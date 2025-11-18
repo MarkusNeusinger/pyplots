@@ -1,0 +1,98 @@
+# pyproject.toml
+[project]
+name = "pyplots"
+version = "0.1.0"
+description = "AI-powered Python plotting examples"
+authors = [{ name = "Markus Neusinger", email = "markus.neusinger@pyplots.ai" }]
+requires-python = ">=3.10"
+readme = "README.md"
+license = { text = "MIT" }
+keywords = [
+    "visualization",
+    "plotting",
+    "matplotlib",
+    "data-science",
+]
+
+dependencies = [
+    # Core Framework
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+
+    # Data & Plotting
+    "pandas>=2.2.0",
+    "numpy>=1.26.0",
+    "matplotlib>=3.8.0",
+
+    # Essentials
+    "pydantic>=2.5.0",
+    "pyyaml>=6.0.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.4.0",
+    "pytest-cov>=6.2.1",
+    "pytest-asyncio>=1.0.0",
+    "ruff>=0.11.13",
+]
+
+[project.urls]
+Homepage = "https://pyplots.ai"
+Repository = "https://github.com/MarkusNeusinger/pyplots"
+
+# ===== Ruff Configuration =====
+
+[tool.ruff]
+line-length = 120
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "dist",
+    "temp",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # Pycodestyle errors
+    "F",   # Pyflakes
+    "W",   # Pycodestyle warnings
+    "I",   # isort
+    "C",   # flake8-comprehensions
+    "B",   # flake8-bugbear
+]
+ignore = [
+    "E501",  # Line too long
+    "C901",  # Too complex
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+# ===== Pytest Configuration =====
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+norecursedirs = [
+    "docs",
+    "scripts",
+    ".git",
+    ".venv",
+    "__pycache__",
+    "temp",
+]
+addopts = [
+    "--strict-markers",
+    "-ra",
+]
+
+# ===== Build System =====
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"

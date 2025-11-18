@@ -1,0 +1,10 @@
+node_modules
+dist
+.vite
+.git
+.gitignore
+*.md
+.env
+.env.local
+.DS_Store
+Thumbs.db

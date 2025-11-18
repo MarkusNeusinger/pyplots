@@ -205,3 +205,30 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Claude
+/.claude/settings.local.json
+
+# Node.js / Frontend
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+.yarn/
+.pnp.*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+*.tmp
+
+# Project-specific
+temp/
+
+# Additional environment files
+.env.local
+.env.production
+.env.development
+
+# Docker
+docker-compose.override.yml

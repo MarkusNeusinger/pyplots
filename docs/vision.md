@@ -104,7 +104,7 @@ Every plot starts with a clear spec defining what it should accomplish, not how.
 ### Performance First
 - **UV Package Manager**: 10-100x faster than pip
 - **Lazy Loading**: Only load what you need
-- **CDN Delivery**: Global edge caching
+- **Google Cloud Infrastructure**: Global deployment with Cloud Run
 - **WebAssembly**: Run Python in browser (experimental)
 
 ## Use Cases

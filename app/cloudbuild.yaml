@@ -1,0 +1,61 @@
+# Cloud Build configuration for pyplots Frontend
+substitutions:
+  _REGION: "europe-west4"
+  _SERVICE_NAME: "pyplots-frontend"
+  _VITE_API_URL: "https://pyplots-backend-REPLACE-ME.run.app"
+
+steps:
+  # Build the container image
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "gcr.io/$PROJECT_ID/${_SERVICE_NAME}:$BUILD_ID",
+        "-t",
+        "gcr.io/$PROJECT_ID/${_SERVICE_NAME}:latest",
+        "--build-arg",
+        "VITE_API_URL=${_VITE_API_URL}",
+        "-f",
+        "app/Dockerfile",
+        "app",
+      ]
+
+  # Push the container image to Container Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "--all-tags", "gcr.io/$PROJECT_ID/${_SERVICE_NAME}"]
+
+  # Deploy container image to Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      - "run"
+      - "deploy"
+      - "${_SERVICE_NAME}"
+      - "--image"
+      - "gcr.io/$PROJECT_ID/${_SERVICE_NAME}:$BUILD_ID"
+      - "--region"
+      - "${_REGION}"
+      - "--platform"
+      - "managed"
+      - "--allow-unauthenticated"
+      - "--memory"
+      - "256Mi"
+      - "--cpu"
+      - "1"
+      - "--timeout"
+      - "60"
+      - "--min-instances"
+      - "0"
+      - "--max-instances"
+      - "3"
+      - "--port"
+      - "8080"
+
+# Store images in Container Registry
+images:
+  - "gcr.io/$PROJECT_ID/${_SERVICE_NAME}:$BUILD_ID"
+  - "gcr.io/$PROJECT_ID/${_SERVICE_NAME}:latest"
+
+options:
+  logging: CLOUD_LOGGING_ONLY

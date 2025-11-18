@@ -18,16 +18,15 @@ dependencies = [
     # Core Framework
     "fastapi>=0.104.0",
     "uvicorn[standard]>=0.24.0",
-
     # Data & Plotting
     "pandas>=2.2.0",
     "numpy>=1.26.0",
     "matplotlib>=3.8.0",
-
     # Essentials
     "pydantic>=2.5.0",
     "pyyaml>=6.0.0",
     "python-dotenv>=1.0.0",
+    "pandas-stubs==2.3.2.250926",
 ]
 
 [project.optional-dependencies]

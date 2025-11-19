@@ -1,34 +1,34 @@
 # 🔄 AI-Powered Plot Generation Workflow
 
-## Übersicht
+## Overview
 
-Dieser Workflow beschreibt den vollständigen, KI-gesteuerten Prozess von der Identifizierung eines neuen Plot-Typs bis zur qualitätsgesicherten Implementierung in mehreren Python-Bibliotheken und Python-Versionen.
+This workflow describes the complete AI-driven process from identifying a new plot type to quality-assured implementation across multiple Python libraries and Python versions.
 
-## Hauptworkflow
+## Main Workflow
 
 ```mermaid
 graph TD
-    A[👤 Mensch/KI findet neuen Plot-Typ] --> B{Plot existiert in Specs?}
-    B -->|Nein| C[📝 Spec nach Template erstellen]
-    B -->|Ähnlich| D[🔍 Distanzprüfung zu existierenden Plots]
-    D -->|Zu ähnlich| E[❌ Ablehnen: Duplikat]
-    D -->|Unterschiedlich genug| C
-    C --> F[🤖 Claude Code analysiert Spec]
-    F --> G[📚 Library-Entscheidung]
-    G --> H[💻 Code-Generierung für alle Libraries]
-    H --> I[🧪 Automated Testing]
-    I --> J{Tests bestanden?}
-    J -->|Nein| H
-    J -->|Ja| K[🎨 Preview-Generierung]
-    K --> L[👁️ Multi-AI Quality Assessment]
-    L --> M{Mehrheit >= 85%?}
-    M -->|Nein| N[🔧 Code-Optimierung durch AI-Team]
+    A[👤 Human/AI finds new plot type] --> B{Plot exists in specs?}
+    B -->|No| C[📝 Create spec from template]
+    B -->|Similar| D[🔍 Distance check against existing plots]
+    D -->|Too similar| E[❌ Reject: Duplicate]
+    D -->|Different enough| C
+    C --> F[🤖 Claude Code analyzes spec]
+    F --> G[📚 Library decision]
+    G --> H[💻 Code generation for all libraries]
+    H --> I[🧪 Automated testing]
+    I --> J{Tests passed?}
+    J -->|No| H
+    J -->|Yes| K[🎨 Preview generation]
+    K --> L[👁️ Multi-AI quality assessment]
+    L --> M{Majority >= 85%?}
+    M -->|No| N[🔧 Code optimization by AI team]
     N --> I
-    M -->|Ja| O[📊 Distanz-Berechnung]
-    O --> P[💾 Speichern in DB + GCS]
+    M -->|Yes| O[📊 Distance calculation]
+    O --> P[💾 Save to DB + GCS]
     P --> Q[🚀 Deployment]
-    Q --> R[⏰ Scheduled Optimization Loop]
-    R --> S[🔄 Kontinuierliche Verbesserung]
+    Q --> R[⏰ Scheduled optimization loop]
+    R --> S[🔄 Continuous improvement]
     S --> I
 
     style A fill:#e1f5ff
@@ -39,74 +39,74 @@ graph TD
     style Q fill:#e1ffe1
 ```
 
-## Detaillierter Prozess
+## Detailed Process
 
 ### 1. Spec Creation & Validation
 
 ```mermaid
 graph LR
-    A[Neuer Plot-Typ identifiziert] --> B[Spec-Template laden]
-    B --> C[Spec ausfüllen]
-    C --> D{Vollständig?}
-    D -->|Nein| C
-    D -->|Ja| E[Distanz-Check zu allen Specs]
-    E --> F{Distanz >= Schwellwert?}
-    F -->|Nein| G[Mensch/KI entscheidet]
-    F -->|Ja| H[specs/{spec-id}.md erstellen]
-    G -->|Ablehnen| I[Ende]
-    G -->|Akzeptieren| H
+    A[New plot type identified] --> B[Load spec template]
+    B --> C[Fill out spec]
+    C --> D{Complete?}
+    D -->|No| C
+    D -->|Yes| E[Distance check against all specs]
+    E --> F{Distance >= threshold?}
+    F -->|No| G[Human/AI decides]
+    F -->|Yes| H[Create specs/{spec-id}.md]
+    G -->|Reject| I[End]
+    G -->|Accept| H
     H --> J[Git commit + push]
 ```
 
 **Details:**
-- **Input**: Plot-Typ Name (z.B. "ROC Curve", "Violin Plot with Significance")
+- **Input**: Plot type name (e.g., "ROC Curve", "Violin Plot with Significance")
 - **Template**: `docs/spec-template.md`
-- **Distanz-Check**: Cosine similarity auf Spec-Embeddings
-- **Schwellwert**: 0.3 (30% Unterschied erforderlich)
+- **Distance check**: Cosine similarity on spec embeddings
+- **Threshold**: 0.3 (30% difference required)
 
 ### 2. Library Analysis & Code Generation
 
 ```mermaid
 graph TD
-    A[📄 Neue Spec vorhanden] --> B[🤖 Claude Code Agent startet]
-    B --> C[Spec analysieren]
-    C --> D[Passende Libraries identifizieren]
-    D --> E{Für jede Library}
-    E --> F1[matplotlib Implementation]
-    E --> F2[seaborn Implementation]
-    E --> F3[plotly Implementation]
-    E --> F4[bokeh Implementation]
+    A[📄 New spec available] --> B[🤖 Claude Code agent starts]
+    B --> C[Analyze spec]
+    C --> D[Identify suitable libraries]
+    D --> E{For each library}
+    E --> F1[matplotlib implementation]
+    E --> F2[seaborn implementation]
+    E --> F3[plotly implementation]
+    E --> F4[bokeh implementation]
 
-    F1 --> G1[default.py generieren]
-    F2 --> G2[default.py generieren]
-    F3 --> G3[default.py generieren]
-    F4 --> G4[default.py generieren]
+    F1 --> G1[Generate default.py]
+    F2 --> G2[Generate default.py]
+    F3 --> G3[Generate default.py]
+    F4 --> G4[Generate default.py]
 
-    G1 --> H[Code Review durch 2. AI]
+    G1 --> H[Code review by 2nd AI]
     G2 --> H
     G3 --> H
     G4 --> H
 
-    H --> I{Code Quality OK?}
-    I -->|Nein| J[Feedback → Regenerierung]
+    H --> I{Code quality OK?}
+    I -->|No| J[Feedback → Regeneration]
     J --> E
-    I -->|Ja| K[Tests generieren]
-    K --> L[pytest ausführen]
+    I -->|Yes| K[Generate tests]
+    K --> L[Run pytest]
 ```
 
-**Libraries-Entscheidung:**
-- matplotlib: Immer (Baseline)
-- seaborn: Wenn statistisch/kategorisch
-- plotly: Wenn Interaktivität sinnvoll
-- bokeh: Wenn Streaming/Dashboard
-- altair: Wenn deklarativ besser
-- andere: Nach Bedarf
+**Library Decision:**
+- matplotlib: Always (baseline)
+- seaborn: When statistical/categorical
+- plotly: When interactivity makes sense
+- bokeh: When streaming/dashboard
+- altair: When declarative is better
+- others: As needed
 
 ### 3. Multi-AI Quality Assessment
 
 ```mermaid
 graph TD
-    A[🎨 Preview generiert] --> B[AI Reviewer #1]
+    A[🎨 Preview generated] --> B[AI Reviewer #1]
     A --> C[AI Reviewer #2]
     A --> D[AI Reviewer #3]
 
@@ -114,73 +114,73 @@ graph TD
     C --> E2[Score: 0-100]
     D --> E3[Score: 0-100]
 
-    E1 --> F[Scores aggregieren]
+    E1 --> F[Aggregate scores]
     E2 --> F
     E3 --> F
 
     F --> G{Median >= 85?}
-    G -->|Ja| H{Varianz <= 15?}
-    G -->|Nein| I[Mehrheits-Feedback sammeln]
-    H -->|Ja| J[✅ Quality Gate bestanden]
-    H -->|Nein| K[AI Diskussion initiieren]
-    K --> L[Konsens finden]
-    L --> M{Einigung?}
-    M -->|Ja| J
-    M -->|Nein| I
-    I --> N[Code-Optimierung beauftragen]
-    N --> O[Zurück zu Code Generation]
+    G -->|Yes| H{Variance <= 15?}
+    G -->|No| I[Collect majority feedback]
+    H -->|Yes| J[✅ Quality gate passed]
+    H -->|No| K[Initiate AI discussion]
+    K --> L[Find consensus]
+    L --> M{Agreement?}
+    M -->|Yes| J
+    M -->|No| I
+    I --> N[Request code optimization]
+    N --> O[Back to code generation]
 ```
 
 **Quality Criteria Checklist:**
 
-Jeder AI Reviewer prüft:
+Each AI reviewer checks:
 
 1. **Spec Compliance**
-   - ✓ Alle Data Requirements umgesetzt
-   - ✓ Optional Parameters funktionieren
-   - ✓ Expected Output erfüllt
+   - ✓ All data requirements implemented
+   - ✓ Optional parameters work
+   - ✓ Expected output fulfilled
 
 2. **Visual Quality**
-   - ✓ Keine überlappenden Labels
-   - ✓ Achsenbeschriftungen vollständig und lesbar
-   - ✓ Legende vorhanden (falls nötig)
-   - ✓ Grid sichtbar aber nicht dominant
-   - ✓ Farben unterscheidbar (colorblind-safe)
-   - ✓ Angemessene Figure-Size
-   - ✓ Kein Text außerhalb der Figur
-   - ✓ Einheitliche Font-Größen
+   - ✓ No overlapping labels
+   - ✓ Axis labels complete and readable
+   - ✓ Legend present (if needed)
+   - ✓ Grid visible but not dominant
+   - ✓ Colors distinguishable (colorblind-safe)
+   - ✓ Appropriate figure size
+   - ✓ No text outside figure bounds
+   - ✓ Consistent font sizes
 
 3. **Technical Quality**
-   - ✓ Code läuft ohne Fehler
-   - ✓ Korrekte Datentypen verwendet
-   - ✓ Edge Cases behandelt (NaN, leere Daten)
-   - ✓ Performance akzeptabel (< 5s für 10k Zeilen)
+   - ✓ Code runs without errors
+   - ✓ Correct data types used
+   - ✓ Edge cases handled (NaN, empty data)
+   - ✓ Acceptable performance (< 5s for 10k rows)
 
 4. **Library Best Practices**
-   - ✓ Idiomatischer Code für die Library
-   - ✓ Empfohlene API-Methoden verwendet
-   - ✓ Keine deprecation warnings
+   - ✓ Idiomatic code for the library
+   - ✓ Recommended API methods used
+   - ✓ No deprecation warnings
 
-**AI Reviewer Konfiguration:**
+**AI Reviewer Configuration:**
 
 ```python
 reviewers = [
     {
         "id": "reviewer_1",
         "model": "claude-sonnet-4",
-        "temperature": 0.3,  # Streng
+        "temperature": 0.3,  # Strict
         "focus": "visual_quality"
     },
     {
         "id": "reviewer_2",
         "model": "claude-sonnet-4",
-        "temperature": 0.5,  # Ausgewogen
+        "temperature": 0.5,  # Balanced
         "focus": "spec_compliance"
     },
     {
         "id": "reviewer_3",
         "model": "claude-sonnet-4",
-        "temperature": 0.7,  # Kreativ
+        "temperature": 0.7,  # Creative
         "focus": "user_experience"
     }
 ]
@@ -190,55 +190,55 @@ reviewers = [
 
 ```mermaid
 graph LR
-    A[Code generiert] --> B[Test-Matrix aufbauen]
+    A[Code generated] --> B[Build test matrix]
     B --> C1[Python 3.10]
     B --> C2[Python 3.11]
     B --> C3[Python 3.12]
 
-    C1 --> D1[pytest ausführen]
-    C2 --> D2[pytest ausführen]
-    C3 --> D3[pytest ausführen]
+    C1 --> D1[Run pytest]
+    C2 --> D2[Run pytest]
+    C3 --> D3[Run pytest]
 
-    D1 --> E1{Bestanden?}
-    D2 --> E2{Bestanden?}
-    D3 --> E3{Bestanden?}
+    D1 --> E1{Passed?}
+    D2 --> E2{Passed?}
+    D3 --> E3{Passed?}
 
-    E1 -->|Ja| F[Version 3.10 ✓]
-    E2 -->|Ja| G[Version 3.11 ✓]
-    E3 -->|Ja| H[Version 3.12 ✓]
+    E1 -->|Yes| F[Version 3.10 ✓]
+    E2 -->|Yes| G[Version 3.11 ✓]
+    E3 -->|Yes| H[Version 3.12 ✓]
 
-    E1 -->|Nein| I1[Fix für 3.10]
-    E2 -->|Nein| I2[Fix für 3.11]
-    E3 -->|Nein| I3[Fix für 3.12]
+    E1 -->|No| I1[Fix for 3.10]
+    E2 -->|No| I2[Fix for 3.11]
+    E3 -->|No| I3[Fix for 3.12]
 
-    I1 --> J{Separate Datei?}
+    I1 --> J{Separate file?}
     I2 --> J
     I3 --> J
 
-    J -->|Ja| K[py310.py/py311.py erstellen]
-    J -->|Nein| L[default.py anpassen]
+    J -->|Yes| K[Create py310.py/py311.py]
+    J -->|No| L[Adapt default.py]
 
     K --> D1
     L --> D1
 
-    F --> M{Alle 3 OK?}
+    F --> M{All 3 OK?}
     G --> M
     H --> M
 
-    M -->|Ja| N[✅ Tests bestanden]
-    M -->|Nein| O[⚠️ Partial Support]
+    M -->|Yes| N[✅ Tests passed]
+    M -->|No| O[⚠️ Partial support]
 ```
 
 **Test Requirements:**
 
-Jede Implementierung muss Tests haben für:
-- Grundfunktionalität (happy path)
-- Edge Cases (leere Daten, NaN, inf)
-- Verschiedene Datenformen (wenig/viele Zeilen)
-- Optional Parameters
-- Error Handling
+Each implementation must have tests for:
+- Basic functionality (happy path)
+- Edge cases (empty data, NaN, inf)
+- Different data shapes (few/many rows)
+- Optional parameters
+- Error handling
 
-**Beispiel Test:**
+**Example Test:**
 
 ```python
 # tests/unit/plots/matplotlib/scatter/test_scatter_basic_001.py
@@ -250,7 +250,7 @@ from plots.matplotlib.scatter.scatter_basic_001.default import create_plot
 
 class TestScatterBasic001:
     def test_basic_functionality(self):
-        """Test grundlegende Funktionalität"""
+        """Test basic functionality"""
         data = pd.DataFrame({
             'x': [1, 2, 3, 4, 5],
             'y': [2, 4, 6, 8, 10]
@@ -260,7 +260,7 @@ class TestScatterBasic001:
         assert len(fig.axes) == 1
 
     def test_with_nan_values(self):
-        """Test mit NaN Werten"""
+        """Test with NaN values"""
         data = pd.DataFrame({
             'x': [1, 2, np.nan, 4, 5],
             'y': [2, np.nan, 6, 8, 10]
@@ -269,13 +269,13 @@ class TestScatterBasic001:
         assert fig is not None
 
     def test_empty_data(self):
-        """Test mit leeren Daten"""
+        """Test with empty data"""
         data = pd.DataFrame({'x': [], 'y': []})
         with pytest.raises(ValueError):
             create_plot(data, x='x', y='y')
 
     def test_large_dataset(self):
-        """Test mit großem Datensatz"""
+        """Test with large dataset"""
         data = pd.DataFrame({
             'x': np.random.randn(10000),
             'y': np.random.randn(10000)
@@ -284,12 +284,12 @@ class TestScatterBasic001:
         start = time.time()
         fig = create_plot(data, x='x', y='y')
         duration = time.time() - start
-        assert duration < 5.0  # Max 5 Sekunden
+        assert duration < 5.0  # Max 5 seconds
 
     @pytest.mark.parametrize("python_version", ["3.10", "3.11", "3.12"])
     def test_python_versions(self, python_version):
-        """Test über Python-Versionen hinweg"""
-        # Wird in CI mit verschiedenen Python-Versionen ausgeführt
+        """Test across Python versions"""
+        # Run in CI with different Python versions
         data = pd.DataFrame({
             'x': [1, 2, 3],
             'y': [2, 4, 6]
@@ -302,37 +302,37 @@ class TestScatterBasic001:
 
 ```mermaid
 graph TD
-    A[Plot erfolgreich erstellt] --> B[Embeddings generieren]
-    B --> C1[Spec Text Embedding]
-    B --> C2[Preview Image Embedding]
-    B --> C3[Code Structure Embedding]
+    A[Plot successfully created] --> B[Generate embeddings]
+    B --> C1[Spec text embedding]
+    B --> C2[Preview image embedding]
+    B --> C3[Code structure embedding]
 
-    C1 --> D[Embedding kombinieren]
+    C1 --> D[Combine embeddings]
     C2 --> D
     C3 --> D
 
-    D --> E[Distanz zu allen Plots berechnen]
-    E --> F[Clustering aktualisieren]
-    F --> G[Cluster-Metadaten speichern]
-    G --> H[Recommendations aktualisieren]
+    D --> E[Calculate distance to all plots]
+    E --> F[Update clustering]
+    F --> G[Save cluster metadata]
+    G --> H[Update recommendations]
 ```
 
-**Distanz-Metriken:**
+**Distance Metrics:**
 
 1. **Semantic Distance** (Spec Text)
-   - Embedding: Claude Text Embeddings
-   - Metrik: Cosine Similarity
-   - Gewicht: 40%
+   - Embedding: Claude text embeddings
+   - Metric: Cosine similarity
+   - Weight: 40%
 
 2. **Visual Distance** (Preview Image)
-   - Embedding: CLIP Image Embeddings
-   - Metrik: Euclidean Distance
-   - Gewicht: 30%
+   - Embedding: CLIP image embeddings
+   - Metric: Euclidean distance
+   - Weight: 30%
 
 3. **Structural Distance** (Code)
-   - Features: AST Analyse, API Calls
-   - Metrik: Jaccard Similarity
-   - Gewicht: 30%
+   - Features: AST analysis, API calls
+   - Metric: Jaccard similarity
+   - Weight: 30%
 
 **Composite Distance:**
 ```python
@@ -352,61 +352,61 @@ def calculate_distance(plot1, plot2):
 
 ```mermaid
 graph TD
-    A[⏰ Scheduled Trigger: täglich] --> B[Plots mit Score < 90 laden]
-    B --> C{Für jeden Plot}
+    A[⏰ Scheduled trigger: daily] --> B[Load plots with score < 90]
+    B --> C{For each plot}
 
     C --> D[AI Optimizer #1]
     C --> E[AI Optimizer #2]
     C --> F[AI Optimizer #3]
 
-    D --> G1[Optimierungsvorschlag 1]
-    E --> G2[Optimierungsvorschlag 2]
-    F --> G3[Optimierungsvorschlag 3]
+    D --> G1[Optimization proposal 1]
+    E --> G2[Optimization proposal 2]
+    F --> G3[Optimization proposal 3]
 
-    G1 --> H[Code-Varianten generieren]
+    G1 --> H[Generate code variants]
     G2 --> H
     G3 --> H
 
-    H --> I[Alle Varianten testen]
-    I --> J[Quality Assessment für alle]
+    H --> I[Test all variants]
+    I --> J[Quality assessment for all]
 
-    J --> K{Beste Variante besser?}
-    K -->|Ja| L[AI-Konsens einholen]
-    K -->|Nein| M[Keine Änderung]
+    J --> K{Best variant better?}
+    K -->|Yes| L[Get AI consensus]
+    K -->|No| M[No change]
 
-    L --> N{Mehrheit zustimmt?}
-    N -->|Ja| O[Code ersetzen]
-    N -->|Nein| M
+    L --> N{Majority agrees?}
+    N -->|Yes| O[Replace code]
+    N -->|No| M
 
-    O --> P[Preview neu generieren]
-    P --> Q[Quality Score aktualisieren]
+    O --> P[Regenerate preview]
+    P --> Q[Update quality score]
     Q --> R[Git commit]
 
-    M --> S[Nächster Plot]
+    M --> S[Next plot]
     R --> S
     S --> C
 ```
 
-**Optimierungs-Strategien:**
+**Optimization Strategies:**
 
 1. **Visual Refinement**
-   - Bessere Farbpaletten
-   - Optimierte Label-Positionen
-   - Verbesserte Font-Größen
-   - Margin-Optimierung
+   - Better color palettes
+   - Optimized label positions
+   - Improved font sizes
+   - Margin optimization
 
 2. **Code Quality**
-   - Mehr idiomatischer Code
-   - Bessere Performance
-   - Klarere Variablennamen
-   - Ausführlichere Docstrings
+   - More idiomatic code
+   - Better performance
+   - Clearer variable names
+   - More detailed docstrings
 
 3. **Feature Enhancement**
-   - Zusätzliche optionale Parameter
-   - Besseres Error Handling
-   - Mehr Flexibilität
+   - Additional optional parameters
+   - Better error handling
+   - More flexibility
 
-**AI Optimizer Konfiguration:**
+**AI Optimizer Configuration:**
 
 ```python
 optimizers = [
@@ -415,7 +415,7 @@ optimizers = [
         "model": "claude-sonnet-4",
         "temperature": 0.6,
         "focus": "visual_improvements",
-        "max_changes": 3  # Max 3 Änderungen pro Iteration
+        "max_changes": 3  # Max 3 changes per iteration
     },
     {
         "id": "optimizer_code",
@@ -434,23 +434,23 @@ optimizers = [
 ]
 ```
 
-**Konsens-Mechanismus:**
+**Consensus Mechanism:**
 
 ```python
 def optimize_plot(spec_id: str, library: str):
-    """Optimiert einen Plot durch AI-Konsens"""
+    """Optimizes a plot through AI consensus"""
 
-    # 1. Aktuelle Version laden
+    # 1. Load current version
     current_code = load_implementation(spec_id, library)
     current_score = get_quality_score(spec_id, library)
 
-    # 2. Optimierungsvorschläge sammeln
+    # 2. Collect optimization proposals
     proposals = []
     for optimizer in optimizers:
         proposal = optimizer.suggest_improvements(current_code)
         proposals.append(proposal)
 
-    # 3. Alle Vorschläge implementieren und testen
+    # 3. Implement and test all proposals
     variants = []
     for proposal in proposals:
         code = apply_changes(current_code, proposal.changes)
@@ -463,49 +463,49 @@ def optimize_plot(spec_id: str, library: str):
                 'proposal': proposal
             })
 
-    # 4. Beste Variante finden
+    # 4. Find best variant
     best = max(variants, key=lambda v: v['score'])
 
-    # 5. Ist es besser?
+    # 5. Is it better?
     if best['score'] <= current_score:
-        return False  # Keine Verbesserung
+        return False  # No improvement
 
-    # 6. Konsens einholen
+    # 6. Get consensus
     votes = []
     for reviewer in reviewers:
         vote = reviewer.compare(current_code, best['code'])
-        votes.append(vote)  # True = Verbesserung, False = keine Verbesserung
+        votes.append(vote)  # True = improvement, False = no improvement
 
-    # 7. Mehrheitsentscheidung
+    # 7. Majority decision
     if sum(votes) >= len(votes) / 2:
-        # Mehrheit sagt: Verbesserung!
+        # Majority says: improvement!
         save_implementation(spec_id, library, best['code'])
         return True
 
     return False
 ```
 
-## Qualitätssicherung
+## Quality Assurance
 
 ### Quality Gates
 
 ```mermaid
 graph LR
-    A[Code generiert] --> B{Pytest}
+    A[Code generated] --> B{Pytest}
     B -->|Pass| C{Coverage >= 90%?}
     B -->|Fail| Z[❌ Reject]
-    C -->|Ja| D{Ruff Linting}
-    C -->|Nein| Z
-    D -->|Pass| E{Type Checking}
+    C -->|Yes| D{Ruff linting}
+    C -->|No| Z
+    D -->|Pass| E{Type checking}
     D -->|Fail| Z
-    E -->|Pass| F{Visual Quality >= 85?}
+    E -->|Pass| F{Visual quality >= 85?}
     E -->|Fail| Z
-    F -->|Ja| G{AI Consensus}
-    F -->|Nein| Z
-    G -->|Ja| H{Python 3.10-3.12}
-    G -->|Nein| Z
-    H -->|All Pass| I[✅ Accept]
-    H -->|Some Fail| J[⚠️ Partial]
+    F -->|Yes| G{AI consensus}
+    F -->|No| Z
+    G -->|Yes| H{Python 3.10-3.12}
+    G -->|No| Z
+    H -->|All pass| I[✅ Accept]
+    H -->|Some fail| J[⚠️ Partial]
 ```
 
 ### Quality Report Format
@@ -583,16 +583,16 @@ graph LR
 
 ```mermaid
 graph LR
-    A[Quality Gates bestanden] --> B[Preview zu GCS]
-    B --> C[Metadata zu PostgreSQL]
+    A[Quality gates passed] --> B[Preview to GCS]
+    B --> C[Metadata to PostgreSQL]
     C --> D[Git commit + push]
     D --> E[CI/CD triggered]
-    E --> F[Build Container]
+    E --> F[Build container]
     F --> G[Deploy to Cloud Run]
-    G --> H[Health Check]
+    G --> H[Health check]
     H --> I{Healthy?}
-    I -->|Ja| J[Traffic umleiten]
-    I -->|Nein| K[Rollback]
+    I -->|Yes| J[Redirect traffic]
+    I -->|No| K[Rollback]
     J --> L[✅ Live]
 ```
 
@@ -601,39 +601,39 @@ graph LR
 ### Key Metrics
 
 1. **Quality Metrics**
-   - Durchschnittlicher Quality Score pro Library
-   - Anzahl Plots pro Quality-Bereich (< 85, 85-90, > 90)
-   - Konsens-Rate bei AI Reviews
-   - Optimierungs-Erfolgsrate
+   - Average quality score per library
+   - Number of plots per quality range (< 85, 85-90, > 90)
+   - Consensus rate in AI reviews
+   - Optimization success rate
 
 2. **Performance Metrics**
-   - Zeit von Spec bis Deployment
-   - Test-Durchlaufzeit
-   - Preview-Generierungszeit
-   - API Response Times
+   - Time from spec to deployment
+   - Test execution time
+   - Preview generation time
+   - API response times
 
 3. **Coverage Metrics**
-   - Anzahl Specs
-   - Anzahl Implementations pro Spec
-   - Abdeckung Python-Versionen
-   - Abdeckung Libraries
+   - Number of specs
+   - Number of implementations per spec
+   - Python version coverage
+   - Library coverage
 
 4. **Usage Metrics**
-   - Beliebteste Plots
-   - Häufigste Library-Wahl
-   - Plot-Distanz-Verteilung
-   - Cluster-Größen
+   - Most popular plots
+   - Most frequent library choice
+   - Plot distance distribution
+   - Cluster sizes
 
-## Zusammenfassung
+## Summary
 
-Dieser Workflow gewährleistet:
+This workflow ensures:
 
-✅ **Vollautomatisierte** Code-Generierung und Testing
-✅ **Multi-AI Konsens** für objektive Qualitätsbewertung
-✅ **Kontinuierliche Optimierung** durch scheduled AI reviews
-✅ **Multi-Version Support** für Python 3.10-3.12
-✅ **Intelligentes Clustering** für bessere Discoverability
-✅ **Hohe Qualitätsstandards** durch mehrschichtige Gates
-✅ **Reproduzierbare Ergebnisse** durch klare Prozesse
+✅ **Fully automated** code generation and testing
+✅ **Multi-AI consensus** for objective quality assessment
+✅ **Continuous optimization** through scheduled AI reviews
+✅ **Multi-version support** for Python 3.10-3.12
+✅ **Intelligent clustering** for better discoverability
+✅ **High quality standards** through multi-layered gates
+✅ **Reproducible results** through clear processes
 
-Der gesamte Prozess ist **AI-first**, **specification-driven** und **quality-focused**.
+The entire process is **AI-first**, **specification-driven**, and **quality-focused**.

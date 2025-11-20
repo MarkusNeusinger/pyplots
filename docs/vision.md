@@ -2,188 +2,78 @@
 
 ## Mission
 
-**Making data visualization in Python effortless by providing AI-powered, specification-driven plot examples that work instantly with YOUR data.**
+**Making Python data visualization effortless: Find the right plot, see it with YOUR data, get working code instantly.**
 
 ## The Problem
 
-- **Generic Examples**: Every tutorial shows fake data, not yours
-- **Library Lock-in**: You pick matplotlib, then realize plotly was better
-- **Time Waste**: Hours adapting examples to your data structure
-- **Discovery Hell**: Finding the right plot type is frustrating
-- **Version Chaos**: Code breaks across Python versions
+Developers waste hours on visualization:
 
-## The Solution: pyplots
+- **Library Lock-in**: Pick matplotlib, then realize seaborn was better
+- **Discovery Hell**: Finding the right plot type across libraries is frustrating
+- **Rigid Categories**: Hard to find specialized plots or discover similar alternatives
+- **Generic Examples**: Tutorials show fake data, not yours
+- **Outdated Code**: Examples break across Python versions and library updates
 
-### 🎯 Core Innovation: "Your Data First"
+## The Solution
 
-Stop adapting examples. Start visualizing immediately.
+**pyplots is an AI-powered platform where specifications meet automation.**
 
-```python
-# Traditional way (hours of work)
-1. Find example with fake data
-2. Understand the structure  
-3. Reshape your data to match
-4. Debug mismatches
-5. Realize wrong library choice
-6. Start over
+### The Human Touch
 
-# pyplots way (seconds)
-1. Upload YOUR data
-2. Pick any plot
-3. See it with YOUR data
-4. Get custom code for YOUR columns
-5. Compare across ALL libraries
-6. Done
-```
+While AI can generate plots instantly, **humans need inspiration and choice**. If you just ask AI "make a chart," you'll
+get the same generic scatter plot every time.
 
-### 🤖 AI That Understands Context
+pyplots is different: **AI curates and maintains, humans discover and choose.**
 
-No more rigid categories. Our AI understands what you're trying to achieve:
+- Browse hundreds of specialized plot types you didn't know existed
+- Compare visual styles side-by-side to find what resonates
+- Discover creative approaches from the community
+- Choose the exact variation that tells your story
 
-```python
-# Search naturally
-"show correlation between sales and temperature with missing data points"
+**AI automates the boring parts. You bring the creativity.**
 
-# AI understands:
-→ correlation visualization needed
-→ two variables relationship  
-→ handles NaN values
-→ possibly scatter or heatmap
+### How It Works
 
-# Returns relevant plots from ANY library
-```
+1. **Spec Collection**: Comprehensive markdown specifications for every plot type
+2. **AI Code Generation**: Automatically creates implementations for all major libraries
+3. **Continuous Quality**: AI validates, tests, and improves examples constantly
+4. **Smart Discovery**: Natural language search + dynamic tagging + similarity clustering
+5. **Your Data, Instantly**: Upload your data, see dozens of plot variations immediately
 
-### 🔍 Compare Everything
+### What Makes It Different
 
-Why guess? See all options instantly:
+- **Library Agnostic**: Compare matplotlib, seaborn, plotly, bokeh, altair side-by-side
+- **Always Current**: AI agents keep examples updated and optimized
+- **Multi-Dimensional Discovery**: Find plots by domain (finance, research), type (scatter, bar), or specific use case (
+  ROC curve, Sankey diagram)
+- **Multiple Styles**: Same plot, different visual styles—pick what you like
+- **Natural Language**: Ask "show correlation between variables" instead of searching categories
+- **Community + AI**: Users submit specs, AI generates and maintains code
+- **Global**: AI-native means any language, anywhere
 
-```python
-# One request, all libraries
-compare("bar chart", your_data)
+## Key Features
 
-→ matplotlib: static, publication-ready
-→ seaborn: statistical, with confidence intervals
-→ plotly: interactive, with hover data
-→ bokeh: streaming-capable, dashboard-ready
-→ altair: declarative, vega-based
+### Core (Free)
 
-# Pick what fits YOUR needs
-```
+- Browse all plot types with live examples
+- Compare libraries side-by-side
+- Copy production-ready code
+- Natural language search
+- AI-generated explanations
 
-## Features
+### Premium
 
-### Available Now
-- ✅ **500+ Specifications**: Every plot type you need
-- ✅ **Your Data Upload**: CSV, Excel, JSON, Parquet
-- ✅ **Instant Preview**: See your data visualized immediately
-- ✅ **Custom Code Generation**: Code tailored to your columns
-- ✅ **Multi-Library Comparison**: Same plot, all libraries
-- ✅ **AI-Powered Search**: Natural language queries
-- ✅ **Python 3.10-3.12**: Multi-version compatibility
-- ✅ **Smart Suggestions**: AI recommends best plots for your data
+- **Try with YOUR data**: Upload CSV/Excel/JSON, see all plots with your actual data
+- **Custom styles**: Generate plots matching your brand
+- **MCP Server**: Integrate pyplots into your AI workflow
 
-### Coming Soon
-- 🔄 **Auto-Adaptation**: Plots adjust to your data structure
-- 🎨 **Smart Theming**: Apply your colors automatically
-- 💬 **Natural Language Generation**: "Make me a dashboard for Q3 sales"
-- 🔌 **IDE Integration**: Real-time suggestions in VSCode
-- 📦 **pip install pyplots**: Use directly in your projects
-- 🌐 **API Access**: Integrate with your tools
+## Why We'll Win
 
-## Technical Excellence
-
-### Specification-Driven Development
-Every plot starts with a clear spec defining what it should accomplish, not how. This ensures quality and allows multiple implementations.
-
-### AI-Native Architecture
-- **Semantic Understanding**: AI comprehends intent, not just keywords
-- **Dynamic Tagging**: No rigid categories, contextual understanding
-- **Smart Mapping**: Automatically maps your columns to plot parameters
-- **Quality Assurance**: AI validates every implementation
-
-### Performance First
-- **UV Package Manager**: 10-100x faster than pip
-- **Lazy Loading**: Only load what you need
-- **Google Cloud Infrastructure**: Global deployment with Cloud Run
-- **WebAssembly**: Run Python in browser (experimental)
-
-## Use Cases
-
-### Data Scientists
-```python
-# Monday: Explore new dataset
-upload("customer_data.csv")
-pyplots.suggest()  # AI recommends visualizations
-
-# Tuesday: Present findings  
-plot = pyplots.get("correlation-matrix")
-plot.apply(data).to_powerpoint()
-```
-
-### Developers
-```python
-# Building a dashboard
-plots = pyplots.compare("realtime-chart", streaming_data)
-# Choose bokeh for streaming capability
-code = plots.bokeh.get_code()
-```
-
-### Researchers
-```python
-# Publication-ready figures
-plot = pyplots.get("violin-plot-with-significance")
-figure = plot.apply(experiment_data, style="nature")
-figure.save("figure_3.pdf", dpi=300)
-```
-
-## Roadmap
-
-### Phase 1: Foundation ✅ (Now)
-- Core collection of 500+ plots
-- Multi-library comparison working
-- "Try with your data" functional
-- AI tagging system active
-
-### Phase 2: Intelligence (Q1 2025)
-- Natural language to visualization
-- Auto-adaptation to data structures
-- Smart theming and styling
-- Performance optimizations
-
-### Phase 3: Integration (Q2 2025)
-- pip package release
-- IDE plugins (VSCode, PyCharm)
-- Jupyter extension
-- API for programmatic access
-
-### Phase 4: Innovation (Q3 2025)
-- WebAssembly runtime
-- Collaborative features
-- Custom plot designer
-- Training on organization's plots
-
-## Why pyplots Will Win
-
-1. **First to solve the real problem**: Working with YOUR data, not examples
-2. **Library agnostic**: We don't care which library, we show all
-3. **AI-first design**: Not bolted on, built in from day one
-4. **Community-driven**: Open source with passionate contributors
-5. **Specification guarantee**: Every plot works as specified
-
-## Join the Revolution
-
-We're not building another example gallery. We're revolutionizing how developers create data visualizations.
-
-**The future isn't about learning plot syntax.**
-**It's about describing what you want to see.**
-
-### Get Involved
-
-- 🌟 Star us on GitHub
-- 🐛 Report issues
-- 📝 Contribute specifications
-- 💡 Share your ideas
-- 🗣️ Spread the word
+1. **First to solve the real problem**: Your data, not examples
+2. **Never outdated**: AI continuously updates and improves
+3. **True discovery**: Similarity clustering reveals plots you didn't know existed
+4. **Specification-driven**: Every plot is guaranteed to work as described
+5. **Community scale**: Open source + AI automation = comprehensive coverage
 
 ---
 

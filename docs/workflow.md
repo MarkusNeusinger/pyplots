@@ -21,7 +21,7 @@ graph TD
     J -->|No| H
     J -->|Yes| K[🎨 Preview generation]
     K --> L[👁️ Multi-AI quality assessment]
-    L --> M{Majority >= 85%?}
+    L --> M{Median >= 85%?}
     M -->|No| N[🔧 Code optimization by AI team]
     N --> I
     M -->|Yes| O[📊 Distance calculation]

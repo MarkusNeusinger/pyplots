@@ -477,7 +477,7 @@ def optimize_plot(spec_id: str, library: str):
         votes.append(vote)  # True = improvement, False = no improvement
 
     # 7. Majority decision
-    if sum(votes) >= len(votes) / 2:
+    if sum(votes) > len(votes) / 2:
         # Majority says: improvement!
         save_implementation(spec_id, library, best['code'])
         return True

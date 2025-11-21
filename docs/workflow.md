@@ -1,639 +1,580 @@
-# 🔄 AI-Powered Plot Generation Workflow
+# 🔄 pyplots Automation Workflow
 
 ## Overview
 
-This workflow describes the complete AI-driven process from identifying a new plot type to quality-assured implementation across multiple Python libraries and Python versions.
+pyplots is a **community-driven, AI-powered platform** that automatically discovers, generates, tests, and maintains Python plotting examples. This document describes the high-level automation architecture that makes this possible.
 
-## Main Workflow
+### Philosophy
+
+- **Start Simple, Scale Intelligently**: Begin with basics (Twitter, matplotlib), expand based on learnings
+- **Cost-Conscious Design**: Leverage existing subscriptions and smart resource allocation
+- **Quality Over Quantity**: Multi-LLM validation ensures only excellent examples go live
+- **Community-Driven**: Ideas from the data science community, curated by AI, approved by humans
+- **Always Current**: Event-based maintenance keeps examples updated with latest libraries and LLMs
+
+### Key Principles
+
+1. **Images in GCS, Code in GitHub**: Preview PNGs stored in Google Cloud Storage with lifecycle management, source code version-controlled
+2. **Multi-Version Support**: All plots tested across Python 3.13, 3.12, 3.11, 3.10
+3. **Hybrid Automation**: AI handles routine tasks, humans approve critical decisions
+4. **Standard Datasets**: Use well-known datasets (pandas iris, seaborn tips, kaggle) for realistic previews
+5. **Event-Based Optimization**: Update plots when LLM/library versions change, not on fixed schedules
+
+---
+
+## System Architecture
+
+```mermaid
+graph TB
+    subgraph "Discovery & Input"
+        SM[Social Media<br/>Twitter, Reddit, GitHub, ArXiv]
+        GI[GitHub Issues<br/>Community Ideas]
+    end
+
+    subgraph "Orchestration Layer"
+        N8N[n8n Cloud<br/>Workflow Engine]
+    end
+
+    subgraph "AI Processing"
+        CCM[Claude Code Max<br/>Primary AI]
+        VTX[Vertex AI<br/>Multi-LLM Critical Decisions]
+        COP[GitHub Copilot<br/>Code Review]
+    end
+
+    subgraph "Testing & Generation"
+        GHA[GitHub Actions<br/>Multi-Version Tests + Preview Gen]
+        DS[Standard Datasets<br/>pandas, seaborn, kaggle]
+    end
+
+    subgraph "Storage & Deployment"
+        GH[GitHub Repository<br/>Code Storage]
+        GCS[Google Cloud Storage<br/>Image Hosting]
+        SQL[Cloud SQL<br/>Metadata]
+        CR[Cloud Run<br/>Web Platform]
+    end
+
+    SM --> N8N
+    GI --> N8N
+    N8N --> CCM
+    CCM --> GHA
+    GHA --> COP
+    GHA --> DS
+    GHA --> GCS
+    GHA --> GH
+    CCM --> VTX
+    VTX --> SQL
+    GCS --> CR
+    SQL --> CR
+    GH --> CR
+```
+
+### Component Responsibilities
+
+| Component | Purpose | When Used |
+|-----------|---------|-----------|
+| **n8n Cloud** | Workflow orchestration, daily monitoring | All automation flows |
+| **Claude Code Max** | Code generation, routine evaluation | Primary AI workload |
+| **Vertex AI (Multi-LLM)** | Critical decisions requiring consensus | Final approval, complex plots |
+| **GitHub Actions** | Testing (4 Python versions), preview generation | On PR + before QA |
+| **GitHub Copilot** | Automated code review | On every PR |
+| **Google Cloud Storage** | PNG hosting with versioning (old versions auto-deleted after 30 days) | All preview images |
+| **Cloud SQL** | Metadata, tags, quality scores | Plot catalog |
+
+---
+
+## Core Automation Flows
+
+### Flow 1: Discovery & Ideation
+
+**Purpose**: Find plot ideas from the data science community
+
+**Trigger**: Daily n8n schedule (start with one source, expand gradually)
+
+**Process**:
+1. n8n monitors social media platforms (phased rollout: Twitter → Reddit → GitHub → ArXiv)
+2. AI extracts interesting plot ideas and visualization techniques
+3. Checks for duplicates against existing specs
+4. Creates GitHub issue with draft spec in Markdown format
+5. Labels issue as `plot-idea`
+
+**Output**: GitHub issue ready for human review
+
+**Cost**: Minimal (daily n8n workflow + lightweight AI calls)
+
+---
+
+### Flow 2: Validation & Code Generation
+
+**Purpose**: Transform approved ideas into working implementations
+
+**Trigger**:
+- GitHub issue labeled `approved` (manual)
+- OR auto-approved for similar plots (high similarity score)
+
+**Process**:
+1. Claude Code Max analyzes spec and checks quality
+2. Determines suitable libraries (matplotlib always, others based on plot type)
+3. **For each library**, enters self-optimization loop (max 3 attempts):
+
+   **Attempt Loop**:
+   - a) Generates implementation code including:
+     - Standalone code with embedded sample data
+     - Deterministic data (hardcoded or seeded)
+     - Explanation text (docstring)
+   - b) Executes code to render preview image
+   - c) **Self-reviews** the generated image:
+     - Does it match the spec requirements?
+     - Are there visual issues (overlapping labels, unreadable text, etc.)?
+     - Does it follow plotting best practices?
+   - d) If issues found: Optimize code and retry (up to 3 attempts)
+   - e) If successful: Mark as ready for external review
+   - f) If 3 attempts failed: Mark library as "not feasible" for this plot
+
+4. Creates Pull Request with successfully generated implementations
+5. **Decision point**: Simple/similar plots auto-proceed, new/complex types wait for human approval
+
+**Output**: Pull Request containing spec + self-reviewed implementation files
+
+**Self-Review Quality Gate**:
+- Code must execute without errors
+- Image must be generated successfully
+- No obvious visual defects detected
+- Basic spec compliance verified
+- Only then proceeds to multi-version testing
+
+**Failure Handling**:
+- If library implementation impossible after 3 attempts: Document as "not supported"
+- Feedback from failed attempts stored for learning
+- Other libraries continue independently
+
+**Human-in-the-Loop**:
+- New plot types require manual approval via GitHub label
+- Complex visualizations reviewed before proceeding
+
+---
+
+### Flow 3: Multi-Version Testing
+
+**Purpose**: Ensure compatibility across Python versions
+
+**Trigger**:
+- Pull Request created
+- Before Quality Assurance flow
+
+**Process**:
+1. GitHub Actions matrix strategy launches parallel test jobs
+2. Tests run with Python 3.13, 3.12, 3.11, 3.10
+3. Pytest executes for each version independently
+4. GitHub Copilot reviews code quality automatically
+5. Version compatibility documented in metadata (e.g., `"3.12+"`, `"all"`, `"3.11-3.13"`)
+6. Results aggregated and reported in PR
+
+**Output**:
+- Test results for all Python versions
+- Version support metadata
+- Copilot code review comments
+
+**Infrastructure**: GitHub Actions (uses your Pro subscription minutes)
+
+**Note**: If code only works in certain versions, this is documented in metadata rather than creating separate files.
+
+---
+
+### Flow 4: Preview Generation
+
+**Purpose**: Create visual previews without bloating repository
+
+**Trigger**: Tests passed
+
+**Process**:
+1. GitHub Action detects successful tests
+2. Spins up Python environment with required plotting library
+3. Executes the plot code (code is **standalone** with embedded data)
+4. Code generates PNG output
+5. Uploads to Google Cloud Storage: `gs://pyplots-images/previews/{library}/{spec-id}/{variant}/v{timestamp}.png`
+6. Updates database with current version URL (points to latest)
+7. **Stores code hash** to ensure quality reviewers see the exact same output
+
+**Critical Requirement**:
+- Code must be **100% deterministic** (same code = same image every time)
+- No external data loading during preview generation
+- All sample data embedded in the code itself
+- This ensures quality reviewers see the exact image that will be deployed
+
+**Storage Strategy**:
+- **Current Version**: Each version has unique filename (e.g., with timestamp or version ID)
+- **Latest Pointer**: Current version remains permanently in GCS
+- **Lifecycle**: When new version is uploaded, previous version is automatically deleted after 30 days
+- **Result**: Always keep current version, auto-cleanup old versions
+
+**Output**: Preview PNG in GCS, URL in database, code hash for verification
+
+---
+
+### Flow 5: Quality Assurance
+
+**Purpose**: Multi-LLM validation before deployment
+
+**Trigger**: Preview uploaded to GCS
+
+**Process**:
+1. Loads the **exact PNG from GCS** (same image that will be deployed)
+2. Verifies code hash matches (ensures image corresponds to code)
+3. **Routine Quality Checks** (Claude via Code Max):
+   - Spec compliance
+   - Visual quality basics
+   - Code quality
+   - Fast and cost-effective for standard plots
+
+4. **Critical Approval** (Multi-LLM via Vertex AI):
+   - Activated for: new plot types, complex visualizations, or when routine check is uncertain
+   - Claude + Gemini + GPT evaluate **the same PNG** independently
+   - Majority vote required (≥2 of 3)
+   - Each LLM provides:
+     - Score (0-100)
+     - Detailed feedback on issues found
+     - Specific suggestions for improvement
+   - Checks against spec quality criteria
+
+**Quality Gate**:
+- Score ≥ 85 (median of all reviewers) AND
+- Multi-LLM majority approval (for critical decisions)
+
+**On Rejection** (Score < 85 or majority rejects):
+1. **Feedback is stored** in database with:
+   - All reviewer scores and comments
+   - Specific issues identified (e.g., "overlapping x-axis labels", "unclear legend")
+   - Suggested improvements from each LLM
+   - Attempt number (1st, 2nd, or 3rd try)
+
+2. **Optimization Loop** (max 3 total attempts):
+   - Feed all reviewer feedback back to code generator
+   - Claude Code Max attempts to fix identified issues
+   - Regenerates code addressing specific problems
+   - Returns to Flow 2 (code generation with feedback)
+   - New preview generated and re-evaluated
+
+3. **After 3 Failed Attempts**:
+   - Implementation marked as "quality-failed"
+   - All feedback history preserved
+   - May indicate plot is not achievable with this library
+   - Human can manually review and decide next steps
+
+**Output**:
+- `quality_report.json` with scores, feedback, and decision
+- On approval: Proceeds to deployment
+- On rejection: Returns to Flow 2 with feedback (up to 3 times)
+
+**Critical Rule**:
+- **Only approved plots appear on website**
+- Failed attempts never publicly visible
+- Quality reports stored for all attempts (learning data)
+
+**Consistency Guarantee**:
+- All reviewers see the **exact same PNG** that will go live
+- Code hash verification prevents mismatches
+- Deterministic code ensures reproducibility
+
+**Cost Optimization**: Vertex AI multi-LLM only for critical decisions, not every evaluation
+
+---
+
+### Flow 6: Deployment & Maintenance
+
+**Purpose**: Make plots discoverable and keep them current
+
+**Deployment Process** (Only for Multi-LLM Approved Plots):
+1. **Prerequisite**: Plot must have passed Multi-LLM quality approval (Score ≥85)
+2. AI generates tags from spec + code + preview analysis
+3. Calculates similarity to existing plots for clustering
+4. Stores metadata in Cloud SQL (tags, quality scores, version support, GCS URLs)
+5. Deploys to Cloud Run web platform
+6. Plot becomes **publicly visible**, searchable and browsable
+
+**Critical Rule**:
+- Only plots that passed Multi-LLM approval are deployed
+- Rejected or failed attempts remain internal only
+- Users only see high-quality, approved visualizations
+
+**Maintenance Process** (Event-Based):
+
+**Triggers** (NOT scheduled to save costs):
+- New LLM version released
+- Library version update (matplotlib, seaborn, etc.)
+- Manual improvement request
+- Community feedback
+
+**Process**:
+1. Identify plots that could benefit from update
+2. Generate improved version
+3. Run full test suite (multi-version)
+4. Multi-LLM approval required
+5. A/B comparison with current version
+6. Deploy only if demonstrably better
+
+**Output**:
+- Live, searchable plots on platform
+- Continuously improved over time
+
+---
+
+## Flow Integration
 
 ```mermaid
 graph TD
-    A[👤 Human/AI finds new plot type] --> B{Plot exists in specs?}
-    B -->|No| C[📝 Create spec from template]
-    B -->|Similar| D[🔍 Distance check against existing plots]
-    D -->|Too similar| E[❌ Reject: Duplicate]
-    D -->|Different enough| C
-    C --> F[🤖 Claude Code analyzes spec]
-    F --> G[📚 Library decision]
-    G --> H[💻 Code generation for all libraries]
-    H --> I[🧪 Automated testing]
-    I --> J{Tests passed?}
-    J -->|No| H
-    J -->|Yes| K[🎨 Preview generation]
-    K --> L[👁️ Multi-AI quality assessment]
-    L --> M{Median >= 85%?}
-    M -->|No| N[🔧 Code optimization by AI team]
-    N --> I
-    M -->|Yes| O[📊 Distance calculation]
-    O --> P[💾 Save to DB + GCS]
-    P --> Q[🚀 Deployment]
-    Q --> R[⏰ Scheduled optimization loop]
-    R --> S[🔄 Continuous improvement]
-    S --> I
+    A[Flow 1: Discovery] -->|GitHub Issue| B{Manual/Auto Approval?}
+    B -->|Manual| C[Human Reviews Issue]
+    B -->|Auto| D[Flow 2: Code Generation<br/>with Self-Review Loop]
+    C -->|Approved| D
+    C -->|Rejected| Z[End]
+
+    D -->|Self-Review Pass<br/>Max 3 Attempts| E{Code Quality OK?}
+    E -->|Yes| F[Flow 3: Multi-Version Testing]
+    E -->|No after 3 tries| W[Mark Library as Not Feasible]
+    W --> Z
+
+    F -->|Tests Passed| G[Flow 4: Preview Generation]
+    F -->|Tests Failed| D
+
+    G -->|PNG in GCS| H{Flow 5: Quality Check}
+    H -->|Routine Plot| I[Claude Evaluation]
+    H -->|Critical Plot| J[Multi-LLM Consensus]
+
+    I -->|Score ≥85| K{Attempt Count}
+    J -->|Majority Approved| K
+
+    I -->|Score <85| L[Store Feedback]
+    J -->|Rejected| L
+
+    L --> M{Attempts < 3?}
+    M -->|Yes| N[Feed Feedback to Generator]
+    N --> D
+    M -->|No| O[Mark as Quality-Failed]
+    O --> Z
+
+    K -->|Approved| P[Flow 6: Deploy to Website]
+    P --> Q[🌐 Publicly Visible]
+
+    R[Event: LLM/Library Update] -->|Trigger| S[Flow 6: Maintenance]
+    S -->|Check Improvements| T{Better?}
+    T -->|Yes + Re-approved| P
+    T -->|No| Z
 
     style A fill:#e1f5ff
-    style C fill:#fff4e1
-    style F fill:#f0e1ff
-    style L fill:#ffe1e1
-    style O fill:#e1ffe1
-    style Q fill:#e1ffe1
+    style D fill:#fff4e1
+    style H fill:#f0e1ff
+    style P fill:#e1ffe1
+    style Q fill:#90EE90
+    style R fill:#ffe1e1
+    style L fill:#FFB6C1
+    style O fill:#FF6B6B
 ```
 
-## Detailed Process
+---
 
-### 1. Spec Creation & Validation
+## Decision Framework
 
-```mermaid
-graph LR
-    A[New plot type identified] --> B[Load spec template]
-    B --> C[Fill out spec]
-    C --> D{Complete?}
-    D -->|No| C
-    D -->|Yes| E[Distance check against all specs]
-    E --> F{Distance >= threshold?}
-    F -->|No| G[Human/AI decides]
-    F -->|Yes| H[Create specs/{spec-id}.md]
-    G -->|Reject| I[End]
-    G -->|Accept| H
-    H --> J[Git commit + push]
+### AI Decides Automatically
+
+✅ **Similar plots** (high semantic similarity to existing specs)
+✅ **Routine quality checks** (standard visualizations)
+✅ **Tag generation** (categorization and clustering)
+✅ **Version compatibility** detection (which Python versions supported)
+✅ **Standard optimizations** (code formatting, best practices)
+
+### Human Approval Required
+
+⚠️ **New plot types** (low similarity to existing specs)
+⚠️ **Complex visualizations** (3D, animations, interactive)
+⚠️ **Multi-LLM disagreement** (no majority consensus)
+⚠️ **Breaking changes** (major spec modifications)
+
+### Approval Mechanism
+
+Via **GitHub Issue Labels**:
+- `approved` → Proceed to code generation
+- `rejected` → Close issue
+- `needs-revision` → Request changes from proposer
+
+---
+
+## Resource Management
+
+### Leveraging Existing Subscriptions
+
+| Resource | Subscription | Usage | Monthly Cost |
+|----------|-------------|-------|--------------|
+| **GitHub Pro** | ✅ Active | Actions (testing + preview gen) + Copilot | Included |
+| **n8n Cloud** | ✅ Active | Workflow orchestration | Included |
+| **Claude Code Max** | ✅ Active | Primary AI workload | Included |
+| **Google Cloud** | Pay-as-you-go | GCS, Cloud SQL, Cloud Run | Variable |
+| **Vertex AI** | Pay-per-use | Multi-LLM critical decisions only | Minimal |
+
+### Cost Optimization Strategies
+
+1. **Smart AI Usage**:
+   - Claude Code Max for routine work (already subscribed)
+   - Vertex AI multi-LLM only for critical decisions
+   - Avoid redundant evaluations
+
+2. **Efficient Storage**:
+   - GCS lifecycle: current version stays, old versions auto-deleted 30 days after new version uploaded
+   - Images never in git repository
+   - Compress PNGs before upload
+
+3. **Smart Scheduling**:
+   - Event-based maintenance (not daily scheduled)
+   - Batch processing when possible
+   - GitHub Actions matrix for parallel testing
+
+4. **Data Efficiency**:
+   - Standard datasets (no AI generation needed)
+   - Small CSVs in repo acceptable
+   - Reuse datasets across similar plots
+
+---
+
+## Data & Testing Strategy
+
+### Sample Data for Previews
+
+**Critical Principle**: All plot code must be **100% standalone and deterministic**
+
+**Data Embedding Strategy**:
+
+1. **Small datasets** (recommended for most plots):
+   ```python
+   # Hardcoded dict/list directly in code
+   data = pd.DataFrame({
+       'category': ['A', 'B', 'C', 'D'],
+       'value': [23, 45, 56, 78]
+   })
+   ```
+
+2. **Standard datasets** (for known examples):
+   ```python
+   # Load standard dataset (always produces same data)
+   data = sns.load_dataset('iris')
+   ```
+
+3. **AI-generated data** (when needed):
+   - AI generates data **once** with fixed seed
+   - Data is then **hardcoded** into the final code
+   - Never use random generation without fixed seed
+
+4. **Seeded random** (for demonstrations):
+   ```python
+   # Fixed seed ensures reproducibility
+   np.random.seed(42)
+   data = pd.DataFrame({
+       'x': np.random.randn(100),
+       'y': np.random.randn(100)
+   })
+   ```
+
+**Why This Matters**:
+- Same code must produce same image every single time
+- Quality reviewers must see the exact image that will be deployed
+- Users must see the exact image shown in previews
+- No surprises, no randomness, complete reproducibility
+
+**Code Requirements**:
+- ✅ Self-contained (no external file loading)
+- ✅ Deterministic (same output every run)
+- ✅ Includes explanation text as docstring
+- ✅ Sample data embedded directly in code
+- ❌ No CSV file loading
+- ❌ No random data without fixed seed
+- ❌ No external API calls
+
+### Multi-Version Testing
+
+**Python Versions Supported**: 3.13, 3.12, 3.11, 3.10
+
+**Testing Infrastructure**:
+```yaml
+# GitHub Actions Matrix Strategy
+strategy:
+  matrix:
+    python-version: ['3.13', '3.12', '3.11', '3.10']
 ```
 
-**Details:**
-- **Input**: Plot type name (e.g., "ROC Curve", "Violin Plot with Significance")
-- **Template**: `docs/spec-template.md`
-- **Distance check**: Cosine similarity on spec embeddings
-- **Threshold**: 0.3 (30% difference required)
+**Test Triggers**:
+- On Pull Request creation
+- Before Quality Assurance flow
+- Not on every commit (saves resources)
 
-### 2. Library Analysis & Code Generation
+**Version Compatibility Documentation**:
+- Metadata field: `supported_versions`
+- Examples: `"all"`, `"3.12+"`, `"3.10-3.12"`
+- No separate code files per version (simplified approach)
 
-```mermaid
-graph TD
-    A[📄 New spec available] --> B[🤖 Claude Code agent starts]
-    B --> C[Analyze spec]
-    C --> D[Identify suitable libraries]
-    D --> E{For each library}
-    E --> F1[matplotlib implementation]
-    E --> F2[seaborn implementation]
-    E --> F3[plotly implementation]
-    E --> F4[bokeh implementation]
+**Test Requirements**:
+- All tests must pass for at least one Python version
+- Prefer universal code that works across all versions
+- Document version restrictions if necessary
 
-    F1 --> G1[Generate default.py]
-    F2 --> G2[Generate default.py]
-    F3 --> G3[Generate default.py]
-    F4 --> G4[Generate default.py]
+---
 
-    G1 --> H[Code review by 2nd AI]
-    G2 --> H
-    G3 --> H
-    G4 --> H
+## Phased Rollout
 
-    H --> I{Code quality OK?}
-    I -->|No| J[Feedback → Regeneration]
-    J --> E
-    I -->|Yes| K[Generate tests]
-    K --> L[Run pytest]
-```
+### Phase 1: MVP (Current Focus)
 
-**Library Decision:**
-- matplotlib: Always (baseline)
-- seaborn: When statistical/categorical
-- plotly: When interactivity makes sense
-- bokeh: When streaming/dashboard
-- altair: When declarative is better
-- others: As needed
+**Scope**:
+- 🎯 **Monitoring**: Twitter only
+- 📊 **Libraries**: matplotlib only
+- 🐍 **Python**: 3.12, 3.11, 3.10 (add 3.13 when stable)
+- ✋ **Approval**: Manual for all new plots
+- ✅ **Quality**: Basic Claude evaluation
 
-### 3. Multi-AI Quality Assessment
+**Goal**: Prove automation pipeline works end-to-end
 
-```mermaid
-graph TD
-    A[🎨 Preview generated] --> B[AI Reviewer #1]
-    A --> C[AI Reviewer #2]
-    A --> D[AI Reviewer #3]
+---
 
-    B --> E1[Score: 0-100]
-    C --> E2[Score: 0-100]
-    D --> E3[Score: 0-100]
+### Phase 2: Expansion
 
-    E1 --> F[Aggregate scores]
-    E2 --> F
-    E3 --> F
+**Add**:
+- 🎯 **Monitoring**: + Reddit (r/dataisbeautiful, r/Python)
+- 🎯 **Monitoring**: + GitHub Trending/Discussions
+- 📊 **Libraries**: + seaborn, + plotly
+- 🤖 **Approval**: Hybrid (auto for similar, manual for new)
+- ✅ **Quality**: Multi-LLM for critical decisions
+- 🐍 **Python**: + 3.13 (when stable)
 
-    F --> G{Median >= 85?}
-    G -->|Yes| H{Variance <= 15?}
-    G -->|No| I[Collect majority feedback]
-    H -->|Yes| J[✅ Quality gate passed]
-    H -->|No| K[Initiate AI discussion]
-    K --> L[Find consensus]
-    L --> M{Agreement?}
-    M -->|Yes| J
-    M -->|No| I
-    I --> N[Request code optimization]
-    N --> O[Back to code generation]
-```
+**Goal**: Scale content production and improve automation
 
-**Quality Criteria Checklist:**
+---
 
-Each AI reviewer checks:
+### Phase 3: Full Automation
 
-1. **Spec Compliance**
-   - ✓ All data requirements implemented
-   - ✓ Optional parameters work
-   - ✓ Expected output fulfilled
+**Add**:
+- 🎯 **Monitoring**: + ArXiv papers (academic visualizations)
+- 📊 **Libraries**: bokeh, altair, + specialized libraries
+- 🤖 **Approval**: Intelligent auto-approval (high confidence)
+- 🔄 **Maintenance**: Proactive optimization suggestions
+- 🌐 **Community**: Public spec submissions via issues
 
-2. **Visual Quality**
-   - ✓ No overlapping labels
-   - ✓ Axis labels complete and readable
-   - ✓ Legend present (if needed)
-   - ✓ Grid visible but not dominant
-   - ✓ Colors distinguishable (colorblind-safe)
-   - ✓ Appropriate figure size
-   - ✓ No text outside figure bounds
-   - ✓ Consistent font sizes
+**Goal**: Comprehensive, self-maintaining plot library
 
-3. **Technical Quality**
-   - ✓ Code runs without errors
-   - ✓ Correct data types used
-   - ✓ Edge cases handled (NaN, empty data)
-   - ✓ Acceptable performance (< 5s for 10k rows)
-
-4. **Library Best Practices**
-   - ✓ Idiomatic code for the library
-   - ✓ Recommended API methods used
-   - ✓ No deprecation warnings
-
-**AI Reviewer Configuration:**
-
-```python
-reviewers = [
-    {
-        "id": "reviewer_1",
-        "model": "claude-sonnet-4",
-        "temperature": 0.3,  # Strict
-        "focus": "visual_quality"
-    },
-    {
-        "id": "reviewer_2",
-        "model": "claude-sonnet-4",
-        "temperature": 0.5,  # Balanced
-        "focus": "spec_compliance"
-    },
-    {
-        "id": "reviewer_3",
-        "model": "claude-sonnet-4",
-        "temperature": 0.7,  # Creative
-        "focus": "user_experience"
-    }
-]
-```
-
-### 4. Automated Testing Pipeline
-
-```mermaid
-graph LR
-    A[Code generated] --> B[Build test matrix]
-    B --> C1[Python 3.10]
-    B --> C2[Python 3.11]
-    B --> C3[Python 3.12]
-
-    C1 --> D1[Run pytest]
-    C2 --> D2[Run pytest]
-    C3 --> D3[Run pytest]
-
-    D1 --> E1{Passed?}
-    D2 --> E2{Passed?}
-    D3 --> E3{Passed?}
-
-    E1 -->|Yes| F[Version 3.10 ✓]
-    E2 -->|Yes| G[Version 3.11 ✓]
-    E3 -->|Yes| H[Version 3.12 ✓]
-
-    E1 -->|No| I1[Fix for 3.10]
-    E2 -->|No| I2[Fix for 3.11]
-    E3 -->|No| I3[Fix for 3.12]
-
-    I1 --> J{Separate file?}
-    I2 --> J
-    I3 --> J
-
-    J -->|Yes| K[Create py310.py/py311.py]
-    J -->|No| L[Adapt default.py]
-
-    K --> D1
-    L --> D1
-
-    F --> M{All 3 OK?}
-    G --> M
-    H --> M
-
-    M -->|Yes| N[✅ Tests passed]
-    M -->|No| O[⚠️ Partial support]
-```
-
-**Test Requirements:**
-
-Each implementation must have tests for:
-- Basic functionality (happy path)
-- Edge cases (empty data, NaN, inf)
-- Different data shapes (few/many rows)
-- Optional parameters
-- Error handling
-
-**Example Test:**
-
-```python
-# tests/unit/plots/matplotlib/scatter/test_scatter_basic_001.py
-import pytest
-import pandas as pd
-import numpy as np
-from plots.matplotlib.scatter.scatter_basic_001.default import create_plot
-
-
-class TestScatterBasic001:
-    def test_basic_functionality(self):
-        """Test basic functionality"""
-        data = pd.DataFrame({
-            'x': [1, 2, 3, 4, 5],
-            'y': [2, 4, 6, 8, 10]
-        })
-        fig = create_plot(data, x='x', y='y')
-        assert fig is not None
-        assert len(fig.axes) == 1
-
-    def test_with_nan_values(self):
-        """Test with NaN values"""
-        data = pd.DataFrame({
-            'x': [1, 2, np.nan, 4, 5],
-            'y': [2, np.nan, 6, 8, 10]
-        })
-        fig = create_plot(data, x='x', y='y')
-        assert fig is not None
-
-    def test_empty_data(self):
-        """Test with empty data"""
-        data = pd.DataFrame({'x': [], 'y': []})
-        with pytest.raises(ValueError):
-            create_plot(data, x='x', y='y')
-
-    def test_large_dataset(self):
-        """Test with large dataset"""
-        data = pd.DataFrame({
-            'x': np.random.randn(10000),
-            'y': np.random.randn(10000)
-        })
-        import time
-        start = time.time()
-        fig = create_plot(data, x='x', y='y')
-        duration = time.time() - start
-        assert duration < 5.0  # Max 5 seconds
-
-    @pytest.mark.parametrize("python_version", ["3.10", "3.11", "3.12"])
-    def test_python_versions(self, python_version):
-        """Test across Python versions"""
-        # Run in CI with different Python versions
-        data = pd.DataFrame({
-            'x': [1, 2, 3],
-            'y': [2, 4, 6]
-        })
-        fig = create_plot(data, x='x', y='y')
-        assert fig is not None
-```
-
-### 5. Distance Calculation & Clustering
-
-```mermaid
-graph TD
-    A[Plot successfully created] --> B[Generate embeddings]
-    B --> C1[Spec text embedding]
-    B --> C2[Preview image embedding]
-    B --> C3[Code structure embedding]
-
-    C1 --> D[Combine embeddings]
-    C2 --> D
-    C3 --> D
-
-    D --> E[Calculate distance to all plots]
-    E --> F[Update clustering]
-    F --> G[Save cluster metadata]
-    G --> H[Update recommendations]
-```
-
-**Distance Metrics:**
-
-1. **Semantic Distance** (Spec Text)
-   - Embedding: Claude text embeddings
-   - Metric: Cosine similarity
-   - Weight: 40%
-
-2. **Visual Distance** (Preview Image)
-   - Embedding: CLIP image embeddings
-   - Metric: Euclidean distance
-   - Weight: 30%
-
-3. **Structural Distance** (Code)
-   - Features: AST analysis, API calls
-   - Metric: Jaccard similarity
-   - Weight: 30%
-
-**Composite Distance:**
-```python
-def calculate_distance(plot1, plot2):
-    semantic_dist = cosine_distance(plot1.spec_embedding, plot2.spec_embedding)
-    visual_dist = euclidean_distance(plot1.image_embedding, plot2.image_embedding)
-    structural_dist = jaccard_distance(plot1.code_features, plot2.code_features)
-
-    return (
-        0.4 * semantic_dist +
-        0.3 * visual_dist +
-        0.3 * structural_dist
-    )
-```
-
-### 6. Continuous Optimization Loop
-
-```mermaid
-graph TD
-    A[⏰ Scheduled trigger: daily] --> B[Load plots with score < 90]
-    B --> C{For each plot}
-
-    C --> D[AI Optimizer #1]
-    C --> E[AI Optimizer #2]
-    C --> F[AI Optimizer #3]
-
-    D --> G1[Optimization proposal 1]
-    E --> G2[Optimization proposal 2]
-    F --> G3[Optimization proposal 3]
-
-    G1 --> H[Generate code variants]
-    G2 --> H
-    G3 --> H
-
-    H --> I[Test all variants]
-    I --> J[Quality assessment for all]
-
-    J --> K{Best variant better?}
-    K -->|Yes| L[Get AI consensus]
-    K -->|No| M[No change]
-
-    L --> N{Majority agrees?}
-    N -->|Yes| O[Replace code]
-    N -->|No| M
-
-    O --> P[Regenerate preview]
-    P --> Q[Update quality score]
-    Q --> R[Git commit]
-
-    M --> S[Next plot]
-    R --> S
-    S --> C
-```
-
-**Optimization Strategies:**
-
-1. **Visual Refinement**
-   - Better color palettes
-   - Optimized label positions
-   - Improved font sizes
-   - Margin optimization
-
-2. **Code Quality**
-   - More idiomatic code
-   - Better performance
-   - Clearer variable names
-   - More detailed docstrings
-
-3. **Feature Enhancement**
-   - Additional optional parameters
-   - Better error handling
-   - More flexibility
-
-**AI Optimizer Configuration:**
-
-```python
-optimizers = [
-    {
-        "id": "optimizer_visual",
-        "model": "claude-sonnet-4",
-        "temperature": 0.6,
-        "focus": "visual_improvements",
-        "max_changes": 3  # Max 3 changes per iteration
-    },
-    {
-        "id": "optimizer_code",
-        "model": "claude-sonnet-4",
-        "temperature": 0.4,
-        "focus": "code_quality",
-        "max_changes": 5
-    },
-    {
-        "id": "optimizer_features",
-        "model": "claude-sonnet-4",
-        "temperature": 0.7,
-        "focus": "feature_enhancement",
-        "max_changes": 2
-    }
-]
-```
-
-**Consensus Mechanism:**
-
-```python
-def optimize_plot(spec_id: str, library: str):
-    """Optimizes a plot through AI consensus"""
-
-    # 1. Load current version
-    current_code = load_implementation(spec_id, library)
-    current_score = get_quality_score(spec_id, library)
-
-    # 2. Collect optimization proposals
-    proposals = []
-    for optimizer in optimizers:
-        proposal = optimizer.suggest_improvements(current_code)
-        proposals.append(proposal)
-
-    # 3. Implement and test all proposals
-    variants = []
-    for proposal in proposals:
-        code = apply_changes(current_code, proposal.changes)
-        if passes_tests(code):
-            preview = generate_preview(code)
-            score = quality_assessment(preview)
-            variants.append({
-                'code': code,
-                'score': score,
-                'proposal': proposal
-            })
-
-    # 4. Find best variant
-    best = max(variants, key=lambda v: v['score'])
-
-    # 5. Is it better?
-    if best['score'] <= current_score:
-        return False  # No improvement
-
-    # 6. Get consensus
-    votes = []
-    for reviewer in reviewers:
-        vote = reviewer.compare(current_code, best['code'])
-        votes.append(vote)  # True = improvement, False = no improvement
-
-    # 7. Majority decision
-    if sum(votes) > len(votes) / 2:
-        # Majority says: improvement!
-        save_implementation(spec_id, library, best['code'])
-        return True
-
-    return False
-```
-
-## Quality Assurance
-
-### Quality Gates
-
-```mermaid
-graph LR
-    A[Code generated] --> B{Pytest}
-    B -->|Pass| C{Coverage >= 90%?}
-    B -->|Fail| Z[❌ Reject]
-    C -->|Yes| D{Ruff linting}
-    C -->|No| Z
-    D -->|Pass| E{Type checking}
-    D -->|Fail| Z
-    E -->|Pass| F{Visual quality >= 85?}
-    E -->|Fail| Z
-    F -->|Yes| G{AI consensus}
-    F -->|No| Z
-    G -->|Yes| H{Python 3.10-3.12}
-    G -->|No| Z
-    H -->|All pass| I[✅ Accept]
-    H -->|Some fail| J[⚠️ Partial]
-```
-
-### Quality Report Format
-
-```json
-{
-  "spec_id": "scatter-basic-001",
-  "library": "matplotlib",
-  "variant": "default",
-  "timestamp": "2025-11-19T10:30:00Z",
-
-  "tests": {
-    "pytest_passed": true,
-    "coverage": 94.2,
-    "python_versions": {
-      "3.10": "pass",
-      "3.11": "pass",
-      "3.12": "pass"
-    }
-  },
-
-  "linting": {
-    "ruff_errors": 0,
-    "ruff_warnings": 0,
-    "type_errors": 0
-  },
-
-  "visual_quality": {
-    "scores": [87, 92, 89],
-    "median": 89,
-    "variance": 6.3,
-    "consensus": true
-  },
-
-  "criteria": {
-    "axes_labeled": true,
-    "grid_visible": true,
-    "no_overlap": true,
-    "readable_text": true,
-    "legend_present": true,
-    "colorblind_safe": true,
-    "appropriate_size": true
-  },
-
-  "distance": {
-    "nearest_plot": "scatter-advanced-005",
-    "distance": 0.42,
-    "cluster_id": "scatter_plots_basic"
-  },
-
-  "overall_score": 89.5,
-  "status": "approved",
-
-  "reviewers": [
-    {
-      "id": "reviewer_1",
-      "score": 87,
-      "feedback": "Good plot, minor margin improvements possible"
-    },
-    {
-      "id": "reviewer_2",
-      "score": 92,
-      "feedback": "Excellent spec compliance, all criteria met"
-    },
-    {
-      "id": "reviewer_3",
-      "score": 89,
-      "feedback": "Great user experience, intuitive API"
-    }
-  ]
-}
-```
-
-## Deployment Pipeline
-
-```mermaid
-graph LR
-    A[Quality gates passed] --> B[Preview to GCS]
-    B --> C[Metadata to PostgreSQL]
-    C --> D[Git commit + push]
-    D --> E[CI/CD triggered]
-    E --> F[Build container]
-    F --> G[Deploy to Cloud Run]
-    G --> H[Health check]
-    H --> I{Healthy?}
-    I -->|Yes| J[Redirect traffic]
-    I -->|No| K[Rollback]
-    J --> L[✅ Live]
-```
-
-## Monitoring & Analytics
-
-### Key Metrics
-
-1. **Quality Metrics**
-   - Average quality score per library
-   - Number of plots per quality range (< 85, 85-90, > 90)
-   - Consensus rate in AI reviews
-   - Optimization success rate
-
-2. **Performance Metrics**
-   - Time from spec to deployment
-   - Test execution time
-   - Preview generation time
-   - API response times
-
-3. **Coverage Metrics**
-   - Number of specs
-   - Number of implementations per spec
-   - Python version coverage
-   - Library coverage
-
-4. **Usage Metrics**
-   - Most popular plots
-   - Most frequent library choice
-   - Plot distance distribution
-   - Cluster sizes
+---
 
 ## Summary
 
 This workflow ensures:
 
-✅ **Fully automated** code generation and testing
-✅ **Multi-AI consensus** for objective quality assessment
-✅ **Continuous optimization** through scheduled AI reviews
-✅ **Multi-version support** for Python 3.10-3.12
-✅ **Intelligent clustering** for better discoverability
-✅ **High quality standards** through multi-layered gates
-✅ **Reproducible results** through clear processes
+✅ **Fully Automated** pipeline from discovery to deployment
+✅ **Multi-Layer Quality Control**:
+   - Self-review loop in code generation (max 3 attempts)
+   - Multi-version testing across Python 3.10-3.13
+   - Multi-LLM consensus validation (Claude + Gemini + GPT)
+   - Feedback-driven optimization on rejection
+✅ **Only High-Quality Plots on Website**: Failed attempts never publicly visible
+✅ **Cost-Conscious** design leveraging existing subscriptions
+✅ **Smart Storage** with GCS lifecycle management (current version stays, old deleted after 30d)
+✅ **Deterministic & Reproducible**: Same code = same image every time
+✅ **Community-Driven** with AI curation and human oversight
+✅ **Event-Based Maintenance** for continuous improvement
+✅ **Phased Rollout** starting simple, scaling intelligently
+✅ **Feedback Storage**: All quality reviews saved for continuous learning
 
-The entire process is **AI-first**, **specification-driven**, and **quality-focused**.
+The system is designed to **scale from MVP to full automation** while maintaining the highest quality standards and controlling costs.

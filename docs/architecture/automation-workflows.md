@@ -1,0 +1,712 @@
+# 🔄 Automation Workflows
+
+## Overview
+
+pyplots uses a **hybrid automation strategy** combining GitHub Actions (for code-related workflows) and n8n (for external service integration). GitHub Issues serve as the **single source of truth** for workflow state and quality feedback.
+
+---
+
+## GitHub Actions vs. n8n: Division of Responsibilities
+
+### Why GitHub Actions for Code Workflows?
+
+✅ **Already paid** - Included in GitHub Pro subscription
+✅ **Transparent** - Community can see and contribute to workflows
+✅ **Version-controlled** - Workflows are in git
+✅ **Native integration** - Issues, PRs, commits trigger natively
+✅ **Easy maintenance** - Solo developer can edit YAML files
+
+### Why n8n for External Services?
+
+✅ **Better for external APIs** - Twitter, Reddit, etc.
+✅ **Visual orchestration** - Complex multi-step flows
+✅ **Scheduled jobs** - Cron-based automation
+✅ **Multi-service coordination** - Easier to connect 5+ external services
+✅ **Already paid** - n8n Cloud Pro subscription
+
+---
+
+## GitHub Actions Workflows
+
+All workflows are in `.github/workflows/`
+
+### 1. `spec-to-code.yml` - Code Generation
+
+**Trigger**: GitHub Issue labeled `approved`
+
+**Purpose**: Convert approved spec into implementation code
+
+**Steps**:
+```yaml
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  generate-code:
+    if: github.event.label.name == 'approved'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract spec from issue
+        run: |
+          # Parse issue body (Markdown)
+          # Create specs/{spec-id}.md
+
+      - name: Generate code with Claude
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          # Call automation/generators/claude_generator.py
+          # Generate plots/{library}/{type}/{spec-id}/default.py
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          title: "feat: implement ${{ env.SPEC_ID }}"
+          body: |
+            Auto-generated from issue #${{ github.event.issue.number }}
+
+            Implements: `${{ env.SPEC_ID }}`
+          branch: "auto/${{ env.SPEC_ID }}"
+          labels: code-generated
+```
+
+**Outputs**:
+- Spec file: `specs/{spec-id}.md`
+- Implementation files: `plots/{library}/{type}/{spec-id}/default.py`
+- Pull request linked to original issue
+
+---
+
+### 2. `test-and-preview.yml` - Testing & Preview Generation
+
+**Trigger**: Pull request opened or updated
+
+**Purpose**: Run multi-version tests and generate preview images
+
+**Steps**:
+```yaml
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.13', '3.12', '3.11', '3.10']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install uv
+          uv sync --all-extras
+
+      - name: Run tests
+        run: uv run pytest tests/ --cov=plots --cov-report=xml
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+
+  preview:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate preview images
+        run: |
+          # Execute each implementation with sample data
+          # Create PNG files
+
+      - name: Upload to GCS
+        env:
+          GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
+        run: |
+          # Upload to gs://pyplots-images/previews/{library}/{spec-id}/{variant}/v{timestamp}.png
+
+      - name: Comment PR with previews
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## Preview Images Generated
+
+            - matplotlib: [View](https://storage.googleapis.com/...)
+            - seaborn: [View](https://storage.googleapis.com/...)
+```
+
+**Outputs**:
+- Test results for Python 3.10-3.13
+- Coverage report
+- Preview PNGs uploaded to GCS
+- PR comment with preview links
+
+---
+
+### 3. `quality-check.yml` - Multi-LLM Quality Evaluation
+
+**Trigger**: Preview images uploaded to GCS (via workflow dispatch or comment command)
+
+**Purpose**: Multi-LLM consensus evaluation of generated plots
+
+**Steps**:
+```yaml
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        required: true
+      spec_id:
+        required: true
+
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download previews from GCS
+        run: |
+          # Download all preview PNGs for this spec
+
+      - name: Load spec
+        run: |
+          # Read specs/{spec-id}.md
+
+      - name: Claude evaluation
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          # Call automation/generators/quality_checker.py
+          # Returns score + feedback
+
+      - name: Gemini evaluation (critical decisions only)
+        if: env.IS_NEW_PLOT_TYPE == 'true'
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: |
+          # Vertex AI call
+
+      - name: GPT evaluation (critical decisions only)
+        if: env.IS_NEW_PLOT_TYPE == 'true'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          # OpenAI API call
+
+      - name: Calculate consensus
+        run: |
+          # Median score across all LLMs
+          # Pass if >= 85
+
+      - name: Post results to issue
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ inputs.pr_number }}
+          body: |
+            ## 🤖 Quality Check Results
+
+            **Claude:** ${{ env.CLAUDE_SCORE }}/100
+            ${{ env.CLAUDE_FEEDBACK }}
+
+            **Gemini:** ${{ env.GEMINI_SCORE }}/100 (if applicable)
+            **GPT-4:** ${{ env.GPT_SCORE }}/100 (if applicable)
+
+            **Consensus:** ${{ env.CONSENSUS }} (Median: ${{ env.MEDIAN_SCORE }})
+
+            ---
+
+            ${{ env.DETAILED_FEEDBACK }}
+
+      - name: Update labels
+        run: |
+          if [ "${{ env.CONSENSUS }}" == "APPROVED" ]; then
+            gh issue edit ${{ inputs.pr_number }} --add-label quality-approved
+          else
+            gh issue edit ${{ inputs.pr_number }} --add-label quality-failed-attempt-${{ env.ATTEMPT_NUMBER }}
+          fi
+
+      - name: Trigger regeneration if needed
+        if: env.CONSENSUS == 'REJECTED' && env.ATTEMPT_NUMBER < 3
+        run: |
+          # Trigger spec-to-code.yml again with feedback
+```
+
+**Quality Gate**:
+- Routine plots: Claude only (fast, cost-effective)
+- Critical plots: Multi-LLM consensus (≥2 of 3 must approve)
+- Pass threshold: Median score ≥ 85
+
+**Feedback Loop**:
+- Attempt 1 fails → Regenerate with feedback
+- Attempt 2 fails → Regenerate with feedback
+- Attempt 3 fails → Mark as `quality-failed`, requires human review
+
+---
+
+### 4. `deploy.yml` - Deployment to Production
+
+**Trigger**: Pull request merged to `main`
+
+**Purpose**: Deploy to Cloud Run and update metadata
+
+**Steps**:
+```yaml
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Build and push Docker image
+        run: |
+          gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT }}/pyplots-api
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy pyplots-api \
+            --image gcr.io/${{ secrets.GCP_PROJECT }}/pyplots-api \
+            --region europe-west4 \
+            --platform managed
+
+      - name: Update database metadata
+        run: |
+          # Call API endpoint to update spec/implementation metadata
+          curl -X POST https://api.pyplots.ai/internal/sync-from-repo \
+            -H "Authorization: Bearer ${{ secrets.API_TOKEN }}"
+
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      # Similar steps for Next.js frontend
+
+  notify-completion:
+    needs: [deploy-backend, deploy-frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post deployment success
+        run: |
+          # Comment on all related issues that were deployed
+          gh issue comment ${{ env.ISSUE_NUMBER }} \
+            --body "✅ Deployed to production: https://pyplots.ai/plots/${{ env.SPEC_ID }}"
+```
+
+**Post-Deployment**:
+- Comment on original issue with live URL
+- Add to promotion queue (for social media)
+- Close issue automatically
+
+---
+
+## n8n Cloud Workflows
+
+**Platform**: n8n Cloud Pro (already subscribed)
+
+**Access**: https://app.n8n.cloud
+
+### 1. Social Media Monitoring
+
+**Schedule**: Daily at 9:00 AM CET
+
+**Purpose**: Discover plot ideas from data science community
+
+**Flow**:
+```
+Trigger: Schedule (daily)
+│
+├─→ Twitter API: Search #dataviz #python #matplotlib
+│   └─→ Filter: Contains plot ideas?
+│       └─→ Claude: Extract plot idea
+│           └─→ GitHub API: Create issue with template
+│               └─→ Label: plot-idea
+│
+├─→ Reddit API: r/dataisbeautiful, r/Python top posts
+│   └─→ (same as above)
+│
+└─→ GitHub API: Trending repos with visualization
+    └─→ (same as above)
+```
+
+**Output**: GitHub Issues labeled `plot-idea`
+
+**Phased Rollout**:
+- Phase 1 (MVP): Twitter only
+- Phase 2: + Reddit
+- Phase 3: + GitHub Discussions, ArXiv papers
+
+---
+
+### 2. Twitter Promotion
+
+**Schedule**: 2x daily at 10:00 and 15:00 CET
+
+**Purpose**: Automatically promote new plots on X (Twitter)
+
+**Flow**:
+```
+Trigger: Schedule (2x daily)
+│
+├─→ API Call: GET /promotion-queue?limit=1
+│   └─→ Check: Posted today < 2?
+│       ├─→ YES: Continue
+│       └─→ NO: Skip (rate limit reached)
+│
+├─→ Claude: Generate tweet text
+│   - Eye-catching description
+│   - Use cases
+│   - Hashtags: #dataviz #python #matplotlib
+│   - Link: https://pyplots.ai/plots/{spec-id}
+│   - Max 280 characters
+│
+├─→ GCS: Download preview image
+│
+├─→ Twitter API: Post tweet with image
+│
+└─→ API Call: POST /promotion-queue/{id}/mark-posted
+```
+
+**Rate Limiting**:
+- Hard limit: 2 posts per day
+- Reset: Daily at midnight CET
+- Queue priority: quality_score DESC
+
+**Fallback**:
+- If tweet fails: Retry max 3 times
+- If 3 failures: Mark as failed, alert human
+
+---
+
+### 3. Issue Triage
+
+**Trigger**: New GitHub issue created
+
+**Purpose**: Automatically label and assign new issues
+
+**Flow**:
+```
+Trigger: New issue created
+│
+├─→ Claude: Analyze issue content
+│   └─→ Determine:
+│       - Is it a plot idea?
+│       - Is it a bug report?
+│       - Is it a feature request?
+│       - Suggested difficulty level
+│
+├─→ GitHub API: Add labels
+│   - plot-idea / bug / feature
+│   - difficulty:simple / difficulty:medium / difficulty:complex
+│
+└─→ GitHub API: Add comment
+    - Thank you message
+    - Next steps
+    - Link to contributing guide
+```
+
+---
+
+### 4. Maintenance Scheduler
+
+**Trigger**: Event-based (not scheduled)
+
+**Purpose**: Detect library/LLM updates and trigger plot updates
+
+**Flow**:
+```
+Trigger: Manual or event detection
+│
+├─→ PyPI API: Check for new matplotlib/seaborn/plotly versions
+│
+├─→ If new version detected:
+│   └─→ For each affected plot:
+│       └─→ GitHub API: Create issue
+│           - Title: "Update {spec-id} for {library} {version}"
+│           - Body: Auto-generated update request
+│           - Label: update, library:{library}
+│           - References: Original issue
+│
+└─→ GitHub Actions: spec-to-code.yml triggered automatically
+```
+
+**Update Strategy**:
+- New issues for updates (not reopening original)
+- Can run in parallel for multiple libraries
+- Each update has own quality check cycle
+
+---
+
+## GitHub Issues as State Machine
+
+### Issue Lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> PlotIdea: Person/Bot creates issue
+    PlotIdea --> Approved: Human/Bot adds label "approved"
+    PlotIdea --> Rejected: Human adds label "rejected"
+
+    Approved --> CodeGenerated: GitHub Action creates PR
+    CodeGenerated --> Testing: PR opened
+    Testing --> QualityCheck: Tests passed, previews generated
+
+    QualityCheck --> Attempt1Failed: Score < 85
+    QualityCheck --> QualityApproved: Score >= 85
+
+    Attempt1Failed --> Attempt2: Regenerate with feedback
+    Attempt2 --> QualityCheck
+
+    Attempt2 --> Attempt2Failed: Score < 85 (2nd try)
+    Attempt2Failed --> Attempt3: Regenerate with feedback
+    Attempt3 --> QualityCheck
+
+    Attempt3 --> QualityFailed: Score < 85 (3rd try)
+    QualityFailed --> [*]: Manual review needed
+
+    QualityApproved --> ReadyForMerge: Human review
+    ReadyForMerge --> Deployed: PR merged
+    Deployed --> PromotionQueue: Add to social media queue
+    PromotionQueue --> [*]: Issue closed
+
+    Rejected --> [*]
+```
+
+### Issue Labels
+
+**Lifecycle Labels**:
+- `plot-idea` - New proposal
+- `approved` - Ready for code generation
+- `code-generated` - PR created
+- `testing` - Tests running
+- `quality-check` - LLM evaluation in progress
+- `quality-failed-attempt-1/2/3` - Failed quality check
+- `quality-approved` - Ready for merge
+- `deployed` - Live on pyplots.ai
+- `rejected` - Not viable
+
+**Category Labels**:
+- `library:matplotlib`, `library:seaborn`, `library:plotly`
+- `type:scatter`, `type:bar`, `type:heatmap`
+- `difficulty:simple`, `difficulty:medium`, `difficulty:complex`
+- `update` - Updating existing plot
+- `bug` - Bug fix
+- `feature` - New feature request
+
+---
+
+## Issue-Based Quality Feedback
+
+### Why Issues Instead of Files?
+
+✅ **Transparency** - Community sees all feedback
+✅ **No repo clutter** - No `quality_report.json` files
+✅ **Discussion** - Humans can comment on feedback
+✅ **History** - All attempts documented
+✅ **Linkable** - Easy to reference in PRs
+
+### Example Issue Flow
+
+```markdown
+Issue #123: "scatter-basic-001: Basic Scatter Plot"
+
+[Person] Initial post with spec proposal
+
+[Bot Comment]
+✓ Spec quality looks good
+✓ Creating implementation for: matplotlib, seaborn, plotly
+
+[Bot Comment]
+PR #124 created with implementations
+Running tests...
+
+[Bot Comment]
+✅ Tests passed on Python 3.10, 3.11, 3.12, 3.13
+✅ Previews generated
+🔍 Running quality checks...
+
+[Bot Comment - Quality Check Results]
+## 🤖 Quality Check Results - Attempt 1
+
+**Claude:** 78/100
+- ❌ X-axis labels overlapping
+- ❌ Legend not colorblind-safe
+- ✅ Grid is subtle
+- ✅ Points clearly visible
+
+**Consensus:** REJECTED (median: 78)
+
+Regenerating with feedback...
+
+[Bot Comment - Quality Check Results]
+## 🤖 Quality Check Results - Attempt 2
+
+**Claude:** 92/100
+- ✅ All quality criteria met
+- ✅ Colorblind-safe colors
+- ✅ Labels properly spaced
+
+**Consensus:** APPROVED (median: 92)
+
+PR #124 ready for merge!
+
+[Human] Merges PR #124
+
+[Bot Comment]
+✅ Deployed to production!
+- Live: https://pyplots.ai/plots/scatter-basic-001
+- Added to promotion queue
+
+Issue automatically closed via PR merge.
+```
+
+---
+
+## Update Strategy: New Issues with References
+
+### Why New Issues for Updates?
+
+✅ **Specific scope** - Only update what's needed
+✅ **Parallel updates** - Multiple libraries at once
+✅ **Clean history** - Original issue stays focused
+✅ **Linkable** - Clear relationship via references
+
+### Example Update Issues
+
+**Original Spec**:
+```
+Issue #123: "scatter-basic-001: Basic Scatter Plot"
+[Closed after deployment]
+```
+
+**Library Update**:
+```
+Issue #456: "Update scatter-basic-001: Matplotlib 4.0 compatibility"
+References: #123
+Scope: matplotlib implementation only
+[Bot regenerates, tests, deploys]
+```
+
+**Spec Refinement**:
+```
+Issue #489: "Refine scatter-basic-001: Add colorblind mode"
+References: #123
+Scope: Spec + all implementations
+[Human approves spec change, bot updates all libraries]
+```
+
+**New Style Variant**:
+```
+Issue #502: "Add ggplot style to scatter-basic-001"
+References: #123
+Scope: matplotlib/scatter-basic-001/ggplot_style.py
+[Bot creates new variant file]
+```
+
+**Bug Fix**:
+```
+Issue #534: "Fix scatter-basic-001 seaborn legend overlap"
+References: #123
+Scope: seaborn implementation only
+[Bot fixes issue, quality check, deploy]
+```
+
+---
+
+## Workflow Integration Example
+
+Complete flow from idea to deployment:
+
+```mermaid
+sequenceDiagram
+    participant Person
+    participant Issues
+    participant GHA as GitHub Actions
+    participant Claude
+    participant GCS
+    participant API
+    participant Twitter
+
+    Person->>Issues: Create issue with spec
+    Person->>Issues: Add label "approved"
+    Issues->>GHA: Trigger spec-to-code.yml
+    GHA->>Claude: Generate code
+    Claude-->>GHA: Return code
+    GHA->>Issues: Create PR #124
+
+    GHA->>GHA: Run tests (4 Python versions)
+    GHA->>GHA: Generate preview PNGs
+    GHA->>GCS: Upload previews
+    GHA->>Issues: Comment with preview links
+
+    GHA->>Claude: Quality check
+    Claude-->>GHA: Score: 78 (REJECTED)
+    GHA->>Issues: Post feedback (Attempt 1 failed)
+
+    GHA->>Claude: Regenerate with feedback
+    Claude-->>GHA: Return improved code
+    GHA->>GCS: Upload new previews
+    GHA->>Claude: Quality check
+    Claude-->>GHA: Score: 92 (APPROVED)
+    GHA->>Issues: Post feedback (Approved!)
+    GHA->>Issues: Add label "quality-approved"
+
+    Person->>Issues: Merge PR #124
+    GHA->>API: Deploy to Cloud Run
+    API-->>GHA: Deployment successful
+    GHA->>API: POST /specs/scatter-basic-001/deployed
+    API-->>GHA: Metadata updated
+    GHA->>Issues: Comment "Deployed!"
+
+    API->>API: Add to promotion queue
+
+    Note over Twitter: Next scheduled run (10:00)
+    Twitter->>API: GET /promotion-queue?limit=1
+    API-->>Twitter: Return scatter-basic-001
+    Twitter->>Claude: Generate tweet text
+    Claude-->>Twitter: Return tweet
+    Twitter->>GCS: Download preview image
+    Twitter->>Twitter: Post to X
+    Twitter->>API: POST /promotion-queue/123/mark-posted
+```
+
+---
+
+## Cost Optimization
+
+### GitHub Actions
+- ✅ Free with GitHub Pro (2,000 minutes/month)
+- ✅ Matrix strategy for parallel testing
+- ✅ Cache dependencies between runs
+
+### n8n Cloud Pro
+- Already paid subscription
+- Unlimited workflow executions
+- No hosting costs
+- $0 additional cost
+
+### API Calls
+- Claude: Code Max subscription (already paid)
+- Vertex AI: Only for critical multi-LLM decisions
+- Twitter API: Free tier (sufficient for 2 posts/day)
+
+---
+
+*For high-level automation flows, see [workflow.md](../workflow.md)*
+*For code examples, see [development.md](../development.md)*

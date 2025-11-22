@@ -61,11 +61,12 @@ pyplots is different: **AI curates and maintains, humans discover and choose.**
 - Natural language search
 - AI-generated explanations
 
-### Premium
+### Premium (Future)
 
 - **Try with YOUR data**: Upload CSV/Excel/JSON, see all plots with your actual data
-- **Custom styles**: Generate plots matching your brand
+- **Custom styles**: Generate plots matching your brand colors
 - **MCP Server**: Integrate pyplots into your AI workflow
+- **API access**: Programmatic access to plot generation
 
 ## Why We'll Win
 

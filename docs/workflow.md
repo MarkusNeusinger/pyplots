@@ -72,7 +72,7 @@ graph TB
 
 | Component | Purpose | When Used |
 |-----------|---------|-----------|
-| **n8n Cloud** | Workflow orchestration, daily monitoring, social media scheduling | All automation flows + social media posting |
+| **n8n Cloud Pro** | Workflow orchestration, daily monitoring, social media scheduling | All automation flows + social media posting (already subscribed) |
 | **Claude Code Max** | Code generation, routine evaluation, post content generation | Primary AI workload + marketing |
 | **Vertex AI (Multi-LLM)** | Critical decisions requiring consensus | Final approval, complex plots |
 | **GitHub Actions** | Testing (4 Python versions), preview generation | On PR + before QA |
@@ -396,10 +396,10 @@ promotion_queue:
 ```
 
 **Cost Optimization**:
-- n8n handles scheduling (already subscribed)
+- n8n Cloud Pro handles scheduling (already subscribed)
 - Claude generates post text (Code Max subscription)
 - X API posting (free tier sufficient for 2 posts/day)
-- No additional infrastructure needed
+- No self-hosting costs (n8n runs on n8n Cloud)
 
 ---
 
@@ -499,7 +499,7 @@ Via **GitHub Issue Labels**:
 | Resource | Subscription | Usage | Monthly Cost |
 |----------|-------------|-------|--------------|
 | **GitHub Pro** | ✅ Active | Actions (testing + preview gen) + Copilot | Included |
-| **n8n Cloud** | ✅ Active | Workflow orchestration | Included |
+| **n8n Cloud Pro** | ✅ Active | Workflow orchestration | Included (subscribed) |
 | **Claude Code Max** | ✅ Active | Primary AI workload | Included |
 | **Google Cloud** | Pay-as-you-go | GCS, Cloud SQL, Cloud Run | Variable |
 | **Vertex AI** | Pay-per-use | Multi-LLM critical decisions only | Minimal |

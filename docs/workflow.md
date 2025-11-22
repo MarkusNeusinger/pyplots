@@ -72,13 +72,14 @@ graph TB
 
 | Component | Purpose | When Used |
 |-----------|---------|-----------|
-| **n8n Cloud** | Workflow orchestration, daily monitoring | All automation flows |
-| **Claude Code Max** | Code generation, routine evaluation | Primary AI workload |
+| **n8n Cloud** | Workflow orchestration, daily monitoring, social media scheduling | All automation flows + social media posting |
+| **Claude Code Max** | Code generation, routine evaluation, post content generation | Primary AI workload + marketing |
 | **Vertex AI (Multi-LLM)** | Critical decisions requiring consensus | Final approval, complex plots |
 | **GitHub Actions** | Testing (4 Python versions), preview generation | On PR + before QA |
 | **GitHub Copilot** | Automated code review | On every PR |
-| **Google Cloud Storage** | PNG hosting with versioning (old versions auto-deleted after 30 days) | All preview images |
-| **Cloud SQL** | Metadata, tags, quality scores | Plot catalog |
+| **Google Cloud Storage** | PNG hosting with versioning (old versions auto-deleted after 30 days) | All preview images + social media images |
+| **Cloud SQL** | Metadata, tags, quality scores, promotion queue | Plot catalog + marketing queue |
+| **X (Twitter) API** | Automated social media posting | Up to 2 posts/day for plot promotion |
 
 ---
 
@@ -318,6 +319,90 @@ graph TB
 
 ---
 
+### Flow 7: Social Media Promotion
+
+**Purpose**: Automatically promote new and updated plots on social media
+
+**Trigger**:
+- New plot deployed (passed Multi-LLM approval and went live)
+- Existing plot significantly updated (new version with improved quality score)
+
+**Process**:
+1. **Queue Addition**:
+   - Plot added to promotion queue in Cloud SQL
+   - Queue entry includes: plot ID, quality score, preview image URL, plot description
+   - Priority assigned based on quality score:
+     - **High Priority**: Score ≥ 90 ("Cool plots")
+     - **Medium Priority**: Score 85-89 (Standard approved plots)
+     - **Low Priority**: Updates to existing plots
+
+2. **Daily Processing** (n8n scheduled workflow):
+   - Runs twice daily at optimal engagement times (e.g., 10 AM, 3 PM CET)
+   - Checks daily post count (stored in database)
+   - If daily limit not reached (max 2 posts/day):
+     - Selects highest priority item from queue
+     - Proceeds to post generation
+
+3. **Post Generation**:
+   - Claude generates engaging post content:
+     - Eye-catching description (what makes this plot special)
+     - Relevant use cases
+     - Key features highlighted
+     - Hashtags: #dataviz #python #matplotlib (or library name)
+   - Loads preview image from GCS
+   - Adds link to plot on website
+   - Ensures X character limit compliance (280 chars)
+
+4. **Publishing**:
+   - Posts to X (Twitter) via API
+   - Marks queue item as "posted" with timestamp
+   - Increments daily post counter
+   - Logs success/failure
+
+5. **Queue Management**:
+   - FIFO within priority tiers
+   - Queue items older than 30 days may be deprioritized
+   - Failed posts retry next day (max 3 attempts)
+
+**Rate Limiting**:
+- **Hard limit**: 2 posts per day maximum
+- **Reset**: Daily counter resets at midnight CET
+- **Prevents spam**: Even with many new plots, respects limit
+- **Quality over quantity**: Only best plots get promoted
+
+**Output**:
+- Automated X posts with preview images
+- Increased platform visibility
+- Community engagement
+
+**Platform Strategy**:
+- **Phase 1 (MVP)**: X (Twitter) only
+- **Phase 2**: Add LinkedIn for professional audience
+- **Phase 3**: Relevant subreddits (r/dataisbeautiful, r/Python)
+- **Coordination**: Cross-platform posts spaced to avoid redundancy
+
+**Queue Storage** (Cloud SQL):
+```
+promotion_queue:
+- id
+- plot_id
+- priority (high/medium/low)
+- quality_score
+- preview_url
+- created_at
+- posted_at (null if not yet posted)
+- status (queued/posted/failed)
+- attempt_count
+```
+
+**Cost Optimization**:
+- n8n handles scheduling (already subscribed)
+- Claude generates post text (Code Max subscription)
+- X API posting (free tier sufficient for 2 posts/day)
+- No additional infrastructure needed
+
+---
+
 ## Flow Integration
 
 ```mermaid
@@ -354,6 +439,13 @@ graph TD
 
     K -->|Approved| P[Flow 6: Deploy to Website]
     P --> Q[🌐 Publicly Visible]
+    P --> U[Flow 7: Add to Promotion Queue]
+
+    U --> V{Daily Post Limit?}
+    V -->|< 2 posts today| X[Generate & Post to X]
+    V -->|Limit reached| Y[Wait in Queue]
+    X --> Z
+    Y -.->|Next day| V
 
     R[Event: LLM/Library Update] -->|Trigger| S[Flow 6: Maintenance]
     S -->|Check Improvements| T{Better?}
@@ -368,6 +460,8 @@ graph TD
     style R fill:#ffe1e1
     style L fill:#FFB6C1
     style O fill:#FF6B6B
+    style U fill:#E6E6FA
+    style X fill:#98FB98
 ```
 
 ---
@@ -526,6 +620,7 @@ strategy:
 - 🐍 **Python**: 3.12, 3.11, 3.10 (add 3.13 when stable)
 - ✋ **Approval**: Manual for all new plots
 - ✅ **Quality**: Basic Claude evaluation
+- 📱 **Promotion**: X (Twitter) posting with 2/day limit
 
 **Goal**: Prove automation pipeline works end-to-end
 
@@ -540,6 +635,7 @@ strategy:
 - 🤖 **Approval**: Hybrid (auto for similar, manual for new)
 - ✅ **Quality**: Multi-LLM for critical decisions
 - 🐍 **Python**: + 3.13 (when stable)
+- 📱 **Promotion**: + LinkedIn posts for professional audience
 
 **Goal**: Scale content production and improve automation
 
@@ -553,6 +649,7 @@ strategy:
 - 🤖 **Approval**: Intelligent auto-approval (high confidence)
 - 🔄 **Maintenance**: Proactive optimization suggestions
 - 🌐 **Community**: Public spec submissions via issues
+- 📱 **Promotion**: + Reddit posts (r/dataisbeautiful, r/Python), cross-platform coordination
 
 **Goal**: Comprehensive, self-maintaining plot library
 
@@ -562,13 +659,14 @@ strategy:
 
 This workflow ensures:
 
-✅ **Fully Automated** pipeline from discovery to deployment
+✅ **Fully Automated** pipeline from discovery to deployment to promotion
 ✅ **Multi-Layer Quality Control**:
    - Self-review loop in code generation (max 3 attempts)
    - Multi-version testing across Python 3.10-3.13
    - Multi-LLM consensus validation (Claude + Gemini + GPT)
    - Feedback-driven optimization on rejection
 ✅ **Only High-Quality Plots on Website**: Failed attempts never publicly visible
+✅ **Automated Marketing**: Queue-based social media promotion with smart rate limiting (max 2 posts/day)
 ✅ **Cost-Conscious** design leveraging existing subscriptions
 ✅ **Smart Storage** with GCS lifecycle management (current version stays, old deleted after 30d)
 ✅ **Deterministic & Reproducible**: Same code = same image every time
@@ -577,4 +675,4 @@ This workflow ensures:
 ✅ **Phased Rollout** starting simple, scaling intelligently
 ✅ **Feedback Storage**: All quality reviews saved for continuous learning
 
-The system is designed to **scale from MVP to full automation** while maintaining the highest quality standards and controlling costs.
+The system is designed to **scale from MVP to full automation** while maintaining the highest quality standards, controlling costs, and automatically promoting the best content to the community.

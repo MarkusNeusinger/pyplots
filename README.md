@@ -88,19 +88,15 @@ See [docs/architecture/](docs/architecture/) for details.
 pyplots/
 ├── specs/              # Plot specifications (Markdown)
 ├── plots/              # Library-specific implementations
-│   ├── matplotlib/
-│   ├── seaborn/
-│   └── plotly/
 ├── core/               # Shared business logic
 ├── api/                # FastAPI backend
 ├── app/                # Next.js frontend
 ├── automation/         # AI code generation
 ├── tests/              # Test suite (pytest)
 └── docs/               # Documentation
-    ├── architecture/   # System design
-    ├── development.md  # Developer guide
-    └── deployment.md   # Cloud deployment
 ```
+
+**For detailed structure and file organization**, see [Repository Structure](docs/architecture/repository-structure.md)
 
 ---
 
@@ -137,29 +133,19 @@ See [development.md](docs/development.md) for details.
 ## Development
 
 ```bash
-# Install dependencies
+# Install dependencies (uv is a fast Python package installer)
 uv sync --all-extras
 
 # Run tests
 uv run pytest
 
-# Format code
-uv run ruff format .
-
-# Type check (optional)
-uv sync --extra typecheck
-uv run mypy .
-
 # Start backend
 uv run uvicorn api.main:app --reload
-
-# Start frontend
-cd app && npm run dev
 ```
 
-**Coverage target**: 90%+
+**For detailed development setup, testing, and code quality tools**, see [Development Guide](docs/development.md)
 
-**Python versions**: 3.10, 3.11, 3.12, 3.13
+**Python versions**: 3.10+ | **Coverage target**: 90%+
 
 ---
 

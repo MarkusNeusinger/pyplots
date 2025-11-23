@@ -129,7 +129,7 @@ graph TB
 - ✅ Promotion queue (social media posts)
 - ❌ NO plot code (stored in repository)
 - ❌ NO images (stored in GCS)
-- ❌ NO quality reports (stored in GitHub Issues as comments)
+- ❌ NO quality report files (quality reports ARE stored as GitHub Issue comments)
 
 **Access**:
 - Only API has direct access (Private IP)
@@ -159,42 +159,26 @@ gs://pyplots-images/
 
 ---
 
-### GitHub Actions (CI/CD)
+### Automation Layer (GitHub Actions + n8n)
 
-**Purpose**: Code-related automation workflows
-
-**Key Workflows**:
-- **spec-to-code.yml**: Issue labeled `approved` → Generate code → Create PR
-- **test-and-preview.yml**: PR opened → Multi-version tests → Generate preview
-- **quality-check.yml**: Preview created → Multi-LLM evaluation → Post results to Issue
-- **deploy.yml**: PR merged → Deploy to Cloud Run → Update metadata
-
-**Why GitHub Actions?**
-- ✅ Already included in GitHub Pro subscription
-- ✅ Transparent for contributors (workflows visible in repo)
-- ✅ Version-controlled workflows
-- ✅ Native integration with Issues/PRs
-- ✅ Easier for solo-dev maintenance
-
----
-
-### n8n Workflows (External Automation)
-
-**Purpose**: External service integration and complex orchestration
+**Strategy**: Hybrid automation - GitHub Actions for code workflows, n8n for external services
 
 **Key Workflows**:
-- **Social Media Monitoring**: Daily scraping (Twitter, Reddit) → Create Issues
-- **Twitter Promotion**: 2x daily → Post queue items to X with images
-- **Issue Triage**: New issues → Labeling and assignment
-- **Maintenance Scheduler**: Detect LLM/library updates → Trigger GitHub workflows
 
-**Why n8n for This?**
-- ✅ Better for external API integrations (Twitter, Reddit)
-- ✅ Visual workflow editor for complex orchestration
-- ✅ Scheduled jobs (cron-based)
-- ✅ Easier to connect multiple external services
+**GitHub Actions** (Code-related):
+- Code generation from approved specs
+- Multi-version testing (Python 3.10+)
+- Preview image generation
+- Multi-LLM quality checks
+- Cloud Run deployment
 
-**Deployment**: n8n Cloud Pro subscription (already paid)
+**n8n Cloud** (External services):
+- Social media monitoring (Twitter, Reddit)
+- Automated posting (2x daily to X)
+- Issue triage and labeling
+- Maintenance scheduling
+
+**For detailed responsibility breakdown**, see [Automation Workflows](./automation-workflows.md#github-actions-vs-n8n-division-of-responsibilities)
 
 ---
 

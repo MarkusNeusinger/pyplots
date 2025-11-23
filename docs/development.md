@@ -707,6 +707,57 @@ pytest --pdb
 
 ---
 
+## Working with Rules
+
+**NEW**: The project includes versioned rules for code generation and quality evaluation.
+
+**Location**: `rules/` directory
+
+### Viewing Rules
+
+```bash
+# See all rule versions
+cat rules/versions.yaml
+
+# Read current generation rules
+cat rules/generation/v1.0.0-draft/code-generation-rules.md
+cat rules/generation/v1.0.0-draft/quality-criteria.md
+```
+
+### Creating New Rule Versions
+
+```bash
+# 1. Copy existing version
+cp -r rules/generation/v1.0.0-draft rules/generation/v1.1.0-draft
+
+# 2. Edit rules (Markdown files)
+vim rules/generation/v1.1.0-draft/code-generation-rules.md
+
+# 3. Update metadata
+vim rules/generation/v1.1.0-draft/metadata.yaml
+
+# 4. Test (when automation implemented)
+python automation/testing/compare_rules.py --versions v1.0.0,v1.1.0
+
+# 5. Activate new version
+vim rules/versions.yaml  # Update active_versions
+```
+
+### Rule File Format
+
+Rules are **Markdown** files because:
+- ✅ Human-readable for review
+- ✅ LLM-friendly for AI consumption
+- ✅ Git-diffable for version control
+- ✅ Easy to comment and explain
+
+**See Also**:
+- [Rule Versioning Guide](./architecture/rule-versioning.md)
+- [A/B Testing Strategies](./concepts/ab-testing-rules.md)
+- [Rules README](../rules/README.md)
+
+---
+
 ## Resources
 
 **Documentation**:

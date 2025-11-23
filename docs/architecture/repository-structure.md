@@ -22,6 +22,20 @@ pyplots/
 │   ├── timeseries-line-003.md
 │   └── bar-grouped-004.md
 │
+├── rules/                             # Versioned rules for code generation and quality evaluation
+│   ├── README.md                      # Rule system documentation
+│   ├── versions.yaml                  # Index of all rule versions
+│   ├── templates/                     # Templates for creating new rules
+│   │   ├── generation-rules-template.md
+│   │   ├── quality-criteria-template.md
+│   │   └── evaluation-prompt-template.md
+│   └── generation/                    # Code generation rules
+│       └── v1.0.0-draft/             # Initial draft version
+│           ├── metadata.yaml
+│           ├── code-generation-rules.md
+│           ├── quality-criteria.md
+│           └── self-review-checklist.md
+│
 ├── plots/                             # Library-specific implementations
 │   ├── matplotlib/
 │   │   ├── scatter/
@@ -156,6 +170,38 @@ pyplots/
 
 **Naming**: `{type}-{variant}-{number}.md`
 - Examples: `scatter-basic-001.md`, `heatmap-corr-002.md`
+
+---
+
+### `rules/`
+
+**Purpose**: Versioned rules for AI code generation and quality evaluation
+
+**Characteristics**:
+- ✅ Markdown format (human and LLM readable)
+- ✅ Semantic versioning (v1.0.0, v2.0.0, etc.)
+- ✅ Separate generation and evaluation rules
+- ✅ Templates for creating new versions
+- ✅ Git-versioned for full audit trail
+
+**Structure**: `rules/{type}/{version}/{files}.md`
+- `type`: generation or evaluation
+- `version`: Semantic version (v1.0.0)
+- `files`: Rule Markdown files + metadata.yaml
+
+**Versions**:
+- **draft**: Work in progress (e.g., v1.0.0-draft)
+- **active**: Production version
+- **deprecated**: Superseded by newer version
+- **archived**: Historical record
+
+**Why Versioned Rules?**
+- **Test improvements**: A/B test rule versions before deploying
+- **Rollback capability**: Return to previous version if issues arise
+- **Audit trail**: Know which rules generated which plots
+- **Scientific improvement**: Prove new rules are better
+
+**See Also**: [Rule Versioning Architecture](./rule-versioning.md)
 
 ---
 

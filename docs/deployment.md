@@ -109,6 +109,8 @@ gcloud sql instances describe pyplots-db \
   --format="value(ipAddresses[0].ipAddress)"
 ```
 
+**Database Schema**: For tables, migrations, and data model, see [Database Architecture](architecture/database.md)
+
 ---
 
 ## Cloud Storage Setup

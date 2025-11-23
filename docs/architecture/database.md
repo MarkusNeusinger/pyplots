@@ -8,6 +8,21 @@ pyplots uses **PostgreSQL** (Cloud SQL) to store metadata about plots, specs, an
 
 ---
 
+## Database Stack Decision
+
+| Database | Status | Use Case | When to Consider |
+|----------|--------|----------|------------------|
+| **PostgreSQL** | ✅ **Current** | All data: specs, implementations, tags, quality scores, promotion queue | Start here - handles everything |
+| **Google Cloud Storage** | ✅ **Current** | Preview images, user-generated plots | Already implemented |
+| **GitHub** | ✅ **Current** | Code, specs, quality reports (as Issue comments) | Already implemented |
+| **Firestore** | 📋 **Future Optimization** | Multi-dimensional tag queries (5-level hierarchy) | IF tag search becomes performance bottleneck with >10,000 specs |
+
+**Current Approach**: All data in PostgreSQL + GCS + GitHub. This is sufficient for MVP and beyond.
+
+**Future Optimization**: See [Firestore for Advanced Tagging](#future-optimization-firestore-for-advanced-tagging) section at the end of this document.
+
+---
+
 ## What's Stored vs. What's Not
 
 ### ✅ Stored in Database
@@ -550,6 +565,97 @@ await session.execute(f"SELECT * FROM specs WHERE id = '{spec_id}'")
 - Anonymous session IDs only
 - Usage data auto-deleted after 90 days
 - GDPR-compliant (no personal data)
+
+---
+
+## Future Optimization: Firestore for Advanced Tagging
+
+**Status**: 📋 **Planned** (not currently implemented)
+
+**Current State**: All tags are stored in PostgreSQL `tags` table (simple array). This is sufficient for MVP and early growth.
+
+**Future Consideration**: As the platform scales beyond 10,000+ specs with complex multi-dimensional search requirements, consider adding Firestore for advanced tag functionality.
+
+---
+
+### Why Firestore Could Help (Future)
+
+**Problem it solves**:
+- Multi-dimensional tag queries (5-level hierarchy: Library → Plot Type → Data Type → Domain → Features)
+- Filtering across multiple dimensions simultaneously (e.g., "matplotlib + timeseries + finance + beginner")
+- Real-time search index updates
+- Automatic scaling for high-volume tag searches
+
+**When to implement**:
+- PostgreSQL tag queries become slow (>500ms for common searches)
+- Need for complex tag hierarchy beyond simple array
+- User feedback requests advanced filtering
+- Catalog grows beyond 10,000 specs
+
+---
+
+### Proposed Architecture (When Implemented)
+
+**Data Split**:
+- **PostgreSQL**: Spec metadata, implementation records, quality scores, promotion queue (no change)
+- **Firestore**: Multi-dimensional tags, search keywords, similarity clusters
+
+**Example Document Structure**:
+```javascript
+{
+  "plot_id": "matplotlib-scatter-basic-001-default",
+  "spec_id": "scatter-basic-001",
+  "tags": {
+    "library": "matplotlib",
+    "plot_type": "scatter",
+    "data_type": "tabular",
+    "domain": "data-science",
+    "features": {"complexity": "beginner", "interactivity": "static"}
+  },
+  "search_keywords": ["scatter", "matplotlib", "basic", "2d"],
+  "confidence_scores": {"overall": 0.89}
+}
+```
+
+**Query Example**:
+```javascript
+// Find all beginner matplotlib plots for data-science
+db.collection('plot_tags')
+  .where('tags.library', '==', 'matplotlib')
+  .where('tags.domain', '==', 'data-science')
+  .where('tags.features.complexity', '==', 'beginner')
+  .get();
+```
+
+---
+
+### Implementation Checklist (When Ready)
+
+- [ ] Confirm PostgreSQL performance is actually bottleneck
+- [ ] Design detailed Firestore schema (based on actual usage patterns)
+- [ ] Create composite indices for common query combinations
+- [ ] Implement sync mechanism (PostgreSQL → Firestore)
+- [ ] Add consistency checks (daily verification)
+- [ ] Monitor costs (estimated <$1/month for 10K docs)
+- [ ] Migrate existing tags from PostgreSQL to Firestore
+- [ ] Update API to query Firestore for tag searches
+- [ ] Keep PostgreSQL tags as backup/audit trail
+
+---
+
+### Cost Estimate (For Future Reference)
+
+**Storage**: 10,000 documents × 3 KB = ~30 MB → <$0.50/month
+**Reads**: 1M reads/month → ~$0.36/month
+**Writes**: 100K writes/month → ~$0.18/month
+**Total**: <$1/month
+
+---
+
+**See Also**:
+- **Tag Taxonomy**: `docs/concepts/tagging-system.md`
+- **Tagging Rules**: `rules/generation/v1.0.0-draft/tagging-rules.md`
+- **Auto-Tagging Workflow**: `docs/workflow.md` (Flow 4.5)
 
 ---
 

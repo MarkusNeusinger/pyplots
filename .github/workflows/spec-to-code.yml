@@ -4,6 +4,10 @@ on:
   issues:
     types: [labeled]
 
+concurrency:
+  group: spec-to-code-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
 jobs:
   trigger-claude-code:
     # Only run when "approved" label is added to an issue that also has "plot-request"

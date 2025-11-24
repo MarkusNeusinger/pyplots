@@ -100,9 +100,16 @@ jobs:
 
             # Extract spec_id, library, variant from path
             # Format: plots/{library}/{plot_type}/{spec_id}/{variant}.py
-            LIBRARY=$(echo "$file" | cut -d'/' -f2)
-            SPEC_ID=$(echo "$file" | cut -d'/' -f4)
-            VARIANT=$(basename "$file" .py)
+            if [[ $file =~ ^plots/([^/]+)/([^/]+)/([^/]+)/([^/]+)\.py$ ]]; then
+              LIBRARY="${BASH_REMATCH[1]}"
+              PLOT_TYPE="${BASH_REMATCH[2]}"
+              SPEC_ID="${BASH_REMATCH[3]}"
+              VARIANT="${BASH_REMATCH[4]}"
+            else
+              echo "⚠️  Invalid file path format: $file"
+              echo "Expected: plots/{library}/{plot_type}/{spec_id}/{variant}.py"
+              continue
+            fi
 
             # Run the plot script to generate image
             OUTPUT_FILE="preview_outputs/${SPEC_ID}_${LIBRARY}_${VARIANT}.png"
@@ -127,12 +134,15 @@ jobs:
 
       - name: Setup Google Cloud authentication
         if: steps.changed_plots.outputs.changed_files != ''
+        id: gcs_auth
+        continue-on-error: true
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCS_CREDENTIALS }}
 
       - name: Upload previews to GCS
-        if: steps.changed_plots.outputs.changed_files != ''
+        if: steps.changed_plots.outputs.changed_files != '' && steps.gcs_auth.outcome == 'success'
+        continue-on-error: true
         uses: google-github-actions/upload-cloud-storage@v2
         with:
           path: preview_outputs
@@ -140,7 +150,7 @@ jobs:
           process_gcloudignore: false
 
       - name: Generate preview URLs
-        if: steps.changed_plots.outputs.changed_files != ''
+        if: steps.changed_plots.outputs.changed_files != '' && steps.gcs_auth.outcome == 'success'
         id: preview_urls
         run: |
           BUCKET="${{ secrets.GCS_BUCKET }}"
@@ -165,7 +175,7 @@ jobs:
           echo -e "$PREVIEW_TABLE" > preview_table.md
 
       - name: Comment on PR with previews
-        if: steps.changed_plots.outputs.changed_files != ''
+        if: steps.changed_plots.outputs.changed_files != '' && steps.gcs_auth.outcome == 'success'
         uses: actions/github-script@v7
         with:
           script: |

@@ -20,16 +20,24 @@ jobs:
           ISSUE_TITLE: ${{ github.event.issue.title }}
         run: |
           # Try to extract spec ID from title (format: "scatter-basic-001: Title" or just "scatter-basic-001")
-          SPEC_ID=$(echo "$ISSUE_TITLE" | grep -oP '^[a-z]+-[a-z]+-\d{3}' || echo "")
+          # Case-insensitive, allows 3-4 digits, converts to lowercase
+          SPEC_ID=$(echo "$ISSUE_TITLE" | grep -oiP '^[a-z]+-[a-z]+-\d{3,4}' | tr '[:upper:]' '[:lower:]' || echo "")
 
           if [ -z "$SPEC_ID" ]; then
             # Try to find spec ID in body (look for markdown heading like "# scatter-basic-001:")
-            SPEC_ID=$(echo "$ISSUE_BODY" | grep -oP '^#\s*\K[a-z]+-[a-z]+-\d{3}' || echo "")
+            SPEC_ID=$(echo "$ISSUE_BODY" | grep -oiP '^#\s*\K[a-z]+-[a-z]+-\d{3,4}' | tr '[:upper:]' '[:lower:]' || echo "")
           fi
 
           if [ -z "$SPEC_ID" ]; then
             echo "❌ Could not extract spec ID from issue"
+            echo "Expected format: {type}-{variant}-{001-9999}"
             exit 1
+          fi
+
+          # Validate spec file exists
+          if [ ! -f "specs/${SPEC_ID}.md" ]; then
+            echo "⚠️  Warning: Spec file specs/${SPEC_ID}.md does not exist"
+            echo "Please ensure the spec file is created before code generation"
           fi
 
           echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT

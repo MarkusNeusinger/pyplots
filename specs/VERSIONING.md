@@ -61,7 +61,9 @@ Then fill in the placeholders.
 
 ### Automatic Upgrade
 
-Upgrade all specs to the latest version:
+#### Structural Upgrades (Simple Script)
+
+For simple structural changes (adding version markers, new sections):
 
 ```bash
 # Dry run (see what would change)
@@ -73,6 +75,34 @@ python automation/scripts/upgrade_specs.py
 # Upgrade specific spec
 python automation/scripts/upgrade_specs.py --spec scatter-basic-001
 ```
+
+#### Semantic Upgrades (AI-Powered)
+
+For semantic improvements (better wording, clearer criteria):
+
+```bash
+# Requires ANTHROPIC_API_KEY environment variable
+export ANTHROPIC_API_KEY=sk-ant-...
+
+# Dry run (see what would change)
+python automation/scripts/upgrade_specs_ai.py --dry-run
+
+# Upgrade all specs (creates automatic backups)
+python automation/scripts/upgrade_specs_ai.py
+
+# Upgrade specific spec
+python automation/scripts/upgrade_specs_ai.py --spec scatter-basic-001
+
+# Upgrade without backups
+python automation/scripts/upgrade_specs_ai.py --no-backup
+```
+
+**Why AI-Powered Upgrades?**
+- Improves quality criteria to be more specific and measurable
+- Enhances parameter descriptions with types and ranges
+- Makes use cases more concrete with domain examples
+- Preserves spec ID and core intent
+- Creates backups automatically
 
 ### When to Upgrade
 

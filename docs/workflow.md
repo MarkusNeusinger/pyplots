@@ -38,7 +38,6 @@ graph TB
     subgraph "AI Processing"
         CCM[Claude Code Max<br/>Primary AI]
         VTX[Vertex AI<br/>Multi-LLM Critical Decisions]
-        COP[GitHub Copilot<br/>Code Review]
     end
 
     subgraph "Testing & Generation"
@@ -57,7 +56,6 @@ graph TB
     GI --> N8N
     N8N --> CCM
     CCM --> GHA
-    GHA --> COP
     GHA --> DS
     GHA --> GCS
     GHA --> GH
@@ -96,8 +94,8 @@ n8n monitors social media daily → AI extracts plot ideas → Creates GitHub is
 ### Flow 2: Code Generation
 Approved issue → Claude generates implementation code with self-review loop (max 3 attempts) → Creates Pull Request
 
-### Flow 3: Copilot Review + Multi-Version Testing
-PR created → `copilot-review.yml` requests @copilot review (general code quality) → `test-and-preview.yml` runs tests across Python 3.10+ → Reports results
+### Flow 3: Multi-Version Testing
+PR created → `test-and-preview.yml` runs tests across Python 3.10+ → Reports results
 
 ### Flow 4: Preview Generation
 Tests passed → GitHub Action generates PNG → Uploads to GCS with lifecycle management → Stores code hash for verification
@@ -106,7 +104,7 @@ Tests passed → GitHub Action generates PNG → Uploads to GCS with lifecycle m
 Preview uploaded → AI analyzes code + spec + image → Generates 5-level tag hierarchy → Stores in PostgreSQL with confidence scores
 
 ### Flow 5: AI Review
-Copilot Review submitted → `ai-review.yml` triggers → Claude evaluates Spec ↔ Code ↔ Preview → Score ≥85 required → On rejection: feedback loop (max 3 attempts) → Labels: `ai-approved` or `ai-failed`
+Tests passed + previews generated → `ai-review.yml` triggers → Claude evaluates Spec ↔ Code ↔ Preview → Score ≥85 required → On rejection: feedback loop (max 3 attempts) → Labels: `ai-approved` or `ai-failed`
 
 ### Flow 5.5: Auto-Merge
 PR labeled `ai-approved` → `auto-merge.yml` triggers → Automatic squash merge
@@ -214,7 +212,7 @@ Via **GitHub Issue Labels**:
 
 | Resource | Subscription | Usage | Monthly Cost |
 |----------|-------------|-------|--------------|
-| **GitHub Pro** | ✅ Active | Actions (testing + preview gen) + Copilot | Included |
+| **GitHub Pro** | ✅ Active | Actions (testing + preview gen) | Included |
 | **n8n Cloud Pro** | ✅ Active | Workflow orchestration | Included (subscribed) |
 | **Claude Code Max** | ✅ Active | Primary AI workload | Included |
 | **Google Cloud** | Pay-as-you-go | GCS, Cloud SQL, Cloud Run | Variable |

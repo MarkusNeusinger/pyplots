@@ -1,0 +1,180 @@
+name: Generate Code from Spec
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  generate-code:
+    # Only run when "approved" label is added
+    if: github.event.label.name == 'approved'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          uv pip install --system anthropic
+
+      - name: Extract spec ID from issue
+        id: extract_spec
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          # Try to extract spec ID from title (format: "scatter-basic-001: Title" or just "scatter-basic-001")
+          SPEC_ID=$(echo "$ISSUE_TITLE" | grep -oP '^[a-z]+-[a-z]+-\d{3}' || echo "")
+
+          if [ -z "$SPEC_ID" ]; then
+            # Try to find spec ID in body (look for markdown heading like "# scatter-basic-001:")
+            SPEC_ID=$(echo "$ISSUE_BODY" | grep -oP '^#\s*\K[a-z]+-[a-z]+-\d{3}' || echo "")
+          fi
+
+          if [ -z "$SPEC_ID" ]; then
+            echo "❌ Could not extract spec ID from issue"
+            exit 1
+          fi
+
+          echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "✅ Extracted spec ID: $SPEC_ID"
+
+      - name: Check if spec file exists
+        id: check_spec
+        run: |
+          SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
+          SPEC_FILE="specs/${SPEC_ID}.md"
+
+          if [ ! -f "$SPEC_FILE" ]; then
+            echo "❌ Spec file not found: $SPEC_FILE"
+            echo "Creating spec file from issue..."
+
+            # Create spec file from issue body
+            mkdir -p specs
+            echo "${{ github.event.issue.body }}" > "$SPEC_FILE"
+
+            # Commit spec file
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git add "$SPEC_FILE"
+            git commit -m "feat: add spec file for $SPEC_ID from issue #${{ github.event.issue.number }}"
+          else
+            echo "✅ Spec file exists: $SPEC_FILE"
+          fi
+
+      - name: Generate matplotlib implementation
+        id: gen_matplotlib
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
+
+          echo "🎨 Generating matplotlib implementation..."
+          python automation/generators/plot_generator.py "$SPEC_ID" matplotlib
+
+          if [ $? -eq 0 ]; then
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "status=failed" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate seaborn implementation
+        id: gen_seaborn
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
+
+          echo "🎨 Generating seaborn implementation..."
+          python automation/generators/plot_generator.py "$SPEC_ID" seaborn
+
+          if [ $? -eq 0 ]; then
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "status=failed" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            feat: implement ${{ steps.extract_spec.outputs.spec_id }}
+
+            Auto-generated implementations from issue #${{ github.event.issue.number }}
+
+            - matplotlib: ${{ steps.gen_matplotlib.outputs.status }}
+            - seaborn: ${{ steps.gen_seaborn.outputs.status }}
+          branch: auto/${{ steps.extract_spec.outputs.spec_id }}
+          title: "feat: implement ${{ steps.extract_spec.outputs.spec_id }}"
+          body: |
+            ## 🤖 Auto-generated Implementation
+
+            This PR contains auto-generated code for **${{ steps.extract_spec.outputs.spec_id }}**
+
+            **Source:** Issue #${{ github.event.issue.number }}
+
+            ### Generation Results
+
+            | Library | Status | Self-Review |
+            |---------|--------|-------------|
+            | matplotlib | ${{ steps.gen_matplotlib.outputs.status }} | See logs |
+            | seaborn | ${{ steps.gen_seaborn.outputs.status }} | See logs |
+
+            ### Next Steps
+
+            - [ ] Review generated code
+            - [ ] Run tests (triggered automatically)
+            - [ ] Generate previews (triggered automatically)
+            - [ ] Quality check (triggered automatically)
+
+            ---
+
+            *Generated by [spec-to-code workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*
+          labels: |
+            code-generated
+            auto-pr
+          draft: false
+
+      - name: Comment on issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const specId = '${{ steps.extract_spec.outputs.spec_id }}';
+            const matplotlibStatus = '${{ steps.gen_matplotlib.outputs.status }}';
+            const seabornStatus = '${{ steps.gen_seaborn.outputs.status }}';
+
+            const statusEmoji = (status) => status === 'success' ? '✅' : '❌';
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `## 🤖 Code Generation Started
+
+            Generating implementations for **${specId}**...
+
+            | Library | Status |
+            |---------|--------|
+            | matplotlib | ${statusEmoji(matplotlibStatus)} ${matplotlibStatus} |
+            | seaborn | ${statusEmoji(seabornStatus)} ${seabornStatus} |
+
+            A pull request will be created shortly with the generated code.
+
+            Check the [workflow run](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`
+            });

@@ -24,6 +24,13 @@ jobs:
         with:
           fetch-depth: 0    # Full history for better context
 
+      - name: React with eyes emoji
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/reactions \
+            -f content=eyes
+
       - name: Extract spec ID from issue
         id: extract_spec
         env:
@@ -58,6 +65,7 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          model: opus
           additional_permissions: |
             actions: read
           prompt: |

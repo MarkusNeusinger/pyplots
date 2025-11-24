@@ -20,7 +20,19 @@ def load_spec(spec_id: str) -> str:
     spec_path = Path(f"specs/{spec_id}.md")
     if not spec_path.exists():
         raise FileNotFoundError(f"Spec file not found: {spec_path}")
-    return spec_path.read_text()
+
+    content = spec_path.read_text()
+
+    # Check spec version
+    import re
+    version_match = re.search(r'\*\*Spec Version:\*\*\s+(\d+\.\d+\.\d+)', content)
+    if version_match:
+        spec_version = version_match.group(1)
+        print(f"📋 Spec version: {spec_version}")
+    else:
+        print(f"⚠️  Warning: Spec has no version marker. Consider upgrading with upgrade_specs.py")
+
+    return content
 
 
 def load_generation_rules(version: str = "v1.0.0-draft") -> str:

@@ -1,5 +1,13 @@
 # scatter-basic-001: Basic 2D Scatter Plot
 
+<!--
+Spec Template Version: 1.0.0
+Created: 2025-01-24
+Last Updated: 2025-01-24
+-->
+
+**Spec Version:** 1.0.0
+
 ## Description
 
 Create a simple scatter plot showing the relationship between two numeric variables.

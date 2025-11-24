@@ -6,13 +6,24 @@ on:
 
 jobs:
   trigger-claude-code:
-    # Only run when "approved" label is added
-    if: github.event.label.name == 'approved'
+    # Only run when "approved" label is added to an issue that also has "plot-request"
+    if: |
+      github.event.label.name == 'approved' &&
+      contains(github.event.issue.labels.*.name, 'plot-request')
     runs-on: ubuntu-latest
     permissions:
-      issues: write
+      contents: write        # Allow commits
+      pull-requests: write   # Allow PR creation
+      issues: write         # Allow issue comments
+      id-token: write       # Required for Claude Code authentication
+      actions: read         # Allow Claude to read CI results
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0    # Full history for better context
+
       - name: Extract spec ID from issue
         id: extract_spec
         env:
@@ -37,56 +48,51 @@ jobs:
           # Validate spec file exists
           if [ ! -f "specs/${SPEC_ID}.md" ]; then
             echo "⚠️  Warning: Spec file specs/${SPEC_ID}.md does not exist"
-            echo "Please ensure the spec file is created before code generation"
+            echo "Claude Code will create it from the issue body"
           fi
 
           echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
           echo "✅ Extracted spec ID: $SPEC_ID"
 
-      - name: Trigger Claude Code with @claude comment
-        uses: actions/github-script@v7
+      - name: Run Claude Code to generate implementations
+        uses: anthropics/claude-code-action@v1
         with:
-          script: |
-            const specId = '${{ steps.extract_spec.outputs.spec_id }}';
-
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: `@claude
-
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          additional_permissions: |
+            actions: read
+          prompt: |
             ## 🎯 Task: Generate Plot Implementations
 
-            This issue has been approved! Please generate implementations for **${specId}**.
+            This issue has been approved! Please generate implementations for **${{ steps.extract_spec.outputs.spec_id }}**.
 
             ### Instructions
 
             1. **Read the specification**
-               - File: \`specs/${specId}.md\`
+               - File: `specs/${{ steps.extract_spec.outputs.spec_id }}.md`
                - If file doesn't exist, create it from the issue body
 
             2. **Read generation rules**
-               - \`rules/generation/v1.0.0-draft/code-generation-rules.md\`
-               - \`rules/generation/v1.0.0-draft/quality-criteria.md\`
-               - \`rules/generation/v1.0.0-draft/self-review-checklist.md\`
+               - `rules/generation/v1.0.0-draft/code-generation-rules.md`
+               - `rules/generation/v1.0.0-draft/quality-criteria.md`
+               - `rules/generation/v1.0.0-draft/self-review-checklist.md`
 
             3. **Generate matplotlib implementation**
-               - Target: \`plots/matplotlib/scatter/${specId}/default.py\`
+               - Target: `plots/matplotlib/scatter/${{ steps.extract_spec.outputs.spec_id }}/default.py`
                - Follow generation rules exactly
                - Implement all spec requirements
                - Use type hints, docstrings, validation
-               - Add standalone execution block (\`if __name__ == '__main__':\`)
+               - Add standalone execution block (`if __name__ == '__main__':`)
                - Self-review: Max 3 attempts to pass quality criteria
 
             4. **Generate seaborn implementation**
-               - Target: \`plots/seaborn/scatterplot/${specId}/default.py\`
+               - Target: `plots/seaborn/scatterplot/${{ steps.extract_spec.outputs.spec_id }}/default.py`
                - Same requirements as matplotlib
 
             5. **Create Pull Request**
-               - Branch: \`auto/${specId}\`
-               - Title: \`feat: implement ${specId}\`
+               - Branch: `auto/${{ steps.extract_spec.outputs.spec_id }}`
+               - Title: `feat: implement ${{ steps.extract_spec.outputs.spec_id }}`
                - Include summary of generation results
-               - Link to this issue
+               - Link to this issue (#${{ github.event.issue.number }})
 
             ### Requirements
             - Each implementation must pass self-review before moving to next
@@ -97,8 +103,7 @@ jobs:
 
             ### Expected Outcome
             - PR created with matplotlib and seaborn implementations
-            - Both pass self-review
+            - Both pass self-review (score ≥ 85)
             - Tests will run automatically on PR
 
-            Please proceed with the generation!`
-            });
+            Please proceed with the generation!

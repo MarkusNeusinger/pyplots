@@ -1,0 +1,313 @@
+name: Quality Check
+
+on:
+  workflow_run:
+    workflows: ["Test and Generate Previews"]
+    types: [completed]
+
+jobs:
+  quality-check:
+    name: AI Quality Evaluation
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install anthropic requests
+
+      - name: Download preview metadata
+        uses: actions/download-artifact@v4
+        with:
+          name: preview-metadata
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Load metadata
+        id: metadata
+        run: |
+          if [ ! -f preview_metadata.json ]; then
+            echo "No preview metadata found, skipping quality check"
+            exit 0
+          fi
+
+          PR_NUMBER=$(jq -r '.pr_number' preview_metadata.json)
+          BUCKET=$(jq -r '.bucket' preview_metadata.json)
+          BASE_PATH=$(jq -r '.base_path' preview_metadata.json)
+
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "bucket=$BUCKET" >> $GITHUB_OUTPUT
+          echo "base_path=$BASE_PATH" >> $GITHUB_OUTPUT
+
+      - name: Setup Google Cloud authentication
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCS_CREDENTIALS }}
+
+      - name: Download preview images
+        run: |
+          mkdir -p preview_images
+          gsutil -m cp -r "gs://${{ steps.metadata.outputs.bucket }}/${{ steps.metadata.outputs.base_path }}/*" preview_images/
+
+      - name: Run quality evaluation
+        id: quality_eval
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          cat > quality_evaluator.py <<'EOF'
+          import os
+          import sys
+          import json
+          import base64
+          from pathlib import Path
+          import anthropic
+
+          def load_spec(spec_id: str) -> str:
+              """Load spec content"""
+              spec_path = Path(f"specs/{spec_id}.md")
+              if not spec_path.exists():
+                  return ""
+              return spec_path.read_text()
+
+          def encode_image(image_path: str) -> str:
+              """Encode image as base64"""
+              with open(image_path, 'rb') as f:
+                  return base64.standard_b64encode(f.read()).decode('utf-8')
+
+          def evaluate_plot(spec_id: str, library: str, variant: str, image_path: str) -> dict:
+              """Evaluate a single plot implementation"""
+              client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+
+              # Load spec
+              spec_content = load_spec(spec_id)
+              if not spec_content:
+                  return {"error": f"Spec not found: {spec_id}"}
+
+              # Encode image
+              image_data = encode_image(image_path)
+
+              # Build evaluation prompt
+              prompt = f"""You are an expert data visualization reviewer.
+
+          # Task
+          Evaluate this plot implementation against its specification.
+
+          # Specification
+          {spec_content}
+
+          # Implementation Details
+          - Library: {library}
+          - Variant: {variant}
+
+          # Quality Evaluation Criteria
+          Review the plot image against EACH quality criterion listed in the specification.
+
+          # Response Format
+          Provide your evaluation in the following JSON format:
+
+          {{
+            "overall_score": <0-100>,
+            "verdict": "<PASS|FAIL>",
+            "criteria_results": [
+              {{
+                "criterion": "<criterion text>",
+                "status": "<PASS|FAIL>",
+                "comment": "<brief explanation>"
+              }}
+            ],
+            "strengths": ["<strength 1>", "<strength 2>"],
+            "improvements": ["<improvement 1>", "<improvement 2>"],
+            "summary": "<2-3 sentence overall assessment>"
+          }}
+
+          # Scoring Guidelines
+          - 90-100: Excellent - All criteria met, production ready
+          - 85-89: Good - Minor issues, acceptable
+          - 75-84: Needs improvement - Some criteria failed
+          - <75: Rejected - Major issues, regeneration required
+
+          # Instructions
+          1. Review the image carefully
+          2. Check EACH quality criterion from the spec
+          3. Provide specific, actionable feedback
+          4. Be objective and constructive
+
+          Provide ONLY the JSON response, no additional text."""
+
+              # Call Claude with vision
+              response = client.messages.create(
+                  model="claude-sonnet-4-20250514",
+                  max_tokens=2000,
+                  messages=[{
+                      "role": "user",
+                      "content": [
+                          {
+                              "type": "image",
+                              "source": {
+                                  "type": "base64",
+                                  "media_type": "image/png",
+                                  "data": image_data
+                              }
+                          },
+                          {
+                              "type": "text",
+                              "text": prompt
+                          }
+                      ]
+                  }]
+              )
+
+              # Parse response
+              response_text = response.content[0].text
+
+              # Extract JSON (handle markdown code blocks)
+              if "```json" in response_text:
+                  response_text = response_text.split("```json")[1].split("```")[0].strip()
+              elif "```" in response_text:
+                  response_text = response_text.split("```")[1].split("```")[0].strip()
+
+              try:
+                  result = json.loads(response_text)
+                  return result
+              except json.JSONDecodeError:
+                  return {"error": "Failed to parse response", "raw": response_text}
+
+          # Main execution
+          if __name__ == "__main__":
+              results = []
+
+              # Process all preview images
+              preview_dir = Path("preview_images")
+              for img_file in preview_dir.glob("*.png"):
+                  # Parse filename: {spec_id}_{library}_{variant}.png
+                  parts = img_file.stem.split('_')
+                  if len(parts) >= 3:
+                      spec_id = '_'.join(parts[:-2])
+                      library = parts[-2]
+                      variant = parts[-1]
+
+                      print(f"🔍 Evaluating: {spec_id}/{library}/{variant}")
+                      result = evaluate_plot(spec_id, library, variant, str(img_file))
+                      result["spec_id"] = spec_id
+                      result["library"] = library
+                      result["variant"] = variant
+                      results.append(result)
+
+              # Save results
+              with open("quality_results.json", "w") as f:
+                  json.dump(results, f, indent=2)
+
+              # Print summary
+              print("\n" + "="*60)
+              print("Quality Evaluation Results")
+              print("="*60)
+              for r in results:
+                  score = r.get("overall_score", 0)
+                  verdict = r.get("verdict", "UNKNOWN")
+                  print(f"{r['spec_id']}/{r['library']}/{r['variant']}: {score}/100 - {verdict}")
+              print("="*60)
+          EOF
+
+          python quality_evaluator.py
+
+      - name: Parse quality results
+        id: results
+        run: |
+          if [ ! -f quality_results.json ]; then
+            echo "No quality results found"
+            exit 0
+          fi
+
+          # Calculate overall verdict
+          TOTAL=$(jq '. | length' quality_results.json)
+          PASSED=$(jq '[.[] | select(.verdict == "PASS")] | length' quality_results.json)
+          FAILED=$((TOTAL - PASSED))
+
+          MIN_SCORE=$(jq '[.[] | .overall_score] | min' quality_results.json)
+
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+          echo "min_score=$MIN_SCORE" >> $GITHUB_OUTPUT
+
+          # Overall verdict: PASS if all pass and min_score >= 85
+          if [ $FAILED -eq 0 ] && [ $MIN_SCORE -ge 85 ]; then
+            echo "overall_verdict=PASS" >> $GITHUB_OUTPUT
+          else
+            echo "overall_verdict=FAIL" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate quality report
+        if: steps.results.outputs.total != ''
+        run: |
+          cat > quality_report.md <<'EOF'
+          ## 🤖 Quality Check Results
+
+          **Overall Verdict:** ${{ steps.results.outputs.overall_verdict }}
+
+          **Summary:**
+          - Total implementations: ${{ steps.results.outputs.total }}
+          - Passed: ${{ steps.results.outputs.passed }}
+          - Failed: ${{ steps.results.outputs.failed }}
+          - Minimum score: ${{ steps.results.outputs.min_score }}/100
+
+          ### Detailed Results
+
+          EOF
+
+          # Add detailed results for each implementation
+          jq -r '.[] | "#### \(.spec_id) / \(.library) / \(.variant)\n\n**Score:** \(.overall_score)/100 | **Verdict:** \(.verdict)\n\n**Summary:** \(.summary)\n\n**Strengths:**\n\(.strengths | map("- " + .) | join("\n"))\n\n**Improvements Needed:**\n\(.improvements | map("- " + .) | join("\n"))\n\n---\n"' quality_results.json >> quality_report.md
+
+          echo "" >> quality_report.md
+          echo "*Generated by [quality-check workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*" >> quality_report.md
+
+      - name: Comment on PR with quality results
+        if: steps.results.outputs.total != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('quality_report.md', 'utf8');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.metadata.outputs.pr_number }},
+              body: report
+            });
+
+      - name: Add labels based on verdict
+        if: steps.results.outputs.total != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const verdict = '${{ steps.results.outputs.overall_verdict }}';
+            const prNumber = ${{ steps.metadata.outputs.pr_number }};
+
+            if (verdict === 'PASS') {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                labels: ['quality-approved']
+              });
+            } else {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                labels: ['quality-check-failed']
+              });
+            }

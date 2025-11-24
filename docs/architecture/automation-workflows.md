@@ -44,54 +44,77 @@ pyplots uses a **hybrid automation strategy** combining GitHub Actions (for code
 
 All workflows are in `.github/workflows/`
 
-### 1. `spec-to-code.yml` - Code Generation
+### 1. `spec-to-code.yml` + `claude.yml` - Code Generation
 
 **Trigger**: GitHub Issue labeled `approved`
 
-**Purpose**: Convert approved spec into implementation code
+**Purpose**: Convert approved spec into implementation code using Claude Code
+
+**How it works**:
+
+1. **spec-to-code.yml** (trigger workflow):
+   - Extracts spec ID from issue title (format: `scatter-basic-001`)
+   - Posts `@claude` comment with detailed generation instructions
+   - Links to spec file, generation rules, and quality criteria
+
+2. **claude.yml** (execution workflow):
+   - Triggers on `@claude` comments (via `anthropics/claude-code-action@v1`)
+   - Claude Code reads spec and generation rules
+   - Generates implementations for matplotlib and seaborn
+   - Self-reviews code against quality criteria (max 3 attempts)
+   - Creates pull request with implementations
+   - **Visible live** at https://claude.ai/code (if OAuth token configured)
 
 **Steps**:
 ```yaml
+# spec-to-code.yml
 on:
   issues:
     types: [labeled]
 
 jobs:
-  generate-code:
+  trigger-claude-code:
     if: github.event.label.name == 'approved'
-    runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Extract spec from issue
+      - name: Extract spec ID from issue
         run: |
-          # Parse issue body (Markdown)
-          # Create specs/{spec-id}.md
+          # Parse spec ID from title (e.g., "scatter-basic-001")
+          SPEC_ID=$(echo "$ISSUE_TITLE" | grep -oiP '^[a-z]+-[a-z]+-\d{3,4}')
 
-      - name: Generate code with Claude
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - name: Trigger Claude Code with @claude comment
         run: |
-          # Call automation/generators/claude_generator.py
-          # Generate plots/{library}/{type}/{spec-id}/default.py
+          # Post @claude comment with:
+          # - Spec file path: specs/{spec-id}.md
+          # - Generation rules: rules/generation/v1.0.0-draft/
+          # - Target paths for matplotlib and seaborn
+          # - Self-review requirements
+```
 
-      - name: Create pull request
-        uses: peter-evans/create-pull-request@v5
+```yaml
+# claude.yml
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  claude:
+    if: contains(github.event.comment.body, '@claude')
+    steps:
+      - uses: anthropics/claude-code-action@v1
         with:
-          title: "feat: implement ${{ env.SPEC_ID }}"
-          body: |
-            Auto-generated from issue #${{ github.event.issue.number }}
-
-            Implements: `${{ env.SPEC_ID }}`
-          branch: "auto/${{ env.SPEC_ID }}"
-          labels: code-generated
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Claude Code reads instructions from @claude comment
+          # Generates code, commits, creates PR autonomously
 ```
 
 **Outputs**:
-- Spec file: `specs/{spec-id}.md`
 - Implementation files: `plots/{library}/{type}/{spec-id}/default.py`
-- Pull request linked to original issue
+- Pull request with title: `feat: implement {spec-id}`
+- PR linked to original issue
+- Live progress visible in Claude Code Web
+
+**Required Secrets**:
+- `CLAUDE_CODE_OAUTH_TOKEN`: OAuth token from https://claude.ai/code/settings
 
 ---
 
@@ -167,102 +190,89 @@ jobs:
 
 ---
 
-### 3. `quality-check.yml` - Multi-LLM Quality Evaluation
+### 3. `quality-check.yml` + `claude.yml` - Quality Evaluation
 
-**Trigger**: Preview images uploaded to GCS (via workflow dispatch or comment command)
+**Trigger**: Preview images uploaded to GCS (triggered by `test-and-preview.yml`)
 
-**Purpose**: Multi-LLM consensus evaluation of generated plots
+**Purpose**: Evaluate generated plots using Claude Code with vision capabilities
+
+**How it works**:
+
+1. **test-and-preview.yml** uploads preview images to GCS
+2. **quality-check.yml** downloads images and posts `@claude` comment
+3. **claude.yml** triggers on `@claude` comment
+4. Claude Code evaluates images against spec criteria using vision
+5. Claude Code posts quality report and updates labels
 
 **Steps**:
 ```yaml
+# quality-check.yml
 on:
-  workflow_dispatch:
-    inputs:
-      pr_number:
-        required: true
-      spec_id:
-        required: true
+  workflow_run:
+    workflows: ["Test and Preview"]
+    types: [completed]
 
 jobs:
-  quality-check:
-    runs-on: ubuntu-latest
+  trigger-quality-check:
     steps:
-      - name: Download previews from GCS
+      - name: Download preview images from GCS
         run: |
-          # Download all preview PNGs for this spec
+          # Download preview PNGs to preview_images/ directory
+          gsutil -m cp -r "gs://$BUCKET/$PATH/*" preview_images/
 
-      - name: Load spec
+      - name: Trigger Claude Code with @claude comment
         run: |
-          # Read specs/{spec-id}.md
-
-      - name: Claude evaluation
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          # Call automation/generators/quality_checker.py
-          # Returns score + feedback
-
-      - name: Gemini evaluation (critical decisions only)
-        if: env.IS_NEW_PLOT_TYPE == 'true'
-        env:
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-        run: |
-          # Vertex AI call
-
-      - name: GPT evaluation (critical decisions only)
-        if: env.IS_NEW_PLOT_TYPE == 'true'
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          # OpenAI API call
-
-      - name: Calculate consensus
-        run: |
-          # Median score across all LLMs
-          # Pass if >= 85
-
-      - name: Post results to issue
-        uses: peter-evans/create-or-update-comment@v3
-        with:
-          issue-number: ${{ inputs.pr_number }}
-          body: |
-            ## 🤖 Quality Check Results
-
-            **Claude:** ${{ env.CLAUDE_SCORE }}/100
-            ${{ env.CLAUDE_FEEDBACK }}
-
-            **Gemini:** ${{ env.GEMINI_SCORE }}/100 (if applicable)
-            **GPT-4:** ${{ env.GPT_SCORE }}/100 (if applicable)
-
-            **Consensus:** ${{ env.CONSENSUS }} (Median: ${{ env.MEDIAN_SCORE }})
-
-            ---
-
-            ${{ env.DETAILED_FEEDBACK }}
-
-      - name: Update labels
-        run: |
-          if [ "${{ env.CONSENSUS }}" == "APPROVED" ]; then
-            gh issue edit ${{ inputs.pr_number }} --add-label quality-approved
-          else
-            gh issue edit ${{ inputs.pr_number }} --add-label quality-failed-attempt-${{ env.ATTEMPT_NUMBER }}
-          fi
-
-      - name: Trigger regeneration if needed
-        if: env.CONSENSUS == 'REJECTED' && env.ATTEMPT_NUMBER < 3
-        run: |
-          # Trigger spec-to-code.yml again with feedback
+          # Post @claude comment on PR with:
+          # - Preview image locations
+          # - Spec file reference
+          # - Quality criteria from spec
+          # - Scoring guidelines (0-100, ≥85 to pass)
 ```
 
-**Quality Gate**:
-- Routine plots: Claude only (fast, cost-effective)
-- Critical plots: Multi-LLM consensus (≥2 of 3 must approve)
-- Pass threshold: Median score ≥ 85
+```yaml
+# claude.yml
+on:
+  issue_comment:
+    types: [created]
 
-**Feedback Loop**:
-- Attempt 1 fails → Regenerate with feedback
-- Attempt 2 fails → Regenerate with feedback
-- Attempt 3 fails → Mark as `quality-failed`, requires human review
+jobs:
+  claude:
+    if: contains(github.event.comment.body, '@claude')
+    steps:
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Claude Code:
+          # 1. Reads spec file
+          # 2. Views preview images with vision
+          # 3. Evaluates against quality criteria
+          # 4. Posts quality report as comment
+          # 5. Adds label: quality-approved or quality-check-failed
+```
+
+**Evaluation Process**:
+1. For each preview image:
+   - Parse filename to extract spec_id, library, variant
+   - Read corresponding spec file
+   - View image using Claude's vision capabilities
+   - Check against all quality criteria in spec
+   - Score 0-100 (≥85 to pass)
+
+2. Generate quality report with:
+   - Overall verdict (PASS/FAIL)
+   - Score for each implementation
+   - Specific feedback per quality criterion
+   - Strengths and improvements needed
+
+**Quality Gate**:
+- Claude vision-based evaluation
+- Pass threshold: Score ≥ 85 for all implementations
+- Objective, measurable criteria from spec
+
+**Outputs**:
+- Quality report as PR comment
+- Label: `quality-approved` or `quality-check-failed`
+- Live evaluation visible in Claude Code Web
 
 ---
 

@@ -1,21 +1,21 @@
 name: AI Review
 
 on:
-  pull_request_review:
-    types: [submitted]
+  workflow_run:
+    workflows: ["Test and Generate Previews"]
+    types: [completed]
 
 jobs:
   ai-review:
-    # Nur wenn Copilot Review submitted wurde auf auto/ branches
-    if: |
-      github.event.review.user.login == 'github-copilot[bot]' &&
-      startsWith(github.event.pull_request.head.ref, 'auto/')
+    # Nur wenn Tests erfolgreich waren
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
       issues: write
       id-token: write
+      actions: read
 
     steps:
       - name: Checkout code
@@ -23,15 +23,50 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Extract spec ID from branch
-        id: spec
+      - name: Download preview metadata
+        uses: actions/download-artifact@v4
+        with:
+          name: preview-metadata
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Load metadata
+        id: metadata
         run: |
+          if [ ! -f preview_metadata.json ]; then
+            echo "No preview metadata found, skipping AI review"
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          PR_NUMBER=$(jq -r '.pr_number' preview_metadata.json)
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "skip=false" >> $GITHUB_OUTPUT
+
+      - name: Get PR details
+        if: steps.metadata.outputs.skip != 'true'
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_DATA=$(gh pr view ${{ steps.metadata.outputs.pr_number }} --json headRefName,number)
+          HEAD_REF=$(echo "$PR_DATA" | jq -r '.headRefName')
+
+          # Check if auto/ branch
+          if [[ ! "$HEAD_REF" =~ ^auto/ ]]; then
+            echo "Not an auto/ branch, skipping AI review"
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
           # Extract spec-id from branch name (auto/scatter-basic-005)
-          SPEC_ID=$(echo "${{ github.event.pull_request.head.ref }}" | sed 's|auto/||')
+          SPEC_ID=$(echo "$HEAD_REF" | sed 's|auto/||')
           echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "skip=false" >> $GITHUB_OUTPUT
           echo "Spec ID: $SPEC_ID"
 
       - name: Setup Google Cloud authentication
+        if: steps.pr.outputs.skip != 'true'
         id: gcs_auth
         continue-on-error: true
         uses: google-github-actions/auth@v2
@@ -39,17 +74,18 @@ jobs:
           credentials_json: ${{ secrets.GCS_CREDENTIALS }}
 
       - name: Download preview images
-        if: steps.gcs_auth.outcome == 'success'
+        if: steps.pr.outputs.skip != 'true' && steps.gcs_auth.outcome == 'success'
         run: |
           mkdir -p preview_images
-          gsutil -m cp -r "gs://${{ secrets.GCS_BUCKET }}/previews/pr-${{ github.event.pull_request.number }}/*" preview_images/ || echo "No preview images found"
+          gsutil -m cp -r "gs://${{ secrets.GCS_BUCKET }}/previews/pr-${{ steps.metadata.outputs.pr_number }}/*" preview_images/ || echo "No preview images found"
 
       - name: Check attempt count
+        if: steps.pr.outputs.skip != 'true'
         id: attempts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          LABELS=$(gh pr view ${{ github.event.pull_request.number }} --json labels -q '.labels[].name' 2>/dev/null || echo "")
+          LABELS=$(gh pr view ${{ steps.metadata.outputs.pr_number }} --json labels -q '.labels[].name' 2>/dev/null || echo "")
 
           if echo "$LABELS" | grep -q "ai-attempt-3"; then
             echo "count=3" >> $GITHUB_OUTPUT
@@ -61,14 +97,22 @@ jobs:
             echo "count=0" >> $GITHUB_OUTPUT
           fi
 
+      - name: React with eyes emoji
+        if: steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/${{ steps.metadata.outputs.pr_number }}/reactions \
+            -f content=eyes
+
       - name: Trigger Claude Quality Check
-        if: steps.attempts.outputs.count != '3'
+        if: steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3'
         uses: actions/github-script@v7
         with:
           script: |
-            const specId = '${{ steps.spec.outputs.spec_id }}';
+            const specId = '${{ steps.pr.outputs.spec_id }}';
             const attempt = parseInt('${{ steps.attempts.outputs.count }}') + 1;
-            const prNumber = context.payload.pull_request.number;
+            const prNumber = ${{ steps.metadata.outputs.pr_number }};
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -78,7 +122,7 @@ jobs:
 
             ## 🎯 Task: AI Quality Review (Attempt ${attempt}/3)
 
-            Copilot has reviewed the code. Now evaluate if the implementation matches the specification.
+            Tests passed and preview images are ready. Evaluate if the implementation matches the specification.
 
             ### Your Task
 
@@ -113,10 +157,10 @@ jobs:
             });
 
       - name: Mark as failed after 3 attempts
-        if: steps.attempts.outputs.count == '3'
+        if: steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count == '3'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr edit ${{ github.event.pull_request.number }} --add-label "ai-failed"
-          gh pr comment ${{ github.event.pull_request.number }} \
+          gh pr edit ${{ steps.metadata.outputs.pr_number }} --add-label "ai-failed"
+          gh pr comment ${{ steps.metadata.outputs.pr_number }} \
             --body "❌ AI Review failed after 3 attempts. Manual review required."

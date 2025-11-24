@@ -13,10 +13,9 @@ pyplots uses a **hybrid automation strategy** combining GitHub Actions (for code
 | Workflow | Platform | Trigger | Frequency | Why This Platform? |
 |----------|----------|---------|-----------|-------------------|
 | **Code Generation** | GitHub Actions | Issue labeled `approved` | On-demand | Native GitHub integration, version-controlled |
-| **Copilot Review** | GitHub Actions | PR opened (auto/ branches) | On-demand | General code quality check |
 | **Multi-Version Testing** | GitHub Actions | PR opened/updated | On-demand | Included in GitHub Pro, transparent |
 | **Preview Generation** | GitHub Actions | Tests passed | On-demand | Needs code checkout, GCS upload |
-| **AI Review** | GitHub Actions | Copilot Review submitted | On-demand | Claude evaluates Spec ↔ Code ↔ Preview |
+| **AI Review** | GitHub Actions | Tests passed, previews generated | On-demand | Claude evaluates Spec ↔ Code ↔ Preview |
 | **Auto-Merge** | GitHub Actions | PR labeled `ai-approved` | On-demand | Automatic squash merge |
 | **Deployment** | GitHub Actions | PR merged to main | On-demand | Native CI/CD, Cloud Run deployment |
 | **Social Media Monitoring** | n8n | Scheduled (daily) | 1x/day | Twitter/Reddit API integration |
@@ -192,26 +191,26 @@ jobs:
 
 ---
 
-### 3. `quality-check.yml` + `claude.yml` - Quality Evaluation
+### 3. `ai-review.yml` + `claude.yml` - Quality Evaluation
 
-**Trigger**: Preview images uploaded to GCS (triggered by `test-and-preview.yml`)
+**Trigger**: `workflow_run` when `test-and-preview.yml` completes successfully
 
 **Purpose**: Evaluate generated plots using Claude Code with vision capabilities
 
 **How it works**:
 
-1. **test-and-preview.yml** uploads preview images to GCS
-2. **quality-check.yml** downloads images and posts `@claude` comment
+1. **test-and-preview.yml** runs tests and uploads preview images to GCS
+2. **ai-review.yml** downloads images and posts `@claude` comment
 3. **claude.yml** triggers on `@claude` comment
 4. Claude Code evaluates images against spec criteria using vision
 5. Claude Code posts quality report and updates labels
 
 **Steps**:
 ```yaml
-# quality-check.yml
+# ai-review.yml
 on:
   workflow_run:
-    workflows: ["Test and Preview"]
+    workflows: ["Test and Generate Previews"]
     types: [completed]
 
 jobs:

@@ -5,14 +5,100 @@ Plot Code Generator
 Generates plot implementations from specifications using Claude with versioned rules.
 """
 
+import ast
 import os
 import sys
+import time
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Callable, TypeVar
 import anthropic
+from anthropic import APIError, RateLimitError, APIConnectionError
 
 
 LibraryType = Literal["matplotlib", "seaborn", "plotly", "bokeh", "altair"]
+
+
+def extract_and_validate_code(response_text: str) -> str:
+    """
+    Extract Python code from Claude response and validate syntax.
+
+    Args:
+        response_text: Raw response from Claude API
+
+    Returns:
+        Validated Python code
+
+    Raises:
+        ValueError: If code cannot be extracted or has syntax errors
+    """
+    code = response_text.strip()
+
+    # Extract code if wrapped in markdown
+    if "```python" in code:
+        code = code.split("```python")[1].split("```")[0].strip()
+    elif "```" in code:
+        code = code.split("```")[1].split("```")[0].strip()
+
+    if not code:
+        raise ValueError("No code could be extracted from response")
+
+    # Validate Python syntax
+    try:
+        ast.parse(code)
+    except SyntaxError as e:
+        raise ValueError(f"Generated code has syntax errors: {e}")
+
+    return code
+
+
+T = TypeVar('T')
+
+
+def retry_with_backoff(
+    func: Callable[[], T],
+    max_retries: int = 3,
+    initial_delay: float = 2.0,
+    backoff_factor: float = 2.0
+) -> T:
+    """
+    Retry a function with exponential backoff.
+
+    Args:
+        func: Function to retry
+        max_retries: Maximum number of retry attempts
+        initial_delay: Initial delay in seconds
+        backoff_factor: Multiplier for delay after each retry
+
+    Returns:
+        Result from successful function call
+
+    Raises:
+        Last exception if all retries fail
+    """
+    delay = initial_delay
+    last_exception = None
+
+    for attempt in range(max_retries + 1):
+        try:
+            return func()
+        except (RateLimitError, APIConnectionError) as e:
+            last_exception = e
+            if attempt < max_retries:
+                print(f"⚠️  API error: {type(e).__name__}. Retrying in {delay}s... (attempt {attempt + 1}/{max_retries})")
+                time.sleep(delay)
+                delay *= backoff_factor
+            else:
+                print(f"❌ Max retries ({max_retries}) exceeded")
+                raise
+        except APIError as e:
+            # For other API errors, don't retry
+            print(f"❌ API error: {e}")
+            raise
+
+    # Should never reach here, but for type checker
+    if last_exception:
+        raise last_exception
+    raise RuntimeError("Unexpected retry loop exit")
 
 
 def load_spec(spec_id: str) -> str:
@@ -165,20 +251,24 @@ Generate the implementation now:"""
 
 Generate the improved implementation:"""
 
-        # Call Claude
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=4000,
-            messages=[{"role": "user", "content": prompt}]
+        # Call Claude with retry logic
+        response = retry_with_backoff(
+            lambda: client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=4000,
+                messages=[{"role": "user", "content": prompt}]
+            )
         )
 
-        code = response.content[0].text
-
-        # Extract code if wrapped in markdown
-        if "```python" in code:
-            code = code.split("```python")[1].split("```")[0].strip()
-        elif "```" in code:
-            code = code.split("```")[1].split("```")[0].strip()
+        # Extract and validate code
+        try:
+            code = extract_and_validate_code(response.content[0].text)
+        except ValueError as e:
+            print(f"❌ Code extraction/validation failed: {e}")
+            if attempt < max_attempts:
+                print(f"🔄 Retrying... ({attempt + 1}/{max_attempts})")
+                continue
+            raise
 
         # Self-review
         print(f"🔍 Running self-review...")
@@ -215,10 +305,12 @@ Format your response as:
 [specific actionable items]
 """
 
-        review_response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=2000,
-            messages=[{"role": "user", "content": review_prompt}]
+        review_response = retry_with_backoff(
+            lambda: client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=2000,
+                messages=[{"role": "user", "content": review_prompt}]
+            )
         )
 
         review_feedback = review_response.content[0].text

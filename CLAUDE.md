@@ -227,6 +227,52 @@ Located in `.github/workflows/`:
 - **quality-check.yml**: Multi-LLM quality evaluation
 - **deploy.yml**: Deploys to Cloud Run
 
+## GitHub Issue Labels
+
+The project uses a structured labeling system to organize different types of issues:
+
+### Plot-Related Labels
+
+- **`plot-request`** (blue, `#0366d6`) - Community plot proposals
+  - Use when: Someone proposes a new plot type or variant
+  - Workflow: Add this label when creating an issue for a new plot
+  - When combined with `approved`, triggers automatic code generation
+
+- **`approved`** (green, `#0e8a16`) - Approved for implementation
+  - Use when: A plot-request has been reviewed and accepted
+  - Workflow: Triggers `spec-to-code.yml` workflow (if issue also has `plot-request` label)
+  - Effect: Claude Code automatically generates implementations and creates PR
+
+- **`quality-issue`** (orange, `#fb8500`) - Quality check found issues
+  - Use when: Multi-LLM quality check identifies problems
+  - Workflow: Automatically created by `quality-check.yml` workflow
+  - Contains: Detailed quality report from Claude, Gemini, GPT evaluation
+
+### Development Labels
+
+- **`bug`** (red, `#d73a4a`) - Something isn't working
+  - Use when: Existing plots have errors or incorrect behavior
+
+- **`infrastructure`** (gray, `#6c757d`) - Workflow, backend, or frontend issues
+  - Use when: Problems with GitHub Actions, API, database, or frontend
+
+- **`documentation`** (blue, `#0075ca`) - Improvements or additions to documentation
+  - Use when: Docs need updates or clarification
+
+- **`enhancement`** (cyan, `#a2eeef`) - New feature or improvement to existing feature
+  - Use when: Non-plot features (e.g., API endpoints, UI components)
+
+### Plot Request Workflow Example
+
+1. User creates issue titled `scatter-advanced-002: 3D scatter with rotation`
+2. Add `plot-request` label
+3. Maintainer reviews and adds `approved` label
+4. `spec-to-code.yml` workflow automatically triggers
+5. Claude Code generates implementations and creates PR
+6. Tests run automatically on PR
+7. Multi-LLM quality check evaluates code
+8. Maintainer reviews and merges
+
 ## Environment Variables
 
 Required in `.env`:
@@ -244,12 +290,13 @@ See `.env.example` for full list.
 
 ### Adding a New Plot Type
 
-1. Create GitHub Issue with spec description
-2. Add label `plot-idea` and wait for approval
-3. AI generates spec file in `specs/`
-4. AI generates implementations for all libraries
-5. Multi-LLM quality check runs automatically
-6. Human reviews PR and merges
+1. Create GitHub Issue with spec description (title format: `{spec-id}: Description`)
+2. Add label `plot-request`
+3. Maintainer reviews and adds `approved` label
+4. AI automatically generates spec file in `specs/` (if needed)
+5. AI generates implementations for matplotlib and seaborn
+6. Multi-LLM quality check runs automatically on PR
+7. Human reviews PR and merges
 
 ### Updating an Existing Implementation
 

@@ -1,155 +1,21 @@
 name: Plot Request
-description: Propose a new plot type or variant for the pyplots library
-title: "[spec-id]: Brief description"
+description: Propose a new plot type for pyplots
+title: "[spec-id]: "
 labels: ["plot-request"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for proposing a new plot! Please fill out the information below to help us understand your visualization idea.
+        ## Plot-Vorschlag
+        Beschreibe kurz, welchen Plot du dir wünschst. Die AI generiert daraus eine vollständige Spezifikation.
 
-        **Spec ID format:** `{type}-{variant}-{number}` (e.g., `scatter-basic-002`, `line-timeseries-001`)
-
-  - type: input
-    id: spec_id
-    attributes:
-      label: Spec ID
-      description: Unique identifier for this plot specification
-      placeholder: "e.g., scatter-basic-002"
-    validations:
-      required: true
-
-  - type: input
-    id: title
-    attributes:
-      label: Plot Title
-      description: Short, descriptive title for the plot
-      placeholder: "e.g., Basic Scatter Plot with Color Mapping"
-    validations:
-      required: true
-
-  - type: dropdown
-    id: plot_type
-    attributes:
-      label: Plot Type
-      description: Primary visualization type
-      options:
-        - scatter
-        - line
-        - bar
-        - histogram
-        - heatmap
-        - box
-        - violin
-        - pie
-        - area
-        - contour
-        - 3d
-        - other
-    validations:
-      required: true
-
-  - type: dropdown
-    id: libraries
-    attributes:
-      label: Target Libraries
-      description: Which plotting libraries should implement this?
-      multiple: true
-      options:
-        - matplotlib
-        - seaborn
-        - plotly
-        - altair
-        - bokeh
-    validations:
-      required: true
+        **Titel-Format:** `scatter-basic-001: Deine Kurzbeschreibung`
 
   - type: textarea
     id: description
     attributes:
-      label: Plot Description
-      description: Detailed description of what the plot should visualize
-      placeholder: |
-        Describe the plot's purpose, visual elements, and use cases.
-
-        Example:
-        "A scatter plot that visualizes the relationship between two continuous variables with optional color mapping for a categorical variable."
+      label: Was soll der Plot zeigen?
+      description: 1-2 Sätze reichen
+      placeholder: "Ein Scatter-Plot mit Regressionslinie, der Korrelationen zwischen zwei Variablen visualisiert."
     validations:
       required: true
-
-  - type: textarea
-    id: visual_requirements
-    attributes:
-      label: Visual Requirements
-      description: Specific visual elements and features
-      placeholder: |
-        - X and Y axes with labeled numerical data
-        - Optional color mapping based on a third column
-        - Configurable point size and transparency
-        - Grid lines for readability
-        - Legend if color mapping is used
-    validations:
-      required: true
-
-  - type: textarea
-    id: data_structure
-    attributes:
-      label: Expected Data Structure
-      description: Describe the input data format
-      placeholder: |
-        ```python
-        # Example DataFrame structure:
-        pd.DataFrame({
-            'x': [1, 2, 3, 4, 5],
-            'y': [2, 4, 3, 5, 6],
-            'category': ['A', 'B', 'A', 'B', 'A']  # optional
-        })
-        ```
-    validations:
-      required: true
-
-  - type: textarea
-    id: example_use_case
-    attributes:
-      label: Example Use Case
-      description: Real-world scenario where this plot would be useful
-      placeholder: |
-        "Useful for exploring correlation between features in machine learning datasets, or visualizing experimental results with multiple treatment groups."
-    validations:
-      required: false
-
-  - type: textarea
-    id: similar_examples
-    attributes:
-      label: Similar Examples or References
-      description: Links to similar plots or inspiration sources
-      placeholder: |
-        - [Matplotlib Gallery Example](https://matplotlib.org/stable/gallery/...)
-        - [Seaborn Example](https://seaborn.pydata.org/examples/...)
-    validations:
-      required: false
-
-  - type: dropdown
-    id: complexity
-    attributes:
-      label: Complexity Level
-      description: How complex is this plot?
-      options:
-        - Basic (simple, single plot)
-        - Intermediate (multiple elements, some customization)
-        - Advanced (complex interactions, multiple subplots)
-    validations:
-      required: true
-
-  - type: checkboxes
-    id: terms
-    attributes:
-      label: Checklist
-      description: Please confirm the following
-      options:
-        - label: I have checked that this plot type doesn't already exist in the repository
-          required: true
-        - label: The spec ID follows the naming convention `{type}-{variant}-{number}`
-          required: true
-        - label: I understand this will be implemented by AI and reviewed by humans
-          required: true

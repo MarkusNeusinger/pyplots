@@ -1,0 +1,104 @@
+name: Generate Code from Spec
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  trigger-claude-code:
+    # Only run when "approved" label is added
+    if: github.event.label.name == 'approved'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Extract spec ID from issue
+        id: extract_spec
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          # Try to extract spec ID from title (format: "scatter-basic-001: Title" or just "scatter-basic-001")
+          # Case-insensitive, allows 3-4 digits, converts to lowercase
+          SPEC_ID=$(echo "$ISSUE_TITLE" | grep -oiP '^[a-z]+-[a-z]+-\d{3,4}' | tr '[:upper:]' '[:lower:]' || echo "")
+
+          if [ -z "$SPEC_ID" ]; then
+            # Try to find spec ID in body (look for markdown heading like "# scatter-basic-001:")
+            SPEC_ID=$(echo "$ISSUE_BODY" | grep -oiP '^#\s*\K[a-z]+-[a-z]+-\d{3,4}' | tr '[:upper:]' '[:lower:]' || echo "")
+          fi
+
+          if [ -z "$SPEC_ID" ]; then
+            echo "❌ Could not extract spec ID from issue"
+            echo "Expected format: {type}-{variant}-{001-9999}"
+            exit 1
+          fi
+
+          # Validate spec file exists
+          if [ ! -f "specs/${SPEC_ID}.md" ]; then
+            echo "⚠️  Warning: Spec file specs/${SPEC_ID}.md does not exist"
+            echo "Please ensure the spec file is created before code generation"
+          fi
+
+          echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "✅ Extracted spec ID: $SPEC_ID"
+
+      - name: Trigger Claude Code with @claude comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const specId = '${{ steps.extract_spec.outputs.spec_id }}';
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `@claude
+
+            ## 🎯 Task: Generate Plot Implementations
+
+            This issue has been approved! Please generate implementations for **${specId}**.
+
+            ### Instructions
+
+            1. **Read the specification**
+               - File: \`specs/${specId}.md\`
+               - If file doesn't exist, create it from the issue body
+
+            2. **Read generation rules**
+               - \`rules/generation/v1.0.0-draft/code-generation-rules.md\`
+               - \`rules/generation/v1.0.0-draft/quality-criteria.md\`
+               - \`rules/generation/v1.0.0-draft/self-review-checklist.md\`
+
+            3. **Generate matplotlib implementation**
+               - Target: \`plots/matplotlib/scatter/${specId}/default.py\`
+               - Follow generation rules exactly
+               - Implement all spec requirements
+               - Use type hints, docstrings, validation
+               - Add standalone execution block (\`if __name__ == '__main__':\`)
+               - Self-review: Max 3 attempts to pass quality criteria
+
+            4. **Generate seaborn implementation**
+               - Target: \`plots/seaborn/scatterplot/${specId}/default.py\`
+               - Same requirements as matplotlib
+
+            5. **Create Pull Request**
+               - Branch: \`auto/${specId}\`
+               - Title: \`feat: implement ${specId}\`
+               - Include summary of generation results
+               - Link to this issue
+
+            ### Requirements
+            - Each implementation must pass self-review before moving to next
+            - Use deterministic sample data (fixed seeds or hardcoded data)
+            - Code must work standalone (no external files)
+            - Follow Python 3.10+ syntax
+            - Commit with clear messages
+
+            ### Expected Outcome
+            - PR created with matplotlib and seaborn implementations
+            - Both pass self-review
+            - Tests will run automatically on PR
+
+            Please proceed with the generation!`
+            });

@@ -1,0 +1,120 @@
+name: Quality Check
+
+on:
+  workflow_run:
+    workflows: ["Test and Generate Previews"]
+    types: [completed]
+
+jobs:
+  quality-check:
+    name: AI Quality Evaluation
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download preview metadata
+        uses: actions/download-artifact@v4
+        with:
+          name: preview-metadata
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Load metadata
+        id: metadata
+        run: |
+          if [ ! -f preview_metadata.json ]; then
+            echo "No preview metadata found, skipping quality check"
+            exit 0
+          fi
+
+          PR_NUMBER=$(jq -r '.pr_number' preview_metadata.json)
+          BUCKET=$(jq -r '.bucket' preview_metadata.json)
+          BASE_PATH=$(jq -r '.base_path' preview_metadata.json)
+          CHANGED_FILES=$(jq -r '.changed_files[]' preview_metadata.json | tr '\n' ' ')
+
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "bucket=$BUCKET" >> $GITHUB_OUTPUT
+          echo "base_path=$BASE_PATH" >> $GITHUB_OUTPUT
+          echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+
+      - name: Setup Google Cloud authentication
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCS_CREDENTIALS }}
+
+      - name: Download preview images
+        run: |
+          mkdir -p preview_images
+          gsutil -m cp -r "gs://${{ steps.metadata.outputs.bucket }}/${{ steps.metadata.outputs.base_path }}/*" preview_images/ || echo "No images to download"
+
+      - name: Trigger quality check with @claude
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = ${{ steps.metadata.outputs.pr_number }};
+            const bucket = '${{ steps.metadata.outputs.bucket }}';
+            const basePath = '${{ steps.metadata.outputs.base_path }}';
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: `@claude
+
+            ## 🎯 Task: Quality Evaluation
+
+            Preview images have been generated and uploaded to GCS. Please evaluate the implementations.
+
+            ### Instructions
+
+            1. **Preview images location**
+               - Already downloaded to \`preview_images/\` directory in this repository
+               - GCS Bucket: \`${bucket}\`
+               - GCS Path: \`${basePath}/\`
+
+            2. **For each preview image:**
+               - Parse filename to extract: spec_id, library, variant (format: \`{spec_id}_{library}_{variant}.png\`)
+               - Read corresponding spec file: \`specs/{spec_id}.md\`
+               - View the preview image carefully using your vision capabilities
+               - Evaluate against quality criteria listed in the spec
+
+            3. **Check each quality criterion:**
+               - Does it meet ALL quality criteria from the spec?
+               - Are visual elements clear and readable?
+               - Are colors appropriate and accessible?
+               - Is the layout well-structured?
+               - Score: 0-100 (≥85 to pass)
+
+            4. **Generate quality report with:**
+               - Overall verdict (PASS if all implementations score ≥85, FAIL otherwise)
+               - Score for each implementation (matplotlib and seaborn separately)
+               - Specific feedback for each quality criterion (met/failed)
+               - Strengths and improvements needed
+               - Concrete, actionable suggestions if FAIL
+
+            5. **Update this PR:**
+               - Post quality report as comment on this PR
+               - Use \`gh pr edit\` to add appropriate label:
+                 - "quality-approved" if PASS
+                 - "quality-check-failed" if FAIL
+
+            ### Scoring Guidelines
+            - 90-100: Excellent - All criteria met, production ready
+            - 85-89: Good - Minor issues, acceptable
+            - 75-84: Needs improvement - regeneration recommended
+            - <75: Rejected - Major issues, regeneration required
+
+            Be objective and constructive in your feedback. Focus on measurable criteria.
+
+            Preview images are ready - please proceed with the evaluation!`
+            });

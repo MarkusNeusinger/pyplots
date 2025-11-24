@@ -1,0 +1,216 @@
+name: Test and Generate Previews
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'plots/**/*.py'
+      - 'specs/**/*.md'
+      - 'tests/**/*.py'
+
+jobs:
+  test:
+    name: Test on Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          uv sync --all-extras
+
+      - name: Run tests
+        run: |
+          uv run pytest tests/ -v --cov=plots --cov-report=xml --cov-report=term
+
+      - name: Upload coverage
+        if: matrix.python-version == '3.12'
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
+
+  generate-previews:
+    name: Generate Preview Images
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          uv sync --all-extras
+
+      - name: Find changed plot files
+        id: changed_plots
+        run: |
+          # Get list of changed Python files in plots/
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '^plots/.*\.py$' || echo "")
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No plot files changed"
+            echo "changed_files=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Convert to JSON array
+          CHANGED_ARRAY=$(echo "$CHANGED_FILES" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "changed_files=$CHANGED_ARRAY" >> $GITHUB_OUTPUT
+          echo "Changed files: $CHANGED_ARRAY"
+
+      - name: Generate preview images
+        if: steps.changed_plots.outputs.changed_files != ''
+        run: |
+          mkdir -p preview_outputs
+
+          # Parse changed files and generate previews
+          echo '${{ steps.changed_plots.outputs.changed_files }}' | jq -r '.[]' | while read -r file; do
+            echo "📊 Generating preview for: $file"
+
+            # Extract spec_id, library, variant from path
+            # Format: plots/{library}/{plot_type}/{spec_id}/{variant}.py
+            if [[ $file =~ ^plots/([^/]+)/([^/]+)/([^/]+)/([^/]+)\.py$ ]]; then
+              LIBRARY="${BASH_REMATCH[1]}"
+              PLOT_TYPE="${BASH_REMATCH[2]}"
+              SPEC_ID="${BASH_REMATCH[3]}"
+              VARIANT="${BASH_REMATCH[4]}"
+            else
+              echo "⚠️  Invalid file path format: $file"
+              echo "Expected: plots/{library}/{plot_type}/{spec_id}/{variant}.py"
+              continue
+            fi
+
+            # Run the plot script to generate image
+            OUTPUT_FILE="preview_outputs/${SPEC_ID}_${LIBRARY}_${VARIANT}.png"
+
+            # Execute with matplotlib backend set to Agg (non-interactive)
+            MPLBACKEND=Agg uv run python "$file" 2>&1 | tee "preview_outputs/${SPEC_ID}_${LIBRARY}_${VARIANT}.log"
+
+            # Check if preview was generated (look for common output filenames)
+            if [ -f "test_output.png" ]; then
+              mv test_output.png "$OUTPUT_FILE"
+              echo "✅ Preview generated: $OUTPUT_FILE"
+            elif [ -f "output.png" ]; then
+              mv output.png "$OUTPUT_FILE"
+              echo "✅ Preview generated: $OUTPUT_FILE"
+            elif [ -f "${SPEC_ID}.png" ]; then
+              mv "${SPEC_ID}.png" "$OUTPUT_FILE"
+              echo "✅ Preview generated: $OUTPUT_FILE"
+            else
+              echo "⚠️  No preview image found for $file"
+            fi
+          done
+
+      - name: Setup Google Cloud authentication
+        if: steps.changed_plots.outputs.changed_files != ''
+        id: gcs_auth
+        continue-on-error: true
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCS_CREDENTIALS }}
+
+      - name: Upload previews to GCS
+        if: steps.changed_plots.outputs.changed_files != '' && steps.gcs_auth.outcome == 'success'
+        continue-on-error: true
+        uses: google-github-actions/upload-cloud-storage@v2
+        with:
+          path: preview_outputs
+          destination: ${{ secrets.GCS_BUCKET }}/previews/pr-${{ github.event.pull_request.number }}
+          process_gcloudignore: false
+
+      - name: Generate preview URLs
+        if: steps.changed_plots.outputs.changed_files != '' && steps.gcs_auth.outcome == 'success'
+        id: preview_urls
+        run: |
+          BUCKET="${{ secrets.GCS_BUCKET }}"
+          PR_NUM="${{ github.event.pull_request.number }}"
+
+          # Create markdown table with preview links
+          PREVIEW_TABLE="| Library | Spec | Variant | Preview |\n|---------|------|---------|----------|\n"
+
+          for file in preview_outputs/*.png; do
+            if [ -f "$file" ]; then
+              BASENAME=$(basename "$file" .png)
+              SPEC_ID=$(echo "$BASENAME" | cut -d'_' -f1-3)
+              LIBRARY=$(echo "$BASENAME" | cut -d'_' -f4)
+              VARIANT=$(echo "$BASENAME" | cut -d'_' -f5)
+
+              URL="https://storage.googleapis.com/${BUCKET}/previews/pr-${PR_NUM}/$(basename "$file")"
+              PREVIEW_TABLE+="| $LIBRARY | $SPEC_ID | $VARIANT | [View]($URL) |\n"
+            fi
+          done
+
+          # Save to file for comment
+          echo -e "$PREVIEW_TABLE" > preview_table.md
+
+      - name: Comment on PR with previews
+        if: steps.changed_plots.outputs.changed_files != '' && steps.gcs_auth.outcome == 'success'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const previewTable = fs.readFileSync('preview_table.md', 'utf8');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `## 🎨 Preview Images Generated
+
+            ${previewTable}
+
+            ---
+
+            *Generated by [test-and-preview workflow](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})*`
+            });
+
+      - name: Save preview metadata
+        if: steps.changed_plots.outputs.changed_files != ''
+        run: |
+          # Create metadata file for downstream workflows
+          cat > preview_metadata.json <<EOF
+          {
+            "pr_number": ${{ github.event.pull_request.number }},
+            "bucket": "${{ secrets.GCS_BUCKET }}",
+            "base_path": "previews/pr-${{ github.event.pull_request.number }}",
+            "changed_files": ${{ steps.changed_plots.outputs.changed_files }}
+          }
+          EOF
+
+      - name: Upload metadata artifact
+        if: steps.changed_plots.outputs.changed_files != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-metadata
+          path: preview_metadata.json

@@ -13,24 +13,13 @@ jobs:
       contents: write
       pull-requests: write
       issues: write
+      id-token: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-
-      - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-
-      - name: Install dependencies
-        run: |
-          uv pip install --system anthropic
+          fetch-depth: 0
 
       - name: Extract spec ID from issue
         id: extract_spec
@@ -61,14 +50,10 @@ jobs:
           SPEC_FILE="specs/${SPEC_ID}.md"
 
           if [ ! -f "$SPEC_FILE" ]; then
-            echo "❌ Spec file not found: $SPEC_FILE"
             echo "Creating spec file from issue..."
-
-            # Create spec file from issue body
             mkdir -p specs
             echo "${{ github.event.issue.body }}" > "$SPEC_FILE"
 
-            # Commit spec file
             git config --global user.name "github-actions[bot]"
             git config --global user.email "github-actions[bot]@users.noreply.github.com"
             git add "$SPEC_FILE"
@@ -77,37 +62,48 @@ jobs:
             echo "✅ Spec file exists: $SPEC_FILE"
           fi
 
-      - name: Generate matplotlib implementation
-        id: gen_matplotlib
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
+      - name: Generate implementations with Claude Code
+        id: generate
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            TASK: Generate plot implementations from specification
 
-          echo "🎨 Generating matplotlib implementation..."
-          python automation/generators/plot_generator.py "$SPEC_ID" matplotlib
+            SPEC_ID: ${{ steps.extract_spec.outputs.spec_id }}
+            ISSUE: #${{ github.event.issue.number }}
 
-          if [ $? -eq 0 ]; then
-            echo "status=success" >> $GITHUB_OUTPUT
-          else
-            echo "status=failed" >> $GITHUB_OUTPUT
-          fi
+            Instructions:
+            1. Read the spec file: specs/${{ steps.extract_spec.outputs.spec_id }}.md
+            2. Read generation rules: rules/generation/v1.0.0-draft/code-generation-rules.md
+            3. Read quality criteria: rules/generation/v1.0.0-draft/quality-criteria.md
+            4. Read self-review checklist: rules/generation/v1.0.0-draft/self-review-checklist.md
 
-      - name: Generate seaborn implementation
-        id: gen_seaborn
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
+            5. Generate matplotlib implementation:
+               - Target: plots/matplotlib/scatter/${{ steps.extract_spec.outputs.spec_id }}/default.py
+               - Follow generation rules exactly
+               - Implement all spec requirements
+               - Use type hints, docstrings, validation
+               - Add standalone execution block
+               - Self-review: Max 3 attempts to pass quality criteria
 
-          echo "🎨 Generating seaborn implementation..."
-          python automation/generators/plot_generator.py "$SPEC_ID" seaborn
+            6. Generate seaborn implementation:
+               - Target: plots/seaborn/scatterplot/${{ steps.extract_spec.outputs.spec_id }}/default.py
+               - Same requirements as matplotlib
 
-          if [ $? -eq 0 ]; then
-            echo "status=success" >> $GITHUB_OUTPUT
-          else
-            echo "status=failed" >> $GITHUB_OUTPUT
-          fi
+            7. Create summary in markdown format with:
+               - Libraries generated (matplotlib, seaborn)
+               - Self-review results for each
+               - File paths created
+               - Any issues encountered
+
+            IMPORTANT:
+            - Each implementation must pass self-review before moving to next
+            - Use deterministic sample data (fixed seeds or hardcoded data)
+            - Code must work standalone (no external files)
+            - Follow Python 3.10+ syntax
+
+            Output your work summary when complete.
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
@@ -117,9 +113,10 @@ jobs:
             feat: implement ${{ steps.extract_spec.outputs.spec_id }}
 
             Auto-generated implementations from issue #${{ github.event.issue.number }}
+            Generated using Claude Code with versioned rules (v1.0.0-draft)
 
-            - matplotlib: ${{ steps.gen_matplotlib.outputs.status }}
-            - seaborn: ${{ steps.gen_seaborn.outputs.status }}
+            - matplotlib implementation
+            - seaborn implementation
           branch: auto/${{ steps.extract_spec.outputs.spec_id }}
           title: "feat: implement ${{ steps.extract_spec.outputs.spec_id }}"
           body: |
@@ -128,24 +125,30 @@ jobs:
             This PR contains auto-generated code for **${{ steps.extract_spec.outputs.spec_id }}**
 
             **Source:** Issue #${{ github.event.issue.number }}
+            **Generated by:** Claude Code Action with versioned rules (v1.0.0-draft)
 
-            ### Generation Results
+            ### What was generated
 
-            | Library | Status | Self-Review |
-            |---------|--------|-------------|
-            | matplotlib | ${{ steps.gen_matplotlib.outputs.status }} | See logs |
-            | seaborn | ${{ steps.gen_seaborn.outputs.status }} | See logs |
+            - ✅ matplotlib implementation (`plots/matplotlib/scatter/${{ steps.extract_spec.outputs.spec_id }}/default.py`)
+            - ✅ seaborn implementation (`plots/seaborn/scatterplot/${{ steps.extract_spec.outputs.spec_id }}/default.py`)
 
             ### Next Steps
 
             - [ ] Review generated code
-            - [ ] Run tests (triggered automatically)
-            - [ ] Generate previews (triggered automatically)
-            - [ ] Quality check (triggered automatically)
+            - [ ] Run tests (triggered automatically on PR)
+            - [ ] Generate previews (triggered automatically on PR)
+            - [ ] Quality check (triggered automatically after previews)
+
+            ### Generation Process
+
+            1. ✅ Spec read from `specs/${{ steps.extract_spec.outputs.spec_id }}.md`
+            2. ✅ Generation rules applied from `rules/generation/v1.0.0-draft/`
+            3. ✅ Self-review loop completed (max 3 attempts per library)
+            4. ✅ Code committed to branch
 
             ---
 
-            *Generated by [spec-to-code workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*
+            *Generated by [Claude Code Action](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*
           labels: |
             code-generated
             auto-pr
@@ -156,25 +159,25 @@ jobs:
         with:
           script: |
             const specId = '${{ steps.extract_spec.outputs.spec_id }}';
-            const matplotlibStatus = '${{ steps.gen_matplotlib.outputs.status }}';
-            const seabornStatus = '${{ steps.gen_seaborn.outputs.status }}';
-
-            const statusEmoji = (status) => status === 'success' ? '✅' : '❌';
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `## 🤖 Code Generation Started
+              body: `## 🤖 Code Generation Complete
 
-            Generating implementations for **${specId}**...
+            Implementations for **${specId}** have been generated using Claude Code!
 
-            | Library | Status |
-            |---------|--------|
-            | matplotlib | ${statusEmoji(matplotlibStatus)} ${matplotlibStatus} |
-            | seaborn | ${statusEmoji(seabornStatus)} ${seabornStatus} |
+            **Generated:**
+            - ✅ matplotlib
+            - ✅ seaborn
 
-            A pull request will be created shortly with the generated code.
+            A pull request has been created with the generated code.
+
+            ### Next Steps
+            1. Multi-version tests will run automatically (Python 3.10-3.13)
+            2. Preview images will be generated
+            3. AI quality check will evaluate the implementations
 
             Check the [workflow run](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`
             });

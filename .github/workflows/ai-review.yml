@@ -1,0 +1,122 @@
+name: AI Review
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  ai-review:
+    # Nur wenn Copilot Review submitted wurde auf auto/ branches
+    if: |
+      github.event.review.user.login == 'github-copilot[bot]' &&
+      startsWith(github.event.pull_request.head.ref, 'auto/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract spec ID from branch
+        id: spec
+        run: |
+          # Extract spec-id from branch name (auto/scatter-basic-005)
+          SPEC_ID=$(echo "${{ github.event.pull_request.head.ref }}" | sed 's|auto/||')
+          echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "Spec ID: $SPEC_ID"
+
+      - name: Setup Google Cloud authentication
+        id: gcs_auth
+        continue-on-error: true
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCS_CREDENTIALS }}
+
+      - name: Download preview images
+        if: steps.gcs_auth.outcome == 'success'
+        run: |
+          mkdir -p preview_images
+          gsutil -m cp -r "gs://${{ secrets.GCS_BUCKET }}/previews/pr-${{ github.event.pull_request.number }}/*" preview_images/ || echo "No preview images found"
+
+      - name: Check attempt count
+        id: attempts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LABELS=$(gh pr view ${{ github.event.pull_request.number }} --json labels -q '.labels[].name' 2>/dev/null || echo "")
+
+          if echo "$LABELS" | grep -q "ai-attempt-3"; then
+            echo "count=3" >> $GITHUB_OUTPUT
+          elif echo "$LABELS" | grep -q "ai-attempt-2"; then
+            echo "count=2" >> $GITHUB_OUTPUT
+          elif echo "$LABELS" | grep -q "ai-attempt-1"; then
+            echo "count=1" >> $GITHUB_OUTPUT
+          else
+            echo "count=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Trigger Claude Quality Check
+        if: steps.attempts.outputs.count != '3'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const specId = '${{ steps.spec.outputs.spec_id }}';
+            const attempt = parseInt('${{ steps.attempts.outputs.count }}') + 1;
+            const prNumber = context.payload.pull_request.number;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: `@claude
+
+            ## 🎯 Task: AI Quality Review (Attempt ${attempt}/3)
+
+            Copilot has reviewed the code. Now evaluate if the implementation matches the specification.
+
+            ### Your Task
+
+            1. **Read the spec file**: \`specs/${specId}.md\`
+               - Understand all quality criteria listed
+               - Note the expected visual output
+
+            2. **Read the implementation files**:
+               - \`plots/matplotlib/scatter/${specId}/default.py\`
+               - \`plots/seaborn/scatterplot/${specId}/default.py\`
+
+            3. **View the preview images** in \`preview_images/\` directory
+               - Use your vision capabilities to analyze each image
+               - Compare with the spec requirements
+
+            4. **Score each implementation (0-100)**:
+               - Does it match ALL quality criteria from spec?
+               - Is the visual output correct?
+               - Is the code clean and follows best practices?
+
+            5. **Post your verdict**:
+               - If ALL implementations score ≥85:
+                 - Post "✅ AI REVIEW APPROVED"
+                 - Run: \`gh pr edit ${prNumber} --add-label ai-approved\`
+               - If ANY implementation scores <85:
+                 - Post detailed feedback for regeneration
+                 - Run: \`gh pr edit ${prNumber} --add-label ai-attempt-${attempt}\`
+                 - If attempt < 3: regenerate the failing implementation
+                 - If attempt 3: Run \`gh pr edit ${prNumber} --add-label ai-failed\`
+
+            Be specific and actionable in your feedback!`
+            });
+
+      - name: Mark as failed after 3 attempts
+        if: steps.attempts.outputs.count == '3'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "ai-failed"
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --body "❌ AI Review failed after 3 attempts. Manual review required."

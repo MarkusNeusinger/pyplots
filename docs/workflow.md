@@ -96,8 +96,8 @@ n8n monitors social media daily → AI extracts plot ideas → Creates GitHub is
 ### Flow 2: Code Generation
 Approved issue → Claude generates implementation code with self-review loop (max 3 attempts) → Creates Pull Request
 
-### Flow 3: Multi-Version Testing
-PR created → GitHub Actions tests across Python 3.10+ → GitHub Copilot reviews code → Reports results
+### Flow 3: Copilot Review + Multi-Version Testing
+PR created → `copilot-review.yml` requests @copilot review (general code quality) → `test-and-preview.yml` runs tests across Python 3.10+ → Reports results
 
 ### Flow 4: Preview Generation
 Tests passed → GitHub Action generates PNG → Uploads to GCS with lifecycle management → Stores code hash for verification
@@ -105,11 +105,14 @@ Tests passed → GitHub Action generates PNG → Uploads to GCS with lifecycle m
 ### Flow 4.5: Auto-Tagging
 Preview uploaded → AI analyzes code + spec + image → Generates 5-level tag hierarchy → Stores in PostgreSQL with confidence scores
 
-### Flow 5: Quality Assurance
-Preview uploaded → Multi-LLM evaluation (Claude + Gemini + GPT) → Score ≥85 required → On rejection: feedback loop (max 3 attempts) → Quality report posted to GitHub Issue
+### Flow 5: AI Review
+Copilot Review submitted → `ai-review.yml` triggers → Claude evaluates Spec ↔ Code ↔ Preview → Score ≥85 required → On rejection: feedback loop (max 3 attempts) → Labels: `ai-approved` or `ai-failed`
+
+### Flow 5.5: Auto-Merge
+PR labeled `ai-approved` → `auto-merge.yml` triggers → Automatic squash merge
 
 ### Flow 6: Deployment & Maintenance
-Approved plots → Deploy to Cloud Run → Publicly visible on website → Event-based maintenance (LLM/library updates) → A/B test improvements
+Merged to main → Deploy to Cloud Run → Publicly visible on website → Event-based maintenance (LLM/library updates) → A/B test improvements
 
 ### Flow 7: Social Media Promotion
 Deployed plot → Added to promotion queue (prioritized by quality score) → n8n posts 2x/day at 10 AM & 3 PM CET → Claude generates content → Posts to X with preview image

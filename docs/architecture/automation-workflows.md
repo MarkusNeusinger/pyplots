@@ -13,9 +13,11 @@ pyplots uses a **hybrid automation strategy** combining GitHub Actions (for code
 | Workflow | Platform | Trigger | Frequency | Why This Platform? |
 |----------|----------|---------|-----------|-------------------|
 | **Code Generation** | GitHub Actions | Issue labeled `approved` | On-demand | Native GitHub integration, version-controlled |
+| **Copilot Review** | GitHub Actions | PR opened (auto/ branches) | On-demand | General code quality check |
 | **Multi-Version Testing** | GitHub Actions | PR opened/updated | On-demand | Included in GitHub Pro, transparent |
 | **Preview Generation** | GitHub Actions | Tests passed | On-demand | Needs code checkout, GCS upload |
-| **Quality Check (Multi-LLM)** | GitHub Actions | Preview uploaded | On-demand | Vertex AI access, needs GCS image |
+| **AI Review** | GitHub Actions | Copilot Review submitted | On-demand | Claude evaluates Spec ↔ Code ↔ Preview |
+| **Auto-Merge** | GitHub Actions | PR labeled `ai-approved` | On-demand | Automatic squash merge |
 | **Deployment** | GitHub Actions | PR merged to main | On-demand | Native CI/CD, Cloud Run deployment |
 | **Social Media Monitoring** | n8n | Scheduled (daily) | 1x/day | Twitter/Reddit API integration |
 | **Social Media Posting** | n8n | Scheduled (twice daily) | 2x/day at 10 AM & 3 PM CET | X API, promotion queue management |
@@ -247,7 +249,7 @@ jobs:
           # 2. Views preview images with vision
           # 3. Evaluates against quality criteria
           # 4. Posts quality report as comment
-          # 5. Adds label: quality-approved or quality-check-failed
+          # 5. Adds label: ai-approved or ai-failed
 ```
 
 **Evaluation Process**:
@@ -271,7 +273,7 @@ jobs:
 
 **Outputs**:
 - Quality report as PR comment
-- Label: `quality-approved` or `quality-check-failed`
+- Label: `ai-approved` or `ai-failed`
 - Live evaluation visible in Claude Code Web
 
 ---
@@ -519,9 +521,9 @@ stateDiagram-v2
 - `approved` - Ready for code generation
 - `code-generated` - PR created
 - `testing` - Tests running
-- `quality-check` - LLM evaluation in progress
-- `quality-failed-attempt-1/2/3` - Failed quality check
-- `quality-approved` - Ready for merge
+- `ai-attempt-1/2/3` - AI Review attempt count
+- `ai-approved` - AI Review passed, ready for auto-merge
+- `ai-failed` - AI Review failed after 3 attempts
 - `deployed` - Live on pyplots.ai
 - `rejected` - Not viable
 
@@ -689,7 +691,7 @@ sequenceDiagram
     GHA->>Claude: Quality check
     Claude-->>GHA: Score: 92 (APPROVED)
     GHA->>Issues: Post feedback (Approved!)
-    GHA->>Issues: Add label "quality-approved"
+    GHA->>Issues: Add label "ai-approved"
 
     Person->>Issues: Merge PR #124
     GHA->>API: Deploy to Cloud Run

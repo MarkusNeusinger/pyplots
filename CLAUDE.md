@@ -4,7 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Important Rules
 
-- **Do NOT commit or push** - Never run `git commit` or `git push` automatically. Always let the user review changes and commit/push manually.
+- **Do NOT commit or push in interactive sessions** - When working with a user interactively, never run `git commit` or `git push` automatically. Always let the user review changes and commit/push manually.
+- **GitHub Actions workflows ARE allowed to commit/push** - When running as part of `spec-to-code.yml` or other automated workflows, creating branches, commits, and PRs is expected and required.
 
 ## Project Overview
 

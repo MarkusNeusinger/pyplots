@@ -40,7 +40,9 @@ jobs:
           fi
 
           PR_NUMBER=$(jq -r '.pr_number' preview_metadata.json)
+          ISSUE_NUMBER=$(jq -r '.issue_number' preview_metadata.json)
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
           echo "skip=false" >> $GITHUB_OUTPUT
 
       - name: Get PR details
@@ -113,6 +115,7 @@ jobs:
             const specId = '${{ steps.pr.outputs.spec_id }}';
             const attempt = parseInt('${{ steps.attempts.outputs.count }}') + 1;
             const prNumber = ${{ steps.metadata.outputs.pr_number }};
+            const issueNumber = '${{ steps.metadata.outputs.issue_number }}';
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -127,31 +130,50 @@ jobs:
             ### Your Task
 
             1. **Read the spec file**: \`specs/${specId}.md\`
-               - Understand all quality criteria listed
-               - Note the expected visual output
+               - Note all quality criteria listed
+               - Understand the expected visual output
 
             2. **Read the implementation files**:
-               - \`plots/matplotlib/scatter/${specId}/default.py\`
-               - \`plots/seaborn/scatterplot/${specId}/default.py\`
+               - \`plots/matplotlib/*/${specId}/default.py\`
+               - \`plots/seaborn/*/${specId}/default.py\`
 
             3. **View the preview images** in \`preview_images/\` directory
                - Use your vision capabilities to analyze each image
                - Compare with the spec requirements
 
-            4. **Score each implementation (0-100)**:
-               - Does it match ALL quality criteria from spec?
-               - Is the visual output correct?
-               - Is the code clean and follows best practices?
+            4. **Evaluate against spec requirements** and create a checklist
 
-            5. **Post your verdict**:
-               - If ALL implementations score ≥85:
-                 - Post "✅ AI REVIEW APPROVED"
+            5. **Post your verdict to Issue #${issueNumber}** using this format:
+
+            \`\`\`markdown
+            ## 🔍 Quality Check
+
+            ### Status: [✅ Approved | ⚠️ Needs Work | ❌ Rejected]
+
+            ### Spec Requirements
+            - [x] Requirement 1 from spec
+            - [x] Requirement 2 from spec
+            - [ ] Requirement 3 ← Issue here
+
+            ### Details
+            {Detailed analysis of what's good and what needs improvement}
+
+            ### Recommendation
+            {If not approved: specific actionable steps to fix}
+            \`\`\`
+
+            6. **Take action based on result**:
+               - **✅ Approved** (all requirements met):
                  - Run: \`gh pr edit ${prNumber} --add-label ai-approved\`
-               - If ANY implementation scores <85:
-                 - Post detailed feedback for regeneration
+                 - Run: \`gh issue comment ${issueNumber} --body "...quality check result..."\`
+               - **⚠️ Needs Work** (minor issues, attempt < 3):
+                 - Run: \`gh pr edit ${prNumber} --add-label needs-work\`
                  - Run: \`gh pr edit ${prNumber} --add-label ai-attempt-${attempt}\`
-                 - If attempt < 3: regenerate the failing implementation
-                 - If attempt 3: Run \`gh pr edit ${prNumber} --add-label ai-failed\`
+                 - Run: \`gh issue comment ${issueNumber} --body "...quality check result..."\`
+                 - Attempt to fix the issues
+               - **❌ Rejected** (major issues or attempt 3):
+                 - Run: \`gh pr edit ${prNumber} --add-label ai-rejected\`
+                 - Run: \`gh issue comment ${issueNumber} --body "...quality check result..."\`
 
             Be specific and actionable in your feedback!`
             });
@@ -161,6 +183,22 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr edit ${{ steps.metadata.outputs.pr_number }} --add-label "ai-failed"
-          gh pr comment ${{ steps.metadata.outputs.pr_number }} \
-            --body "❌ AI Review failed after 3 attempts. Manual review required."
+          ISSUE_NUM="${{ steps.metadata.outputs.issue_number }}"
+          PR_NUM="${{ steps.metadata.outputs.pr_number }}"
+
+          gh pr edit "$PR_NUM" --add-label "ai-rejected"
+
+          # Post to Issue
+          gh issue comment "$ISSUE_NUM" --body "## 🔍 Quality Check
+
+          ### Status: ❌ Rejected
+
+          AI Review failed after 3 attempts. Manual review required.
+
+          **PR:** #$PR_NUM
+
+          ---
+          🤖 *Automated quality check*"
+
+          # Post to PR
+          gh pr comment "$PR_NUM" --body "❌ AI Review failed after 3 attempts. Manual review required."

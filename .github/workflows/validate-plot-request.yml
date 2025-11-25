@@ -159,9 +159,17 @@ jobs:
             🤖 *Automated validation by Claude Code*
             ```
 
+            #### Step 6: Update issue title with spec ID (if NEW)
+
+            After posting the comment, update the issue title to include the spec ID in brackets:
+            - Use: `gh issue edit ${{ github.event.issue.number }} --title "ORIGINAL_TITLE [{new-spec-id}]"`
+            - Example: "Plot: Basic bar chart" → "Plot: Basic bar chart [bar-basic]"
+            - This makes issues searchable by spec ID
+
             ### Important Notes
             - Do NOT create any files - only analyze and comment
             - Do NOT add or remove labels
             - Use `gh issue comment ${{ github.event.issue.number }} --body "..."` to post comment
+            - Use `gh issue edit ${{ github.event.issue.number }} --title "..."` to update title (only for NEW specs)
             - Be helpful and constructive in feedback
             - If the request is unclear, ask for clarification in the comment

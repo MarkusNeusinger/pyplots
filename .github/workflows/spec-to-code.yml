@@ -41,18 +41,28 @@ jobs:
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_TITLE: ${{ github.event.issue.title }}
         run: |
-          # Try to extract spec ID from title (format: "scatter-basic-001: Title" or just "scatter-basic-001")
-          # Case-insensitive, allows 3-4 digits, converts to lowercase
-          SPEC_ID=$(echo "$ISSUE_TITLE" | grep -oiP '^[a-z]+-[a-z]+-\d{3,4}' | tr '[:upper:]' '[:lower:]' || echo "")
+          # Extract spec ID from issue comments (assigned by validate-plot-request workflow)
+          # Look for "**Assigned ID:** `spec-id`" pattern in comments
+          SPEC_ID=$(gh issue view ${{ github.event.issue.number }} --json comments -q '.comments[].body' | \
+            grep -oP '\*\*Assigned ID:\*\* `\K[a-z0-9-]+(?=`)' | tail -1 || echo "")
 
           if [ -z "$SPEC_ID" ]; then
-            # Try to find spec ID in body (look for markdown heading like "# scatter-basic-001:")
-            SPEC_ID=$(echo "$ISSUE_BODY" | grep -oiP '^#\s*\K[a-z]+-[a-z]+-\d{3,4}' | tr '[:upper:]' '[:lower:]' || echo "")
+            # Fallback: Try to extract from title (format: "spec-id: Title" or just "spec-id")
+            # New format: {type}-{variant}-{modifier} (no numbers required)
+            # Examples: scatter-basic, scatter-color-mapped, heatmap-correlation
+            SPEC_ID=$(echo "$ISSUE_TITLE" | grep -oiP '^[a-z]+-[a-z]+(-[a-z0-9]+)?' | tr '[:upper:]' '[:lower:]' || echo "")
+          fi
+
+          if [ -z "$SPEC_ID" ]; then
+            # Try legacy format with numbers for backwards compatibility
+            SPEC_ID=$(echo "$ISSUE_TITLE" | grep -oiP '^[a-z]+-[a-z]+-\d{3,4}' | tr '[:upper:]' '[:lower:]' || echo "")
           fi
 
           if [ -z "$SPEC_ID" ]; then
             echo "❌ Could not extract spec ID from issue"
-            echo "Expected format: {type}-{variant}-{001-9999}"
+            echo "Expected: Assigned ID in comments (from validate-plot-request workflow)"
+            echo "Or title format: {type}-{variant}-{modifier}"
+            echo "Examples: scatter-basic, scatter-color-mapped, heatmap-correlation"
             exit 1
           fi
 

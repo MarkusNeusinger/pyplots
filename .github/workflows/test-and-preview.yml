@@ -37,7 +37,12 @@ jobs:
 
       - name: Run tests
         run: |
-          uv run pytest tests/ -v --cov=plots --cov-report=xml --cov-report=term
+          # Run tests with coverage if plots directory exists, otherwise just run tests
+          if [ -d "plots" ]; then
+            uv run pytest tests/ -v --cov=plots --cov-report=xml --cov-report=term
+          else
+            uv run pytest tests/ -v
+          fi
 
       - name: Upload coverage
         if: matrix.python-version == '3.12'

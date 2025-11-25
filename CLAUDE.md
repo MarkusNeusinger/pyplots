@@ -72,12 +72,30 @@ specs/{spec-id}.md → plots/{library}/{plot-type}/{spec-id}/default.py
 
 Example:
 ```
-specs/scatter-basic-001.md  → plots/matplotlib/scatter/scatter-basic-001/default.py
-                            → plots/seaborn/scatterplot/scatter-basic-001/default.py
-                            → plots/plotly/scatter/scatter-basic-001/default.py
+specs/scatter-basic.md  → plots/matplotlib/scatter/scatter-basic/default.py
+                        → plots/seaborn/scatterplot/scatter-basic/default.py
+                        → plots/plotly/scatter/scatter-basic/default.py
 ```
 
 The same spec ID links implementations across all libraries.
+
+### Spec ID Naming Convention
+
+**Format:** `{plot-type}-{variant}-{modifier}` (all lowercase, hyphens only)
+
+- `plot-type`: Main visualization type (scatter, bar, line, heatmap, histogram, box, violin, pie, etc.)
+- `variant`: Main characteristic (basic, grouped, stacked, horizontal, 3d, multi, etc.)
+- `modifier`: Optional additional feature (regression, animated, interactive, annotated, etc.)
+
+**Examples:**
+- `scatter-basic` - Simple 2D scatter plot
+- `scatter-color-mapped` - Scatter with color encoding
+- `scatter-regression-linear` - Scatter with trend line
+- `bar-grouped-horizontal` - Horizontal grouped bars
+- `heatmap-correlation` - Correlation matrix heatmap
+- `line-timeseries-multi` - Multiple time series
+
+**Note:** Legacy specs may use numbered format (`scatter-basic-001`). Both formats are supported.
 
 ### Directory Structure
 
@@ -147,7 +165,9 @@ def create_plot(data: pd.DataFrame, x: str, y: str, **kwargs) -> Figure:
 
 ### File Naming Conventions
 
-**Spec IDs**: `{type}-{variant}-{number}` (e.g., `scatter-basic-001`)
+**Spec IDs**: `{type}-{variant}-{modifier}` (e.g., `scatter-basic`, `heatmap-correlation`)
+- No numbers needed - descriptive names scale better
+- See "Spec ID Naming Convention" section above for details
 
 **Implementation Variants**:
 - `default.py`: Standard implementation (required)
@@ -264,14 +284,23 @@ The project uses a structured labeling system to organize different types of iss
 
 ### Plot Request Workflow Example
 
-1. User creates issue titled `scatter-advanced-002: 3D scatter with rotation`
+1. User creates issue with descriptive title (e.g., "3D scatter plot with rotation animation")
 2. Add `plot-request` label
-3. Maintainer reviews and adds `approved` label
-4. `spec-to-code.yml` workflow automatically triggers
-5. Claude Code generates implementations and creates PR
-6. Tests run automatically on PR
-7. Multi-LLM quality check evaluates code
-8. Maintainer reviews and merges
+3. **`validate-plot-request.yml` automatically runs:**
+   - Analyzes the request against existing specs
+   - Checks for duplicates or similar plots
+   - Assigns a spec ID (e.g., `scatter-3d-animated`) as a comment
+   - Or flags as duplicate with link to existing spec
+4. Maintainer reviews and adds `approved` label
+5. `spec-to-code.yml` workflow automatically triggers
+   - Reads assigned spec ID from comments
+   - Creates spec file and implementations
+6. Claude Code generates implementations and creates PR
+7. Tests run automatically on PR
+8. Multi-LLM quality check evaluates code
+9. Maintainer reviews and merges
+
+**Note:** Users no longer need to specify the spec ID in the title - Claude will analyze the request and assign an appropriate ID automatically.
 
 ## Environment Variables
 
@@ -290,11 +319,11 @@ See `.env.example` for full list.
 
 ### Adding a New Plot Type
 
-1. Create GitHub Issue with spec description (title format: `{spec-id}: Description`)
+1. Create GitHub Issue with descriptive title (e.g., "Grouped bar chart with error bars")
 2. Add label `plot-request`
-3. Maintainer reviews and adds `approved` label
-4. AI automatically generates spec file in `specs/` (if needed)
-5. AI generates implementations for matplotlib and seaborn
+3. `validate-plot-request.yml` automatically assigns a spec ID (e.g., `bar-grouped-errorbars`)
+4. Maintainer reviews and adds `approved` label
+5. AI automatically generates spec file in `specs/` and implementations
 6. Multi-LLM quality check runs automatically on PR
 7. Human reviews PR and merges
 

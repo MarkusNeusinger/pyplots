@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Important Rules
+
+- **Do NOT commit or push** - Never run `git commit` or `git push` automatically. Always let the user review changes and commit/push manually.
+
 ## Project Overview
 
 **pyplots** is an AI-powered platform for Python data visualization that automatically discovers, generates, tests, and maintains plotting examples. The platform is specification-driven: every plot starts as a library-agnostic Markdown spec, then AI generates implementations for matplotlib, seaborn, plotly, and other libraries.

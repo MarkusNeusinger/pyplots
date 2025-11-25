@@ -1,0 +1,134 @@
+name: Link Sub-Issue
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  link-sub-issue:
+    # Only run for issues with "plot-update" label
+    if: contains(github.event.issue.labels.*.name, 'plot-update')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Extract parent issue number
+        id: extract
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          # Extract parent issue number from body (looks for #XX pattern)
+          PARENT_NUM=$(echo "$ISSUE_BODY" | grep -oP '#\d+' | head -1 | tr -d '#' || echo "")
+
+          if [ -z "$PARENT_NUM" ]; then
+            echo "No parent issue found in body"
+            echo "has_parent=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "parent_num=$PARENT_NUM" >> $GITHUB_OUTPUT
+          echo "has_parent=true" >> $GITHUB_OUTPUT
+          echo "Found parent issue: #$PARENT_NUM"
+
+      - name: Get issue node IDs
+        if: steps.extract.outputs.has_parent == 'true'
+        id: get_ids
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PARENT_NUM="${{ steps.extract.outputs.parent_num }}"
+          CHILD_NUM="${{ github.event.issue.number }}"
+
+          # Get parent issue node ID
+          PARENT_ID=$(gh api graphql -f query='
+            query($owner: String!, $repo: String!, $number: Int!) {
+              repository(owner: $owner, name: $repo) {
+                issue(number: $number) {
+                  id
+                }
+              }
+            }
+          ' -f owner="${{ github.repository_owner }}" -f repo="${{ github.event.repository.name }}" -F number="$PARENT_NUM" --jq '.data.repository.issue.id' || echo "")
+
+          # Get child issue node ID
+          CHILD_ID=$(gh api graphql -f query='
+            query($owner: String!, $repo: String!, $number: Int!) {
+              repository(owner: $owner, name: $repo) {
+                issue(number: $number) {
+                  id
+                }
+              }
+            }
+          ' -f owner="${{ github.repository_owner }}" -f repo="${{ github.event.repository.name }}" -F number="$CHILD_NUM" --jq '.data.repository.issue.id' || echo "")
+
+          echo "parent_id=$PARENT_ID" >> $GITHUB_OUTPUT
+          echo "child_id=$CHILD_ID" >> $GITHUB_OUTPUT
+
+          if [ -z "$PARENT_ID" ] || [ -z "$CHILD_ID" ]; then
+            echo "Could not get issue IDs"
+            echo "valid=false" >> $GITHUB_OUTPUT
+          else
+            echo "valid=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create sub-issue relationship
+        if: steps.extract.outputs.has_parent == 'true' && steps.get_ids.outputs.valid == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+        run: |
+          PARENT_ID="${{ steps.get_ids.outputs.parent_id }}"
+          CHILD_ID="${{ steps.get_ids.outputs.child_id }}"
+
+          # Create sub-issue relationship
+          gh api graphql -f query='
+            mutation($parentId: ID!, $subIssueId: ID!) {
+              addSubIssue(input: {
+                issueId: $parentId
+                subIssueId: $subIssueId
+              }) {
+                issue {
+                  id
+                }
+              }
+            }
+          ' -f parentId="$PARENT_ID" -f subIssueId="$CHILD_ID" || echo "Sub-issue API not available or failed"
+
+      - name: Post comment on parent issue
+        if: steps.extract.outputs.has_parent == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PARENT_NUM="${{ steps.extract.outputs.parent_num }}"
+          CHILD_NUM="${{ github.event.issue.number }}"
+          CHILD_TITLE="${{ github.event.issue.title }}"
+
+          gh issue comment "$PARENT_NUM" --body "## 🔄 Update Requested
+
+          A new update has been requested for this plot:
+
+          **Update Issue:** #$CHILD_NUM
+          **Title:** $CHILD_TITLE
+
+          ---
+          🤖 *Automated link by pyplots CI*"
+
+      - name: Post confirmation on child issue
+        if: steps.extract.outputs.has_parent == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PARENT_NUM="${{ steps.extract.outputs.parent_num }}"
+          CHILD_NUM="${{ github.event.issue.number }}"
+
+          gh issue comment "$CHILD_NUM" --body "## 🔗 Linked to Parent
+
+          This update request has been linked to the original plot request:
+
+          **Parent Issue:** #$PARENT_NUM
+
+          A maintainer will review this update request.
+
+          ---
+          🤖 *Automated link by pyplots CI*"

@@ -1,0 +1,71 @@
+name: Plot Update
+description: Request changes or improvements to an existing plot
+title: "Update: "
+labels: ["plot-update"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Plot Update Request
+
+        Use this form to request changes to an existing plot implementation.
+        This will be linked as a sub-issue to the original plot request.
+
+  - type: input
+    id: parent_issue
+    attributes:
+      label: Original Plot Request
+      description: "Issue number of the original plot-request (e.g., #24)"
+      placeholder: "#24"
+    validations:
+      required: true
+
+  - type: input
+    id: spec_id
+    attributes:
+      label: Spec ID
+      description: "The spec ID of the plot to update (e.g., bar-basic)"
+      placeholder: "bar-basic"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: update_type
+    attributes:
+      label: Type of Update
+      description: What kind of change is this?
+      options:
+        - Bug Fix (plot doesn't render correctly)
+        - Visual Improvement (styling, colors, layout)
+        - Feature Addition (new parameter, option)
+        - Performance (faster rendering, less memory)
+        - Code Quality (refactoring, better practices)
+        - Documentation (docstrings, comments)
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_behavior
+    attributes:
+      label: Current Behavior
+      description: Describe what the plot currently does
+      placeholder: "The bar chart currently shows labels overlapping when there are many categories..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: desired_behavior
+    attributes:
+      label: Desired Behavior
+      description: Describe what you want the plot to do instead
+      placeholder: "Labels should be rotated 45 degrees to prevent overlap, or use a horizontal layout..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context (optional)
+      description: Screenshots, code snippets, or other relevant information
+    validations:
+      required: false

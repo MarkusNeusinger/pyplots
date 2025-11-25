@@ -1,21 +1,70 @@
 name: Plot Request
 description: Propose a new plot type for pyplots
-title: "[spec-id]: "
+title: ""
 labels: ["plot-request"]
 body:
   - type: markdown
     attributes:
       value: |
-        ## Plot-Vorschlag
-        Beschreibe kurz, welchen Plot du dir wünschst. Die AI generiert daraus eine vollständige Spezifikation.
+        ## New Plot Proposal
 
-        **Titel-Format:** `scatter-basic-001: Deine Kurzbeschreibung`
+        Describe the plot you'd like to see. Our AI will:
+        1. Check for similar existing plots
+        2. Assign a descriptive spec ID (e.g., `scatter-regression-linear`)
+        3. Generate implementations once approved
+
+        **No need to specify an ID** - just describe what you want!
 
   - type: textarea
     id: description
     attributes:
-      label: Was soll der Plot zeigen?
-      description: 1-2 Sätze reichen
-      placeholder: "Ein Scatter-Plot mit Regressionslinie, der Korrelationen zwischen zwei Variablen visualisiert."
+      label: What should this plot show?
+      description: Describe the visualization you need (1-3 sentences)
+      placeholder: "A scatter plot with a linear regression line that shows the correlation between two variables, including confidence intervals."
     validations:
       required: true
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use Cases (optional)
+      description: When would someone use this plot?
+      placeholder: |
+        - Analyzing relationship between marketing spend and sales
+        - Visualizing correlation in scientific experiments
+    validations:
+      required: false
+
+  - type: dropdown
+    id: plot_type
+    attributes:
+      label: Plot Category
+      description: What type of visualization is this?
+      options:
+        - Scatter / Point
+        - Line / Time Series
+        - Bar / Column
+        - Histogram / Distribution
+        - Heatmap / Matrix
+        - Box / Violin
+        - Pie / Donut
+        - Area / Stacked
+        - 3D Plot
+        - Other
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: features
+    attributes:
+      label: Desired Features (optional)
+      description: Select any special features you'd like
+      options:
+        - label: Color mapping (encode additional variable)
+        - label: Size mapping (encode additional variable)
+        - label: Annotations / Labels
+        - label: Trend line / Regression
+        - label: Error bars / Confidence intervals
+        - label: Interactive (hover, zoom)
+        - label: Animation
+        - label: Multiple subplots / Facets

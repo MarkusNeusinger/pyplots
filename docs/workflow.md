@@ -14,8 +14,8 @@ pyplots is a **community-driven, AI-powered platform** that automatically discov
 
 ### Key Principles
 
-1. **Images in GCS, Code in GitHub**: Preview PNGs stored in Google Cloud Storage with lifecycle management, source code version-controlled
-2. **Multi-Version Support**: All plots tested across Python 3.10+ (3.10, 3.11, 3.12, 3.13)
+1. **Images in GCS, Code in GitHub**: Plot PNGs stored in Google Cloud Storage with version history, source code version-controlled
+2. **Multi-Version Support**: All plots tested across Python 3.11+ (3.11, 3.12, 3.13, 3.14 primary)
 3. **Hybrid Automation**: AI handles routine tasks, humans approve critical decisions
 4. **Standard Datasets**: Use well-known datasets (pandas iris, seaborn tips, kaggle) for realistic previews
 5. **Event-Based Optimization**: Update plots when LLM/library versions change, not on fixed schedules
@@ -97,8 +97,8 @@ Approved issue → Claude generates implementation code with self-review loop (m
 ### Flow 3: Multi-Version Testing
 PR created → `test-and-preview.yml` runs tests across Python 3.10+ → Reports results
 
-### Flow 4: Preview Generation
-Tests passed → GitHub Action generates PNG → Uploads to GCS with lifecycle management → Stores code hash for verification
+### Flow 4: Plot Image Generation
+Tests passed → GitHub Action generates PNG + thumbnail → Uploads to GCS with versioned paths (`plots/{spec-id}/{library}/{variant}/v{timestamp}.png`) → Stores previous version for before/after comparison
 
 ### Flow 4.5: Auto-Tagging
 Preview uploaded → AI analyzes code + spec + image → Generates 5-level tag hierarchy → Stores in PostgreSQL with confidence scores
@@ -226,9 +226,11 @@ Via **GitHub Issue Labels**:
    - Avoid redundant evaluations
 
 2. **Efficient Storage**:
-   - GCS lifecycle: current version stays, old versions auto-deleted 30 days after new version uploaded
+   - GCS versioning: all versions kept permanently for history tracking
+   - Path structure: `plots/{spec-id}/{library}/{variant}/v{ISO-timestamp}.png`
+   - Thumbnails: `v{timestamp}_thumb.png` (400px width) for gallery views
    - Images never in git repository
-   - Compress PNGs before upload
+   - Before/after comparison in Issues for updates
 
 3. **Smart Scheduling**:
    - Event-based maintenance (not daily scheduled)
@@ -297,14 +299,20 @@ Via **GitHub Issue Labels**:
 
 ### Multi-Version Testing
 
-**Python Versions Supported**: 3.10+ (tested on 3.10, 3.11, 3.12, 3.13)
+**Python Versions Supported**: 3.11+ (tested on 3.11, 3.12, 3.13, 3.14)
+
+**Primary Version**: Python 3.14 (required to pass, generates plot images)
 
 **Testing Infrastructure**:
 ```yaml
 # GitHub Actions Matrix Strategy
 strategy:
   matrix:
-    python-version: ['3.13', '3.12', '3.11', '3.10']
+    python-version: ['3.11', '3.12', '3.13', '3.14']
+  fail-fast: false
+
+# Python 3.14 is required to pass - older versions are compatibility tests
+continue-on-error: ${{ matrix.python-version != '3.14' }}
 ```
 
 **Test Triggers**:
@@ -313,14 +321,14 @@ strategy:
 - Not on every commit (saves resources)
 
 **Version Compatibility Documentation**:
-- Metadata field: `supported_versions`
-- Examples: `"all"`, `"3.12+"`, `"3.10-3.12"`
-- No separate code files per version (simplified approach)
+- Code optimized for Python 3.14 (newest)
+- Older versions (3.11-3.13) run as compatibility tests
+- Failures in older versions don't block the PR
 
 **Test Requirements**:
-- All tests must pass for at least one Python version
-- Prefer universal code that works across all versions
-- Document version restrictions if necessary
+- Python 3.14 tests must pass (primary)
+- Plot images only generated with Python 3.14
+- Older version failures logged but don't block merge
 
 ---
 
@@ -408,13 +416,13 @@ This workflow ensures:
 ✅ **Fully Automated** pipeline from discovery to deployment to promotion
 ✅ **Multi-Layer Quality Control**:
    - Self-review loop in code generation (max 3 attempts)
-   - Multi-version testing across Python 3.10-3.13
+   - Multi-version testing across Python 3.11-3.14 (3.14 primary)
    - Multi-LLM consensus validation (Claude + Gemini + GPT)
    - Feedback-driven optimization on rejection
 ✅ **Only High-Quality Plots on Website**: Failed attempts never publicly visible
 ✅ **Automated Marketing**: Queue-based social media promotion with smart rate limiting (max 2 posts/day)
 ✅ **Cost-Conscious** design leveraging existing subscriptions
-✅ **Smart Storage** with GCS lifecycle management (current version stays, old deleted after 30d)
+✅ **Smart Storage** with versioned GCS paths (all versions kept for history)
 ✅ **Deterministic & Reproducible**: Same code = same image every time
 ✅ **Community-Driven** with AI curation and human oversight
 ✅ **Event-Based Maintenance** for continuous improvement

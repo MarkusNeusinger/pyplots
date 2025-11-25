@@ -2,7 +2,7 @@ name: AI Review
 
 on:
   workflow_run:
-    workflows: ["Test and Generate Previews"]
+    workflows: ["Test and Generate Plots"]
     types: [completed]
 
 jobs:
@@ -23,26 +23,28 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download preview metadata
+      - name: Download plot metadata
         uses: actions/download-artifact@v4
         with:
-          name: preview-metadata
+          name: plot-metadata
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Load metadata
         id: metadata
         run: |
-          if [ ! -f preview_metadata.json ]; then
-            echo "No preview metadata found, skipping AI review"
+          if [ ! -f plot_metadata.json ]; then
+            echo "No plot metadata found, skipping AI review"
             echo "skip=true" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          PR_NUMBER=$(jq -r '.pr_number' preview_metadata.json)
-          ISSUE_NUMBER=$(jq -r '.issue_number' preview_metadata.json)
+          PR_NUMBER=$(jq -r '.pr_number' plot_metadata.json)
+          ISSUE_NUMBER=$(jq -r '.issue_number' plot_metadata.json)
+          TIMESTAMP=$(jq -r '.timestamp' plot_metadata.json)
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
           echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
           echo "skip=false" >> $GITHUB_OUTPUT
 
       - name: Get PR details
@@ -75,11 +77,24 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCS_CREDENTIALS }}
 
-      - name: Download preview images
+      - name: Setup gcloud CLI
+        if: steps.pr.outputs.skip != 'true' && steps.gcs_auth.outcome == 'success'
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Download plot images
         if: steps.pr.outputs.skip != 'true' && steps.gcs_auth.outcome == 'success'
         run: |
-          mkdir -p preview_images
-          gsutil -m cp -r "gs://${{ secrets.GCS_BUCKET }}/previews/pr-${{ steps.metadata.outputs.pr_number }}/*" preview_images/ || echo "No preview images found"
+          SPEC_ID="${{ steps.pr.outputs.spec_id }}"
+          TIMESTAMP="${{ steps.metadata.outputs.timestamp }}"
+
+          mkdir -p plot_images
+
+          # Download plot images for this spec from all libraries
+          gsutil -m cp -r "gs://${{ secrets.GCS_BUCKET }}/plots/${SPEC_ID}/**/*v${TIMESTAMP}*.png" plot_images/ 2>/dev/null || echo "No plot images found"
+
+          # List downloaded images
+          echo "📊 Downloaded plot images:"
+          find plot_images -name "*.png" -type f 2>/dev/null || echo "No images found"
 
       - name: Check attempt count
         if: steps.pr.outputs.skip != 'true'
@@ -137,7 +152,7 @@ jobs:
                - \`plots/matplotlib/*/${specId}/default.py\`
                - \`plots/seaborn/*/${specId}/default.py\`
 
-            3. **View the preview images** in \`preview_images/\` directory
+            3. **View the plot images** in \`plot_images/\` directory
                - Use your vision capabilities to analyze each image
                - Compare with the spec requirements
 

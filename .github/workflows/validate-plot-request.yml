@@ -10,8 +10,11 @@ concurrency:
 
 jobs:
   validate-and-assign-id:
-    # Only run for issues with "plot-request" label
-    if: contains(github.event.issue.labels.*.name, 'plot-request')
+    # Only run for issues with "plot-request" label AND no spec ID in title yet
+    # Spec ID format: [some-spec-id] at end of title
+    if: |
+      contains(github.event.issue.labels.*.name, 'plot-request') &&
+      !contains(github.event.issue.title, '[')
     runs-on: ubuntu-latest
     permissions:
       contents: read

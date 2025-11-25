@@ -38,6 +38,7 @@ jobs:
       - name: Extract spec ID from issue
         id: extract_spec
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_TITLE: ${{ github.event.issue.title }}
         run: |

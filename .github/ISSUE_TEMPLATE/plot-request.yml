@@ -52,7 +52,7 @@ body:
         - 3D Plot
         - Other
     validations:
-      required: true
+      required: false
 
   - type: checkboxes
     id: features

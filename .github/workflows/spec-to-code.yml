@@ -42,15 +42,29 @@ jobs:
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_TITLE: ${{ github.event.issue.title }}
         run: |
+          # Check if issue was marked as duplicate
+          COMMENTS=$(gh issue view ${{ github.event.issue.number }} --json comments -q '.comments[].body')
+
+          if echo "$COMMENTS" | grep -q "Duplicate Detected"; then
+            echo "❌ This issue was marked as a duplicate by validate-plot-request workflow"
+            echo "Please review the duplicate notice and either:"
+            echo "  1. Use the existing spec mentioned in the comment"
+            echo "  2. Update the issue with unique requirements and re-run validation"
+            exit 1
+          fi
+
           # Extract spec ID from issue comments (assigned by validate-plot-request workflow)
           # Look for "**Assigned ID:** `spec-id`" pattern in comments
-          SPEC_ID=$(gh issue view ${{ github.event.issue.number }} --json comments -q '.comments[].body' | \
-            grep -oP '\*\*Assigned ID:\*\* `\K[a-z0-9-]+(?=`)' | tail -1 || echo "")
+          SPEC_ID=$(echo "$COMMENTS" | grep -oP '\*\*Assigned ID:\*\* `\K[a-z0-9-]+(?=`)' | tail -1 || echo "")
+
+          if [ -z "$SPEC_ID" ]; then
+            # Fallback: Check for existing spec reference (for duplicates that should use existing)
+            SPEC_ID=$(echo "$COMMENTS" | grep -oP '\*\*Existing Spec:\*\* `\K[a-z0-9-]+(?=`)' | tail -1 || echo "")
+          fi
 
           if [ -z "$SPEC_ID" ]; then
             # Fallback: Try to extract from title (format: "spec-id: Title" or just "spec-id")
             # New format: {type}-{variant}-{modifier} (no numbers required)
-            # Examples: scatter-basic, scatter-color-mapped, heatmap-correlation
             SPEC_ID=$(echo "$ISSUE_TITLE" | grep -oiP '^[a-z]+-[a-z]+(-[a-z0-9]+)?' | tr '[:upper:]' '[:lower:]' || echo "")
           fi
 

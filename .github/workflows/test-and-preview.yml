@@ -272,10 +272,10 @@ jobs:
               continue
             fi
 
-            # Generate thumbnail (400px width, maintain aspect ratio)
-            echo "🖼️  Generating thumbnail..."
-            uv run python -c "from PIL import Image; img = Image.open('$FULL_FILE'); ratio = 400 / img.width; new_size = (400, int(img.height * ratio)); thumb = img.resize(new_size, Image.Resampling.LANCZOS); thumb.save('$THUMB_FILE', optimize=True, quality=85); print(f'Thumbnail: {new_size[0]}x{new_size[1]}px')"
-            echo "✅ Thumbnail: $THUMB_FILE"
+            # Process image: add watermark and generate thumbnail
+            echo "🖼️  Processing image (watermark + thumbnail)..."
+            uv run python -m core.images process "$FULL_FILE" "$FULL_FILE" "$THUMB_FILE"
+            echo "✅ Processed: $FULL_FILE + $THUMB_FILE"
           done
 
       - name: Upload plots to GCS

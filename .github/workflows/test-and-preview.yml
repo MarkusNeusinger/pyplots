@@ -320,12 +320,15 @@ jobs:
                 if [ -n "$PREV_URL" ] && [ "$PREV_URL" != "null" ]; then
                   # UPDATE: Show before/after comparison
                   NEW_COUNT=$((PREV_COUNT + 1))
+                  TABLE_HEADER="| Before | After |"
+                  TABLE_SEP="|--------|-------|"
+                  TABLE_ROW="| ![Before](${PREV_URL}) | ![After](${NEW_URL}) |"
                   PLOT_MARKDOWN="${PLOT_MARKDOWN}
 ### ${LIBRARY} (${VARIANT}) - UPDATE
 
-| Before | After |
-|--------|-------|
-| ![Before](${PREV_URL}) | ![After](${NEW_URL}) |
+${TABLE_HEADER}
+${TABLE_SEP}
+${TABLE_ROW}
 
 [View version history (${NEW_COUNT} versions)](${HISTORY_URL})
 "
@@ -343,15 +346,21 @@ jobs:
             PLOT_MARKDOWN=$(cat plot_markdown.txt 2>/dev/null || echo "")
           fi
 
-          # Create comment body
+          # Create comment body - use variables to avoid YAML pipe issues
+          TBL_HDR="| Python | Status | Note |"
+          TBL_SEP="|--------|--------|------|"
+          TBL_R1="| 3.14   | ✅ Pass | Primary (plot generated) |"
+          TBL_R2="| 3.13   | ℹ️ See workflow | Compatibility test |"
+          TBL_R3="| 3.12   | ℹ️ See workflow | Compatibility test |"
+          TBL_R4="| 3.11   | ℹ️ See workflow | Compatibility test |"
           COMMENT_BODY="## 🧪 Test Results (PR #${PR_NUM})
 
-| Python | Status | Note |
-|--------|--------|------|
-| 3.14   | ✅ Pass | Primary (plot generated) |
-| 3.13   | ℹ️ See workflow | Compatibility test |
-| 3.12   | ℹ️ See workflow | Compatibility test |
-| 3.11   | ℹ️ See workflow | Compatibility test |
+${TBL_HDR}
+${TBL_SEP}
+${TBL_R1}
+${TBL_R2}
+${TBL_R3}
+${TBL_R4}
 
 **Note:** Code is optimized for Python 3.14. Older versions may not be compatible.
 

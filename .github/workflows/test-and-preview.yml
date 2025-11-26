@@ -274,7 +274,7 @@ jobs:
 
             # Generate thumbnail (400px width, maintain aspect ratio)
             echo "🖼️  Generating thumbnail..."
-            uv run python -c "
+            uv run python << PYTHON_SCRIPT
 from PIL import Image
 img = Image.open('$FULL_FILE')
 ratio = 400 / img.width
@@ -282,7 +282,7 @@ new_size = (400, int(img.height * ratio))
 thumb = img.resize(new_size, Image.Resampling.LANCZOS)
 thumb.save('$THUMB_FILE', optimize=True, quality=85)
 print(f'   Thumbnail: {new_size[0]}x{new_size[1]}px')
-"
+PYTHON_SCRIPT
             echo "✅ Thumbnail: $THUMB_FILE"
           done
 

@@ -1,4 +1,4 @@
-name: Gen: Update Plot (Repair Loop)
+name: "Gen: Update Plot (Repair Loop)"
 
 on:
   pull_request:

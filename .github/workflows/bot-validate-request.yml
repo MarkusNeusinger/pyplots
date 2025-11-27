@@ -1,4 +1,4 @@
-name: Bot: Validate Plot Request
+name: "Bot: Validate Plot Request"
 run-name: "Validate: ${{ github.event.issue.title || 'Manual trigger' }}"
 
 on:

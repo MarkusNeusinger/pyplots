@@ -1,4 +1,4 @@
-name: Bot: AI Review
+name: "Bot: AI Review"
 
 on:
   workflow_run:

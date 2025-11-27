@@ -1,4 +1,4 @@
-name: Gen: New Plot
+name: "Gen: New Plot"
 run-name: "Generate: ${{ github.event.issue.title }}"
 
 on:

@@ -1,0 +1,13 @@
+# Force LF line endings for all text files
+* text=auto eol=lf
+
+# Explicitly set line endings for specific files
+*.yml text eol=lf
+*.yaml text eol=lf
+*.md text eol=lf
+*.py text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.sh text eol=lf

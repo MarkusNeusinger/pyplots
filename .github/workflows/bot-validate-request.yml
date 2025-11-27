@@ -9,7 +9,7 @@ on:
         required: true
         type: string
   issues:
-    types: [opened, edited, labeled]
+    types: [labeled]
 
 concurrency:
   group: validate-plot-request-${{ github.event.issue.number || github.run_id }}

@@ -103,6 +103,19 @@ jobs:
         run: |
           echo "ℹ️ No plot files changed in this PR - skipping tests"
 
+      - name: Save test results
+        if: always()
+        run: |
+          mkdir -p test-results
+          echo "${{ matrix.python-version }},${{ steps.test_execution.outcome || 'skipped' }}" > test-results/result-${{ matrix.python-version }}.txt
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.python-version }}
+          path: test-results/
+
   generate-plots:
     name: Generate Plots and Post to Issue
     needs: test-plots
@@ -113,6 +126,43 @@ jobs:
       issues: write
 
     steps:
+      - name: Download all test results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: test-results-*
+          path: all-test-results
+          merge-multiple: true
+
+      - name: Parse test results
+        id: test_results
+        run: |
+          echo "Parsing test results..."
+
+          get_status() {
+            local version=$1
+            local file="all-test-results/result-${version}.txt"
+            if [ -f "$file" ]; then
+              outcome=$(cut -d',' -f2 "$file")
+              if [ "$outcome" == "success" ]; then
+                echo "pass"
+              elif [ "$outcome" == "skipped" ]; then
+                echo "skip"
+              else
+                echo "fail"
+              fi
+            else
+              echo "unknown"
+            fi
+          }
+
+          echo "py314=$(get_status 3.14)" >> $GITHUB_OUTPUT
+          echo "py313=$(get_status 3.13)" >> $GITHUB_OUTPUT
+          echo "py312=$(get_status 3.12)" >> $GITHUB_OUTPUT
+          echo "py311=$(get_status 3.11)" >> $GITHUB_OUTPUT
+
+          echo "Results parsed:"
+          cat all-test-results/*.txt 2>/dev/null || echo "No results found"
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -268,78 +318,92 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
           TIMESTAMP: ${{ steps.timestamp.outputs.value }}
+          PY314: ${{ steps.test_results.outputs.py314 }}
+          PY313: ${{ steps.test_results.outputs.py313 }}
+          PY312: ${{ steps.test_results.outputs.py312 }}
+          PY311: ${{ steps.test_results.outputs.py311 }}
         shell: bash
         run: |
           ISSUE_NUM="${{ steps.get_issue.outputs.issue_num }}"
           PR_NUM="${{ github.event.pull_request.number }}"
-          
+
+          # Helper function to format status
+          format_status() {
+            case "$1" in
+              pass) echo "✅ Pass" ;;
+              fail) echo "❌ Fail" ;;
+              skip) echo "⏭️ Skip" ;;
+              *) echo "❓ Unknown" ;;
+            esac
+          }
+
+          STATUS_314=$(format_status "$PY314")
+          STATUS_313=$(format_status "$PY313")
+          STATUS_312=$(format_status "$PY312")
+          STATUS_311=$(format_status "$PY311")
+
+          # Build plot images markdown
           touch plot_markdown.txt
-          
+
           if [ "${{ steps.gcs_auth.outcome }}" == "success" ]; then
             PREV_VERSIONS=$(cat previous_versions.json)
-          
+
             echo '${{ steps.changed_plots.outputs.changed_files }}' | jq -r '.[]' | while read -r file; do
               if [[ $file =~ ^plots/([^/]+)/([^/]+)/([^/]+)/([^/]+)\.py$ ]]; then
                 LIBRARY="${BASH_REMATCH[1]}"
                 SPEC_ID="${BASH_REMATCH[3]}"
                 VARIANT="${BASH_REMATCH[4]}"
-          
+
                 KEY="${SPEC_ID}_${LIBRARY}_${VARIANT}"
                 NEW_URL="https://storage.googleapis.com/${GCS_BUCKET}/plots/${SPEC_ID}/${LIBRARY}/${VARIANT}/v${TIMESTAMP}.png"
                 HISTORY_URL="https://console.cloud.google.com/storage/browser/${GCS_BUCKET}/plots/${SPEC_ID}/${LIBRARY}/${VARIANT}"
-          
+
                 PREV_URL=$(echo "$PREV_VERSIONS" | jq -r --arg key "$KEY" '.[$key].url // empty')
                 PREV_COUNT=$(echo "$PREV_VERSIONS" | jq -r --arg key "$KEY" '.[$key].count // 0')
-          
+
                 if [ -n "$PREV_URL" ] && [ "$PREV_URL" != "null" ]; then
                   NEW_COUNT=$((PREV_COUNT + 1))
-                  # ACHTUNG: PLOTEOF muss am Zeilenanfang stehen!
-                  cat >> plot_markdown.txt << 'PLOTEOF'
-          ### ${LIBRARY} (${VARIANT}) - UPDATE
-          
-          | Before | After |
-          |--------|-------|
-          | ![Before](${PREV_URL}) | ![After](${NEW_URL}) |
-          
-          [View version history (${NEW_COUNT} versions)](${HISTORY_URL})
-          PLOTEOF
-                  # Sed with | delimiter to act safely on URLs
-                  sed -i "s|\${LIBRARY}|${LIBRARY}|g; s|\${VARIANT}|${VARIANT}|g; s|\${PREV_URL}|${PREV_URL}|g; s|\${NEW_URL}|${NEW_URL}|g; s|\${NEW_COUNT}|${NEW_COUNT}|g; s|\${HISTORY_URL}|${HISTORY_URL}|g" plot_markdown.txt
+                  echo "### ${LIBRARY} (${VARIANT}) - UPDATE" >> plot_markdown.txt
+                  echo "" >> plot_markdown.txt
+                  echo "| Before | After |" >> plot_markdown.txt
+                  echo "|--------|-------|" >> plot_markdown.txt
+                  echo "| ![Before](${PREV_URL}) | ![After](${NEW_URL}) |" >> plot_markdown.txt
+                  echo "" >> plot_markdown.txt
+                  echo "[View version history (${NEW_COUNT} versions)](${HISTORY_URL})" >> plot_markdown.txt
                 else
-                  cat >> plot_markdown.txt << 'PLOTEOF'
-          ### ${LIBRARY} (${VARIANT}) - NEW
-          
-          ![${LIBRARY} ${VARIANT}](${NEW_URL})
-          PLOTEOF
-                  sed -i "s|\${LIBRARY}|${LIBRARY}|g; s|\${VARIANT}|${VARIANT}|g; s|\${NEW_URL}|${NEW_URL}|g" plot_markdown.txt
+                  echo "### ${LIBRARY} (${VARIANT}) - NEW" >> plot_markdown.txt
+                  echo "" >> plot_markdown.txt
+                  echo "![${LIBRARY} ${VARIANT}](${NEW_URL})" >> plot_markdown.txt
                 fi
+                echo "" >> plot_markdown.txt
               fi
             done
           fi
-          
+
           PLOT_MARKDOWN=$(cat plot_markdown.txt 2>/dev/null || echo "")
-          
-          # ACHTUNG: COMMENTEOF muss am Zeilenanfang stehen!
-          cat > comment_body.md << COMMENTEOF
-          ## 🧪 Test Results (PR #${PR_NUM})
-          
-          | Python | Status | Note |
-          |--------|--------|------|
-          | 3.14   | ✅ Pass | Primary (plot generated) |
-          | 3.13   | ℹ️ See workflow | Compatibility test |
-          | 3.12   | ℹ️ See workflow | Compatibility test |
-          | 3.11   | ℹ️ See workflow | Compatibility test |
-          
-          **Note:** Code is optimized for Python 3.14.
-          
-          ## 📊 Plot (Python 3.14)
-          ${PLOT_MARKDOWN}
-          
-          ---
-          🤖 *Generated by [test-and-preview workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*
-          COMMENTEOF
-          
+
+          # Build comment body
+          {
+            echo "## 🧪 Test Results (PR #${PR_NUM})"
+            echo ""
+            echo "| Python | Status | Note |"
+            echo "|--------|--------|------|"
+            echo "| 3.14   | ${STATUS_314} | Primary (plot generated) |"
+            echo "| 3.13   | ${STATUS_313} | Compatibility test |"
+            echo "| 3.12   | ${STATUS_312} | Compatibility test |"
+            echo "| 3.11   | ${STATUS_311} | Compatibility test |"
+            echo ""
+            echo "**Note:** Code is optimized for Python 3.14."
+            echo ""
+            echo "## 📊 Plot (Python 3.14)"
+            echo "${PLOT_MARKDOWN}"
+            echo ""
+            echo "---"
+            echo "🤖 *Generated by [test-and-preview workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+          } > comment_body.md
+
           gh issue comment "$ISSUE_NUM" --body-file comment_body.md
+          echo "✅ Posted results to issue #$ISSUE_NUM"
 
       - name: Save plot metadata
         if: steps.changed_plots.outputs.has_plots == 'true'
@@ -347,18 +411,15 @@ jobs:
           GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
           TIMESTAMP: ${{ steps.timestamp.outputs.value }}
         run: |
-          # ACHTUNG: EOF muss am Zeilenanfang stehen!
-          cat > plot_metadata.json <<EOF
-          {
-            "pr_number": ${{ github.event.pull_request.number }},
-            "issue_number": "${{ steps.get_issue.outputs.issue_num }}",
-            "bucket": "${GCS_BUCKET}",
-            "base_path": "plots",
-            "timestamp": "${TIMESTAMP}",
-            "python_version": "3.14",
-            "changed_files": ${{ steps.changed_plots.outputs.changed_files }}
-          }
-          EOF
+          echo '{' > plot_metadata.json
+          echo '  "pr_number": ${{ github.event.pull_request.number }},' >> plot_metadata.json
+          echo '  "issue_number": "${{ steps.get_issue.outputs.issue_num }}",' >> plot_metadata.json
+          echo '  "bucket": "'"${GCS_BUCKET}"'",' >> plot_metadata.json
+          echo '  "base_path": "plots",' >> plot_metadata.json
+          echo '  "timestamp": "'"${TIMESTAMP}"'",' >> plot_metadata.json
+          echo '  "python_version": "3.14",' >> plot_metadata.json
+          echo '  "changed_files": ${{ steps.changed_plots.outputs.changed_files }}' >> plot_metadata.json
+          echo '}' >> plot_metadata.json
 
       - name: Upload metadata artifact
         if: steps.changed_plots.outputs.has_plots == 'true'

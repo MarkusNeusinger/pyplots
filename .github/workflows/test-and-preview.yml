@@ -303,7 +303,7 @@ jobs:
             fi
           
             echo "🖼️  Processing image..."
-            uv run python -m core.images process "$FULL_FILE" "$FULL_FILE" "$THUMB_FILE"
+            uv run python -m core.images process "$FULL_FILE" "$FULL_FILE" "$THUMB_FILE" "$SPEC_ID"
           done
 
       - name: Upload plots to GCS

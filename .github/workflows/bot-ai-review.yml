@@ -1,13 +1,13 @@
-name: AI Review
+name: Bot: AI Review
 
 on:
   workflow_run:
-    workflows: ["Test and Generate Plots"]
+    workflows: ["Generate Plot Previews"]
     types: [completed]
 
 jobs:
   ai-review:
-    # Nur wenn Tests erfolgreich waren
+    # Only run when preview generation was successful
     if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     permissions:
@@ -158,39 +158,43 @@ jobs:
 
             4. **Evaluate against spec requirements** and create a checklist
 
-            5. **Post your verdict to Issue #${issueNumber}** using this format:
+            5. **IMPORTANT: Post your verdict to Issue #${issueNumber}** (NOT the PR!) using this format:
 
             \`\`\`markdown
-            ## 🔍 Quality Check
+            ## 🤖 AI Review (PR #${prNumber})
 
-            ### Status: [✅ Approved | ⚠️ Needs Work | ❌ Rejected]
+            ### Status: ✅ Approved / ❌ Rejected
+
+            ### Evaluation
+            | Criterion | Score |
+            |-----------|-------|
+            | Code Quality | X/10 |
+            | Spec Conformity | X/10 |
+            | Visual Quality | X/10 |
 
             ### Spec Requirements
             - [x] Requirement 1 from spec
             - [x] Requirement 2 from spec
             - [ ] Requirement 3 ← Issue here
 
-            ### Details
-            {Detailed analysis of what's good and what needs improvement}
+            ### Improvement Suggestions (for future updates)
+            - [ ] Suggestion 1 (even if approved, note areas for improvement)
+            - [ ] Suggestion 2
 
-            ### Recommendation
-            {If not approved: specific actionable steps to fix}
+            ### Critical Issues (only if rejected)
+            - Issue 1 that must be fixed
+            - Issue 2 that must be fixed
             \`\`\`
 
             6. **Take action based on result**:
-               - **✅ Approved** (all requirements met):
+               - **✅ Approved** (score >= 7/10 on all criteria):
                  - Run: \`gh pr edit ${prNumber} --add-label ai-approved\`
-                 - Run: \`gh issue comment ${issueNumber} --body "...quality check result..."\`
-               - **⚠️ Needs Work** (minor issues, attempt < 3):
-                 - Run: \`gh pr edit ${prNumber} --add-label needs-work\`
-                 - Run: \`gh pr edit ${prNumber} --add-label ai-attempt-${attempt}\`
-                 - Run: \`gh issue comment ${issueNumber} --body "...quality check result..."\`
-                 - Attempt to fix the issues
-               - **❌ Rejected** (major issues or attempt 3):
+                 - Post review to Issue #${issueNumber} (include suggestions for future updates)
+               - **❌ Rejected** (any score < 7/10):
                  - Run: \`gh pr edit ${prNumber} --add-label ai-rejected\`
-                 - Run: \`gh issue comment ${issueNumber} --body "...quality check result..."\`
+                 - Post review to Issue #${issueNumber} (include specific fixes needed)
 
-            Be specific and actionable in your feedback!`
+            **Remember:** The Issue is the permanent knowledge base. Include all feedback there, even if approved!`
             });
 
       - name: Mark as failed after 3 attempts

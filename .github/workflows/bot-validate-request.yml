@@ -1,4 +1,4 @@
-name: Validate Plot Request
+name: Bot: Validate Plot Request
 
 on:
   issues:

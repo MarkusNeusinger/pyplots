@@ -1,4 +1,4 @@
-name: Generate Code from Spec
+name: Gen: New Plot
 
 on:
   issues:

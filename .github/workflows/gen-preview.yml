@@ -1,137 +1,31 @@
-name: Plot Tests and Preview
+name: Generate Plot Previews
 
 on:
-  pull_request:
-    types: [ opened, synchronize, reopened ]
-    paths:
-      - 'plots/**/*.py'
-      - 'specs/**/*.md'
+  workflow_run:
+    workflows: ["Plot Tests"]
+    types:
+      - completed
 
 jobs:
-  test-plots:
-    name: Test Plots on Python ${{ matrix.python-version }}
+  generate-previews:
+    name: Generate Previews and Post to Issue
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [ '3.11', '3.12', '3.13', '3.14' ]
-      fail-fast: false
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-
-      - name: Install dependencies
-        run: |
-          uv sync --all-extras
-
-      - name: Find changed plot files
-        id: changed_plots
-        run: |
-          # Get list of changed Python files in plots/
-          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'plots/**/*.py' || echo "")
-
-          if [ -z "$CHANGED_FILES" ]; then
-            echo "No plot files changed"
-            echo "has_plots=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          echo "has_plots=true" >> $GITHUB_OUTPUT
-          echo "files<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-          echo "Changed plot files:"
-          echo "$CHANGED_FILES"
-
-      - name: Test plot execution
-        id: test_execution
-        if: steps.changed_plots.outputs.has_plots == 'true'
-        # Only Python 3.14 is required to pass - older versions are compatibility tests
-        continue-on-error: ${{ matrix.python-version != '3.14' }}
-        run: |
-          echo "🧪 Testing plot files on Python ${{ matrix.python-version }}"
-
-          FAILED=0
-          PASSED=0
-
-          while IFS= read -r file; do
-            if [ -z "$file" ]; then continue; fi
-
-            echo ""
-            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            echo "📊 Testing: $file"
-            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-            # Run with non-interactive backend
-            if MPLBACKEND=Agg uv run python "$file" 2>&1; then
-              echo "✅ PASSED: $file"
-              PASSED=$((PASSED + 1))
-            else
-              echo "❌ FAILED: $file"
-              FAILED=$((FAILED + 1))
-            fi
-          done <<< "${{ steps.changed_plots.outputs.files }}"
-
-          echo ""
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "📋 Summary: $PASSED passed, $FAILED failed"
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-          # Save results for later aggregation
-          echo "passed=$PASSED" >> $GITHUB_OUTPUT
-          echo "failed=$FAILED" >> $GITHUB_OUTPUT
-
-          if [ $FAILED -gt 0 ]; then
-            echo "::error::$FAILED plot(s) failed execution on Python ${{ matrix.python-version }}"
-            exit 1
-          fi
-
-      - name: Skip message
-        if: steps.changed_plots.outputs.has_plots != 'true'
-        run: |
-          echo "ℹ️ No plot files changed in this PR - skipping tests"
-
-      - name: Save test results
-        if: always()
-        run: |
-          mkdir -p test-results
-          echo "${{ matrix.python-version }},${{ steps.test_execution.outcome || 'skipped' }}" > test-results/result-${{ matrix.python-version }}.txt
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results-${{ matrix.python-version }}
-          path: test-results/
-
-  generate-plots:
-    name: Generate Plots and Post to Issue
-    needs: test-plots
-    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: read
       pull-requests: write
       issues: write
+      actions: read
 
     steps:
-      - name: Download all test results
+      - name: Download test results
         uses: actions/download-artifact@v4
         with:
           pattern: test-results-*
           path: all-test-results
           merge-multiple: true
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Parse test results
         id: test_results
@@ -163,9 +57,19 @@ jobs:
           echo "Results parsed:"
           cat all-test-results/*.txt 2>/dev/null || echo "No results found"
 
+      - name: Get PR number from workflow run
+        id: get_pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }} --jq '.pull_requests[0].number')
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "Found PR: #$PR_NUMBER"
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
 
       - name: Set up Python 3.14
@@ -186,34 +90,36 @@ jobs:
       - name: Find changed plot files
         id: changed_plots
         run: |
-          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'plots/**/*.py' || echo "")
-          
+          # Get the base branch from the PR
+          BASE_SHA=${{ github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.pull_requests[0].base.sha || 'origin/main' }}
+          CHANGED_FILES=$(git diff --name-only $BASE_SHA...${{ github.event.workflow_run.head_sha }} -- 'plots/**/*.py' || echo "")
+
           if [ -z "$CHANGED_FILES" ]; then
             echo "No plot files changed"
             echo "has_plots=false" >> $GITHUB_OUTPUT
             exit 0
           fi
-          
+
           echo "has_plots=true" >> $GITHUB_OUTPUT
-          # JSON Array sicher erstellen
           CHANGED_ARRAY=$(echo "$CHANGED_FILES" | jq -R -s -c 'split("\n") | map(select(length > 0))')
           echo "changed_files=$CHANGED_ARRAY" >> $GITHUB_OUTPUT
 
       - name: Extract issue number from PR
         id: get_issue
-        if: steps.changed_plots.outputs.has_plots == 'true'
+        if: steps.changed_plots.outputs.has_plots == 'true' && steps.get_pr.outputs.pr_number != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR_BODY=$(gh pr view ${{ github.event.pull_request.number }} --json body -q '.body')
+          PR_BODY=$(gh pr view ${{ steps.get_pr.outputs.pr_number }} --json body -q '.body')
           ISSUE_NUM=$(echo "$PR_BODY" | grep -oP '#\K\d+' | head -1 || echo "")
-          
+
           if [ -z "$ISSUE_NUM" ]; then
-            BRANCH="${{ github.head_ref }}"
+            # Try to find issue by branch name
+            BRANCH=$(gh pr view ${{ steps.get_pr.outputs.pr_number }} --json headRefName -q '.headRefName')
             SPEC_ID=$(echo "$BRANCH" | sed 's/auto\///')
             ISSUE_NUM=$(gh issue list --label plot-request --search "$SPEC_ID in:title" --json number -q '.[0].number' || echo "")
           fi
-          
+
           echo "issue_num=$ISSUE_NUM" >> $GITHUB_OUTPUT
           echo "Found issue: #$ISSUE_NUM"
 
@@ -245,11 +151,11 @@ jobs:
         run: |
           mkdir -p plot_outputs
           echo "{}" > previous_versions.json
-          
+
           echo '${{ steps.changed_plots.outputs.changed_files }}' | jq -r '.[]' | while read -r file; do
             echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             echo "📊 Processing: $file"
-          
+
             if [[ $file =~ ^plots/([^/]+)/([^/]+)/([^/]+)/([^/]+)\.py$ ]]; then
               LIBRARY="${BASH_REMATCH[1]}"
               PLOT_TYPE="${BASH_REMATCH[2]}"
@@ -259,24 +165,24 @@ jobs:
               echo "⚠️  Invalid file path format: $file"
               continue
             fi
-          
+
             OUTPUT_DIR="plot_outputs/${SPEC_ID}/${LIBRARY}/${VARIANT}"
             mkdir -p "$OUTPUT_DIR"
             FULL_FILE="${OUTPUT_DIR}/v${TIMESTAMP}.png"
             THUMB_FILE="${OUTPUT_DIR}/v${TIMESTAMP}_thumb.png"
-          
+
             PREVIOUS_URL=""
             VERSION_COUNT=0
-          
+
             if [ "$GCS_AUTH_SUCCESS" == "success" ] && [ -n "$GCS_BUCKET" ]; then
               GCS_PATH="gs://${GCS_BUCKET}/plots/${SPEC_ID}/${LIBRARY}/${VARIANT}/"
               VERSIONS=$(gsutil ls "${GCS_PATH}v*.png" 2>/dev/null | grep -v "_thumb" | sort || echo "")
-          
+
               if [ -n "$VERSIONS" ]; then
                 VERSION_COUNT=$(echo "$VERSIONS" | wc -l)
                 PREVIOUS_GCS=$(echo "$VERSIONS" | tail -1)
                 PREVIOUS_URL=$(echo "$PREVIOUS_GCS" | sed "s|gs://${GCS_BUCKET}|https://storage.googleapis.com/${GCS_BUCKET}|")
-          
+
                 jq --arg key "${SPEC_ID}_${LIBRARY}_${VARIANT}" \
                    --arg url "$PREVIOUS_URL" \
                    --arg count "$VERSION_COUNT" \
@@ -284,10 +190,10 @@ jobs:
                    previous_versions.json > tmp.json && mv tmp.json previous_versions.json
               fi
             fi
-          
+
             echo "🎨 Generating plot..."
             MPLBACKEND=Agg uv run python "$file" 2>&1 | tee "${OUTPUT_DIR}/generation.log"
-          
+
             FOUND_IMAGE=false
             for img in "plot.png" "test_output.png" "output.png" "${SPEC_ID}.png" "preview.png"; do
               if [ -f "$img" ]; then
@@ -296,12 +202,12 @@ jobs:
                 break
               fi
             done
-          
+
             if [ "$FOUND_IMAGE" == "false" ]; then
               echo "⚠️  No output image found for $file"
               continue
             fi
-          
+
             echo "🖼️  Processing image..."
             uv run python -m core.images process "$FULL_FILE" "$FULL_FILE" "$THUMB_FILE" "$SPEC_ID"
           done
@@ -321,44 +227,42 @@ jobs:
         shell: bash
         run: |
           ISSUE_NUM="${{ steps.get_issue.outputs.issue_num }}"
-          PR_NUM="${{ github.event.pull_request.number }}"
-          
+          PR_NUM="${{ steps.get_pr.outputs.pr_number }}"
+
           touch plot_markdown.txt
-          
+
           if [ "${{ steps.gcs_auth.outcome }}" == "success" ]; then
             PREV_VERSIONS=$(cat previous_versions.json)
-          
+
             echo '${{ steps.changed_plots.outputs.changed_files }}' | jq -r '.[]' | while read -r file; do
               if [[ $file =~ ^plots/([^/]+)/([^/]+)/([^/]+)/([^/]+)\.py$ ]]; then
                 LIBRARY="${BASH_REMATCH[1]}"
                 SPEC_ID="${BASH_REMATCH[3]}"
                 VARIANT="${BASH_REMATCH[4]}"
-          
+
                 KEY="${SPEC_ID}_${LIBRARY}_${VARIANT}"
                 NEW_URL="https://storage.googleapis.com/${GCS_BUCKET}/plots/${SPEC_ID}/${LIBRARY}/${VARIANT}/v${TIMESTAMP}.png"
                 HISTORY_URL="https://console.cloud.google.com/storage/browser/${GCS_BUCKET}/plots/${SPEC_ID}/${LIBRARY}/${VARIANT}"
-          
+
                 PREV_URL=$(echo "$PREV_VERSIONS" | jq -r --arg key "$KEY" '.[$key].url // empty')
                 PREV_COUNT=$(echo "$PREV_VERSIONS" | jq -r --arg key "$KEY" '.[$key].count // 0')
-          
+
                 if [ -n "$PREV_URL" ] && [ "$PREV_URL" != "null" ]; then
                   NEW_COUNT=$((PREV_COUNT + 1))
-                  # ACHTUNG: PLOTEOF muss am Zeilenanfang stehen!
                   cat >> plot_markdown.txt << 'PLOTEOF'
           ### ${LIBRARY} (${VARIANT}) - UPDATE
-          
+
           | Before | After |
           |--------|-------|
           | ![Before](${PREV_URL}) | ![After](${NEW_URL}) |
-          
+
           [View version history (${NEW_COUNT} versions)](${HISTORY_URL})
           PLOTEOF
-                  # Sed with | delimiter to act safely on URLs
                   sed -i "s|\${LIBRARY}|${LIBRARY}|g; s|\${VARIANT}|${VARIANT}|g; s|\${PREV_URL}|${PREV_URL}|g; s|\${NEW_URL}|${NEW_URL}|g; s|\${NEW_COUNT}|${NEW_COUNT}|g; s|\${HISTORY_URL}|${HISTORY_URL}|g" plot_markdown.txt
                 else
                   cat >> plot_markdown.txt << 'PLOTEOF'
           ### ${LIBRARY} (${VARIANT}) - NEW
-          
+
           ![${LIBRARY} ${VARIANT}](${NEW_URL})
           PLOTEOF
                   sed -i "s|\${LIBRARY}|${LIBRARY}|g; s|\${VARIANT}|${VARIANT}|g; s|\${NEW_URL}|${NEW_URL}|g" plot_markdown.txt
@@ -367,29 +271,28 @@ jobs:
               fi
             done
           fi
-          
+
           PLOT_MARKDOWN=$(cat plot_markdown.txt 2>/dev/null || echo "")
-          
-          # ACHTUNG: COMMENTEOF muss am Zeilenanfang stehen!
+
           cat > comment_body.md << COMMENTEOF
           ## 🧪 Test Results (PR #${PR_NUM})
-          
+
           | Python | Status | Note |
           |--------|--------|------|
           | 3.14   | ✅ Pass | Primary (plot generated) |
           | 3.13   | ℹ️ See workflow | Compatibility test |
           | 3.12   | ℹ️ See workflow | Compatibility test |
           | 3.11   | ℹ️ See workflow | Compatibility test |
-          
+
           **Note:** Code is optimized for Python 3.14.
-          
-          ## 📊 Plot (Python 3.14)
+
+          ## 📊 Plot Preview (Python 3.14)
           ${PLOT_MARKDOWN}
-          
+
           ---
-          🤖 *Generated by [test-and-preview workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*
+          🤖 *Generated by [gen-preview workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*
           COMMENTEOF
-          
+
           gh issue comment "$ISSUE_NUM" --body-file comment_body.md
 
       - name: Save plot metadata
@@ -398,10 +301,9 @@ jobs:
           GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
           TIMESTAMP: ${{ steps.timestamp.outputs.value }}
         run: |
-          # ACHTUNG: EOF muss am Zeilenanfang stehen!
           cat > plot_metadata.json <<EOF
           {
-            "pr_number": ${{ github.event.pull_request.number }},
+            "pr_number": ${{ steps.get_pr.outputs.pr_number }},
             "issue_number": "${{ steps.get_issue.outputs.issue_num }}",
             "bucket": "${GCS_BUCKET}",
             "base_path": "plots",

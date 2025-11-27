@@ -2,16 +2,17 @@
 Pytest configuration and fixtures for pyplots tests.
 """
 
-import pytest
 import matplotlib
+import pytest
+
 matplotlib.use('Agg')  # Non-interactive backend for CI
 
 
 @pytest.fixture
 def sample_data():
     """Provide sample data for plot tests."""
-    import pandas as pd
     import numpy as np
+    import pandas as pd
 
     np.random.seed(42)
     return pd.DataFrame({

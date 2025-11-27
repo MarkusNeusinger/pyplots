@@ -5,9 +5,10 @@ Variant: default
 Python: 3.10+
 """
 
+from typing import TYPE_CHECKING, Optional
+
 import matplotlib.pyplot as plt
 import pandas as pd
-from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
@@ -22,7 +23,7 @@ def create_plot(
     title: Optional[str] = None,
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
-    figsize: tuple[float, float] = (10, 6),
+    figsize: tuple[float, float] = (16, 9),
     **kwargs
 ) -> "Figure":
     """
@@ -37,7 +38,7 @@ def create_plot(
         title: Plot title (default: None)
         xlabel: Custom x-axis label (default: column name)
         ylabel: Custom y-axis label (default: column name)
-        figsize: Figure size as (width, height) (default: (10, 6))
+        figsize: Figure size as (width, height) (default: (16, 9))
         **kwargs: Additional parameters passed to ax.bar()
 
     Returns:
@@ -67,7 +68,7 @@ def create_plot(
     # Determine if color is a column or a direct value
     if color and color in data.columns:
         # Color mapping from column
-        bars = ax.bar(data[x], data[y], color=data[color], alpha=alpha, **kwargs)
+        ax.bar(data[x], data[y], color=data[color], alpha=alpha, **kwargs)
         # Create colorbar for numeric color column
         if pd.api.types.is_numeric_dtype(data[color]):
             sm = plt.cm.ScalarMappable(
@@ -80,7 +81,7 @@ def create_plot(
     else:
         # Direct color value
         bar_color = color or "steelblue"
-        bars = ax.bar(data[x], data[y], color=bar_color, alpha=alpha, **kwargs)
+        ax.bar(data[x], data[y], color=bar_color, alpha=alpha, **kwargs)
 
     # Apply styling
     ax.set_xlabel(xlabel or x)
@@ -108,6 +109,6 @@ if __name__ == "__main__":
     fig = create_plot(data, x="Category", y="Sales", title="Product Sales Comparison")
 
     # Save for inspection
-    plt.savefig("test_output.png", dpi=150, bbox_inches="tight")
-    print("Plot saved to test_output.png")
+    plt.savefig("plot.png", dpi=300, bbox_inches="tight")
+    print("Plot saved to plot.png")
     plt.show()

@@ -110,7 +110,7 @@ if __name__ == '__main__':
     fig = create_plot(data, ...)
 
     # Save for inspection - ALWAYS use 'plot.png' as filename
-    plt.savefig('plot.png', dpi=200)
+    plt.savefig('plot.png', dpi=300, bbox_inches='tight')
     print("Plot saved to plot.png")
 ```
 
@@ -198,12 +198,13 @@ From `docs/development.md` (lines 182-241):
 - ✅ Imports: Organized (standard, third-party, local)
 
 **Visual Quality**:
-- ✅ Figure size: `figsize=(10, 6)` by default
+- ✅ Figure size: `figsize=(16, 9)` by default (16:9 aspect ratio)
 - ✅ Axis labels: From column names or custom
 - ✅ Grid: `ax.grid(True, alpha=0.3)` (subtle)
 - ✅ Font sizes: Readable (≥10pt)
 - ✅ Legend: If multiple series or color mapping
 - ✅ Tight layout: `plt.tight_layout()` to avoid clipping
+- ✅ DPI: Always use `dpi=300` when saving for high-quality output
 
 ---
 
@@ -214,8 +215,8 @@ From `docs/development.md` (lines 182-241):
 From `docs/development.md` (lines 332-343):
 
 ```python
-# Create figure explicitly
-fig, ax = plt.subplots(figsize=(10, 6))
+# Create figure explicitly (16:9 aspect ratio, 300 DPI)
+fig, ax = plt.subplots(figsize=(16, 9))
 
 # Use axes methods (not pyplot)
 ax.scatter(...)  # ✅

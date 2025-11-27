@@ -5,9 +5,10 @@ Variant: default
 Python: 3.10+
 """
 
+from typing import TYPE_CHECKING, Optional
+
 import matplotlib.pyplot as plt
 import pandas as pd
-from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
@@ -22,7 +23,7 @@ def create_plot(
     startangle: float = 0,
     explode: Optional[list] = None,
     title: Optional[str] = None,
-    figsize: tuple = (8, 8),
+    figsize: tuple = (9, 9),
     **kwargs
 ) -> "Figure":
     """
@@ -39,7 +40,7 @@ def create_plot(
         explode: List of offset values for slices to separate them.
             Should have same length as values (default: None)
         title: Plot title (default: None)
-        figsize: Figure size as tuple (width, height) in inches (default: (8, 8))
+        figsize: Figure size as tuple (width, height) in inches (default: (9, 9))
         **kwargs: Additional parameters passed to plt.pie()
 
     Returns:
@@ -73,7 +74,7 @@ def create_plot(
         if numeric_values.isna().all():
             raise TypeError(f"Column '{values}' contains non-numeric data")
     except Exception as e:
-        raise TypeError(f"Column '{values}' must contain numeric data: {e}")
+        raise TypeError(f"Column '{values}' must contain numeric data: {e}") from e
 
     # Extract data
     pie_values = data[values].values
@@ -138,5 +139,5 @@ if __name__ == '__main__':
     )
 
     # Save for inspection
-    plt.savefig('test_output.png', dpi=150, bbox_inches='tight')
-    print("Plot saved to test_output.png")
+    plt.savefig('plot.png', dpi=300, bbox_inches='tight')
+    print("Plot saved to plot.png")

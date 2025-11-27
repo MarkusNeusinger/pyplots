@@ -96,17 +96,17 @@ pyplots/
 └── docs/               # Documentation
 ```
 
-**For detailed structure and file organization**, see [Repository Structure](docs/architecture/repository-structure.md)
+**For detailed structure and file organization**, see [Repository Structure](docs/architecture/repository.md)
 
 ---
 
 ## Documentation
 
 - **[Vision](docs/vision.md)** - Product vision and mission
-- **[Workflow](docs/workflow.md)** - 7 automation flows (Discovery → Deployment → Social Media)
-- **[Architecture](docs/architecture/)** - System design, database, API, automation
-- **[Development](docs/development.md)** - Local setup, code standards, contributing
-- **[Deployment](docs/deployment.md)** - GCP setup, CI/CD, cost optimization
+- **[Workflow](docs/workflow.md)** - Automation flows (Discovery → Deployment → Social Media)
+- **[Development](docs/development.md)** - Local setup, testing, deployment
+- **[Specs Guide](docs/specs-guide.md)** - How to write plot specifications
+- **[Architecture](docs/architecture/)** - API, database, repository structure
 
 ---
 

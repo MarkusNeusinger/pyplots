@@ -11,7 +11,8 @@ git ls-files
 @README.md
 @pyproject.toml
 @docs/vision.md
-@docs/architecture.md
+@docs/workflow.md
+@docs/architecture/repository.md
 
 ## Read and Execute
 

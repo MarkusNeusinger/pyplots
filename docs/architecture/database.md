@@ -680,4 +680,3 @@ Set up alerts for:
 ---
 
 *For API endpoints using this database, see [api.md](./api.md)*
-*For deployment configuration, see [deployment.md](../deployment.md)*

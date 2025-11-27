@@ -11,10 +11,6 @@ concurrency:
 
 jobs:
   trigger-claude-code:
-    # Only run when "approved" label is added to an issue that also has "plot-request"
-    if: |
-      github.event.label.name == 'approved' &&
-      contains(github.event.issue.labels.*.name, 'plot-request')
     runs-on: ubuntu-latest
     permissions:
       contents: write        # Allow commits
@@ -24,12 +20,40 @@ jobs:
       actions: read         # Allow Claude to read CI results
 
     steps:
+      - name: Check conditions
+        id: check
+        run: |
+          echo "=== Debug Info ==="
+          echo "Label added: ${{ github.event.label.name }}"
+          echo "Issue labels: ${{ join(github.event.issue.labels.*.name, ', ') }}"
+          echo "=================="
+
+          # Check 1: Must be "approved" label being added
+          if [[ "${{ github.event.label.name }}" != "approved" ]]; then
+            echo "::notice::Skipping: Not the 'approved' label"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Check 2: Issue must have "plot-request" label
+          HAS_PLOT_REQUEST="${{ contains(github.event.issue.labels.*.name, 'plot-request') }}"
+          if [[ "$HAS_PLOT_REQUEST" != "true" ]]; then
+            echo "::notice::Skipping: Issue does not have 'plot-request' label"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "::notice::All conditions met - proceeding with code generation"
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
       - name: Checkout repository
+        if: steps.check.outputs.should_run == 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0    # Full history for better context
 
       - name: React with eyes emoji
+        if: steps.check.outputs.should_run == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -37,6 +61,7 @@ jobs:
             -f content=eyes
 
       - name: Extract spec ID from issue
+        if: steps.check.outputs.should_run == 'true'
         id: extract_spec
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -92,6 +117,7 @@ jobs:
           echo "✅ Extracted spec ID: $SPEC_ID"
 
       - name: Run Claude Code to generate implementations
+        if: steps.check.outputs.should_run == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}

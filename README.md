@@ -4,7 +4,7 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Ruff](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-lint.yml/badge.svg)](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-lint.yml)
+[![Ruff](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-lint.yml/badge.svg?branch=main)](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-lint.yml)
 [![codecov](https://codecov.io/gh/MarkusNeusinger/pyplots/branch/main/graph/badge.svg)](https://codecov.io/gh/MarkusNeusinger/pyplots)
 
 > Stop adapting examples to your data. Start visualizing your data directly.

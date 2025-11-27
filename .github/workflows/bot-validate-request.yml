@@ -2,7 +2,7 @@ name: Bot: Validate Plot Request
 
 on:
   issues:
-    types: [opened, edited]
+    types: [opened, edited, labeled]
 
 concurrency:
   group: validate-plot-request-${{ github.event.issue.number }}
@@ -12,9 +12,11 @@ jobs:
   validate-and-assign-id:
     # Only run for issues with "plot-request" label AND no spec ID in title yet
     # Spec ID format: [some-spec-id] at end of title
+    # For labeled events: only trigger when plot-request label is added
     if: |
       contains(github.event.issue.labels.*.name, 'plot-request') &&
-      !contains(github.event.issue.title, '[')
+      !contains(github.event.issue.title, '[') &&
+      (github.event.action != 'labeled' || github.event.label.name == 'plot-request')
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -1,4 +1,4 @@
-name: Bot: Auto-Merge
+name: "Bot: Auto-Merge"
 
 on:
   pull_request:

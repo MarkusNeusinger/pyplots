@@ -1,4 +1,4 @@
-name: Bot: Auto-Tag
+name: "Bot: Auto-Tag"
 
 on:
   pull_request:

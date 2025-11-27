@@ -14,6 +14,15 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
+# Optional: pngquant for better compression
+try:
+    import subprocess
+    _HAS_PNGQUANT = subprocess.run(
+        ["pngquant", "--version"], capture_output=True
+    ).returncode == 0
+except (FileNotFoundError, subprocess.SubprocessError):
+    _HAS_PNGQUANT = False
+
 
 def create_thumbnail(
     input_path: str | Path,
@@ -96,7 +105,45 @@ def add_watermark(
     draw.text((x, y), text, font=font, fill=text_color)
 
     result = Image.alpha_composite(img, overlay)
-    result.convert("RGB").save(output_path)
+    result.convert("RGB").save(output_path, optimize=True)
+
+
+def optimize_png(
+    input_path: str | Path,
+    output_path: str | Path | None = None,
+    quality: int = 80,
+) -> int:
+    """Optimize PNG file size without visible quality loss.
+
+    Uses Pillow's optimize flag, and pngquant if available for better results.
+
+    Args:
+        input_path: Path to the source PNG image.
+        output_path: Path for optimized image. If None, overwrites input.
+        quality: Quality level for lossy compression (1-100). Only used with pngquant.
+
+    Returns:
+        Size reduction in bytes (positive = smaller file).
+    """
+    input_path = Path(input_path)
+    output_path = Path(output_path) if output_path else input_path
+    original_size = input_path.stat().st_size
+
+    if _HAS_PNGQUANT:
+        # pngquant gives much better compression
+        import subprocess
+        subprocess.run(
+            ["pngquant", "--force", "--quality", f"{quality}-100",
+             "--output", str(output_path), str(input_path)],
+            check=True
+        )
+    else:
+        # Fallback: Pillow optimize
+        img = Image.open(input_path)
+        img.save(output_path, optimize=True)
+
+    new_size = output_path.stat().st_size
+    return original_size - new_size
 
 
 def process_plot_image(
@@ -106,11 +153,12 @@ def process_plot_image(
     thumb_width: int = 400,
     watermark_text: str = "pyplots.ai",
     add_watermark_flag: bool = True,
-) -> dict[str, str | tuple[int, int]]:
-    """Process a plot image: add watermark and create thumbnail.
+    optimize: bool = True,
+) -> dict[str, str | tuple[int, int] | int]:
+    """Process a plot image: add watermark, optimize, and create thumbnail.
 
-    This is a convenience function that combines watermarking and
-    thumbnail generation in a single call.
+    This is a convenience function that combines watermarking, PNG optimization,
+    and thumbnail generation in a single call.
 
     Args:
         input_path: Path to the source plot image.
@@ -119,26 +167,32 @@ def process_plot_image(
         thumb_width: Width of the thumbnail in pixels.
         watermark_text: Text for the watermark.
         add_watermark_flag: Whether to add a watermark.
+        optimize: Whether to optimize PNG file size.
 
     Returns:
         Dictionary with processing results:
         - 'output': Path to the output image
         - 'thumbnail': Path to thumbnail (if created)
         - 'thumb_size': Tuple of thumbnail dimensions (if created)
+        - 'bytes_saved': Bytes saved by optimization (if optimized)
     """
-    result: dict[str, str | tuple[int, int]] = {"output": str(output_path)}
+    result: dict[str, str | tuple[int, int] | int] = {"output": str(output_path)}
 
     if add_watermark_flag:
         add_watermark(input_path, output_path, text=watermark_text)
     else:
-        # Just copy the image
+        # Just copy the image with optimization
         img = Image.open(input_path)
-        img.save(output_path)
+        img.save(output_path, optimize=True)
+
+    # Optimize PNG
+    if optimize:
+        bytes_saved = optimize_png(output_path)
+        result["bytes_saved"] = bytes_saved
 
     if thumb_path:
-        # Create thumbnail from the watermarked image
-        source = output_path if add_watermark_flag else input_path
-        thumb_size = create_thumbnail(source, thumb_path, width=thumb_width)
+        # Create thumbnail from the processed image
+        thumb_size = create_thumbnail(output_path, thumb_path, width=thumb_width)
         result["thumbnail"] = str(thumb_path)
         result["thumb_size"] = thumb_size
 

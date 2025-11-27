@@ -103,6 +103,19 @@ jobs:
         run: |
           echo "ℹ️ No plot files changed in this PR - skipping tests"
 
+      - name: Save test results
+        if: always()
+        run: |
+          mkdir -p test-results
+          echo "${{ matrix.python-version }},${{ steps.test_execution.outcome || 'skipped' }}" > test-results/result-${{ matrix.python-version }}.txt
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.python-version }}
+          path: test-results/
+
   generate-plots:
     name: Generate Plots and Post to Issue
     needs: test-plots
@@ -113,6 +126,43 @@ jobs:
       issues: write
 
     steps:
+      - name: Download all test results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: test-results-*
+          path: all-test-results
+          merge-multiple: true
+
+      - name: Parse test results
+        id: test_results
+        run: |
+          echo "Parsing test results..."
+
+          get_status() {
+            local version=$1
+            local file="all-test-results/result-${version}.txt"
+            if [ -f "$file" ]; then
+              outcome=$(cut -d',' -f2 "$file")
+              if [ "$outcome" == "success" ]; then
+                echo "pass"
+              elif [ "$outcome" == "skipped" ]; then
+                echo "skip"
+              else
+                echo "fail"
+              fi
+            else
+              echo "unknown"
+            fi
+          }
+
+          echo "py314=$(get_status 3.14)" >> $GITHUB_OUTPUT
+          echo "py313=$(get_status 3.13)" >> $GITHUB_OUTPUT
+          echo "py312=$(get_status 3.12)" >> $GITHUB_OUTPUT
+          echo "py311=$(get_status 3.11)" >> $GITHUB_OUTPUT
+
+          echo "Results parsed:"
+          cat all-test-results/*.txt 2>/dev/null || echo "No results found"
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -313,6 +363,7 @@ jobs:
           PLOTEOF
                   sed -i "s|\${LIBRARY}|${LIBRARY}|g; s|\${VARIANT}|${VARIANT}|g; s|\${NEW_URL}|${NEW_URL}|g" plot_markdown.txt
                 fi
+                echo "" >> plot_markdown.txt
               fi
             done
           fi

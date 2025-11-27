@@ -1,23 +1,22 @@
 name: Bot: Validate Plot Request
-run-name: "Validate: ${{ github.event.issue.title }}"
+run-name: "Validate: ${{ github.event.issue.title || 'Manual trigger' }}"
 
 on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue number to validate'
+        required: true
+        type: string
   issues:
     types: [opened, edited, labeled]
 
 concurrency:
-  group: validate-plot-request-${{ github.event.issue.number }}
+  group: validate-plot-request-${{ github.event.issue.number || github.run_id }}
   cancel-in-progress: false
 
 jobs:
   validate-and-assign-id:
-    # Only run for issues with "plot-request" label AND no spec ID in title yet
-    # Spec ID format: [some-spec-id] at end of title
-    # For labeled events: only trigger when plot-request label is added
-    if: |
-      contains(github.event.issue.labels.*.name, 'plot-request') &&
-      !contains(github.event.issue.title, '[') &&
-      (github.event.action != 'labeled' || github.event.label.name == 'plot-request')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -25,12 +24,54 @@ jobs:
       id-token: write
 
     steps:
+      - name: Check conditions
+        id: check
+        run: |
+          echo "=== Debug Info ==="
+          echo "Event: ${{ github.event_name }}"
+          echo "Action: ${{ github.event.action }}"
+          echo "Issue Number: ${{ github.event.issue.number }}"
+          echo "Issue Title: ${{ github.event.issue.title }}"
+          echo "Labels: ${{ join(github.event.issue.labels.*.name, ', ') }}"
+          echo "Label added (if labeled event): ${{ github.event.label.name }}"
+          echo "=================="
+
+          # Check 1: Must have plot-request label
+          HAS_LABEL="${{ contains(github.event.issue.labels.*.name, 'plot-request') }}"
+          if [[ "$HAS_LABEL" != "true" ]]; then
+            echo "::notice::Skipping: Issue does not have 'plot-request' label"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Check 2: Must not already have spec ID in title (indicated by [...])
+          TITLE="${{ github.event.issue.title }}"
+          if [[ "$TITLE" == *"["* ]]; then
+            echo "::notice::Skipping: Issue title already contains spec ID"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Check 3: For labeled events, only trigger when plot-request label is added
+          EVENT_ACTION="${{ github.event.action }}"
+          LABEL_NAME="${{ github.event.label.name }}"
+          if [[ "$EVENT_ACTION" == "labeled" && "$LABEL_NAME" != "plot-request" ]]; then
+            echo "::notice::Skipping: Labeled event but not plot-request label"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "::notice::All conditions met - proceeding with validation"
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
       - name: Checkout repository
+        if: steps.check.outputs.should_run == 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: React with eyes emoji
+        if: steps.check.outputs.should_run == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -38,6 +79,7 @@ jobs:
             -f content=eyes
 
       - name: Run Claude Code to validate and assign spec ID
+        if: steps.check.outputs.should_run == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}

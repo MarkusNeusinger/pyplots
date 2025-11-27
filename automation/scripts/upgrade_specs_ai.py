@@ -10,6 +10,7 @@ import os
 import re
 from pathlib import Path
 from typing import Dict, Tuple
+
 import anthropic
 
 
@@ -309,7 +310,7 @@ if __name__ == "__main__":
         print("❌ ANTHROPIC_API_KEY environment variable not set")
         exit(1)
 
-    print(f"🤖 AI-Powered Spec Upgrader")
+    print("🤖 AI-Powered Spec Upgrader")
     print(f"Target version: {args.version}")
     print(f"Dry run: {args.dry_run}")
     print(f"Backup: {not args.no_backup}")

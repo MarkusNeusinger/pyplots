@@ -5,10 +5,11 @@ Variant: default
 Python: 3.10+
 """
 
-import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
 from typing import TYPE_CHECKING, Optional
+
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
 
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
@@ -23,7 +24,7 @@ def create_plot(
     title: Optional[str] = None,
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
-    figsize: tuple[float, float] = (10, 6),
+    figsize: tuple[float, float] = (16, 9),
     **kwargs
 ) -> "Figure":
     """
@@ -38,7 +39,7 @@ def create_plot(
         title: Plot title (default: None)
         xlabel: Custom x-axis label (default: column name)
         ylabel: Custom y-axis label (default: column name)
-        figsize: Figure size as (width, height) (default: (10, 6))
+        figsize: Figure size as (width, height) (default: (16, 9))
         **kwargs: Additional parameters passed to sns.barplot()
 
     Returns:
@@ -121,6 +122,6 @@ if __name__ == "__main__":
     fig = create_plot(data, x="Category", y="Sales", title="Product Sales Comparison")
 
     # Save for inspection
-    plt.savefig("test_output_seaborn.png", dpi=150, bbox_inches="tight")
-    print("Plot saved to test_output_seaborn.png")
+    plt.savefig("plot.png", dpi=300, bbox_inches="tight")
+    print("Plot saved to plot.png")
     plt.show()

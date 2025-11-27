@@ -27,16 +27,14 @@ except (FileNotFoundError, subprocess.SubprocessError):
 def create_thumbnail(
     input_path: str | Path,
     output_path: str | Path,
-    width: int = 400,
-    quality: int = 85,
+    width: int = 600,
 ) -> tuple[int, int]:
     """Create a thumbnail maintaining aspect ratio.
 
     Args:
         input_path: Path to the source image.
         output_path: Path where the thumbnail will be saved.
-        width: Target width in pixels. Height is calculated to maintain aspect ratio.
-        quality: JPEG quality (1-100). Only applies to JPEG output.
+        width: Target width in pixels (default: 600). Height is calculated to maintain aspect ratio.
 
     Returns:
         Tuple of (width, height) of the created thumbnail.
@@ -49,7 +47,7 @@ def create_thumbnail(
     ratio = width / img.width
     new_size = (width, int(img.height * ratio))
     thumb = img.resize(new_size, Image.Resampling.LANCZOS)
-    thumb.save(output_path, optimize=True, quality=quality)
+    thumb.save(output_path, optimize=True)
     return new_size
 
 
@@ -160,7 +158,7 @@ def process_plot_image(
     input_path: str | Path,
     output_path: str | Path,
     thumb_path: str | Path | None = None,
-    thumb_width: int = 400,
+    thumb_width: int = 600,
     watermark_text: str = "pyplots.ai",
     spec_id: str | None = None,
     add_watermark_flag: bool = True,

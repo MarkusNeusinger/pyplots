@@ -10,10 +10,10 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Literal, Callable, TypeVar
-import anthropic
-from anthropic import APIError, RateLimitError, APIConnectionError
+from typing import Callable, Literal, TypeVar
 
+import anthropic
+from anthropic import APIConnectionError, APIError, RateLimitError
 
 LibraryType = Literal["matplotlib", "seaborn", "plotly", "bokeh", "altair"]
 
@@ -46,7 +46,7 @@ def extract_and_validate_code(response_text: str) -> str:
     try:
         ast.parse(code)
     except SyntaxError as e:
-        raise ValueError(f"Generated code has syntax errors: {e}")
+        raise ValueError(f"Generated code has syntax errors: {e}") from e
 
     return code
 
@@ -116,7 +116,7 @@ def load_spec(spec_id: str) -> str:
         spec_version = version_match.group(1)
         print(f"📋 Spec version: {spec_version}")
     else:
-        print(f"⚠️  Warning: Spec has no version marker. Consider upgrading with upgrade_specs.py")
+        print("⚠️  Warning: Spec has no version marker. Consider upgrading with upgrade_specs.py")
 
     return content
 
@@ -193,6 +193,8 @@ def generate_code(
     file_path = Path(f"plots/{library}/{plot_type}/{spec_id}/{variant}.py")
 
     # Self-review loop
+    code = ""  # Will be set in loop
+    review_feedback = ""  # Will be set in loop
     for attempt in range(1, max_attempts + 1):
         print(f"🔄 Attempt {attempt}/{max_attempts} for {spec_id}/{library}/{variant}")
 
@@ -252,11 +254,12 @@ Generate the implementation now:"""
 Generate the improved implementation:"""
 
         # Call Claude with retry logic
+        current_prompt = prompt  # Capture for lambda
         response = retry_with_backoff(
-            lambda: client.messages.create(
+            lambda p=current_prompt: client.messages.create(
                 model="claude-sonnet-4-20250514",
                 max_tokens=4000,
-                messages=[{"role": "user", "content": prompt}]
+                messages=[{"role": "user", "content": p}]
             )
         )
 
@@ -271,7 +274,7 @@ Generate the improved implementation:"""
             raise
 
         # Self-review
-        print(f"🔍 Running self-review...")
+        print("🔍 Running self-review...")
         review_prompt = f"""Review this generated plot implementation against the specification and quality criteria.
 
 # Specification
@@ -305,11 +308,12 @@ Format your response as:
 [specific actionable items]
 """
 
+        current_review_prompt = review_prompt  # Capture for lambda
         review_response = retry_with_backoff(
-            lambda: client.messages.create(
+            lambda p=current_review_prompt: client.messages.create(
                 model="claude-sonnet-4-20250514",
                 max_tokens=2000,
-                messages=[{"role": "user", "content": review_prompt}]
+                messages=[{"role": "user", "content": p}]
             )
         )
 
@@ -328,9 +332,9 @@ Format your response as:
         else:
             print(f"❌ Self-review failed on attempt {attempt}")
             if attempt < max_attempts:
-                print(f"🔄 Regenerating with feedback...")
+                print("🔄 Regenerating with feedback...")
             else:
-                print(f"⚠️ Max attempts reached. Returning best effort code.")
+                print("⚠️ Max attempts reached. Returning best effort code.")
 
     # Max attempts reached without passing
     return {
@@ -378,7 +382,7 @@ if __name__ == "__main__":
 
         # Print summary
         print("\n" + "="*60)
-        print(f"✅ Generation complete!")
+        print("✅ Generation complete!")
         print(f"   Spec: {args.spec_id}")
         print(f"   Library: {args.library}")
         print(f"   Variant: {args.variant}")

@@ -5,10 +5,11 @@ Variant: default
 Python: 3.10+
 """
 
-import matplotlib.pyplot as plt
-import pandas as pd
-import numpy as np
 from typing import TYPE_CHECKING, Optional
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
@@ -18,7 +19,7 @@ def create_plot(
     data: pd.DataFrame,
     x: str,
     y: str,
-    figsize: tuple[float, float] = (10, 6),
+    figsize: tuple[float, float] = (16, 9),
     alpha: float = 0.6,
     size: float = 30,
     color: str = "steelblue",
@@ -36,7 +37,7 @@ def create_plot(
         data: Input DataFrame with required columns
         x: Column name for x-axis values
         y: Column name for y-axis values
-        figsize: Figure size as (width, height) tuple (default: (10, 6))
+        figsize: Figure size as (width, height) tuple (default: (16, 9))
         alpha: Transparency level for points (default: 0.6 for better visibility with many points)
         size: Point size (default: 30)
         color: Point color (default: "steelblue")
@@ -79,7 +80,7 @@ def create_plot(
     fig, ax = plt.subplots(figsize=figsize)
 
     # Plot data
-    scatter = ax.scatter(
+    ax.scatter(
         data[x],
         data[y],
         s=size,
@@ -127,5 +128,5 @@ if __name__ == '__main__':
     )
 
     # Save for inspection - ALWAYS use 'plot.png' as filename
-    plt.savefig('plot.png', dpi=200, bbox_inches='tight')
+    plt.savefig('plot.png', dpi=300, bbox_inches='tight')
     print("Plot saved to plot.png")

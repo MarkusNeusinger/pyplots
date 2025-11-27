@@ -118,7 +118,7 @@ class TestProcessPlotImage:
         assert thumb_path.exists()
         assert result["output"] == str(output_path)
         assert result["thumbnail"] == str(thumb_path)
-        assert result["thumb_size"] == (400, 300)
+        assert result["thumb_size"] == (600, 450)
 
     def test_without_thumbnail(self, sample_image: Path, tmp_path: Path) -> None:
         """Should work without creating a thumbnail."""
@@ -134,7 +134,7 @@ class TestProcessPlotImage:
         output_path = tmp_path / "output.png"
         thumb_path = tmp_path / "thumb.png"
 
-        result = process_plot_image(
+        process_plot_image(
             sample_image,
             output_path,
             thumb_path,

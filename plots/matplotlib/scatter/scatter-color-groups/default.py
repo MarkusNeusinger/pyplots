@@ -5,10 +5,10 @@ Variant: default
 Python: 3.10+
 """
 
-import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
-import pandas as pd
 from typing import TYPE_CHECKING
+
+import matplotlib.pyplot as plt
+import pandas as pd
 
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
@@ -19,7 +19,7 @@ def create_plot(
     x: str,
     y: str,
     group: str,
-    figsize: tuple[float, float] = (10, 6),
+    figsize: tuple[float, float] = (16, 9),
     alpha: float = 0.7,
     size: float = 50,
     title: str | None = None,
@@ -39,7 +39,7 @@ def create_plot(
         x: Column name for x-axis values
         y: Column name for y-axis values
         group: Column name for categorical grouping and coloring
-        figsize: Figure size as (width, height) tuple (default: (10, 6))
+        figsize: Figure size as (width, height) tuple (default: (16, 9))
         alpha: Transparency level for points (default: 0.7)
         size: Point size (default: 50)
         title: Plot title (default: None)
@@ -142,5 +142,5 @@ if __name__ == "__main__":
     fig = create_plot(data, "x", "y", "group", title="Scatter Plot with Color Groups")
 
     # Save for inspection
-    plt.savefig("plot.png", dpi=200, bbox_inches="tight")
+    plt.savefig("plot.png", dpi=300, bbox_inches="tight")
     print("Plot saved to plot.png")

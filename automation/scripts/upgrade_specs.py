@@ -38,7 +38,7 @@ def upgrade_to_1_0_0(spec_content: str, spec_id: str) -> str:
     title_line = title_match.group(0)
 
     # Insert version info after title
-    version_block = f"""
+    version_block = """
 <!--
 Spec Template Version: 1.0.0
 Created: 2025-01-24
@@ -133,7 +133,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    print(f"🔄 Spec Version Upgrader")
+    print("🔄 Spec Version Upgrader")
     print(f"Target version: {args.version}")
     print(f"Dry run: {args.dry_run}")
     print("=" * 60)

@@ -2,15 +2,14 @@
 Smoke tests to verify basic functionality.
 """
 
-import pytest
 
 
 def test_imports():
     """Test that core packages can be imported."""
     import matplotlib
     import matplotlib.pyplot as plt
-    import pandas as pd
     import numpy as np
+    import pandas as pd
 
     assert matplotlib is not None
     assert plt is not None

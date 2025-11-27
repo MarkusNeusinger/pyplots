@@ -1,0 +1,12 @@
+name: Test Issue Trigger
+
+on:
+  issues:
+    types: [opened, edited, labeled]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hello
+        run: echo "Issue event received!"

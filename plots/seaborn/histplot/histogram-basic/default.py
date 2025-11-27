@@ -121,6 +121,6 @@ if __name__ == "__main__":
     )
 
     # Save for inspection
-    plt.savefig("test_output.png", dpi=150, bbox_inches="tight")
+    plt.savefig("test_output.png", dpi=200, bbox_inches="tight")
     print("Plot saved to test_output.png")
     plt.show()

@@ -783,4 +783,4 @@ Plot generation runs in sandboxed environment:
 ---
 
 *For database schema, see [database.md](./database.md)*
-*For automation workflows using this API, see [automation-workflows.md](./automation-workflows.md)*
+*For automation workflows, see `.github/workflows/`*

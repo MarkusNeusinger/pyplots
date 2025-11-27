@@ -179,291 +179,34 @@ pre-commit install
 
 ## Code Standards
 
-### Python
-
-**Style Guide**: PEP 8 (enforced by Ruff)
-
-**Line Length**: 120 characters
-
-**Type Hints**: Required for all functions
-
-```python
-# ✅ Good
-def create_plot(data: pd.DataFrame, x: str, y: str, **kwargs) -> Figure:
-    """Create a scatter plot"""
-    pass
-
-# ❌ Bad (no type hints)
-def create_plot(data, x, y, **kwargs):
-    pass
-```
-
-**Docstrings**: Required for all public functions (Google style)
-
-```python
-def create_plot(data: pd.DataFrame, x: str, y: str, **kwargs) -> Figure:
-    """
-    Create a scatter plot from DataFrame
-
-    Args:
-        data: Input DataFrame with data
-        x: Column name for x-axis
-        y: Column name for y-axis
-        **kwargs: Additional plotting parameters
-
-    Returns:
-        Matplotlib Figure object
-
-    Raises:
-        ValueError: If x or y column not found in data
-    """
-    pass
-```
-
-**Imports**: Organized by category
-
-```python
-# Standard library
-import os
-from pathlib import Path
-
-# Third-party
-import pandas as pd
-import matplotlib.pyplot as plt
-from fastapi import FastAPI
-
-# Local
-from core.database import get_session
-from core.models import Spec
-```
+See [CLAUDE.md](../CLAUDE.md) for detailed code standards including:
+- Python style guide (PEP 8, Ruff)
+- Type hints requirements
+- Docstring format (Google style)
+- Import ordering
 
 ---
 
-### Testing
+## Testing
 
 **Coverage Target**: 90%+
 
-**Test Structure**: Mirror source structure
-
-```
-plots/matplotlib/scatter/scatter_basic_001/default.py
-tests/unit/plots/matplotlib/test_scatter_basic_001.py
-```
+**Test Structure**: Mirror source structure (`plots/.../default.py` → `tests/unit/plots/.../test_*.py`)
 
 **Test Naming**: `test_{what_it_does}`
 
-```python
-def test_scatter_basic_001_creates_figure():
-    """Test that scatter-basic-001 creates a valid figure"""
-    pass
+**Fixtures**: Use pytest fixtures in `tests/conftest.py` for reusable test data
 
-def test_scatter_basic_001_labels_axes():
-    """Test that axes are labeled with column names"""
-    pass
-```
-
-**Fixtures**: Use pytest fixtures for reusable test data
-
-```python
-# tests/conftest.py
-import pytest
-import pandas as pd
-
-@pytest.fixture
-def sample_data():
-    """Sample DataFrame for testing"""
-    return pd.DataFrame({
-        'x': [1, 2, 3, 4, 5],
-        'y': [2, 4, 6, 8, 10]
-    })
-```
-
-**Example Test**:
-
-```python
-# tests/unit/plots/matplotlib/test_scatter_basic_001.py
-import pandas as pd
-import pytest
-from plots.matplotlib.scatter.scatter_basic_001.default import create_plot
-
-
-def test_creates_valid_figure(sample_data):
-    """Test that create_plot returns a matplotlib Figure"""
-    fig = create_plot(sample_data, x='x', y='y')
-
-    assert fig is not None
-    assert len(fig.axes) == 1
-
-
-def test_axes_are_labeled(sample_data):
-    """Test that axes have correct labels"""
-    fig = create_plot(sample_data, x='x', y='y')
-    ax = fig.axes[0]
-
-    assert ax.get_xlabel() == 'x'
-    assert ax.get_ylabel() == 'y'
-
-
-def test_handles_missing_column(sample_data):
-    """Test that ValueError is raised for missing columns"""
-    with pytest.raises(KeyError):
-        create_plot(sample_data, x='missing', y='y')
-```
+See [CLAUDE.md](../CLAUDE.md) for testing standards.
 
 ---
 
 ## Writing Plot Implementations
 
-### Template
-
-Every implementation file should follow this structure:
-
-```python
-"""
-scatter-basic-001: Basic 2D Scatter Plot
-Implementation for: matplotlib
-Variant: default
-Python: 3.10+
-"""
-
-import matplotlib.pyplot as plt
-import pandas as pd
-from matplotlib.figure import Figure
-
-
-def create_plot(
-    data: pd.DataFrame,
-    x: str,
-    y: str,
-    color: str | None = None,
-    size: float = 50,
-    alpha: float = 0.8,
-    title: str | None = None,
-    **kwargs
-) -> Figure:
-    """
-    Create a basic scatter plot
-
-    Args:
-        data: Input DataFrame
-        x: Column name for x-axis
-        y: Column name for y-axis
-        color: Point color or column name for color mapping
-        size: Point size in pixels
-        alpha: Transparency (0-1)
-        title: Plot title (optional)
-        **kwargs: Additional parameters passed to ax.scatter()
-
-    Returns:
-        Matplotlib Figure object
-
-    Raises:
-        KeyError: If x or y column not found in data
-        ValueError: If data is empty
-
-    Example:
-        >>> import pandas as pd
-        >>> data = pd.DataFrame({'x': [1, 2, 3], 'y': [2, 4, 6]})
-        >>> fig = create_plot(data, x='x', y='y', color='blue')
-    """
-    if data.empty:
-        raise ValueError("Data cannot be empty")
-
-    if x not in data.columns or y not in data.columns:
-        raise KeyError(f"Columns '{x}' or '{y}' not found in data")
-
-    # Create figure
-    fig, ax = plt.subplots(figsize=(10, 6))
-
-    # Plot data
-    scatter_params = {
-        's': size,
-        'alpha': alpha,
-        **kwargs
-    }
-
-    if color and color in data.columns:
-        # Color mapping
-        scatter = ax.scatter(data[x], data[y], c=data[color], **scatter_params)
-        plt.colorbar(scatter, ax=ax, label=color)
-    else:
-        # Single color
-        scatter_params['color'] = color or 'blue'
-        ax.scatter(data[x], data[y], **scatter_params)
-
-    # Labels and title
-    ax.set_xlabel(x)
-    ax.set_ylabel(y)
-    if title:
-        ax.set_title(title)
-
-    # Grid
-    ax.grid(True, alpha=0.3)
-
-    plt.tight_layout()
-    return fig
-
-
-# Optional: Standalone execution for testing
-if __name__ == '__main__':
-    # Sample data
-    data = pd.DataFrame({
-        'x': [1, 2, 3, 4, 5],
-        'y': [2, 4, 6, 8, 10]
-    })
-
-    # Create plot
-    fig = create_plot(data, x='x', y='y', title='Test Plot')
-
-    # Save or show
-    plt.savefig('test_output.png', dpi=150)
-    print("Plot saved to test_output.png")
-```
-
-### Best Practices
-
-**1. Validation First**
-
-```python
-# Check data
-if data.empty:
-    raise ValueError("Data cannot be empty")
-
-# Check columns
-if x not in data.columns:
-    raise KeyError(f"Column '{x}' not found")
-```
-
-**2. Sensible Defaults**
-
-```python
-# Good defaults that work for most cases
-figsize=(10, 6)  # Not too large, not too small
-alpha=0.8        # Slightly transparent for overlapping points
-grid=True        # Helps readability
-```
-
-**3. Handle Optional Parameters**
-
-```python
-# Support both direct value and column mapping
-if color and color in data.columns:
-    # Color mapping
-    ax.scatter(..., c=data[color])
-else:
-    # Direct color
-    ax.scatter(..., color=color or 'blue')
-```
-
-**4. Clear Error Messages**
-
-```python
-# ✅ Good
-raise KeyError(f"Column '{x}' not found in data. Available: {list(data.columns)}")
-
-# ❌ Bad
-raise KeyError("Column not found")
-```
+See [CLAUDE.md](../CLAUDE.md) for:
+- Implementation file template
+- Best practices (validation, defaults, error handling)
+- Anti-patterns to avoid
 
 ---
 
@@ -523,114 +266,33 @@ Closes #123
 
 ---
 
-## Project Structure Deep Dive
+## Project Structure
 
-### Implementation File Naming
-
-```
-plots/{library}/{plot_type}/{spec_id}/{variant}.py
-```
-
-Examples:
-```
-plots/matplotlib/scatter/scatter-basic-001/default.py
-plots/matplotlib/scatter/scatter-basic-001/ggplot_style.py
-plots/seaborn/scatterplot/scatter-basic-001/default.py
-plots/plotly/scatter/scatter-basic-001/default.py
-```
-
-**Note**: `plot_type` may differ by library:
-- matplotlib: `scatter`
-- seaborn: `scatterplot`
-- plotly: `scatter`
-
-### Test File Naming
-
-```
-tests/unit/plots/{library}/test_{spec_id}.py
-```
-
-Example:
-```
-tests/unit/plots/matplotlib/test_scatter_basic_001.py
-```
-
-Tests all variants in one file:
-```python
-def test_default_variant():
-    from plots.matplotlib.scatter.scatter_basic_001.default import create_plot
-    # ...
-
-def test_ggplot_style_variant():
-    from plots.matplotlib.scatter.scatter_basic_001.ggplot_style import create_plot
-    # ...
-```
+See [CLAUDE.md](../CLAUDE.md) for:
+- Directory structure
+- Implementation file naming (`plots/{library}/{plot_type}/{spec_id}/{variant}.py`)
+- Test file naming (`tests/unit/plots/{library}/test_{spec_id}.py`)
 
 ---
 
 ## Common Tasks
 
 ### Add a New Library
-
-1. **Update database**:
-```sql
-INSERT INTO libraries (id, name, version, documentation_url)
-VALUES ('bokeh', 'Bokeh', '3.3.0', 'https://docs.bokeh.org');
-```
-
-2. **Create directory structure**:
-```bash
-mkdir -p plots/bokeh/scatter
-```
-
-3. **Implement existing specs**:
-```bash
-# Start with most popular specs
-plots/bokeh/scatter/scatter-basic-001/default.py
-```
-
-4. **Add tests**:
-```bash
-tests/unit/plots/bokeh/test_scatter_basic_001.py
-```
+1. Update database (add to `libraries` table)
+2. Create directory structure (`mkdir -p plots/{library}/scatter`)
+3. Implement existing specs
+4. Add tests
 
 ### Update an Existing Implementation
-
-1. **Create GitHub issue** referencing original:
-```
-Issue #456: "Update scatter-basic-001 for matplotlib 4.0"
-References: #123
-```
-
-2. **Update implementation file**
-3. **Run tests**: `pytest tests/unit/plots/matplotlib/test_scatter_basic_001.py`
-4. **Generate preview**: Run implementation standalone
-5. **Create PR** with new preview
-6. **Quality check** runs automatically
+1. Create GitHub issue referencing original
+2. Update implementation file
+3. Run tests: `pytest tests/unit/plots/{library}/test_{spec_id}.py`
+4. Create PR → Quality check runs automatically
 
 ### Add a Style Variant
-
-1. **Create new file**:
-```python
-# plots/matplotlib/scatter/scatter-basic-001/dark_style.py
-def create_plot(data, x, y, **kwargs):
-    plt.style.use('dark_background')
-    # ... rest of implementation
-```
-
-2. **Add test**:
-```python
-def test_dark_style_variant(sample_data):
-    from plots.matplotlib.scatter.scatter_basic_001.dark_style import create_plot
-    fig = create_plot(sample_data, x='x', y='y')
-    assert fig is not None
-```
-
-3. **Add to database**:
-```sql
-INSERT INTO implementations (spec_id, library_id, variant, file_path, ...)
-VALUES ('scatter-basic-001', 'matplotlib', 'dark_style', 'plots/matplotlib/scatter/scatter-basic-001/dark_style.py', ...);
-```
+1. Create new file: `plots/{library}/{plot_type}/{spec_id}/{style}_style.py`
+2. Add test
+3. Add to database
 
 ---
 
@@ -709,52 +371,44 @@ pytest --pdb
 
 ## Working with Rules
 
-**NEW**: The project includes versioned rules for code generation and quality evaluation.
+The project includes versioned rules for AI code generation and quality evaluation.
 
 **Location**: `rules/` directory
 
-### Viewing Rules
+**Key Files**:
+- `rules/versions.yaml` - Version configuration
+- `rules/generation/v*/` - Code generation rules (Markdown)
+- `rules/README.md` - Rule system documentation
 
-```bash
-# See all rule versions
-cat rules/versions.yaml
-
-# Read current generation rules
-cat rules/generation/v1.0.0-draft/code-generation-rules.md
-cat rules/generation/v1.0.0-draft/quality-criteria.md
-```
-
-### Creating New Rule Versions
-
-```bash
-# 1. Copy existing version
-cp -r rules/generation/v1.0.0-draft rules/generation/v1.1.0-draft
-
-# 2. Edit rules (Markdown files)
-vim rules/generation/v1.1.0-draft/code-generation-rules.md
-
-# 3. Update metadata
-vim rules/generation/v1.1.0-draft/metadata.yaml
-
-# 4. Test (when automation implemented)
-python automation/testing/compare_rules.py --versions v1.0.0,v1.1.0
-
-# 5. Activate new version
-vim rules/versions.yaml  # Update active_versions
-```
-
-### Rule File Format
-
-Rules are **Markdown** files because:
-- ✅ Human-readable for review
-- ✅ LLM-friendly for AI consumption
-- ✅ Git-diffable for version control
-- ✅ Easy to comment and explain
+**Rule States**: draft → active → deprecated → archived
 
 **See Also**:
-- [Rule Versioning Guide](./architecture/rule-versioning.md)
 - [A/B Testing Strategies](./concepts/ab-testing-rules.md)
 - [Rules README](../rules/README.md)
+
+---
+
+## Deployment
+
+pyplots runs on **Google Cloud Platform**:
+
+| Service | Purpose |
+|---------|---------|
+| **Cloud Run** | FastAPI backend + Next.js frontend (auto-scaling) |
+| **Cloud SQL** | PostgreSQL database |
+| **Cloud Storage** | Preview images |
+| **n8n Cloud** | Automation workflows (separate subscription) |
+
+**Deploy Commands**:
+```bash
+# Backend
+gcloud run deploy pyplots-api --source . --region europe-west4
+
+# Frontend
+gcloud run deploy pyplots-frontend --source ./app --region europe-west4
+```
+
+CI/CD is handled by GitHub Actions (see `.github/workflows/`).
 
 ---
 
@@ -771,11 +425,6 @@ Rules are **Markdown** files because:
 - [Ruff Linter/Formatter](https://github.com/astral-sh/ruff)
 - [Alembic Migrations](https://alembic.sqlalchemy.org/)
 
-**Community**:
-- GitHub Issues: Report bugs, request features
-- GitHub Discussions: Ask questions, share ideas
-
 ---
 
 *For architecture details, see [architecture/](./architecture/)*
-*For deployment, see [deployment.md](./deployment.md)*

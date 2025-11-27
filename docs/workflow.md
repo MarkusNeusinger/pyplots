@@ -70,23 +70,19 @@ graph TB
 
 | Component | Purpose | Usage Notes |
 |-----------|---------|-------------|
-| **GitHub Actions** | Code generation, testing, preview gen, quality checks, deployment | See [automation-workflows.md](docs/architecture/automation-workflows.md) for detailed responsibility table |
-| **n8n Cloud Pro** | Social media monitoring, posting, issue triage, maintenance scheduling | External service integration (already subscribed) |
+| **GitHub Actions** | Code generation, testing, preview gen, quality checks, deployment | See `.github/workflows/` for implementation |
+| **n8n Cloud Pro** | Social media monitoring, posting, issue triage, maintenance scheduling | External service integration |
 | **Claude Code Max** | Code generation, routine evaluation, post content | Primary AI workload |
 | **Vertex AI (Multi-LLM)** | Critical quality decisions | Multi-LLM consensus for complex plots |
 | **Google Cloud Storage** | PNG hosting with lifecycle management | Preview images + generated plots |
 | **Cloud SQL (PostgreSQL)** | Metadata, tags, quality scores, promotion queue | All structured data |
 | **X (Twitter) API** | Social media posting | Max 2 posts/day |
 
-**For complete automation responsibilities breakdown**, see [Automation Workflows Documentation](docs/architecture/automation-workflows.md#github-actions-vs-n8n-division-of-responsibilities).
+**Workflow files**: See `.github/workflows/` for all automation implementations (ci-*, bot-*, gen-*, util-*).
 
 ---
 
 ## Core Automation Flows
-
-**Detailed technical implementation**: See [Automation Workflows](docs/architecture/automation-workflows.md)
-
-**High-Level Overview**:
 
 ### Flow 1: Discovery & Ideation
 n8n monitors social media daily → AI extracts plot ideas → Creates GitHub issues with draft specs → Human reviews and approves
@@ -255,35 +251,10 @@ Via **GitHub Issue Labels**:
 
 **Data Embedding Strategy**:
 
-1. **Small datasets** (recommended for most plots):
-   ```python
-   # Hardcoded dict/list directly in code
-   data = pd.DataFrame({
-       'category': ['A', 'B', 'C', 'D'],
-       'value': [23, 45, 56, 78]
-   })
-   ```
-
-2. **Standard datasets** (for known examples):
-   ```python
-   # Load standard dataset (always produces same data)
-   data = sns.load_dataset('iris')
-   ```
-
-3. **AI-generated data** (when needed):
-   - AI generates data **once** with fixed seed
-   - Data is then **hardcoded** into the final code
-   - Never use random generation without fixed seed
-
-4. **Seeded random** (for demonstrations):
-   ```python
-   # Fixed seed ensures reproducibility
-   np.random.seed(42)
-   data = pd.DataFrame({
-       'x': np.random.randn(100),
-       'y': np.random.randn(100)
-   })
-   ```
+1. **Small datasets** - Hardcoded dict/list directly in code (recommended)
+2. **Standard datasets** - Use `sns.load_dataset('iris')` or similar (always produces same data)
+3. **AI-generated data** - AI generates once with fixed seed, then hardcoded
+4. **Seeded random** - Use `np.random.seed(42)` for reproducibility
 
 **Why This Matters**:
 - Same code must produce same image every single time
@@ -306,17 +277,7 @@ Via **GitHub Issue Labels**:
 
 **Primary Version**: Python 3.14 (required to pass, generates plot images)
 
-**Testing Infrastructure**:
-```yaml
-# GitHub Actions Matrix Strategy
-strategy:
-  matrix:
-    python-version: ['3.11', '3.12', '3.13', '3.14']
-  fail-fast: false
-
-# Python 3.14 is required to pass - older versions are compatibility tests
-continue-on-error: ${{ matrix.python-version != '3.14' }}
-```
+**Testing Infrastructure**: GitHub Actions matrix tests all Python versions in parallel. See `ci-plottest.yml`.
 
 **Test Triggers**:
 - On Pull Request creation
@@ -394,7 +355,6 @@ continue-on-error: ${{ matrix.python-version != '3.14' }}
 - 📈 **Scientific Improvement**: Prove new rules are better with data
 
 **Current Status** (Documentation Phase):
-- ✅ Architecture documented (docs/architecture/rule-versioning.md)
 - ✅ Rule templates created (rules/templates/)
 - ✅ Initial draft rules (rules/generation/v1.0.0-draft/)
 - ⏳ Automation not yet implemented
@@ -406,7 +366,6 @@ continue-on-error: ${{ matrix.python-version != '3.14' }}
 - Rule improvements will be A/B tested before deployment
 
 **See Also**:
-- [Rule Versioning Architecture](docs/architecture/rule-versioning.md)
 - [A/B Testing Strategies](docs/concepts/ab-testing-rules.md)
 - [Claude Skill Concept](docs/concepts/claude-skill-plot-generation.md)
 

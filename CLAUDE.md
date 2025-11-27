@@ -395,11 +395,13 @@ pytest --pdb       # Debug on failure
 
 ## Key Documentation Files
 
-- **docs/development.md**: Comprehensive development guide
-- **docs/architecture/repository-structure.md**: Detailed directory structure
-- **docs/architecture/system-overview.md**: Architecture diagrams and data flows
-- **docs/workflow.md**: 7 automation workflows (Discovery → Deployment → Social)
-- **rules/README.md**: Rule versioning system documentation
+- **docs/development.md**: Development setup, testing, deployment
+- **docs/workflow.md**: Automation flows (Discovery → Deployment → Social)
+- **docs/specs-guide.md**: How to write plot specifications
+- **docs/architecture/repository.md**: Directory structure
+- **docs/architecture/api.md**: API endpoints reference
+- **docs/architecture/database.md**: Database schema
+- **rules/README.md**: Rule versioning system
 
 ## Project Philosophy
 

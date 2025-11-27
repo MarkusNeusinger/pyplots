@@ -14,21 +14,17 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
+
 # Optional: pngquant for better compression
 try:
     import subprocess
-    _HAS_PNGQUANT = subprocess.run(
-        ["pngquant", "--version"], capture_output=True
-    ).returncode == 0
+
+    _HAS_PNGQUANT = subprocess.run(["pngquant", "--version"], capture_output=True).returncode == 0
 except (FileNotFoundError, subprocess.SubprocessError):
     _HAS_PNGQUANT = False
 
 
-def create_thumbnail(
-    input_path: str | Path,
-    output_path: str | Path,
-    width: int = 600,
-) -> tuple[int, int]:
+def create_thumbnail(input_path: str | Path, output_path: str | Path, width: int = 600) -> tuple[int, int]:
     """Create a thumbnail maintaining aspect ratio.
 
     Args:
@@ -116,11 +112,7 @@ def add_watermark(
     result.convert("RGB").save(output_path, optimize=True)
 
 
-def optimize_png(
-    input_path: str | Path,
-    output_path: str | Path | None = None,
-    quality: int = 80,
-) -> int:
+def optimize_png(input_path: str | Path, output_path: str | Path | None = None, quality: int = 80) -> int:
     """Optimize PNG file size without visible quality loss.
 
     Uses Pillow's optimize flag, and pngquant if available for better results.
@@ -140,10 +132,10 @@ def optimize_png(
     if _HAS_PNGQUANT:
         # pngquant gives much better compression
         import subprocess
+
         subprocess.run(
-            ["pngquant", "--force", "--quality", f"{quality}-100",
-             "--output", str(output_path), str(input_path)],
-            check=True
+            ["pngquant", "--force", "--quality", f"{quality}-100", "--output", str(output_path), str(input_path)],
+            check=True,
         )
     else:
         # Fallback: Pillow optimize

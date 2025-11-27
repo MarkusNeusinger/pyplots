@@ -96,6 +96,13 @@ ignore = [
 quote-style = "double"
 indent-style = "space"
 line-ending = "auto"
+skip-magic-trailing-comma = true
+
+[tool.ruff.lint.isort]
+force-single-line = false
+lines-after-imports = 2
+known-first-party = ["api", "core", "automation"]
+split-on-trailing-comma = false
 
 # ===== Pytest Configuration =====
 

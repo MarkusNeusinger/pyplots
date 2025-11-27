@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
 
@@ -28,7 +29,7 @@ def create_plot(
     ylabel: Optional[str] = None,
     edgecolors: Optional[str] = None,
     linewidth: float = 0,
-    **kwargs
+    **kwargs,
 ) -> "Figure":
     """
     Create a basic scatter plot visualizing the relationship between two continuous variables.
@@ -80,16 +81,7 @@ def create_plot(
     fig, ax = plt.subplots(figsize=figsize)
 
     # Plot data
-    ax.scatter(
-        data[x],
-        data[y],
-        s=size,
-        alpha=alpha,
-        c=color,
-        edgecolors=edgecolors,
-        linewidth=linewidth,
-        **kwargs
-    )
+    ax.scatter(data[x], data[y], s=size, alpha=alpha, c=color, edgecolors=edgecolors, linewidth=linewidth, **kwargs)
 
     # Labels and title
     ax.set_xlabel(xlabel or x)
@@ -107,26 +99,21 @@ def create_plot(
     return fig
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Sample data for testing - many points to demonstrate basic scatter
     np.random.seed(42)
     n_points = 500
 
-    data = pd.DataFrame({
-        'x': np.random.randn(n_points) * 2 + 10,
-        'y': np.random.randn(n_points) * 3 + 15 + np.random.randn(n_points) * 0.5
-    })
-
-    # Create plot
-    fig = create_plot(
-        data,
-        'x',
-        'y',
-        title='Basic Scatter Plot Example',
-        xlabel='X Value',
-        ylabel='Y Value'
+    data = pd.DataFrame(
+        {
+            "x": np.random.randn(n_points) * 2 + 10,
+            "y": np.random.randn(n_points) * 3 + 15 + np.random.randn(n_points) * 0.5,
+        }
     )
 
+    # Create plot
+    fig = create_plot(data, "x", "y", title="Basic Scatter Plot Example", xlabel="X Value", ylabel="Y Value")
+
     # Save for inspection - ALWAYS use 'plot.png' as filename
-    plt.savefig('plot.png', dpi=300, bbox_inches='tight')
+    plt.savefig("plot.png", dpi=300, bbox_inches="tight")
     print("Plot saved to plot.png")

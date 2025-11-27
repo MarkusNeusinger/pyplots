@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Optional
 import matplotlib.pyplot as plt
 import pandas as pd
 
+
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
 
@@ -25,7 +26,7 @@ def create_plot(
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
     figsize: tuple[float, float] = (16, 9),
-    **kwargs
+    **kwargs,
 ) -> "Figure":
     """
     Create a basic histogram showing the distribution of numeric data.
@@ -78,14 +79,7 @@ def create_plot(
     fig, ax = plt.subplots(figsize=figsize)
 
     # Create histogram
-    ax.hist(
-        values,
-        bins=bins,
-        color=color,
-        alpha=alpha,
-        edgecolor=edgecolor,
-        **kwargs
-    )
+    ax.hist(values, bins=bins, color=color, alpha=alpha, edgecolor=edgecolor, **kwargs)
 
     # Apply styling
     ax.set_xlabel(xlabel or column)
@@ -105,18 +99,12 @@ def create_plot(
 if __name__ == "__main__":
     # Sample data for testing
     import numpy as np
+
     np.random.seed(42)
-    data = pd.DataFrame({
-        "Values": np.random.normal(loc=100, scale=15, size=1000)
-    })
+    data = pd.DataFrame({"Values": np.random.normal(loc=100, scale=15, size=1000)})
 
     # Create plot
-    fig = create_plot(
-        data,
-        column="Values",
-        bins=40,
-        title="Distribution of Values"
-    )
+    fig = create_plot(data, column="Values", bins=40, title="Distribution of Values")
 
     # Save for inspection
     plt.savefig("plot.png", dpi=300, bbox_inches="tight")

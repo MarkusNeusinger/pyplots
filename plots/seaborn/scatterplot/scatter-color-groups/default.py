@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
+
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
 
@@ -27,7 +28,7 @@ def create_plot(
     xlabel: str | None = None,
     ylabel: str | None = None,
     palette: str = "Set1",
-    **kwargs
+    **kwargs,
 ) -> "Figure":
     """
     Create a scatter plot with points colored by categorical groups using seaborn.
@@ -75,25 +76,13 @@ def create_plot(
     for col in required_cols:
         if col not in data.columns:
             available = ", ".join(data.columns)
-            raise KeyError(
-                f"Column '{col}' not found in data. Available columns: {available}"
-            )
+            raise KeyError(f"Column '{col}' not found in data. Available columns: {available}")
 
     # Create figure
     fig, ax = plt.subplots(figsize=figsize)
 
     # Create scatter plot with hue for grouping
-    sns.scatterplot(
-        data=data,
-        x=x,
-        y=y,
-        hue=group,
-        palette=palette,
-        alpha=alpha,
-        s=size,
-        ax=ax,
-        **kwargs
-    )
+    sns.scatterplot(data=data, x=x, y=y, hue=group, palette=palette, alpha=alpha, s=size, ax=ax, **kwargs)
 
     # Set labels
     ax.set_xlabel(xlabel or x, fontsize=11)
@@ -117,15 +106,13 @@ def create_plot(
 
 if __name__ == "__main__":
     # Sample data for testing
-    data = pd.DataFrame({
-        "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5],
-        "y": [2, 4, 3, 5, 6, 4, 7, 8, 9, 10, 3, 5, 4, 6, 7, 5],
-        "group": [
-            "A", "A", "A", "A", "A", "A",
-            "B", "B", "B", "B",
-            "C", "C", "C", "C", "C", "C"
-        ]
-    })
+    data = pd.DataFrame(
+        {
+            "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5],
+            "y": [2, 4, 3, 5, 6, 4, 7, 8, 9, 10, 3, 5, 4, 6, 7, 5],
+            "group": ["A", "A", "A", "A", "A", "A", "B", "B", "B", "B", "C", "C", "C", "C", "C", "C"],
+        }
+    )
 
     # Create plot
     fig = create_plot(data, "x", "y", "group", title="Scatter Plot with Color Groups")

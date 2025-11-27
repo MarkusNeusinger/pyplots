@@ -51,14 +51,11 @@ def extract_and_validate_code(response_text: str) -> str:
     return code
 
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 def retry_with_backoff(
-    func: Callable[[], T],
-    max_retries: int = 3,
-    initial_delay: float = 2.0,
-    backoff_factor: float = 2.0
+    func: Callable[[], T], max_retries: int = 3, initial_delay: float = 2.0, backoff_factor: float = 2.0
 ) -> T:
     """
     Retry a function with exponential backoff.
@@ -84,7 +81,9 @@ def retry_with_backoff(
         except (RateLimitError, APIConnectionError) as e:
             last_exception = e
             if attempt < max_retries:
-                print(f"⚠️  API error: {type(e).__name__}. Retrying in {delay}s... (attempt {attempt + 1}/{max_retries})")
+                print(
+                    f"⚠️  API error: {type(e).__name__}. Retrying in {delay}s... (attempt {attempt + 1}/{max_retries})"
+                )
                 time.sleep(delay)
                 delay *= backoff_factor
             else:
@@ -111,7 +110,8 @@ def load_spec(spec_id: str) -> str:
 
     # Check spec version
     import re
-    version_match = re.search(r'\*\*Spec Version:\*\*\s+(\d+\.\d+\.\d+)', content)
+
+    version_match = re.search(r"\*\*Spec Version:\*\*\s+(\d+\.\d+\.\d+)", content)
     if version_match:
         spec_version = version_match.group(1)
         print(f"📋 Spec version: {spec_version}")
@@ -150,7 +150,7 @@ def generate_code(
     library: LibraryType,
     variant: str = "default",
     rules_version: str = "v1.0.0-draft",
-    max_attempts: int = 3
+    max_attempts: int = 3,
 ) -> dict:
     """
     Generate plot implementation code using Claude
@@ -180,7 +180,7 @@ def generate_code(
 
     # Determine output path
     # Format: plots/{library}/{plot_type}/{spec_id}/{variant}.py
-    spec_type = spec_id.split('-')[0]  # e.g., "scatter" from "scatter-basic-001"
+    spec_type = spec_id.split("-")[0]  # e.g., "scatter" from "scatter-basic-001"
 
     # Library-specific plot type mapping
     plot_type_map = {
@@ -257,9 +257,7 @@ Generate the improved implementation:"""
         current_prompt = prompt  # Capture for lambda
         response = retry_with_backoff(
             lambda p=current_prompt: client.messages.create(
-                model="claude-sonnet-4-20250514",
-                max_tokens=4000,
-                messages=[{"role": "user", "content": p}]
+                model="claude-sonnet-4-20250514", max_tokens=4000, messages=[{"role": "user", "content": p}]
             )
         )
 
@@ -311,9 +309,7 @@ Format your response as:
         current_review_prompt = review_prompt  # Capture for lambda
         review_response = retry_with_backoff(
             lambda p=current_review_prompt: client.messages.create(
-                model="claude-sonnet-4-20250514",
-                max_tokens=2000,
-                messages=[{"role": "user", "content": p}]
+                model="claude-sonnet-4-20250514", max_tokens=2000, messages=[{"role": "user", "content": p}]
             )
         )
 
@@ -327,7 +323,7 @@ Format your response as:
                 "file_path": str(file_path),
                 "attempt_count": attempt,
                 "passed_review": True,
-                "review_feedback": review_feedback
+                "review_feedback": review_feedback,
             }
         else:
             print(f"❌ Self-review failed on attempt {attempt}")
@@ -342,7 +338,7 @@ Format your response as:
         "file_path": str(file_path),
         "attempt_count": max_attempts,
         "passed_review": False,
-        "review_feedback": review_feedback
+        "review_feedback": review_feedback,
     }
 
 
@@ -360,8 +356,9 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Generate plot implementation from spec")
     parser.add_argument("spec_id", help="Specification ID (e.g., scatter-basic-001)")
-    parser.add_argument("library", choices=["matplotlib", "seaborn", "plotly", "bokeh", "altair"],
-                        help="Target library")
+    parser.add_argument(
+        "library", choices=["matplotlib", "seaborn", "plotly", "bokeh", "altair"], help="Target library"
+    )
     parser.add_argument("--variant", default="default", help="Variant name (default: default)")
     parser.add_argument("--rules-version", default="v1.0.0-draft", help="Rules version")
     parser.add_argument("--max-attempts", type=int, default=3, help="Max self-review attempts")
@@ -374,14 +371,14 @@ if __name__ == "__main__":
             library=args.library,
             variant=args.variant,
             rules_version=args.rules_version,
-            max_attempts=args.max_attempts
+            max_attempts=args.max_attempts,
         )
 
         # Save code
         file_path = save_implementation(result)
 
         # Print summary
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("✅ Generation complete!")
         print(f"   Spec: {args.spec_id}")
         print(f"   Library: {args.library}")
@@ -389,10 +386,10 @@ if __name__ == "__main__":
         print(f"   File: {file_path}")
         print(f"   Attempts: {result['attempt_count']}")
         print(f"   Review: {'✅ PASSED' if result['passed_review'] else '❌ FAILED'}")
-        print("="*60)
+        print("=" * 60)
 
         # Exit with appropriate code
-        sys.exit(0 if result['passed_review'] else 1)
+        sys.exit(0 if result["passed_review"] else 1)
 
     except Exception as e:
         print(f"❌ Error: {e}", file=sys.stderr)

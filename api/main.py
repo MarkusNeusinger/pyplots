@@ -11,10 +11,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -64,12 +63,7 @@ async def root():
     """
     Root endpoint - Hello World.
     """
-    return {
-        "message": "Welcome to pyplots API",
-        "version": "0.1.0",
-        "docs": "/docs",
-        "health": "/health",
-    }
+    return {"message": "Welcome to pyplots API", "version": "0.1.0", "docs": "/docs", "health": "/health"}
 
 
 @app.get("/health")
@@ -77,10 +71,7 @@ async def health_check():
     """
     Health check endpoint for Cloud Run.
     """
-    return JSONResponse(
-        content={"status": "healthy", "service": "pyplots-api", "version": "0.1.0"},
-        status_code=200,
-    )
+    return JSONResponse(content={"status": "healthy", "service": "pyplots-api", "version": "0.1.0"}, status_code=200)
 
 
 # Simple hello endpoint

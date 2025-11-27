@@ -6,7 +6,7 @@ on:
 
 concurrency:
   group: validate-plot-request-${{ github.event.issue.number }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   validate-and-assign-id:

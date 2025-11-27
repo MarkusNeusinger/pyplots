@@ -15,6 +15,7 @@ from typing import Callable, Literal, TypeVar
 import anthropic
 from anthropic import APIConnectionError, APIError, RateLimitError
 
+
 LibraryType = Literal["matplotlib", "seaborn", "plotly", "bokeh", "altair"]
 
 

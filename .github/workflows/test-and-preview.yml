@@ -2,7 +2,7 @@ name: Test and Generate Plots
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
     paths:
       - 'plots/**/*.py'
       - 'specs/**/*.md'
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.11', '3.12', '3.13', '3.14']
+        python-version: [ '3.11', '3.12', '3.13', '3.14' ]
       fail-fast: false
 
     steps:
@@ -103,346 +103,268 @@ jobs:
         run: |
           echo "ℹ️ No plot files changed in this PR - skipping tests"
 
-  generate-plots:
-    name: Generate Plots and Post to Issue
-    needs: test-plots
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-      issues: write
+generate-plots:
+  name: Generate Plots and Post to Issue
+  needs: test-plots
+  runs-on: ubuntu-latest
+  permissions:
+    contents: read
+    pull-requests: write
+    issues: write
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-      - name: Set up Python 3.14
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.14'
+    - name: Set up Python 3.14
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.14'
 
-      - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+    - name: Install uv
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
-      - name: Install dependencies
-        run: |
-          uv sync --all-extras
-          uv pip install pillow
+    - name: Install dependencies
+      run: |
+        uv sync --all-extras
+        uv pip install pillow
 
-      - name: Find changed plot files
-        id: changed_plots
-        run: |
-          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'plots/**/*.py' || echo "")
+    - name: Find changed plot files
+      id: changed_plots
+      run: |
+        CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'plots/**/*.py' || echo "")
+        
+        if [ -z "$CHANGED_FILES" ]; then
+          echo "No plot files changed"
+          echo "has_plots=false" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+        
+        echo "has_plots=true" >> $GITHUB_OUTPUT
+        # JSON Array sicher erstellen
+        CHANGED_ARRAY=$(echo "$CHANGED_FILES" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+        echo "changed_files=$CHANGED_ARRAY" >> $GITHUB_OUTPUT
 
-          if [ -z "$CHANGED_FILES" ]; then
-            echo "No plot files changed"
-            echo "has_plots=false" >> $GITHUB_OUTPUT
-            exit 0
+    - name: Extract issue number from PR
+      id: get_issue
+      if: steps.changed_plots.outputs.has_plots == 'true'
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        PR_BODY=$(gh pr view ${{ github.event.pull_request.number }} --json body -q '.body')
+        ISSUE_NUM=$(echo "$PR_BODY" | grep -oP '#\K\d+' | head -1 || echo "")
+        
+        if [ -z "$ISSUE_NUM" ]; then
+          BRANCH="${{ github.head_ref }}"
+          SPEC_ID=$(echo "$BRANCH" | sed 's/auto\///')
+          ISSUE_NUM=$(gh issue list --label plot-request --search "$SPEC_ID in:title" --json number -q '.[0].number' || echo "")
+        fi
+        
+        echo "issue_num=$ISSUE_NUM" >> $GITHUB_OUTPUT
+        echo "Found issue: #$ISSUE_NUM"
+
+    - name: Setup Google Cloud authentication
+      if: steps.changed_plots.outputs.has_plots == 'true'
+      id: gcs_auth
+      continue-on-error: true
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCS_CREDENTIALS }}
+
+    - name: Setup gcloud CLI
+      if: steps.changed_plots.outputs.has_plots == 'true' && steps.gcs_auth.outcome == 'success'
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: Generate timestamp
+      id: timestamp
+      run: |
+        TIMESTAMP=$(date -u +"%Y-%m-%dT%H%M%SZ")
+        echo "value=$TIMESTAMP" >> $GITHUB_OUTPUT
+
+    - name: Detect previous versions and generate plots
+      id: generate_plots
+      if: steps.changed_plots.outputs.has_plots == 'true'
+      env:
+        GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
+        TIMESTAMP: ${{ steps.timestamp.outputs.value }}
+        GCS_AUTH_SUCCESS: ${{ steps.gcs_auth.outcome }}
+      run: |
+        mkdir -p plot_outputs
+        echo "{}" > previous_versions.json
+        
+        echo '${{ steps.changed_plots.outputs.changed_files }}' | jq -r '.[]' | while read -r file; do
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📊 Processing: $file"
+        
+          if [[ $file =~ ^plots/([^/]+)/([^/]+)/([^/]+)/([^/]+)\.py$ ]]; then
+            LIBRARY="${BASH_REMATCH[1]}"
+            PLOT_TYPE="${BASH_REMATCH[2]}"
+            SPEC_ID="${BASH_REMATCH[3]}"
+            VARIANT="${BASH_REMATCH[4]}"
+          else
+            echo "⚠️  Invalid file path format: $file"
+            continue
           fi
-
-          echo "has_plots=true" >> $GITHUB_OUTPUT
-          CHANGED_ARRAY=$(echo "$CHANGED_FILES" | jq -R -s -c 'split("\n") | map(select(length > 0))')
-          echo "changed_files=$CHANGED_ARRAY" >> $GITHUB_OUTPUT
-
-      - name: Extract issue number from PR
-        id: get_issue
-        if: steps.changed_plots.outputs.has_plots == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Try to find issue number from PR body (looks for #XX references)
-          PR_BODY=$(gh pr view ${{ github.event.pull_request.number }} --json body -q '.body')
-          ISSUE_NUM=$(echo "$PR_BODY" | grep -oP '#\K\d+' | head -1 || echo "")
-
-          if [ -z "$ISSUE_NUM" ]; then
-            # Fallback: Extract spec ID from branch and find matching issue
-            BRANCH="${{ github.head_ref }}"
-            SPEC_ID=$(echo "$BRANCH" | sed 's/auto\///')
-            ISSUE_NUM=$(gh issue list --label plot-request --search "$SPEC_ID in:title" --json number -q '.[0].number' || echo "")
+        
+          OUTPUT_DIR="plot_outputs/${SPEC_ID}/${LIBRARY}/${VARIANT}"
+          mkdir -p "$OUTPUT_DIR"
+          FULL_FILE="${OUTPUT_DIR}/v${TIMESTAMP}.png"
+          THUMB_FILE="${OUTPUT_DIR}/v${TIMESTAMP}_thumb.png"
+        
+          PREVIOUS_URL=""
+          VERSION_COUNT=0
+        
+          if [ "$GCS_AUTH_SUCCESS" == "success" ] && [ -n "$GCS_BUCKET" ]; then
+            GCS_PATH="gs://${GCS_BUCKET}/plots/${SPEC_ID}/${LIBRARY}/${VARIANT}/"
+            VERSIONS=$(gsutil ls "${GCS_PATH}v*.png" 2>/dev/null | grep -v "_thumb" | sort || echo "")
+        
+            if [ -n "$VERSIONS" ]; then
+              VERSION_COUNT=$(echo "$VERSIONS" | wc -l)
+              PREVIOUS_GCS=$(echo "$VERSIONS" | tail -1)
+              PREVIOUS_URL=$(echo "$PREVIOUS_GCS" | sed "s|gs://${GCS_BUCKET}|https://storage.googleapis.com/${GCS_BUCKET}|")
+        
+              jq --arg key "${SPEC_ID}_${LIBRARY}_${VARIANT}" \
+                 --arg url "$PREVIOUS_URL" \
+                 --arg count "$VERSION_COUNT" \
+                 '. + {($key): {"url": $url, "count": ($count | tonumber)}}' \
+                 previous_versions.json > tmp.json && mv tmp.json previous_versions.json
+            fi
           fi
+        
+          echo "🎨 Generating plot..."
+          MPLBACKEND=Agg uv run python "$file" 2>&1 | tee "${OUTPUT_DIR}/generation.log"
+        
+          FOUND_IMAGE=false
+          for img in "test_output.png" "output.png" "${SPEC_ID}.png" "preview.png"; do
+            if [ -f "$img" ]; then
+              mv "$img" "$FULL_FILE"
+              FOUND_IMAGE=true
+              break
+            fi
+          done
+        
+          if [ "$FOUND_IMAGE" == "false" ]; then
+            echo "⚠️  No output image found for $file"
+            continue
+          fi
+        
+          echo "🖼️  Processing image..."
+          uv run python -m core.images process "$FULL_FILE" "$FULL_FILE" "$THUMB_FILE"
+        done
 
-          echo "issue_num=$ISSUE_NUM" >> $GITHUB_OUTPUT
-          echo "Found issue: #$ISSUE_NUM"
+    - name: Upload plots to GCS
+      if: steps.changed_plots.outputs.has_plots == 'true' && steps.gcs_auth.outcome == 'success'
+      continue-on-error: true
+      run: |
+        gsutil -m cp -r plot_outputs/* gs://${{ secrets.GCS_BUCKET }}/plots/
 
-      - name: Setup Google Cloud authentication
-        if: steps.changed_plots.outputs.has_plots == 'true'
-        id: gcs_auth
-        continue-on-error: true
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCS_CREDENTIALS }}
-
-      - name: Setup gcloud CLI
-        if: steps.changed_plots.outputs.has_plots == 'true' && steps.gcs_auth.outcome == 'success'
-        uses: google-github-actions/setup-gcloud@v2
-
-      - name: Generate timestamp
-        id: timestamp
-        run: |
-          # ISO format timestamp (URL-safe: no colons)
-          TIMESTAMP=$(date -u +"%Y-%m-%dT%H%M%SZ")
-          echo "value=$TIMESTAMP" >> $GITHUB_OUTPUT
-          echo "Generated timestamp: $TIMESTAMP"
-
-      - name: Detect previous versions and generate plots
-        id: generate_plots
-        if: steps.changed_plots.outputs.has_plots == 'true'
-        env:
-          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
-          TIMESTAMP: ${{ steps.timestamp.outputs.value }}
-          GCS_AUTH_SUCCESS: ${{ steps.gcs_auth.outcome }}
-        run: |
-          mkdir -p plot_outputs
-
-          # Store previous versions info for later
-          echo "{}" > previous_versions.json
-
+    - name: Post results to Issue
+      if: steps.changed_plots.outputs.has_plots == 'true' && steps.get_issue.outputs.issue_num != ''
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
+        TIMESTAMP: ${{ steps.timestamp.outputs.value }}
+      shell: bash
+      run: |
+        ISSUE_NUM="${{ steps.get_issue.outputs.issue_num }}"
+        PR_NUM="${{ github.event.pull_request.number }}"
+        
+        touch plot_markdown.txt
+        
+        if [ "${{ steps.gcs_auth.outcome }}" == "success" ]; then
+          PREV_VERSIONS=$(cat previous_versions.json)
+        
           echo '${{ steps.changed_plots.outputs.changed_files }}' | jq -r '.[]' | while read -r file; do
-            echo ""
-            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            echo "📊 Processing: $file"
-            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-            # Extract spec_id, library, variant from path
             if [[ $file =~ ^plots/([^/]+)/([^/]+)/([^/]+)/([^/]+)\.py$ ]]; then
               LIBRARY="${BASH_REMATCH[1]}"
-              PLOT_TYPE="${BASH_REMATCH[2]}"
               SPEC_ID="${BASH_REMATCH[3]}"
               VARIANT="${BASH_REMATCH[4]}"
-            else
-              echo "⚠️  Invalid file path format: $file"
-              continue
-            fi
-
-            # Create directory structure matching GCS path
-            OUTPUT_DIR="plot_outputs/${SPEC_ID}/${LIBRARY}/${VARIANT}"
-            mkdir -p "$OUTPUT_DIR"
-
-            FULL_FILE="${OUTPUT_DIR}/v${TIMESTAMP}.png"
-            THUMB_FILE="${OUTPUT_DIR}/v${TIMESTAMP}_thumb.png"
-
-            # Check for previous versions in GCS
-            PREVIOUS_URL=""
-            VERSION_COUNT=0
-            if [ "$GCS_AUTH_SUCCESS" == "success" ] && [ -n "$GCS_BUCKET" ]; then
-              GCS_PATH="gs://${GCS_BUCKET}/plots/${SPEC_ID}/${LIBRARY}/${VARIANT}/"
-              echo "🔍 Checking for previous versions at: $GCS_PATH"
-
-              VERSIONS=$(gsutil ls "${GCS_PATH}v*.png" 2>/dev/null | grep -v "_thumb" | sort || echo "")
-
-              if [ -n "$VERSIONS" ]; then
-                VERSION_COUNT=$(echo "$VERSIONS" | wc -l)
-                PREVIOUS_GCS=$(echo "$VERSIONS" | tail -1)
-                PREVIOUS_URL=$(echo "$PREVIOUS_GCS" | sed "s|gs://${GCS_BUCKET}|https://storage.googleapis.com/${GCS_BUCKET}|")
-                echo "📜 Found ${VERSION_COUNT} previous version(s)"
-                echo "   Latest: $PREVIOUS_URL"
-
-                # Store previous version info
-                jq --arg key "${SPEC_ID}_${LIBRARY}_${VARIANT}" \
-                   --arg url "$PREVIOUS_URL" \
-                   --arg count "$VERSION_COUNT" \
-                   '. + {($key): {"url": $url, "count": ($count | tonumber)}}' \
-                   previous_versions.json > tmp.json && mv tmp.json previous_versions.json
+        
+              KEY="${SPEC_ID}_${LIBRARY}_${VARIANT}"
+              NEW_URL="https://storage.googleapis.com/${GCS_BUCKET}/plots/${SPEC_ID}/${LIBRARY}/${VARIANT}/v${TIMESTAMP}.png"
+              HISTORY_URL="https://console.cloud.google.com/storage/browser/${GCS_BUCKET}/plots/${SPEC_ID}/${LIBRARY}/${VARIANT}"
+        
+              PREV_URL=$(echo "$PREV_VERSIONS" | jq -r --arg key "$KEY" '.[$key].url // empty')
+              PREV_COUNT=$(echo "$PREV_VERSIONS" | jq -r --arg key "$KEY" '.[$key].count // 0')
+        
+              if [ -n "$PREV_URL" ] && [ "$PREV_URL" != "null" ]; then
+                NEW_COUNT=$((PREV_COUNT + 1))
+                # ACHTUNG: PLOTEOF muss am Zeilenanfang stehen!
+                cat >> plot_markdown.txt << 'PLOTEOF'
+        ### ${LIBRARY} (${VARIANT}) - UPDATE
+        
+        | Before | After |
+        |--------|-------|
+        | ![Before](${PREV_URL}) | ![After](${NEW_URL}) |
+        
+        [View version history (${NEW_COUNT} versions)](${HISTORY_URL})
+        PLOTEOF
+                # Sed with | delimiter to act safely on URLs
+                sed -i "s|\${LIBRARY}|${LIBRARY}|g; s|\${VARIANT}|${VARIANT}|g; s|\${PREV_URL}|${PREV_URL}|g; s|\${NEW_URL}|${NEW_URL}|g; s|\${NEW_COUNT}|${NEW_COUNT}|g; s|\${HISTORY_URL}|${HISTORY_URL}|g" plot_markdown.txt
               else
-                echo "🆕 No previous versions found - this is a new plot"
+                cat >> plot_markdown.txt << 'PLOTEOF'
+        ### ${LIBRARY} (${VARIANT}) - NEW
+        
+        ![${LIBRARY} ${VARIANT}](${NEW_URL})
+        PLOTEOF
+                sed -i "s|\${LIBRARY}|${LIBRARY}|g; s|\${VARIANT}|${VARIANT}|g; s|\${NEW_URL}|${NEW_URL}|g" plot_markdown.txt
               fi
             fi
-
-            # Execute plot and capture output
-            echo "🎨 Generating plot..."
-            MPLBACKEND=Agg uv run python "$file" 2>&1 | tee "${OUTPUT_DIR}/generation.log"
-
-            # Find and move generated image
-            FOUND_IMAGE=false
-            for img in "test_output.png" "output.png" "${SPEC_ID}.png" "preview.png"; do
-              if [ -f "$img" ]; then
-                mv "$img" "$FULL_FILE"
-                echo "✅ Full image: $FULL_FILE"
-                FOUND_IMAGE=true
-                break
-              fi
-            done
-
-            if [ "$FOUND_IMAGE" = false ]; then
-              echo "⚠️  No output image found for $file"
-              continue
-            fi
-
-            # Process image: add watermark and generate thumbnail
-            echo "🖼️  Processing image (watermark + thumbnail)..."
-            uv run python -m core.images process "$FULL_FILE" "$FULL_FILE" "$THUMB_FILE"
-            echo "✅ Processed: $FULL_FILE + $THUMB_FILE"
           done
+        fi
+        
+        PLOT_MARKDOWN=$(cat plot_markdown.txt 2>/dev/null || echo "")
+        
+        # ACHTUNG: COMMENTEOF muss am Zeilenanfang stehen!
+        cat > comment_body.md << COMMENTEOF
+        ## 🧪 Test Results (PR #${PR_NUM})
+        
+        | Python | Status | Note |
+        |--------|--------|------|
+        | 3.14   | ✅ Pass | Primary (plot generated) |
+        | 3.13   | ℹ️ See workflow | Compatibility test |
+        | 3.12   | ℹ️ See workflow | Compatibility test |
+        | 3.11   | ℹ️ See workflow | Compatibility test |
+        
+        **Note:** Code is optimized for Python 3.14.
+        
+        ## 📊 Plot (Python 3.14)
+        ${PLOT_MARKDOWN}
+        
+        ---
+        🤖 *Generated by [test-and-preview workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*
+        COMMENTEOF
+        
+        gh issue comment "$ISSUE_NUM" --body-file comment_body.md
 
-      - name: Upload plots to GCS
-        if: steps.changed_plots.outputs.has_plots == 'true' && steps.gcs_auth.outcome == 'success'
-        continue-on-error: true
-        run: |
-          echo "📤 Uploading plots to GCS..."
-          gsutil -m cp -r plot_outputs/* gs://${{ secrets.GCS_BUCKET }}/plots/
-          echo "✅ Upload complete"
+    - name: Save plot metadata
+      if: steps.changed_plots.outputs.has_plots == 'true'
+      env:
+        GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
+        TIMESTAMP: ${{ steps.timestamp.outputs.value }}
+      run: |
+        # ACHTUNG: EOF muss am Zeilenanfang stehen!
+        cat > plot_metadata.json <<EOF
+        {
+          "pr_number": ${{ github.event.pull_request.number }},
+          "issue_number": "${{ steps.get_issue.outputs.issue_num }}",
+          "bucket": "${GCS_BUCKET}",
+          "base_path": "plots",
+          "timestamp": "${TIMESTAMP}",
+          "python_version": "3.14",
+          "changed_files": ${{ steps.changed_plots.outputs.changed_files }}
+        }
+        EOF
 
-      - name: Post results to Issue
-        if: steps.changed_plots.outputs.has_plots == 'true' && steps.get_issue.outputs.issue_num != ''
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
-          TIMESTAMP: ${{ steps.timestamp.outputs.value }}
-        shell: bash
-        run: |
-          ISSUE_NUM="${{ steps.get_issue.outputs.issue_num }}"
-          PR_NUM="${{ github.event.pull_request.number }}"
-
-          # Build plot images markdown with before/after comparison
-          touch plot_markdown.txt
-
-          if [ "${{ steps.gcs_auth.outcome }}" == "success" ]; then
-            PREV_VERSIONS=$(cat previous_versions.json)
-
-            echo '${{ steps.changed_plots.outputs.changed_files }}' | jq -r '.[]' | while read -r file; do
-              if [[ $file =~ ^plots/([^/]+)/([^/]+)/([^/]+)/([^/]+)\.py$ ]]; then
-                LIBRARY="${BASH_REMATCH[1]}"
-                SPEC_ID="${BASH_REMATCH[3]}"
-                VARIANT="${BASH_REMATCH[4]}"
-
-                KEY="${SPEC_ID}_${LIBRARY}_${VARIANT}"
-                NEW_URL="https://storage.googleapis.com/${GCS_BUCKET}/plots/${SPEC_ID}/${LIBRARY}/${VARIANT}/v${TIMESTAMP}.png"
-                HISTORY_URL="https://console.cloud.google.com/storage/browser/${GCS_BUCKET}/plots/${SPEC_ID}/${LIBRARY}/${VARIANT}"
-
-                PREV_URL=$(echo "$PREV_VERSIONS" | jq -r --arg key "$KEY" '.[$key].url // empty')
-                PREV_COUNT=$(echo "$PREV_VERSIONS" | jq -r --arg key "$KEY" '.[$key].count // 0')
-
-                if [ -n "$PREV_URL" ] && [ "$PREV_URL" != "null" ]; then
-                  NEW_COUNT=$((PREV_COUNT + 1))
-                  cat >> plot_markdown.txt << 'PLOTEOF'
-### ${LIBRARY} (${VARIANT}) - UPDATE
-
-| Before | After |
-|--------|-------|
-| ![Before](${PREV_URL}) | ![After](${NEW_URL}) |
-
-[View version history (${NEW_COUNT} versions)](${HISTORY_URL})
-PLOTEOF
-                  sed -i "s/\${LIBRARY}/${LIBRARY}/g; s/\${VARIANT}/${VARIANT}/g; s/\${PREV_URL}/${PREV_URL//\//\\/}/g; s/\${NEW_URL}/${NEW_URL//\//\\/}/g; s/\${NEW_COUNT}/${NEW_COUNT}/g; s/\${HISTORY_URL}/${HISTORY_URL//\//\\/}/g" plot_markdown.txt
-                else
-                  cat >> plot_markdown.txt << 'PLOTEOF'
-### ${LIBRARY} (${VARIANT}) - NEW
-
-![${LIBRARY} ${VARIANT}](${NEW_URL})
-PLOTEOF
-                  sed -i "s/\${LIBRARY}/${LIBRARY}/g; s/\${VARIANT}/${VARIANT}/g; s/\${NEW_URL}/${NEW_URL//\//\\/}/g" plot_markdown.txt
-                fi
-              fi
-            done
-          fi
-
-          PLOT_MARKDOWN=$(cat plot_markdown.txt 2>/dev/null || echo "")
-
-          # Create comment using heredoc
-          cat > comment_body.md << COMMENTEOF
-## 🧪 Test Results (PR #${PR_NUM})
-
-| Python | Status | Note |
-|--------|--------|------|
-| 3.14   | ✅ Pass | Primary (plot generated) |
-| 3.13   | ℹ️ See workflow | Compatibility test |
-| 3.12   | ℹ️ See workflow | Compatibility test |
-| 3.11   | ℹ️ See workflow | Compatibility test |
-
-**Note:** Code is optimized for Python 3.14. Older versions may not be compatible.
-
-## 📊 Plot (Python 3.14)
-${PLOT_MARKDOWN}
-
----
-🤖 *Generated by [test-and-preview workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*
-COMMENTEOF
-
-          gh issue comment "$ISSUE_NUM" --body-file comment_body.md
-          echo "✅ Posted results to issue #$ISSUE_NUM"
-
-      - name: Comment on PR with plots
-        if: steps.changed_plots.outputs.has_plots == 'true' && steps.gcs_auth.outcome == 'success'
-        env:
-          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
-          TIMESTAMP: ${{ steps.timestamp.outputs.value }}
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const path = require('path');
-
-            let plotMarkdown = '';
-            const plotDir = 'plot_outputs';
-            const bucket = process.env.GCS_BUCKET;
-            const timestamp = process.env.TIMESTAMP;
-
-            // Walk through plot_outputs directory structure
-            if (fs.existsSync(plotDir)) {
-              const specIds = fs.readdirSync(plotDir, { withFileTypes: true })
-                .filter(d => d.isDirectory())
-                .map(d => d.name);
-
-              for (const specId of specIds) {
-                const specPath = path.join(plotDir, specId);
-                const libraries = fs.readdirSync(specPath, { withFileTypes: true })
-                  .filter(d => d.isDirectory())
-                  .map(d => d.name);
-
-                for (const library of libraries) {
-                  const libPath = path.join(specPath, library);
-                  const variants = fs.readdirSync(libPath, { withFileTypes: true })
-                    .filter(d => d.isDirectory())
-                    .map(d => d.name);
-
-                  for (const variant of variants) {
-                    const fullFile = `v${timestamp}.png`;
-                    const url = `https://storage.googleapis.com/${bucket}/plots/${specId}/${library}/${variant}/${fullFile}`;
-                    plotMarkdown += `### ${library} (${variant})\n![${specId}](${url})\n\n`;
-                  }
-                }
-              }
-            }
-
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: `## 🎨 Plot Images (Python 3.14)
-
-${plotMarkdown}
-
----
-*Generated by [test-and-preview workflow](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})*`
-            });
-
-      - name: Save plot metadata
-        if: steps.changed_plots.outputs.has_plots == 'true'
-        env:
-          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
-          TIMESTAMP: ${{ steps.timestamp.outputs.value }}
-        run: |
-          cat > plot_metadata.json <<EOF
-          {
-            "pr_number": ${{ github.event.pull_request.number }},
-            "issue_number": "${{ steps.get_issue.outputs.issue_num }}",
-            "bucket": "${GCS_BUCKET}",
-            "base_path": "plots",
-            "timestamp": "${TIMESTAMP}",
-            "python_version": "3.14",
-            "changed_files": ${{ steps.changed_plots.outputs.changed_files }}
-          }
-          EOF
-
-      - name: Upload metadata artifact
-        if: steps.changed_plots.outputs.has_plots == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: plot-metadata
-          path: |
-            plot_metadata.json
-            previous_versions.json
+    - name: Upload metadata artifact
+      if: steps.changed_plots.outputs.has_plots == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: plot-metadata
+        path: |
+          plot_metadata.json
+          previous_versions.json

@@ -289,7 +289,7 @@ jobs:
             MPLBACKEND=Agg uv run python "$file" 2>&1 | tee "${OUTPUT_DIR}/generation.log"
           
             FOUND_IMAGE=false
-            for img in "test_output.png" "output.png" "${SPEC_ID}.png" "preview.png"; do
+            for img in "plot.png" "test_output.png" "output.png" "${SPEC_ID}.png" "preview.png"; do
               if [ -f "$img" ]; then
                 mv "$img" "$FULL_FILE"
                 FOUND_IMAGE=true

@@ -109,10 +109,15 @@ if __name__ == '__main__':
     # Create plot
     fig = create_plot(data, ...)
 
-    # Save for inspection
-    plt.savefig('test_output.png', dpi=150)
-    print("Plot saved to test_output.png")
+    # Save for inspection - ALWAYS use 'plot.png' as filename
+    plt.savefig('plot.png', dpi=200)
+    print("Plot saved to plot.png")
 ```
+
+> **WICHTIG**: Der Ausgabe-Dateiname MUSS immer `plot.png` sein - unabhängig von der
+> verwendeten Library (matplotlib, seaborn, plotly). Der Workflow erwartet genau diesen
+> Namen. Verwende NIEMALS `test_output_matplotlib.png`, `test_output_seaborn.png` oder
+> ähnliche library-spezifische Namen.
 
 ---
 

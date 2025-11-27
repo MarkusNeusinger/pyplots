@@ -95,19 +95,22 @@ n8n monitors social media daily → AI extracts plot ideas → Creates GitHub is
 Approved issue → Claude generates implementation code with self-review loop (max 3 attempts) → Creates Pull Request
 
 ### Flow 3: Multi-Version Testing
-PR created → `test-and-preview.yml` runs tests across Python 3.10+ → Reports results
+PR created → `ci-plottest.yml` runs tests across Python 3.11+ → Reports results
 
 ### Flow 4: Plot Image Generation
-Tests passed → GitHub Action generates PNG + thumbnail → Uploads to GCS with versioned paths (`plots/{spec-id}/{library}/{variant}/v{timestamp}.png`) → Stores previous version for before/after comparison
+Tests passed → `gen-preview.yml` generates PNG + thumbnail → Uploads to GCS with versioned paths (`plots/{spec-id}/{library}/{variant}/v{timestamp}.png`) → Stores previous version for before/after comparison
 
 ### Flow 4.5: Auto-Tagging
-Preview uploaded → AI analyzes code + spec + image → Generates 5-level tag hierarchy → Stores in PostgreSQL with confidence scores
+PR merged with `ai-approved` → `bot-auto-tag.yml` triggers → AI analyzes code + spec + image → Generates 5-level tag hierarchy → Stores in PostgreSQL with confidence scores
 
 ### Flow 5: AI Review
-Tests passed + previews generated → `ai-review.yml` triggers → Claude evaluates Spec ↔ Code ↔ Preview → Score ≥85 required → On rejection: feedback loop (max 3 attempts) → Labels: `ai-approved` or `ai-failed`
+Previews generated → `bot-ai-review.yml` triggers → Claude evaluates Spec ↔ Code ↔ Preview → **Posts results to Issue** (permanent knowledge base) → Score ≥7/10 on all criteria required → Labels: `ai-approved` or `ai-rejected`
 
-### Flow 5.5: Auto-Merge
-PR labeled `ai-approved` → `auto-merge.yml` triggers → Automatic squash merge
+### Flow 5.5: Repair Loop (NEW)
+PR labeled `ai-rejected` → `gen-update-plot.yml` triggers → Reads feedback from Issue → Regenerates improved code → Pushes to PR → Re-triggers ci-plottest → Max 3 attempts → After 3 failures: `ai-failed` label (manual review needed)
+
+### Flow 5.6: Auto-Merge
+PR labeled `ai-approved` → `bot-auto-merge.yml` triggers → Automatic squash merge
 
 ### Flow 6: Deployment & Maintenance
 Merged to main → Deploy to Cloud Run → Publicly visible on website → Event-based maintenance (LLM/library updates) → A/B test improvements

@@ -43,9 +43,69 @@ pyplots uses a **hybrid automation strategy** combining GitHub Actions (for code
 
 ## GitHub Actions Workflows
 
-All workflows are in `.github/workflows/`
+All workflows are in `.github/workflows/` and follow a naming convention:
+- `ci-*` = Continuous Integration (tests, lint)
+- `bot-*` = Automated bot actions
+- `gen-*` = Code generation
+- `util-*` = Utility/helper
 
-### 1. `spec-to-code.yml` + `claude.yml` - Code Generation
+### Workflow Overview
+
+| File | Name | Trigger |
+|------|------|---------|
+| `ci-lint.yml` | Lint and Format Check | push, PR |
+| `ci-unittest.yml` | Unit Tests | push, PR |
+| `ci-plottest.yml` | Plot Tests | PR with plots/** |
+| `gen-new-plot.yml` | Gen: New Plot | Issue labeled `approved` |
+| `gen-preview.yml` | Generate Plot Previews | After ci-plottest |
+| `gen-update-plot.yml` | Gen: Update Plot (Repair Loop) | PR labeled `ai-rejected` |
+| `bot-validate-request.yml` | Bot: Validate Plot Request | Issue with `plot-request` |
+| `bot-ai-review.yml` | Bot: AI Review | After gen-preview |
+| `bot-auto-merge.yml` | Bot: Auto-Merge | PR labeled `ai-approved` |
+| `bot-auto-tag.yml` | Bot: Auto-Tag | PR merged with `ai-approved` |
+| `bot-link-issue.yml` | Bot: Link Issue | Issue with `plot-update` |
+| `util-claude.yml` | Util: Claude Code | @claude comment |
+
+### Workflow Chain
+
+```
+PR created (auto/ branch)
+    ↓
+┌─────────────────┐  ┌─────────────────┐
+│  ci-lint.yml    │  │ ci-unittest.yml │  (parallel)
+└─────────────────┘  └─────────────────┘
+    ↓                     ↓
+    └─────────┬───────────┘
+              ↓
+┌─────────────────┐
+│ ci-plottest.yml │
+└─────────────────┘
+              ↓
+┌─────────────────┐
+│ gen-preview.yml │
+└─────────────────┘
+              ↓
+┌─────────────────┐
+│ bot-ai-review   │ → Posts to ISSUE (not PR!)
+└─────────────────┘
+              ↓
+        ┌────┴────┐
+        ↓         ↓
+  ai-approved  ai-rejected
+        ↓              ↓
+┌────────────┐  ┌──────────────────┐
+│bot-auto-   │  │gen-update-plot   │
+│merge       │  │(repair loop)     │
+└────────────┘  └──────────────────┘
+        ↓
+┌────────────┐
+│bot-auto-tag│
+└────────────┘
+```
+
+---
+
+### 1. `gen-new-plot.yml` + `util-claude.yml` - Code Generation
 
 **Trigger**: GitHub Issue labeled `approved`
 
@@ -119,11 +179,13 @@ jobs:
 
 ---
 
-### 2. `test-and-preview.yml` - Testing & Preview Generation
+### 2. `ci-plottest.yml` + `gen-preview.yml` - Testing & Preview Generation
 
-**Trigger**: Pull request opened or updated
+**Trigger**: Pull request opened or updated with `plots/**` files
 
-**Purpose**: Run multi-version tests and generate preview images
+**Purpose**: Run multi-version tests (ci-plottest) then generate preview images (gen-preview)
+
+**Split Reason**: Better separation of concerns - testing and preview generation can fail independently
 
 **Steps**:
 ```yaml
@@ -191,19 +253,24 @@ jobs:
 
 ---
 
-### 3. `ai-review.yml` + `claude.yml` - Quality Evaluation
+### 3. `bot-ai-review.yml` + `util-claude.yml` - Quality Evaluation
 
-**Trigger**: `workflow_run` when `test-and-preview.yml` completes successfully
+**Trigger**: `workflow_run` when `gen-preview.yml` completes successfully
 
 **Purpose**: Evaluate generated plots using Claude Code with vision capabilities
 
+**IMPORTANT**: All review results are posted to the **Issue** (not just PR) because:
+- Issue is the permanent knowledge base (PR disappears after merge)
+- Future updates need access to previous feedback
+- Improvement suggestions are preserved even for approved plots
+
 **How it works**:
 
-1. **test-and-preview.yml** runs tests and uploads preview images to GCS
-2. **ai-review.yml** downloads images and posts `@claude` comment
-3. **claude.yml** triggers on `@claude` comment
+1. **gen-preview.yml** generates preview images and uploads to GCS
+2. **bot-ai-review.yml** downloads images and posts `@claude` comment
+3. **util-claude.yml** triggers on `@claude` comment
 4. Claude Code evaluates images against spec criteria using vision
-5. Claude Code posts quality report and updates labels
+5. Claude Code posts quality report **to the Issue** and updates PR labels
 
 **Steps**:
 ```yaml
@@ -516,13 +583,16 @@ stateDiagram-v2
 ### Issue Labels
 
 **Lifecycle Labels**:
-- `plot-idea` - New proposal
+- `plot-request` - New proposal
 - `approved` - Ready for code generation
 - `code-generated` - PR created
 - `testing` - Tests running
-- `ai-attempt-1/2/3` - AI Review attempt count
-- `ai-approved` - AI Review passed, ready for auto-merge
-- `ai-failed` - AI Review failed after 3 attempts
+- `ai-attempt-1` - First repair attempt (yellow)
+- `ai-attempt-2` - Second repair attempt (orange)
+- `ai-attempt-3` - Third/final repair attempt (red)
+- `ai-approved` - AI Review passed, ready for auto-merge (green)
+- `ai-rejected` - AI Review failed, triggers repair loop (red)
+- `ai-failed` - Failed after 3 attempts, needs manual review (black)
 - `deployed` - Live on pyplots.ai
 - `rejected` - Not viable
 

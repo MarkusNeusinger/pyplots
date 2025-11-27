@@ -1,0 +1,117 @@
+name: Plot Tests
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    paths:
+      - 'plots/**/*.py'
+      - 'specs/**/*.md'
+
+jobs:
+  test-plots:
+    name: Test Plots on Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '3.11', '3.12', '3.13', '3.14' ]
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          uv sync --all-extras
+
+      - name: Find changed plot files
+        id: changed_plots
+        run: |
+          # Get list of changed Python files in plots/
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'plots/**/*.py' || echo "")
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No plot files changed"
+            echo "has_plots=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "has_plots=true" >> $GITHUB_OUTPUT
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "Changed plot files:"
+          echo "$CHANGED_FILES"
+
+      - name: Test plot execution
+        id: test_execution
+        if: steps.changed_plots.outputs.has_plots == 'true'
+        # Only Python 3.14 is required to pass - older versions are compatibility tests
+        continue-on-error: ${{ matrix.python-version != '3.14' }}
+        run: |
+          echo "🧪 Testing plot files on Python ${{ matrix.python-version }}"
+
+          FAILED=0
+          PASSED=0
+
+          while IFS= read -r file; do
+            if [ -z "$file" ]; then continue; fi
+
+            echo ""
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "📊 Testing: $file"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+            # Run with non-interactive backend
+            if MPLBACKEND=Agg uv run python "$file" 2>&1; then
+              echo "✅ PASSED: $file"
+              PASSED=$((PASSED + 1))
+            else
+              echo "❌ FAILED: $file"
+              FAILED=$((FAILED + 1))
+            fi
+          done <<< "${{ steps.changed_plots.outputs.files }}"
+
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📋 Summary: $PASSED passed, $FAILED failed"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+          # Save results for later aggregation
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+
+          if [ $FAILED -gt 0 ]; then
+            echo "::error::$FAILED plot(s) failed execution on Python ${{ matrix.python-version }}"
+            exit 1
+          fi
+
+      - name: Skip message
+        if: steps.changed_plots.outputs.has_plots != 'true'
+        run: |
+          echo "ℹ️ No plot files changed in this PR - skipping tests"
+
+      - name: Save test results
+        if: always()
+        run: |
+          mkdir -p test-results
+          echo "${{ matrix.python-version }},${{ steps.test_execution.outcome || 'skipped' }}" > test-results/result-${{ matrix.python-version }}.txt
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.python-version }}
+          path: test-results/

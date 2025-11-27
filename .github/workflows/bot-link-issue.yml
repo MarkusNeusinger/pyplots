@@ -1,4 +1,4 @@
-name: Link Sub-Issue
+name: Bot: Link Issue
 
 on:
   issues:

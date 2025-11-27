@@ -1,4 +1,4 @@
-name: Auto-Merge Approved PRs
+name: Bot: Auto-Merge
 
 on:
   pull_request:

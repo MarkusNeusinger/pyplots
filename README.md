@@ -2,10 +2,11 @@
 
 **AI-powered Python plotting library that works with YOUR data.**
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
+[![Python 3.14+](https://img.shields.io/badge/python-3.14+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Tests](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-unittest.yml/badge.svg?branch=main)](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-unittest.yml)
 [![Ruff](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-lint.yml/badge.svg?branch=main)](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-lint.yml)
-[![codecov](https://codecov.io/gh/MarkusNeusinger/pyplots/branch/main/graph/badge.svg)](https://codecov.io/gh/MarkusNeusinger/pyplots)
+[![codecov](https://codecov.io/gh/MarkusNeusinger/pyplots/graph/badge.svg)](https://codecov.io/gh/MarkusNeusinger/pyplots)
 
 > Stop adapting examples to your data. Start visualizing your data directly.
 

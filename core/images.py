@@ -57,17 +57,21 @@ def add_watermark(
     input_path: str | Path,
     output_path: str | Path,
     text: str = "pyplots.ai",
-    opacity: float = 0.3,
-    font_size: int = 20,
-    padding: int = 10,
+    spec_id: str | None = None,
+    opacity: float = 0.5,
+    font_size: int = 22,
+    padding: int = 12,
 ) -> None:
-    """Add text watermark to bottom-right corner of an image.
+    """Add text watermarks to an image.
+
+    Adds pyplots.ai to bottom-right and optionally spec_id to bottom-left.
 
     Args:
         input_path: Path to the source image.
         output_path: Path where the watermarked image will be saved.
-        text: Watermark text to display.
-        opacity: Transparency of the watermark (0.0-1.0).
+        text: Watermark text for bottom-right (default: "pyplots.ai").
+        spec_id: Optional spec ID for bottom-left corner.
+        opacity: Transparency of the watermark (0.0-1.0). Default 0.5 for visibility.
         font_size: Size of the watermark font in pixels.
         padding: Padding from the image edge in pixels.
 
@@ -88,21 +92,27 @@ def add_watermark(
         except OSError:
             font = ImageFont.load_default()
 
-    # Calculate position: bottom-right with padding
+    # Colors with better visibility
+    shadow_color = (0, 0, 0, int(255 * opacity * 0.7))
+    text_color = (255, 255, 255, int(255 * opacity))
+
+    def draw_text_with_shadow(x: int, y: int, label: str) -> None:
+        """Draw text with shadow for readability."""
+        draw.text((x + 1, y + 1), label, font=font, fill=shadow_color)
+        draw.text((x, y), label, font=font, fill=text_color)
+
+    # Bottom-right: pyplots.ai
     bbox = draw.textbbox((0, 0), text, font=font)
     text_width = bbox[2] - bbox[0]
     text_height = bbox[3] - bbox[1]
-    x = img.width - text_width - padding
-    y = img.height - text_height - padding
+    x_right = img.width - text_width - padding
+    y_bottom = img.height - text_height - padding
+    draw_text_with_shadow(x_right, y_bottom, text)
 
-    # Draw text with opacity (white text with shadow for readability)
-    shadow_color = (0, 0, 0, int(255 * opacity * 0.5))
-    text_color = (255, 255, 255, int(255 * opacity))
-
-    # Shadow offset
-    draw.text((x + 1, y + 1), text, font=font, fill=shadow_color)
-    # Main text
-    draw.text((x, y), text, font=font, fill=text_color)
+    # Bottom-left: spec_id (if provided)
+    if spec_id:
+        x_left = padding
+        draw_text_with_shadow(x_left, y_bottom, spec_id)
 
     result = Image.alpha_composite(img, overlay)
     result.convert("RGB").save(output_path, optimize=True)
@@ -152,6 +162,7 @@ def process_plot_image(
     thumb_path: str | Path | None = None,
     thumb_width: int = 400,
     watermark_text: str = "pyplots.ai",
+    spec_id: str | None = None,
     add_watermark_flag: bool = True,
     optimize: bool = True,
 ) -> dict[str, str | tuple[int, int] | int]:
@@ -165,7 +176,8 @@ def process_plot_image(
         output_path: Path for the watermarked full-size image.
         thumb_path: Path for the thumbnail. If None, no thumbnail is created.
         thumb_width: Width of the thumbnail in pixels.
-        watermark_text: Text for the watermark.
+        watermark_text: Text for bottom-right watermark.
+        spec_id: Spec ID for bottom-left watermark (e.g., "histogram-basic").
         add_watermark_flag: Whether to add a watermark.
         optimize: Whether to optimize PNG file size.
 
@@ -179,7 +191,7 @@ def process_plot_image(
     result: dict[str, str | tuple[int, int] | int] = {"output": str(output_path)}
 
     if add_watermark_flag:
-        add_watermark(input_path, output_path, text=watermark_text)
+        add_watermark(input_path, output_path, text=watermark_text, spec_id=spec_id)
     else:
         # Just copy the image with optimization
         img = Image.open(input_path)
@@ -206,7 +218,10 @@ if __name__ == "__main__":
         print("Usage:")
         print("  python -m core.images thumbnail <input> <output> [width]")
         print("  python -m core.images watermark <input> <output> [text]")
-        print("  python -m core.images process <input> <output> <thumb> [watermark_text]")
+        print("  python -m core.images process <input> <output> <thumb> [spec_id]")
+        print("")
+        print("Examples:")
+        print("  python -m core.images process plot.png out.png thumb.png histogram-basic")
         sys.exit(1)
 
     if len(sys.argv) < 2:
@@ -234,8 +249,8 @@ if __name__ == "__main__":
         if len(sys.argv) < 5:
             print_usage()
         input_path, output_path, thumb_path = sys.argv[2], sys.argv[3], sys.argv[4]
-        text = sys.argv[5] if len(sys.argv) > 5 else "pyplots.ai"
-        result = process_plot_image(input_path, output_path, thumb_path, watermark_text=text)
+        spec_id = sys.argv[5] if len(sys.argv) > 5 else None
+        result = process_plot_image(input_path, output_path, thumb_path, spec_id=spec_id)
         print(f"Processed: {result}")
 
     else:

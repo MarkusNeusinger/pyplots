@@ -20,9 +20,7 @@ def sample_image(tmp_path: Path) -> Path:
 class TestCreateThumbnail:
     """Tests for create_thumbnail function."""
 
-    def test_creates_thumbnail_with_correct_width(
-        self, sample_image: Path, tmp_path: Path
-    ) -> None:
+    def test_creates_thumbnail_with_correct_width(self, sample_image: Path, tmp_path: Path) -> None:
         """Thumbnail should have the specified width."""
         output_path = tmp_path / "thumb.png"
         width, height = create_thumbnail(sample_image, output_path, width=400)
@@ -34,9 +32,7 @@ class TestCreateThumbnail:
         result_img = Image.open(output_path)
         assert result_img.width == 400
 
-    def test_maintains_aspect_ratio(
-        self, sample_image: Path, tmp_path: Path
-    ) -> None:
+    def test_maintains_aspect_ratio(self, sample_image: Path, tmp_path: Path) -> None:
         """Thumbnail should maintain the original aspect ratio."""
         output_path = tmp_path / "thumb.png"
         width, height = create_thumbnail(sample_image, output_path, width=400)
@@ -58,9 +54,7 @@ class TestCreateThumbnail:
     def test_handles_path_objects(self, sample_image: Path, tmp_path: Path) -> None:
         """Function should accept Path objects."""
         output_path = tmp_path / "thumb.png"
-        width, height = create_thumbnail(
-            Path(sample_image), Path(output_path), width=400
-        )
+        width, height = create_thumbnail(Path(sample_image), Path(output_path), width=400)
 
         assert width == 400
         assert output_path.exists()
@@ -69,9 +63,7 @@ class TestCreateThumbnail:
 class TestAddWatermark:
     """Tests for add_watermark function."""
 
-    def test_adds_watermark_to_image(
-        self, sample_image: Path, tmp_path: Path
-    ) -> None:
+    def test_adds_watermark_to_image(self, sample_image: Path, tmp_path: Path) -> None:
         """Watermark should be added to the image."""
         output_path = tmp_path / "watermarked.png"
         add_watermark(sample_image, output_path, text="pyplots.ai")
@@ -83,9 +75,7 @@ class TestAddWatermark:
         original_img = Image.open(sample_image)
         assert result_img.size == original_img.size
 
-    def test_custom_watermark_text(
-        self, sample_image: Path, tmp_path: Path
-    ) -> None:
+    def test_custom_watermark_text(self, sample_image: Path, tmp_path: Path) -> None:
         """Function should accept custom watermark text."""
         output_path = tmp_path / "watermarked.png"
         add_watermark(sample_image, output_path, text="Custom Watermark")
@@ -103,16 +93,12 @@ class TestAddWatermark:
 class TestProcessPlotImage:
     """Tests for process_plot_image function."""
 
-    def test_creates_watermarked_image_and_thumbnail(
-        self, sample_image: Path, tmp_path: Path
-    ) -> None:
+    def test_creates_watermarked_image_and_thumbnail(self, sample_image: Path, tmp_path: Path) -> None:
         """Should create both watermarked image and thumbnail."""
         output_path = tmp_path / "output.png"
         thumb_path = tmp_path / "thumb.png"
 
-        result = process_plot_image(
-            sample_image, output_path, thumb_path, watermark_text="pyplots.ai"
-        )
+        result = process_plot_image(sample_image, output_path, thumb_path, watermark_text="pyplots.ai")
 
         assert output_path.exists()
         assert thumb_path.exists()
@@ -134,12 +120,7 @@ class TestProcessPlotImage:
         output_path = tmp_path / "output.png"
         thumb_path = tmp_path / "thumb.png"
 
-        process_plot_image(
-            sample_image,
-            output_path,
-            thumb_path,
-            add_watermark_flag=False,
-        )
+        process_plot_image(sample_image, output_path, thumb_path, add_watermark_flag=False)
 
         assert output_path.exists()
         assert thumb_path.exists()

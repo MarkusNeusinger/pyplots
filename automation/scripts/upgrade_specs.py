@@ -12,12 +12,12 @@ from typing import Dict, List, Tuple
 
 def get_spec_version(spec_content: str) -> str:
     """Extract spec version from content"""
-    match = re.search(r'\*\*Spec Version:\*\*\s+(\d+\.\d+\.\d+)', spec_content)
+    match = re.search(r"\*\*Spec Version:\*\*\s+(\d+\.\d+\.\d+)", spec_content)
     if match:
         return match.group(1)
 
     # Check comment version (older format)
-    match = re.search(r'Spec Template Version:\s+(\d+\.\d+\.\d+)', spec_content)
+    match = re.search(r"Spec Template Version:\s+(\d+\.\d+\.\d+)", spec_content)
     if match:
         return match.group(1)
 
@@ -31,7 +31,7 @@ def upgrade_to_1_0_0(spec_content: str, spec_id: str) -> str:
         return spec_content
 
     # Extract title
-    title_match = re.search(r'^#\s+(.+)$', spec_content, re.MULTILINE)
+    title_match = re.search(r"^#\s+(.+)$", spec_content, re.MULTILINE)
     if not title_match:
         raise ValueError(f"Could not find title in spec: {spec_id}")
 
@@ -49,11 +49,7 @@ Last Updated: 2025-01-24
 """
 
     # Replace title with title + version block
-    upgraded = spec_content.replace(
-        title_line,
-        title_line + "\n" + version_block,
-        1
-    )
+    upgraded = spec_content.replace(title_line, title_line + "\n" + version_block, 1)
 
     return upgraded
 

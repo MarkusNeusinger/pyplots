@@ -3,7 +3,6 @@ Smoke tests to verify basic functionality.
 """
 
 
-
 def test_imports():
     """Test that core packages can be imported."""
     import matplotlib
@@ -20,7 +19,8 @@ def test_imports():
 def test_matplotlib_backend():
     """Test matplotlib can create figures without display."""
     import matplotlib
-    matplotlib.use('Agg')
+
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
     fig, ax = plt.subplots()
@@ -31,6 +31,6 @@ def test_matplotlib_backend():
 def test_sample_data_fixture(sample_data):
     """Test that sample_data fixture provides valid data."""
     assert len(sample_data) == 50
-    assert 'x' in sample_data.columns
-    assert 'y' in sample_data.columns
-    assert 'category' in sample_data.columns
+    assert "x" in sample_data.columns
+    assert "y" in sample_data.columns
+    assert "category" in sample_data.columns

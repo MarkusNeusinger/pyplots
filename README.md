@@ -4,7 +4,7 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Ruff](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-lint.yml/badge.svg)](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-lint.yml)
 [![codecov](https://codecov.io/gh/MarkusNeusinger/pyplots/branch/main/graph/badge.svg)](https://codecov.io/gh/MarkusNeusinger/pyplots)
 
 > Stop adapting examples to your data. Start visualizing your data directly.
@@ -13,9 +13,12 @@
 
 ## What is pyplots?
 
-**pyplots** is an AI-powered platform for Python data visualization that automatically discovers, generates, tests, and maintains plotting examples. Browse hundreds of plots across all major Python libraries - matplotlib, seaborn, plotly, and more.
+**pyplots** is an AI-powered platform for Python data visualization that automatically discovers, generates, tests, and
+maintains plotting examples. Browse hundreds of plots across all major Python libraries - matplotlib, seaborn, plotly,
+and more.
 
-**Community-driven, AI-maintained** - Propose plot ideas via GitHub Issues, AI generates the code, multi-LLM quality checks ensure excellence. Zero manual coding required.
+**Community-driven, AI-maintained** - Propose plot ideas via GitHub Issues, AI generates the code, multi-LLM quality
+checks ensure excellence. Zero manual coding required.
 
 ---
 
@@ -51,7 +54,8 @@ uv run uvicorn api.main:app --reload
 
 ## Architecture
 
-**Specification-first design**: Every plot starts as a Markdown spec (library-agnostic), then AI generates implementations for all major libraries.
+**Specification-first design**: Every plot starts as a Markdown spec (library-agnostic), then AI generates
+implementations for all major libraries.
 
 ```
 specs/scatter-basic-001.md  → plots/matplotlib/scatter/scatter-basic-001/default.py
@@ -59,9 +63,11 @@ specs/scatter-basic-001.md  → plots/matplotlib/scatter/scatter-basic-001/defau
                             → plots/plotly/scatter/scatter-basic-001/default.py
 ```
 
-**Issue-based workflow**: GitHub Issues as state machine for plot lifecycle. All quality feedback documented as bot comments - no clutter in repo.
+**Issue-based workflow**: GitHub Issues as state machine for plot lifecycle. All quality feedback documented as bot
+comments - no clutter in repo.
 
-**Multi-LLM quality checks**: Claude + Gemini + GPT evaluate generated plots. Score ≥ 85 required (median). Automatic feedback loops (max 3 attempts).
+**Multi-LLM quality checks**: Claude + Gemini + GPT evaluate generated plots. Score ≥ 85 required (median). Automatic
+feedback loops (max 3 attempts).
 
 See [docs/architecture/](docs/architecture/) for details.
 
@@ -123,9 +129,12 @@ We welcome contributions! **All code is AI-generated** - you propose ideas, AI i
 4. **Improve docs** - Help others understand the project
 
 **The workflow**:
-- You create Issue with plot idea → AI generates spec → AI generates code for all libraries → Multi-LLM quality check → Deployed
 
-**Important**: Don't submit code directly! If a plot has quality issues, it means the spec needs improvement, not the code.
+- You create Issue with plot idea → AI generates spec → AI generates code for all libraries → Multi-LLM quality check →
+  Deployed
+
+**Important**: Don't submit code directly! If a plot has quality issues, it means the spec needs improvement, not the
+code.
 
 See [development.md](docs/development.md) for details.
 

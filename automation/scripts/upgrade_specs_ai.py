@@ -16,7 +16,7 @@ import anthropic
 
 def get_spec_version(spec_content: str) -> str:
     """Extract spec version from content"""
-    match = re.search(r'\*\*Spec Version:\*\*\s+(\d+\.\d+\.\d+)', spec_content)
+    match = re.search(r"\*\*Spec Version:\*\*\s+(\d+\.\d+\.\d+)", spec_content)
     if match:
         return match.group(1)
     return "0.0.0"
@@ -67,11 +67,7 @@ def load_upgrade_instructions(from_version: str, to_version: str) -> str:
 
 
 def upgrade_spec_with_ai(
-    spec_content: str,
-    spec_id: str,
-    target_version: str,
-    api_key: str,
-    dry_run: bool = False
+    spec_content: str, spec_id: str, target_version: str, api_key: str, dry_run: bool = False
 ) -> Tuple[bool, str, str]:
     """
     Use Claude to upgrade a spec to target version
@@ -153,9 +149,7 @@ Generate the upgraded spec now:"""
     client = anthropic.Anthropic(api_key=api_key)
 
     response = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=4000,
-        messages=[{"role": "user", "content": prompt}]
+        model="claude-sonnet-4-20250514", max_tokens=4000, messages=[{"role": "user", "content": prompt}]
     )
 
     upgraded_content = response.content[0].text
@@ -172,13 +166,17 @@ Generate the upgraded spec now:"""
         return False, spec_content, f"Upgrade failed: version is {new_version}, expected {target_version}"
 
     # Verify spec ID is preserved
-    spec_id_pattern = r'^#\s+([a-z]+-[a-z]+-\d{3}):'
+    spec_id_pattern = r"^#\s+([a-z]+-[a-z]+-\d{3}):"
     old_match = re.search(spec_id_pattern, spec_content, re.MULTILINE)
     new_match = re.search(spec_id_pattern, upgraded_content, re.MULTILINE)
 
     if old_match and new_match:
         if old_match.group(1) != new_match.group(1):
-            return False, spec_content, f"Upgrade failed: spec ID changed from {old_match.group(1)} to {new_match.group(1)}"
+            return (
+                False,
+                spec_content,
+                f"Upgrade failed: spec ID changed from {old_match.group(1)} to {new_match.group(1)}",
+            )
     elif old_match and not new_match:
         return False, spec_content, "Upgrade failed: spec ID was removed"
 
@@ -186,11 +184,7 @@ Generate the upgraded spec now:"""
 
 
 def upgrade_spec_file_ai(
-    spec_path: Path,
-    target_version: str,
-    api_key: str,
-    dry_run: bool = False,
-    backup: bool = True
+    spec_path: Path, target_version: str, api_key: str, dry_run: bool = False, backup: bool = True
 ) -> Tuple[bool, str]:
     """
     Upgrade a single spec file using AI
@@ -209,9 +203,7 @@ def upgrade_spec_file_ai(
         content = spec_path.read_text()
         spec_id = spec_path.stem
 
-        success, upgraded_content, message = upgrade_spec_with_ai(
-            content, spec_id, target_version, api_key, dry_run
-        )
+        success, upgraded_content, message = upgrade_spec_with_ai(content, spec_id, target_version, api_key, dry_run)
 
         if not success:
             return False, message
@@ -235,10 +227,7 @@ def upgrade_spec_file_ai(
 
 
 def upgrade_all_specs_ai(
-    target_version: str,
-    api_key: str,
-    dry_run: bool = False,
-    backup: bool = True
+    target_version: str, api_key: str, dry_run: bool = False, backup: bool = True
 ) -> Dict[str, Tuple[bool, str]]:
     """
     Upgrade all spec files using AI
@@ -256,18 +245,13 @@ def upgrade_all_specs_ai(
     specs_dir = Path("specs")
 
     # Get all spec files (exclude template and backups)
-    spec_files = [
-        f for f in specs_dir.glob("*.md")
-        if f.name != ".template.md" and not f.name.endswith(".backup")
-    ]
+    spec_files = [f for f in specs_dir.glob("*.md") if f.name != ".template.md" and not f.name.endswith(".backup")]
 
     for spec_path in spec_files:
         spec_id = spec_path.stem
         print(f"\n🔄 Processing: {spec_id}")
 
-        success, message = upgrade_spec_file_ai(
-            spec_path, target_version, api_key, dry_run, backup
-        )
+        success, message = upgrade_spec_file_ai(spec_path, target_version, api_key, dry_run, backup)
 
         results[spec_id] = (success, message)
         status = "✅" if success else "❌"
@@ -279,28 +263,11 @@ def upgrade_all_specs_ai(
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="AI-powered spec upgrader using Claude"
-    )
-    parser.add_argument(
-        "--version",
-        default="1.0.0",
-        help="Target version (default: 1.0.0)"
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Show what would be changed without modifying files"
-    )
-    parser.add_argument(
-        "--spec",
-        help="Upgrade specific spec file (e.g., scatter-basic-001)"
-    )
-    parser.add_argument(
-        "--no-backup",
-        action="store_true",
-        help="Don't create backup files"
-    )
+    parser = argparse.ArgumentParser(description="AI-powered spec upgrader using Claude")
+    parser.add_argument("--version", default="1.0.0", help="Target version (default: 1.0.0)")
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be changed without modifying files")
+    parser.add_argument("--spec", help="Upgrade specific spec file (e.g., scatter-basic-001)")
+    parser.add_argument("--no-backup", action="store_true", help="Don't create backup files")
 
     args = parser.parse_args()
 
@@ -323,13 +290,7 @@ if __name__ == "__main__":
             print(f"❌ Spec not found: {spec_path}")
             exit(1)
 
-        success, message = upgrade_spec_file_ai(
-            spec_path,
-            args.version,
-            api_key,
-            args.dry_run,
-            not args.no_backup
-        )
+        success, message = upgrade_spec_file_ai(spec_path, args.version, api_key, args.dry_run, not args.no_backup)
 
         status = "✅" if success else "❌"
         print(f"\n{status} {args.spec}: {message}")
@@ -338,12 +299,7 @@ if __name__ == "__main__":
             exit(1)
     else:
         # Upgrade all specs
-        results = upgrade_all_specs_ai(
-            args.version,
-            api_key,
-            args.dry_run,
-            not args.no_backup
-        )
+        results = upgrade_all_specs_ai(args.version, api_key, args.dry_run, not args.no_backup)
 
         print("\n" + "=" * 60)
         print("Summary")

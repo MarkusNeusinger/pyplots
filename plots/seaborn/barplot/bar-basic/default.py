@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
+
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
 
@@ -25,7 +26,7 @@ def create_plot(
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
     figsize: tuple[float, float] = (16, 9),
-    **kwargs
+    **kwargs,
 ) -> "Figure":
     """
     Create a basic bar chart showing values for different categories using seaborn.
@@ -72,29 +73,13 @@ def create_plot(
     # Determine if color is a column or a direct value
     if color and color in data.columns:
         # Color mapping from column
-        sns.barplot(
-            data=data,
-            x=x,
-            y=y,
-            hue=color,
-            ax=ax,
-            alpha=alpha,
-            **plot_kwargs
-        )
+        sns.barplot(data=data, x=x, y=y, hue=color, ax=ax, alpha=alpha, **plot_kwargs)
         # Legend is automatically created by seaborn with hue
         ax.legend(title=color, loc="best")
     else:
         # Direct color value
         bar_color = color or "steelblue"
-        sns.barplot(
-            data=data,
-            x=x,
-            y=y,
-            color=bar_color,
-            ax=ax,
-            alpha=alpha,
-            **plot_kwargs
-        )
+        sns.barplot(data=data, x=x, y=y, color=bar_color, ax=ax, alpha=alpha, **plot_kwargs)
 
     # Apply styling
     ax.set_xlabel(xlabel or x)
@@ -113,10 +98,12 @@ def create_plot(
 
 if __name__ == "__main__":
     # Sample data for testing
-    data = pd.DataFrame({
-        "Category": ["Product A", "Product B", "Product C", "Product D", "Product E"],
-        "Sales": [23000, 17500, 21000, 19500, 25000]
-    })
+    data = pd.DataFrame(
+        {
+            "Category": ["Product A", "Product B", "Product C", "Product D", "Product E"],
+            "Sales": [23000, 17500, 21000, 19500, 25000],
+        }
+    )
 
     # Create plot
     fig = create_plot(data, x="Category", y="Sales", title="Product Sales Comparison")

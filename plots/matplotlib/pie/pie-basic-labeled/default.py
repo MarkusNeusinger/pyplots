@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Optional
 import matplotlib.pyplot as plt
 import pandas as pd
 
+
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
 
@@ -24,7 +25,7 @@ def create_plot(
     explode: Optional[list] = None,
     title: Optional[str] = None,
     figsize: tuple = (9, 9),
-    **kwargs
+    **kwargs,
 ) -> "Figure":
     """
     Create a pie chart showing the composition of categorical data.
@@ -70,7 +71,7 @@ def create_plot(
 
     # Validate that values column contains numeric data
     try:
-        numeric_values = pd.to_numeric(data[values], errors='coerce')
+        numeric_values = pd.to_numeric(data[values], errors="coerce")
         if numeric_values.isna().all():
             raise TypeError(f"Column '{values}' contains non-numeric data")
     except Exception as e:
@@ -102,42 +103,34 @@ def create_plot(
         autopct=autopct,
         startangle=startangle,
         explode=explode,
-        **kwargs
+        **kwargs,
     )
 
     # Styling for readability
     for text in texts:
         text.set_fontsize(10)
-        text.set_weight('normal')
+        text.set_weight("normal")
 
     for autotext in autotexts:
-        autotext.set_color('white')
+        autotext.set_color("white")
         autotext.set_fontsize(9)
-        autotext.set_weight('bold')
+        autotext.set_weight("bold")
 
     # Add title if provided
     if title:
-        ax.set_title(title, fontsize=14, weight='bold', pad=20)
+        ax.set_title(title, fontsize=14, weight="bold", pad=20)
 
     plt.tight_layout()
     return fig
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Sample data for testing
-    data = pd.DataFrame({
-        'category': ['Product A', 'Product B', 'Product C', 'Product D'],
-        'sales': [35, 25, 20, 20]
-    })
+    data = pd.DataFrame({"category": ["Product A", "Product B", "Product C", "Product D"], "sales": [35, 25, 20, 20]})
 
     # Create plot
-    fig = create_plot(
-        data,
-        values='sales',
-        labels='category',
-        title='Sales Distribution by Product'
-    )
+    fig = create_plot(data, values="sales", labels="category", title="Sales Distribution by Product")
 
     # Save for inspection
-    plt.savefig('plot.png', dpi=300, bbox_inches='tight')
+    plt.savefig("plot.png", dpi=300, bbox_inches="tight")
     print("Plot saved to plot.png")

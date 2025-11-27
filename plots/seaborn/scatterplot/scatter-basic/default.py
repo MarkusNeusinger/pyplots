@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
 
@@ -29,7 +30,7 @@ def create_plot(
     ylabel: Optional[str] = None,
     edgecolors: Optional[str] = None,
     linewidth: float = 0,
-    **kwargs
+    **kwargs,
 ) -> "Figure":
     """
     Create a basic scatter plot visualizing the relationship between two continuous variables.
@@ -94,7 +95,7 @@ def create_plot(
         edgecolor=edgecolors,
         linewidth=linewidth,
         ax=ax,
-        **kwargs
+        **kwargs,
     )
 
     # Labels and title
@@ -116,26 +117,21 @@ def create_plot(
     return fig
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Sample data for testing - many points to demonstrate basic scatter
     np.random.seed(42)
     n_points = 500
 
-    data = pd.DataFrame({
-        'x': np.random.randn(n_points) * 2 + 10,
-        'y': np.random.randn(n_points) * 3 + 15 + np.random.randn(n_points) * 0.5
-    })
-
-    # Create plot
-    fig = create_plot(
-        data,
-        'x',
-        'y',
-        title='Basic Scatter Plot Example',
-        xlabel='X Value',
-        ylabel='Y Value'
+    data = pd.DataFrame(
+        {
+            "x": np.random.randn(n_points) * 2 + 10,
+            "y": np.random.randn(n_points) * 3 + 15 + np.random.randn(n_points) * 0.5,
+        }
     )
 
+    # Create plot
+    fig = create_plot(data, "x", "y", title="Basic Scatter Plot Example", xlabel="X Value", ylabel="Y Value")
+
     # Save for inspection - ALWAYS use 'plot.png' as filename
-    plt.savefig('plot.png', dpi=300, bbox_inches='tight')
+    plt.savefig("plot.png", dpi=300, bbox_inches="tight")
     print("Plot saved to plot.png")

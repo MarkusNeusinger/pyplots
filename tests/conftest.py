@@ -5,7 +5,8 @@ Pytest configuration and fixtures for pyplots tests.
 import matplotlib
 import pytest
 
-matplotlib.use('Agg')  # Non-interactive backend for CI
+
+matplotlib.use("Agg")  # Non-interactive backend for CI
 
 
 @pytest.fixture
@@ -15,12 +16,14 @@ def sample_data():
     import pandas as pd
 
     np.random.seed(42)
-    return pd.DataFrame({
-        'x': np.random.randn(50),
-        'y': np.random.randn(50),
-        'category': np.random.choice(['A', 'B', 'C'], 50),
-        'size': np.random.uniform(10, 100, 50)
-    })
+    return pd.DataFrame(
+        {
+            "x": np.random.randn(50),
+            "y": np.random.randn(50),
+            "category": np.random.choice(["A", "B", "C"], 50),
+            "size": np.random.uniform(10, 100, 50),
+        }
+    )
 
 
 @pytest.fixture

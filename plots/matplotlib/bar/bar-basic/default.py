@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Optional
 import matplotlib.pyplot as plt
 import pandas as pd
 
+
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
 
@@ -24,7 +25,7 @@ def create_plot(
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
     figsize: tuple[float, float] = (16, 9),
-    **kwargs
+    **kwargs,
 ) -> "Figure":
     """
     Create a basic bar chart showing values for different categories.
@@ -72,8 +73,7 @@ def create_plot(
         # Create colorbar for numeric color column
         if pd.api.types.is_numeric_dtype(data[color]):
             sm = plt.cm.ScalarMappable(
-                cmap="viridis",
-                norm=plt.Normalize(vmin=data[color].min(), vmax=data[color].max())
+                cmap="viridis", norm=plt.Normalize(vmin=data[color].min(), vmax=data[color].max())
             )
             sm.set_array([])
             cbar = plt.colorbar(sm, ax=ax)
@@ -100,10 +100,12 @@ def create_plot(
 
 if __name__ == "__main__":
     # Sample data for testing
-    data = pd.DataFrame({
-        "Category": ["Product A", "Product B", "Product C", "Product D", "Product E"],
-        "Sales": [23000, 17500, 21000, 19500, 25000]
-    })
+    data = pd.DataFrame(
+        {
+            "Category": ["Product A", "Product B", "Product C", "Product D", "Product E"],
+            "Sales": [23000, 17500, 21000, 19500, 25000],
+        }
+    )
 
     # Create plot
     fig = create_plot(data, x="Category", y="Sales", title="Product Sales Comparison")

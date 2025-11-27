@@ -63,7 +63,7 @@ def create_plot(
         ...     'group': ['A', 'A', 'B', 'B', 'C', 'C']
         ... })
         >>> fig = create_plot(data, 'x', 'y', 'group')
-        >>> plt.savefig('scatter_groups.png')
+        >>> plt.savefig('plot.png')
     """
     # Input validation
     if data.empty:
@@ -130,5 +130,5 @@ if __name__ == "__main__":
     fig = create_plot(data, "x", "y", "group", title="Scatter Plot with Color Groups")
 
     # Save for inspection
-    plt.savefig("test_output_seaborn.png", dpi=150)
-    print("Seaborn plot saved to test_output_seaborn.png")
+    plt.savefig("plot.png", dpi=200, bbox_inches="tight")
+    print("Plot saved to plot.png")

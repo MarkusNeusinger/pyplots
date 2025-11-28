@@ -242,13 +242,30 @@ From `docs/development.md` (lines 182-241):
 - ✅ Imports: Organized (standard, third-party, local)
 
 **Visual Quality**:
-- ✅ Figure size: `figsize=(16, 9)` by default (16:9 aspect ratio)
+- ✅ Figure size: 16:9 aspect ratio for all libraries (see Standard Plot Sizes below)
 - ✅ Axis labels: From column names or custom
 - ✅ Grid: `ax.grid(True, alpha=0.3)` (subtle)
 - ✅ Font sizes: Readable (≥10pt)
 - ✅ Legend: If multiple series or color mapping
 - ✅ Tight layout: `plt.tight_layout()` to avoid clipping
 - ✅ DPI: Always use `dpi=300` when saving for high-quality output
+
+### Standard Plot Sizes (16:9, 300 DPI equivalent)
+
+All plots must use 16:9 aspect ratio with 300 DPI equivalent quality:
+
+| Library | Size Parameters | DPI/Scale | Final Resolution |
+|---------|-----------------|-----------|------------------|
+| matplotlib | `figsize=(16, 9)` | `dpi=300` | 4800×2700 |
+| seaborn | `figsize=(16, 9)` | `dpi=300` | 4800×2700 |
+| plotnine | `figure_size=(16, 9)` | `dpi=300` | 4800×2700 |
+| bokeh | `width=1600, height=900` | (pixel-based) | 1600×900 |
+| plotly | `width=1600, height=900` | `scale=2` | 3200×1800 |
+| altair | `width=800, height=450` | `scale_factor=2.0` | 1600×900 |
+| pygal | `width=1600, height=900` | (SVG/PNG) | 1600×900 |
+| highcharts | `width=1600, height=900` | (Screenshot) | 1600×900 |
+
+**Rationale**: 16:9 is the standard widescreen format, optimal for web display and presentations. 300 DPI ensures print-quality output for publications
 
 ---
 

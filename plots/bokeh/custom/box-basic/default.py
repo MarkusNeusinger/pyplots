@@ -25,8 +25,8 @@ def create_plot(
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
     colors: Optional[list] = None,
-    width: int = 1000,
-    height: int = 600,
+    width: int = 1600,
+    height: int = 900,
     **kwargs,
 ) -> Figure:
     """
@@ -40,8 +40,8 @@ def create_plot(
         xlabel: Custom x-axis label (optional, defaults to groups column name)
         ylabel: Custom y-axis label (optional, defaults to values column name)
         colors: List of colors for each box (optional)
-        width: Figure width in pixels (default: 1000)
-        height: Figure height in pixels (default: 600)
+        width: Figure width in pixels (default: 1600)
+        height: Figure height in pixels (default: 900)
         **kwargs: Additional parameters
 
     Returns:

@@ -34,8 +34,8 @@ def create_plot(
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
     fill_palette: str = "Set2",
-    width: int = 10,
-    height: int = 6,
+    width: int = 16,
+    height: int = 9,
     show_outliers: bool = True,
     **kwargs,
 ) -> GGPlot:
@@ -50,8 +50,8 @@ def create_plot(
         xlabel: Custom x-axis label (optional, defaults to groups column name)
         ylabel: Custom y-axis label (optional, defaults to values column name)
         fill_palette: Color palette for boxes (default: 'Set2')
-        width: Figure width in inches (default: 10)
-        height: Figure height in inches (default: 6)
+        width: Figure width in inches (default: 16)
+        height: Figure height in inches (default: 9)
         show_outliers: Whether to show outliers (default: True)
         **kwargs: Additional parameters for geom_boxplot
 

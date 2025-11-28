@@ -24,7 +24,8 @@ def create_plot(
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
     colors: Optional[list] = None,
-    height: int = 600,
+    width: int = 1600,
+    height: int = 900,
     **kwargs,
 ) -> Chart:
     """
@@ -38,7 +39,8 @@ def create_plot(
         xlabel: Custom x-axis label (optional, defaults to groups column name)
         ylabel: Custom y-axis label (optional, defaults to values column name)
         colors: List of colors for each box (optional)
-        height: Figure height in pixels (default: 600)
+        width: Figure width in pixels (default: 1600)
+        height: Figure height in pixels (default: 900)
         **kwargs: Additional parameters for Highcharts configuration
 
     Returns:
@@ -146,7 +148,7 @@ def create_plot(
     }
 
     # Chart dimensions
-    chart.options.chart = {"type": "boxplot", "height": height, "backgroundColor": "white"}
+    chart.options.chart = {"type": "boxplot", "width": width, "height": height, "backgroundColor": "white"}
 
     # Add box plot series
     box_series = BoxPlotSeries()
@@ -247,7 +249,7 @@ if __name__ == "__main__":
     <script src="https://code.highcharts.com/highcharts-more.js"></script>
 </head>
 <body style="margin:0;">
-    <div id="container" style="width: 1000px; height: 600px;"></div>
+    <div id="container" style="width: 1600px; height: 900px;"></div>
     <script>{html_str}</script>
 </body>
 </html>"""
@@ -261,7 +263,7 @@ if __name__ == "__main__":
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--window-size=1000,600")
+    chrome_options.add_argument("--window-size=1600,900")
 
     driver = webdriver.Chrome(options=chrome_options)
     driver.get(f"file://{temp_path}")

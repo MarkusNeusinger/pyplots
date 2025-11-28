@@ -174,10 +174,6 @@ if __name__ == "__main__":
         xlabel="Categories",
     )
 
-    # Save for inspection
-    chart.save("plot.html")
-    print("Interactive plot saved to plot.html")
-
-    # Also save as PNG
+    # Save as PNG
     chart.save("plot.png", scale_factor=2.0)
-    print("Static plot saved to plot.png")
+    print("Plot saved to plot.png")

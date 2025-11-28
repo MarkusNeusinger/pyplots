@@ -136,6 +136,28 @@ if __name__ == '__main__':
 > Namen. Verwende NIEMALS `test_output_matplotlib.png`, `test_output_seaborn.png` oder
 > ähnliche library-spezifische Namen.
 
+### Output Format Requirements
+
+**Current Phase: PNG only**
+
+All plots must output `plot.png`. No HTML, SVG, or interactive outputs.
+
+| Library | PNG Export Method |
+|---------|-------------------|
+| matplotlib | `plt.savefig('plot.png', dpi=300, bbox_inches='tight')` |
+| seaborn | `plt.savefig('plot.png', dpi=300, bbox_inches='tight')` |
+| plotly | `fig.write_image('plot.png', width=1000, height=600, scale=2)` |
+| bokeh | `export_png(fig, filename='plot.png')` |
+| altair | `chart.save('plot.png', scale_factor=2.0)` |
+| plotnine | `plot.save('plot.png', dpi=300)` |
+| pygal | `chart.render_to_png('plot.png')` |
+| highcharts | Selenium screenshot (see example below) |
+
+**Future Phase: Interactive HTML** *(not yet implemented)*
+- Interactive plots (HTML) planned for future release
+- Will enable hover, zoom, pan for plotly/bokeh/altair
+- SVG output also planned for pygal
+
 ---
 
 ## Generation Process

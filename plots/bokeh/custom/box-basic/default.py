@@ -9,9 +9,8 @@ from typing import TYPE_CHECKING, Optional
 
 import numpy as np
 import pandas as pd
-from bokeh.models import ColumnDataSource
-from bokeh.plotting import figure, output_file, save
-
+from bokeh.models import ColumnDataSource, FixedTicker, Label, Whisker
+from bokeh.plotting import figure
 
 if TYPE_CHECKING:
     from bokeh.plotting import Figure
@@ -70,47 +69,44 @@ def create_plot(
 
     # Calculate box plot statistics for each group
     group_names = sorted(data[groups].unique())
+    n_groups = len(group_names)
 
-    # Prepare data structures for box plot components
-    box_data = {
-        "groups": [],
-        "q1": [],
-        "q2": [],
-        "q3": [],
-        "upper": [],
-        "lower": [],
-        "outliers_x": [],
-        "outliers_y": [],
-    }
+    # Prepare data for box plot
+    stats = {"x": [], "q1": [], "q2": [], "q3": [], "upper": [], "lower": [], "group": []}
+    outliers = {"x": [], "y": []}
 
-    for group in group_names:
+    for i, group in enumerate(group_names):
         group_data = data[data[groups] == group][values].dropna()
 
         q1 = group_data.quantile(0.25)
-        q2 = group_data.quantile(0.5)  # median
+        q2 = group_data.quantile(0.5)
         q3 = group_data.quantile(0.75)
         iqr = q3 - q1
         upper = min(group_data.max(), q3 + 1.5 * iqr)
         lower = max(group_data.min(), q1 - 1.5 * iqr)
 
+        stats["x"].append(i)
+        stats["q1"].append(q1)
+        stats["q2"].append(q2)
+        stats["q3"].append(q3)
+        stats["upper"].append(upper)
+        stats["lower"].append(lower)
+        stats["group"].append(group)
+
         # Find outliers
-        outliers = group_data[(group_data < lower) | (group_data > upper)]
+        outlier_data = group_data[(group_data < lower) | (group_data > upper)]
+        for val in outlier_data:
+            outliers["x"].append(i)
+            outliers["y"].append(val)
 
-        box_data["groups"].append(group)
-        box_data["q1"].append(q1)
-        box_data["q2"].append(q2)
-        box_data["q3"].append(q3)
-        box_data["upper"].append(upper)
-        box_data["lower"].append(lower)
+    # Set colors
+    if not colors:
+        from bokeh.palettes import Set2_8
 
-        # Add outliers
-        for outlier in outliers:
-            box_data["outliers_x"].append(group)
-            box_data["outliers_y"].append(outlier)
+        colors = Set2_8[:n_groups]
 
-    # Create figure
+    # Create figure with numeric x-axis
     p = figure(
-        x_range=group_names,
         width=width,
         height=height,
         title=title or "Box Plot Distribution",
@@ -118,70 +114,74 @@ def create_plot(
         tools="pan,wheel_zoom,box_zoom,reset,save",
     )
 
-    # Set colors
-    if not colors:
-        from bokeh.palettes import Set2_8
+    source = ColumnDataSource(data=stats)
 
-        colors = Set2_8[: len(group_names)]
-
-    # Draw boxes (Q1 to Q3) for each group
-    for i, group in enumerate(group_names):
-        idx = box_data["groups"].index(group)
-
-        # Box from Q1 to Q3
+    # Draw boxes (Q1 to Q3)
+    box_width = 0.5
+    for i, color in enumerate(colors):
         p.vbar(
-            x=group,
-            width=0.5,
-            bottom=box_data["q1"][idx],
-            top=box_data["q3"][idx],
-            fill_color=colors[i % len(colors)],
+            x=i,
+            width=box_width,
+            bottom=stats["q1"][i],
+            top=stats["q3"][i],
+            fill_color=color,
             line_color="black",
             alpha=0.7,
         )
 
-        # Median line
-        p.line(x=[i - 0.25, i + 0.25], y=[box_data["q2"][idx], box_data["q2"][idx]], line_color="red", line_width=2)
-
-        # Upper whisker
-        p.line(x=[i, i], y=[box_data["q3"][idx], box_data["upper"][idx]], line_color="black", line_width=1)
-
-        # Upper whisker cap
-        p.line(
-            x=[i - 0.1, i + 0.1], y=[box_data["upper"][idx], box_data["upper"][idx]], line_color="black", line_width=1.5
+    # Draw median lines
+    for i in range(n_groups):
+        p.segment(
+            x0=i - box_width / 2,
+            y0=stats["q2"][i],
+            x1=i + box_width / 2,
+            y1=stats["q2"][i],
+            line_color="red",
+            line_width=2,
         )
 
-        # Lower whisker
-        p.line(x=[i, i], y=[box_data["q1"][idx], box_data["lower"][idx]], line_color="black", line_width=1)
+    # Draw whiskers
+    upper_whisker = Whisker(base="x", upper="upper", lower="q3", source=source, line_color="black")
+    upper_whisker.upper_head.size = 10
+    upper_whisker.lower_head.size = 0
+    p.add_layout(upper_whisker)
 
-        # Lower whisker cap
-        p.line(
-            x=[i - 0.1, i + 0.1], y=[box_data["lower"][idx], box_data["lower"][idx]], line_color="black", line_width=1.5
+    lower_whisker = Whisker(base="x", upper="q1", lower="lower", source=source, line_color="black")
+    lower_whisker.upper_head.size = 0
+    lower_whisker.lower_head.size = 10
+    p.add_layout(lower_whisker)
+
+    # Draw outliers
+    if outliers["x"]:
+        outlier_source = ColumnDataSource(data=outliers)
+        p.scatter(
+            x="x", y="y", source=outlier_source, size=8, color="red", alpha=0.5, line_color="black", line_width=1
         )
 
-    # Draw outliers using ColumnDataSource (required for categorical x-axis)
-    if box_data["outliers_x"]:
-        outlier_source = ColumnDataSource(data={"x": box_data["outliers_x"], "y": box_data["outliers_y"]})
-        p.scatter(x="x", y="y", source=outlier_source, size=8, color="red", alpha=0.5, line_color="black", line_width=1)
+    # Set x-axis to show group names
+    p.xaxis.ticker = FixedTicker(ticks=list(range(n_groups)))
+    p.xaxis.major_label_overrides = {i: name for i, name in enumerate(group_names)}
 
-    # Styling
+    # Labels
     p.xaxis.axis_label = xlabel or groups
     p.yaxis.axis_label = ylabel or values
 
+    # Styling
     p.title.text_font_size = "14pt"
     p.title.align = "center"
-
-    # Grid
     p.ygrid.grid_line_alpha = 0.3
     p.ygrid.grid_line_dash = [6, 4]
     p.xgrid.visible = False
 
     # Add sample size annotations
     group_counts = data.groupby(groups)[values].count()
-    for i, (_group, count) in enumerate(group_counts.items()):
-        y_position = data[values].min() - (data[values].max() - data[values].min()) * 0.05
-        from bokeh.models import Label
-
-        label = Label(x=i, y=y_position, text=f"n={count}", text_align="center", text_font_size="9pt", text_alpha=0.7)
+    y_min = data[values].min()
+    y_range = data[values].max() - y_min
+    for i, group in enumerate(group_names):
+        count = group_counts[group]
+        label = Label(
+            x=i, y=y_min - y_range * 0.08, text=f"n={count}", text_align="center", text_font_size="9pt", text_alpha=0.7
+        )
         p.add_layout(label)
 
     return p
@@ -189,27 +189,23 @@ def create_plot(
 
 if __name__ == "__main__":
     # Sample data for testing with different distributions per group
-    np.random.seed(42)  # For reproducibility
+    np.random.seed(42)
 
-    # Generate sample data with 4 groups
     data_dict = {"Group": [], "Value": []}
 
-    # Group A: Normal distribution, mean=50, std=10
+    # Group A: Normal distribution
     group_a_data = np.random.normal(50, 10, 40)
-    # Add some outliers
     group_a_data = np.append(group_a_data, [80, 85, 15])
 
-    # Group B: Normal distribution, mean=60, std=15
+    # Group B: Normal distribution
     group_b_data = np.random.normal(60, 15, 35)
-    # Add outliers
     group_b_data = np.append(group_b_data, [100, 10])
 
-    # Group C: Normal distribution, mean=45, std=8
+    # Group C: Normal distribution
     group_c_data = np.random.normal(45, 8, 45)
 
     # Group D: Skewed distribution
     group_d_data = np.random.gamma(2, 2, 30) + 40
-    # Add outliers
     group_d_data = np.append(group_d_data, [75, 78, 20])
 
     # Combine all data
@@ -233,16 +229,8 @@ if __name__ == "__main__":
         xlabel="Categories",
     )
 
-    # Save for inspection
-    output_file("plot.html")
-    save(fig)
-    print("Interactive plot saved to plot.html")
+    # Save as PNG
+    from bokeh.io import export_png
 
-    # Also export as PNG if possible
-    try:
-        from bokeh.io import export_png
-
-        export_png(fig, filename="plot.png")
-        print("Static plot saved to plot.png")
-    except ImportError:
-        print("Note: Install 'selenium' and 'pillow' to export PNG images")
+    export_png(fig, filename="plot.png")
+    print("Plot saved to plot.png")

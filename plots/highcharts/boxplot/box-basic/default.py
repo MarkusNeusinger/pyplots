@@ -149,21 +149,28 @@ def create_plot(
     chart.options.chart = {"type": "boxplot", "height": height, "backgroundColor": "white"}
 
     # Add box plot series
-    chart.add_series(BoxPlotSeries.from_array(data=box_data, name="Distribution", colorByPoint=True))
+    box_series = BoxPlotSeries()
+    box_series.data = box_data
+    box_series.name = "Distribution"
+    box_series.color_by_point = True
+    chart.add_series(box_series)
 
     # Add outliers as scatter series if any exist
     if outliers_data:
         from highcharts_core.options.series.scatter import ScatterSeries
 
-        chart.add_series(
-            ScatterSeries.from_array(
-                data=outliers_data,
-                name="Outliers",
-                color="rgba(255, 0, 0, 0.5)",
-                marker={"fillColor": "rgba(255, 0, 0, 0.5)", "lineWidth": 1, "lineColor": "#000000", "radius": 4},
-                tooltip={"pointFormat": "Outlier: <b>{point.y}</b>"},
-            )
-        )
+        scatter_series = ScatterSeries()
+        scatter_series.data = outliers_data
+        scatter_series.name = "Outliers"
+        scatter_series.color = "rgba(255, 0, 0, 0.5)"
+        scatter_series.marker = {
+            "fillColor": "rgba(255, 0, 0, 0.5)",
+            "lineWidth": 1,
+            "lineColor": "#000000",
+            "radius": 4,
+        }
+        scatter_series.tooltip = {"pointFormat": "Outlier: <b>{point.y}</b>"}
+        chart.add_series(scatter_series)
 
     # Legend
     chart.options.legend = {
@@ -222,31 +229,45 @@ if __name__ == "__main__":
         xlabel="Categories",
     )
 
-    # Export to HTML
-    html_str = chart.to_js_literal()
+    # Export to PNG via Selenium screenshot
+    import tempfile
+    import time
+    from pathlib import Path
 
-    # Create HTML file
+    from selenium import webdriver
+    from selenium.webdriver.chrome.options import Options
+
+    # Generate HTML content
+    html_str = chart.to_js_literal()
     html_content = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Box Plot - Highcharts</title>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/highcharts-more.js"></script>
 </head>
-<body>
-    <div id="container" style="width: 100%; height: 600px;"></div>
-    <script>
-        {html_str}
-    </script>
+<body style="margin:0;">
+    <div id="container" style="width: 1000px; height: 600px;"></div>
+    <script>{html_str}</script>
 </body>
 </html>"""
 
-    with open("plot.html", "w") as f:
+    # Write temp HTML and take screenshot
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False) as f:
         f.write(html_content)
+        temp_path = f.name
 
-    print("Interactive plot saved to plot.html")
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--window-size=1000,600")
 
-    # Note about PNG export
-    print("Note: Highcharts requires a license for commercial use")
-    print("For static image export, use Highcharts Export Server or phantomjs")
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.get(f"file://{temp_path}")
+    time.sleep(1)  # Wait for chart to render
+    driver.save_screenshot("plot.png")
+    driver.quit()
+
+    Path(temp_path).unlink()  # Clean up temp file
+    print("Plot saved to plot.png")

@@ -201,8 +201,6 @@ if __name__ == "__main__":
         xlabel="Categories",
     )
 
-    # Save for inspection
-    fig.write_html("plot.html")
+    # Save as PNG
     fig.write_image("plot.png", width=1000, height=600, scale=2)
-    print("Interactive plot saved to plot.html")
-    print("Static plot saved to plot.png")
+    print("Plot saved to plot.png")

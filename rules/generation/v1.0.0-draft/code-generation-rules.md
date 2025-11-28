@@ -19,7 +19,7 @@ Define how to generate plot implementation code from Markdown specifications.
 
 ### Required
 1. **Spec Markdown**: Complete spec file from `specs/{spec-id}.md`
-2. **Target Library**: matplotlib, seaborn, plotly, bokeh, or altair
+2. **Target Library**: matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, or highcharts
 3. **Variant**: default, {style}_style, or py{version}
 
 ### Optional
@@ -30,6 +30,23 @@ Define how to generate plot implementation code from Markdown specifications.
 ---
 
 ## Output Requirements
+
+### Directory Structure
+
+The folder name must match the library's API function name for the plot type:
+
+| Library | Function | Folder Example |
+|---------|----------|----------------|
+| matplotlib | `ax.boxplot()` | `plots/matplotlib/boxplot/` |
+| seaborn | `sns.boxplot()` | `plots/seaborn/boxplot/` |
+| plotly | `go.Box()` | `plots/plotly/box/` |
+| pygal | `pygal.Box()` | `plots/pygal/box/` |
+| altair | `mark_boxplot()` | `plots/altair/boxplot/` |
+| plotnine | `geom_boxplot()` | `plots/plotnine/boxplot/` |
+| highcharts | `BoxPlotSeries` | `plots/highcharts/boxplot/` |
+
+**Fallback for libraries without native function:** Use `custom/`
+- Example: Bokeh has no native boxplot → `plots/bokeh/custom/`
 
 ### File Structure
 
@@ -156,19 +173,24 @@ From `docs/architecture/specs-guide.md`:
 
 ### Step 2: Library Selection
 
-From `docs/workflow.md` (lines 119-127):
+From `docs/workflow.md`:
 
-**Rules**:
+**Supported Libraries**:
 - **matplotlib**: Always implement (universal support)
-- **seaborn**: Auto-select for: heatmap, violin, box, pair plots, distributions
-- **plotly**: Auto-select for: interactive needs, 3D plots, animations
-- **bokeh/altair**: Future support
+- **seaborn**: Statistical visualizations (heatmap, violin, box, pair plots, distributions)
+- **plotly**: Interactive plots, 3D plots, animations
+- **bokeh**: Interactive web-based visualizations
+- **altair**: Declarative statistical visualization
+- **plotnine**: ggplot2-style plotting (Grammar of Graphics)
+- **pygal**: SVG-based charts for web
+- **highcharts**: Professional web charts (requires license for commercial use)
 
 **Selection Logic**:
 ```
-if spec mentions "interactive" → plotly
+if spec mentions "interactive" → plotly, bokeh
 else if plot_type in ["heatmap", "violin", "box", "pair"] → seaborn + matplotlib
-else → matplotlib (default)
+else if spec mentions "ggplot" or "grammar of graphics" → plotnine
+else → all libraries (default)
 ```
 
 ### Step 3: Code Structure
@@ -271,6 +293,160 @@ fig.update_layout(
 
 return fig
 ```
+
+### bokeh
+
+```python
+from bokeh.plotting import figure, output_file, save
+from bokeh.models import ColumnDataSource
+
+# Create figure with categorical x-axis
+p = figure(x_range=categories, ...)
+
+# IMPORTANT: For categorical axes, use ColumnDataSource
+source = ColumnDataSource(data={'x': cat_data, 'y': num_data})
+p.scatter(x='x', y='y', source=source)  # Use scatter, not circle with categorical
+
+# Save output
+output_file('plot.html')
+save(p)
+
+# PNG export (requires selenium)
+try:
+    from bokeh.io import export_png
+    export_png(p, filename='plot.png')
+except ImportError:
+    print("Note: Install 'selenium' for PNG export")
+```
+
+### altair
+
+```python
+import altair as alt
+
+# Create chart
+chart = alt.Chart(data).mark_point().encode(x='x:Q', y='y:Q')
+
+# Save HTML (always works)
+chart.save('plot.html')
+
+# PNG export (requires vl-convert-python)
+try:
+    chart.save('plot.png', scale_factor=2.0)
+except Exception:
+    print("Note: Install 'vl-convert-python' for PNG export")
+```
+
+### plotnine
+
+```python
+from plotnine import ggplot, aes, scale_fill_brewer
+
+# IMPORTANT: Palette types must match the palette name
+# - Qualitative: Set1, Set2, Set3, Paired, Pastel1, Pastel2, Dark2, Accent
+# - Sequential: Blues, Greens, Reds, Oranges, Purples, Greys, etc.
+# - Diverging: RdBu, PiYG, PRGn, BrBG, RdYlBu, etc.
+
+# ✅ Correct: Set2 is qualitative
++ scale_fill_brewer(type='qual', palette='Set2')
+
+# ❌ Wrong: Set2 is NOT sequential
++ scale_fill_brewer(type='seq', palette='Set2')
+```
+
+### highcharts
+
+**Note:** Highcharts requires a license for commercial use.
+
+```python
+# IMPORTANT: Use correct import path
+from highcharts_core.chart import Chart  # ✅ Correct
+# NOT: from highcharts_core import Chart  # ❌ Wrong
+
+from highcharts_core.options import HighchartsOptions
+
+# Create chart
+chart = Chart()
+chart.options = HighchartsOptions()
+
+# Export to HTML (always works)
+html_str = chart.to_js_literal()
+
+# Static image export requires Highcharts Export Server
+```
+
+### pygal
+
+```python
+import pygal
+
+# Create chart
+chart = pygal.Bar()
+chart.title = 'Title'
+chart.add('Series', [1, 2, 3])
+
+# Save as SVG (native format)
+chart.render_to_file('plot.svg')
+
+# PNG export (requires cairosvg)
+try:
+    chart.render_to_png('plot.png')
+except ImportError:
+    print("Note: Install 'cairosvg' for PNG export")
+```
+
+---
+
+## API Version Compatibility
+
+### matplotlib 3.9+
+
+```python
+# DEPRECATED: labels parameter in boxplot
+ax.boxplot(data, labels=group_names)  # ❌ Deprecated
+
+# USE: tick_labels parameter
+ax.boxplot(data, tick_labels=group_names)  # ✅ Correct
+```
+
+### seaborn 0.14+
+
+```python
+# When using palette, always specify hue
+# Otherwise seaborn raises a warning
+
+# ❌ Warning: palette without hue
+sns.boxplot(data=df, x='group', y='value', palette='Set2')
+
+# ✅ Correct: hue with palette
+sns.boxplot(data=df, x='group', y='value', hue='group', palette='Set2', legend=False)
+```
+
+---
+
+## Code Quality Checks (Required Before PR)
+
+Before creating a pull request, **always** run these checks and fix any issues:
+
+```bash
+# 1. Check for linting issues
+uv run ruff check .
+
+# 2. Auto-fix issues (safe fixes)
+uv run ruff check . --fix
+
+# 3. Auto-fix with unsafe fixes if needed
+uv run ruff check . --fix --unsafe-fixes
+
+# 4. Format code
+uv run ruff format .
+```
+
+**Common issues to watch for:**
+- `C408`: Use dict literals `{}` instead of `dict()`
+- `B905`: Add `strict=False` to `zip()` calls
+- `B007`: Prefix unused loop variables with `_` (e.g., `_group`)
+- Import ordering (auto-fixed by ruff)
 
 ---
 

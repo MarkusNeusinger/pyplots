@@ -221,6 +221,7 @@ dist/
 .DS_Store
 Thumbs.db
 *.tmp
+nul
 
 # Project-specific
 temp/

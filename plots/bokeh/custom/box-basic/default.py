@@ -12,6 +12,7 @@ import pandas as pd
 from bokeh.models import ColumnDataSource, FixedTicker, Label, Whisker
 from bokeh.plotting import figure
 
+
 if TYPE_CHECKING:
     from bokeh.plotting import Figure
 
@@ -154,13 +155,11 @@ def create_plot(
     # Draw outliers
     if outliers["x"]:
         outlier_source = ColumnDataSource(data=outliers)
-        p.scatter(
-            x="x", y="y", source=outlier_source, size=8, color="red", alpha=0.5, line_color="black", line_width=1
-        )
+        p.scatter(x="x", y="y", source=outlier_source, size=8, color="red", alpha=0.5, line_color="black", line_width=1)
 
     # Set x-axis to show group names
     p.xaxis.ticker = FixedTicker(ticks=list(range(n_groups)))
-    p.xaxis.major_label_overrides = {i: name for i, name in enumerate(group_names)}
+    p.xaxis.major_label_overrides = dict(enumerate(group_names))
 
     # Labels
     p.xaxis.axis_label = xlabel or groups
@@ -229,8 +228,21 @@ if __name__ == "__main__":
         xlabel="Categories",
     )
 
-    # Save as PNG
+    # Save as PNG using webdriver-manager for automatic chromedriver
     from bokeh.io import export_png
+    from selenium import webdriver
+    from selenium.webdriver.chrome.options import Options
+    from selenium.webdriver.chrome.service import Service
+    from webdriver_manager.chrome import ChromeDriverManager
 
-    export_png(fig, filename="plot.png")
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+
+    export_png(fig, filename="plot.png", webdriver=driver)
+    driver.quit()
     print("Plot saved to plot.png")

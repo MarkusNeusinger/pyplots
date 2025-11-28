@@ -302,13 +302,25 @@ Via **GitHub Issue Labels**:
 
 **Scope**:
 - 🎯 **Monitoring**: Twitter only
-- 📊 **Libraries**: matplotlib only
-- 🐍 **Python**: 3.10+ (tested on 3.10, 3.11, 3.12, 3.13)
+- 📊 **Libraries**: All 8 supported (matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts)
+- 🐍 **Python**: 3.14+ (primary), tested on 3.11-3.14
 - ✋ **Approval**: Manual for all new plots
 - ✅ **Quality**: Basic Claude evaluation
 - 📱 **Promotion**: X (Twitter) posting with 2/day limit
 
-**Goal**: Prove automation pipeline works end-to-end
+**Supported Libraries**:
+| Library | Strength |
+|---------|----------|
+| matplotlib | The classic standard, maximum flexibility |
+| seaborn | Statistical visualizations, beautiful defaults |
+| plotly | Interactive web plots, dashboards, 3D |
+| bokeh | Interactive, streaming data, large datasets |
+| altair | Declarative/Vega-Lite, elegant exploration |
+| plotnine | ggplot2 syntax for R users |
+| pygal | Minimalistic SVG charts |
+| highcharts | Interactive web charts, stock charts |
+
+**Goal**: Prove automation pipeline works end-to-end with all libraries
 
 ---
 
@@ -317,10 +329,8 @@ Via **GitHub Issue Labels**:
 **Add**:
 - 🎯 **Monitoring**: + Reddit (r/dataisbeautiful, r/Python)
 - 🎯 **Monitoring**: + GitHub Trending/Discussions
-- 📊 **Libraries**: + seaborn, + plotly
 - 🤖 **Approval**: Hybrid (auto for similar, manual for new)
 - ✅ **Quality**: Multi-LLM for critical decisions
-- 🐍 **Python**: 3.10+ (already supports all versions)
 - 📱 **Promotion**: + LinkedIn posts for professional audience
 
 **Goal**: Scale content production and improve automation
@@ -331,7 +341,7 @@ Via **GitHub Issue Labels**:
 
 **Add**:
 - 🎯 **Monitoring**: + ArXiv papers (academic visualizations)
-- 📊 **Libraries**: bokeh, altair, + specialized libraries
+- 📊 **Libraries**: + specialized libraries as needed
 - 🤖 **Approval**: Intelligent auto-approval (high confidence)
 - 🔄 **Maintenance**: Proactive optimization suggestions
 - 🌐 **Community**: Public spec submissions via issues

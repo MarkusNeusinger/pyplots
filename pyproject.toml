@@ -55,8 +55,14 @@ typecheck = [
     "mypy>=1.8.0",
 ]
 plotting = [
+    # Additional plotting libraries (matplotlib already in main dependencies)
     "seaborn>=0.13.0",
     "plotly>=5.18.0",
+    "bokeh>=3.3.0",
+    "altair>=5.2.0",
+    "plotnine>=0.13.0",
+    "pygal>=3.0.0",
+    "highcharts-core>=2.0.0",
 ]
 all = [
     "pyplots[test,dev,plotting,typecheck]",

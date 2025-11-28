@@ -9,7 +9,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**pyplots** is an AI-powered platform for Python data visualization that automatically discovers, generates, tests, and maintains plotting examples. The platform is specification-driven: every plot starts as a library-agnostic Markdown spec, then AI generates implementations for matplotlib, seaborn, plotly, and other libraries.
+**pyplots** is an AI-powered platform for Python data visualization that automatically discovers, generates, tests, and maintains plotting examples. The platform is specification-driven: every plot starts as a library-agnostic Markdown spec, then AI generates implementations for all supported libraries.
+
+**Supported Libraries** (8 total):
+- **matplotlib** - The classic standard, maximum flexibility
+- **seaborn** - Statistical visualizations, beautiful defaults
+- **plotly** - Interactive web plots, dashboards, 3D
+- **bokeh** - Interactive, streaming data, large datasets
+- **altair** - Declarative/Vega-Lite, elegant exploration
+- **plotnine** - ggplot2 syntax for R users
+- **pygal** - Minimalistic SVG charts
+- **highcharts** - Interactive web charts, stock charts (requires license for commercial use)
 
 **Core Principle**: Community proposes plot ideas via GitHub Issues → AI generates code → Multi-LLM quality checks → Deployed.
 
@@ -80,9 +90,14 @@ Example:
 specs/scatter-basic.md  → plots/matplotlib/scatter/scatter-basic/default.py
                         → plots/seaborn/scatterplot/scatter-basic/default.py
                         → plots/plotly/scatter/scatter-basic/default.py
+                        → plots/bokeh/scatter/scatter-basic/default.py
+                        → plots/altair/scatter/scatter-basic/default.py
+                        → plots/plotnine/scatter/scatter-basic/default.py
+                        → plots/pygal/scatter/scatter-basic/default.py
+                        → plots/highcharts/scatter/scatter-basic/default.py
 ```
 
-The same spec ID links implementations across all libraries.
+The same spec ID links implementations across all 8 supported libraries.
 
 ### Spec ID Naming Convention
 
@@ -124,7 +139,7 @@ The same spec ID links implementations across all libraries.
 
 - **Backend**: FastAPI, SQLAlchemy (async), PostgreSQL, Python 3.10+
 - **Frontend**: Next.js 14, TypeScript, Tailwind CSS, MUI 7
-- **Plotting**: matplotlib, seaborn, plotly
+- **Plotting**: matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts
 - **Package Manager**: uv (fast Python installer)
 - **Infrastructure**: Google Cloud Run, Cloud SQL, Cloud Storage
 - **Automation**: GitHub Actions (code workflows) + n8n Cloud (external services)

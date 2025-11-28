@@ -36,13 +36,13 @@ pyplots/
 │           ├── quality-criteria.md
 │           └── self-review-checklist.md
 │
-├── plots/                             # Library-specific implementations
-│   ├── matplotlib/
+├── plots/                             # Library-specific implementations (8 libraries)
+│   ├── matplotlib/                    # The classic standard
 │   │   ├── scatter/
 │   │   │   ├── scatter-basic-001/     # Implements specs/scatter-basic-001.md
 │   │   │   │   ├── default.py         # Standard implementation
 │   │   │   │   ├── ggplot_style.py    # Style variant
-│   │   │   │   └── py310.py           # Python 3.10 specific (only if needed)
+│   │   │   │   └── py311.py           # Python 3.11 specific (only if needed)
 │   │   │   └── scatter-advanced-005/
 │   │   │       └── default.py
 │   │   ├── bar/
@@ -52,7 +52,7 @@ pyplots/
 │   │       └── heatmap-corr-002/
 │   │           └── default.py
 │   │
-│   ├── seaborn/
+│   ├── seaborn/                       # Statistical visualizations
 │   │   ├── scatterplot/
 │   │   │   └── scatter-basic-001/      # Same spec-id!
 │   │   │       ├── default.py
@@ -61,9 +61,34 @@ pyplots/
 │   │       └── heatmap-corr-002/
 │   │           └── default.py
 │   │
-│   └── plotly/
+│   ├── plotly/                        # Interactive web plots
+│   │   └── scatter/
+│   │       └── scatter-basic-001/      # Same spec-id!
+│   │           └── default.py
+│   │
+│   ├── bokeh/                         # Interactive, large datasets
+│   │   └── scatter/
+│   │       └── scatter-basic-001/
+│   │           └── default.py
+│   │
+│   ├── altair/                        # Declarative/Vega-Lite
+│   │   └── scatter/
+│   │       └── scatter-basic-001/
+│   │           └── default.py
+│   │
+│   ├── plotnine/                      # ggplot2 syntax
+│   │   └── scatter/
+│   │       └── scatter-basic-001/
+│   │           └── default.py
+│   │
+│   ├── pygal/                         # SVG charts
+│   │   └── scatter/
+│   │       └── scatter-basic-001/
+│   │           └── default.py
+│   │
+│   └── highcharts/                    # Interactive web charts, stock charts
 │       └── scatter/
-│           └── scatter-basic-001/      # Same spec-id!
+│           └── scatter-basic-001/
 │               └── default.py
 │
 ├── core/                              # Shared business logic
@@ -225,11 +250,16 @@ pyplots/
 - ❌ NO `quality_report.json` (stored in GitHub Issues)
 - ✅ Only Python code
 
-**Cross-Library Linking**: Same `spec_id` across different libraries
+**Cross-Library Linking**: Same `spec_id` across all 8 supported libraries
 ```
 matplotlib/scatter/scatter-basic-001/default.py
 seaborn/scatterplot/scatter-basic-001/default.py
 plotly/scatter/scatter-basic-001/default.py
+bokeh/scatter/scatter-basic-001/default.py
+altair/scatter/scatter-basic-001/default.py
+plotnine/scatter/scatter-basic-001/default.py
+pygal/scatter/scatter-basic-001/default.py
+highcharts/scatter/scatter-basic-001/default.py
 ```
 All implement the same spec: `specs/scatter-basic-001.md`
 

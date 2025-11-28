@@ -125,7 +125,7 @@ jobs:
           additional_permissions: |
             actions: read
           prompt: |
-            ## 🎯 Task: Generate Plot Implementations
+            ## 🎯 Task: Generate Plot Implementations for All 8 Libraries
 
             This issue has been approved! Please generate implementations for **${{ steps.extract_spec.outputs.spec_id }}**.
 
@@ -140,7 +140,9 @@ jobs:
                - `rules/generation/v1.0.0-draft/quality-criteria.md`
                - `rules/generation/v1.0.0-draft/self-review-checklist.md`
 
-            3. **Generate matplotlib implementation**
+            3. **Generate implementations for all 8 libraries** (in order of priority):
+
+               **3.1 matplotlib**
                - Determine the correct plot type folder from spec (e.g., histogram, scatter, bar, line, etc.)
                - Target: `plots/matplotlib/{plot_type}/${{ steps.extract_spec.outputs.spec_id }}/default.py`
                - Follow generation rules exactly
@@ -149,15 +151,46 @@ jobs:
                - Add standalone execution block (`if __name__ == '__main__':`)
                - Self-review: Max 3 attempts to pass quality criteria
 
-            4. **Generate seaborn implementation**
+               **3.2 seaborn**
                - Determine the correct seaborn function folder (e.g., histplot, scatterplot, barplot, etc.)
                - Target: `plots/seaborn/{seaborn_function}/${{ steps.extract_spec.outputs.spec_id }}/default.py`
                - Same requirements as matplotlib
 
-            5. **Create Pull Request**
+               **3.3 plotly**
+               - Target: `plots/plotly/{plot_type}/${{ steps.extract_spec.outputs.spec_id }}/default.py`
+               - Use plotly.express or plotly.graph_objects as appropriate
+               - Ensure interactive features work
+
+               **3.4 bokeh**
+               - Target: `plots/bokeh/{plot_type}/${{ steps.extract_spec.outputs.spec_id }}/default.py`
+               - Use bokeh.plotting interface
+               - Include output_file() for standalone HTML generation
+
+               **3.5 altair**
+               - Target: `plots/altair/{plot_type}/${{ steps.extract_spec.outputs.spec_id }}/default.py`
+               - Use declarative Vega-Lite approach
+               - Leverage altair's data transformations where appropriate
+
+               **3.6 plotnine**
+               - Target: `plots/plotnine/{plot_type}/${{ steps.extract_spec.outputs.spec_id }}/default.py`
+               - Use ggplot2-style grammar of graphics
+               - Follow plotnine idioms (aes, geom_*, etc.)
+
+               **3.7 pygal**
+               - Target: `plots/pygal/{plot_type}/${{ steps.extract_spec.outputs.spec_id }}/default.py`
+               - Generate SVG output
+               - Use pygal's chart classes
+
+               **3.8 highcharts**
+               - Target: `plots/highcharts/{plot_type}/${{ steps.extract_spec.outputs.spec_id }}/default.py`
+               - Use highcharts-core library (from highcharts_core import Chart)
+               - Generate interactive HTML output
+               - Note: Requires license for commercial use
+
+            4. **Create Pull Request**
                - Branch: `auto/${{ steps.extract_spec.outputs.spec_id }}`
                - Title: `feat: implement ${{ steps.extract_spec.outputs.spec_id }}`
-               - Include summary of generation results
+               - Include summary of generation results for ALL libraries
                - Link to this issue (#${{ github.event.issue.number }})
 
             ### Requirements
@@ -166,10 +199,11 @@ jobs:
             - Code must work standalone (no external files)
             - Follow Python 3.10+ syntax
             - Commit with clear messages
+            - If a library doesn't support the plot type well, note this in the PR but still try to create a reasonable approximation
 
             ### Expected Outcome
-            - PR created with matplotlib and seaborn implementations
-            - Both pass self-review (score ≥ 85)
+            - PR created with implementations for all 8 libraries
+            - All pass self-review (score ≥ 85)
             - Tests will run automatically on PR
 
             Please proceed with the generation!

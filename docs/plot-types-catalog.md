@@ -12,6 +12,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each entry inclu
 | **Bokeh** | Large datasets, streaming | Real-time data, big data visualization |
 | **Altair** | Declarative, exploratory | Quick exploration, academic use |
 | **Plotnine** | ggplot2 syntax | R users, grammar of graphics |
+| **Pygal** | SVG output, minimalistic | Embeddable SVG charts, simple dashboards |
+| **Highcharts** | Professional web charts | Stock charts, drilldown, enterprise dashboards |
 
 ---
 
@@ -797,16 +799,347 @@ A comprehensive catalog of plot types for the pyplots platform. Each entry inclu
 
 ---
 
+## 24. Financial Charts
+
+### stock-candlestick
+**Best Library:** Highcharts
+**Description:** Professional candlestick chart for stock prices with volume.
+**Basic Chart:** OHLC candles, volume bars below, date axis with trading days.
+
+### stock-area
+**Best Library:** Highcharts
+**Description:** Area chart for stock price history with range selector.
+**Basic Chart:** Filled area showing price, navigator at bottom, range buttons.
+
+### stock-comparison
+**Best Library:** Highcharts
+**Description:** Multiple stock series normalized for comparison.
+**Basic Chart:** 2-3 stocks rebased to 100%, percentage y-axis.
+
+### stock-flags
+**Best Library:** Highcharts
+**Description:** Stock chart with event markers/annotations.
+**Basic Chart:** Price line with flag icons marking dividends, splits, earnings.
+
+### stock-volume
+**Best Library:** Highcharts
+**Description:** Stock price with volume bars in synchronized panes.
+**Basic Chart:** Price in top pane, volume histogram below.
+
+### indicator-macd
+**Best Library:** Highcharts
+**Description:** MACD technical indicator chart.
+**Basic Chart:** Price chart with MACD line, signal line, histogram below.
+
+### indicator-rsi
+**Best Library:** Highcharts
+**Description:** Relative Strength Index indicator.
+**Basic Chart:** RSI oscillator with overbought/oversold zones (70/30).
+
+### indicator-bollinger
+**Best Library:** Highcharts
+**Description:** Bollinger Bands overlay on price chart.
+**Basic Chart:** Price with upper, middle, lower bands.
+
+### indicator-sma
+**Best Library:** Matplotlib
+**Description:** Simple Moving Average overlay.
+**Basic Chart:** Price line with 20-day and 50-day SMA lines.
+
+### indicator-ema
+**Best Library:** Matplotlib
+**Description:** Exponential Moving Average overlay.
+**Basic Chart:** Price line with EMA lines of different periods.
+
+### returns-histogram
+**Best Library:** Seaborn
+**Description:** Distribution of daily/monthly returns.
+**Basic Chart:** Histogram of percentage returns with normal curve overlay.
+
+### drawdown-chart
+**Best Library:** Matplotlib
+**Description:** Drawdown from peak visualization.
+**Basic Chart:** Area chart showing negative drawdown percentages over time.
+
+### correlation-returns
+**Best Library:** Seaborn
+**Description:** Correlation matrix of asset returns.
+**Basic Chart:** Heatmap of return correlations between assets.
+
+### portfolio-allocation
+**Best Library:** Plotly
+**Description:** Interactive portfolio weight visualization.
+**Basic Chart:** Pie or treemap showing asset allocation.
+
+### efficient-frontier
+**Best Library:** Matplotlib
+**Description:** Portfolio risk-return optimization curve.
+**Basic Chart:** Scatter of portfolios, efficient frontier line, risk vs return axes.
+
+---
+
+## 25. Extended Geographic & Maps
+
+### map-tile
+**Best Library:** Plotly
+**Description:** Map with OpenStreetMap or satellite tile background.
+**Basic Chart:** Zoomable tile map with markers.
+
+### map-density
+**Best Library:** Plotly
+**Description:** Point density visualization on map.
+**Basic Chart:** Heatmap-style density showing concentration.
+
+### map-flow
+**Best Library:** Plotly
+**Description:** Origin-destination flow map with curved lines.
+**Basic Chart:** Arcs showing movement between locations, width by volume.
+
+### map-cluster
+**Best Library:** Plotly
+**Description:** Clustered markers that expand on zoom.
+**Basic Chart:** Grouped markers with count badges.
+
+### map-hexbin
+**Best Library:** Plotly
+**Description:** Hexagonal binning on geographic data.
+**Basic Chart:** Hexagon grid colored by point count.
+
+### map-route
+**Best Library:** Plotly
+**Description:** Path/route visualization on map.
+**Basic Chart:** Connected waypoints showing journey.
+
+### map-animated
+**Best Library:** Plotly
+**Description:** Animated map showing changes over time.
+**Basic Chart:** Choropleth or scatter with time slider.
+
+### map-drill
+**Best Library:** Highcharts
+**Description:** Drillable map (country → state → city).
+**Basic Chart:** Click to zoom into sub-regions.
+
+### map-projection
+**Best Library:** Matplotlib (cartopy)
+**Description:** Map with different geographic projections.
+**Basic Chart:** Robinson, Mercator, or orthographic projection.
+
+### map-contour
+**Best Library:** Matplotlib (cartopy)
+**Description:** Contour lines on geographic background.
+**Basic Chart:** Elevation or weather contours on map.
+
+---
+
+## 26. SVG & Minimal Charts (Pygal)
+
+### svg-line
+**Best Library:** Pygal
+**Description:** Clean SVG line chart for web embedding.
+**Basic Chart:** Minimal line chart, hover tooltips, embeddable.
+
+### svg-bar
+**Best Library:** Pygal
+**Description:** SVG bar chart with smooth animations.
+**Basic Chart:** Animated bars on hover, clean design.
+
+### svg-pie
+**Best Library:** Pygal
+**Description:** Interactive SVG pie chart.
+**Basic Chart:** Slices with hover effects, legend.
+
+### svg-radar
+**Best Library:** Pygal
+**Description:** SVG radar/spider chart.
+**Basic Chart:** Clean polygonal radar with fill.
+
+### svg-dot
+**Best Library:** Pygal
+**Description:** Dot matrix chart in SVG.
+**Basic Chart:** Dots arranged in grid, sized by value.
+
+### svg-gauge
+**Best Library:** Pygal
+**Description:** Gauge chart in SVG format.
+**Basic Chart:** Semicircular gauge with needle.
+
+### svg-funnel
+**Best Library:** Pygal
+**Description:** SVG funnel chart.
+**Basic Chart:** Clean funnel with stage labels.
+
+### svg-box
+**Best Library:** Pygal
+**Description:** SVG box plot.
+**Basic Chart:** Clean box and whisker with tooltips.
+
+### svg-treemap
+**Best Library:** Pygal
+**Description:** SVG treemap visualization.
+**Basic Chart:** Nested rectangles with hover info.
+
+### svg-worldmap
+**Best Library:** Pygal
+**Description:** Simple SVG world map.
+**Basic Chart:** Countries colored by value, hover to show data.
+
+---
+
+## 27. Drilldown & Interactive (Highcharts)
+
+### drilldown-pie
+**Best Library:** Highcharts
+**Description:** Pie chart with click-to-drill functionality.
+**Basic Chart:** Click slice to see subcategory breakdown.
+
+### drilldown-bar
+**Best Library:** Highcharts
+**Description:** Bar chart with drilldown to details.
+**Basic Chart:** Click bar to see component breakdown.
+
+### drilldown-column
+**Best Library:** Highcharts
+**Description:** Column chart with hierarchical drilling.
+**Basic Chart:** Year → Quarter → Month drilldown.
+
+### synchronized-charts
+**Best Library:** Highcharts
+**Description:** Multiple charts with synchronized crosshairs.
+**Basic Chart:** Several charts, hover shows value across all.
+
+### navigator-chart
+**Best Library:** Highcharts
+**Description:** Chart with mini navigator for range selection.
+**Basic Chart:** Main chart with small overview below.
+
+### range-selector
+**Best Library:** Highcharts
+**Description:** Chart with preset range buttons (1M, 3M, YTD, 1Y).
+**Basic Chart:** Quick range selection buttons.
+
+### export-chart
+**Best Library:** Highcharts
+**Description:** Chart with built-in export menu.
+**Basic Chart:** Export to PNG, PDF, SVG, or print.
+
+---
+
+## 28. Real-Time & Streaming
+
+### realtime-line
+**Best Library:** Bokeh
+**Description:** Line chart updating with live data.
+**Basic Chart:** Auto-scrolling line with new points.
+
+### realtime-gauge
+**Best Library:** Plotly
+**Description:** Gauge updating in real-time.
+**Basic Chart:** Needle moving with live value.
+
+### realtime-bar
+**Best Library:** Bokeh
+**Description:** Bar chart with live updates.
+**Basic Chart:** Bars growing/shrinking with data.
+
+### streaming-scatter
+**Best Library:** Bokeh
+**Description:** Scatter plot with streaming points.
+**Basic Chart:** New points appearing, old fading.
+
+### dashboard-tiles
+**Best Library:** Bokeh
+**Description:** Multiple real-time metrics in tiles.
+**Basic Chart:** KPI tiles with sparklines.
+
+---
+
+## 29. Scientific & Domain-Specific
+
+### spectrum-plot
+**Best Library:** Matplotlib
+**Description:** Frequency spectrum visualization.
+**Basic Chart:** Amplitude vs frequency, peaks labeled.
+
+### spectrogram
+**Best Library:** Matplotlib
+**Description:** Time-frequency heatmap for audio/signals.
+**Basic Chart:** Time on x, frequency on y, color for intensity.
+
+### phase-diagram
+**Best Library:** Matplotlib
+**Description:** Phase space plot (x vs dx/dt).
+**Basic Chart:** Trajectory in phase space, attractor patterns.
+
+### vector-field
+**Best Library:** Matplotlib
+**Description:** 2D vector field with arrows.
+**Basic Chart:** Grid of arrows showing direction and magnitude.
+
+### streamline-plot
+**Best Library:** Matplotlib
+**Description:** Streamlines of a vector field.
+**Basic Chart:** Smooth curves following flow direction.
+
+### quiver-plot
+**Best Library:** Matplotlib
+**Description:** Arrow plot for velocity or gradient fields.
+**Basic Chart:** Arrows at grid points showing vectors.
+
+### ternary-plot
+**Best Library:** Plotly
+**Description:** Three-component composition diagram.
+**Basic Chart:** Triangle with points showing 3-part ratios.
+
+### smith-chart
+**Best Library:** Matplotlib
+**Description:** RF/microwave impedance chart.
+**Basic Chart:** Circular chart for complex impedance.
+
+### survival-curve
+**Best Library:** Matplotlib
+**Description:** Kaplan-Meier survival analysis plot.
+**Basic Chart:** Step function showing survival probability over time.
+
+### forest-plot
+**Best Library:** Matplotlib
+**Description:** Meta-analysis effect sizes with confidence intervals.
+**Basic Chart:** Horizontal lines with diamonds showing effects.
+
+### volcano-plot
+**Best Library:** Matplotlib
+**Description:** Statistical significance vs fold change.
+**Basic Chart:** -log10(p) vs log2(fold change), highlighted significant points.
+
+### manhattan-plot
+**Best Library:** Matplotlib
+**Description:** Genome-wide association study visualization.
+**Basic Chart:** Chromosomes on x-axis, -log10(p) on y, significance line.
+
+### circos-plot
+**Best Library:** Matplotlib
+**Description:** Circular genome or relationship visualization.
+**Basic Chart:** Circular tracks with connections between regions.
+
+### phylogenetic-tree
+**Best Library:** Matplotlib
+**Description:** Evolutionary tree diagram.
+**Basic Chart:** Branching tree with species at leaves.
+
+---
+
 ## Summary by Library Recommendation
 
 | Library | Primary Strengths | Recommended Plot Types |
 |---------|-------------------|------------------------|
-| **Matplotlib** | Flexibility, static plots | Line, bar, scatter, histogram, polar, 3D wireframe, annotations |
+| **Matplotlib** | Flexibility, static plots | Line, bar, scatter, histogram, polar, 3D wireframe, annotations, scientific |
 | **Seaborn** | Statistical, beautiful defaults | Distributions, regression, heatmaps, categorical, pair plots |
-| **Plotly** | Interactivity, web, 3D | Interactive plots, maps, 3D surfaces, animations, sankey, treemap |
-| **Bokeh** | Streaming, large data | Linked views, brush/zoom, real-time dashboards |
+| **Plotly** | Interactivity, web, 3D | Interactive plots, maps, 3D surfaces, animations, sankey, treemap, ternary |
+| **Bokeh** | Streaming, large data | Linked views, brush/zoom, real-time dashboards, streaming data |
 | **Altair** | Declarative, quick exploration | Exploratory analysis, faceted plots, academic visualizations |
 | **Plotnine** | ggplot2 syntax | Users from R, grammar of graphics approach |
+| **Pygal** | SVG, minimalistic, embeddable | Simple web charts, SVG export, lightweight dashboards |
+| **Highcharts** | Professional, financial, drilldown | Stock charts, technical indicators, enterprise dashboards, drilldown |
 
 ---
 
@@ -816,7 +1149,17 @@ Each plot type in this catalog can become a spec file. Priority order suggestion
 
 1. **Essential basics** (scatter-basic, line-basic, bar-basic, histogram-basic, pie-basic, box-basic)
 2. **Statistical** (heatmap-correlation, violin-basic, regression-linear)
-3. **Interactive** (scatter-3d, timeseries-candlestick, map-choropleth)
-4. **Specialized** (sankey-basic, treemap-basic, radar-basic)
+3. **Interactive** (scatter-3d, map-choropleth, drilldown-pie)
+4. **Financial** (stock-candlestick, indicator-macd, efficient-frontier)
+5. **SVG/Minimal** (svg-line, svg-radar, svg-worldmap)
+6. **Scientific** (spectrum-plot, survival-curve, forest-plot)
 
 To create a spec, use the format: `specs/{spec-id}.md`
+
+---
+
+## Statistics
+
+- **Total Plot Types:** 170+
+- **Categories:** 29
+- **Libraries Covered:** 8 (Matplotlib, Seaborn, Plotly, Bokeh, Altair, Plotnine, Pygal, Highcharts)

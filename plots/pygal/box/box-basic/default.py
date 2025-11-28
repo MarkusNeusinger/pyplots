@@ -161,13 +161,6 @@ if __name__ == "__main__":
         xlabel="Categories",
     )
 
-    # Save as SVG
-    chart.render_to_file("plot.svg")
-    print("SVG plot saved to plot.svg")
-
-    # Also save as PNG if cairosvg is available
-    try:
-        chart.render_to_png("plot.png")
-        print("PNG plot saved to plot.png")
-    except ImportError:
-        print("Note: Install 'cairosvg' to export PNG images")
+    # Save as PNG
+    chart.render_to_png("plot.png")
+    print("Plot saved to plot.png")

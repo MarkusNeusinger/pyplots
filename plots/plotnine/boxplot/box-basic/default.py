@@ -90,7 +90,7 @@ def create_plot(
             width=0.6,
             **kwargs,
         )
-        + scale_fill_brewer(type="qual", palette=fill_palette, guide=False)  # Hide legend
+        + scale_fill_brewer(type="qual", palette=fill_palette, guide=None)  # Hide legend
         + labs(title=title or "Box Plot Distribution", x=xlabel or groups, y=ylabel or values)
         + theme_minimal()
         + theme(

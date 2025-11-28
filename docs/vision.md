@@ -42,7 +42,7 @@ pyplots is different: **AI curates and maintains, humans discover and choose.**
 
 ### What Makes It Different
 
-- **Library Agnostic**: Compare matplotlib, seaborn, plotly, bokeh, altair side-by-side
+- **Library Agnostic**: Compare all 8 libraries side-by-side (matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts)
 - **Always Current**: AI agents keep examples updated and optimized
 - **Multi-Dimensional Discovery**: Find plots by domain (finance, research), type (scatter, bar), or specific use case (
   ROC curve, Sankey diagram)

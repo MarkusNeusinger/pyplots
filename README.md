@@ -16,7 +16,7 @@
 
 **pyplots** is an AI-powered platform for Python data visualization that automatically discovers, generates, tests, and
 maintains plotting examples. Browse hundreds of plots across all major Python libraries - matplotlib, seaborn, plotly,
-and more.
+bokeh, altair, plotnine, pygal, and highcharts.
 
 **Community-driven, AI-maintained** - Propose plot ideas via GitHub Issues, AI generates the code, multi-LLM quality
 checks ensure excellence. Zero manual coding required.
@@ -80,13 +80,21 @@ See [docs/architecture/](docs/architecture/) for details.
 
 **Frontend**: Next.js 14 • TypeScript • Tailwind CSS
 
-**Plotting**: matplotlib • seaborn • plotly (more coming)
+**Plotting**: matplotlib • seaborn • plotly • bokeh • altair • plotnine • pygal • highcharts
 
 **Infrastructure**: Google Cloud Run • Cloud SQL • Cloud Storage
 
 **Automation**: GitHub Actions • n8n Cloud Pro
 
 **AI**: Claude (Code Max) • Vertex AI (Multi-LLM)
+
+---
+
+## License Notes
+
+Most plotting libraries are fully open source. Note these exceptions:
+
+- **Highcharts**: Free for non-commercial use. Commercial use requires a license from [highcharts.com](https://www.highcharts.com/license)
 
 ---
 

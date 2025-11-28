@@ -5,10 +5,12 @@ Variant: default
 Python: 3.10+
 """
 
-import altair as alt
-import pandas as pd
-import numpy as np
 from typing import TYPE_CHECKING, Optional
+
+import altair as alt
+import numpy as np
+import pandas as pd
+
 
 if TYPE_CHECKING:
     from altair import Chart
@@ -21,10 +23,10 @@ def create_plot(
     title: Optional[str] = None,
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
-    color_scheme: str = 'set2',
+    color_scheme: str = "set2",
     width: int = 600,
     height: int = 400,
-    **kwargs
+    **kwargs,
 ) -> Chart:
     """
     Create a basic box plot showing statistical distribution of multiple groups using altair.
@@ -66,92 +68,72 @@ def create_plot(
             raise KeyError(f"Column '{col}' not found. Available columns: {available}")
 
     # Create the box plot using Altair's mark_boxplot
-    base = alt.Chart(data).mark_boxplot(
-        extent=1.5,  # 1.5 * IQR for whiskers
-        outliers=True,
-        size=40,
-        opacity=0.7
-    ).encode(
-        x=alt.X(
-            f'{groups}:N',
-            title=xlabel or groups,
-            axis=alt.Axis(
-                labelAngle=0 if data[groups].nunique() <= 5 else -45,
-                labelLimit=200
-            )
-        ),
-        y=alt.Y(
-            f'{values}:Q',
-            title=ylabel or values,
-            scale=alt.Scale(zero=False)
-        ),
-        color=alt.Color(
-            f'{groups}:N',
-            scale=alt.Scale(scheme=color_scheme),
-            legend=None  # Hide legend as it's redundant with x-axis
-        ),
-        tooltip=[
-            alt.Tooltip(f'{groups}:N', title='Group'),
-            alt.Tooltip(f'count({values}):Q', title='Count'),
-            alt.Tooltip(f'min({values}):Q', title='Min', format='.2f'),
-            alt.Tooltip(f'q1({values}):Q', title='Q1', format='.2f'),
-            alt.Tooltip(f'median({values}):Q', title='Median', format='.2f'),
-            alt.Tooltip(f'q3({values}):Q', title='Q3', format='.2f'),
-            alt.Tooltip(f'max({values}):Q', title='Max', format='.2f')
-        ]
+    base = (
+        alt.Chart(data)
+        .mark_boxplot(
+            extent=1.5,  # 1.5 * IQR for whiskers
+            outliers=True,
+            size=40,
+            opacity=0.7,
+        )
+        .encode(
+            x=alt.X(
+                f"{groups}:N",
+                title=xlabel or groups,
+                axis=alt.Axis(labelAngle=0 if data[groups].nunique() <= 5 else -45, labelLimit=200),
+            ),
+            y=alt.Y(f"{values}:Q", title=ylabel or values, scale=alt.Scale(zero=False)),
+            color=alt.Color(
+                f"{groups}:N",
+                scale=alt.Scale(scheme=color_scheme),
+                legend=None,  # Hide legend as it's redundant with x-axis
+            ),
+            tooltip=[
+                alt.Tooltip(f"{groups}:N", title="Group"),
+                alt.Tooltip(f"count({values}):Q", title="Count"),
+                alt.Tooltip(f"min({values}):Q", title="Min", format=".2f"),
+                alt.Tooltip(f"q1({values}):Q", title="Q1", format=".2f"),
+                alt.Tooltip(f"median({values}):Q", title="Median", format=".2f"),
+                alt.Tooltip(f"q3({values}):Q", title="Q3", format=".2f"),
+                alt.Tooltip(f"max({values}):Q", title="Max", format=".2f"),
+            ],
+        )
     )
 
     # Add sample size annotations
-    text = alt.Chart(data).mark_text(
-        align='center',
-        baseline='top',
-        dy=10,
-        fontSize=10,
-        opacity=0.7
-    ).encode(
-        x=alt.X(f'{groups}:N'),
-        y=alt.Y(f'min({values}):Q'),
-        text=alt.Text('count():Q', format='d')
-    ).transform_aggregate(
-        count='count()',
-        groupby=[groups]
+    text = (
+        alt.Chart(data)
+        .mark_text(align="center", baseline="top", dy=10, fontSize=10, opacity=0.7)
+        .encode(x=alt.X(f"{groups}:N"), y=alt.Y(f"min({values}):Q"), text=alt.Text("count():Q", format="d"))
+        .transform_aggregate(count="count()", groupby=[groups])
     )
 
     # Combine box plot with annotations
-    chart = (base + text).properties(
-        width=width,
-        height=height,
-        title=alt.TitleParams(
-            text=title or 'Box Plot Distribution',
-            fontSize=16,
-            anchor='middle'
+    chart = (
+        (base + text)
+        .properties(
+            width=width,
+            height=height,
+            title=alt.TitleParams(text=title or "Box Plot Distribution", fontSize=16, anchor="middle"),
         )
-    ).configure_view(
-        strokeWidth=0
-    ).configure_axis(
-        grid=True,
-        gridOpacity=0.3,
-        gridDash=[3, 3],
-        domainWidth=1,
-        tickWidth=1
-    ).configure_boxplot(
-        median=dict(color='red', strokeWidth=2),
-        box=dict(strokeWidth=1.5),
-        outliers=dict(fill='red', fillOpacity=0.5, size=50)
+        .configure_view(strokeWidth=0)
+        .configure_axis(grid=True, gridOpacity=0.3, gridDash=[3, 3], domainWidth=1, tickWidth=1)
+        .configure_boxplot(
+            median={"color": "red", "strokeWidth": 2},
+            box={"strokeWidth": 1.5},
+            outliers={"fill": "red", "fillOpacity": 0.5, "size": 50},
+        )
     )
 
     return chart
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Sample data for testing with different distributions per group
     np.random.seed(42)  # For reproducibility
 
     # Generate sample data with 4 groups
-    data_dict = {
-        'Group': [],
-        'Value': []
-    }
+    data_dict = {"Group": [], "Value": []}
 
     # Group A: Normal distribution, mean=50, std=10
     group_a_data = np.random.normal(50, 10, 40)
@@ -173,28 +155,29 @@ if __name__ == '__main__':
 
     # Combine all data
     for group, values in zip(
-        ['Group A', 'Group B', 'Group C', 'Group D'],
-        [group_a_data, group_b_data, group_c_data, group_d_data]
+        ["Group A", "Group B", "Group C", "Group D"],
+        [group_a_data, group_b_data, group_c_data, group_d_data],
+        strict=False,
     ):
-        data_dict['Group'].extend([group] * len(values))
-        data_dict['Value'].extend(values)
+        data_dict["Group"].extend([group] * len(values))
+        data_dict["Value"].extend(values)
 
     data = pd.DataFrame(data_dict)
 
     # Create plot
     chart = create_plot(
         data,
-        values='Value',
-        groups='Group',
-        title='Statistical Distribution Comparison Across Groups',
-        ylabel='Measurement Value',
-        xlabel='Categories'
+        values="Value",
+        groups="Group",
+        title="Statistical Distribution Comparison Across Groups",
+        ylabel="Measurement Value",
+        xlabel="Categories",
     )
 
     # Save for inspection
-    chart.save('plot.html')
+    chart.save("plot.html")
     print("Interactive plot saved to plot.html")
 
     # Also save as PNG
-    chart.save('plot.png', scale_factor=2.0)
+    chart.save("plot.png", scale_factor=2.0)
     print("Static plot saved to plot.png")

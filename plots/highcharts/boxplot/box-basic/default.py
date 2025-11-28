@@ -7,16 +7,13 @@ Python: 3.10+
 Note: Highcharts requires a license for commercial use.
 """
 
-from highcharts_core import Chart
-from highcharts_core.options import HighchartsOptions
-from highcharts_core.options.plot_options.boxplot import BoxPlotOptions
-from highcharts_core.options.series.boxplot import BoxPlotSeries
-import pandas as pd
-import numpy as np
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
-if TYPE_CHECKING:
-    from highcharts_core import Chart
+import numpy as np
+import pandas as pd
+from highcharts_core.chart import Chart
+from highcharts_core.options import HighchartsOptions
+from highcharts_core.options.series.boxplot import BoxPlotSeries
 
 
 def create_plot(
@@ -28,7 +25,7 @@ def create_plot(
     ylabel: Optional[str] = None,
     colors: Optional[list] = None,
     height: int = 600,
-    **kwargs
+    **kwargs,
 ) -> Chart:
     """
     Create a basic box plot showing statistical distribution of multiple groups using Highcharts.
@@ -100,119 +97,91 @@ def create_plot(
 
     # Title
     chart.options.title = {
-        'text': title or 'Box Plot Distribution',
-        'style': {
-            'fontSize': '16px',
-            'fontWeight': 'bold'
-        }
+        "text": title or "Box Plot Distribution",
+        "style": {"fontSize": "16px", "fontWeight": "bold"},
     }
 
     # X-axis
-    chart.options.x_axis = {
-        'categories': list(group_names),
-        'title': {
-            'text': xlabel or groups
-        }
-    }
+    chart.options.x_axis = {"categories": list(group_names), "title": {"text": xlabel or groups}}
 
     # Y-axis
     chart.options.y_axis = {
-        'title': {
-            'text': ylabel or values
-        },
-        'gridLineWidth': 1,
-        'gridLineDashStyle': 'Dot',
-        'gridLineColor': '#e0e0e0'
+        "title": {"text": ylabel or values},
+        "gridLineWidth": 1,
+        "gridLineDashStyle": "Dot",
+        "gridLineColor": "#e0e0e0",
     }
 
     # Colors
     if colors:
         chart.options.colors = colors
     else:
-        chart.options.colors = ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854']
+        chart.options.colors = ["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854"]
 
     # Plot options
     chart.options.plot_options = {
-        'boxplot': {
-            'fillColor': None,
-            'lineWidth': 2,
-            'medianWidth': 3,
-            'medianColor': '#FF0000',
-            'stemWidth': 1,
-            'whiskerWidth': 2,
-            'whiskerLength': '50%'
+        "boxplot": {
+            "fillColor": None,
+            "lineWidth": 2,
+            "medianWidth": 3,
+            "medianColor": "#FF0000",
+            "stemWidth": 1,
+            "whiskerWidth": 2,
+            "whiskerLength": "50%",
         }
     }
 
     # Tooltip
     chart.options.tooltip = {
-        'shared': False,
-        'useHTML': True,
-        'headerFormat': '<em>{point.key}</em><br/>',
-        'pointFormat': (
-            '<span>Max: {point.high}</span><br/>'
-            '<span>Q3: {point.q3}</span><br/>'
+        "shared": False,
+        "useHTML": True,
+        "headerFormat": "<em>{point.key}</em><br/>",
+        "pointFormat": (
+            "<span>Max: {point.high}</span><br/>"
+            "<span>Q3: {point.q3}</span><br/>"
             '<span style="color: red">Median: {point.median}</span><br/>'
-            '<span>Q1: {point.q1}</span><br/>'
-            '<span>Min: {point.low}</span><br/>'
-        )
+            "<span>Q1: {point.q1}</span><br/>"
+            "<span>Min: {point.low}</span><br/>"
+        ),
     }
 
     # Chart dimensions
-    chart.options.chart = {
-        'type': 'boxplot',
-        'height': height,
-        'backgroundColor': 'white'
-    }
+    chart.options.chart = {"type": "boxplot", "height": height, "backgroundColor": "white"}
 
     # Add box plot series
-    chart.add_series(BoxPlotSeries.from_array(
-        data=box_data,
-        name='Distribution',
-        colorByPoint=True
-    ))
+    chart.add_series(BoxPlotSeries.from_array(data=box_data, name="Distribution", colorByPoint=True))
 
     # Add outliers as scatter series if any exist
     if outliers_data:
         from highcharts_core.options.series.scatter import ScatterSeries
 
-        chart.add_series(ScatterSeries.from_array(
-            data=outliers_data,
-            name='Outliers',
-            color='rgba(255, 0, 0, 0.5)',
-            marker={
-                'fillColor': 'rgba(255, 0, 0, 0.5)',
-                'lineWidth': 1,
-                'lineColor': '#000000',
-                'radius': 4
-            },
-            tooltip={
-                'pointFormat': 'Outlier: <b>{point.y}</b>'
-            }
-        ))
+        chart.add_series(
+            ScatterSeries.from_array(
+                data=outliers_data,
+                name="Outliers",
+                color="rgba(255, 0, 0, 0.5)",
+                marker={"fillColor": "rgba(255, 0, 0, 0.5)", "lineWidth": 1, "lineColor": "#000000", "radius": 4},
+                tooltip={"pointFormat": "Outlier: <b>{point.y}</b>"},
+            )
+        )
 
     # Legend
     chart.options.legend = {
-        'enabled': False  # Hide legend for cleaner look
+        "enabled": False  # Hide legend for cleaner look
     }
 
     # Credits
-    chart.options.credits = {
-        'enabled': False
-    }
+    chart.options.credits = {"enabled": False}
 
     return chart
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Sample data for testing with different distributions per group
     np.random.seed(42)  # For reproducibility
 
     # Generate sample data with 4 groups
-    data_dict = {
-        'Group': [],
-        'Value': []
-    }
+    data_dict = {"Group": [], "Value": []}
 
     # Group A: Normal distribution, mean=50, std=10
     group_a_data = np.random.normal(50, 10, 40)
@@ -234,22 +203,23 @@ if __name__ == '__main__':
 
     # Combine all data
     for group, values in zip(
-        ['Group A', 'Group B', 'Group C', 'Group D'],
-        [group_a_data, group_b_data, group_c_data, group_d_data]
+        ["Group A", "Group B", "Group C", "Group D"],
+        [group_a_data, group_b_data, group_c_data, group_d_data],
+        strict=False,
     ):
-        data_dict['Group'].extend([group] * len(values))
-        data_dict['Value'].extend(values)
+        data_dict["Group"].extend([group] * len(values))
+        data_dict["Value"].extend(values)
 
     data = pd.DataFrame(data_dict)
 
     # Create plot
     chart = create_plot(
         data,
-        values='Value',
-        groups='Group',
-        title='Statistical Distribution Comparison Across Groups',
-        ylabel='Measurement Value',
-        xlabel='Categories'
+        values="Value",
+        groups="Group",
+        title="Statistical Distribution Comparison Across Groups",
+        ylabel="Measurement Value",
+        xlabel="Categories",
     )
 
     # Export to HTML
@@ -272,7 +242,7 @@ if __name__ == '__main__':
 </body>
 </html>"""
 
-    with open('plot.html', 'w') as f:
+    with open("plot.html", "w") as f:
         f.write(html_content)
 
     print("Interactive plot saved to plot.html")

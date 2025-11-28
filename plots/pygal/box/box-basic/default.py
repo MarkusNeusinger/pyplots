@@ -5,11 +5,13 @@ Variant: default
 Python: 3.10+
 """
 
+from typing import TYPE_CHECKING, Optional
+
+import numpy as np
+import pandas as pd
 import pygal
 from pygal.style import Style
-import pandas as pd
-import numpy as np
-from typing import TYPE_CHECKING, Optional
+
 
 if TYPE_CHECKING:
     from pygal import Box
@@ -25,7 +27,7 @@ def create_plot(
     width: int = 800,
     height: int = 600,
     show_legend: bool = True,
-    **kwargs
+    **kwargs,
 ) -> Box:
     """
     Create a basic box plot showing statistical distribution of multiple groups using pygal.
@@ -68,32 +70,32 @@ def create_plot(
 
     # Create custom style
     custom_style = Style(
-        background='white',
-        plot_background='white',
-        foreground='#333',
-        foreground_strong='#333',
-        foreground_subtle='#555',
+        background="white",
+        plot_background="white",
+        foreground="#333",
+        foreground_strong="#333",
+        foreground_subtle="#555",
         opacity=0.7,
         opacity_hover=0.9,
-        colors=('#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854', '#ffd92f', '#e5c494', '#b3b3b3'),
-        font_family='Arial, sans-serif',
-        major_guide_stroke_dasharray='3,3',
-        guide_stroke_dasharray='1,1'
+        colors=("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f", "#e5c494", "#b3b3b3"),
+        font_family="Arial, sans-serif",
+        major_guide_stroke_dasharray="3,3",
+        guide_stroke_dasharray="1,1",
     )
 
     # Create box plot
     box_chart = pygal.Box(
-        title=title or 'Box Plot Distribution',
+        title=title or "Box Plot Distribution",
         x_title=xlabel or groups,
         y_title=ylabel or values,
         width=width,
         height=height,
         show_legend=show_legend,
         style=custom_style,
-        box_mode='tukey',  # Use Tukey method (1.5 * IQR for whiskers)
+        box_mode="tukey",  # Use Tukey method (1.5 * IQR for whiskers)
         print_values=False,
         print_zeroes=False,
-        **kwargs
+        **kwargs,
     )
 
     # Calculate box plot data for each group
@@ -108,20 +110,17 @@ def create_plot(
         values_list = group_data.tolist()
 
         # Add the series with label
-        box_chart.add(f'{group} (n={len(values_list)})', values_list)
+        box_chart.add(f"{group} (n={len(values_list)})", values_list)
 
     return box_chart
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Sample data for testing with different distributions per group
     np.random.seed(42)  # For reproducibility
 
     # Generate sample data with 4 groups
-    data_dict = {
-        'Group': [],
-        'Value': []
-    }
+    data_dict = {"Group": [], "Value": []}
 
     # Group A: Normal distribution, mean=50, std=10
     group_a_data = np.random.normal(50, 10, 40)
@@ -143,31 +142,32 @@ if __name__ == '__main__':
 
     # Combine all data
     for group, values in zip(
-        ['Group A', 'Group B', 'Group C', 'Group D'],
-        [group_a_data, group_b_data, group_c_data, group_d_data]
+        ["Group A", "Group B", "Group C", "Group D"],
+        [group_a_data, group_b_data, group_c_data, group_d_data],
+        strict=False,
     ):
-        data_dict['Group'].extend([group] * len(values))
-        data_dict['Value'].extend(values)
+        data_dict["Group"].extend([group] * len(values))
+        data_dict["Value"].extend(values)
 
     data = pd.DataFrame(data_dict)
 
     # Create plot
     chart = create_plot(
         data,
-        values='Value',
-        groups='Group',
-        title='Statistical Distribution Comparison Across Groups',
-        ylabel='Measurement Value',
-        xlabel='Categories'
+        values="Value",
+        groups="Group",
+        title="Statistical Distribution Comparison Across Groups",
+        ylabel="Measurement Value",
+        xlabel="Categories",
     )
 
     # Save as SVG
-    chart.render_to_file('plot.svg')
+    chart.render_to_file("plot.svg")
     print("SVG plot saved to plot.svg")
 
     # Also save as PNG if cairosvg is available
     try:
-        chart.render_to_png('plot.png')
+        chart.render_to_png("plot.png")
         print("PNG plot saved to plot.png")
     except ImportError:
         print("Note: Install 'cairosvg' to export PNG images")

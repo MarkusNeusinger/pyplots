@@ -62,7 +62,7 @@ plotting = [
     "altair>=5.2.0",
     "plotnine>=0.13.0",
     "pygal>=3.0.0",
-    "highcharts-core>=2.0.0",
+    "highcharts-core>=1.10.0",
 ]
 all = [
     "pyplots[test,dev,plotting,typecheck]",

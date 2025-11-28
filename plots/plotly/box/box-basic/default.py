@@ -24,8 +24,8 @@ def create_plot(
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
     color_discrete_sequence: Optional[list] = None,
-    height: int = 600,
-    width: int = 1000,
+    height: int = 900,
+    width: int = 1600,
     showlegend: bool = False,
     **kwargs,
 ) -> Figure:
@@ -40,8 +40,8 @@ def create_plot(
         xlabel: Custom x-axis label (optional, defaults to groups column name)
         ylabel: Custom y-axis label (optional, defaults to values column name)
         color_discrete_sequence: List of colors for each box (optional)
-        height: Figure height in pixels (default: 600)
-        width: Figure width in pixels (default: 1000)
+        height: Figure height in pixels (default: 900)
+        width: Figure width in pixels (default: 1600)
         showlegend: Whether to show legend (default: False)
         **kwargs: Additional parameters passed to plotly box trace
 
@@ -202,5 +202,5 @@ if __name__ == "__main__":
     )
 
     # Save as PNG
-    fig.write_image("plot.png", width=1000, height=600, scale=2)
+    fig.write_image("plot.png", width=1600, height=900, scale=2)
     print("Plot saved to plot.png")

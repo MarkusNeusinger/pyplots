@@ -24,8 +24,8 @@ def create_plot(
     title: Optional[str] = None,
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
-    width: int = 800,
-    height: int = 600,
+    width: int = 1600,
+    height: int = 900,
     show_legend: bool = True,
     **kwargs,
 ) -> Box:
@@ -39,8 +39,8 @@ def create_plot(
         title: Plot title (optional)
         xlabel: Custom x-axis label (optional, defaults to groups column name)
         ylabel: Custom y-axis label (optional, defaults to values column name)
-        width: Figure width in pixels (default: 800)
-        height: Figure height in pixels (default: 600)
+        width: Figure width in pixels (default: 1600)
+        height: Figure height in pixels (default: 900)
         show_legend: Whether to show legend (default: True)
         **kwargs: Additional parameters for pygal configuration
 

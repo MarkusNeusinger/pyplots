@@ -24,8 +24,8 @@ def create_plot(
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
     color_scheme: str = "set2",
-    width: int = 600,
-    height: int = 400,
+    width: int = 800,
+    height: int = 450,
     **kwargs,
 ) -> Chart:
     """
@@ -39,8 +39,8 @@ def create_plot(
         xlabel: Custom x-axis label (optional, defaults to groups column name)
         ylabel: Custom y-axis label (optional, defaults to values column name)
         color_scheme: Color scheme for boxes (default: 'set2')
-        width: Figure width in pixels (default: 600)
-        height: Figure height in pixels (default: 400)
+        width: Figure width in pixels (default: 800)
+        height: Figure height in pixels (default: 450)
         **kwargs: Additional parameters for altair chart configuration
 
     Returns:

@@ -25,7 +25,7 @@ def create_plot(
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
     palette: Optional[str] = "Set2",
-    figsize: tuple[float, float] = (10, 6),
+    figsize: tuple[float, float] = (16, 9),
     showfliers: bool = True,
     **kwargs,
 ) -> Figure:
@@ -40,7 +40,7 @@ def create_plot(
         xlabel: Custom x-axis label (optional, defaults to groups column name)
         ylabel: Custom y-axis label (optional, defaults to values column name)
         palette: Color palette name for boxes (default: 'Set2')
-        figsize: Figure size as (width, height) in inches (default: (10, 6))
+        figsize: Figure size as (width, height) in inches (default: (16, 9))
         showfliers: Whether to show outliers (default: True)
         **kwargs: Additional parameters passed to seaborn boxplot function
 

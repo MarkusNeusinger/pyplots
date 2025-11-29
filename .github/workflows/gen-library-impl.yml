@@ -34,7 +34,7 @@ on:
       CLAUDE_CODE_OAUTH_TOKEN:
         required: true
       ANTHROPIC_API_KEY:
-        required: true
+        required: false
 
 jobs:
   generate:

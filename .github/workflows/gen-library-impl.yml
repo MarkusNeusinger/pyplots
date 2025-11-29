@@ -198,33 +198,28 @@ jobs:
           fi
 
           # Create attempt documentation comment
-          cat > /tmp/attempt_comment.md << 'COMMENTEOF'
-          ## Attempt $ATTEMPT/3 - $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          PR_LINK=$([[ -n "$PR_NUMBER" ]] && echo "#$PR_NUMBER" || echo "Not created")
+
+          # Use Python to safely create the comment with code
+          python3 << PYEOF
+          code = '''$CODE'''
+          comment = f"""## Attempt $ATTEMPT/3 - {TIMESTAMP}
 
           ### Generated Code
-          ```python
-          $CODE
-          ```
+          \`\`\`python
+          {code}
+          \`\`\`
 
           ### Status
-          - **PR:** $([[ -n "$PR_NUMBER" ]] && echo "#$PR_NUMBER" || echo "Not created")
-          - **File:** `$PLOT_FILE`
+          - **PR:** {PR_LINK}
+          - **File:** \`$PLOT_FILE\`
           - **Workflow:** [${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
           ---
-          COMMENTEOF
-
-          # Replace placeholders
-          sed -i "s/\$ATTEMPT/$ATTEMPT/g" /tmp/attempt_comment.md
-          sed -i "s|\$PLOT_FILE|$PLOT_FILE|g" /tmp/attempt_comment.md
-
-          # Escape code for sed
-          python3 << PYEOF
-          with open('/tmp/attempt_comment.md', 'r') as f:
-              content = f.read()
-          content = content.replace('\$CODE', '''$CODE''')
+          """
           with open('/tmp/attempt_comment.md', 'w') as f:
-              f.write(content)
+              f.write(comment)
           PYEOF
 
           # Post to sub-issue

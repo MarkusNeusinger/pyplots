@@ -7,7 +7,7 @@ import pygal
 from pygal.style import Style
 ```
 
-## Chart erstellen
+## Create Chart
 
 ```python
 chart = pygal.Bar(
@@ -19,35 +19,35 @@ chart = pygal.Bar(
 )
 ```
 
-## Chart-Typen
+## Chart Types
 
 ```python
-pygal.Bar()          # Vertikale Balken
-pygal.HorizontalBar()# Horizontale Balken
-pygal.Line()         # Linien
-pygal.XY()           # Scatter (XY-Koordinaten)
-pygal.Pie()          # Kreisdiagramm
+pygal.Bar()          # Vertical bars
+pygal.HorizontalBar()# Horizontal bars
+pygal.Line()         # Lines
+pygal.XY()           # Scatter (XY coordinates)
+pygal.Pie()          # Pie chart
 pygal.Box()          # Boxplot
-pygal.Histogram()    # Histogramm
+pygal.Histogram()    # Histogram
 ```
 
-## Daten hinzufügen
+## Add Data
 
 ```python
 chart.add('Series 1', [1, 2, 3, 4])
 chart.add('Series 2', [4, 3, 2, 1])
 
-# X-Achsen-Labels
+# X-axis labels
 chart.x_labels = ['A', 'B', 'C', 'D']
 ```
 
-## Speichern
+## Save
 
 ```python
-# SVG (nativ)
+# SVG (native)
 chart.render_to_file('plot.svg')
 
-# PNG (benötigt cairosvg)
+# PNG (requires cairosvg)
 chart.render_to_png('plot.png')
 ```
 
@@ -79,7 +79,7 @@ chart = pygal.Bar(
 
 `plots/pygal/{chart_type}/`
 
-| Typ | Folder |
+| Type | Folder |
 |-----|--------|
 | `pygal.Bar()` | `bar/` |
 | `pygal.Line()` | `line/` |
@@ -90,5 +90,5 @@ chart = pygal.Bar(
 ## Return Type
 
 ```python
-def create_plot(...) -> pygal.Bar:  # oder entsprechender Typ
+def create_plot(...) -> pygal.Bar:  # or corresponding type
 ```

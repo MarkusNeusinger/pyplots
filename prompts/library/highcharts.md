@@ -1,32 +1,32 @@
 # highcharts
 
-**Hinweis**: Highcharts erfordert eine Lizenz für kommerzielle Nutzung.
+**Note**: Highcharts requires a license for commercial use.
 
 ## Import
 
 ```python
-# WICHTIG: Korrekter Import-Pfad
+# IMPORTANT: Correct import path
 from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
 from highcharts_core.options.series.bar import BarSeries
 from highcharts_core.options.series.scatter import ScatterSeries
 ```
 
-## Chart erstellen
+## Create Chart
 
 ```python
 chart = Chart()
 chart.options = HighchartsOptions()
 
-# Titel
+# Title
 chart.options.title = {'text': title}
 
-# Achsen
+# Axes
 chart.options.x_axis = {'title': {'text': x_label}}
 chart.options.y_axis = {'title': {'text': y_label}}
 ```
 
-## Series hinzufügen
+## Add Series
 
 ```python
 from highcharts_core.options.series.scatter import ScatterSeries
@@ -38,7 +38,7 @@ series.name = 'Data'
 chart.add_series(series)
 ```
 
-## Series-Typen
+## Series Types
 
 ```python
 from highcharts_core.options.series.bar import BarSeries
@@ -52,10 +52,10 @@ from highcharts_core.options.series.boxplot import BoxPlotSeries
 ## HTML Export
 
 ```python
-# Als HTML-String
+# As HTML string
 html = chart.to_js_literal()
 
-# Als HTML-Datei
+# As HTML file
 with open('plot.html', 'w') as f:
     f.write(f'''
     <html>
@@ -79,10 +79,10 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 def export_to_png(chart, filename='plot.png'):
-    # HTML generieren
-    html_content = f'''...'''  # wie oben
+    # Generate HTML
+    html_content = f'''...'''  # as above
 
-    # Selenium Screenshot
+    # Selenium screenshot
     options = Options()
     options.add_argument('--headless')
     driver = webdriver.Chrome(options=options)
@@ -96,7 +96,7 @@ def export_to_png(chart, filename='plot.png'):
     driver.quit()
 ```
 
-## Chart-Größe
+## Chart Size
 
 ```python
 chart.options.chart = {

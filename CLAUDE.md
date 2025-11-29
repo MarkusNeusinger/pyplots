@@ -124,7 +124,7 @@ The same spec ID links implementations across all 8 supported libraries.
 - **`core/`**: Shared business logic (database, repositories, config)
 - **`api/`**: FastAPI backend (routers, schemas, dependencies)
 - **`app/`**: Next.js frontend (React + TypeScript + Vite + MUI)
-- **`rules/`**: Versioned rules for AI code generation and quality evaluation
+- **`prompts/`**: AI agent prompts for code generation, quality evaluation, and tagging
 - **`tests/unit/`**: Unit tests mirroring source structure
 - **`docs/`**: Architecture and workflow documentation
 
@@ -218,25 +218,49 @@ uv run alembic revision --autogenerate -m "description"
 uv run alembic upgrade head
 ```
 
-## Versioned Rules System
+## Prompts System
 
-The `rules/` directory contains versioned rules for AI code generation and quality evaluation.
+The `prompts/` directory contains AI agent prompts for code generation, quality evaluation, and tagging.
 
-### Working with Rules
+### Prompt Files
+
+| File | Purpose |
+|------|---------|
+| `plot-generator.md` | Base rules for all plot implementations |
+| `library/*.md` | Library-specific rules (8 files) |
+| `quality-criteria.md` | Definition of code/visual quality |
+| `quality-evaluator.md` | Multi-LLM evaluation prompt |
+| `auto-tagger.md` | Automatic tagging across 5 dimensions |
+| `spec-validator.md` | Validates plot request issues |
+| `spec-id-generator.md` | Assigns unique spec IDs |
+
+### Using Prompts
 
 ```bash
-# View current rules
-cat rules/versions.yaml
-cat rules/generation/v1.0.0-draft/code-generation-rules.md
+# View a prompt
+cat prompts/plot-generator.md
+cat prompts/library/matplotlib.md
 
-# Create new version
-cp -r rules/generation/v1.0.0-draft rules/generation/v1.1.0-draft
-# Edit files, then update rules/versions.yaml
+# Edit a prompt
+vim prompts/quality-criteria.md
+git commit -m "prompts: improve quality criteria"
 ```
 
-**Rule States**: draft → active → deprecated → archived
+**No folder versioning** - Git history tracks all changes. View old versions with `git log -p prompts/*.md`.
 
-**Why Versioned?** Enables A/B testing of rule improvements, provides audit trail, allows rollback.
+### Workflow Integration
+
+Workflows reference prompts instead of embedding long instructions:
+
+```yaml
+# Example usage in workflow
+prompt: |
+  $(cat prompts/plot-generator.md)
+  $(cat prompts/library/matplotlib.md)
+
+  ## Spec
+  $(cat specs/scatter-basic.md)
+```
 
 ## Implementation Guidelines
 
@@ -416,7 +440,7 @@ pytest --pdb       # Debug on failure
 - **docs/architecture/repository.md**: Directory structure
 - **docs/architecture/api.md**: API endpoints reference
 - **docs/architecture/database.md**: Database schema
-- **rules/README.md**: Rule versioning system
+- **prompts/README.md**: AI agent prompt system
 
 ## Project Philosophy
 

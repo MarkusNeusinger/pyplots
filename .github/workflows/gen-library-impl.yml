@@ -16,11 +16,11 @@ on:
       main_issue_number:
         description: "Parent issue number"
         required: true
-        type: number
+        type: string
       sub_issue_number:
         description: "Sub-issue number for this library"
         required: true
-        type: number
+        type: string
       attempt:
         description: "Attempt number (1-3)"
         required: false

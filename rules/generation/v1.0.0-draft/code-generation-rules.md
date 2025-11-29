@@ -19,7 +19,7 @@ Define how to generate plot implementation code from Markdown specifications.
 
 ### Required
 1. **Spec Markdown**: Complete spec file from `specs/{spec-id}.md`
-2. **Target Library**: matplotlib, seaborn, plotly, bokeh, or altair
+2. **Target Library**: matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, or highcharts
 3. **Variant**: default, {style}_style, or py{version}
 
 ### Optional
@@ -30,6 +30,23 @@ Define how to generate plot implementation code from Markdown specifications.
 ---
 
 ## Output Requirements
+
+### Directory Structure
+
+The folder name must match the library's API function name for the plot type:
+
+| Library | Function | Folder Example |
+|---------|----------|----------------|
+| matplotlib | `ax.boxplot()` | `plots/matplotlib/boxplot/` |
+| seaborn | `sns.boxplot()` | `plots/seaborn/boxplot/` |
+| plotly | `go.Box()` | `plots/plotly/box/` |
+| pygal | `pygal.Box()` | `plots/pygal/box/` |
+| altair | `mark_boxplot()` | `plots/altair/boxplot/` |
+| plotnine | `geom_boxplot()` | `plots/plotnine/boxplot/` |
+| highcharts | `BoxPlotSeries` | `plots/highcharts/boxplot/` |
+
+**Fallback for libraries without native function:** Use `custom/`
+- Example: Bokeh has no native boxplot → `plots/bokeh/custom/`
 
 ### File Structure
 
@@ -119,6 +136,28 @@ if __name__ == '__main__':
 > Namen. Verwende NIEMALS `test_output_matplotlib.png`, `test_output_seaborn.png` oder
 > ähnliche library-spezifische Namen.
 
+### Output Format Requirements
+
+**Current Phase: PNG only**
+
+All plots must output `plot.png`. No HTML, SVG, or interactive outputs.
+
+| Library | PNG Export Method |
+|---------|-------------------|
+| matplotlib | `plt.savefig('plot.png', dpi=300, bbox_inches='tight')` |
+| seaborn | `plt.savefig('plot.png', dpi=300, bbox_inches='tight')` |
+| plotly | `fig.write_image('plot.png', width=1000, height=600, scale=2)` |
+| bokeh | `export_png(fig, filename='plot.png')` |
+| altair | `chart.save('plot.png', scale_factor=2.0)` |
+| plotnine | `plot.save('plot.png', dpi=300)` |
+| pygal | `chart.render_to_png('plot.png')` |
+| highcharts | Selenium screenshot (see example below) |
+
+**Future Phase: Interactive HTML** *(not yet implemented)*
+- Interactive plots (HTML) planned for future release
+- Will enable hover, zoom, pan for plotly/bokeh/altair
+- SVG output also planned for pygal
+
 ---
 
 ## Generation Process
@@ -156,19 +195,24 @@ From `docs/architecture/specs-guide.md`:
 
 ### Step 2: Library Selection
 
-From `docs/workflow.md` (lines 119-127):
+From `docs/workflow.md`:
 
-**Rules**:
+**Supported Libraries**:
 - **matplotlib**: Always implement (universal support)
-- **seaborn**: Auto-select for: heatmap, violin, box, pair plots, distributions
-- **plotly**: Auto-select for: interactive needs, 3D plots, animations
-- **bokeh/altair**: Future support
+- **seaborn**: Statistical visualizations (heatmap, violin, box, pair plots, distributions)
+- **plotly**: Interactive plots, 3D plots, animations
+- **bokeh**: Interactive web-based visualizations
+- **altair**: Declarative statistical visualization
+- **plotnine**: ggplot2-style plotting (Grammar of Graphics)
+- **pygal**: SVG-based charts for web
+- **highcharts**: Professional web charts (requires license for commercial use)
 
 **Selection Logic**:
 ```
-if spec mentions "interactive" → plotly
+if spec mentions "interactive" → plotly, bokeh
 else if plot_type in ["heatmap", "violin", "box", "pair"] → seaborn + matplotlib
-else → matplotlib (default)
+else if spec mentions "ggplot" or "grammar of graphics" → plotnine
+else → all libraries (default)
 ```
 
 ### Step 3: Code Structure
@@ -198,13 +242,30 @@ From `docs/development.md` (lines 182-241):
 - ✅ Imports: Organized (standard, third-party, local)
 
 **Visual Quality**:
-- ✅ Figure size: `figsize=(16, 9)` by default (16:9 aspect ratio)
+- ✅ Figure size: 16:9 aspect ratio for all libraries (see Standard Plot Sizes below)
 - ✅ Axis labels: From column names or custom
 - ✅ Grid: `ax.grid(True, alpha=0.3)` (subtle)
 - ✅ Font sizes: Readable (≥10pt)
 - ✅ Legend: If multiple series or color mapping
 - ✅ Tight layout: `plt.tight_layout()` to avoid clipping
 - ✅ DPI: Always use `dpi=300` when saving for high-quality output
+
+### Standard Plot Sizes (16:9, 300 DPI equivalent)
+
+All plots must use 16:9 aspect ratio with 300 DPI equivalent quality:
+
+| Library | Size Parameters | DPI/Scale | Final Resolution |
+|---------|-----------------|-----------|------------------|
+| matplotlib | `figsize=(16, 9)` | `dpi=300` | 4800×2700 |
+| seaborn | `figsize=(16, 9)` | `dpi=300` | 4800×2700 |
+| plotnine | `figure_size=(16, 9)` | `dpi=300` | 4800×2700 |
+| bokeh | `width=1600, height=900` | (pixel-based) | 1600×900 |
+| plotly | `width=1600, height=900` | `scale=2` | 3200×1800 |
+| altair | `width=800, height=450` | `scale_factor=2.0` | 1600×900 |
+| pygal | `width=1600, height=900` | (SVG/PNG) | 1600×900 |
+| highcharts | `width=1600, height=900` | (Screenshot) | 1600×900 |
+
+**Rationale**: 16:9 is the standard widescreen format, optimal for web display and presentations. 300 DPI ensures print-quality output for publications
 
 ---
 
@@ -271,6 +332,160 @@ fig.update_layout(
 
 return fig
 ```
+
+### bokeh
+
+```python
+from bokeh.plotting import figure, output_file, save
+from bokeh.models import ColumnDataSource
+
+# Create figure with categorical x-axis
+p = figure(x_range=categories, ...)
+
+# IMPORTANT: For categorical axes, use ColumnDataSource
+source = ColumnDataSource(data={'x': cat_data, 'y': num_data})
+p.scatter(x='x', y='y', source=source)  # Use scatter, not circle with categorical
+
+# Save output
+output_file('plot.html')
+save(p)
+
+# PNG export (requires selenium)
+try:
+    from bokeh.io import export_png
+    export_png(p, filename='plot.png')
+except ImportError:
+    print("Note: Install 'selenium' for PNG export")
+```
+
+### altair
+
+```python
+import altair as alt
+
+# Create chart
+chart = alt.Chart(data).mark_point().encode(x='x:Q', y='y:Q')
+
+# Save HTML (always works)
+chart.save('plot.html')
+
+# PNG export (requires vl-convert-python)
+try:
+    chart.save('plot.png', scale_factor=2.0)
+except Exception:
+    print("Note: Install 'vl-convert-python' for PNG export")
+```
+
+### plotnine
+
+```python
+from plotnine import ggplot, aes, scale_fill_brewer
+
+# IMPORTANT: Palette types must match the palette name
+# - Qualitative: Set1, Set2, Set3, Paired, Pastel1, Pastel2, Dark2, Accent
+# - Sequential: Blues, Greens, Reds, Oranges, Purples, Greys, etc.
+# - Diverging: RdBu, PiYG, PRGn, BrBG, RdYlBu, etc.
+
+# ✅ Correct: Set2 is qualitative
++ scale_fill_brewer(type='qual', palette='Set2')
+
+# ❌ Wrong: Set2 is NOT sequential
++ scale_fill_brewer(type='seq', palette='Set2')
+```
+
+### highcharts
+
+**Note:** Highcharts requires a license for commercial use.
+
+```python
+# IMPORTANT: Use correct import path
+from highcharts_core.chart import Chart  # ✅ Correct
+# NOT: from highcharts_core import Chart  # ❌ Wrong
+
+from highcharts_core.options import HighchartsOptions
+
+# Create chart
+chart = Chart()
+chart.options = HighchartsOptions()
+
+# Export to HTML (always works)
+html_str = chart.to_js_literal()
+
+# Static image export requires Highcharts Export Server
+```
+
+### pygal
+
+```python
+import pygal
+
+# Create chart
+chart = pygal.Bar()
+chart.title = 'Title'
+chart.add('Series', [1, 2, 3])
+
+# Save as SVG (native format)
+chart.render_to_file('plot.svg')
+
+# PNG export (requires cairosvg)
+try:
+    chart.render_to_png('plot.png')
+except ImportError:
+    print("Note: Install 'cairosvg' for PNG export")
+```
+
+---
+
+## API Version Compatibility
+
+### matplotlib 3.9+
+
+```python
+# DEPRECATED: labels parameter in boxplot
+ax.boxplot(data, labels=group_names)  # ❌ Deprecated
+
+# USE: tick_labels parameter
+ax.boxplot(data, tick_labels=group_names)  # ✅ Correct
+```
+
+### seaborn 0.14+
+
+```python
+# When using palette, always specify hue
+# Otherwise seaborn raises a warning
+
+# ❌ Warning: palette without hue
+sns.boxplot(data=df, x='group', y='value', palette='Set2')
+
+# ✅ Correct: hue with palette
+sns.boxplot(data=df, x='group', y='value', hue='group', palette='Set2', legend=False)
+```
+
+---
+
+## Code Quality Checks (Required Before PR)
+
+Before creating a pull request, **always** run these checks and fix any issues:
+
+```bash
+# 1. Check for linting issues
+uv run ruff check .
+
+# 2. Auto-fix issues (safe fixes)
+uv run ruff check . --fix
+
+# 3. Auto-fix with unsafe fixes if needed
+uv run ruff check . --fix --unsafe-fixes
+
+# 4. Format code
+uv run ruff format .
+```
+
+**Common issues to watch for:**
+- `C408`: Use dict literals `{}` instead of `dict()`
+- `B905`: Add `strict=False` to `zip()` calls
+- `B007`: Prefix unused loop variables with `_` (e.g., `_group`)
+- Import ordering (auto-fixed by ruff)
 
 ---
 

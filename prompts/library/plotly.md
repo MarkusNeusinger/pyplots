@@ -4,18 +4,18 @@
 
 ```python
 import plotly.graph_objects as go
-# oder
+# or
 import plotly.express as px
 ```
 
-## Figure erstellen
+## Create Figure
 
 ```python
 # Graph Objects
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=x, y=y))
 
-# Express (für schnelle Plots)
+# Express (for quick plots)
 fig = px.scatter(df, x='col_x', y='col_y')
 ```
 
@@ -32,18 +32,18 @@ fig.update_layout(
 )
 ```
 
-## Speichern (PNG)
+## Save (PNG)
 
 ```python
 fig.write_image('plot.png', width=1600, height=900, scale=2)
 ```
 
-**Hinweis**: Benötigt `kaleido` für PNG-Export.
+**Note**: Requires `kaleido` for PNG export.
 
-## Interaktivität
+## Interactivity
 
-Plotly ist standardmäßig interaktiv (Hover, Zoom, Pan).
-Für statische Outputs → `write_image()`.
+Plotly is interactive by default (hover, zoom, pan).
+For static outputs → `write_image()`.
 
 ## Folder-Name
 

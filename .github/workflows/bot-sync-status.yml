@@ -18,6 +18,9 @@ jobs:
       pull-requests: read
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
       - name: Determine parent issue
         id: parent
         env:

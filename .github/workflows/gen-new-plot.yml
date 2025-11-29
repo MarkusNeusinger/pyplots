@@ -111,6 +111,7 @@ jobs:
       pygal_issue: ${{ steps.create.outputs.pygal_issue }}
       highcharts_issue: ${{ steps.create.outputs.highcharts_issue }}
     permissions:
+      contents: read
       issues: write
 
     steps:
@@ -318,6 +319,7 @@ jobs:
     if: always() && needs.check-conditions.outputs.should_run == 'true'
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       issues: write
 
     steps:

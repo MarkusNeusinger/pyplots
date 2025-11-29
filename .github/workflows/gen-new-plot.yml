@@ -9,15 +9,18 @@ concurrency:
   group: spec-to-code-${{ github.event.issue.number }}
   cancel-in-progress: true
 
+env:
+  LIBRARIES: "matplotlib seaborn plotly bokeh altair plotnine pygal highcharts"
+
 jobs:
-  trigger-claude-code:
+  # ============================================================================
+  # Step 1: Check conditions and extract spec ID
+  # ============================================================================
+  check-conditions:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write        # Allow commits
-      pull-requests: write   # Allow PR creation
-      issues: write         # Allow issue comments
-      id-token: write       # Required for Claude Code authentication
-      actions: read         # Allow Claude to read CI results
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+      spec_id: ${{ steps.extract_spec.outputs.spec_id }}
 
     steps:
       - name: Check conditions
@@ -50,15 +53,7 @@ jobs:
         if: steps.check.outputs.should_run == 'true'
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0    # Full history for better context
-
-      - name: React with eyes emoji
-        if: steps.check.outputs.should_run == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/reactions \
-            -f content=eyes
+          fetch-depth: 0
 
       - name: Extract spec ID from issue
         if: steps.check.outputs.should_run == 'true'
@@ -72,82 +67,303 @@ jobs:
           COMMENTS=$(gh issue view ${{ github.event.issue.number }} --json comments -q '.comments[].body')
 
           if echo "$COMMENTS" | grep -q "Duplicate Detected"; then
-            echo "❌ This issue was marked as a duplicate by validate-plot-request workflow"
-            echo "Please review the duplicate notice and either:"
-            echo "  1. Use the existing spec mentioned in the comment"
-            echo "  2. Update the issue with unique requirements and re-run validation"
+            echo "::error::This issue was marked as a duplicate"
             exit 1
           fi
 
           # Extract spec ID from issue comments (assigned by validate-plot-request workflow)
-          # Look for "**Assigned ID:** `spec-id`" pattern in comments
           SPEC_ID=$(echo "$COMMENTS" | grep -oP '\*\*Assigned ID:\*\* `\K[a-z0-9-]+(?=`)' | tail -1 || echo "")
 
           if [ -z "$SPEC_ID" ]; then
-            # Fallback: Check for existing spec reference (for duplicates that should use existing)
             SPEC_ID=$(echo "$COMMENTS" | grep -oP '\*\*Existing Spec:\*\* `\K[a-z0-9-]+(?=`)' | tail -1 || echo "")
           fi
 
           if [ -z "$SPEC_ID" ]; then
-            # Fallback: Try to extract from title (format: "spec-id: Title" or just "spec-id")
-            # New format: {type}-{variant}-{modifier} (no numbers required)
             SPEC_ID=$(echo "$ISSUE_TITLE" | grep -oiP '^[a-z]+-[a-z]+(-[a-z0-9]+)?' | tr '[:upper:]' '[:lower:]' || echo "")
           fi
 
           if [ -z "$SPEC_ID" ]; then
-            # Try legacy format with numbers for backwards compatibility
             SPEC_ID=$(echo "$ISSUE_TITLE" | grep -oiP '^[a-z]+-[a-z]+-\d{3,4}' | tr '[:upper:]' '[:lower:]' || echo "")
           fi
 
           if [ -z "$SPEC_ID" ]; then
-            echo "❌ Could not extract spec ID from issue"
-            echo "Expected: Assigned ID in comments (from validate-plot-request workflow)"
-            echo "Or title format: {type}-{variant}-{modifier}"
-            echo "Examples: scatter-basic, scatter-color-mapped, heatmap-correlation"
+            echo "::error::Could not extract spec ID from issue"
             exit 1
           fi
 
-          # Validate spec file exists
-          if [ ! -f "specs/${SPEC_ID}.md" ]; then
-            echo "⚠️  Warning: Spec file specs/${SPEC_ID}.md does not exist"
-            echo "Claude Code will create it from the issue body"
-          fi
-
           echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
-          echo "✅ Extracted spec ID: $SPEC_ID"
+          echo "::notice::Extracted spec ID: $SPEC_ID"
 
-      - name: Run Claude Code to generate implementations
-        if: steps.check.outputs.should_run == 'true'
-        uses: anthropics/claude-code-action@v1
-        with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: "--model opus"
-          additional_permissions: |
-            actions: read
-          prompt: |
-            ## Task: Generate Plot Implementations
+  # ============================================================================
+  # Step 2: Create sub-issues for each library
+  # ============================================================================
+  create-sub-issues:
+    needs: check-conditions
+    if: needs.check-conditions.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      matplotlib_issue: ${{ steps.create.outputs.matplotlib_issue }}
+      seaborn_issue: ${{ steps.create.outputs.seaborn_issue }}
+      plotly_issue: ${{ steps.create.outputs.plotly_issue }}
+      bokeh_issue: ${{ steps.create.outputs.bokeh_issue }}
+      altair_issue: ${{ steps.create.outputs.altair_issue }}
+      plotnine_issue: ${{ steps.create.outputs.plotnine_issue }}
+      pygal_issue: ${{ steps.create.outputs.pygal_issue }}
+      highcharts_issue: ${{ steps.create.outputs.highcharts_issue }}
+    permissions:
+      issues: write
 
-            Generate implementations for **${{ steps.extract_spec.outputs.spec_id }}** for all 8 libraries.
+    steps:
+      - name: React with eyes emoji
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/reactions \
+            -f content=eyes
 
-            ### Read these files first:
-            1. `prompts/plot-generator.md` - Base generation rules
-            2. `prompts/quality-criteria.md` - Quality requirements
-            3. `specs/${{ steps.extract_spec.outputs.spec_id }}.md` - The specification (create from issue body if missing)
+      - name: Add in-progress label
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue edit ${{ github.event.issue.number }} --add-label "in-progress"
 
-            ### For each library, also read:
-            - `prompts/library/{library}.md` - Library-specific rules
+      - name: Create sub-issues for each library
+        id: create
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SPEC_ID="${{ needs.check-conditions.outputs.spec_id }}"
+          PARENT_NUM="${{ github.event.issue.number }}"
+          PARENT_NODE_ID=$(gh api repos/${{ github.repository }}/issues/$PARENT_NUM --jq '.node_id')
 
-            ### Generate implementations for:
-            1. matplotlib → `plots/matplotlib/{plot_type}/${{ steps.extract_spec.outputs.spec_id }}/default.py`
-            2. seaborn → `plots/seaborn/{function}/${{ steps.extract_spec.outputs.spec_id }}/default.py`
-            3. plotly → `plots/plotly/{plot_type}/${{ steps.extract_spec.outputs.spec_id }}/default.py`
-            4. bokeh → `plots/bokeh/{plot_type}/${{ steps.extract_spec.outputs.spec_id }}/default.py`
-            5. altair → `plots/altair/{plot_type}/${{ steps.extract_spec.outputs.spec_id }}/default.py`
-            6. plotnine → `plots/plotnine/{plot_type}/${{ steps.extract_spec.outputs.spec_id }}/default.py`
-            7. pygal → `plots/pygal/{plot_type}/${{ steps.extract_spec.outputs.spec_id }}/default.py`
-            8. highcharts → `plots/highcharts/{plot_type}/${{ steps.extract_spec.outputs.spec_id }}/default.py`
+          for LIBRARY in ${{ env.LIBRARIES }}; do
+            echo "Creating sub-issue for $LIBRARY..."
 
-            ### Create PR:
-            - Branch: `auto/${{ steps.extract_spec.outputs.spec_id }}`
-            - Title: `feat: implement ${{ steps.extract_spec.outputs.spec_id }}`
-            - Link to issue #${{ github.event.issue.number }}
+            # Check if sub-issue already exists
+            EXISTING=$(gh issue list --label "library:$LIBRARY" --search "[$SPEC_ID] in:title" --json number -q '.[0].number' 2>/dev/null || echo "")
+
+            if [ -n "$EXISTING" ]; then
+              echo "${LIBRARY}_issue=$EXISTING" >> $GITHUB_OUTPUT
+              echo "::notice::Sub-issue for $LIBRARY already exists: #$EXISTING"
+              continue
+            fi
+
+            # Create sub-issue
+            SUB_BODY="## [$SPEC_ID] $LIBRARY Implementation
+
+          **Parent Issue:** #$PARENT_NUM
+          **Spec:** \`specs/$SPEC_ID.md\`
+          **Library:** $LIBRARY
+
+          ---
+
+          ### Attempt History
+
+          _Attempts will be documented below as comments._
+          "
+
+            SUB_ISSUE=$(gh issue create \
+              --title "[$SPEC_ID] $LIBRARY implementation" \
+              --body "$SUB_BODY" \
+              --label "library:$LIBRARY,sub-issue,generating")
+
+            SUB_NUM=$(echo "$SUB_ISSUE" | grep -oP '\d+$')
+            SUB_NODE_ID=$(gh api repos/${{ github.repository }}/issues/$SUB_NUM --jq '.node_id')
+
+            # Link as sub-issue using GitHub's sub-issues API
+            gh api graphql -f query='
+              mutation($parent: ID!, $child: ID!) {
+                addSubIssue(input: {issueId: $parent, subIssueId: $child}) {
+                  issue { id }
+                }
+              }' -f parent="$PARENT_NODE_ID" -f child="$SUB_NODE_ID" 2>/dev/null || echo "Note: Sub-issue linking not available"
+
+            echo "${LIBRARY}_issue=$SUB_NUM" >> $GITHUB_OUTPUT
+            echo "::notice::Created sub-issue for $LIBRARY: #$SUB_NUM"
+          done
+
+  # ============================================================================
+  # Step 3: Generate implementations in parallel (one job per library)
+  # ============================================================================
+  generate-matplotlib:
+    needs: [check-conditions, create-sub-issues]
+    if: needs.check-conditions.outputs.should_run == 'true'
+    uses: ./.github/workflows/gen-library-impl.yml
+    with:
+      spec_id: ${{ needs.check-conditions.outputs.spec_id }}
+      library: matplotlib
+      main_issue_number: ${{ github.event.issue.number }}
+      sub_issue_number: ${{ needs.create-sub-issues.outputs.matplotlib_issue }}
+      deps: "matplotlib>=3.9.0 numpy>=1.26.0"
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+  generate-seaborn:
+    needs: [check-conditions, create-sub-issues]
+    if: needs.check-conditions.outputs.should_run == 'true'
+    uses: ./.github/workflows/gen-library-impl.yml
+    with:
+      spec_id: ${{ needs.check-conditions.outputs.spec_id }}
+      library: seaborn
+      main_issue_number: ${{ github.event.issue.number }}
+      sub_issue_number: ${{ needs.create-sub-issues.outputs.seaborn_issue }}
+      deps: "seaborn>=0.13.0 matplotlib>=3.8.0,<3.9.0 numpy>=1.26.0"
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+  generate-plotly:
+    needs: [check-conditions, create-sub-issues]
+    if: needs.check-conditions.outputs.should_run == 'true'
+    uses: ./.github/workflows/gen-library-impl.yml
+    with:
+      spec_id: ${{ needs.check-conditions.outputs.spec_id }}
+      library: plotly
+      main_issue_number: ${{ github.event.issue.number }}
+      sub_issue_number: ${{ needs.create-sub-issues.outputs.plotly_issue }}
+      deps: "plotly>=5.18.0 kaleido>=0.2.1 numpy>=1.26.0"
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+  generate-bokeh:
+    needs: [check-conditions, create-sub-issues]
+    if: needs.check-conditions.outputs.should_run == 'true'
+    uses: ./.github/workflows/gen-library-impl.yml
+    with:
+      spec_id: ${{ needs.check-conditions.outputs.spec_id }}
+      library: bokeh
+      main_issue_number: ${{ github.event.issue.number }}
+      sub_issue_number: ${{ needs.create-sub-issues.outputs.bokeh_issue }}
+      deps: "bokeh>=3.4.0 numpy>=1.26.0"
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+  generate-altair:
+    needs: [check-conditions, create-sub-issues]
+    if: needs.check-conditions.outputs.should_run == 'true'
+    uses: ./.github/workflows/gen-library-impl.yml
+    with:
+      spec_id: ${{ needs.check-conditions.outputs.spec_id }}
+      library: altair
+      main_issue_number: ${{ github.event.issue.number }}
+      sub_issue_number: ${{ needs.create-sub-issues.outputs.altair_issue }}
+      deps: "altair>=5.2.0 vl-convert-python>=1.3.0 numpy>=1.26.0"
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+  generate-plotnine:
+    needs: [check-conditions, create-sub-issues]
+    if: needs.check-conditions.outputs.should_run == 'true'
+    uses: ./.github/workflows/gen-library-impl.yml
+    with:
+      spec_id: ${{ needs.check-conditions.outputs.spec_id }}
+      library: plotnine
+      main_issue_number: ${{ github.event.issue.number }}
+      sub_issue_number: ${{ needs.create-sub-issues.outputs.plotnine_issue }}
+      deps: "plotnine>=0.13.0 numpy>=1.26.0"
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+  generate-pygal:
+    needs: [check-conditions, create-sub-issues]
+    if: needs.check-conditions.outputs.should_run == 'true'
+    uses: ./.github/workflows/gen-library-impl.yml
+    with:
+      spec_id: ${{ needs.check-conditions.outputs.spec_id }}
+      library: pygal
+      main_issue_number: ${{ github.event.issue.number }}
+      sub_issue_number: ${{ needs.create-sub-issues.outputs.pygal_issue }}
+      deps: "pygal>=3.0.0 cairosvg>=2.7.0"
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+  generate-highcharts:
+    needs: [check-conditions, create-sub-issues]
+    if: needs.check-conditions.outputs.should_run == 'true'
+    uses: ./.github/workflows/gen-library-impl.yml
+    with:
+      spec_id: ${{ needs.check-conditions.outputs.spec_id }}
+      library: highcharts
+      main_issue_number: ${{ github.event.issue.number }}
+      sub_issue_number: ${{ needs.create-sub-issues.outputs.highcharts_issue }}
+      deps: "highcharts-core>=1.10.0 numpy>=1.26.0"
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+  # ============================================================================
+  # Step 4: Summary after all generations complete
+  # ============================================================================
+  summary:
+    needs:
+      - check-conditions
+      - create-sub-issues
+      - generate-matplotlib
+      - generate-seaborn
+      - generate-plotly
+      - generate-bokeh
+      - generate-altair
+      - generate-plotnine
+      - generate-pygal
+      - generate-highcharts
+    if: always() && needs.check-conditions.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Post summary to main issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SPEC_ID="${{ needs.check-conditions.outputs.spec_id }}"
+
+          # Collect results
+          RESULTS=""
+          for LIB in matplotlib seaborn plotly bokeh altair plotnine pygal highcharts; do
+            JOB_NAME="generate-$LIB"
+            # Note: We can't easily get job status in a summary job
+            # The bot-sync-status workflow will update the main issue
+            RESULTS="$RESULTS\n- **$LIB**: Check sub-issue for status"
+          done
+
+          # Post summary comment
+          gh issue comment ${{ github.event.issue.number }} --body "## Generation Complete
+
+          All 8 library generation jobs have been dispatched for \`$SPEC_ID\`.
+
+          ### Sub-Issues Created
+          - matplotlib: #${{ needs.create-sub-issues.outputs.matplotlib_issue }}
+          - seaborn: #${{ needs.create-sub-issues.outputs.seaborn_issue }}
+          - plotly: #${{ needs.create-sub-issues.outputs.plotly_issue }}
+          - bokeh: #${{ needs.create-sub-issues.outputs.bokeh_issue }}
+          - altair: #${{ needs.create-sub-issues.outputs.altair_issue }}
+          - plotnine: #${{ needs.create-sub-issues.outputs.plotnine_issue }}
+          - pygal: #${{ needs.create-sub-issues.outputs.pygal_issue }}
+          - highcharts: #${{ needs.create-sub-issues.outputs.highcharts_issue }}
+
+          ### Next Steps
+          Each library will:
+          1. Generate implementation code
+          2. Create a separate PR
+          3. Run tests
+          4. Generate preview images
+          5. Undergo AI quality review
+          6. Auto-merge if quality score >= 85
+
+          Check the **Implementation Status** table above for real-time progress.
+
+          ---
+          :robot: *[gen-new-plot workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+      - name: Remove in-progress label
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue edit ${{ github.event.issue.number }} --remove-label "in-progress" || true

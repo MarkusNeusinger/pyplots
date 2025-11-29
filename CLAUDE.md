@@ -286,65 +286,117 @@ Every implementation file should:
 
 Located in `.github/workflows/`:
 
-- **spec-to-code.yml**: Generates code from approved specs
-- **test-and-preview.yml**: Runs tests + creates preview images
-- **quality-check.yml**: Multi-LLM quality evaluation
-- **deploy.yml**: Deploys to Cloud Run
+### Core Generation Pipeline (Parallel Per-Library)
+
+- **gen-new-plot.yml**: Orchestrator - creates sub-issues and triggers parallel generation
+- **gen-library-impl.yml**: Reusable workflow - generates one library implementation
+- **ci-plottest.yml**: Multi-Python-version testing (3.11-3.14)
+- **gen-preview.yml**: Generates preview images, uploads to GCS
+- **bot-ai-review.yml**: Per-library AI quality evaluation
+- **gen-update-plot.yml**: Per-library repair loop (max 3 attempts)
+- **bot-auto-merge.yml**: Per-library auto-merge on approval
+- **bot-sync-status.yml**: Syncs sub-issue status to main issue
+
+### Supporting Workflows
+
+- **bot-validate-request.yml**: Validates plot requests, assigns spec IDs
+- **bot-auto-tag.yml**: AI-generated tagging after merge
+- **ci-lint.yml**: Ruff linting
+- **ci-unittest.yml**: Unit tests
+
+### Parallel Architecture
+
+Each spec generates **8 parallel workflows** (one per library):
+```
+Main Issue (plot-request + approved)
+    │
+    ├── Sub-Issue: [spec-id] matplotlib implementation
+    │   └── Branch: auto/{spec-id}/matplotlib → PR → Test → Review → Merge
+    │
+    ├── Sub-Issue: [spec-id] seaborn implementation
+    │   └── Branch: auto/{spec-id}/seaborn → PR → Test → Review → Merge
+    │
+    └── ... (6 more libraries)
+```
+
+Each library runs in **separate context** with **isolated dependencies**:
+- matplotlib can use latest version
+- seaborn can pin older matplotlib for compatibility
+- No context pollution between different library syntaxes
 
 ## GitHub Issue Labels
 
-The project uses a structured labeling system to organize different types of issues:
+The project uses a structured labeling system. Setup labels with:
+```bash
+bash .github/scripts/setup-labels.sh
+```
 
-### Plot-Related Labels
+### Library Labels (per-library tracking)
 
-- **`plot-request`** (blue, `#0366d6`) - Community plot proposals
-  - Use when: Someone proposes a new plot type or variant
-  - Workflow: Add this label when creating an issue for a new plot
-  - When combined with `approved`, triggers automatic code generation
+- **`library:matplotlib`**, **`library:seaborn`**, **`library:plotly`**, **`library:bokeh`**
+- **`library:altair`**, **`library:plotnine`**, **`library:pygal`**, **`library:highcharts`**
 
-- **`approved`** (green, `#0e8a16`) - Approved for implementation
-  - Use when: A plot-request has been reviewed and accepted
-  - Workflow: Triggers `spec-to-code.yml` workflow (if issue also has `plot-request` label)
-  - Effect: Claude Code automatically generates implementations and creates PR
+### Workflow Status Labels
 
-- **`quality-issue`** (orange, `#fb8500`) - Quality check found issues
-  - Use when: Multi-LLM quality check identifies problems
-  - Workflow: Automatically created by `quality-check.yml` workflow
-  - Contains: Detailed quality report from Claude, Gemini, GPT evaluation
+- **`sub-issue`** - Library-specific sub-issue (child of main plot-request)
+- **`generating`** - Code is being generated
+- **`testing`** - Tests are running
+- **`reviewing`** - Quality review in progress
+- **`merged`** - Successfully merged to main
+- **`not-feasible`** - 3x failed, not implementable in this library
+- **`completed`** - All library implementations complete
+
+### Approval Labels (Human vs AI distinction)
+
+| Label | Meaning | Set by |
+|-------|---------|--------|
+| `approved` | Human approved for implementation | Maintainer manually |
+| `ai-approved` | AI quality check passed (score >= 85) | Workflow automatically |
+| `rejected` | Human rejected | Maintainer manually |
+| `ai-rejected` | AI quality check failed (score < 85) | Workflow automatically |
+
+### Quality Score Labels
+
+- **`quality:excellent`** - Score >= 90
+- **`quality:good`** - Score 85-89
+- **`quality:needs-work`** - Score 75-84
+- **`quality:poor`** - Score < 75
 
 ### Development Labels
 
-- **`bug`** (red, `#d73a4a`) - Something isn't working
-  - Use when: Existing plots have errors or incorrect behavior
+- **`bug`** - Something isn't working
+- **`infrastructure`** - Workflow, backend, or frontend issues
+- **`documentation`** - Documentation improvements
+- **`enhancement`** - New feature or improvement
 
-- **`infrastructure`** (gray, `#6c757d`) - Workflow, backend, or frontend issues
-  - Use when: Problems with GitHub Actions, API, database, or frontend
-
-- **`documentation`** (blue, `#0075ca`) - Improvements or additions to documentation
-  - Use when: Docs need updates or clarification
-
-- **`enhancement`** (cyan, `#a2eeef`) - New feature or improvement to existing feature
-  - Use when: Non-plot features (e.g., API endpoints, UI components)
-
-### Plot Request Workflow Example
+### Plot Request Workflow (Parallel Per-Library)
 
 1. User creates issue with descriptive title (e.g., "3D scatter plot with rotation animation")
 2. Add `plot-request` label
-3. **`validate-plot-request.yml` automatically runs:**
-   - Analyzes the request against existing specs
-   - Checks for duplicates or similar plots
-   - Assigns a spec ID (e.g., `scatter-3d-animated`) as a comment
-   - Or flags as duplicate with link to existing spec
+3. **`bot-validate-request.yml` automatically runs:**
+   - Analyzes the request, assigns spec ID (e.g., `scatter-3d-animated`)
+   - Or flags as duplicate
 4. Maintainer reviews and adds `approved` label
-5. `spec-to-code.yml` workflow automatically triggers
-   - Reads assigned spec ID from comments
-   - Creates spec file and implementations
-6. Claude Code generates implementations and creates PR
-7. Tests run automatically on PR
-8. Multi-LLM quality check evaluates code
-9. Maintainer reviews and merges
+5. **`gen-new-plot.yml` orchestrator triggers:**
+   - Creates **8 sub-issues** (one per library)
+   - Dispatches **8 parallel generation jobs**
+6. **Each library independently:**
+   - Generates implementation in separate Claude context
+   - Creates own branch: `auto/{spec-id}/{library}`
+   - Creates own PR linked to sub-issue
+   - Runs tests (Python 3.11-3.14)
+   - Generates preview image
+   - AI quality review (score >= 85 required)
+   - Auto-merge if approved, or repair loop (max 3 attempts)
+7. **Main issue tracks overall progress:**
+   - Status table auto-updates with each library's status
+   - Closes when all libraries are merged or marked not-feasible
 
-**Note:** Users no longer need to specify the spec ID in the title - Claude will analyze the request and assign an appropriate ID automatically.
+**Benefits:**
+- ~8x faster (parallel execution)
+- No context pollution (separate Claude sessions)
+- Partial success (5/8 can merge while 3/8 retry)
+- Per-library dependency isolation
 
 ## Environment Variables
 

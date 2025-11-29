@@ -1,0 +1,240 @@
+name: "Gen: Library Implementation"
+run-name: "Generate: ${{ inputs.library }} for ${{ inputs.spec_id }}"
+
+# Reusable workflow - called once per library in parallel
+on:
+  workflow_call:
+    inputs:
+      spec_id:
+        description: "The spec ID (e.g., scatter-basic)"
+        required: true
+        type: string
+      library:
+        description: "The library to generate for"
+        required: true
+        type: string
+      main_issue_number:
+        description: "Parent issue number"
+        required: true
+        type: number
+      sub_issue_number:
+        description: "Sub-issue number for this library"
+        required: true
+        type: number
+      attempt:
+        description: "Attempt number (1-3)"
+        required: false
+        type: number
+        default: 1
+      deps:
+        description: "Library-specific dependencies"
+        required: true
+        type: string
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN:
+        required: true
+      ANTHROPIC_API_KEY:
+        required: true
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update sub-issue status to generating
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue edit ${{ inputs.sub_issue_number }} \
+            --remove-label "testing,reviewing,ai-approved,ai-rejected" \
+            --add-label "generating" 2>/dev/null || true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install library-specific dependencies
+        run: |
+          uv venv .venv
+          source .venv/bin/activate
+          uv pip install ${{ inputs.deps }} pandas>=2.2.0
+
+      - name: Check for previous attempts in sub-issue
+        id: previous_attempts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get all comments from sub-issue to provide context for AI
+          COMMENTS=$(gh api repos/${{ github.repository }}/issues/${{ inputs.sub_issue_number }}/comments \
+            --jq '[.[] | select(.body | contains("Attempt"))] | map(.body) | join("\n\n---\n\n")' 2>/dev/null || echo "")
+
+          if [ -n "$COMMENTS" ]; then
+            echo "has_history=true" >> $GITHUB_OUTPUT
+            # Save to file for later use
+            echo "$COMMENTS" > /tmp/previous_attempts.md
+          else
+            echo "has_history=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create branch for this library
+        id: branch
+        run: |
+          BRANCH="auto/${{ inputs.spec_id }}/${{ inputs.library }}"
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+
+          # Check if branch exists
+          if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+            git fetch origin "$BRANCH"
+            git checkout "$BRANCH"
+            echo "branch_exists=true" >> $GITHUB_OUTPUT
+          else
+            git checkout -b "$BRANCH"
+            echo "branch_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Claude Code to generate implementation
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--model opus"
+          additional_permissions: |
+            actions: read
+          prompt: |
+            ## Task: Generate ${{ inputs.library }} Implementation for ${{ inputs.spec_id }}
+
+            You are generating ONLY the **${{ inputs.library }}** implementation. Focus exclusively on this library.
+
+            ### Step 1: Read required files
+            1. `prompts/plot-generator.md` - Base generation rules
+            2. `prompts/quality-criteria.md` - Quality requirements
+            3. `prompts/library/${{ inputs.library }}.md` - Library-specific rules
+            4. `specs/${{ inputs.spec_id }}.md` - The specification
+
+            ### Step 2: Check for previous attempts
+            ${{ steps.previous_attempts.outputs.has_history == 'true' && 'IMPORTANT: There are previous failed attempts. Read /tmp/previous_attempts.md to understand what went wrong and avoid repeating the same mistakes.' || 'This is the first attempt for this library.' }}
+
+            ### Step 3: Generate implementation
+            Create the implementation file at the correct path:
+            - `plots/${{ inputs.library }}/{plot_type}/${{ inputs.spec_id }}/default.py`
+
+            Determine {plot_type} from the spec (e.g., scatter, bar, line, heatmap).
+
+            ### Step 4: Test the implementation
+            Run the implementation to verify it works:
+            ```bash
+            source .venv/bin/activate
+            MPLBACKEND=Agg python plots/${{ inputs.library }}/{plot_type}/${{ inputs.spec_id }}/default.py
+            ```
+
+            ### Step 5: Create PR (only if implementation is successful)
+            - Branch: `auto/${{ inputs.spec_id }}/${{ inputs.library }}`
+            - Title: `feat(${{ inputs.library }}): implement ${{ inputs.spec_id }}`
+            - Body must include:
+              ```
+              ## Summary
+              Implements `${{ inputs.spec_id }}` for **${{ inputs.library }}** library.
+
+              **Parent Issue:** #${{ inputs.main_issue_number }}
+              **Sub-Issue:** #${{ inputs.sub_issue_number }}
+              **Attempt:** ${{ inputs.attempt }}/3
+
+              ## Implementation
+              - `plots/${{ inputs.library }}/{plot_type}/${{ inputs.spec_id }}/default.py`
+              ```
+
+            ### Important
+            - Focus ONLY on ${{ inputs.library }} - do not generate code for other libraries
+            - If you cannot implement this plot type in ${{ inputs.library }}, explain why in the PR body
+            - Document any limitations or workarounds in code comments
+
+      - name: Get PR number
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="auto/${{ inputs.spec_id }}/${{ inputs.library }}"
+          PR_NUMBER=$(gh pr list --head "$BRANCH" --json number -q '.[0].number' 2>/dev/null || echo "")
+
+          if [ -n "$PR_NUMBER" ]; then
+            echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+            echo "pr_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "pr_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update sub-issue with attempt details
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SPEC_ID="${{ inputs.spec_id }}"
+          LIBRARY="${{ inputs.library }}"
+          ATTEMPT="${{ inputs.attempt }}"
+          PR_NUMBER="${{ steps.pr.outputs.pr_number }}"
+
+          # Find the generated plot file
+          PLOT_FILE=$(find plots/$LIBRARY -name "default.py" -path "*/${SPEC_ID}/*" 2>/dev/null | head -1 || echo "")
+
+          # Read the code if it exists
+          if [ -f "$PLOT_FILE" ]; then
+            CODE=$(cat "$PLOT_FILE")
+          else
+            CODE="No implementation file found"
+          fi
+
+          # Create attempt documentation comment
+          cat > /tmp/attempt_comment.md << 'COMMENTEOF'
+          ## Attempt $ATTEMPT/3 - $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          ### Generated Code
+          ```python
+          $CODE
+          ```
+
+          ### Status
+          - **PR:** $([[ -n "$PR_NUMBER" ]] && echo "#$PR_NUMBER" || echo "Not created")
+          - **File:** `$PLOT_FILE`
+          - **Workflow:** [${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+          ---
+          COMMENTEOF
+
+          # Replace placeholders
+          sed -i "s/\$ATTEMPT/$ATTEMPT/g" /tmp/attempt_comment.md
+          sed -i "s|\$PLOT_FILE|$PLOT_FILE|g" /tmp/attempt_comment.md
+
+          # Escape code for sed
+          python3 << PYEOF
+          with open('/tmp/attempt_comment.md', 'r') as f:
+              content = f.read()
+          content = content.replace('\$CODE', '''$CODE''')
+          with open('/tmp/attempt_comment.md', 'w') as f:
+              f.write(content)
+          PYEOF
+
+          # Post to sub-issue
+          gh issue comment ${{ inputs.sub_issue_number }} --body-file /tmp/attempt_comment.md
+
+      - name: Update sub-issue label to testing
+        if: steps.pr.outputs.pr_exists == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue edit ${{ inputs.sub_issue_number }} \
+            --remove-label "generating" \
+            --add-label "testing"

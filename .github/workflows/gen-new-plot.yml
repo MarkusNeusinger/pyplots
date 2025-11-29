@@ -114,6 +114,9 @@ jobs:
       issues: write
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
       - name: React with eyes emoji
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -318,6 +321,9 @@ jobs:
       issues: write
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
       - name: Post summary to main issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

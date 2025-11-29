@@ -19,6 +19,9 @@ jobs:
       issues: write
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
       - name: Extract spec ID, library, and sub-issue
         id: extract_info
         env:

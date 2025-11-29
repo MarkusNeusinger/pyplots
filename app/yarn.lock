@@ -653,10 +653,10 @@
   resolved "https://registry.yarnpkg.com/@types/react-transition-group/-/react-transition-group-4.4.12.tgz#b5d76568485b02a307238270bfe96cb51ee2a044"
   integrity sha512-8TV6R3h2j7a91c+1DXdJi3Syo69zzIZbz7Lg5tORM5LEJG7X/E6a1V3drRyBRZq7/utz7A+c4OgYLiLcYGHG6w==
 
-"@types/react@^19.1.9":
-  version "19.2.6"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-19.2.6.tgz#d27db1ff45012d53980f5589fda925278e1249ca"
-  integrity sha512-p/jUvulfgU7oKtj6Xpk8cA2Y1xKTtICGpJYeJXz2YVO2UcvjQgeRMLDGfDeqeRW2Ta+0QNFwcc8X3GH8SxZz6w==
+"@types/react@^19.2.7":
+  version "19.2.7"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-19.2.7.tgz#84e62c0f23e8e4e5ac2cadcea1ffeacccae7f62f"
+  integrity sha512-MWtvHrGZLFttgeEj28VXHxpmwYbor/ATPYbBfSFZEIRK0ecCFLl2Qo55z52Hss+UV9CRN7trSeq1zbgx7YDWWg==
   dependencies:
     csstype "^3.2.2"
 
@@ -1033,10 +1033,10 @@ typescript@^5.9.2:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.9.3.tgz#5b4f59e15310ab17a216f5d6cf53ee476ede670f"
   integrity sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==
 
-vite@^7.1.1:
-  version "7.2.2"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-7.2.2.tgz#17dd62eac2d0ca0fa90131c5f56e4fefb8845362"
-  integrity sha512-BxAKBWmIbrDgrokdGZH1IgkIk/5mMHDreLDmCJ0qpyJaAteP8NvMhkwr/ZCQNqNH97bw/dANTE9PDzqwJghfMQ==
+vite@^7.2.4:
+  version "7.2.4"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-7.2.4.tgz#a3a09c7e25487612ecc1119c7d412c73da35bd4e"
+  integrity sha512-NL8jTlbo0Tn4dUEXEsUg8KeyG/Lkmc4Fnzb8JXN/Ykm9G4HNImjtABMJgkQoVjOBN/j2WAwDTRytdqJbZsah7w==
   dependencies:
     esbuild "^0.25.0"
     fdir "^6.5.0"

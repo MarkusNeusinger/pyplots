@@ -1,12 +1,16 @@
 name: "Bot: Auto-Merge"
+run-name: "Auto-Merge: ${{ github.event.pull_request.head.ref }}"
 
 on:
   pull_request:
     types: [labeled, closed]
 
 jobs:
+  # ============================================================================
+  # Job 1: Enable auto-merge when ai-approved label is added
+  # ============================================================================
   auto-merge:
-    # Nur wenn ai-approved Label gesetzt wird auf auto/ branches
+    # Only when ai-approved label is set on auto/{spec-id}/{library} branches
     if: |
       github.event.action == 'labeled' &&
       github.event.label.name == 'ai-approved' &&
@@ -15,14 +19,44 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      issues: write
 
     steps:
+      - name: Extract info from branch
+        id: extract
+        run: |
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          # Format: auto/{spec-id}/{library}
+          SPEC_ID=$(echo "$BRANCH" | cut -d'/' -f2)
+          LIBRARY=$(echo "$BRANCH" | cut -d'/' -f3)
+
+          echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "library=$LIBRARY" >> $GITHUB_OUTPUT
+
+      - name: Get sub-issue from PR body
+        id: sub_issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_BODY="${{ github.event.pull_request.body }}"
+          SUB_ISSUE=$(echo "$PR_BODY" | grep -oP 'Sub-Issue: #\K\d+' | head -1 || echo "")
+          echo "number=$SUB_ISSUE" >> $GITHUB_OUTPUT
+
       - name: React with rocket emoji
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/reactions \
             -f content=rocket
+
+      - name: Update sub-issue label
+        if: steps.sub_issue.outputs.number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue edit ${{ steps.sub_issue.outputs.number }} \
+            --remove-label "reviewing,ai-rejected" \
+            --add-label "ai-approved"
 
       - name: Enable auto-merge
         env:
@@ -33,8 +67,11 @@ jobs:
             --squash \
             --auto
 
+  # ============================================================================
+  # Job 2: Post-merge summary (per library)
+  # ============================================================================
   post-merge-summary:
-    # Wird ausgeführt wenn PR gemerged wurde
+    # Runs when PR is merged (closed with merged=true)
     if: |
       github.event.action == 'closed' &&
       github.event.pull_request.merged == true &&
@@ -49,88 +86,159 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Extract spec ID and find issue
+      - name: Extract spec ID, library, and issues
         id: extract
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Extract spec-id from branch name
           BRANCH="${{ github.event.pull_request.head.ref }}"
-          SPEC_ID=$(echo "$BRANCH" | sed 's|auto/||')
-          echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
-
-          # Find issue number from PR body
           PR_BODY="${{ github.event.pull_request.body }}"
-          ISSUE_NUM=$(echo "$PR_BODY" | grep -oP '#\K\d+' | head -1 || echo "")
 
-          if [ -z "$ISSUE_NUM" ]; then
-            # Fallback: Search for issue by spec ID
-            ISSUE_NUM=$(gh issue list --label plot-request --search "$SPEC_ID in:title" --json number -q '.[0].number' || echo "")
+          # Format: auto/{spec-id}/{library}
+          SPEC_ID=$(echo "$BRANCH" | cut -d'/' -f2)
+          LIBRARY=$(echo "$BRANCH" | cut -d'/' -f3)
+
+          # Extract issues from PR body
+          SUB_ISSUE=$(echo "$PR_BODY" | grep -oP 'Sub-Issue: #\K\d+' | head -1 || echo "")
+          MAIN_ISSUE=$(echo "$PR_BODY" | grep -oP 'Parent Issue: #\K\d+' | head -1 || echo "")
+
+          # Fallback: search for main issue
+          if [ -z "$MAIN_ISSUE" ]; then
+            MAIN_ISSUE=$(gh issue list --label plot-request --search "$SPEC_ID in:title" --json number -q '.[0].number' || echo "")
           fi
 
-          echo "issue_num=$ISSUE_NUM" >> $GITHUB_OUTPUT
-          echo "Found spec ID: $SPEC_ID, Issue: #$ISSUE_NUM"
+          echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "library=$LIBRARY" >> $GITHUB_OUTPUT
+          echo "sub_issue=$SUB_ISSUE" >> $GITHUB_OUTPUT
+          echo "main_issue=$MAIN_ISSUE" >> $GITHUB_OUTPUT
 
-      - name: Find implementation files
+          echo "Spec: $SPEC_ID, Library: $LIBRARY, Sub: #$SUB_ISSUE, Main: #$MAIN_ISSUE"
+
+      - name: Find implementation file
         id: files
         run: |
           SPEC_ID="${{ steps.extract.outputs.spec_id }}"
+          LIBRARY="${{ steps.extract.outputs.library }}"
 
-          # Find all implementation files for this spec
-          MATPLOTLIB_FILE=$(find plots/matplotlib -name "default.py" -path "*/$SPEC_ID/*" 2>/dev/null | head -1 || echo "")
-          SEABORN_FILE=$(find plots/seaborn -name "default.py" -path "*/$SPEC_ID/*" 2>/dev/null | head -1 || echo "")
+          # Find implementation file for this library
+          IMPL_FILE=$(find plots/$LIBRARY -name "default.py" -path "*/$SPEC_ID/*" 2>/dev/null | head -1 || echo "")
+          echo "impl_file=$IMPL_FILE" >> $GITHUB_OUTPUT
 
-          echo "matplotlib=$MATPLOTLIB_FILE" >> $GITHUB_OUTPUT
-          echo "seaborn=$SEABORN_FILE" >> $GITHUB_OUTPUT
-
-      - name: Post summary to Issue
-        if: steps.extract.outputs.issue_num != ''
+      - name: Update sub-issue to merged
+        if: steps.extract.outputs.sub_issue != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ISSUE_NUM="${{ steps.extract.outputs.issue_num }}"
+          SUB_ISSUE="${{ steps.extract.outputs.sub_issue }}"
+          LIBRARY="${{ steps.extract.outputs.library }}"
           SPEC_ID="${{ steps.extract.outputs.spec_id }}"
           PR_NUM="${{ github.event.pull_request.number }}"
           MERGE_COMMIT="${{ github.event.pull_request.merge_commit_sha }}"
           SHORT_SHA=$(echo "$MERGE_COMMIT" | cut -c1-7)
+          IMPL_FILE="${{ steps.files.outputs.impl_file }}"
 
-          MATPLOTLIB_FILE="${{ steps.files.outputs.matplotlib }}"
-          SEABORN_FILE="${{ steps.files.outputs.seaborn }}"
+          # Update labels
+          gh issue edit $SUB_ISSUE \
+            --remove-label "ai-approved,reviewing,generating,testing" \
+            --add-label "merged"
 
-          # Build implementations list
-          IMPL_LIST=""
-          if [ -n "$MATPLOTLIB_FILE" ]; then
-            IMPL_LIST="${IMPL_LIST}
-          - matplotlib: \`$MATPLOTLIB_FILE\`"
-          fi
-          if [ -n "$SEABORN_FILE" ]; then
-            IMPL_LIST="${IMPL_LIST}
-          - seaborn: \`$SEABORN_FILE\`"
-          fi
+          # Post completion comment
+          gh issue comment $SUB_ISSUE --body "## Merged
 
-          COMMENT_BODY="## ✅ Implementation Complete
+          **$LIBRARY** implementation for \`$SPEC_ID\` has been merged to main!
 
-          **Spec ID:** \`$SPEC_ID\`
-          **PR:** #$PR_NUM (merged)
-          **Commit:** [$SHORT_SHA](https://github.com/${{ github.repository }}/commit/$MERGE_COMMIT)
-
-          ### Implementations
-          $IMPL_LIST
-
-          ### Spec File
-          - \`specs/$SPEC_ID.md\`
+          ### Details
+          - **PR:** #$PR_NUM
+          - **Commit:** [$SHORT_SHA](https://github.com/${{ github.repository }}/commit/$MERGE_COMMIT)
+          - **File:** \`$IMPL_FILE\`
 
           ---
-          🤖 *Auto-generated by pyplots CI*"
+          :rocket: *Auto-merged by pyplots CI*"
 
-          gh issue comment "$ISSUE_NUM" --body "$COMMENT_BODY"
-          echo "✅ Posted summary to issue #$ISSUE_NUM"
+          # Close sub-issue
+          gh issue close $SUB_ISSUE --reason completed
 
-      - name: Close the issue
-        if: steps.extract.outputs.issue_num != ''
+      - name: Check if all libraries are done
+        id: check_complete
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh issue close "${{ steps.extract.outputs.issue_num }}" \
-            --reason completed \
-            --comment "🎉 This plot request has been implemented and merged!"
+          MAIN_ISSUE="${{ steps.extract.outputs.main_issue }}"
+
+          if [ -z "$MAIN_ISSUE" ]; then
+            echo "all_done=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Get all sub-issues for this main issue
+          SUB_ISSUES=$(gh issue list --search "Parent: #$MAIN_ISSUE in:body" --json number,labels -q '.')
+
+          # Count statuses
+          TOTAL=$(echo "$SUB_ISSUES" | jq 'length')
+          MERGED=$(echo "$SUB_ISSUES" | jq '[.[] | select(.labels[].name == "merged")] | length')
+          NOT_FEASIBLE=$(echo "$SUB_ISSUES" | jq '[.[] | select(.labels[].name == "not-feasible")] | length')
+          DONE=$((MERGED + NOT_FEASIBLE))
+
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "merged=$MERGED" >> $GITHUB_OUTPUT
+          echo "not_feasible=$NOT_FEASIBLE" >> $GITHUB_OUTPUT
+
+          if [ "$DONE" -eq "$TOTAL" ] && [ "$TOTAL" -gt 0 ]; then
+            echo "all_done=true" >> $GITHUB_OUTPUT
+          else
+            echo "all_done=false" >> $GITHUB_OUTPUT
+          fi
+
+          echo "Progress: $DONE/$TOTAL complete ($MERGED merged, $NOT_FEASIBLE not feasible)"
+
+      - name: Post progress to main issue
+        if: steps.extract.outputs.main_issue != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          MAIN_ISSUE="${{ steps.extract.outputs.main_issue }}"
+          LIBRARY="${{ steps.extract.outputs.library }}"
+          SPEC_ID="${{ steps.extract.outputs.spec_id }}"
+          PR_NUM="${{ github.event.pull_request.number }}"
+          MERGED="${{ steps.check_complete.outputs.merged }}"
+          NOT_FEASIBLE="${{ steps.check_complete.outputs.not_feasible }}"
+          TOTAL="${{ steps.check_complete.outputs.total }}"
+
+          gh issue comment $MAIN_ISSUE --body "## :white_check_mark: $LIBRARY Merged
+
+          **$LIBRARY** implementation for \`$SPEC_ID\` has been merged!
+
+          **Progress:** $MERGED merged, $NOT_FEASIBLE not feasible, $((TOTAL - MERGED - NOT_FEASIBLE)) pending
+
+          ---
+          :robot: *PR #$PR_NUM*"
+
+      - name: Complete main issue if all done
+        if: steps.check_complete.outputs.all_done == 'true' && steps.extract.outputs.main_issue != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          MAIN_ISSUE="${{ steps.extract.outputs.main_issue }}"
+          SPEC_ID="${{ steps.extract.outputs.spec_id }}"
+          MERGED="${{ steps.check_complete.outputs.merged }}"
+          NOT_FEASIBLE="${{ steps.check_complete.outputs.not_feasible }}"
+
+          # Post final summary
+          gh issue comment $MAIN_ISSUE --body "## :tada: Implementation Complete!
+
+          All library implementations for \`$SPEC_ID\` are now complete.
+
+          ### Final Status
+          - **Merged:** $MERGED libraries
+          - **Not Feasible:** $NOT_FEASIBLE libraries
+
+          Check the **Implementation Status** table in the issue body for details.
+
+          ---
+          :robot: *pyplots CI*"
+
+          # Add completed label
+          gh issue edit $MAIN_ISSUE --add-label "completed"
+
+          # Close main issue
+          gh issue close $MAIN_ISSUE --reason completed

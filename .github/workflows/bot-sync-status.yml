@@ -1,0 +1,220 @@
+name: "Bot: Sync Sub-Issue Status"
+
+# Syncs the status of all library sub-issues to the main issue's status table
+on:
+  issues:
+    types: [labeled, unlabeled, closed]
+  pull_request:
+    types: [labeled, closed]
+  workflow_run:
+    workflows: ["Gen: Library Implementation", "Bot: AI Review"]
+    types: [completed]
+
+jobs:
+  sync-status:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: read
+
+    steps:
+      - name: Determine parent issue
+        id: parent
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Try to find parent issue from different trigger types
+
+          if [ "${{ github.event_name }}" == "issues" ]; then
+            ISSUE_NUM="${{ github.event.issue.number }}"
+            LABELS="${{ join(github.event.issue.labels.*.name, ',') }}"
+
+            # Check if this is a sub-issue
+            if echo "$LABELS" | grep -q "sub-issue"; then
+              # Find parent from issue body
+              BODY=$(gh issue view $ISSUE_NUM --json body -q '.body')
+              PARENT_NUM=$(echo "$BODY" | grep -oP 'Parent: #\K\d+' | head -1 || echo "")
+
+              if [ -n "$PARENT_NUM" ]; then
+                echo "parent_number=$PARENT_NUM" >> $GITHUB_OUTPUT
+                echo "should_sync=true" >> $GITHUB_OUTPUT
+                exit 0
+              fi
+            fi
+
+            # Check if this is the main issue with plot-request label
+            if echo "$LABELS" | grep -q "plot-request"; then
+              echo "parent_number=$ISSUE_NUM" >> $GITHUB_OUTPUT
+              echo "should_sync=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+          elif [ "${{ github.event_name }}" == "pull_request" ]; then
+            PR_NUM="${{ github.event.pull_request.number }}"
+            PR_BODY="${{ github.event.pull_request.body }}"
+
+            # Extract parent issue from PR body
+            PARENT_NUM=$(echo "$PR_BODY" | grep -oP 'Parent Issue: #\K\d+' | head -1 || echo "")
+
+            if [ -n "$PARENT_NUM" ]; then
+              echo "parent_number=$PARENT_NUM" >> $GITHUB_OUTPUT
+              echo "should_sync=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+          elif [ "${{ github.event_name }}" == "workflow_run" ]; then
+            # For workflow_run, we need to extract from artifacts or run context
+            # This is a fallback - the main triggers should handle most cases
+            echo "should_sync=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "should_sync=false" >> $GITHUB_OUTPUT
+
+      - name: Collect sub-issue statuses
+        if: steps.parent.outputs.should_sync == 'true'
+        id: collect
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PARENT_NUM="${{ steps.parent.outputs.parent_number }}"
+
+          # Get all sub-issues for this parent
+          # Using GitHub's sub-issues API or searching for issues with "Parent: #N" in body
+          SUB_ISSUES=$(gh api graphql -f query='
+            query($owner: String!, $repo: String!, $parent: Int!) {
+              repository(owner: $owner, name: $repo) {
+                issue(number: $parent) {
+                  subIssues(first: 20) {
+                    nodes {
+                      number
+                      title
+                      labels(first: 10) {
+                        nodes { name }
+                      }
+                      state
+                    }
+                  }
+                }
+              }
+            }' -f owner="${{ github.repository_owner }}" -f repo="${{ github.event.repository.name }}" -F parent="$PARENT_NUM" 2>/dev/null || echo '{"data":{"repository":{"issue":{"subIssues":{"nodes":[]}}}}}')
+
+          # Fallback: search for issues with "Parent: #N" in body
+          if [ "$(echo "$SUB_ISSUES" | jq '.data.repository.issue.subIssues.nodes | length')" == "0" ]; then
+            SUB_ISSUES_SEARCH=$(gh issue list --search "Parent: #$PARENT_NUM in:body" --json number,title,labels,state)
+            echo "$SUB_ISSUES_SEARCH" > /tmp/sub_issues.json
+          else
+            echo "$SUB_ISSUES" | jq '.data.repository.issue.subIssues.nodes' > /tmp/sub_issues.json
+          fi
+
+          echo "sub_issues_file=/tmp/sub_issues.json" >> $GITHUB_OUTPUT
+
+      - name: Build status table
+        if: steps.parent.outputs.should_sync == 'true'
+        id: table
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PARENT_NUM="${{ steps.parent.outputs.parent_number }}"
+
+          # Define all libraries
+          LIBRARIES="matplotlib seaborn plotly bokeh altair plotnine pygal highcharts"
+
+          # Start building the table
+          cat > /tmp/status_table.md << 'TABLEEOF'
+          ## Implementation Status
+
+          | Library | Status | Score | PR | Attempts |
+          |---------|--------|-------|-----|----------|
+          TABLEEOF
+
+          for LIB in $LIBRARIES; do
+            # Find sub-issue for this library
+            SUB_ISSUE=$(jq -r --arg lib "$LIB" '.[] | select(.title | contains($lib)) | .number' /tmp/sub_issues.json 2>/dev/null | head -1 || echo "")
+
+            if [ -z "$SUB_ISSUE" ]; then
+              # No sub-issue yet
+              echo "| $LIB | :hourglass: Pending | - | - | 0/3 |" >> /tmp/status_table.md
+              continue
+            fi
+
+            # Get labels for status
+            LABELS=$(jq -r --arg lib "$LIB" '.[] | select(.title | contains($lib)) | .labels | if type == "array" then .[].name else .nodes[].name end' /tmp/sub_issues.json 2>/dev/null | tr '\n' ',' || echo "")
+
+            # Determine status emoji and text
+            if echo "$LABELS" | grep -q "merged"; then
+              STATUS=":white_check_mark: Merged"
+            elif echo "$LABELS" | grep -q "ai-approved"; then
+              STATUS=":ballot_box_with_check: Approved"
+            elif echo "$LABELS" | grep -q "not-feasible"; then
+              STATUS=":warning: Not Feasible"
+            elif echo "$LABELS" | grep -q "ai-rejected"; then
+              STATUS=":x: Rejected"
+            elif echo "$LABELS" | grep -q "reviewing"; then
+              STATUS=":mag: Reviewing"
+            elif echo "$LABELS" | grep -q "testing"; then
+              STATUS=":test_tube: Testing"
+            elif echo "$LABELS" | grep -q "generating"; then
+              STATUS=":gear: Generating"
+            else
+              STATUS=":hourglass: Pending"
+            fi
+
+            # Get quality score from sub-issue comments
+            SCORE=$(gh api repos/${{ github.repository }}/issues/$SUB_ISSUE/comments \
+              --jq '[.[] | .body | capture("\\*\\*Median\\*\\* \\| \\*\\*(?<score>\\d+)") | .score] | last // "-"' 2>/dev/null || echo "-")
+
+            # Find PR for this library
+            PR_NUM=$(gh pr list --search "implement ${{ steps.parent.outputs.spec_id || 'spec' }} in:title $LIB in:title" \
+              --json number -q '.[0].number' 2>/dev/null || echo "")
+            PR_LINK=$([[ -n "$PR_NUM" ]] && echo "#$PR_NUM" || echo "-")
+
+            # Count attempts from labels
+            ATTEMPTS=0
+            if echo "$LABELS" | grep -q "ai-attempt-1"; then ATTEMPTS=1; fi
+            if echo "$LABELS" | grep -q "ai-attempt-2"; then ATTEMPTS=2; fi
+            if echo "$LABELS" | grep -q "ai-attempt-3"; then ATTEMPTS=3; fi
+
+            echo "| $LIB | $STATUS | $SCORE | $PR_LINK | $ATTEMPTS/3 |" >> /tmp/status_table.md
+          done
+
+          echo "" >> /tmp/status_table.md
+          echo "_Last updated: $(date -u +"%Y-%m-%d %H:%M UTC")_" >> /tmp/status_table.md
+
+          cat /tmp/status_table.md
+
+      - name: Update main issue body
+        if: steps.parent.outputs.should_sync == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PARENT_NUM="${{ steps.parent.outputs.parent_number }}"
+
+          # Get current issue body
+          CURRENT_BODY=$(gh issue view $PARENT_NUM --json body -q '.body')
+
+          # Check if status table already exists
+          if echo "$CURRENT_BODY" | grep -q "## Implementation Status"; then
+            # Replace existing table
+            # Find start and end markers
+            NEW_BODY=$(echo "$CURRENT_BODY" | awk '
+              /^## Implementation Status/ { skip=1; next }
+              /^## / && skip { skip=0 }
+              !skip { print }
+            ')
+
+            # Append new table at the end
+            echo "$NEW_BODY" > /tmp/new_body.md
+            echo "" >> /tmp/new_body.md
+            cat /tmp/status_table.md >> /tmp/new_body.md
+          else
+            # Append table to existing body
+            echo "$CURRENT_BODY" > /tmp/new_body.md
+            echo "" >> /tmp/new_body.md
+            cat /tmp/status_table.md >> /tmp/new_body.md
+          fi
+
+          # Update issue
+          gh issue edit $PARENT_NUM --body-file /tmp/new_body.md
+
+          echo "::notice::Updated status table in issue #$PARENT_NUM"

@@ -1,8 +1,9 @@
 name: "Bot: AI Review"
+run-name: "AI Review: ${{ github.event.workflow_run.head_branch || github.event.pull_request.head.ref }}"
 
 on:
   workflow_run:
-    workflows: ["Generate Plot Previews"]
+    workflows: ["Gen: Preview Images"]
     types: [completed]
 
 jobs:
@@ -40,11 +41,16 @@ jobs:
           fi
 
           PR_NUMBER=$(jq -r '.pr_number' plot_metadata.json)
-          ISSUE_NUMBER=$(jq -r '.issue_number' plot_metadata.json)
+          ISSUE_NUMBER=$(jq -r '.issue_number // empty' plot_metadata.json)
+          SUB_ISSUE_NUMBER=$(jq -r '.sub_issue_number // empty' plot_metadata.json)
           TIMESTAMP=$(jq -r '.timestamp' plot_metadata.json)
+          LIBRARY=$(jq -r '.library // empty' plot_metadata.json)
+
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
           echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+          echo "sub_issue_number=$SUB_ISSUE_NUMBER" >> $GITHUB_OUTPUT
           echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+          echo "library=$LIBRARY" >> $GITHUB_OUTPUT
           echo "skip=false" >> $GITHUB_OUTPUT
 
       - name: Get PR details
@@ -53,21 +59,38 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR_DATA=$(gh pr view ${{ steps.metadata.outputs.pr_number }} --json headRefName,number)
+          PR_DATA=$(gh pr view ${{ steps.metadata.outputs.pr_number }} --json headRefName,number,body)
           HEAD_REF=$(echo "$PR_DATA" | jq -r '.headRefName')
+          PR_BODY=$(echo "$PR_DATA" | jq -r '.body')
 
-          # Check if auto/ branch
+          # Check if auto/ branch (now includes library: auto/scatter-basic/matplotlib)
           if [[ ! "$HEAD_REF" =~ ^auto/ ]]; then
             echo "Not an auto/ branch, skipping AI review"
             echo "skip=true" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          # Extract spec-id from branch name (auto/scatter-basic-005)
-          SPEC_ID=$(echo "$HEAD_REF" | sed 's|auto/||')
+          # Extract spec-id and library from branch name
+          # Format: auto/{spec-id}/{library}
+          SPEC_ID=$(echo "$HEAD_REF" | cut -d'/' -f2)
+          LIBRARY=$(echo "$HEAD_REF" | cut -d'/' -f3)
+
+          # If library not in branch, try from metadata
+          if [ -z "$LIBRARY" ]; then
+            LIBRARY="${{ steps.metadata.outputs.library }}"
+          fi
+
+          # Extract sub-issue from PR body if not in metadata
+          SUB_ISSUE="${{ steps.metadata.outputs.sub_issue_number }}"
+          if [ -z "$SUB_ISSUE" ]; then
+            SUB_ISSUE=$(echo "$PR_BODY" | grep -oP 'Sub-Issue: #\K\d+' | head -1 || echo "")
+          fi
+
           echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "library=$LIBRARY" >> $GITHUB_OUTPUT
+          echo "sub_issue=$SUB_ISSUE" >> $GITHUB_OUTPUT
           echo "skip=false" >> $GITHUB_OUTPUT
-          echo "Spec ID: $SPEC_ID"
+          echo "Spec ID: $SPEC_ID, Library: $LIBRARY, Sub-Issue: #$SUB_ISSUE"
 
       - name: Setup Google Cloud authentication
         if: steps.pr.outputs.skip != 'true'
@@ -85,15 +108,15 @@ jobs:
         if: steps.pr.outputs.skip != 'true' && steps.gcs_auth.outcome == 'success'
         run: |
           SPEC_ID="${{ steps.pr.outputs.spec_id }}"
+          LIBRARY="${{ steps.pr.outputs.library }}"
           TIMESTAMP="${{ steps.metadata.outputs.timestamp }}"
 
           mkdir -p plot_images
 
-          # Download plot images for this spec from all libraries
-          gsutil -m cp -r "gs://${{ secrets.GCS_BUCKET }}/plots/${SPEC_ID}/**/*v${TIMESTAMP}*.png" plot_images/ 2>/dev/null || echo "No plot images found"
+          # Download plot images for this specific library
+          gsutil -m cp -r "gs://${{ secrets.GCS_BUCKET }}/plots/${SPEC_ID}/${LIBRARY}/**/*v${TIMESTAMP}*.png" plot_images/ 2>/dev/null || echo "No plot images found"
 
-          # List downloaded images
-          echo "📊 Downloaded plot images:"
+          echo "Downloaded plot images:"
           find plot_images -name "*.png" -type f 2>/dev/null || echo "No images found"
 
       - name: Check attempt count
@@ -114,6 +137,15 @@ jobs:
             echo "count=0" >> $GITHUB_OUTPUT
           fi
 
+      - name: Update sub-issue label to reviewing
+        if: steps.pr.outputs.skip != 'true' && steps.pr.outputs.sub_issue != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue edit ${{ steps.pr.outputs.sub_issue }} \
+            --remove-label "testing" \
+            --add-label "reviewing" 2>/dev/null || true
+
       - name: React with eyes emoji
         if: steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3'
         env:
@@ -128,9 +160,11 @@ jobs:
         with:
           script: |
             const specId = '${{ steps.pr.outputs.spec_id }}';
+            const library = '${{ steps.pr.outputs.library }}';
             const attempt = parseInt('${{ steps.attempts.outputs.count }}') + 1;
             const prNumber = ${{ steps.metadata.outputs.pr_number }};
-            const issueNumber = '${{ steps.metadata.outputs.issue_number }}';
+            const subIssueNumber = '${{ steps.pr.outputs.sub_issue }}';
+            const mainIssueNumber = '${{ steps.metadata.outputs.issue_number }}';
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -138,9 +172,9 @@ jobs:
               issue_number: prNumber,
               body: `@claude
 
-            ## 🎯 Task: AI Quality Review (Attempt ${attempt}/3)
+            ## Task: AI Quality Review for **${library}** (Attempt ${attempt}/3)
 
-            Tests passed and preview images are ready. Evaluate if the implementation matches the specification.
+            Tests passed and preview images are ready. Evaluate if the **${library}** implementation matches the specification.
 
             ### Your Task
 
@@ -148,53 +182,58 @@ jobs:
                - Note all quality criteria listed
                - Understand the expected visual output
 
-            2. **Read the implementation files**:
-               - \`plots/matplotlib/*/${specId}/default.py\`
-               - \`plots/seaborn/*/${specId}/default.py\`
+            2. **Read the ${library} implementation**:
+               - \`plots/${library}/*/${specId}/default.py\`
 
-            3. **View the plot images** in \`plot_images/\` directory
+            3. **Read library-specific rules**:
+               - \`prompts/library/${library}.md\`
+
+            4. **View the plot images** in \`plot_images/\` directory
                - Use your vision capabilities to analyze each image
                - Compare with the spec requirements
 
-            4. **Evaluate against spec requirements** and create a checklist
+            5. **Evaluate against quality criteria** from \`prompts/quality-criteria.md\`
 
-            5. **IMPORTANT: Post your verdict to Issue #${issueNumber}** (NOT the PR!) using this format:
+            6. **Post your verdict to Sub-Issue #${subIssueNumber}** using this EXACT format:
 
             \`\`\`markdown
-            ## 🤖 AI Review (PR #${prNumber})
+            ## AI Review - Attempt ${attempt}/3
 
-            ### Status: ✅ Approved / ❌ Rejected
+            ### Quality Evaluation
+            | Evaluator | Score | Verdict |
+            |-----------|-------|---------|
+            | Claude | XX/100 | approve/reject |
 
-            ### Evaluation
-            | Criterion | Score |
-            |-----------|-------|
-            | Code Quality | X/10 |
-            | Spec Conformity | X/10 |
-            | Visual Quality | X/10 |
+            ### Criteria Checklist
+            - [x] VQ-001: Axes labeled correctly
+            - [x] VQ-002: Grid is subtle
+            - [ ] VQ-003: Elements clear ← Issue here
+            - [x] CQ-001: Type hints present
+            ...
 
-            ### Spec Requirements
-            - [x] Requirement 1 from spec
-            - [x] Requirement 2 from spec
-            - [ ] Requirement 3 ← Issue here
+            ### Issues Found
+            1. **VQ-003 FAILED**: Legend overlaps with data points
+            2. **CQ-002 PARTIAL**: Docstring missing return type
 
-            ### Improvement Suggestions (for future updates)
-            - [ ] Suggestion 1 (even if approved, note areas for improvement)
-            - [ ] Suggestion 2
+            ### AI Feedback for Next Attempt
+            > Move legend outside plot area with \\\`bbox_to_anchor=(1.05, 1)\\\`
+            > Add return type to docstring
 
-            ### Critical Issues (only if rejected)
-            - Issue 1 that must be fixed
-            - Issue 2 that must be fixed
+            ### Verdict: APPROVED / REJECTED
             \`\`\`
 
-            6. **Take action based on result**:
-               - **✅ Approved** (score >= 7/10 on all criteria):
+            7. **Take action based on result**:
+               - **APPROVED** (score >= 85):
                  - Run: \`gh pr edit ${prNumber} --add-label ai-approved\`
-                 - Post review to Issue #${issueNumber} (include suggestions for future updates)
-               - **❌ Rejected** (any score < 7/10):
+                 - Run: \`gh issue edit ${subIssueNumber} --remove-label reviewing --add-label ai-approved\`
+               - **REJECTED** (score < 85):
                  - Run: \`gh pr edit ${prNumber} --add-label ai-rejected\`
-                 - Post review to Issue #${issueNumber} (include specific fixes needed)
+                 - Run: \`gh issue edit ${subIssueNumber} --remove-label reviewing --add-label ai-rejected\`
 
-            **Remember:** The Issue is the permanent knowledge base. Include all feedback there, even if approved!`
+            **IMPORTANT:**
+            - This is a **${library}-only** review - focus only on this library
+            - Post feedback to **Sub-Issue #${subIssueNumber}**, NOT the main issue
+            - Include the generated code in your review comment for documentation`
             });
 
       - name: Mark as failed after 3 attempts
@@ -202,22 +241,35 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ISSUE_NUM="${{ steps.metadata.outputs.issue_number }}"
+          SUB_ISSUE="${{ steps.pr.outputs.sub_issue }}"
           PR_NUM="${{ steps.metadata.outputs.pr_number }}"
+          LIBRARY="${{ steps.pr.outputs.library }}"
+          SPEC_ID="${{ steps.pr.outputs.spec_id }}"
 
+          # Update PR labels
           gh pr edit "$PR_NUM" --add-label "ai-rejected"
 
-          # Post to Issue
-          gh issue comment "$ISSUE_NUM" --body "## 🔍 Quality Check
+          # Update sub-issue
+          if [ -n "$SUB_ISSUE" ]; then
+            gh issue edit "$SUB_ISSUE" \
+              --remove-label "reviewing,ai-rejected" \
+              --add-label "not-feasible"
 
-          ### Status: ❌ Rejected
+            # Post final status to sub-issue
+            gh issue comment "$SUB_ISSUE" --body "## AI Review - Final Status
 
-          AI Review failed after 3 attempts. Manual review required.
+            ### Status: Not Feasible
 
-          **PR:** #$PR_NUM
+            AI Review failed after **3 attempts**. This ${LIBRARY} implementation for \`${SPEC_ID}\` could not meet quality standards.
 
-          ---
-          🤖 *Automated quality check*"
+            **Options:**
+            1. Manual review and fix
+            2. Wait for improved AI capabilities
+            3. Mark this library as unsupported for this plot type
+
+            ---
+            :robot: *Automated quality check*"
+          fi
 
           # Post to PR
-          gh pr comment "$PR_NUM" --body "❌ AI Review failed after 3 attempts. Manual review required."
+          gh pr comment "$PR_NUM" --body "AI Review failed after 3 attempts. See sub-issue #$SUB_ISSUE for details."

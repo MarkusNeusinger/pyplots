@@ -8,7 +8,7 @@ from bokeh.models import ColumnDataSource
 from bokeh.io import export_png
 ```
 
-## Figure erstellen
+## Create Figure
 
 ```python
 p = figure(
@@ -20,15 +20,15 @@ p = figure(
 )
 ```
 
-## Plot-Methoden
+## Plot Methods
 
 ```python
-# Numerische Daten
+# Numeric data
 p.scatter(x='x', y='y', source=source)
 p.line(x='x', y='y', source=source)
 
-# WICHTIG: Kategorische Achsen
-p = figure(x_range=categories, ...)  # x_range definieren!
+# IMPORTANT: Categorical axes
+p = figure(x_range=categories, ...)  # define x_range!
 source = ColumnDataSource(data={'x': cat_data, 'y': num_data})
 p.scatter(x='x', y='y', source=source)
 ```
@@ -36,7 +36,7 @@ p.scatter(x='x', y='y', source=source)
 ## ColumnDataSource
 
 ```python
-# Immer ColumnDataSource verwenden für Flexibilität
+# Always use ColumnDataSource for flexibility
 source = ColumnDataSource(data={
     'x': df['col_x'],
     'y': df['col_y'],
@@ -44,7 +44,7 @@ source = ColumnDataSource(data={
 })
 ```
 
-## Speichern (PNG)
+## Save (PNG)
 
 ```python
 from bokeh.io import export_png
@@ -52,7 +52,7 @@ from bokeh.io import export_png
 export_png(p, filename='plot.png')
 ```
 
-**Hinweis**: Benötigt `selenium` und WebDriver für PNG-Export.
+**Note**: Requires `selenium` and WebDriver for PNG export.
 
 ## Styling
 
@@ -66,17 +66,17 @@ p.yaxis.axis_label = y_label
 
 `plots/bokeh/{glyph_method}/`
 
-| Methode | Folder |
-|---------|--------|
+| Method | Folder |
+|--------|--------|
 | `p.scatter()` | `scatter/` |
 | `p.line()` | `line/` |
 | `p.vbar()` | `vbar/` |
 | `p.hbar()` | `hbar/` |
-| Custom (kein natives) | `custom/` |
+| Custom (no native) | `custom/` |
 
 ## Return Type
 
 ```python
 def create_plot(...) -> figure:
-    # Hinweis: bokeh.plotting.figure (lowercase)
+    # Note: bokeh.plotting.figure (lowercase)
 ```

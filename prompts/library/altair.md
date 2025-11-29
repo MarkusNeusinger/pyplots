@@ -6,7 +6,7 @@
 import altair as alt
 ```
 
-## Chart erstellen
+## Create Chart
 
 ```python
 chart = alt.Chart(df).mark_point().encode(
@@ -22,16 +22,16 @@ chart = alt.Chart(df).mark_point().encode(
 ## Encoding Types
 
 ```python
-# Q = Quantitative (numerisch)
+# Q = Quantitative (numeric)
 x='value:Q'
 
-# N = Nominal (kategorisch, keine Ordnung)
+# N = Nominal (categorical, no order)
 color='category:N'
 
-# O = Ordinal (kategorisch, mit Ordnung)
+# O = Ordinal (categorical, with order)
 x='month:O'
 
-# T = Temporal (Datum/Zeit)
+# T = Temporal (date/time)
 x='date:T'
 ```
 
@@ -46,18 +46,18 @@ x='date:T'
 .mark_area()       # Area
 ```
 
-## Speichern (PNG)
+## Save (PNG)
 
 ```python
 chart.save('plot.png', scale_factor=2.0)
 ```
 
-**Hinweis**: Benötigt `vl-convert-python` für PNG-Export.
+**Note**: Requires `vl-convert-python` for PNG export.
 
-## Interaktivität
+## Interactivity
 
 ```python
-# Zoom/Pan aktivieren
+# Enable zoom/pan
 chart = chart.interactive()
 
 # Tooltips

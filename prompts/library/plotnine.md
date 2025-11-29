@@ -11,7 +11,7 @@ from plotnine import (
 )
 ```
 
-## Plot erstellen
+## Create Plot
 
 ```python
 plot = (
@@ -28,36 +28,36 @@ plot = (
 plot = plot + theme(figure_size=(16, 9))
 ```
 
-## Speichern (PNG)
+## Save (PNG)
 
 ```python
 plot.save('plot.png', dpi=300)
 ```
 
-## Brewer Paletten
+## Brewer Palettes
 
-**WICHTIG**: Palette-Typ muss zum Palette-Namen passen!
+**IMPORTANT**: Palette type must match the palette name!
 
 ```python
-# Qualitativ (kategorisch)
+# Qualitative (categorical)
 + scale_fill_brewer(type='qual', palette='Set2')
 + scale_fill_brewer(type='qual', palette='Paired')
 + scale_fill_brewer(type='qual', palette='Dark2')
 
-# Sequentiell (numerisch)
+# Sequential (numeric)
 + scale_fill_brewer(type='seq', palette='Blues')
 + scale_fill_brewer(type='seq', palette='Greens')
 
-# Divergierend (um Nullpunkt)
+# Diverging (around zero)
 + scale_fill_brewer(type='div', palette='RdBu')
 + scale_fill_brewer(type='div', palette='PiYG')
 ```
 
 ```python
-# FALSCH: Set2 ist NICHT sequentiell!
+# WRONG: Set2 is NOT sequential!
 + scale_fill_brewer(type='seq', palette='Set2')
 
-# RICHTIG: Set2 ist qualitativ
+# RIGHT: Set2 is qualitative
 + scale_fill_brewer(type='qual', palette='Set2')
 ```
 
@@ -66,7 +66,7 @@ plot.save('plot.png', dpi=300)
 ```python
 geom_point()     # Scatter
 geom_line()      # Line
-geom_bar()       # Bar (stat='identity' für Werte)
+geom_bar()       # Bar (stat='identity' for values)
 geom_boxplot()   # Boxplot
 geom_histogram() # Histogram
 geom_tile()      # Heatmap

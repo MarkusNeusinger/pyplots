@@ -1,0 +1,72 @@
+# Prompts
+
+Central prompt collection for all AI agents in the pyplots workflow.
+
+## Concept
+
+Instead of complex folder versioning: **One Markdown file per task**.
+Git history shows all changes (`git log -p prompts/plot-generator.md`).
+
+## Overview
+
+| File | Agent | Task |
+|------|-------|------|
+| `plot-generator.md` | Plot Generator | Base rules for all plot implementations |
+| `library/*.md` | Plot Generator | Library-specific rules (8 files) |
+| `quality-criteria.md` | All | Definition of what "good code" means |
+| `quality-evaluator.md` | Quality Checker | Multi-LLM evaluation (Claude/Gemini/GPT) |
+| `auto-tagger.md` | Auto-Tagger | Automatic tagging across 5 dimensions |
+| `spec-validator.md` | Spec Validator | Validates plot request issues |
+| `spec-id-generator.md` | Spec ID Generator | Assigns unique spec IDs |
+
+## Usage in Workflows
+
+```yaml
+# Example: gen-new-plot.yml
+- name: Generate matplotlib plot
+  env:
+    PROMPT_BASE: ${{ steps.load_prompts.outputs.base }}
+    PROMPT_LIB: ${{ steps.load_prompts.outputs.library }}
+  run: |
+    claude --prompt "${PROMPT_BASE}
+
+    ${PROMPT_LIB}
+
+    ## Spec
+    $(cat specs/${{ inputs.spec_id }}.md)"
+```
+
+## Prompt Structure
+
+Each prompt follows this pattern:
+
+```markdown
+# [Agent Name]
+
+## Role
+You are [description]...
+
+## Task
+[What the agent should do]
+
+## Rules
+[Specific instructions]
+
+## Input
+[What the agent receives]
+
+## Output
+[What the agent should deliver]
+```
+
+## Making Changes
+
+1. Edit the file
+2. Test (locally or via PR)
+3. Commit with descriptive message
+
+```bash
+git commit -m "prompts: improve matplotlib color handling"
+```
+
+View old versions: `git log -p prompts/library/matplotlib.md`

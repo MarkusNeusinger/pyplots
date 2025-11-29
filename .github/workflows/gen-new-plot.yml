@@ -211,7 +211,7 @@ jobs:
       library: seaborn
       main_issue_number: ${{ github.event.issue.number }}
       sub_issue_number: ${{ needs.create-sub-issues.outputs.seaborn_issue }}
-      deps: "seaborn>=0.13.0 matplotlib>=3.8.0,<3.9.0 numpy>=1.26.0"
+      deps: "seaborn>=0.13.0 matplotlib numpy>=1.26.0"
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 

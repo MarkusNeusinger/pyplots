@@ -68,7 +68,7 @@ Examples: `scatter-basic`, `scatter-color-mapped`, `bar-grouped-horizontal`, `he
 - **`plots/{library}/{plot_type}/{spec_id}/{variant}.py`**: Library-specific implementations
 - **`core/`**: Shared business logic (database, repositories, config)
 - **`api/`**: FastAPI backend (routers, schemas, dependencies)
-- **`app/`**: Next.js frontend (React + TypeScript + Vite + MUI)
+- **`app/`**: React frontend (React 19 + TypeScript + Vite 7 + MUI 7)
 - **`rules/`**: Versioned rules for AI code generation and quality evaluation
 - **`tests/unit/`**: Unit tests mirroring source structure
 - **`docs/`**: Architecture and workflow documentation
@@ -96,9 +96,10 @@ Every implementation file should:
 1. Start with docstring describing spec ID, library, variant
 2. Define `create_plot()` function with type hints
 3. Validate inputs first (empty data, missing columns)
-4. Use sensible defaults (`figsize=(10, 6)`, `alpha=0.8`)
-5. Include grid for readability
-6. Return the Figure object
+4. Validate data types (numeric columns)
+5. Use sensible defaults (`figsize=(16, 9)`, `alpha=0.6`)
+6. Include grid for readability
+7. Return the Figure object
 
 ### Anti-Patterns to Avoid
 
@@ -108,8 +109,8 @@ Every implementation file should:
 
 ## Tech Stack
 
-- **Backend**: FastAPI, SQLAlchemy (async), PostgreSQL, Python 3.10+
-- **Frontend**: Next.js 14, TypeScript, Tailwind CSS, MUI 7
+- **Backend**: FastAPI, SQLAlchemy (async), PostgreSQL, Python 3.14+
+- **Frontend**: React 19, TypeScript, Vite 7, MUI 7
 - **Package Manager**: uv (Python), yarn (Node.js)
 - **Linting**: Ruff (Python)
 

@@ -2,7 +2,7 @@
 
 **AI-powered Python plotting library that works with YOUR data.**
 
-[![Python 3.14+](https://img.shields.io/badge/python-3.14+-blue.svg)](https://www.python.org/)
+[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Tests](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-unittest.yml/badge.svg?branch=main)](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-unittest.yml)
 [![Ruff](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-lint.yml/badge.svg?branch=main)](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-lint.yml)
@@ -64,11 +64,10 @@ specs/scatter-basic-001.md  → plots/matplotlib/scatter/scatter-basic-001/defau
                             → plots/plotly/scatter/scatter-basic-001/default.py
 ```
 
-**Issue-based workflow**: GitHub Issues as state machine for plot lifecycle. All quality feedback documented as bot
-comments - no clutter in repo.
+**Issue-based workflow**: GitHub Issues as state machine for plot lifecycle. Each plot request spawns **8 parallel sub-issues** (one per library) for independent tracking.
 
 **Multi-LLM quality checks**: Claude + Gemini + GPT evaluate generated plots. Score ≥ 85 required (median). Automatic
-feedback loops (max 3 attempts).
+feedback loops (max 3 attempts per library).
 
 See [docs/architecture/](docs/architecture/) for details.
 
@@ -139,8 +138,7 @@ We welcome contributions! **All code is AI-generated** - you propose ideas, AI i
 
 **The workflow**:
 
-- You create Issue with plot idea → AI generates spec → AI generates code for all libraries → Multi-LLM quality check →
-  Deployed
+- You create Issue with plot idea → AI generates spec → **8 parallel sub-issues** spawn (one per library) → Each library generates independently → Multi-LLM quality check per library → Merged & Deployed
 
 **Important**: Don't submit code directly! If a plot has quality issues, it means the spec needs improvement, not the
 code.

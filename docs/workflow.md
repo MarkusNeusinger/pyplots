@@ -87,8 +87,25 @@ graph TB
 ### Flow 1: Discovery & Ideation
 n8n monitors social media daily → AI extracts plot ideas → Creates GitHub issues with draft specs → Human reviews and approves
 
-### Flow 2: Code Generation
-Approved issue → Claude generates implementation code with self-review loop (max 3 attempts) → Creates Pull Request
+### Flow 2: Parallel Code Generation
+
+Approved issue triggers **parallel generation pipeline**:
+
+1. **Orchestrator** (`gen-new-plot.yml`) creates 8 sub-issues (one per library)
+2. **8 parallel jobs** run simultaneously via `gen-library-impl.yml`:
+   - Each library has isolated dependencies
+   - Separate Claude context (no syntax confusion)
+   - Independent PR per library
+3. **Per-library tracking**: Each sub-issue documents attempts and status
+4. **Partial success possible**: Some libraries can merge while others retry
+
+```
+Main Issue (#53)
+├── Sub-Issue: [spec-id] matplotlib implementation (#54) → PR #62
+├── Sub-Issue: [spec-id] seaborn implementation (#55) → PR #63
+├── Sub-Issue: [spec-id] plotly implementation (#56) → PR #64
+└── ... (8 total)
+```
 
 ### Flow 3: Multi-Version Testing
 PR created → `ci-plottest.yml` runs tests across Python 3.11+ → Reports results
@@ -102,8 +119,16 @@ PR merged with `ai-approved` → `bot-auto-tag.yml` triggers → AI analyzes cod
 ### Flow 5: AI Review
 Previews generated → `bot-ai-review.yml` triggers → Claude evaluates Spec ↔ Code ↔ Preview → **Posts results to Issue** (permanent knowledge base) → Score ≥7/10 on all criteria required → Labels: `ai-approved` or `ai-rejected`
 
-### Flow 5.5: Repair Loop (NEW)
-PR labeled `ai-rejected` → `gen-update-plot.yml` triggers → Reads feedback from Issue → Regenerates improved code → Pushes to PR → Re-triggers ci-plottest → Max 3 attempts → After 3 failures: `ai-failed` label (manual review needed)
+### Flow 5.5: Per-Library Repair Loop
+PR labeled `ai-rejected` → `gen-update-plot.yml` triggers for that **specific library**:
+
+1. Reads all previous attempts from sub-issue (for context/learning)
+2. Regenerates improved code with feedback
+3. Pushes to PR → Re-triggers tests
+4. Max 3 attempts per library
+5. After 3 failures: `not-feasible` label (library marked as not implementable for this spec)
+
+**Note**: Each library repairs independently - matplotlib can be on attempt 3 while plotly already merged
 
 ### Flow 5.6: Auto-Merge
 PR labeled `ai-approved` → `bot-auto-merge.yml` triggers → Automatic squash merge
@@ -116,65 +141,121 @@ Deployed plot → Added to promotion queue (prioritized by quality score) → n8
 
 ---
 
+## Sub-Issue Architecture
+
+Each plot request spawns **8 parallel sub-issues** (one per library), enabling:
+
+- **~8x faster** generation (parallel execution)
+- **No context pollution** (separate Claude sessions per library)
+- **Per-library dependencies** (seaborn can use older matplotlib if needed)
+- **Partial success** (5/8 can merge while 3/8 retry)
+- **Independent tracking** (each library has its own status)
+
+### Sub-Issue Lifecycle
+
+```mermaid
+graph LR
+    A[Main Issue<br/>plot-request + approved] --> B[Orchestrator]
+    B --> C1[Sub-Issue<br/>matplotlib]
+    B --> C2[Sub-Issue<br/>seaborn]
+    B --> C3[Sub-Issue<br/>...]
+
+    C1 --> D1{generating}
+    D1 --> E1{testing}
+    E1 --> F1{reviewing}
+    F1 -->|Score ≥85| G1[ai-approved]
+    F1 -->|Score <85| H1[ai-rejected]
+    H1 -->|Attempt <3| D1
+    H1 -->|Attempt =3| I1[not-feasible]
+    G1 --> J1[merged]
+```
+
+### Sub-Issue Labels
+
+| Label | Meaning |
+|-------|---------|
+| `sub-issue` | Identifies as child of main issue |
+| `library:{name}` | Which library (matplotlib, seaborn, etc.) |
+| `generating` | Code being generated |
+| `testing` | Tests running |
+| `reviewing` | AI quality review in progress |
+| `ai-approved` | Passed review (score ≥85) |
+| `ai-rejected` | Failed review, will retry |
+| `not-feasible` | 3x failed, not implementable in this library |
+| `merged` | Successfully merged to main |
+
+### Attempt Documentation
+
+Each attempt is documented in the sub-issue with:
+
+```markdown
+## Attempt 1/3 - 2025-11-30T12:00:00Z
+
+### Approach
+- Using: seaborn
+- heatmap-correlation: Correlation Matrix Heatmap
+- Create figure with figsize
+- Plot data using heatmap
+- Configure colorbar
+
+### Status
+- **PR:** #123
+- **File:** `plots/seaborn/heatmap/heatmap-correlation/default.py`
+- **Workflow:** [link]
+```
+
+This enables learning from previous attempts during repair loops.
+
+---
+
 ## Flow Integration
 
 ```mermaid
 graph TD
     A[Flow 1: Discovery] -->|GitHub Issue| B{Manual/Auto Approval?}
     B -->|Manual| C[Human Reviews Issue]
-    B -->|Auto| D[Flow 2: Code Generation<br/>with Self-Review Loop]
+    B -->|Auto| D[Flow 2: Parallel Generation]
     C -->|Approved| D
     C -->|Rejected| Z[End]
 
-    D -->|Self-Review Pass<br/>Max 3 Attempts| E{Code Quality OK?}
-    E -->|Yes| F[Flow 3: Multi-Version Testing]
-    E -->|No after 3 tries| W[Mark Library as Not Feasible]
-    W --> Z
+    D -->|Create 8 Sub-Issues| D1[Orchestrator]
+    D1 --> D2[8 Parallel Jobs]
+    D2 -->|Per Library| E{Tests Pass?}
 
-    F -->|Tests Passed| G[Flow 4: Preview Generation]
-    F -->|Tests Failed| D
+    E -->|Yes| F[Flow 4: Preview Generation]
+    E -->|No| D2
 
-    G -->|PNG in GCS| H{Flow 5: Quality Check}
-    H -->|Routine Plot| I[Claude Evaluation]
-    H -->|Critical Plot| J[Multi-LLM Consensus]
+    F -->|PNG in GCS| G{Flow 5: AI Review}
+    G -->|Score ≥85| H[ai-approved]
+    G -->|Score <85| I[ai-rejected]
 
-    I -->|Score ≥85| K{Attempt Count}
-    J -->|Majority Approved| K
+    I --> J{Attempts < 3?}
+    J -->|Yes| K[Repair Loop]
+    K --> D2
+    J -->|No| L[not-feasible]
+    L --> Z
 
-    I -->|Score <85| L[Store Feedback]
-    J -->|Rejected| L
+    H --> M[Auto-Merge]
+    M --> N[Flow 6: Deploy]
+    N --> O[🌐 Publicly Visible]
+    N --> P[Flow 7: Promotion Queue]
 
-    L --> M{Attempts < 3?}
-    M -->|Yes| N[Feed Feedback to Generator]
-    N --> D
-    M -->|No| O[Mark as Quality-Failed]
-    O --> Z
-
-    K -->|Approved| P[Flow 6: Deploy to Website]
-    P --> Q[🌐 Publicly Visible]
-    P --> U[Flow 7: Add to Promotion Queue]
-
-    U --> V{Daily Post Limit?}
-    V -->|< 2 posts today| X[Generate & Post to X]
-    V -->|Limit reached| Y[Wait in Queue]
-    X --> Z
-    Y -.->|Next day| V
-
-    R[Event: LLM/Library Update] -->|Trigger| S[Flow 6: Maintenance]
-    S -->|Check Improvements| T{Better?}
-    T -->|Yes + Re-approved| P
-    T -->|No| Z
+    P --> Q{Daily Limit?}
+    Q -->|< 2 posts| R[Post to X]
+    Q -->|Limit| S[Wait]
+    R --> Z
+    S -.->|Next day| Q
 
     style A fill:#e1f5ff
     style D fill:#fff4e1
-    style H fill:#f0e1ff
-    style P fill:#e1ffe1
-    style Q fill:#90EE90
-    style R fill:#ffe1e1
-    style L fill:#FFB6C1
-    style O fill:#FF6B6B
-    style U fill:#E6E6FA
-    style X fill:#98FB98
+    style D1 fill:#fff4e1
+    style D2 fill:#fff4e1
+    style G fill:#f0e1ff
+    style N fill:#e1ffe1
+    style O fill:#90EE90
+    style L fill:#FF6B6B
+    style P fill:#E6E6FA
+    style R fill:#98FB98
 ```
 
 ---
@@ -386,8 +467,13 @@ Via **GitHub Issue Labels**:
 This workflow ensures:
 
 ✅ **Fully Automated** pipeline from discovery to deployment to promotion
+✅ **Parallel Per-Library Generation**:
+   - 8 libraries generated simultaneously (~8x faster)
+   - Isolated dependencies per library
+   - Independent tracking via sub-issues
+   - Partial success possible (some merge while others retry)
 ✅ **Multi-Layer Quality Control**:
-   - Self-review loop in code generation (max 3 attempts)
+   - Self-review loop in code generation (max 3 attempts per library)
    - Multi-version testing across Python 3.11-3.14 (3.14 primary)
    - Multi-LLM consensus validation (Claude + Gemini + GPT)
    - Feedback-driven optimization on rejection

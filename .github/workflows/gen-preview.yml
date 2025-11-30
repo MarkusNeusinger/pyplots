@@ -11,7 +11,6 @@ jobs:
   generate-previews:
     name: Generate Previews and Post to Issue
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: read
       pull-requests: write
@@ -19,7 +18,21 @@ jobs:
       actions: read
 
     steps:
+      - name: Check conditions
+        id: check
+        run: |
+          CONCLUSION="${{ github.event.workflow_run.conclusion }}"
+
+          if [[ "$CONCLUSION" != "success" ]]; then
+            echo "::notice::Skipping: Workflow run conclusion is '$CONCLUSION', not 'success'"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
       - name: Download test results
+        if: steps.check.outputs.should_run == 'true'
         uses: actions/download-artifact@v6
         with:
           pattern: test-results-*
@@ -29,6 +42,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Parse test results
+        if: steps.check.outputs.should_run == 'true'
         id: test_results
         run: |
           echo "Parsing test results..."
@@ -59,6 +73,7 @@ jobs:
           cat all-test-results/*.txt 2>/dev/null || echo "No results found"
 
       - name: Get PR number from workflow run
+        if: steps.check.outputs.should_run == 'true'
         id: get_pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -68,27 +83,32 @@ jobs:
           echo "Found PR: #$PR_NUMBER"
 
       - name: Checkout code
+        if: steps.check.outputs.should_run == 'true'
         uses: actions/checkout@v6
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
 
       - name: Set up Python 3.14
+        if: steps.check.outputs.should_run == 'true'
         uses: actions/setup-python@v6
         with:
           python-version: '3.14'
 
       - name: Install uv
+        if: steps.check.outputs.should_run == 'true'
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
+        if: steps.check.outputs.should_run == 'true'
         run: |
           uv sync --all-extras
           uv pip install pillow
 
       - name: Find changed plot files
+        if: steps.check.outputs.should_run == 'true'
         id: changed_plots
         run: |
           # Get the base branch from the PR
@@ -107,7 +127,7 @@ jobs:
 
       - name: Extract issue number from PR
         id: get_issue
-        if: steps.changed_plots.outputs.has_plots == 'true' && steps.get_pr.outputs.pr_number != ''
+        if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true' && steps.get_pr.outputs.pr_number != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -125,7 +145,7 @@ jobs:
           echo "Found issue: #$ISSUE_NUM"
 
       - name: Setup Google Cloud authentication
-        if: steps.changed_plots.outputs.has_plots == 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true'
         id: gcs_auth
         continue-on-error: true
         uses: google-github-actions/auth@v3
@@ -133,10 +153,11 @@ jobs:
           credentials_json: ${{ secrets.GCS_CREDENTIALS }}
 
       - name: Setup gcloud CLI
-        if: steps.changed_plots.outputs.has_plots == 'true' && steps.gcs_auth.outcome == 'success'
+        if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true' && steps.gcs_auth.outcome == 'success'
         uses: google-github-actions/setup-gcloud@v3
 
       - name: Generate timestamp
+        if: steps.check.outputs.should_run == 'true'
         id: timestamp
         run: |
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H%M%SZ")
@@ -144,7 +165,7 @@ jobs:
 
       - name: Detect previous versions and generate plots
         id: generate_plots
-        if: steps.changed_plots.outputs.has_plots == 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true'
         env:
           GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
           TIMESTAMP: ${{ steps.timestamp.outputs.value }}
@@ -214,13 +235,13 @@ jobs:
           done
 
       - name: Upload plots to GCS
-        if: steps.changed_plots.outputs.has_plots == 'true' && steps.gcs_auth.outcome == 'success'
+        if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true' && steps.gcs_auth.outcome == 'success'
         continue-on-error: true
         run: |
           gsutil -m cp -r plot_outputs/* gs://${{ secrets.GCS_BUCKET }}/plots/
 
       - name: Post results to Issue
-        if: steps.changed_plots.outputs.has_plots == 'true' && steps.get_issue.outputs.issue_num != ''
+        if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true' && steps.get_issue.outputs.issue_num != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
@@ -297,7 +318,7 @@ jobs:
           gh issue comment "$ISSUE_NUM" --body-file comment_body.md
 
       - name: Save plot metadata
-        if: steps.changed_plots.outputs.has_plots == 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true'
         env:
           GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
           TIMESTAMP: ${{ steps.timestamp.outputs.value }}
@@ -315,7 +336,7 @@ jobs:
           EOF
 
       - name: Upload metadata artifact
-        if: steps.changed_plots.outputs.has_plots == 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true'
         uses: actions/upload-artifact@v5
         with:
           name: plot-metadata
@@ -329,14 +350,27 @@ jobs:
   notify-failure:
     name: Notify Test Failure
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     permissions:
       pull-requests: write
       issues: write
       actions: read
 
     steps:
+      - name: Check conditions
+        id: check
+        run: |
+          CONCLUSION="${{ github.event.workflow_run.conclusion }}"
+
+          if [[ "$CONCLUSION" != "failure" ]]; then
+            echo "::notice::Skipping: Workflow run conclusion is '$CONCLUSION', not 'failure'"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
       - name: Get PR number from workflow run
+        if: steps.check.outputs.should_run == 'true'
         id: get_pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -345,7 +379,7 @@ jobs:
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
 
       - name: Post failure notice
-        if: steps.get_pr.outputs.pr_number != ''
+        if: steps.check.outputs.should_run == 'true' && steps.get_pr.outputs.pr_number != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

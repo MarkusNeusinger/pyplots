@@ -8,8 +8,6 @@ on:
 
 jobs:
   ai-review:
-    # Only run when preview generation was successful
-    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -19,12 +17,27 @@ jobs:
       actions: read
 
     steps:
+      - name: Check conditions
+        id: check
+        run: |
+          CONCLUSION="${{ github.event.workflow_run.conclusion }}"
+
+          if [[ "$CONCLUSION" != "success" ]]; then
+            echo "::notice::Skipping: Workflow run conclusion is '$CONCLUSION', not 'success'"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
       - name: Checkout code
+        if: steps.check.outputs.should_run == 'true'
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Download plot metadata
+        if: steps.check.outputs.should_run == 'true'
         uses: actions/download-artifact@v6
         with:
           name: plot-metadata
@@ -32,6 +45,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Load metadata
+        if: steps.check.outputs.should_run == 'true'
         id: metadata
         run: |
           if [ ! -f plot_metadata.json ]; then
@@ -54,7 +68,7 @@ jobs:
           echo "skip=false" >> $GITHUB_OUTPUT
 
       - name: Get PR details
-        if: steps.metadata.outputs.skip != 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.metadata.outputs.skip != 'true'
         id: pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -93,7 +107,7 @@ jobs:
           echo "Spec ID: $SPEC_ID, Library: $LIBRARY, Sub-Issue: #$SUB_ISSUE"
 
       - name: Setup Google Cloud authentication
-        if: steps.pr.outputs.skip != 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true'
         id: gcs_auth
         continue-on-error: true
         uses: google-github-actions/auth@v3
@@ -101,11 +115,11 @@ jobs:
           credentials_json: ${{ secrets.GCS_CREDENTIALS }}
 
       - name: Setup gcloud CLI
-        if: steps.pr.outputs.skip != 'true' && steps.gcs_auth.outcome == 'success'
+        if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.gcs_auth.outcome == 'success'
         uses: google-github-actions/setup-gcloud@v3
 
       - name: Download plot images
-        if: steps.pr.outputs.skip != 'true' && steps.gcs_auth.outcome == 'success'
+        if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.gcs_auth.outcome == 'success'
         run: |
           SPEC_ID="${{ steps.pr.outputs.spec_id }}"
           LIBRARY="${{ steps.pr.outputs.library }}"
@@ -120,7 +134,7 @@ jobs:
           find plot_images -name "*.png" -type f 2>/dev/null || echo "No images found"
 
       - name: Check attempt count
-        if: steps.pr.outputs.skip != 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true'
         id: attempts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -138,7 +152,7 @@ jobs:
           fi
 
       - name: Update sub-issue label to reviewing
-        if: steps.pr.outputs.skip != 'true' && steps.pr.outputs.sub_issue != ''
+        if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.pr.outputs.sub_issue != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -147,7 +161,7 @@ jobs:
             --add-label "reviewing" 2>/dev/null || true
 
       - name: React with eyes emoji
-        if: steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3'
+        if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -155,7 +169,7 @@ jobs:
             -f content=eyes
 
       - name: Trigger Claude Quality Check
-        if: steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3'
+        if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3'
         uses: actions/github-script@v8
         with:
           script: |
@@ -237,7 +251,7 @@ jobs:
             });
 
       - name: Mark as failed after 3 attempts
-        if: steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count == '3'
+        if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count == '3'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

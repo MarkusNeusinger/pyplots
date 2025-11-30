@@ -10,11 +10,6 @@ jobs:
   # Job 1: Enable auto-merge when ai-approved label is added
   # ============================================================================
   auto-merge:
-    # Only when ai-approved label is set on auto/{spec-id}/{library} branches
-    if: |
-      github.event.action == 'labeled' &&
-      github.event.label.name == 'ai-approved' &&
-      startsWith(github.event.pull_request.head.ref, 'auto/')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -22,10 +17,39 @@ jobs:
       issues: write
 
     steps:
+      - name: Check conditions
+        id: check
+        run: |
+          ACTION="${{ github.event.action }}"
+          LABEL="${{ github.event.label.name }}"
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+
+          if [[ "$ACTION" != "labeled" ]]; then
+            echo "::notice::Skipping: Action is '$ACTION', not 'labeled'"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if [[ "$LABEL" != "ai-approved" ]]; then
+            echo "::notice::Skipping: Label is '$LABEL', not 'ai-approved'"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if [[ ! "$BRANCH" =~ ^auto/ ]]; then
+            echo "::notice::Skipping: Branch '$BRANCH' is not auto/*"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
       - name: Checkout repository
+        if: steps.check.outputs.should_run == 'true'
         uses: actions/checkout@v6
 
       - name: Extract info from branch
+        if: steps.check.outputs.should_run == 'true'
         id: extract
         run: |
           BRANCH="${{ github.event.pull_request.head.ref }}"
@@ -37,6 +61,7 @@ jobs:
           echo "library=$LIBRARY" >> $GITHUB_OUTPUT
 
       - name: Get sub-issue from PR body
+        if: steps.check.outputs.should_run == 'true'
         id: sub_issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -46,6 +71,7 @@ jobs:
           echo "number=$SUB_ISSUE" >> $GITHUB_OUTPUT
 
       - name: React with rocket emoji
+        if: steps.check.outputs.should_run == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -53,7 +79,7 @@ jobs:
             -f content=rocket
 
       - name: Update sub-issue label
-        if: steps.sub_issue.outputs.number != ''
+        if: steps.check.outputs.should_run == 'true' && steps.sub_issue.outputs.number != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -63,6 +89,7 @@ jobs:
             --add-label "ai-approved"
 
       - name: Enable auto-merge
+        if: steps.check.outputs.should_run == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -75,11 +102,6 @@ jobs:
   # Job 2: Post-merge summary (per library)
   # ============================================================================
   post-merge-summary:
-    # Runs when PR is merged (closed with merged=true)
-    if: |
-      github.event.action == 'closed' &&
-      github.event.pull_request.merged == true &&
-      startsWith(github.event.pull_request.head.ref, 'auto/')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -87,10 +109,39 @@ jobs:
       pull-requests: read
 
     steps:
+      - name: Check conditions
+        id: check
+        run: |
+          ACTION="${{ github.event.action }}"
+          MERGED="${{ github.event.pull_request.merged }}"
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+
+          if [[ "$ACTION" != "closed" ]]; then
+            echo "::notice::Skipping: Action is '$ACTION', not 'closed'"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if [[ "$MERGED" != "true" ]]; then
+            echo "::notice::Skipping: PR was closed but not merged"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if [[ ! "$BRANCH" =~ ^auto/ ]]; then
+            echo "::notice::Skipping: Branch '$BRANCH' is not auto/*"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
       - name: Checkout code
+        if: steps.check.outputs.should_run == 'true'
         uses: actions/checkout@v6
 
       - name: Extract spec ID, library, and issues
+        if: steps.check.outputs.should_run == 'true'
         id: extract
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -119,6 +170,7 @@ jobs:
           echo "Spec: $SPEC_ID, Library: $LIBRARY, Sub: #$SUB_ISSUE, Main: #$MAIN_ISSUE"
 
       - name: Find implementation file
+        if: steps.check.outputs.should_run == 'true'
         id: files
         run: |
           SPEC_ID="${{ steps.extract.outputs.spec_id }}"
@@ -129,7 +181,7 @@ jobs:
           echo "impl_file=$IMPL_FILE" >> $GITHUB_OUTPUT
 
       - name: Update sub-issue to merged
-        if: steps.extract.outputs.sub_issue != ''
+        if: steps.check.outputs.should_run == 'true' && steps.extract.outputs.sub_issue != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -166,6 +218,7 @@ jobs:
           gh issue close $SUB_ISSUE --reason completed
 
       - name: Check if all libraries are done
+        if: steps.check.outputs.should_run == 'true'
         id: check_complete
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -199,7 +252,7 @@ jobs:
           echo "Progress: $DONE/$TOTAL complete ($MERGED merged, $NOT_FEASIBLE not feasible)"
 
       - name: Post progress to main issue
-        if: steps.extract.outputs.main_issue != ''
+        if: steps.check.outputs.should_run == 'true' && steps.extract.outputs.main_issue != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -221,7 +274,7 @@ jobs:
           :robot: *PR #$PR_NUM*"
 
       - name: Complete main issue if all done
-        if: steps.check_complete.outputs.all_done == 'true' && steps.extract.outputs.main_issue != ''
+        if: steps.check.outputs.should_run == 'true' && steps.check_complete.outputs.all_done == 'true' && steps.extract.outputs.main_issue != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

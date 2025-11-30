@@ -67,7 +67,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PR_BODY="${{ github.event.pull_request.body }}"
-          SUB_ISSUE=$(echo "$PR_BODY" | grep -oP 'Sub-Issue: #\K\d+' | head -1 || echo "")
+          SUB_ISSUE=$(echo "$PR_BODY" | grep -oP '\*\*Sub-Issue:\*\* #\K\d+' | head -1 || echo "")
           echo "number=$SUB_ISSUE" >> $GITHUB_OUTPUT
 
       - name: React with rocket emoji
@@ -154,8 +154,8 @@ jobs:
           LIBRARY=$(echo "$BRANCH" | cut -d'/' -f3)
 
           # Extract issues from PR body
-          SUB_ISSUE=$(echo "$PR_BODY" | grep -oP 'Sub-Issue: #\K\d+' | head -1 || echo "")
-          MAIN_ISSUE=$(echo "$PR_BODY" | grep -oP 'Parent Issue: #\K\d+' | head -1 || echo "")
+          SUB_ISSUE=$(echo "$PR_BODY" | grep -oP '\*\*Sub-Issue:\*\* #\K\d+' | head -1 || echo "")
+          MAIN_ISSUE=$(echo "$PR_BODY" | grep -oP '\*\*Parent Issue:\*\* #\K\d+' | head -1 || echo "")
 
           # Fallback: search for main issue
           if [ -z "$MAIN_ISSUE" ]; then
@@ -231,7 +231,7 @@ jobs:
           fi
 
           # Get all sub-issues for this main issue
-          SUB_ISSUES=$(gh issue list --search "Parent: #$MAIN_ISSUE in:body" --json number,labels -q '.')
+          SUB_ISSUES=$(gh issue list --search "Parent Issue: #$MAIN_ISSUE in:body" --json number,labels -q '.')
 
           # Count statuses
           TOTAL=$(echo "$SUB_ISSUES" | jq 'length')

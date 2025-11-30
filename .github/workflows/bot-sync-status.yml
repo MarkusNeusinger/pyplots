@@ -37,7 +37,7 @@ jobs:
             if echo "$LABELS" | grep -q "sub-issue"; then
               # Find parent from issue body
               BODY=$(gh issue view $ISSUE_NUM --json body -q '.body')
-              PARENT_NUM=$(echo "$BODY" | grep -oP 'Parent: #\K\d+' | head -1 || echo "")
+              PARENT_NUM=$(echo "$BODY" | grep -oP '\*\*Parent Issue:\*\* #\K\d+' | head -1 || echo "")
 
               if [ -n "$PARENT_NUM" ]; then
                 echo "parent_number=$PARENT_NUM" >> $GITHUB_OUTPUT
@@ -58,7 +58,7 @@ jobs:
             PR_BODY="${{ github.event.pull_request.body }}"
 
             # Extract parent issue from PR body
-            PARENT_NUM=$(echo "$PR_BODY" | grep -oP 'Parent Issue: #\K\d+' | head -1 || echo "")
+            PARENT_NUM=$(echo "$PR_BODY" | grep -oP '\*\*Parent Issue:\*\* #\K\d+' | head -1 || echo "")
 
             if [ -n "$PARENT_NUM" ]; then
               echo "parent_number=$PARENT_NUM" >> $GITHUB_OUTPUT
@@ -84,7 +84,7 @@ jobs:
           PARENT_NUM="${{ steps.parent.outputs.parent_number }}"
 
           # Get all sub-issues for this parent
-          # Using GitHub's sub-issues API or searching for issues with "Parent: #N" in body
+          # Using GitHub's sub-issues API or searching for issues with "Parent Issue: #N" in body
           SUB_ISSUES=$(gh api graphql -f query='
             query($owner: String!, $repo: String!, $parent: Int!) {
               repository(owner: $owner, name: $repo) {
@@ -103,9 +103,9 @@ jobs:
               }
             }' -f owner="${{ github.repository_owner }}" -f repo="${{ github.event.repository.name }}" -F parent="$PARENT_NUM" 2>/dev/null || echo '{"data":{"repository":{"issue":{"subIssues":{"nodes":[]}}}}}')
 
-          # Fallback: search for issues with "Parent: #N" in body
+          # Fallback: search for issues with "Parent Issue: #N" in body
           if [ "$(echo "$SUB_ISSUES" | jq '.data.repository.issue.subIssues.nodes | length')" == "0" ]; then
-            SUB_ISSUES_SEARCH=$(gh issue list --search "Parent: #$PARENT_NUM in:body" --json number,title,labels,state)
+            SUB_ISSUES_SEARCH=$(gh issue list --search "Parent Issue: #$PARENT_NUM in:body" --json number,title,labels,state)
             echo "$SUB_ISSUES_SEARCH" > /tmp/sub_issues.json
           else
             echo "$SUB_ISSUES" | jq '.data.repository.issue.subIssues.nodes' > /tmp/sub_issues.json

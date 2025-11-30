@@ -1,4 +1,5 @@
 name: "Bot: Auto-Tag"
+run-name: "Auto-Tag: ${{ github.event.pull_request.head.ref }}"
 
 on:
   pull_request:
@@ -136,8 +137,8 @@ jobs:
           sed -i "s|\${SPEC_CONTENT}|${SPEC_CONTENT}|g" /tmp/tag_prompt.txt
           sed -i "s|\${PLOT_CONTENT}|${PLOT_CONTENT}|g" /tmp/tag_prompt.txt
 
-          # Call Claude API
-          RESPONSE=$(curl -s https://api.anthropic.com/v1/messages \
+          # Call Claude API (with timeout)
+          RESPONSE=$(curl -s --max-time 60 --connect-timeout 10 https://api.anthropic.com/v1/messages \
             -H "Content-Type: application/json" \
             -H "x-api-key: $ANTHROPIC_API_KEY" \
             -H "anthropic-version: 2023-06-01" \
@@ -149,6 +150,14 @@ jobs:
                 \"content\": $(cat /tmp/tag_prompt.txt | jq -Rs .)
               }]
             }")
+
+          # Validate API response
+          if ! echo "$RESPONSE" | jq -e '.content[0].text' > /dev/null 2>&1; then
+            echo "::warning::API response invalid or empty"
+            echo "Response: $(echo "$RESPONSE" | jq -r '.error // .' 2>/dev/null || echo "$RESPONSE")"
+            echo "tags_generated=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
 
           # Extract tags from response
           TAGS=$(echo "$RESPONSE" | jq -r '.content[0].text // empty')

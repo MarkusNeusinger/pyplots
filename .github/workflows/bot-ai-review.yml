@@ -252,7 +252,8 @@ jobs:
           # Update sub-issue
           if [ -n "$SUB_ISSUE" ]; then
             gh issue edit "$SUB_ISSUE" \
-              --remove-label "reviewing,ai-rejected" \
+              --remove-label "reviewing" \
+              --remove-label "ai-rejected" \
               --add-label "not-feasible"
 
             # Post final status to sub-issue

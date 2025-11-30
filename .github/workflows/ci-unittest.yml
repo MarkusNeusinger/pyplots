@@ -1,4 +1,5 @@
-name: Unit Tests
+name: "CI: Unit Tests"
+run-name: "Tests: ${{ github.ref_name }}"
 
 on:
   push:
@@ -40,6 +41,7 @@ jobs:
       with:
         name: coverage-report
         path: coverage.xml
+        retention-days: 30
       if: always()
 
     - name: Upload coverage to Codecov

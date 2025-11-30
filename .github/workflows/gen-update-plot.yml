@@ -5,6 +5,11 @@ on:
   pull_request:
     types: [labeled]
 
+# Prevent race conditions when multiple repairs trigger for same PR
+concurrency:
+  group: repair-${{ github.event.pull_request.head.ref }}
+  cancel-in-progress: false
+
 jobs:
   update-plot:
     name: Regenerate Plot from AI Feedback
@@ -88,7 +93,8 @@ jobs:
           # Update sub-issue
           if [ -n "$SUB_ISSUE" ]; then
             gh issue edit $SUB_ISSUE \
-              --remove-label "ai-rejected,reviewing" \
+              --remove-label "ai-rejected" \
+              --remove-label "reviewing" \
               --add-label "not-feasible"
           fi
 
@@ -199,7 +205,8 @@ jobs:
           # Update sub-issue
           if [ -n "$SUB_ISSUE" ]; then
             gh issue edit $SUB_ISSUE \
-              --remove-label "ai-rejected,reviewing" \
+              --remove-label "ai-rejected" \
+              --remove-label "reviewing" \
               --add-label "generating"
           fi
 
@@ -287,8 +294,8 @@ jobs:
               f.write(content)
           PYEOF
 
-          # Call Claude API
-          RESPONSE=$(curl -s https://api.anthropic.com/v1/messages \
+          # Call Claude API (with timeout)
+          RESPONSE=$(curl -s --max-time 120 --connect-timeout 10 https://api.anthropic.com/v1/messages \
             -H "Content-Type: application/json" \
             -H "x-api-key: $ANTHROPIC_API_KEY" \
             -H "anthropic-version: 2023-06-01" \
@@ -300,6 +307,13 @@ jobs:
                 \"content\": $(cat /tmp/improve_prompt.txt | jq -Rs .)
               }]
             }")
+
+          # Validate API response
+          if ! echo "$RESPONSE" | jq -e '.content[0].text' > /dev/null 2>&1; then
+            echo "::error::API response invalid or empty"
+            echo "Response: $(echo "$RESPONSE" | jq -r '.error // .' 2>/dev/null || echo "$RESPONSE")"
+            exit 1
+          fi
 
           # Extract improved code
           IMPROVED_CODE=$(echo "$RESPONSE" | jq -r '.content[0].text // empty')
@@ -334,11 +348,7 @@ jobs:
             echo "No changes to commit"
           else
             git add plots/
-            git commit -m "fix($LIBRARY): address AI review feedback for $SPEC_ID (attempt $ATTEMPT/3)
-
-          :robot: Generated with [Claude Code](https://claude.com/claude-code)
-
-          Co-Authored-By: Claude <noreply@anthropic.com>"
+            git commit -m "fix($LIBRARY): address AI review feedback for $SPEC_ID (attempt $ATTEMPT/3)"
 
             git push
             echo "Changes pushed"
@@ -389,3 +399,8 @@ jobs:
           COMMENTEOF
 
           gh issue comment "$SUB_ISSUE" --body-file /tmp/update_comment.md
+
+      - name: Cleanup temporary files
+        if: always()
+        run: |
+          rm -f /tmp/improve_prompt.txt /tmp/latest_feedback.md /tmp/all_attempts.md /tmp/update_comment.md

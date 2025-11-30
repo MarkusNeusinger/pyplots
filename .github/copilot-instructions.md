@@ -2,6 +2,10 @@
 
 This file provides guidance to GitHub Copilot when working with code in this repository.
 
+## Important Rules
+
+- **No Co-authored-by in commit messages** - Never add `Co-authored-by:` lines to commit messages. Keep commit messages clean without AI attribution footers.
+
 ## Project Overview
 
 **pyplots** is an AI-powered platform for Python data visualization that automatically discovers, generates, tests, and maintains plotting examples. The platform is specification-driven: every plot starts as a library-agnostic Markdown spec, then AI generates implementations for all supported libraries.

@@ -159,20 +159,24 @@ class TestCORSMiddleware:
     """Tests for CORS configuration."""
 
     def test_cors_allows_localhost(self, client: TestClient) -> None:
-        """CORS should allow localhost origins."""
+        """CORS should allow localhost origins for preflight requests."""
         response = client.options(
             "/", headers={"Origin": "http://localhost:3000", "Access-Control-Request-Method": "GET"}
         )
 
-        # Should not be blocked
-        assert response.status_code in [200, 204, 400]
+        # Preflight should succeed with 200 or 204 (not 400 which indicates an error)
+        assert response.status_code in [200, 204], f"Preflight failed with status {response.status_code}"
 
     def test_cors_headers_present(self, client: TestClient) -> None:
-        """CORS headers should be present in response."""
+        """CORS headers should be present in response for cross-origin requests."""
         response = client.get("/", headers={"Origin": "http://localhost:3000"})
 
-        # The response should include CORS headers
         assert response.status_code == 200
+        # Verify CORS headers are present in the response
+        cors_header = response.headers.get("access-control-allow-origin")
+        assert cors_header is not None, "Missing Access-Control-Allow-Origin header"
+        # Should allow the requesting origin or use wildcard
+        assert cors_header in ["http://localhost:3000", "*"], f"Unexpected CORS origin: {cors_header}"
 
 
 class TestAppConfiguration:

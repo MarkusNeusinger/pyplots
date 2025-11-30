@@ -8,35 +8,62 @@ on:
 jobs:
   auto-tag:
     name: Generate Tags for Merged Plot
-    # Only run when PR is merged AND has ai-approved label AND is from auto/ branch
-    if: |
-      github.event.pull_request.merged == true &&
-      contains(github.event.pull_request.labels.*.name, 'ai-approved') &&
-      startsWith(github.event.pull_request.head.ref, 'auto/')
     runs-on: ubuntu-latest
     permissions:
       contents: read
       issues: write
 
     steps:
+      - name: Check conditions
+        id: check
+        run: |
+          MERGED="${{ github.event.pull_request.merged }}"
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          LABELS="${{ join(github.event.pull_request.labels.*.name, ',') }}"
+
+          if [[ "$MERGED" != "true" ]]; then
+            echo "::notice::Skipping: PR was closed but not merged"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if [[ ! "$LABELS" =~ ai-approved ]]; then
+            echo "::notice::Skipping: PR does not have 'ai-approved' label"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if [[ ! "$BRANCH" =~ ^auto/ ]]; then
+            echo "::notice::Skipping: Branch '$BRANCH' is not auto/*"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
       - name: Checkout code
+        if: steps.check.outputs.should_run == 'true'
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Set up Python
+        if: steps.check.outputs.should_run == 'true'
         uses: actions/setup-python@v6
         with:
           python-version: '3.13'
 
       - name: Install uv
+        if: steps.check.outputs.should_run == 'true'
         uses: astral-sh/setup-uv@v7
 
       - name: Install dependencies
+        if: steps.check.outputs.should_run == 'true'
         run: |
           uv sync --all-extras
 
       - name: Extract spec ID from branch
+        if: steps.check.outputs.should_run == 'true'
         id: extract_spec
         run: |
           BRANCH="${{ github.event.pull_request.head.ref }}"
@@ -45,6 +72,7 @@ jobs:
           echo "Extracted spec ID: $SPEC_ID"
 
       - name: Find related issue
+        if: steps.check.outputs.should_run == 'true'
         id: find_issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -63,6 +91,7 @@ jobs:
           echo "Found issue: #$ISSUE_NUM"
 
       - name: Read spec and code files
+        if: steps.check.outputs.should_run == 'true'
         id: read_files
         run: |
           SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
@@ -85,7 +114,7 @@ jobs:
 
       - name: Generate tags with Claude
         id: generate_tags
-        if: steps.read_files.outputs.spec_exists == 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.read_files.outputs.spec_exists == 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
@@ -170,7 +199,7 @@ jobs:
           fi
 
       - name: Post tags to issue
-        if: steps.generate_tags.outputs.tags_generated == 'true' && steps.find_issue.outputs.issue_num != ''
+        if: steps.check.outputs.should_run == 'true' && steps.generate_tags.outputs.tags_generated == 'true' && steps.find_issue.outputs.issue_num != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -199,7 +228,7 @@ jobs:
           gh issue comment "$ISSUE_NUM" --body-file /tmp/tag_comment.md
 
       - name: Save tags to database (placeholder)
-        if: steps.generate_tags.outputs.tags_generated == 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.generate_tags.outputs.tags_generated == 'true'
         run: |
           # TODO: Implement database storage
           # This would call an API endpoint to store the tags

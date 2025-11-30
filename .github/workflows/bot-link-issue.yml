@@ -6,14 +6,26 @@ on:
 
 jobs:
   link-sub-issue:
-    # Only run for issues with "plot-update" label
-    if: contains(github.event.issue.labels.*.name, 'plot-update')
     runs-on: ubuntu-latest
     permissions:
       issues: write
 
     steps:
+      - name: Check conditions
+        id: check
+        run: |
+          LABELS="${{ join(github.event.issue.labels.*.name, ',') }}"
+
+          if [[ ! "$LABELS" =~ plot-update ]]; then
+            echo "::notice::Skipping: Issue does not have 'plot-update' label"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
       - name: Extract parent issue number
+        if: steps.check.outputs.should_run == 'true'
         id: extract
         env:
           ISSUE_BODY: ${{ github.event.issue.body }}
@@ -32,7 +44,7 @@ jobs:
           echo "Found parent issue: #$PARENT_NUM"
 
       - name: Get issue node IDs
-        if: steps.extract.outputs.has_parent == 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.extract.outputs.has_parent == 'true'
         id: get_ids
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -73,7 +85,7 @@ jobs:
           fi
 
       - name: Create sub-issue relationship
-        if: steps.extract.outputs.has_parent == 'true' && steps.get_ids.outputs.valid == 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.extract.outputs.has_parent == 'true' && steps.get_ids.outputs.valid == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
@@ -96,7 +108,7 @@ jobs:
           ' -f parentId="$PARENT_ID" -f subIssueId="$CHILD_ID" || echo "Sub-issue API not available or failed"
 
       - name: Post comment on parent issue
-        if: steps.extract.outputs.has_parent == 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.extract.outputs.has_parent == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -115,7 +127,7 @@ jobs:
           🤖 *Automated link by pyplots CI*"
 
       - name: Post confirmation on child issue
-        if: steps.extract.outputs.has_parent == 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.extract.outputs.has_parent == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

@@ -13,10 +13,6 @@ concurrency:
 jobs:
   update-plot:
     name: Regenerate Plot from AI Feedback
-    # Only run when ai-rejected label is added to auto/{spec-id}/{library} branches
-    if: |
-      github.event.label.name == 'ai-rejected' &&
-      startsWith(github.event.pull_request.head.ref, 'auto/')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -24,10 +20,32 @@ jobs:
       issues: write
 
     steps:
+      - name: Check conditions
+        id: check
+        run: |
+          LABEL="${{ github.event.label.name }}"
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+
+          if [[ "$LABEL" != "ai-rejected" ]]; then
+            echo "::notice::Skipping: Label is '$LABEL', not 'ai-rejected'"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if [[ ! "$BRANCH" =~ ^auto/ ]]; then
+            echo "::notice::Skipping: Branch '$BRANCH' is not auto/*"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
       - name: Checkout repository
+        if: steps.check.outputs.should_run == 'true'
         uses: actions/checkout@v6
 
       - name: Extract spec ID, library, and sub-issue
+        if: steps.check.outputs.should_run == 'true'
         id: extract_info
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -53,6 +71,7 @@ jobs:
           echo "Spec: $SPEC_ID, Library: $LIBRARY, Sub-Issue: #$SUB_ISSUE"
 
       - name: Check attempt count
+        if: steps.check.outputs.should_run == 'true'
         id: check_attempts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -78,7 +97,7 @@ jobs:
           fi
 
       - name: Mark as not-feasible if max attempts reached
-        if: steps.check_attempts.outputs.max_reached == 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -115,7 +134,7 @@ jobs:
           :robot: *[gen-update-plot workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
 
       - name: Checkout code
-        if: steps.check_attempts.outputs.max_reached != 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
         uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.ref }}
@@ -123,22 +142,22 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
-        if: steps.check_attempts.outputs.max_reached != 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
         uses: actions/setup-python@v6
         with:
           python-version: '3.14'
 
       - name: Install uv
-        if: steps.check_attempts.outputs.max_reached != 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
         uses: astral-sh/setup-uv@v7
 
       - name: Install dependencies
-        if: steps.check_attempts.outputs.max_reached != 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
         run: |
           uv sync --all-extras
 
       - name: Get AI feedback from sub-issue
-        if: steps.check_attempts.outputs.max_reached != 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
         id: get_feedback
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -167,7 +186,7 @@ jobs:
           fi
 
       - name: Find current plot file
-        if: steps.check_attempts.outputs.max_reached != 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
         id: read_plot
         run: |
           SPEC_ID="${{ steps.extract_info.outputs.spec_id }}"
@@ -191,7 +210,7 @@ jobs:
           fi
 
       - name: Update labels
-        if: steps.check_attempts.outputs.max_reached != 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -211,7 +230,7 @@ jobs:
           fi
 
       - name: Regenerate plot code
-        if: steps.check_attempts.outputs.max_reached != 'true' && steps.get_feedback.outputs.has_feedback == 'true' && steps.read_plot.outputs.plot_exists == 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true' && steps.get_feedback.outputs.has_feedback == 'true' && steps.read_plot.outputs.plot_exists == 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
@@ -334,7 +353,7 @@ jobs:
           fi
 
       - name: Commit and push changes
-        if: steps.check_attempts.outputs.max_reached != 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
         run: |
           SPEC_ID="${{ steps.extract_info.outputs.spec_id }}"
           LIBRARY="${{ steps.extract_info.outputs.library }}"
@@ -355,7 +374,7 @@ jobs:
           fi
 
       - name: Post update to sub-issue
-        if: steps.check_attempts.outputs.max_reached != 'true'
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

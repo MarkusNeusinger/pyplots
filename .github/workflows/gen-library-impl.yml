@@ -30,6 +30,13 @@ on:
         description: "Library-specific dependencies"
         required: true
         type: string
+    outputs:
+      pr_number:
+        description: "PR number created (if any)"
+        value: ${{ jobs.generate.outputs.pr_number }}
+      pr_exists:
+        description: "Whether a PR was created"
+        value: ${{ jobs.generate.outputs.pr_exists }}
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN:
         required: true
@@ -39,11 +46,13 @@ on:
 jobs:
   generate:
     runs-on: ubuntu-latest
+    outputs:
+      pr_number: ${{ steps.pr.outputs.pr_number }}
+      pr_exists: ${{ steps.pr.outputs.pr_exists }}
     permissions:
       contents: write
       pull-requests: write
       issues: write
-      id-token: write
       actions: read
 
     steps:
@@ -57,7 +66,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh issue edit ${{ inputs.sub_issue_number }} \
-            --remove-label "testing,reviewing,ai-approved,ai-rejected" \
+            --remove-label "testing" \
+            --remove-label "reviewing" \
+            --remove-label "ai-approved" \
+            --remove-label "ai-rejected" \
             --add-label "generating" 2>/dev/null || true
 
       - name: Set up Python
@@ -108,6 +120,7 @@ jobs:
           fi
 
       - name: Run Claude Code to generate implementation
+        timeout-minutes: 60
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}

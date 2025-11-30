@@ -58,7 +58,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh issue edit ${{ steps.sub_issue.outputs.number }} \
-            --remove-label "reviewing,ai-rejected" \
+            --remove-label "reviewing" \
+            --remove-label "ai-rejected" \
             --add-label "ai-approved"
 
       - name: Enable auto-merge
@@ -142,7 +143,10 @@ jobs:
 
           # Update labels
           gh issue edit $SUB_ISSUE \
-            --remove-label "ai-approved,reviewing,generating,testing" \
+            --remove-label "ai-approved" \
+            --remove-label "reviewing" \
+            --remove-label "generating" \
+            --remove-label "testing" \
             --add-label "merged"
 
           # Post completion comment

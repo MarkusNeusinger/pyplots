@@ -1,4 +1,5 @@
-name: Lint and Format Check
+name: "CI: Lint and Format Check"
+run-name: "Lint: ${{ github.ref_name }}"
 
 on:
   push:

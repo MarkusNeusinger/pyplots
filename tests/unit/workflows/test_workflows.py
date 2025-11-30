@@ -301,9 +301,6 @@ class TestWorkflowBestPractices:
             has_fetch_depth = "fetch-depth:" in content or "fetch-depth :" in content
             # Note: This is advisory - workflows may have reasons not to fetch full history
             # We document the check but don't fail on it
-            if not has_fetch_depth:
-                # Could add a warning here in the future, but for now just pass
-                pass
 
     @pytest.mark.parametrize("filepath", get_all_workflow_files(), ids=lambda p: p.name)
     def test_uses_environment_for_secrets(self, filepath: Path) -> None:

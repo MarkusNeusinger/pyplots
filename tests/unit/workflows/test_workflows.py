@@ -283,7 +283,7 @@ class TestNamingConventions:
                     if len(fw) >= 3 and len(nw) >= 3  # Only match words with 3+ chars
                 )
 
-                has_relation = len(overlap) > 0 or has_substring_match or len(file_words) == 1
+                has_relation = len(overlap) > 0 or has_substring_match
                 assert has_relation, f"Workflow name '{name}' unrelated to file: {filepath.name}"
 
 

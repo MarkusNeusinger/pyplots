@@ -248,18 +248,22 @@ jobs:
 
           approach_text = '\n'.join(approach_lines)
 
-          comment = f"""## Attempt $ATTEMPT/3 - $TIMESTAMP
+          lines = [
+              f"## Attempt $ATTEMPT/3 - $TIMESTAMP",
+              "",
+              "### Approach",
+              approach_text,
+              "",
+              "### Status",
+              f"- **PR:** $PR_LINK",
+              f"- **File:** \`$PLOT_FILE\`",
+              f"- **Workflow:** [${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})",
+              "",
+              "---",
+              ""
+          ]
+          comment = '\n'.join(lines)
 
-### Approach
-{approach_text}
-
-### Status
-- **PR:** $PR_LINK
-- **File:** \`$PLOT_FILE\`
-- **Workflow:** [${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
----
-"""
           with open('/tmp/attempt_comment.md', 'w') as f:
               f.write(comment)
           PYEOF

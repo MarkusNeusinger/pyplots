@@ -3,7 +3,7 @@ run-name: "Preview: ${{ github.event.workflow_run.head_branch }}"
 
 on:
   workflow_run:
-    workflows: ["Plot Tests"]
+    workflows: ["CI: Plot Tests"]
     types:
       - completed
 

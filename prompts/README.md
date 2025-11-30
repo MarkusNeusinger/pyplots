@@ -18,6 +18,19 @@ Git history shows all changes (`git log -p prompts/plot-generator.md`).
 | `auto-tagger.md` | Auto-Tagger | Automatic tagging across 5 dimensions |
 | `spec-validator.md` | Spec Validator | Validates plot request issues |
 | `spec-id-generator.md` | Spec ID Generator | Assigns unique spec IDs |
+| `workflow-prompts/*.md` | GitHub Actions | Workflow-specific prompts (see below) |
+
+## Workflow Prompts
+
+Located in `workflow-prompts/` - templates for GitHub Actions workflows:
+
+| File | Workflow | Purpose |
+|------|----------|---------|
+| `generate-implementation.md` | gen-library-impl.yml | Initial code generation |
+| `improve-from-feedback.md` | gen-update-plot.yml | Code improvement after rejection |
+| `ai-quality-review.md` | bot-ai-review.yml | Quality evaluation |
+
+See `workflow-prompts/README.md` for variable reference and usage.
 
 ## Usage in Workflows
 

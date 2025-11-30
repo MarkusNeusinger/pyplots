@@ -157,14 +157,26 @@ class TestNoPlaceholders:
 
     def test_no_empty_sections(self) -> None:
         """No empty sections (## Header followed by another ## or end of file)."""
-        empty_section_pattern = re.compile(r"^## .+\n\s*(?=^## |\Z)", re.MULTILINE)
+        # Find all level-2 headers and their positions
+        header_pattern = re.compile(r"^## .+$", re.MULTILINE)
 
         for filepath in self._get_all_prompt_files():
             content = filepath.read_text()
-            matches = empty_section_pattern.findall(content)
-            # Filter out intentionally minimal sections
-            real_empty = [m for m in matches if len(m.strip()) < 20]
-            assert not real_empty, f"Found empty sections in {filepath.name}: {real_empty}"
+            headers = list(header_pattern.finditer(content))
+
+            empty_sections = []
+            for i, match in enumerate(headers):
+                header = match.group()
+                start = match.end()
+                # End is either the next header or end of content
+                end = headers[i + 1].start() if i + 1 < len(headers) else len(content)
+                section_content = content[start:end].strip()
+
+                # Check if section content is empty (only whitespace)
+                if not section_content:
+                    empty_sections.append(header)
+
+            assert not empty_sections, f"Found empty sections in {filepath.name}: {empty_sections}"
 
 
 class TestCrossReferences:

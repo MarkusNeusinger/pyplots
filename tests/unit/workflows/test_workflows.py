@@ -269,11 +269,22 @@ class TestNamingConventions:
             file_words -= common_words
             name_words -= common_words
 
-            # At least one word should overlap (very lenient check)
+            # Check for at least some word overlap between filename and workflow name
+            # This is a lenient check using multiple strategies
             if file_words and name_words:
+                # Strategy 1: Exact word overlap
                 overlap = file_words & name_words
-                # This is a soft check - just ensure there's some relation
-                assert len(overlap) >= 0, f"Workflow name unrelated to file: {filepath.name}"
+
+                # Strategy 2: Substring matching (e.g., "plottest" contains "plot")
+                has_substring_match = any(
+                    fw in nw or nw in fw
+                    for fw in file_words
+                    for nw in name_words
+                    if len(fw) >= 3 and len(nw) >= 3  # Only match words with 3+ chars
+                )
+
+                has_relation = len(overlap) > 0 or has_substring_match
+                assert has_relation, f"Workflow name '{name}' unrelated to file: {filepath.name}"
 
 
 class TestWorkflowBestPractices:
@@ -284,12 +295,10 @@ class TestWorkflowBestPractices:
         """Checkout actions should consider fetch-depth for history needs."""
         content = filepath.read_text()
 
-        # This is informational - fetch-depth: 0 is needed for full history
-        # Just ensure it's explicitly set when used with git log/diff
-        if "git log" in content or "git diff" in content:
-            has_fetch_depth = "fetch-depth:" in content or "fetch-depth :" in content
-            # Soft check - it's good practice but not strictly required
-            assert has_fetch_depth or True  # Always passes, but documents the practice
+        # Best practice: fetch-depth: 0 is needed for full git history
+        # When using git log/diff, workflows should set fetch-depth
+        # Note: This is advisory only - workflows may have valid reasons not to fetch full history
+        _ = content  # Suppress unused variable warning; content is read for potential future validation
 
     @pytest.mark.parametrize("filepath", get_all_workflow_files(), ids=lambda p: p.name)
     def test_uses_environment_for_secrets(self, filepath: Path) -> None:

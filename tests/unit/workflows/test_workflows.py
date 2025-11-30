@@ -297,10 +297,8 @@ class TestWorkflowBestPractices:
 
         # Best practice: fetch-depth: 0 is needed for full git history
         # When using git log/diff, workflows should set fetch-depth
-        if "git log" in content or "git diff" in content:
-            has_fetch_depth = "fetch-depth:" in content or "fetch-depth :" in content
-            # Note: This is advisory - workflows may have reasons not to fetch full history
-            # We document the check but don't fail on it
+        # Note: This is advisory only - workflows may have valid reasons not to fetch full history
+        _ = content  # Suppress unused variable warning; content is read for potential future validation
 
     @pytest.mark.parametrize("filepath", get_all_workflow_files(), ids=lambda p: p.name)
     def test_uses_environment_for_secrets(self, filepath: Path) -> None:

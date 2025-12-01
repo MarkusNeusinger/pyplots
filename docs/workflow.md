@@ -174,7 +174,7 @@ graph LR
 
 | Label | Meaning |
 |-------|---------|
-| `sub-issue` | Identifies as child of main issue |
+| `plot-request:impl` | Identifies as child of main issue |
 | `library:{name}` | Which library (matplotlib, seaborn, etc.) |
 | `generating` | Code being generated |
 | `testing` | Tests running |
@@ -183,6 +183,9 @@ graph LR
 | `ai-rejected` | Failed review, will retry |
 | `not-feasible` | 3x failed, not implementable in this library |
 | `merged` | Successfully merged to main |
+| `completed` | All implementations merged (main issue closed) |
+| `update` | Update request for existing spec |
+| `test` | Test issue, not a real plot |
 
 ### Attempt Documentation
 
@@ -205,6 +208,20 @@ Each attempt is documented in the sub-issue with:
 ```
 
 This enables learning from previous attempts during repair loops.
+
+### Updating Existing Plots
+
+To update or regenerate an existing plot:
+
+1. Create issue with title: `[update] {spec-id}` (all libraries) or `[update:seaborn] {spec-id}` (single library)
+2. Add label: `plot-request` (template adds `update` automatically)
+3. Issue body can describe spec changes (Claude updates spec first)
+4. Maintainer adds `approved` label
+5. Workflow regenerates specified implementations
+
+**Examples:**
+- `[update] scatter-basic` → Regenerate all 8 libraries
+- `[update:matplotlib] heatmap-correlation` → Regenerate only matplotlib
 
 ---
 

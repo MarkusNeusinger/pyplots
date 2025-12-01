@@ -339,13 +339,15 @@ bash .github/scripts/setup-labels.sh
 
 ### Workflow Status Labels
 
-- **`sub-issue`** - Library-specific sub-issue (child of main plot-request)
+- **`plot-request:impl`** - Library implementation sub-issue (child of main plot-request)
 - **`generating`** - Code is being generated
 - **`testing`** - Tests are running
 - **`reviewing`** - Quality review in progress
 - **`merged`** - Successfully merged to main
 - **`not-feasible`** - 3x failed, not implementable in this library
 - **`completed`** - All library implementations complete
+- **`update`** - Update request for existing spec (use with plot-request)
+- **`test`** - Test issue, not a real plot request
 
 ### Approval Labels (Human vs AI distinction)
 
@@ -398,6 +400,31 @@ bash .github/scripts/setup-labels.sh
 - No context pollution (separate Claude sessions)
 - Partial success (5/8 can merge while 3/8 retry)
 - Per-library dependency isolation
+
+### Updating Existing Plots
+
+To update an existing plot implementation:
+
+1. Create issue with title: `[update] {spec-id}` (all libraries) or `[update:library] {spec-id}` (single library)
+   - Example: `[update] scatter-basic` - regenerate all 8 libraries
+   - Example: `[update:seaborn] scatter-basic` - regenerate only seaborn
+2. Add label: `plot-request`
+3. Issue body can contain spec changes (Claude will update `specs/{spec-id}.md` first)
+4. Maintainer adds `approved` label
+5. Workflow regenerates specified implementations
+
+**Issue Lifecycle:**
+```
+[open] plot-request → approved → in-progress → completed [closed]
+```
+
+**Sub-Issue Lifecycle:**
+```
+[open] generating → testing → reviewing → merged [closed]
+                                        → not-feasible [closed]
+```
+
+**Test Issues:** When creating issues for testing workflows, add the `test` label to exclude them from production searches.
 
 ## Environment Variables
 

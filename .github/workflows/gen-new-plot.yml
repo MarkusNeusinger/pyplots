@@ -80,6 +80,14 @@ jobs:
             CLEAN_TITLE="$ISSUE_TITLE"
           fi
 
+          # Validate TARGET_LIBRARY if specified
+          if [ -n "$TARGET_LIBRARY" ]; then
+            VALID_LIBS="matplotlib seaborn plotly bokeh altair plotnine pygal highcharts"
+            if ! echo "$VALID_LIBS" | grep -qw "$TARGET_LIBRARY"; then
+              echo "::error::Invalid library '$TARGET_LIBRARY'. Must be one of: $VALID_LIBS"
+              exit 1
+            fi
+          fi
           # Check if issue was marked as duplicate
           COMMENTS=$(gh issue view ${{ github.event.issue.number }} --json comments -q '.comments[].body')
 

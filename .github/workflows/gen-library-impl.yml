@@ -192,7 +192,7 @@ jobs:
           fi
 
       - name: Update sub-issue with attempt details
-        if: always()
+        if: steps.pr.outputs.pr_exists == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -213,63 +213,84 @@ jobs:
 
           # Create attempt documentation comment
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          PR_LINK=$([[ -n "$PR_NUMBER" ]] && echo "#$PR_NUMBER" || echo "Not created")
 
-          # Extract approach from code (docstring + key comments)
+          # Extract technical approach from code
           python3 << PYEOF
           import re
 
           code = '''$CODE'''
 
-          # Extract approach bullet points
           approach_lines = []
 
-          # 1. Get module docstring (first line after triple quotes)
-          docstring_match = re.search(r'^"""(.*?)"""', code, re.DOTALL)
-          if docstring_match:
-              doc = docstring_match.group(1).strip()
-              # Get first meaningful line (title/description)
-              for line in doc.split('\n'):
-                  line = line.strip()
-                  if line and not line.startswith('Library:'):
-                      approach_lines.append(f"- {line}")
-                      break
-
-          # 2. Extract structural comments as approach steps
-          for line in code.split('\n'):
-              line = line.strip()
-              # Look for section comments like "# Create figure", "# Plot data"
-              if line.startswith('# ') and not line.startswith('# Input') and not line.startswith('# Sample'):
-                  comment = line[2:].strip()
-                  if comment and len(comment) > 3 and comment[0].isupper():
-                      approach_lines.append(f"- {comment}")
-
-          # 3. Extract key imports
+          # 1. Extract all imports (full import lines)
           imports = []
           for line in code.split('\n'):
               if line.startswith('import ') or line.startswith('from '):
-                  if 'matplotlib' in line or 'seaborn' in line or 'plotly' in line or 'bokeh' in line or 'altair' in line or 'plotnine' in line or 'pygal' in line or 'highcharts' in line:
-                      imports.append(line.split()[1].split('.')[0])
+                  # Skip typing imports
+                  if 'typing' not in line and 'TYPE_CHECKING' not in line:
+                      imports.append(line.strip())
 
           if imports:
-              approach_lines.insert(0, f"- Using: {', '.join(set(imports))}")
+              approach_lines.append(f"**Imports:** \`{', '.join(imports[:3])}\`")
 
-          # Limit to 6 bullet points
-          approach_lines = approach_lines[:6]
+          # 2. Find main plot function call (e.g., ax.plot, sns.lineplot, px.line)
+          plot_patterns = [
+              (r'ax\.(plot|scatter|bar|hist|boxplot|violinplot|heatmap|imshow)\s*\(', 'matplotlib'),
+              (r'plt\.(plot|scatter|bar|hist)\s*\(', 'matplotlib'),
+              (r'sns\.(lineplot|scatterplot|barplot|histplot|boxplot|violinplot|heatmap|regplot)\s*\(', 'seaborn'),
+              (r'px\.(line|scatter|bar|histogram|box|violin|imshow|density_heatmap)\s*\(', 'plotly'),
+              (r'go\.(Scatter|Bar|Heatmap|Box|Violin)\s*\(', 'plotly'),
+              (r'figure\.(line|circle|scatter|vbar|hbar|quad|rect)\s*\(', 'bokeh'),
+              (r'alt\.(Chart|LayerChart)\s*\(', 'altair'),
+              (r'(ggplot|geom_line|geom_point|geom_bar|geom_histogram|geom_boxplot)\s*\(', 'plotnine'),
+              (r'pygal\.(Line|Bar|Pie|XY|Histogram|Box|Dot)\s*\(', 'pygal'),
+              (r'(LineSeries|BarSeries|ScatterSeries|PieSeries)\s*\(', 'highcharts'),
+          ]
+
+          for pattern, lib in plot_patterns:
+              match = re.search(pattern, code)
+              if match:
+                  approach_lines.append(f"**Plot function:** \`{match.group(0).rstrip('(')}\`")
+                  break
+
+          # 3. Extract create_plot function signature
+          func_match = re.search(r'def create_plot\((.*?)\)\s*->', code, re.DOTALL)
+          if func_match:
+              params = func_match.group(1).strip()
+              # Get first 3 params
+              param_list = [p.strip().split(':')[0].strip() for p in params.split(',')[:4]]
+              approach_lines.append(f"**Parameters:** \`{', '.join(param_list)}\`")
+
+          # 4. Extract key styling/config (figsize, style, etc.)
+          style_patterns = [
+              (r"figsize\s*=\s*\(([^)]+)\)", "figsize"),
+              (r"style\s*=\s*['\"]([^'\"]+)['\"]", "style"),
+              (r"template\s*=\s*['\"]([^'\"]+)['\"]", "template"),
+              (r"color\s*=\s*['\"]([^'\"]+)['\"]", "color"),
+          ]
+
+          styles = []
+          for pattern, name in style_patterns:
+              match = re.search(pattern, code)
+              if match:
+                  styles.append(f"{name}={match.group(1)}")
+
+          if styles:
+              approach_lines.append(f"**Config:** {', '.join(styles[:3])}")
 
           if not approach_lines:
-              approach_lines = ["- See PR for implementation details"]
+              approach_lines = ["See PR for implementation details"]
 
-          approach_text = '\n'.join(approach_lines)
+          approach_text = '\n'.join(f"- {line}" for line in approach_lines)
 
           lines = [
-              f"## Attempt $ATTEMPT/3 - $TIMESTAMP",
+              f"## Attempt $ATTEMPT/3",
               "",
-              "### Approach",
+              "### Technical Approach",
               approach_text,
               "",
               "### Status",
-              f"- **PR:** $PR_LINK",
+              f"- **PR:** #$PR_NUMBER",
               f"- **File:** \`$PLOT_FILE\`",
               f"- **Workflow:** [${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})",
               "",

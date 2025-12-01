@@ -231,7 +231,7 @@ jobs:
           fi
 
           # Get all sub-issues for this main issue
-          SUB_ISSUES=$(gh issue list --search "Parent Issue: #$MAIN_ISSUE in:body" --json number,labels -q '.')
+          SUB_ISSUES=$(gh issue list --search "**Parent Issue:** #$MAIN_ISSUE in:body" --json number,labels -q '.')
 
           # Count statuses
           TOTAL=$(echo "$SUB_ISSUES" | jq 'length')

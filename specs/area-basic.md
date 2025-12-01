@@ -4,43 +4,45 @@
 
 ## Description
 
-A simple filled area chart showing a single data series over time or sequential x-values. The area between the data line and the baseline (typically zero) is filled with a semi-transparent color to emphasize the magnitude of values.
+A basic area chart displays a single data series as a filled area under a line, connecting data points in sequence. This visualization is ideal for showing trends over time while emphasizing the magnitude of values through the filled region beneath the line.
 
 ## Data Requirements
 
-- **x**: Sequential or time-series values for the x-axis (numeric or datetime)
-- **y**: Numeric values to plot on the y-axis
+- **x**: Sequential values for the x-axis (numeric or categorical representing order/time)
+- **y**: Numeric values for the y-axis representing the magnitude at each point
 
 ## Optional Parameters
 
-- `fill_alpha`: Transparency of the filled area (type: float, default: 0.5)
-- `line_color`: Color of the line and fill (type: str, default: library default)
 - `title`: Chart title (type: str, default: None)
-- `x_label`: Label for x-axis (type: str, default: column name)
-- `y_label`: Label for y-axis (type: str, default: column name)
+- `xlabel`: X-axis label (type: str, default: column name)
+- `ylabel`: Y-axis label (type: str, default: column name)
+- `fill_alpha`: Transparency of the filled area (type: float, default: 0.5)
+- `color`: Color for the line and fill (type: str, default: library default)
+- `show_line`: Whether to show the line on top of fill (type: bool, default: True)
 
 ## Quality Criteria
 
-- [ ] X and Y axes are labeled with meaningful names
-- [ ] Grid is visible but subtle (alpha <= 0.5)
-- [ ] Area fill is semi-transparent (alpha between 0.3 and 0.7)
-- [ ] Line on top of fill area is visible
+- [ ] X and Y axes are labeled with meaningful descriptions
+- [ ] The filled area is clearly visible with appropriate transparency (alpha ~0.5)
+- [ ] The line connecting data points is visible on top of the fill
+- [ ] Grid is present but subtle (alpha ≤ 0.5)
 - [ ] No overlapping axis labels or tick marks
-- [ ] Data accurately represented without distortion
-- [ ] Figure has appropriate size (16:9 aspect ratio)
+- [ ] Fill extends from the line to the baseline (y=0 or bottom axis)
+- [ ] Data points are accurately represented without distortion
 
 ## Expected Output
 
-A clean area chart with a filled region between the data line and the x-axis baseline. The fill should be semi-transparent to allow grid lines to show through slightly. The line defining the top of the area should be clearly visible. Axes should be properly labeled, and a subtle grid should aid in reading values.
+A single area chart showing one data series with a filled region beneath the line. The line should be clearly visible on top of the semi-transparent fill. The fill should extend from the data line down to the x-axis baseline. The chart should include proper axis labels, a subtle grid for readability, and optionally a title. The overall appearance should be clean and professional, suitable for showing trends or cumulative data over a sequence.
 
 ## Tags
 
-area, trend, time-series, basic, 2d
+area, trend, timeseries, basic, 2d, composition
 
 ## Use Cases
 
-- Visualizing website traffic over time
-- Showing cumulative sales or revenue trends
-- Displaying stock price history with emphasis on magnitude
-- Monitoring system resource usage over time
-- Tracking temperature or weather data trends
+- Visualizing website traffic over time with emphasis on volume
+- Showing cumulative sales or revenue trends over months/quarters
+- Displaying temperature variations throughout a day
+- Tracking stock price movements with visual volume emphasis
+- Monitoring system resource usage (CPU, memory) over time
+- Illustrating population growth or decline over years

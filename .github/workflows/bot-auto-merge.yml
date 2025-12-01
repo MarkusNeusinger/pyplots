@@ -1,13 +1,19 @@
 name: "Bot: Auto-Merge"
-run-name: "Auto-Merge: ${{ github.event.pull_request.head.ref }}"
+run-name: "Auto-Merge: ${{ github.event.inputs.pr_number || github.event.pull_request.head.ref }}"
 
 on:
   pull_request:
     types: [labeled, closed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to auto-merge'
+        required: true
+        type: number
 
 jobs:
   # ============================================================================
-  # Job 1: Enable auto-merge when ai-approved label is added
+  # Job 1: Enable auto-merge when ai-approved label is added or dispatched
   # ============================================================================
   auto-merge:
     runs-on: ubuntu-latest
@@ -19,7 +25,35 @@ jobs:
     steps:
       - name: Check conditions
         id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Handle workflow_dispatch trigger
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            PR_NUM="${{ github.event.inputs.pr_number }}"
+            PR_DATA=$(gh pr view "$PR_NUM" --repo ${{ github.repository }} --json headRefName,labels)
+            BRANCH=$(echo "$PR_DATA" | jq -r '.headRefName')
+            HAS_APPROVED=$(echo "$PR_DATA" | jq -r '.labels[].name' | grep -c "ai-approved" || echo "0")
+
+            if [[ ! "$BRANCH" =~ ^auto/ ]]; then
+              echo "::notice::Skipping: Branch '$BRANCH' is not auto/*"
+              echo "should_run=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            if [[ "$HAS_APPROVED" == "0" ]]; then
+              echo "::notice::Skipping: PR does not have ai-approved label"
+              echo "should_run=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            echo "pr_number=$PR_NUM" >> $GITHUB_OUTPUT
+            echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Handle pull_request labeled trigger
           ACTION="${{ github.event.action }}"
           LABEL="${{ github.event.label.name }}"
           BRANCH="${{ github.event.pull_request.head.ref }}"
@@ -42,6 +76,8 @@ jobs:
             exit 0
           fi
 
+          echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
           echo "should_run=true" >> $GITHUB_OUTPUT
 
       - name: Checkout repository
@@ -52,7 +88,7 @@ jobs:
         if: steps.check.outputs.should_run == 'true'
         id: extract
         run: |
-          BRANCH="${{ github.event.pull_request.head.ref }}"
+          BRANCH="${{ steps.check.outputs.branch }}"
           # Format: auto/{spec-id}/{library}
           SPEC_ID=$(echo "$BRANCH" | cut -d'/' -f2)
           LIBRARY=$(echo "$BRANCH" | cut -d'/' -f3)
@@ -66,7 +102,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR_NUM="${{ github.event.pull_request.number }}"
+          PR_NUM="${{ steps.check.outputs.pr_number }}"
           PR_BODY=$(gh pr view "$PR_NUM" --json body -q '.body' 2>/dev/null || echo "")
           SUB_ISSUE=$(echo "$PR_BODY" | grep -oP '\*\*Sub-Issue:\*\* #\K\d+' | head -1 || echo "")
           echo "number=$SUB_ISSUE" >> $GITHUB_OUTPUT
@@ -76,7 +112,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/reactions \
+          gh api repos/${{ github.repository }}/issues/${{ steps.check.outputs.pr_number }}/reactions \
             -f content=rocket
 
       - name: Update sub-issue label
@@ -94,7 +130,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr merge ${{ github.event.pull_request.number }} \
+          gh pr merge ${{ steps.check.outputs.pr_number }} \
             --repo ${{ github.repository }} \
             --squash \
             --auto

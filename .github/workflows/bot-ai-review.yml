@@ -14,7 +14,7 @@ jobs:
       pull-requests: write
       issues: write
       id-token: write
-      actions: read
+      actions: write
 
     steps:
       - name: Check conditions
@@ -238,6 +238,23 @@ jobs:
             - This is a **${{ steps.pr.outputs.library }}-only** review - focus only on this library
             - Post feedback to **Sub-Issue #${{ steps.pr.outputs.sub_issue }}**, NOT the main issue
             - Include the generated code in your review comment for documentation
+
+      - name: Trigger auto-merge if approved
+        if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUM="${{ steps.metadata.outputs.pr_number }}"
+
+          # Check if PR has ai-approved label (added by Claude)
+          HAS_APPROVED=$(gh pr view "$PR_NUM" --json labels -q '.labels[].name' | grep -c "ai-approved" || echo "0")
+
+          if [[ "$HAS_APPROVED" != "0" ]]; then
+            echo "PR #$PR_NUM has ai-approved label, triggering auto-merge workflow"
+            gh workflow run bot-auto-merge.yml -f pr_number="$PR_NUM"
+          else
+            echo "PR #$PR_NUM does not have ai-approved label, skipping auto-merge trigger"
+          fi
 
       - name: Mark as failed after 3 attempts
         if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count == '3'

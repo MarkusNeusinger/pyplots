@@ -33,7 +33,7 @@ jobs:
 
       - name: Download test results
         if: steps.check.outputs.should_run == 'true'
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v4
         with:
           pattern: test-results-*
           path: all-test-results
@@ -350,7 +350,7 @@ jobs:
 
       - name: Upload metadata artifact
         if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: plot-metadata
           path: |

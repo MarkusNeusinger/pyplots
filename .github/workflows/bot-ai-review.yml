@@ -38,7 +38,7 @@ jobs:
 
       - name: Download plot metadata
         if: steps.check.outputs.should_run == 'true'
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v4
         with:
           name: plot-metadata
           run-id: ${{ github.event.workflow_run.id }}

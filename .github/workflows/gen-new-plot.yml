@@ -318,20 +318,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      - name: Check if summary already posted
+        id: check_summary
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Check if "Generation Complete" comment already exists (idempotency)
+          EXISTING=$(gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
+            --jq '[.[] | select(.body | startswith("## Generation Complete"))] | length')
+
+          if [ "$EXISTING" -gt "0" ]; then
+            echo "Summary already posted, skipping"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Post summary to main issue
+        if: steps.check_summary.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           SPEC_ID="${{ needs.check-conditions.outputs.spec_id }}"
-
-          # Collect results
-          RESULTS=""
-          for LIB in matplotlib seaborn plotly bokeh altair plotnine pygal highcharts; do
-            JOB_NAME="generate-$LIB"
-            # Note: We can't easily get job status in a summary job
-            # The bot-sync-status workflow will update the main issue
-            RESULTS="$RESULTS\n- **$LIB**: Check sub-issue for status"
-          done
 
           # Post summary comment
           gh issue comment ${{ github.event.issue.number }} --body "## Generation Complete

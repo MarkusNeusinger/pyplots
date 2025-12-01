@@ -55,7 +55,9 @@ jobs:
 
           elif [ "${{ github.event_name }}" == "pull_request" ]; then
             PR_NUM="${{ github.event.pull_request.number }}"
-            PR_BODY="${{ github.event.pull_request.body }}"
+
+            # Safely get PR body using gh CLI to avoid shell escaping issues
+            PR_BODY=$(gh pr view "$PR_NUM" --json body -q '.body' 2>/dev/null || echo "")
 
             # Extract parent issue from PR body
             PARENT_NUM=$(echo "$PR_BODY" | grep -oP '\*\*Parent Issue:\*\* #\K\d+' | head -1 || echo "")

@@ -405,7 +405,7 @@ bash .github/scripts/setup-labels.sh
 
 To update an existing plot implementation:
 
-1. Create issue with title: `[update] {spec-id}` (all libraries) or `[update:library] {spec-id}` (single library)
+1. Create issue with title: `[update] {spec-id}` (all libraries) or `[update:{library}] {spec-id}` (single library)
    - Example: `[update] scatter-basic` - regenerate all 8 libraries
    - Example: `[update:seaborn] scatter-basic` - regenerate only seaborn
 2. Add label: `plot-request`

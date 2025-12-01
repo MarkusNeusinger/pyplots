@@ -125,24 +125,35 @@ jobs:
           CHANGED_ARRAY=$(echo "$CHANGED_FILES" | jq -R -s -c 'split("\n") | map(select(length > 0))')
           echo "changed_files=$CHANGED_ARRAY" >> $GITHUB_OUTPUT
 
-      - name: Extract issue number from PR
+      - name: Extract issue number and metadata from PR
         id: get_issue
         if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true' && steps.get_pr.outputs.pr_number != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR_BODY=$(gh pr view ${{ steps.get_pr.outputs.pr_number }} --json body -q '.body')
-          ISSUE_NUM=$(echo "$PR_BODY" | grep -oP '#\K\d+' | head -1 || echo "")
+          PR_DATA=$(gh pr view ${{ steps.get_pr.outputs.pr_number }} --json body,headRefName)
+          PR_BODY=$(echo "$PR_DATA" | jq -r '.body')
+          BRANCH=$(echo "$PR_DATA" | jq -r '.headRefName')
+
+          # Extract parent issue from PR body (format: **Parent Issue:** #NUM)
+          ISSUE_NUM=$(echo "$PR_BODY" | grep -oP '\*\*Parent Issue:\*\* #\K\d+' | head -1 || echo "")
+
+          # Extract sub-issue from PR body (format: **Sub-Issue:** #NUM)
+          SUB_ISSUE_NUM=$(echo "$PR_BODY" | grep -oP '\*\*Sub-Issue:\*\* #\K\d+' | head -1 || echo "")
+
+          # Extract library from branch name (format: auto/{spec-id}/{library})
+          LIBRARY=$(echo "$BRANCH" | cut -d'/' -f3)
 
           if [ -z "$ISSUE_NUM" ]; then
             # Try to find issue by branch name
-            BRANCH=$(gh pr view ${{ steps.get_pr.outputs.pr_number }} --json headRefName -q '.headRefName')
-            SPEC_ID=$(echo "$BRANCH" | sed 's/auto\///')
+            SPEC_ID=$(echo "$BRANCH" | cut -d'/' -f2)
             ISSUE_NUM=$(gh issue list --label plot-request --search "$SPEC_ID in:title" --json number -q '.[0].number' || echo "")
           fi
 
           echo "issue_num=$ISSUE_NUM" >> $GITHUB_OUTPUT
-          echo "Found issue: #$ISSUE_NUM"
+          echo "sub_issue_num=$SUB_ISSUE_NUM" >> $GITHUB_OUTPUT
+          echo "library=$LIBRARY" >> $GITHUB_OUTPUT
+          echo "Found issue: #$ISSUE_NUM, sub-issue: #$SUB_ISSUE_NUM, library: $LIBRARY"
 
       - name: Setup Google Cloud authentication
         if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true'
@@ -327,6 +338,8 @@ jobs:
           {
             "pr_number": ${{ steps.get_pr.outputs.pr_number }},
             "issue_number": "${{ steps.get_issue.outputs.issue_num }}",
+            "sub_issue_number": "${{ steps.get_issue.outputs.sub_issue_num }}",
+            "library": "${{ steps.get_issue.outputs.library }}",
             "bucket": "${GCS_BUCKET}",
             "base_path": "plots",
             "timestamp": "${TIMESTAMP}",

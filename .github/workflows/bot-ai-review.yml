@@ -94,10 +94,10 @@ jobs:
             LIBRARY="${{ steps.metadata.outputs.library }}"
           fi
 
-          # Extract sub-issue from PR body if not in metadata
+          # Extract sub-issue from PR body if not in metadata (format: **Sub-Issue:** #NUM)
           SUB_ISSUE="${{ steps.metadata.outputs.sub_issue_number }}"
           if [ -z "$SUB_ISSUE" ]; then
-            SUB_ISSUE=$(echo "$PR_BODY" | grep -oP 'Sub-Issue: #\K\d+' | head -1 || echo "")
+            SUB_ISSUE=$(echo "$PR_BODY" | grep -oP '\*\*Sub-Issue:\*\* #\K\d+' | head -1 || echo "")
           fi
 
           echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT

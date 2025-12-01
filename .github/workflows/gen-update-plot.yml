@@ -57,11 +57,11 @@ jobs:
           SPEC_ID=$(echo "$BRANCH" | cut -d'/' -f2)
           LIBRARY=$(echo "$BRANCH" | cut -d'/' -f3)
 
-          # Extract sub-issue from PR body
-          SUB_ISSUE=$(echo "$PR_BODY" | grep -oP 'Sub-Issue: #\K\d+' | head -1 || echo "")
+          # Extract sub-issue from PR body (format: **Sub-Issue:** #NUM)
+          SUB_ISSUE=$(echo "$PR_BODY" | grep -oP '\*\*Sub-Issue:\*\* #\K\d+' | head -1 || echo "")
 
-          # Extract main issue from PR body
-          MAIN_ISSUE=$(echo "$PR_BODY" | grep -oP 'Parent Issue: #\K\d+' | head -1 || echo "")
+          # Extract main issue from PR body (format: **Parent Issue:** #NUM)
+          MAIN_ISSUE=$(echo "$PR_BODY" | grep -oP '\*\*Parent Issue:\*\* #\K\d+' | head -1 || echo "")
 
           echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
           echo "library=$LIBRARY" >> $GITHUB_OUTPUT

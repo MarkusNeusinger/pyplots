@@ -66,7 +66,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR_BODY="${{ github.event.pull_request.body }}"
+          PR_NUM="${{ github.event.pull_request.number }}"
+          PR_BODY=$(gh pr view "$PR_NUM" --json body -q '.body' 2>/dev/null || echo "")
           SUB_ISSUE=$(echo "$PR_BODY" | grep -oP '\*\*Sub-Issue:\*\* #\K\d+' | head -1 || echo "")
           echo "number=$SUB_ISSUE" >> $GITHUB_OUTPUT
 
@@ -147,7 +148,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BRANCH="${{ github.event.pull_request.head.ref }}"
-          PR_BODY="${{ github.event.pull_request.body }}"
+          PR_NUM="${{ github.event.pull_request.number }}"
+          PR_BODY=$(gh pr view "$PR_NUM" --json body -q '.body' 2>/dev/null || echo "")
 
           # Format: auto/{spec-id}/{library}
           SPEC_ID=$(echo "$BRANCH" | cut -d'/' -f2)

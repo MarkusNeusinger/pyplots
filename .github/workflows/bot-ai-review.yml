@@ -168,50 +168,40 @@ jobs:
           gh api repos/${{ github.repository }}/issues/${{ steps.metadata.outputs.pr_number }}/reactions \
             -f content=eyes
 
-      - name: Trigger Claude Quality Check
+      - name: Run Claude AI Quality Review
         if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3'
-        uses: actions/github-script@v8
+        timeout-minutes: 30
+        uses: anthropics/claude-code-action@v1
         with:
-          script: |
-            const specId = '${{ steps.pr.outputs.spec_id }}';
-            const library = '${{ steps.pr.outputs.library }}';
-            const attempt = parseInt('${{ steps.attempts.outputs.count }}') + 1;
-            const prNumber = ${{ steps.metadata.outputs.pr_number }};
-            const subIssueNumber = '${{ steps.pr.outputs.sub_issue }}';
-            const mainIssueNumber = '${{ steps.metadata.outputs.issue_number }}';
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--model opus"
+          prompt: |
+            ## Task: AI Quality Review for **${{ steps.pr.outputs.library }}** (Attempt ${{ steps.attempts.outputs.count }}/3)
 
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              body: `@claude
-
-            ## Task: AI Quality Review for **${library}** (Attempt ${attempt}/3)
-
-            Tests passed and preview images are ready. Evaluate if the **${library}** implementation matches the specification.
+            Tests passed and preview images are ready. Evaluate if the **${{ steps.pr.outputs.library }}** implementation matches the specification.
 
             ### Your Task
 
-            1. **Read the spec file**: \`specs/${specId}.md\`
+            1. **Read the spec file**: `specs/${{ steps.pr.outputs.spec_id }}.md`
                - Note all quality criteria listed
                - Understand the expected visual output
 
-            2. **Read the ${library} implementation**:
-               - \`plots/${library}/*/${specId}/default.py\`
+            2. **Read the ${{ steps.pr.outputs.library }} implementation**:
+               - `plots/${{ steps.pr.outputs.library }}/*/${{ steps.pr.outputs.spec_id }}/default.py`
 
             3. **Read library-specific rules**:
-               - \`prompts/library/${library}.md\`
+               - `prompts/library/${{ steps.pr.outputs.library }}.md`
 
-            4. **View the plot images** in \`plot_images/\` directory
+            4. **View the plot images** in `plot_images/` directory
                - Use your vision capabilities to analyze each image
                - Compare with the spec requirements
 
-            5. **Evaluate against quality criteria** from \`prompts/quality-criteria.md\`
+            5. **Evaluate against quality criteria** from `prompts/quality-criteria.md`
 
-            6. **Post your verdict to Sub-Issue #${subIssueNumber}** using this EXACT format:
+            6. **Post your verdict to Sub-Issue #${{ steps.pr.outputs.sub_issue }}** using this EXACT format:
 
-            \`\`\`markdown
-            ## AI Review - Attempt ${attempt}/3
+            ```markdown
+            ## AI Review - Attempt ${{ steps.attempts.outputs.count }}/3
 
             ### Quality Evaluation
             | Evaluator | Score | Verdict |
@@ -230,25 +220,24 @@ jobs:
             2. **CQ-002 PARTIAL**: Docstring missing return type
 
             ### AI Feedback for Next Attempt
-            > Move legend outside plot area with \\\`bbox_to_anchor=(1.05, 1)\\\`
+            > Move legend outside plot area with `bbox_to_anchor=(1.05, 1)`
             > Add return type to docstring
 
             ### Verdict: APPROVED / REJECTED
-            \`\`\`
+            ```
 
             7. **Take action based on result**:
                - **APPROVED** (score >= 85):
-                 - Run: \`gh pr edit ${prNumber} --add-label ai-approved\`
-                 - Run: \`gh issue edit ${subIssueNumber} --remove-label reviewing --add-label ai-approved\`
+                 - Run: `gh pr edit ${{ steps.metadata.outputs.pr_number }} --add-label ai-approved`
+                 - Run: `gh issue edit ${{ steps.pr.outputs.sub_issue }} --remove-label reviewing --add-label ai-approved`
                - **REJECTED** (score < 85):
-                 - Run: \`gh pr edit ${prNumber} --add-label ai-rejected\`
-                 - Run: \`gh issue edit ${subIssueNumber} --remove-label reviewing --add-label ai-rejected\`
+                 - Run: `gh pr edit ${{ steps.metadata.outputs.pr_number }} --add-label ai-rejected`
+                 - Run: `gh issue edit ${{ steps.pr.outputs.sub_issue }} --remove-label reviewing --add-label ai-rejected`
 
             **IMPORTANT:**
-            - This is a **${library}-only** review - focus only on this library
-            - Post feedback to **Sub-Issue #${subIssueNumber}**, NOT the main issue
-            - Include the generated code in your review comment for documentation`
-            });
+            - This is a **${{ steps.pr.outputs.library }}-only** review - focus only on this library
+            - Post feedback to **Sub-Issue #${{ steps.pr.outputs.sub_issue }}**, NOT the main issue
+            - Include the generated code in your review comment for documentation
 
       - name: Mark as failed after 3 attempts
         if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count == '3'

@@ -21,6 +21,8 @@ jobs:
     outputs:
       should_run: ${{ steps.check.outputs.should_run }}
       spec_id: ${{ steps.extract_spec.outputs.spec_id }}
+      is_update: ${{ steps.extract_spec.outputs.is_update }}
+      target_library: ${{ steps.extract_spec.outputs.target_library }}
 
     steps:
       - name: Check conditions
@@ -63,6 +65,29 @@ jobs:
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_TITLE: ${{ github.event.issue.title }}
         run: |
+          # Check for [update] or [update:library] prefix in title
+          IS_UPDATE="false"
+          TARGET_LIBRARY=""
+
+          if echo "$ISSUE_TITLE" | grep -qiP '^\[update(:[a-z]+)?\]'; then
+            IS_UPDATE="true"
+            # Extract target library if specified (e.g., [update:seaborn])
+            TARGET_LIBRARY=$(echo "$ISSUE_TITLE" | grep -oiP '^\[update:\K[a-z]+(?=\])' | tr '[:upper:]' '[:lower:]' || echo "")
+            # Remove [update...] prefix from title for spec ID extraction
+            CLEAN_TITLE=$(echo "$ISSUE_TITLE" | sed 's/^\[update[^]]*\]\s*//')
+            echo "::notice::Update mode detected. Target library: ${TARGET_LIBRARY:-all}"
+          else
+            CLEAN_TITLE="$ISSUE_TITLE"
+          fi
+
+          # Validate TARGET_LIBRARY if specified
+          if [ -n "$TARGET_LIBRARY" ]; then
+            VALID_LIBS="matplotlib seaborn plotly bokeh altair plotnine pygal highcharts"
+            if ! echo "$VALID_LIBS" | grep -qw "$TARGET_LIBRARY"; then
+              echo "::error::Invalid library '$TARGET_LIBRARY'. Must be one of: $VALID_LIBS"
+              exit 1
+            fi
+          fi
           # Check if issue was marked as duplicate
           COMMENTS=$(gh issue view ${{ github.event.issue.number }} --json comments -q '.comments[].body')
 
@@ -71,8 +96,15 @@ jobs:
             exit 1
           fi
 
+          # For updates, try to extract spec ID from cleaned title first
+          if [ "$IS_UPDATE" == "true" ]; then
+            SPEC_ID=$(echo "$CLEAN_TITLE" | grep -oiP '^[a-z]+-[a-z]+(-[a-z0-9]+)?' | tr '[:upper:]' '[:lower:]' || echo "")
+          fi
+
           # Extract spec ID from issue comments (assigned by validate-plot-request workflow)
-          SPEC_ID=$(echo "$COMMENTS" | grep -oP '\*\*Assigned ID:\*\* `\K[a-z0-9-]+(?=`)' | tail -1 || echo "")
+          if [ -z "$SPEC_ID" ]; then
+            SPEC_ID=$(echo "$COMMENTS" | grep -oP '\*\*Assigned ID:\*\* `\K[a-z0-9-]+(?=`)' | tail -1 || echo "")
+          fi
 
           if [ -z "$SPEC_ID" ]; then
             SPEC_ID=$(echo "$COMMENTS" | grep -oP '\*\*Existing Spec:\*\* `\K[a-z0-9-]+(?=`)' | tail -1 || echo "")
@@ -92,7 +124,9 @@ jobs:
           fi
 
           echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
-          echo "::notice::Extracted spec ID: $SPEC_ID"
+          echo "is_update=$IS_UPDATE" >> $GITHUB_OUTPUT
+          echo "target_library=$TARGET_LIBRARY" >> $GITHUB_OUTPUT
+          echo "::notice::Extracted spec ID: $SPEC_ID (update=$IS_UPDATE, target=$TARGET_LIBRARY)"
 
   # ============================================================================
   # Step 2: Create sub-issues for each library
@@ -169,7 +203,7 @@ jobs:
             SUB_ISSUE=$(gh issue create \
               --title "[$SPEC_ID] $LIBRARY implementation" \
               --body "$SUB_BODY" \
-              --label "library:$LIBRARY,sub-issue,generating")
+              --label "library:$LIBRARY,plot-request:impl,generating")
 
             SUB_NUM=$(echo "$SUB_ISSUE" | grep -oP '\d+$')
             SUB_NODE_ID=$(gh api repos/${{ github.repository }}/issues/$SUB_NUM --jq '.node_id')
@@ -191,7 +225,10 @@ jobs:
   # ============================================================================
   generate-matplotlib:
     needs: [check-conditions, create-sub-issues]
-    if: needs.check-conditions.outputs.should_run == 'true'
+    if: |
+      needs.check-conditions.outputs.should_run == 'true' &&
+      (needs.check-conditions.outputs.target_library == '' ||
+       needs.check-conditions.outputs.target_library == 'matplotlib')
     uses: ./.github/workflows/gen-library-impl.yml
     with:
       spec_id: ${{ needs.check-conditions.outputs.spec_id }}
@@ -204,7 +241,10 @@ jobs:
 
   generate-seaborn:
     needs: [check-conditions, create-sub-issues]
-    if: needs.check-conditions.outputs.should_run == 'true'
+    if: |
+      needs.check-conditions.outputs.should_run == 'true' &&
+      (needs.check-conditions.outputs.target_library == '' ||
+       needs.check-conditions.outputs.target_library == 'seaborn')
     uses: ./.github/workflows/gen-library-impl.yml
     with:
       spec_id: ${{ needs.check-conditions.outputs.spec_id }}
@@ -217,7 +257,10 @@ jobs:
 
   generate-plotly:
     needs: [check-conditions, create-sub-issues]
-    if: needs.check-conditions.outputs.should_run == 'true'
+    if: |
+      needs.check-conditions.outputs.should_run == 'true' &&
+      (needs.check-conditions.outputs.target_library == '' ||
+       needs.check-conditions.outputs.target_library == 'plotly')
     uses: ./.github/workflows/gen-library-impl.yml
     with:
       spec_id: ${{ needs.check-conditions.outputs.spec_id }}
@@ -230,7 +273,10 @@ jobs:
 
   generate-bokeh:
     needs: [check-conditions, create-sub-issues]
-    if: needs.check-conditions.outputs.should_run == 'true'
+    if: |
+      needs.check-conditions.outputs.should_run == 'true' &&
+      (needs.check-conditions.outputs.target_library == '' ||
+       needs.check-conditions.outputs.target_library == 'bokeh')
     uses: ./.github/workflows/gen-library-impl.yml
     with:
       spec_id: ${{ needs.check-conditions.outputs.spec_id }}
@@ -243,7 +289,10 @@ jobs:
 
   generate-altair:
     needs: [check-conditions, create-sub-issues]
-    if: needs.check-conditions.outputs.should_run == 'true'
+    if: |
+      needs.check-conditions.outputs.should_run == 'true' &&
+      (needs.check-conditions.outputs.target_library == '' ||
+       needs.check-conditions.outputs.target_library == 'altair')
     uses: ./.github/workflows/gen-library-impl.yml
     with:
       spec_id: ${{ needs.check-conditions.outputs.spec_id }}
@@ -256,7 +305,10 @@ jobs:
 
   generate-plotnine:
     needs: [check-conditions, create-sub-issues]
-    if: needs.check-conditions.outputs.should_run == 'true'
+    if: |
+      needs.check-conditions.outputs.should_run == 'true' &&
+      (needs.check-conditions.outputs.target_library == '' ||
+       needs.check-conditions.outputs.target_library == 'plotnine')
     uses: ./.github/workflows/gen-library-impl.yml
     with:
       spec_id: ${{ needs.check-conditions.outputs.spec_id }}
@@ -269,7 +321,10 @@ jobs:
 
   generate-pygal:
     needs: [check-conditions, create-sub-issues]
-    if: needs.check-conditions.outputs.should_run == 'true'
+    if: |
+      needs.check-conditions.outputs.should_run == 'true' &&
+      (needs.check-conditions.outputs.target_library == '' ||
+       needs.check-conditions.outputs.target_library == 'pygal')
     uses: ./.github/workflows/gen-library-impl.yml
     with:
       spec_id: ${{ needs.check-conditions.outputs.spec_id }}
@@ -282,7 +337,10 @@ jobs:
 
   generate-highcharts:
     needs: [check-conditions, create-sub-issues]
-    if: needs.check-conditions.outputs.should_run == 'true'
+    if: |
+      needs.check-conditions.outputs.should_run == 'true' &&
+      (needs.check-conditions.outputs.target_library == '' ||
+       needs.check-conditions.outputs.target_library == 'highcharts')
     uses: ./.github/workflows/gen-library-impl.yml
     with:
       spec_id: ${{ needs.check-conditions.outputs.spec_id }}

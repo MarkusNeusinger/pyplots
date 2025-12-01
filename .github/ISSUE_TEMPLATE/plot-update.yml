@@ -1,33 +1,47 @@
 name: Plot Update
-description: Request changes or improvements to an existing plot
-title: "Update: "
-labels: ["plot-update"]
+description: Request updates or regeneration of an existing plot
+title: "[update] "
+labels: ["plot-request", "update"]
 body:
   - type: markdown
     attributes:
       value: |
         ## Plot Update Request
 
-        Use this form to request changes to an existing plot implementation.
-        This will be linked as a sub-issue to the original plot request.
+        Use this form to update or regenerate an existing plot.
 
-  - type: input
-    id: parent_issue
-    attributes:
-      label: Original Plot Request
-      description: "Issue number of the original plot-request (e.g., #24)"
-      placeholder: "#24"
-    validations:
-      required: true
+        **Title Format:**
+        - `[update] scatter-basic` → Regenerate all 8 libraries
+        - `[update:seaborn] scatter-basic` → Regenerate only seaborn
+
+        After submitting, a maintainer will add the `approved` label to trigger regeneration.
 
   - type: input
     id: spec_id
     attributes:
       label: Spec ID
-      description: "The spec ID of the plot to update (e.g., bar-basic)"
-      placeholder: "bar-basic"
+      description: "The spec ID of the plot to update (will be appended to title)"
+      placeholder: "scatter-basic"
     validations:
       required: true
+
+  - type: dropdown
+    id: target_library
+    attributes:
+      label: Target Library (optional)
+      description: Update only a specific library, or leave empty for all
+      options:
+        - All libraries
+        - matplotlib
+        - seaborn
+        - plotly
+        - bokeh
+        - altair
+        - plotnine
+        - pygal
+        - highcharts
+    validations:
+      required: false
 
   - type: dropdown
     id: update_type
@@ -35,32 +49,25 @@ body:
       label: Type of Update
       description: What kind of change is this?
       options:
+        - Regenerate (use current spec)
+        - Spec Update (describe changes below)
         - Bug Fix (plot doesn't render correctly)
         - Visual Improvement (styling, colors, layout)
         - Feature Addition (new parameter, option)
-        - Performance (faster rendering, less memory)
-        - Code Quality (refactoring, better practices)
-        - Documentation (docstrings, comments)
     validations:
       required: true
 
   - type: textarea
-    id: current_behavior
+    id: changes
     attributes:
-      label: Current Behavior
-      description: Describe what the plot currently does
-      placeholder: "The bar chart currently shows labels overlapping when there are many categories..."
+      label: Requested Changes
+      description: Describe the changes to the spec or implementation (Claude will update the spec first if needed)
+      placeholder: |
+        - Add grid lines for better readability
+        - Change default color scheme to colorblind-friendly
+        - Include legend for all data series
     validations:
-      required: true
-
-  - type: textarea
-    id: desired_behavior
-    attributes:
-      label: Desired Behavior
-      description: Describe what you want the plot to do instead
-      placeholder: "Labels should be rotated 45 degrees to prevent overlap, or use a horizontal layout..."
-    validations:
-      required: true
+      required: false
 
   - type: textarea
     id: additional_context

@@ -33,8 +33,8 @@ jobs:
             ISSUE_NUM="${{ github.event.issue.number }}"
             LABELS="${{ join(github.event.issue.labels.*.name, ',') }}"
 
-            # Check if this is a sub-issue
-            if echo "$LABELS" | grep -q "sub-issue"; then
+            # Check if this is a plot-request implementation issue
+            if echo "$LABELS" | grep -q "plot-request:impl"; then
               # Find parent from issue body
               BODY=$(gh issue view $ISSUE_NUM --json body -q '.body')
               PARENT_NUM=$(echo "$BODY" | grep -oP '\*\*Parent Issue:\*\* #\K\d+' | head -1 || echo "")

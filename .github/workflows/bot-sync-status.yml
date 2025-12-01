@@ -105,7 +105,7 @@ jobs:
 
           # Fallback: search for issues with "Parent Issue: #N" in body
           if [ "$(echo "$SUB_ISSUES" | jq '.data.repository.issue.subIssues.nodes | length')" == "0" ]; then
-            SUB_ISSUES_SEARCH=$(gh issue list --search "Parent Issue: #$PARENT_NUM in:body" --json number,title,labels,state)
+            SUB_ISSUES_SEARCH=$(gh issue list --search "**Parent Issue:** #$PARENT_NUM in:body" --json number,title,labels,state)
             echo "$SUB_ISSUES_SEARCH" > /tmp/sub_issues.json
           else
             echo "$SUB_ISSUES" | jq '.data.repository.issue.subIssues.nodes' > /tmp/sub_issues.json

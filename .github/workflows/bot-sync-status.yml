@@ -166,20 +166,19 @@ jobs:
               STATUS=":hourglass: Pending"
             fi
 
-            # Get quality score from sub-issue comments
+            # Get quality score from sub-issue comments (format: | Claude | XX/100 | approve |)
             SCORE=$(gh api repos/${{ github.repository }}/issues/$SUB_ISSUE/comments \
-              --jq '[.[] | .body | capture("\\*\\*Median\\*\\* \\| \\*\\*(?<score>\\d+)") | .score] | last // "-"' 2>/dev/null || echo "-")
+              --jq '[.[] | .body | capture("Claude \\| (?<score>\\d+)/100") | .score] | last // "-"' 2>/dev/null || echo "-")
 
-            # Find PR for this library
-            PR_NUM=$(gh pr list --search "implement ${{ steps.parent.outputs.spec_id || 'spec' }} in:title $LIB in:title" \
-              --json number -q '.[0].number' 2>/dev/null || echo "")
+            # Find PR for this library (search by library name in auto/ branches)
+            PR_NUM=$(gh pr list --head "auto/" --search "$LIB" \
+              --json number,headRefName -q '.[] | select(.headRefName | contains("'"$LIB"'")) | .number' 2>/dev/null | head -1 || echo "")
             PR_LINK=$([[ -n "$PR_NUM" ]] && echo "#$PR_NUM" || echo "-")
 
-            # Count attempts from labels
-            ATTEMPTS=0
-            if echo "$LABELS" | grep -q "ai-attempt-1"; then ATTEMPTS=1; fi
-            if echo "$LABELS" | grep -q "ai-attempt-2"; then ATTEMPTS=2; fi
-            if echo "$LABELS" | grep -q "ai-attempt-3"; then ATTEMPTS=3; fi
+            # Count attempts from sub-issue comments
+            ATTEMPTS=$(gh api repos/${{ github.repository }}/issues/$SUB_ISSUE/comments \
+              --jq '[.[] | .body | select(startswith("## Attempt"))] | length' 2>/dev/null || echo "0")
+            [[ -z "$ATTEMPTS" ]] && ATTEMPTS=0
 
             echo "| $LIB | $STATUS | $SCORE | $PR_LINK | $ATTEMPTS/3 |" >> /tmp/status_table.md
           done

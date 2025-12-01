@@ -117,3 +117,105 @@ jobs:
           name: test-results-${{ matrix.python-version }}
           path: test-results/
           retention-days: 30
+
+  # Summary job: post compact PR comment with test results
+  summary:
+    name: Post Test Summary
+    needs: test-plots
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Download all test results
+        uses: actions/download-artifact@v6
+        with:
+          pattern: test-results-*
+          merge-multiple: true
+
+      - name: Build summary comment
+        id: summary
+        run: |
+          # Parse results
+          PY311_RESULT=$(cat result-3.11.txt 2>/dev/null | cut -d',' -f2 || echo "skipped")
+          PY312_RESULT=$(cat result-3.12.txt 2>/dev/null | cut -d',' -f2 || echo "skipped")
+          PY313_RESULT=$(cat result-3.13.txt 2>/dev/null | cut -d',' -f2 || echo "skipped")
+          PY314_RESULT=$(cat result-3.14.txt 2>/dev/null | cut -d',' -f2 || echo "skipped")
+
+          # Helper function for badge
+          badge() {
+            local version=$1
+            local result=$2
+            if [ "$result" == "success" ]; then
+              echo "![${version}](https://img.shields.io/badge/${version}-pass-brightgreen)"
+            elif [ "$result" == "failure" ]; then
+              echo "![${version}](https://img.shields.io/badge/${version}-fail-red)"
+            else
+              echo "![${version}](https://img.shields.io/badge/${version}-skip-lightgrey)"
+            fi
+          }
+
+          # Build comment
+          if [ "$PY314_RESULT" == "success" ]; then
+            HEADER="## ✅ Plot Tests Passed"
+            MAIN_STATUS="**Created with Python 3.14**"
+          elif [ "$PY314_RESULT" == "failure" ]; then
+            HEADER="## ❌ Plot Tests Failed"
+            MAIN_STATUS="**Python 3.14 failed** (required)"
+          else
+            HEADER="## ⏭️ Plot Tests Skipped"
+            MAIN_STATUS="No plot files changed"
+          fi
+
+          # Build badges
+          B311=$(badge "3.11" "$PY311_RESULT")
+          B312=$(badge "3.12" "$PY312_RESULT")
+          B313=$(badge "3.13" "$PY313_RESULT")
+
+          cat > /tmp/comment.md << EOF
+          ${HEADER}
+
+          ${MAIN_STATUS}
+
+          **Compatibility:** ${B311} ${B312} ${B313}
+          EOF
+
+          cat /tmp/comment.md
+          echo "has_comment=true" >> $GITHUB_OUTPUT
+
+      - name: Post PR comment
+        if: steps.summary.outputs.has_comment == 'true'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            const comment = fs.readFileSync('/tmp/comment.md', 'utf8');
+
+            // Find existing bot comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+
+            const botComment = comments.find(c =>
+              c.user.type === 'Bot' &&
+              c.body.includes('Plot Tests')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }

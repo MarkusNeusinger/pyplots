@@ -10,20 +10,19 @@ Last Updated: 2025-12-01
 
 ## Description
 
-Create a simple filled area chart showing a single data series over time or sequential x-values.
-Perfect for visualizing cumulative values, trends with emphasis on magnitude, and comparing values to a baseline.
-Works with any dataset containing sequential x-values and numeric y-values.
+Create a simple area chart that displays a single filled area beneath a line, ideal for showing how a quantity changes over time or another continuous variable. The filled area emphasizes the magnitude of values and cumulative totals.
 
 ## Data Requirements
 
-- **x**: Sequential values for x-axis (datetime, numeric, or categorical)
-- **y**: Numeric values representing the area height at each x point
+- **x**: Numeric or datetime column for the x-axis (continuous variable, typically time or sequence)
+- **y**: Numeric column for the y-axis (the values to plot)
 
 ## Optional Parameters
 
 - `color`: Fill color for the area (type: string, default: "steelblue")
-- `alpha`: Transparency level for fill (type: float 0.0-1.0, default: 0.4)
-- `line_alpha`: Transparency level for edge line (type: float 0.0-1.0, default: 1.0)
+- `alpha`: Fill transparency level (type: float 0.0-1.0, default: 0.6)
+- `line_color`: Color of the top line (type: string, default: same as color)
+- `line_width`: Width of the top line (type: float, default: 1.5)
 - `title`: Plot title (type: string, default: None)
 - `xlabel`: Custom x-axis label (type: string, default: column name)
 - `ylabel`: Custom y-axis label (type: string, default: column name)
@@ -33,30 +32,25 @@ Works with any dataset containing sequential x-values and numeric y-values.
 
 - [ ] X and Y axes are labeled with column names (or custom labels if provided)
 - [ ] Grid is visible but subtle with alpha=0.3
-- [ ] Area fill is clearly visible with appropriate transparency (alpha ~0.4)
-- [ ] Edge line is visible to define the data boundary
+- [ ] Area fill is clearly visible with appropriate transparency
+- [ ] Line on top of area provides clear boundary
 - [ ] No overlapping axis labels or tick marks
-- [ ] Colorblind-safe colors used
-- [ ] Appropriate figure size (16x9 aspect ratio) for readability
+- [ ] Appropriate figure size (16:9 aspect ratio) for readability
 - [ ] Title is centered and clearly readable if provided
 
 ## Expected Output
 
-A clean area chart with a filled region between the data line and the x-axis baseline.
-The fill should be semi-transparent to allow grid lines to show through while still emphasizing magnitude.
-A solid edge line should clearly define the top boundary of the data.
-The plot should be immediately understandable without additional explanation.
-All text elements should be legible at standard display sizes.
+A clean area chart with a filled region showing values over a continuous axis. The area should be filled with a semi-transparent color, bounded by a line at the top edge. The baseline should be at y=0. Grid lines should help with reading values without overpowering the data. All text elements (labels, title, and tick labels) should be legible at standard display sizes.
 
 ## Tags
 
-area, trend, time-series, basic, magnitude, cumulative, exploratory
+trend, time-series, basic, area, continuous, statistical, exploratory
 
 ## Use Cases
 
-- Visualizing cumulative values over time (e.g., total revenue growth)
-- Showing trends with emphasis on magnitude (e.g., stock prices)
-- Comparing values to a baseline (e.g., temperature above/below average)
-- Website traffic visualization over time
-- Resource utilization monitoring (CPU, memory usage)
-- Population or growth trends
+- Stock price or market value over time (e.g., portfolio value growth)
+- Website traffic visualization (e.g., daily visitors over months)
+- Resource usage monitoring (e.g., CPU or memory usage over time)
+- Sales trends over time periods (e.g., monthly revenue)
+- Temperature or environmental data over time
+- Population growth or demographic changes

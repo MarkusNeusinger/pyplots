@@ -1,55 +1,62 @@
 # area-basic: Basic Area Chart
 
+<!--
+Spec Template Version: 1.0.0
+Created: 2025-12-01
+Last Updated: 2025-12-01
+-->
+
 **Spec Version:** 1.0.0
 
 ## Description
 
-A basic area chart that displays quantitative data over a continuous interval or time period. The area between the line and the axis is filled with color, emphasizing the magnitude of values. Ideal for showing trends and cumulative totals over time.
+Create a simple filled area chart showing a single data series over time or sequential x-values.
+Perfect for visualizing cumulative values, trends with emphasis on magnitude, and comparing values to a baseline.
+Works with any dataset containing sequential x-values and numeric y-values.
 
 ## Data Requirements
 
-- **x**: Column for x-axis values (typically time or sequential data - numeric or datetime)
-- **y**: Numeric column for y-axis values (the values to be plotted)
+- **x**: Sequential values for x-axis (datetime, numeric, or categorical)
+- **y**: Numeric values representing the area height at each x point
 
 ## Optional Parameters
 
-- `title`: Plot title (default: None)
-- `xlabel`: X-axis label (default: uses column name)
-- `ylabel`: Y-axis label (default: uses column name)
-- `color`: Fill color for the area (default: library-specific default)
-- `alpha`: Transparency level for the fill (default: 0.5)
-- `line_color`: Color of the line at the top of the area (default: same as color but darker)
-- `line_width`: Width of the line (default: 2)
-- `fill_to`: What to fill to - 'zero' or 'none' (default: 'zero')
+- `color`: Fill color for the area (type: string, default: "steelblue")
+- `alpha`: Transparency level for fill (type: float 0.0-1.0, default: 0.4)
+- `line_alpha`: Transparency level for edge line (type: float 0.0-1.0, default: 1.0)
+- `title`: Plot title (type: string, default: None)
+- `xlabel`: Custom x-axis label (type: string, default: column name)
+- `ylabel`: Custom y-axis label (type: string, default: column name)
+- `figsize`: Figure size (type: tuple, default: (16, 9))
 
 ## Quality Criteria
 
-- [ ] X and Y axes are labeled with column names or custom labels
-- [ ] Area fill is visible but not overwhelming (appropriate alpha)
-- [ ] Line at top of area is clearly visible
-- [ ] Grid is visible but subtle (alpha <= 0.3)
-- [ ] No overlapping labels or tick marks
-- [ ] Data accurately represented without distortion
-- [ ] Appropriate figure size (16:9 aspect ratio)
+- [ ] X and Y axes are labeled with column names (or custom labels if provided)
+- [ ] Grid is visible but subtle with alpha=0.3
+- [ ] Area fill is clearly visible with appropriate transparency (alpha ~0.4)
+- [ ] Edge line is visible to define the data boundary
+- [ ] No overlapping axis labels or tick marks
+- [ ] Colorblind-safe colors used
+- [ ] Appropriate figure size (16x9 aspect ratio) for readability
+- [ ] Title is centered and clearly readable if provided
 
 ## Expected Output
 
-A filled area chart with:
-- A colored area extending from the data line down to the x-axis (or zero line)
-- A visible line tracing the top of the area
-- Clear axis labels and optional title
-- Subtle grid for readability
-- Professional appearance suitable for presentations and reports
+A clean area chart with a filled region between the data line and the x-axis baseline.
+The fill should be semi-transparent to allow grid lines to show through while still emphasizing magnitude.
+A solid edge line should clearly define the top boundary of the data.
+The plot should be immediately understandable without additional explanation.
+All text elements should be legible at standard display sizes.
 
 ## Tags
 
-area, line, trend, timeseries, basic, 2d
+area, trend, time-series, basic, magnitude, cumulative, exploratory
 
 ## Use Cases
 
-- Visualizing stock price movements over time
-- Displaying website traffic trends
-- Showing cumulative sales or revenue over periods
-- Tracking temperature changes throughout the day
-- Monitoring resource usage (CPU, memory) over time
-- Displaying population growth trends
+- Visualizing cumulative values over time (e.g., total revenue growth)
+- Showing trends with emphasis on magnitude (e.g., stock prices)
+- Comparing values to a baseline (e.g., temperature above/below average)
+- Website traffic visualization over time
+- Resource utilization monitoring (CPU, memory usage)
+- Population or growth trends

@@ -77,6 +77,41 @@ Examples: `scatter-basic`, `scatter-color-mapped`, `bar-grouped-horizontal`, `he
 - **`tests/unit/`**: Unit tests mirroring source structure
 - **`docs/`**: Architecture and workflow documentation
 
+## GitHub Issue Labels
+
+### Workflow Status Labels
+
+- **`plot-request`** - Main plot request issue
+- **`plot-request:impl`** - Library implementation sub-issue (child of main)
+- **`generating`** - Code is being generated
+- **`testing`** - Tests are running
+- **`reviewing`** - Quality review in progress
+- **`merged`** - Successfully merged to main
+- **`not-feasible`** - 3x failed, not implementable in this library
+- **`completed`** - All library implementations complete
+- **`update`** - Update request for existing spec
+- **`test`** - Test issue, not a real plot request
+
+### Updating Existing Plots
+
+To update an existing plot:
+1. Create issue with title: `[update] {spec-id}` (all libraries) or `[update:library] {spec-id}` (single library)
+2. Add label: `plot-request`
+3. Issue body can contain spec changes (Claude updates spec first)
+4. Maintainer adds `approved` label
+5. Workflow regenerates specified implementations
+
+**Issue Lifecycle:**
+```
+[open] plot-request → approved → in-progress → completed [closed]
+```
+
+**Sub-Issue Lifecycle:**
+```
+[open] generating → testing → reviewing → merged [closed]
+                                        → not-feasible [closed]
+```
+
 ## Code Standards
 
 ### Python Style

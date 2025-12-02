@@ -22,6 +22,7 @@ RUN pip install --no-cache-dir uv && \
 # Copy application code
 COPY api/ ./api/
 COPY core/ ./core/
+COPY specs/ ./specs/
 
 # Create non-root user and set permissions AFTER everything is installed
 RUN useradd -m -u 1000 appuser && \

@@ -311,6 +311,66 @@ jobs:
           ---
           :robot: *PR #$PR_NUM*"
 
+      - name: Merge feature branch to main
+        if: steps.check.outputs.should_run == 'true' && steps.check_complete.outputs.all_done == 'true' && steps.extract.outputs.main_issue != ''
+        id: merge_feature
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SPEC_ID="${{ steps.extract.outputs.spec_id }}"
+          MAIN_ISSUE="${{ steps.extract.outputs.main_issue }}"
+          FEATURE_BRANCH="plot/$SPEC_ID"
+          MERGED="${{ steps.check_complete.outputs.merged }}"
+          NOT_FEASIBLE="${{ steps.check_complete.outputs.not_feasible }}"
+
+          # Check if feature branch exists
+          if ! git ls-remote --heads origin "$FEATURE_BRANCH" | grep -q "$FEATURE_BRANCH"; then
+            echo "::warning::Feature branch $FEATURE_BRANCH does not exist, skipping merge"
+            echo "merged=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Check if PR already exists
+          EXISTING_PR=$(gh pr list --head "$FEATURE_BRANCH" --base main --json number -q '.[0].number' 2>/dev/null || echo "")
+
+          if [ -n "$EXISTING_PR" ]; then
+            echo "::notice::PR already exists: #$EXISTING_PR"
+            PR_NUMBER="$EXISTING_PR"
+          else
+            # Create PR from feature branch to main
+            PR_BODY="## Summary
+
+          Merges all implementations for \`$SPEC_ID\` to main.
+
+          **Parent Issue:** #$MAIN_ISSUE
+
+          ### Libraries Included
+          - **Merged:** $MERGED libraries
+          - **Not Feasible:** $NOT_FEASIBLE libraries
+
+          ### Files
+          - \`specs/$SPEC_ID.md\`
+          - \`plots/*/{plot_type}/$SPEC_ID/default.py\` (multiple libraries)
+
+          ---
+          :robot: *Auto-generated feature branch merge*"
+
+            PR_URL=$(gh pr create \
+              --base main \
+              --head "$FEATURE_BRANCH" \
+              --title "feat: add $SPEC_ID implementations" \
+              --body "$PR_BODY")
+
+            PR_NUMBER=$(echo "$PR_URL" | grep -oP '\d+$')
+            echo "::notice::Created PR #$PR_NUMBER to merge feature branch to main"
+          fi
+
+          # Enable auto-merge
+          gh pr merge "$PR_NUMBER" --squash --auto
+
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "merged=true" >> $GITHUB_OUTPUT
+
       - name: Complete main issue if all done
         if: steps.check.outputs.should_run == 'true' && steps.check_complete.outputs.all_done == 'true' && steps.extract.outputs.main_issue != ''
         env:
@@ -320,6 +380,7 @@ jobs:
           SPEC_ID="${{ steps.extract.outputs.spec_id }}"
           MERGED="${{ steps.check_complete.outputs.merged }}"
           NOT_FEASIBLE="${{ steps.check_complete.outputs.not_feasible }}"
+          FEATURE_PR="${{ steps.merge_feature.outputs.pr_number }}"
 
           # Post final summary
           gh issue comment $MAIN_ISSUE --body "## :tada: Implementation Complete!
@@ -327,10 +388,11 @@ jobs:
           All library implementations for \`$SPEC_ID\` are now complete.
 
           ### Final Status
-          - **Merged:** $MERGED libraries
+          - **Merged to feature branch:** $MERGED libraries
           - **Not Feasible:** $NOT_FEASIBLE libraries
+          - **Feature Branch PR:** #$FEATURE_PR (merging to main)
 
-          Check the **Implementation Status** table in the issue body for details.
+          The feature branch \`plot/$SPEC_ID\` is being merged to main.
 
           ---
           :robot: *pyplots CI*"

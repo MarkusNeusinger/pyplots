@@ -1,0 +1,277 @@
+name: "Gen: Create Spec"
+run-name: "Create Spec: ${{ github.event.issue.title }}"
+
+on:
+  issues:
+    types: [labeled]
+
+concurrency:
+  group: create-spec-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================================================
+  # Step 1: Check conditions and extract spec ID
+  # ============================================================================
+  create-spec:
+    runs-on: ubuntu-latest
+    outputs:
+      spec_id: ${{ steps.extract_spec.outputs.spec_id }}
+      feature_branch: ${{ steps.create_branch.outputs.feature_branch }}
+      spec_exists: ${{ steps.check_spec.outputs.exists }}
+
+    permissions:
+      contents: write
+      issues: write
+      id-token: write
+
+    steps:
+      - name: Check conditions
+        id: check
+        run: |
+          echo "=== Debug Info ==="
+          echo "Label added: ${{ github.event.label.name }}"
+          echo "Issue labels: ${{ join(github.event.issue.labels.*.name, ', ') }}"
+          echo "=================="
+
+          # Check 1: Must be "approved" label being added
+          if [[ "${{ github.event.label.name }}" != "approved" ]]; then
+            echo "::notice::Skipping: Not the 'approved' label"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Check 2: Issue must have "plot-request" label
+          HAS_PLOT_REQUEST="${{ contains(github.event.issue.labels.*.name, 'plot-request') }}"
+          if [[ "$HAS_PLOT_REQUEST" != "true" ]]; then
+            echo "::notice::Skipping: Issue does not have 'plot-request' label"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Check 3: Must NOT have "update" label (updates use existing spec)
+          HAS_UPDATE="${{ contains(github.event.issue.labels.*.name, 'update') }}"
+          if [[ "$HAS_UPDATE" == "true" ]]; then
+            echo "::notice::Skipping: This is an update request, not a new spec"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "::notice::All conditions met - proceeding with spec creation"
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
+      - name: Checkout repository
+        if: steps.check.outputs.should_run == 'true'
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: React with eyes emoji
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/reactions \
+            -f content=eyes
+
+      - name: Add in-progress label
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue edit ${{ github.event.issue.number }} --add-label "in-progress"
+
+      - name: Extract spec ID from issue
+        if: steps.check.outputs.should_run == 'true'
+        id: extract_spec
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          # Check if issue was marked as duplicate
+          COMMENTS=$(gh issue view ${{ github.event.issue.number }} --json comments -q '.comments[].body')
+
+          if echo "$COMMENTS" | grep -q "Duplicate Detected"; then
+            echo "::error::This issue was marked as a duplicate"
+            exit 1
+          fi
+
+          # Extract spec ID from issue comments (assigned by validate-plot-request workflow)
+          SPEC_ID=$(echo "$COMMENTS" | grep -oP '\*\*Assigned ID:\*\* `\K[a-z0-9-]+(?=`)' | tail -1 || echo "")
+
+          if [ -z "$SPEC_ID" ]; then
+            SPEC_ID=$(echo "$COMMENTS" | grep -oP '\*\*Existing Spec:\*\* `\K[a-z0-9-]+(?=`)' | tail -1 || echo "")
+          fi
+
+          # Fallback: extract from title if in brackets [spec-id]
+          if [ -z "$SPEC_ID" ]; then
+            SPEC_ID=$(echo "$ISSUE_TITLE" | grep -oP '\[\K[a-z0-9-]+(?=\])' | tail -1 || echo "")
+          fi
+
+          if [ -z "$SPEC_ID" ]; then
+            echo "::error::Could not extract spec ID from issue. Has validate-plot-request run?"
+            exit 1
+          fi
+
+          echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "::notice::Extracted spec ID: $SPEC_ID"
+
+      - name: Check if spec already exists
+        if: steps.check.outputs.should_run == 'true'
+        id: check_spec
+        run: |
+          SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
+
+          if [ -f "specs/$SPEC_ID.md" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "::notice::Spec file already exists: specs/$SPEC_ID.md"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "::notice::Spec file does not exist yet"
+          fi
+
+      - name: Check if feature branch exists
+        if: steps.check.outputs.should_run == 'true'
+        id: check_branch
+        run: |
+          SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
+          BRANCH="plot/$SPEC_ID"
+
+          if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "::notice::Feature branch already exists: $BRANCH"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create feature branch
+        if: steps.check.outputs.should_run == 'true'
+        id: create_branch
+        run: |
+          SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
+          BRANCH="plot/$SPEC_ID"
+
+          echo "feature_branch=$BRANCH" >> $GITHUB_OUTPUT
+
+          if [[ "${{ steps.check_branch.outputs.exists }}" == "true" ]]; then
+            git fetch origin "$BRANCH"
+            git checkout "$BRANCH"
+            echo "::notice::Checked out existing branch: $BRANCH"
+          else
+            git checkout -b "$BRANCH"
+            echo "::notice::Created new branch: $BRANCH"
+          fi
+
+      - name: Generate spec file with Claude
+        if: steps.check.outputs.should_run == 'true' && steps.check_spec.outputs.exists != 'true'
+        timeout-minutes: 30
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--model opus"
+          prompt: |
+            ## Task: Create Spec File for ${{ steps.extract_spec.outputs.spec_id }}
+
+            You need to create a specification file for a new plot type.
+
+            ### Input
+            - **Spec ID:** `${{ steps.extract_spec.outputs.spec_id }}`
+            - **Issue Title:** ${{ github.event.issue.title }}
+            - **Issue Body:**
+            ```
+            ${{ github.event.issue.body }}
+            ```
+
+            ### Instructions
+
+            1. Read the template: `specs/.template.md`
+            2. Read an example spec for reference: `specs/scatter-basic.md`
+            3. Read the spec validator rules: `prompts/spec-validator.md`
+
+            4. Create the spec file at: `specs/${{ steps.extract_spec.outputs.spec_id }}.md`
+               - Follow the template structure exactly
+               - Fill in all sections based on the issue description
+               - Be specific and detailed in quality criteria
+               - Include realistic use cases
+
+            5. Do NOT commit or push - just create the file
+
+            ### Quality Requirements
+            - All required sections must be present (Title, Description, Data Requirements)
+            - Quality criteria should be specific and measurable
+            - Use cases should be realistic and varied
+            - The spec should be complete enough for AI to generate implementations
+
+      - name: Commit and push spec file
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
+          BRANCH="${{ steps.create_branch.outputs.feature_branch }}"
+
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Check if spec file was created
+          if [ -f "specs/$SPEC_ID.md" ]; then
+            git add "specs/$SPEC_ID.md"
+
+            # Check if there are changes to commit
+            if git diff --cached --quiet; then
+              echo "::notice::No changes to commit (spec already exists)"
+            else
+              git commit -m "spec: add $SPEC_ID specification
+
+            Created from issue #${{ github.event.issue.number }}"
+              git push -u origin "$BRANCH"
+              echo "::notice::Pushed spec file to $BRANCH"
+            fi
+          else
+            echo "::error::Spec file was not created by Claude"
+            exit 1
+          fi
+
+      - name: Post comment with spec creation summary
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
+          BRANCH="${{ steps.create_branch.outputs.feature_branch }}"
+
+          gh issue comment ${{ github.event.issue.number }} --body "## Spec Created
+
+          **Spec ID:** \`$SPEC_ID\`
+          **Branch:** \`$BRANCH\`
+          **File:** \`specs/$SPEC_ID.md\`
+
+          ### Next Steps
+          Triggering code generation for all 8 libraries...
+
+          ---
+          :robot: *[gen-create-spec workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+  # ============================================================================
+  # Step 2: Trigger library generation
+  # ============================================================================
+  trigger-generation:
+    needs: create-spec
+    if: needs.create-spec.outputs.spec_id != ''
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+
+    steps:
+      - name: Trigger gen-new-plot workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run gen-new-plot.yml \
+            --repo ${{ github.repository }} \
+            -f spec_id="${{ needs.create-spec.outputs.spec_id }}" \
+            -f feature_branch="${{ needs.create-spec.outputs.feature_branch }}" \
+            -f issue_number="${{ github.event.issue.number }}"
+
+          echo "::notice::Triggered gen-new-plot.yml for ${{ needs.create-spec.outputs.spec_id }}"

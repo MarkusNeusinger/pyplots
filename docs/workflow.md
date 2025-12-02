@@ -87,39 +87,60 @@ graph TB
 ### Flow 1: Discovery & Ideation
 n8n monitors social media daily → AI extracts plot ideas → Creates GitHub issues with draft specs → Human reviews and approves
 
-### Flow 2: Parallel Code Generation
+### Flow 2: Feature Branch & Spec Creation
 
-Approved issue triggers **parallel generation pipeline**:
+Approved issue triggers **feature branch creation**:
+
+1. **Spec Creator** (`gen-create-spec.yml`) runs when `approved` label is added:
+   - Creates feature branch: `plot/{spec-id}`
+   - Claude generates specification file: `specs/{spec-id}.md`
+   - Commits spec to feature branch
+   - Dispatches code generation workflow
+
+```
+Main Issue (#53) + [approved] label
+       ↓
+gen-create-spec.yml
+  ├─ Creates branch: plot/scatter-basic
+  ├─ Creates: specs/scatter-basic.md
+  └─ Dispatches: gen-new-plot.yml
+```
+
+### Flow 3: Parallel Code Generation
+
+Feature branch triggers **parallel generation pipeline**:
 
 1. **Orchestrator** (`gen-new-plot.yml`) creates 8 sub-issues (one per library)
 2. **8 parallel jobs** run simultaneously via `gen-library-impl.yml`:
    - Each library has isolated dependencies
    - Separate Claude context (no syntax confusion)
-   - Independent PR per library
+   - **PRs target feature branch** (`plot/{spec-id}`), not main
 3. **Per-library tracking**: Each sub-issue documents attempts and status
 4. **Partial success possible**: Some libraries can merge while others retry
 
 ```
+Feature Branch: plot/scatter-basic
+       ↓
 Main Issue (#53)
-├── Sub-Issue: [spec-id] matplotlib implementation (#54) → PR #62
-├── Sub-Issue: [spec-id] seaborn implementation (#55) → PR #63
-├── Sub-Issue: [spec-id] plotly implementation (#56) → PR #64
-└── ... (8 total)
+├── Sub-Issue: [scatter-basic] matplotlib (#54) → PR #62 → plot/scatter-basic
+├── Sub-Issue: [scatter-basic] seaborn (#55) → PR #63 → plot/scatter-basic
+├── Sub-Issue: [scatter-basic] plotly (#56) → PR #64 → plot/scatter-basic
+└── ... (8 total, all targeting feature branch)
 ```
 
-### Flow 3: Multi-Version Testing
+### Flow 4: Multi-Version Testing
 PR created → `ci-plottest.yml` runs tests across Python 3.11+ → Reports results
 
-### Flow 4: Plot Image Generation
+### Flow 5: Plot Image Generation
 Tests passed → `gen-preview.yml` generates PNG + thumbnail → Uploads to GCS with versioned paths (`plots/{spec-id}/{library}/{variant}/v{timestamp}.png`) → Stores previous version for before/after comparison
 
-### Flow 4.5: Auto-Tagging
+### Flow 5.5: Auto-Tagging
 PR merged with `ai-approved` → `bot-auto-tag.yml` triggers → AI analyzes code + spec + image → Generates 5-level tag hierarchy → Stores in PostgreSQL with confidence scores
 
-### Flow 5: AI Review
+### Flow 6: AI Review
 Previews generated → `bot-ai-review.yml` triggers → Claude evaluates Spec ↔ Code ↔ Preview → **Posts results to Issue** (permanent knowledge base) → Score ≥7/10 on all criteria required → Labels: `ai-approved` or `ai-rejected`
 
-### Flow 5.5: Per-Library Repair Loop
+### Flow 6.5: Per-Library Repair Loop
 PR labeled `ai-rejected` → `gen-update-plot.yml` triggers for that **specific library**:
 
 1. Reads all previous attempts from sub-issue (for context/learning)
@@ -130,13 +151,29 @@ PR labeled `ai-rejected` → `gen-update-plot.yml` triggers for that **specific 
 
 **Note**: Each library repairs independently - matplotlib can be on attempt 3 while plotly already merged
 
-### Flow 5.6: Auto-Merge
-PR labeled `ai-approved` → `bot-auto-merge.yml` triggers → Automatic squash merge
+### Flow 7: Auto-Merge (Two-Stage)
 
-### Flow 6: Deployment & Maintenance
+**Stage 1: Library PR → Feature Branch**
+PR labeled `ai-approved` → `bot-auto-merge.yml` triggers → Squash merge to feature branch (`plot/{spec-id}`)
+
+**Stage 2: Feature Branch → Main**
+When all libraries are done (merged or not-feasible):
+1. Creates PR from `plot/{spec-id}` to `main`
+2. Enables auto-merge with squash
+3. Closes main issue with completion summary
+
+```
+Library PRs → plot/scatter-basic (feature branch)
+                    ↓
+         All libraries complete
+                    ↓
+    plot/scatter-basic → main (single merge)
+```
+
+### Flow 8: Deployment & Maintenance
 Merged to main → Deploy to Cloud Run → Publicly visible on website → Event-based maintenance (LLM/library updates) → A/B test improvements
 
-### Flow 7: Social Media Promotion
+### Flow 9: Social Media Promotion
 Deployed plot → Added to promotion queue (prioritized by quality score) → n8n posts 2x/day at 10 AM & 3 PM CET → Claude generates content → Posts to X with preview image
 
 ---
@@ -150,12 +187,15 @@ Each plot request spawns **8 parallel sub-issues** (one per library), enabling:
 - **Per-library dependencies** (seaborn can use older matplotlib if needed)
 - **Partial success** (5/8 can merge while 3/8 retry)
 - **Independent tracking** (each library has its own status)
+- **Feature branch isolation** (all PRs target `plot/{spec-id}`, not main)
 
 ### Sub-Issue Lifecycle
 
 ```mermaid
 graph LR
-    A[Main Issue<br/>plot-request + approved] --> B[Orchestrator]
+    A[Main Issue<br/>plot-request + approved] --> A1[Create Feature Branch<br/>plot/spec-id]
+    A1 --> A2[Generate Spec<br/>specs/spec-id.md]
+    A2 --> B[Orchestrator]
     B --> C1[Sub-Issue<br/>matplotlib]
     B --> C2[Sub-Issue<br/>seaborn]
     B --> C3[Sub-Issue<br/>...]
@@ -167,7 +207,7 @@ graph LR
     F1 -->|Score <85| H1[ai-rejected]
     H1 -->|Attempt <3| D1
     H1 -->|Attempt =3| I1[not-feasible]
-    G1 --> J1[merged]
+    G1 --> J1[merged to<br/>feature branch]
 ```
 
 ### Sub-Issue Labels
@@ -182,8 +222,8 @@ graph LR
 | `ai-approved` | Passed review (score ≥85) |
 | `ai-rejected` | Failed review, will retry |
 | `not-feasible` | 3x failed, not implementable in this library |
-| `merged` | Successfully merged to main |
-| `completed` | All implementations merged (main issue closed) |
+| `merged` | Successfully merged to feature branch |
+| `completed` | All implementations merged, feature branch merged to main |
 | `update` | Update request for existing spec |
 | `test` | Test issue, not a real plot |
 
@@ -231,18 +271,21 @@ To update or regenerate an existing plot:
 graph TD
     A[Flow 1: Discovery] -->|GitHub Issue| B{Manual/Auto Approval?}
     B -->|Manual| C[Human Reviews Issue]
-    B -->|Auto| D[Flow 2: Parallel Generation]
-    C -->|Approved| D
+    B -->|Auto| D0[Flow 2: Create Feature Branch]
+    C -->|Approved| D0
     C -->|Rejected| Z[End]
+
+    D0 -->|Create plot/spec-id branch| D0a[Generate Spec File]
+    D0a -->|specs/spec-id.md| D[Flow 3: Parallel Generation]
 
     D -->|Create 8 Sub-Issues| D1[Orchestrator]
     D1 --> D2[8 Parallel Jobs]
-    D2 -->|Per Library| E{Tests Pass?}
+    D2 -->|PR → Feature Branch| E{Tests Pass?}
 
-    E -->|Yes| F[Flow 4: Preview Generation]
+    E -->|Yes| F[Flow 5: Preview Generation]
     E -->|No| D2
 
-    F -->|PNG in GCS| G{Flow 5: AI Review}
+    F -->|PNG in GCS| G{Flow 6: AI Review}
     G -->|Score ≥85| H[ai-approved]
     G -->|Score <85| I[ai-rejected]
 
@@ -250,12 +293,17 @@ graph TD
     J -->|Yes| K[Repair Loop]
     K --> D2
     J -->|No| L[not-feasible]
-    L --> Z
 
-    H --> M[Auto-Merge]
-    M --> N[Flow 6: Deploy]
+    H --> M[Merge to Feature Branch]
+    L --> M2{All Libraries Done?}
+    M --> M2
+
+    M2 -->|Yes| M3[Merge Feature Branch → Main]
+    M2 -->|No| Z2[Wait for others]
+
+    M3 --> N[Flow 8: Deploy]
     N --> O[🌐 Publicly Visible]
-    N --> P[Flow 7: Promotion Queue]
+    N --> P[Flow 9: Promotion Queue]
 
     P --> Q{Daily Limit?}
     Q -->|< 2 posts| R[Post to X]
@@ -264,10 +312,13 @@ graph TD
     S -.->|Next day| Q
 
     style A fill:#e1f5ff
+    style D0 fill:#ffe4b5
+    style D0a fill:#ffe4b5
     style D fill:#fff4e1
     style D1 fill:#fff4e1
     style D2 fill:#fff4e1
     style G fill:#f0e1ff
+    style M3 fill:#98FB98
     style N fill:#e1ffe1
     style O fill:#90EE90
     style L fill:#FF6B6B

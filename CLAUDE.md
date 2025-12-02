@@ -287,15 +287,16 @@ Every implementation file should:
 
 Located in `.github/workflows/`:
 
-### Core Generation Pipeline (Parallel Per-Library)
+### Core Generation Pipeline (Feature Branch + Parallel Per-Library)
 
+- **gen-create-spec.yml**: Creates feature branch `plot/{spec-id}` and generates spec file
 - **gen-new-plot.yml**: Orchestrator - creates sub-issues and triggers parallel generation
 - **gen-library-impl.yml**: Reusable workflow - generates one library implementation
 - **ci-plottest.yml**: Multi-Python-version testing (3.11-3.14)
 - **gen-preview.yml**: Generates preview images, uploads to GCS
 - **bot-ai-review.yml**: Per-library AI quality evaluation
 - **gen-update-plot.yml**: Per-library repair loop (max 3 attempts)
-- **bot-auto-merge.yml**: Per-library auto-merge on approval
+- **bot-auto-merge.yml**: Per-library auto-merge to feature branch, then feature branch to main
 - **bot-sync-status.yml**: Syncs sub-issue status to main issue
 
 ### Supporting Workflows
@@ -305,25 +306,34 @@ Located in `.github/workflows/`:
 - **ci-lint.yml**: Ruff linting
 - **ci-unittest.yml**: Unit tests
 
-### Parallel Architecture
+### Feature Branch Architecture
 
-Each spec generates **8 parallel workflows** (one per library):
+Each spec uses a **feature branch workflow**:
 ```
 Main Issue (plot-request + approved)
     │
-    ├── Sub-Issue: [spec-id] matplotlib implementation
-    │   └── Branch: auto/{spec-id}/matplotlib → PR → Test → Review → Merge
-    │
-    ├── Sub-Issue: [spec-id] seaborn implementation
-    │   └── Branch: auto/{spec-id}/seaborn → PR → Test → Review → Merge
-    │
-    └── ... (6 more libraries)
+    └── gen-create-spec.yml
+        ├── Creates: plot/{spec-id} branch
+        ├── Creates: specs/{spec-id}.md
+        └── Dispatches: gen-new-plot.yml
+            │
+            ├── Sub-Issue: [spec-id] matplotlib implementation
+            │   └── Branch: auto/{spec-id}/matplotlib → PR → plot/{spec-id}
+            │
+            ├── Sub-Issue: [spec-id] seaborn implementation
+            │   └── Branch: auto/{spec-id}/seaborn → PR → plot/{spec-id}
+            │
+            └── ... (6 more libraries, all PRs target feature branch)
+
+When all libraries complete:
+    plot/{spec-id} → main (single merge with spec + all implementations)
 ```
 
 Each library runs in **separate context** with **isolated dependencies**:
-- matplotlib can use latest version
-- seaborn can pin older matplotlib for compatibility
-- No context pollution between different library syntaxes
+- All PRs target the feature branch, not main
+- Feature branch contains spec file + all successful implementations
+- Single merge to main when complete (cleaner git history)
+- Partial success: failed libraries don't block successful ones
 
 ## GitHub Issue Labels
 
@@ -372,7 +382,7 @@ bash .github/scripts/setup-labels.sh
 - **`documentation`** - Documentation improvements
 - **`enhancement`** - New feature or improvement
 
-### Plot Request Workflow (Parallel Per-Library)
+### Plot Request Workflow (Feature Branch + Parallel Per-Library)
 
 1. User creates issue with descriptive title (e.g., "3D scatter plot with rotation animation")
 2. Add `plot-request` label
@@ -380,26 +390,33 @@ bash .github/scripts/setup-labels.sh
    - Analyzes the request, assigns spec ID (e.g., `scatter-3d-animated`)
    - Or flags as duplicate
 4. Maintainer reviews and adds `approved` label
-5. **`gen-new-plot.yml` orchestrator triggers:**
+5. **`gen-create-spec.yml` triggers:**
+   - Creates feature branch: `plot/{spec-id}`
+   - Claude generates spec file: `specs/{spec-id}.md`
+   - Dispatches `gen-new-plot.yml`
+6. **`gen-new-plot.yml` orchestrator triggers:**
    - Creates **8 sub-issues** (one per library)
-   - Dispatches **8 parallel generation jobs**
-6. **Each library independently:**
+   - Dispatches **8 parallel generation jobs** (all use feature branch as base)
+7. **Each library independently:**
    - Generates implementation in separate Claude context
-   - Creates own branch: `auto/{spec-id}/{library}`
-   - Creates own PR linked to sub-issue
+   - Creates own branch: `auto/{spec-id}/{library}` FROM `plot/{spec-id}`
+   - Creates PR targeting **feature branch** (not main)
    - Runs tests (Python 3.11-3.14)
    - Generates preview image
    - AI quality review (score >= 85 required)
-   - Auto-merge if approved, or repair loop (max 3 attempts)
-7. **Main issue tracks overall progress:**
-   - Status table auto-updates with each library's status
-   - Closes when all libraries are merged or marked not-feasible
+   - Auto-merge to feature branch if approved, or repair loop (max 3 attempts)
+8. **When all libraries complete:**
+   - Creates PR from `plot/{spec-id}` to `main`
+   - Auto-merges with squash (single commit with spec + all implementations)
+   - Closes main issue with completion summary
 
 **Benefits:**
 - ~8x faster (parallel execution)
 - No context pollution (separate Claude sessions)
 - Partial success (5/8 can merge while 3/8 retry)
 - Per-library dependency isolation
+- **Clean git history** (single merge to main per plot)
+- **Atomic feature** (spec + all implementations together)
 
 ### Updating Existing Plots
 

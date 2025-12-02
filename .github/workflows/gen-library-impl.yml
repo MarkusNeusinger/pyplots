@@ -30,6 +30,11 @@ on:
         description: "Library-specific dependencies"
         required: true
         type: string
+      base_branch:
+        description: "Base branch to create from (e.g., plot/{spec_id} or main)"
+        required: false
+        type: string
+        default: "main"
     outputs:
       pr_number:
         description: "PR number created (if any)"
@@ -108,17 +113,26 @@ jobs:
         id: branch
         run: |
           BRANCH="auto/${{ inputs.spec_id }}/${{ inputs.library }}"
-          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          BASE="${{ inputs.base_branch }}"
 
-          # Check if branch exists
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "base_branch=$BASE" >> $GITHUB_OUTPUT
+
+          # Fetch base branch first
+          git fetch origin "$BASE"
+
+          # Check if library branch exists
           if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
             git fetch origin "$BRANCH"
             git checkout "$BRANCH"
             echo "branch_exists=true" >> $GITHUB_OUTPUT
           else
-            git checkout -b "$BRANCH"
+            # Create new branch FROM the base branch (not main)
+            git checkout -b "$BRANCH" "origin/$BASE"
             echo "branch_exists=false" >> $GITHUB_OUTPUT
           fi
+
+          echo "::notice::Branch: $BRANCH (base: $BASE)"
 
       - name: Run Claude Code to generate implementation
         timeout-minutes: 60
@@ -157,18 +171,22 @@ jobs:
 
             ### Step 5: Create PR (only if implementation is successful)
             - Branch: `auto/${{ inputs.spec_id }}/${{ inputs.library }}`
+            - **Base:** `${{ inputs.base_branch }}` (IMPORTANT: use --base flag!)
             - Title: `feat(${{ inputs.library }}): implement ${{ inputs.spec_id }}`
-            - Body must include:
-              ```
-              ## Summary
-              Implements `${{ inputs.spec_id }}` for **${{ inputs.library }}** library.
+            - Use this command:
+              ```bash
+              gh pr create --base "${{ inputs.base_branch }}" \
+                --title "feat(${{ inputs.library }}): implement ${{ inputs.spec_id }}" \
+                --body "## Summary
+              Implements \`${{ inputs.spec_id }}\` for **${{ inputs.library }}** library.
 
               **Parent Issue:** #${{ inputs.main_issue_number }}
               **Sub-Issue:** #${{ inputs.sub_issue_number }}
+              **Base Branch:** \`${{ inputs.base_branch }}\`
               **Attempt:** ${{ inputs.attempt }}/3
 
               ## Implementation
-              - `plots/${{ inputs.library }}/{plot_type}/${{ inputs.spec_id }}/default.py`
+              - \`plots/${{ inputs.library }}/{plot_type}/${{ inputs.spec_id }}/default.py\`"
               ```
 
             ### Important
@@ -182,7 +200,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BRANCH="auto/${{ inputs.spec_id }}/${{ inputs.library }}"
-          PR_NUMBER=$(gh pr list --head "$BRANCH" --json number -q '.[0].number' 2>/dev/null || echo "")
+          BASE="${{ inputs.base_branch }}"
+          PR_NUMBER=$(gh pr list --head "$BRANCH" --base "$BASE" --json number -q '.[0].number' 2>/dev/null || echo "")
 
           if [ -n "$PR_NUMBER" ]; then
             echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT

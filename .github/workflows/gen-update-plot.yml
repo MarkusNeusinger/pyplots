@@ -1,13 +1,19 @@
 name: "Gen: Update Plot (Repair Loop)"
-run-name: "Repair: ${{ github.event.pull_request.head.ref }}"
+run-name: "Repair: ${{ github.event.pull_request.head.ref || github.event.inputs.pr_number }}"
 
 on:
   pull_request:
     types: [labeled]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to repair'
+        required: true
+        type: number
 
 # Prevent race conditions when multiple repairs trigger for same PR
 concurrency:
-  group: repair-${{ github.event.pull_request.head.ref }}
+  group: repair-${{ github.event.pull_request.number || github.event.inputs.pr_number }}
   cancel-in-progress: false
 
 jobs:
@@ -22,7 +28,35 @@ jobs:
     steps:
       - name: Check conditions
         id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Handle workflow_dispatch trigger
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            PR_NUM="${{ github.event.inputs.pr_number }}"
+            PR_DATA=$(gh pr view "$PR_NUM" --repo ${{ github.repository }} --json headRefName,labels)
+            BRANCH=$(echo "$PR_DATA" | jq -r '.headRefName')
+            HAS_REJECTED=$(echo "$PR_DATA" | jq -r '.labels[].name' | grep -c "ai-rejected" || echo "0")
+
+            if [[ ! "$BRANCH" =~ ^auto/ ]]; then
+              echo "::notice::Skipping: Branch '$BRANCH' is not auto/*"
+              echo "should_run=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            if [[ "$HAS_REJECTED" == "0" ]]; then
+              echo "::notice::Skipping: PR does not have ai-rejected label"
+              echo "should_run=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            echo "pr_number=$PR_NUM" >> $GITHUB_OUTPUT
+            echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Handle pull_request labeled trigger
           LABEL="${{ github.event.label.name }}"
           BRANCH="${{ github.event.pull_request.head.ref }}"
 
@@ -38,6 +72,8 @@ jobs:
             exit 0
           fi
 
+          echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
           echo "should_run=true" >> $GITHUB_OUTPUT
 
       - name: Checkout repository
@@ -50,8 +86,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          BRANCH="${{ github.event.pull_request.head.ref }}"
-          PR_BODY="${{ github.event.pull_request.body }}"
+          BRANCH="${{ steps.check.outputs.branch }}"
+          PR_NUM="${{ steps.check.outputs.pr_number }}"
+
+          # Get PR body
+          PR_BODY=$(gh pr view "$PR_NUM" --json body -q '.body' 2>/dev/null || echo "")
 
           # Extract from branch: auto/{spec-id}/{library}
           SPEC_ID=$(echo "$BRANCH" | cut -d'/' -f2)
@@ -67,6 +106,7 @@ jobs:
           echo "library=$LIBRARY" >> $GITHUB_OUTPUT
           echo "sub_issue=$SUB_ISSUE" >> $GITHUB_OUTPUT
           echo "main_issue=$MAIN_ISSUE" >> $GITHUB_OUTPUT
+          echo "pr_number=$PR_NUM" >> $GITHUB_OUTPUT
 
           echo "Spec: $SPEC_ID, Library: $LIBRARY, Sub-Issue: #$SUB_ISSUE"
 
@@ -76,7 +116,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_NUMBER="${{ steps.extract_info.outputs.pr_number }}"
           LABELS=$(gh pr view $PR_NUMBER --json labels -q '.labels[].name')
 
           # Count existing attempts
@@ -101,7 +141,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_NUMBER="${{ steps.extract_info.outputs.pr_number }}"
           SUB_ISSUE="${{ steps.extract_info.outputs.sub_issue }}"
           LIBRARY="${{ steps.extract_info.outputs.library }}"
           SPEC_ID="${{ steps.extract_info.outputs.spec_id }}"
@@ -137,7 +177,7 @@ jobs:
         if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ steps.check.outputs.branch }}
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -214,7 +254,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_NUMBER="${{ steps.extract_info.outputs.pr_number }}"
           SUB_ISSUE="${{ steps.extract_info.outputs.sub_issue }}"
           ATTEMPT="${{ steps.check_attempts.outputs.attempt }}"
 
@@ -379,7 +419,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           SUB_ISSUE="${{ steps.extract_info.outputs.sub_issue }}"
-          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_NUMBER="${{ steps.extract_info.outputs.pr_number }}"
           ATTEMPT="${{ steps.check_attempts.outputs.attempt }}"
           LIBRARY="${{ steps.extract_info.outputs.library }}"
           SPEC_ID="${{ steps.extract_info.outputs.spec_id }}"

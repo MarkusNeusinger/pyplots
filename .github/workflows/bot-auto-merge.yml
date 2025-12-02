@@ -1,5 +1,5 @@
 name: "Bot: Auto-Merge"
-run-name: "Auto-Merge: ${{ github.event.inputs.pr_number || github.event.pull_request.head.ref }}"
+run-name: "Auto-Merge: ${{ github.event.inputs.pr_number || github.event.pull_request.head.ref || 'push' }}"
 
 on:
   pull_request:
@@ -10,6 +10,10 @@ on:
         description: 'PR number to auto-merge'
         required: true
         type: number
+  push:
+    branches: [main]
+    paths:
+      - 'plots/**'
 
 jobs:
   # ============================================================================
@@ -311,66 +315,6 @@ jobs:
           ---
           :robot: *PR #$PR_NUM*"
 
-      - name: Merge feature branch to main
-        if: steps.check.outputs.should_run == 'true' && steps.check_complete.outputs.all_done == 'true' && steps.extract.outputs.main_issue != ''
-        id: merge_feature
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          SPEC_ID="${{ steps.extract.outputs.spec_id }}"
-          MAIN_ISSUE="${{ steps.extract.outputs.main_issue }}"
-          FEATURE_BRANCH="plot/$SPEC_ID"
-          MERGED="${{ steps.check_complete.outputs.merged }}"
-          NOT_FEASIBLE="${{ steps.check_complete.outputs.not_feasible }}"
-
-          # Check if feature branch exists
-          if ! git ls-remote --heads origin "$FEATURE_BRANCH" | grep -q "$FEATURE_BRANCH"; then
-            echo "::warning::Feature branch $FEATURE_BRANCH does not exist, skipping merge"
-            echo "merged=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          # Check if PR already exists
-          EXISTING_PR=$(gh pr list --head "$FEATURE_BRANCH" --base main --json number -q '.[0].number' 2>/dev/null || echo "")
-
-          if [ -n "$EXISTING_PR" ]; then
-            echo "::notice::PR already exists: #$EXISTING_PR"
-            PR_NUMBER="$EXISTING_PR"
-          else
-            # Create PR from feature branch to main
-            PR_BODY="## Summary
-
-          Merges all implementations for \`$SPEC_ID\` to main.
-
-          **Parent Issue:** #$MAIN_ISSUE
-
-          ### Libraries Included
-          - **Merged:** $MERGED libraries
-          - **Not Feasible:** $NOT_FEASIBLE libraries
-
-          ### Files
-          - \`specs/$SPEC_ID.md\`
-          - \`plots/*/{plot_type}/$SPEC_ID/default.py\` (multiple libraries)
-
-          ---
-          :robot: *Auto-generated feature branch merge*"
-
-            PR_URL=$(gh pr create \
-              --base main \
-              --head "$FEATURE_BRANCH" \
-              --title "feat: add $SPEC_ID implementations" \
-              --body "$PR_BODY")
-
-            PR_NUMBER=$(echo "$PR_URL" | grep -oP '\d+$')
-            echo "::notice::Created PR #$PR_NUMBER to merge feature branch to main"
-          fi
-
-          # Enable auto-merge
-          gh pr merge "$PR_NUMBER" --squash --auto
-
-          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
-          echo "merged=true" >> $GITHUB_OUTPUT
-
       - name: Complete main issue if all done
         if: steps.check.outputs.should_run == 'true' && steps.check_complete.outputs.all_done == 'true' && steps.extract.outputs.main_issue != ''
         env:
@@ -380,19 +324,18 @@ jobs:
           SPEC_ID="${{ steps.extract.outputs.spec_id }}"
           MERGED="${{ steps.check_complete.outputs.merged }}"
           NOT_FEASIBLE="${{ steps.check_complete.outputs.not_feasible }}"
-          FEATURE_PR="${{ steps.merge_feature.outputs.pr_number }}"
 
           # Post final summary
-          gh issue comment $MAIN_ISSUE --body "## :tada: Implementation Complete!
+          gh issue comment $MAIN_ISSUE --body "## :tada: All Libraries Complete!
 
-          All library implementations for \`$SPEC_ID\` are now complete.
+          All library implementations for \`$SPEC_ID\` have been merged to the feature branch.
 
           ### Final Status
-          - **Merged to feature branch:** $MERGED libraries
+          - **Merged:** $MERGED libraries
           - **Not Feasible:** $NOT_FEASIBLE libraries
-          - **Feature Branch PR:** #$FEATURE_PR (merging to main)
 
-          The feature branch \`plot/$SPEC_ID\` is being merged to main.
+          ### Next Step
+          Manually create a PR from \`plot/$SPEC_ID\` to \`main\` to complete the process.
 
           ---
           :robot: *pyplots CI*"
@@ -402,3 +345,178 @@ jobs:
 
           # Close main issue
           gh issue close $MAIN_ISSUE --reason completed
+
+  # ============================================================================
+  # Job 3: Handle push-triggered post-merge summary
+  # ============================================================================
+  push-post-merge:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+
+      - name: Extract info from commit
+        id: extract
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get the commit message
+          COMMIT_MSG=$(git log -1 --format='%s')
+          COMMIT_SHA="${{ github.sha }}"
+          SHORT_SHA=$(echo "$COMMIT_SHA" | cut -c1-7)
+
+          echo "commit_msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
+          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
+
+          # Try to extract library and spec from commit message
+          # Format: feat(library): implement spec-id (#PR)
+          if [[ "$COMMIT_MSG" =~ feat\(([a-z]+)\):.*implement[[:space:]]+([a-z0-9-]+) ]]; then
+            LIBRARY="${BASH_REMATCH[1]}"
+            SPEC_ID="${BASH_REMATCH[2]}"
+            echo "library=$LIBRARY" >> $GITHUB_OUTPUT
+            echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
+            echo "found=true" >> $GITHUB_OUTPUT
+            echo "Found: Library=$LIBRARY, Spec=$SPEC_ID"
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+            echo "Could not extract library/spec from commit: $COMMIT_MSG"
+          fi
+
+      - name: Find and update sub-issue
+        if: steps.extract.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LIBRARY="${{ steps.extract.outputs.library }}"
+          SPEC_ID="${{ steps.extract.outputs.spec_id }}"
+          COMMIT_SHA="${{ steps.extract.outputs.commit_sha }}"
+          SHORT_SHA="${{ steps.extract.outputs.short_sha }}"
+
+          # Find sub-issue for this library/spec
+          SUB_ISSUE=$(gh issue list --label "library:$LIBRARY" --search "[$SPEC_ID] in:title" --json number,labels -q '.[0].number' 2>/dev/null || echo "")
+
+          if [ -z "$SUB_ISSUE" ]; then
+            echo "No sub-issue found for $LIBRARY/$SPEC_ID"
+            exit 0
+          fi
+
+          # Check if already merged
+          LABELS=$(gh issue view "$SUB_ISSUE" --json labels -q '.labels[].name' 2>/dev/null || echo "")
+          if echo "$LABELS" | grep -q "merged"; then
+            echo "Sub-issue #$SUB_ISSUE already has merged label"
+            exit 0
+          fi
+
+          # Find implementation file
+          IMPL_FILE=$(find plots/$LIBRARY -name "default.py" -path "*/${SPEC_ID}/*" 2>/dev/null | head -1 || echo "")
+
+          # Update labels
+          gh issue edit "$SUB_ISSUE" \
+            --remove-label "ai-approved" \
+            --remove-label "reviewing" \
+            --remove-label "generating" \
+            --remove-label "testing" \
+            --add-label "merged" 2>/dev/null || true
+
+          # Post completion comment
+          gh issue comment "$SUB_ISSUE" --body "## Merged
+
+          **$LIBRARY** implementation for \`$SPEC_ID\` has been merged to main!
+
+          ### Details
+          - **Commit:** [$SHORT_SHA](https://github.com/${{ github.repository }}/commit/$COMMIT_SHA)
+          - **File:** \`$IMPL_FILE\`
+
+          ---
+          :rocket: *Auto-merged by pyplots CI (push trigger)*"
+
+          # Close sub-issue
+          gh issue close "$SUB_ISSUE" --reason completed
+
+          echo "Updated sub-issue #$SUB_ISSUE"
+
+      - name: Check if all libraries are done
+        if: steps.extract.outputs.found == 'true'
+        id: check_complete
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SPEC_ID="${{ steps.extract.outputs.spec_id }}"
+
+          # Find main issue
+          MAIN_ISSUE=$(gh issue list --label plot-request --search "$SPEC_ID in:title" --json number -q '.[0].number' 2>/dev/null || echo "")
+
+          if [ -z "$MAIN_ISSUE" ]; then
+            echo "all_done=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "main_issue=$MAIN_ISSUE" >> $GITHUB_OUTPUT
+
+          # Get all sub-issues for this main issue
+          SUB_ISSUES=$(gh issue list --search "**Parent Issue:** #$MAIN_ISSUE in:body" --json number,labels -q '.' 2>/dev/null || echo "[]")
+
+          # Count statuses
+          TOTAL=$(echo "$SUB_ISSUES" | jq 'length')
+          MERGED=$(echo "$SUB_ISSUES" | jq '[.[] | select(.labels[].name == "merged")] | length')
+          NOT_FEASIBLE=$(echo "$SUB_ISSUES" | jq '[.[] | select(.labels[].name == "not-feasible")] | length')
+          DONE=$((MERGED + NOT_FEASIBLE))
+
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "merged=$MERGED" >> $GITHUB_OUTPUT
+          echo "not_feasible=$NOT_FEASIBLE" >> $GITHUB_OUTPUT
+
+          if [ "$DONE" -eq "$TOTAL" ] && [ "$TOTAL" -gt 0 ]; then
+            echo "all_done=true" >> $GITHUB_OUTPUT
+          else
+            echo "all_done=false" >> $GITHUB_OUTPUT
+          fi
+
+          echo "Progress: $DONE/$TOTAL complete ($MERGED merged, $NOT_FEASIBLE not feasible)"
+
+      - name: Complete main issue if all done
+        if: steps.extract.outputs.found == 'true' && steps.check_complete.outputs.all_done == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          MAIN_ISSUE="${{ steps.check_complete.outputs.main_issue }}"
+          SPEC_ID="${{ steps.extract.outputs.spec_id }}"
+          MERGED="${{ steps.check_complete.outputs.merged }}"
+          NOT_FEASIBLE="${{ steps.check_complete.outputs.not_feasible }}"
+
+          # Check if already completed
+          LABELS=$(gh issue view "$MAIN_ISSUE" --json labels -q '.labels[].name' 2>/dev/null || echo "")
+          if echo "$LABELS" | grep -q "completed"; then
+            echo "Main issue #$MAIN_ISSUE already completed"
+            exit 0
+          fi
+
+          # Post final summary
+          gh issue comment "$MAIN_ISSUE" --body "## :tada: All Libraries Complete!
+
+          All library implementations for \`$SPEC_ID\` have been merged to the feature branch.
+
+          ### Final Status
+          - **Merged:** $MERGED libraries
+          - **Not Feasible:** $NOT_FEASIBLE libraries
+
+          ### Next Step
+          Manually create a PR from \`plot/$SPEC_ID\` to \`main\` to complete the process.
+
+          ---
+          :robot: *pyplots CI (push trigger)*"
+
+          # Add completed label
+          gh issue edit "$MAIN_ISSUE" --add-label "completed"
+
+          # Close main issue
+          gh issue close "$MAIN_ISSUE" --reason completed

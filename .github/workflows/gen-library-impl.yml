@@ -169,7 +169,14 @@ jobs:
             MPLBACKEND=Agg python plots/${{ inputs.library }}/{plot_type}/${{ inputs.spec_id }}/default.py
             ```
 
-            ### Step 5: Create PR (only if implementation is successful)
+            ### Step 5: Format the code
+            IMPORTANT: Run ruff to format and lint the code before committing:
+            ```bash
+            uv run ruff format plots/${{ inputs.library }}/{plot_type}/${{ inputs.spec_id }}/default.py
+            uv run ruff check --fix plots/${{ inputs.library }}/{plot_type}/${{ inputs.spec_id }}/default.py
+            ```
+
+            ### Step 6: Create PR (only if implementation is successful)
             - Branch: `auto/${{ inputs.spec_id }}/${{ inputs.library }}`
             - **Base:** `${{ inputs.base_branch }}` (IMPORTANT: use --base flag!)
             - Title: `feat(${{ inputs.library }}): implement ${{ inputs.spec_id }}`

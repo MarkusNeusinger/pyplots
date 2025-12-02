@@ -256,6 +256,23 @@ jobs:
             echo "PR #$PR_NUM does not have ai-approved label, skipping auto-merge trigger"
           fi
 
+      - name: Trigger retry if rejected
+        if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUM="${{ steps.metadata.outputs.pr_number }}"
+
+          # Check if PR has ai-rejected label (added by Claude)
+          HAS_REJECTED=$(gh pr view "$PR_NUM" --json labels -q '.labels[].name' | grep -c "ai-rejected" || echo "0")
+
+          if [[ "$HAS_REJECTED" != "0" ]]; then
+            echo "PR #$PR_NUM has ai-rejected label, triggering repair workflow"
+            gh workflow run gen-update-plot.yml -f pr_number="$PR_NUM"
+          else
+            echo "PR #$PR_NUM does not have ai-rejected label, skipping retry trigger"
+          fi
+
       - name: Mark as failed after 3 attempts
         if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count == '3'
         env:

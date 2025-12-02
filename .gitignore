@@ -233,3 +233,4 @@ temp/
 
 # Docker
 docker-compose.override.yml
+secrets/

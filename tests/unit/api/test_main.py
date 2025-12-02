@@ -194,3 +194,74 @@ class TestAppConfiguration:
         """App should have description."""
         assert "AI-powered" in app.description
         assert "plotting" in app.description.lower()
+
+
+class TestSpecsEndpoint:
+    """Tests for the specs endpoint (/specs)."""
+
+    def test_returns_200_status(self, client: TestClient) -> None:
+        """Specs endpoint should return 200 OK."""
+        response = client.get("/specs")
+        assert response.status_code == 200
+
+    def test_returns_specs_list(self, client: TestClient) -> None:
+        """Specs endpoint should return a list of specs."""
+        response = client.get("/specs")
+        data = response.json()
+        assert "specs" in data
+        assert isinstance(data["specs"], list)
+
+    def test_returns_known_specs(self, client: TestClient) -> None:
+        """Specs endpoint should return known spec IDs."""
+        response = client.get("/specs")
+        data = response.json()
+        specs = data["specs"]
+        # Should contain some of our known specs
+        assert len(specs) > 0
+        # Check for at least one known spec
+        known_specs = {"scatter-basic", "bar-basic", "box-basic", "histogram-basic", "pie-basic-labeled", "area-basic"}
+        assert any(spec in known_specs for spec in specs)
+
+    def test_excludes_template_files(self, client: TestClient) -> None:
+        """Specs endpoint should exclude template and versioning files."""
+        response = client.get("/specs")
+        data = response.json()
+        specs = data["specs"]
+        assert ".template" not in specs
+        assert "VERSIONING" not in specs
+
+
+class TestSpecImagesEndpoint:
+    """Tests for the spec images endpoint (/specs/{spec_id}/images)."""
+
+    def test_returns_200_for_valid_spec(self, client: TestClient) -> None:
+        """Images endpoint should return 200 for valid spec."""
+        response = client.get("/specs/scatter-basic/images")
+        assert response.status_code == 200
+
+    def test_returns_404_for_invalid_spec(self, client: TestClient) -> None:
+        """Images endpoint should return 404 for non-existent spec."""
+        response = client.get("/specs/nonexistent-spec/images")
+        assert response.status_code == 404
+
+    def test_returns_spec_id_in_response(self, client: TestClient) -> None:
+        """Images endpoint should return spec_id in response."""
+        response = client.get("/specs/scatter-basic/images")
+        data = response.json()
+        assert data["spec_id"] == "scatter-basic"
+
+    def test_returns_images_list(self, client: TestClient) -> None:
+        """Images endpoint should return images list."""
+        response = client.get("/specs/scatter-basic/images")
+        data = response.json()
+        assert "images" in data
+        assert isinstance(data["images"], list)
+
+    def test_image_has_library_and_url(self, client: TestClient) -> None:
+        """Each image should have library and url fields."""
+        response = client.get("/specs/scatter-basic/images")
+        data = response.json()
+        # If images are available (depends on GCS)
+        for img in data["images"]:
+            assert "library" in img
+            assert "url" in img

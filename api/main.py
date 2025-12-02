@@ -5,11 +5,27 @@ AI-powered Python plotting examples that work with YOUR data.
 """
 
 import logging
+import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+
+
+# Try to import GCS client (optional)
+try:
+    from google.cloud import storage
+
+    GCS_AVAILABLE = True
+except ImportError:
+    GCS_AVAILABLE = False
+
+# Configuration
+GCS_BUCKET = os.getenv("GCS_BUCKET", "pyplots-images")
+BASE_DIR = Path(__file__).parent.parent
+SPECS_DIR = BASE_DIR / "specs"
 
 
 # Configure logging
@@ -81,6 +97,103 @@ async def hello(name: str):
     Simple hello endpoint for testing.
     """
     return {"message": f"Hello, {name}!", "service": "pyplots"}
+
+
+# ============================================================================
+# Spec and Image Endpoints
+# ============================================================================
+
+
+def list_spec_ids() -> list[str]:
+    """
+    List all available spec IDs from the specs directory.
+
+    Returns:
+        List of spec IDs (without .md extension)
+    """
+    if not SPECS_DIR.exists():
+        return []
+
+    excluded = {".template", "VERSIONING"}
+    specs = []
+    for f in SPECS_DIR.glob("*.md"):
+        spec_id = f.stem
+        if spec_id not in excluded:
+            specs.append(spec_id)
+    return sorted(specs)
+
+
+def get_latest_images_for_spec(spec_id: str) -> list[dict]:
+    """
+    Get latest plot images for a spec from GCS.
+
+    Args:
+        spec_id: The specification ID
+
+    Returns:
+        List of dicts with library name and image URL
+    """
+    if not GCS_AVAILABLE:
+        logger.warning("GCS client not available - returning empty image list")
+        return []
+
+    try:
+        client = storage.Client()
+        bucket = client.bucket(GCS_BUCKET)
+        prefix = f"plots/{spec_id}/"
+        blobs = list(bucket.list_blobs(prefix=prefix))
+
+        # Group by library, find newest image (excluding thumbnails)
+        library_images: dict[str, str] = {}
+        for blob in blobs:
+            if blob.name.endswith(".png") and "_thumb" not in blob.name:
+                parts = blob.name.split("/")
+                if len(parts) >= 4:
+                    # Path: plots/{spec_id}/{library}/{variant}/v{timestamp}.png
+                    library = parts[2]
+                    # Keep the newest (lexicographically highest timestamp)
+                    if library not in library_images or blob.name > library_images[library]:
+                        library_images[library] = blob.name
+
+        return [
+            {"library": lib, "url": f"https://storage.googleapis.com/{GCS_BUCKET}/{path}"}
+            for lib, path in sorted(library_images.items())
+        ]
+    except Exception as e:
+        logger.error(f"Error fetching images from GCS: {e}")
+        return []
+
+
+@app.get("/specs")
+async def get_specs():
+    """
+    Get list of all available plot specifications.
+
+    Returns:
+        List of spec IDs
+    """
+    specs = list_spec_ids()
+    return {"specs": specs}
+
+
+@app.get("/specs/{spec_id}/images")
+async def get_spec_images(spec_id: str):
+    """
+    Get latest plot images for a specification across all libraries.
+
+    Args:
+        spec_id: The specification ID (e.g., 'scatter-basic')
+
+    Returns:
+        Spec ID and list of images with library names and URLs
+    """
+    # Verify spec exists
+    available_specs = list_spec_ids()
+    if spec_id not in available_specs:
+        raise HTTPException(status_code=404, detail=f"Spec '{spec_id}' not found")
+
+    images = get_latest_images_for_spec(spec_id)
+    return {"spec_id": spec_id, "images": images}
 
 
 if __name__ == "__main__":

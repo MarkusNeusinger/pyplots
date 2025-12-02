@@ -4,11 +4,39 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import App from './App';
 
+// Import Inter font
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
+
 const theme = createTheme({
+  typography: {
+    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  },
   palette: {
     mode: 'light',
     primary: {
-      main: '#1976d2',
+      main: '#2563eb', // Slightly softer blue
+    },
+    text: {
+      primary: '#1f2937',
+      secondary: '#6b7280',
+    },
+    background: {
+      default: '#ffffff',
+    },
+  },
+  shape: {
+    borderRadius: 12,
+  },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          backgroundColor: '#ffffff',
+        },
+      },
     },
   },
 });

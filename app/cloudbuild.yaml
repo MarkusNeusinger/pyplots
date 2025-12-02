@@ -2,7 +2,7 @@
 substitutions:
   _REGION: "europe-west4"
   _SERVICE_NAME: "pyplots-frontend"
-  _VITE_API_URL: "https://pyplots-backend-REPLACE-ME.run.app"
+  _VITE_API_URL: "https://api.pyplots.ai"
 
 steps:
   # Build the container image

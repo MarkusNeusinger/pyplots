@@ -124,7 +124,7 @@ The same spec ID links implementations across all 8 supported libraries.
 - **`plots/{library}/{plot_type}/{spec_id}/{variant}.py`**: Library-specific implementations
 - **`core/`**: Shared business logic (database, repositories, config)
 - **`api/`**: FastAPI backend (routers, schemas, dependencies)
-- **`app/`**: Next.js frontend (React + TypeScript + Vite + MUI)
+- **`app/`**: React frontend (Vite + TypeScript + MUI)
 - **`prompts/`**: AI agent prompts for code generation, quality evaluation, and tagging
 - **`tests/unit/`**: Unit tests mirroring source structure
 - **`docs/`**: Architecture and workflow documentation
@@ -139,7 +139,7 @@ The same spec ID links implementations across all 8 supported libraries.
 ## Tech Stack
 
 - **Backend**: FastAPI, SQLAlchemy (async), PostgreSQL, Python 3.10+
-- **Frontend**: Next.js 14, TypeScript, Tailwind CSS, MUI 7
+- **Frontend**: React 19, Vite, TypeScript, MUI 7
 - **Plotting**: matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts
 - **Package Manager**: uv (fast Python installer)
 - **Infrastructure**: Google Cloud Run, Cloud SQL, Cloud Storage
@@ -445,16 +445,22 @@ To update an existing plot implementation:
 
 ## Environment Variables
 
-Required in `.env`:
+Required in `.env` for local development:
 ```bash
-DATABASE_URL=postgresql+asyncpg://user:pass@localhost:5432/pyplots
-ANTHROPIC_API_KEY=sk-ant-...
-GCS_BUCKET=pyplots-images-dev
+# Database (Cloud SQL via public IP for local dev)
+DATABASE_URL=postgresql+asyncpg://user:password@CLOUD_SQL_IP:5432/pyplots
+
+# Google Cloud Storage
+GCS_BUCKET=pyplots-images
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
+
+# Environment
 ENVIRONMENT=development
-FRONTEND_URL=http://localhost:3000
 ```
 
-See `.env.example` for full list.
+**Production** (Cloud Run): Secrets are injected via Secret Manager and environment variables set in `cloudbuild.yaml`.
+
+See `.env.example` for full list with comments.
 
 ## Common Development Tasks
 
@@ -493,20 +499,39 @@ python plots/matplotlib/scatter/scatter_basic_001/default.py
 
 ## Cloud Deployment
 
-### Backend (FastAPI)
+The project runs on **Google Cloud Platform**:
+
+| Service | Component | Purpose |
+|---------|-----------|---------|
+| **Cloud Run** | `pyplots-backend` | FastAPI API (auto-scaling, serverless) |
+| **Cloud Run** | `pyplots-frontend` | React SPA served via nginx |
+| **Cloud SQL** | PostgreSQL | Database (connected via Unix socket) |
+| **Cloud Storage** | `pyplots-images` | Preview images (GCS bucket) |
+| **Secret Manager** | `DATABASE_URL` | Secure credential storage |
+| **Cloud Build** | Triggers | Auto-deploy on push to main |
+
+### Automatic Deployment
+
+Push to `main` branch triggers Cloud Build:
+- Changes in `api/`, `core/`, `pyproject.toml` → Backend redeploy
+- Changes in `app/` → Frontend redeploy
+
+### Manual Deployment
 
 ```bash
-# Deploy to Cloud Run
+# Backend
 gcloud builds submit --config=api/cloudbuild.yaml --project=YOUR_PROJECT_ID
+
+# Frontend
+gcloud builds submit --config=app/cloudbuild.yaml --project=YOUR_PROJECT_ID
 ```
 
-### Frontend (Next.js)
+### Configuration Files
 
-```bash
-# Deploy to Cloud Run
-gcloud builds submit --config=app/cloudbuild.yaml \
-  --substitutions=_VITE_API_URL=https://api.pyplots.ai
-```
+- **`api/cloudbuild.yaml`**: Backend build + deploy (includes Cloud SQL connection)
+- **`api/Dockerfile`**: Python 3.13 + uv + FastAPI
+- **`app/cloudbuild.yaml`**: Frontend build + deploy
+- **`app/Dockerfile`**: Multi-stage build (Node → nginx)
 
 ## Debugging Tips
 

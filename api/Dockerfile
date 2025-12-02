@@ -1,5 +1,5 @@
 # Dockerfile for pyplots FastAPI backend on Cloud Run
-FROM python:3.10-slim
+FROM python:3.13-slim
 
 # Set working directory
 WORKDIR /app
@@ -14,17 +14,19 @@ RUN apt-get update && apt-get install -y \
 COPY pyproject.toml .
 COPY README.md .
 
-# Install Python dependencies (production only, no test extras)
+# Install uv and create venv
 RUN pip install --no-cache-dir uv && \
+    uv venv && \
     uv sync
 
 # Copy application code
 COPY api/ ./api/
 COPY core/ ./core/
 
-# Create non-root user
+# Create non-root user and set permissions AFTER everything is installed
 RUN useradd -m -u 1000 appuser && \
-    chown -R appuser:appuser /app
+    chown -R appuser:appuser /app && \
+    chmod -R 755 /app/.venv/bin
 
 # Switch to non-root user
 USER appuser
@@ -41,4 +43,4 @@ HEALTHCHECK CMD curl --fail http://localhost:8000/health || exit 1
 
 # Run FastAPI app with uvicorn
 # Cloud Run provides PORT env var, default to 8000
-CMD .venv/bin/uvicorn api.main:app --host 0.0.0.0 --port ${PORT:-8000}
+CMD [".venv/bin/uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]

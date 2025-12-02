@@ -94,27 +94,24 @@ Frontend available at: `http://localhost:3000`
 
 ## Environment Variables
 
-Create `.env` file in project root:
+Create `.env` file in project root (see `.env.example`):
 
 ```bash
-# Database
-DATABASE_URL=postgresql+asyncpg://pyplots:dev_password@localhost:5432/pyplots
+# Database (Cloud SQL via public IP for local development)
+DATABASE_URL=postgresql+asyncpg://user:password@CLOUD_SQL_PUBLIC_IP:5432/pyplots
 
-# API Keys (for AI generation)
-ANTHROPIC_API_KEY=sk-ant-...
-GOOGLE_API_KEY=...  # For Vertex AI (optional)
-OPENAI_API_KEY=sk-...  # For GPT (optional)
-
-# Google Cloud (for preview uploads)
-GCS_BUCKET=pyplots-images-dev
-GCS_CREDENTIALS_PATH=/path/to/credentials.json
+# Google Cloud Storage
+GCS_BUCKET=pyplots-images
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
 
 # Environment
 ENVIRONMENT=development
 
-# Frontend URL (for CORS)
-FRONTEND_URL=http://localhost:3000
+# API Keys (optional, for AI generation workflows)
+# ANTHROPIC_API_KEY=sk-ant-...
 ```
+
+**Production**: In Cloud Run, `DATABASE_URL` is injected from Secret Manager and uses a Unix socket connection to Cloud SQL.
 
 **Never commit `.env`!** (Already in `.gitignore`)
 
@@ -390,25 +387,39 @@ The project includes versioned rules for AI code generation and quality evaluati
 
 ## Deployment
 
-pyplots runs on **Google Cloud Platform**:
+pyplots runs on **Google Cloud Platform** (europe-west4 region):
 
-| Service | Purpose |
-|---------|---------|
-| **Cloud Run** | FastAPI backend + Next.js frontend (auto-scaling) |
-| **Cloud SQL** | PostgreSQL database |
-| **Cloud Storage** | Preview images |
-| **n8n Cloud** | Automation workflows (separate subscription) |
+| Service | Component | Purpose |
+|---------|-----------|---------|
+| **Cloud Run** | `pyplots-backend` | FastAPI API (serverless, auto-scaling) |
+| **Cloud Run** | `pyplots-frontend` | React SPA via nginx |
+| **Cloud SQL** | PostgreSQL 18 | Database (Unix socket in production) |
+| **Cloud Storage** | `pyplots-images` | Preview images (GCS bucket) |
+| **Secret Manager** | `DATABASE_URL` | Secure credential storage |
+| **Cloud Build** | Triggers | Auto-deploy on push to main |
 
-**Deploy Commands**:
+### Automatic Deployment (Recommended)
+
+Push to `main` triggers Cloud Build automatically:
+- `api/**`, `core/**`, `pyproject.toml` changes → Backend redeploy
+- `app/**` changes → Frontend redeploy
+
+### Manual Deployment
+
 ```bash
 # Backend
-gcloud run deploy pyplots-api --source . --region europe-west4
+gcloud builds submit --config=api/cloudbuild.yaml --project=YOUR_PROJECT_ID
 
 # Frontend
-gcloud run deploy pyplots-frontend --source ./app --region europe-west4
+gcloud builds submit --config=app/cloudbuild.yaml --project=YOUR_PROJECT_ID
 ```
 
-CI/CD is handled by GitHub Actions (see `.github/workflows/`).
+### Key Files
+
+- `api/cloudbuild.yaml` - Backend build config (Cloud SQL + Secrets)
+- `api/Dockerfile` - Python 3.13 + uv + uvicorn
+- `app/cloudbuild.yaml` - Frontend build config
+- `app/Dockerfile` - Multi-stage: Node build → nginx serve
 
 ---
 

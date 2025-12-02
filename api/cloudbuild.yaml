@@ -50,8 +50,11 @@ steps:
       - "--max-instances=${_MAX_INSTANCES}"
       - "--port=8000"
       - "--allow-unauthenticated"
+      - "--add-cloudsql-instances=pyplots:europe-west4:pyplots-db"
+      - "--set-secrets=DATABASE_URL=DATABASE_URL:latest"
       - "--set-env-vars=ENVIRONMENT=production"
       - "--set-env-vars=GOOGLE_CLOUD_PROJECT=$PROJECT_ID"
+      - "--set-env-vars=GCS_BUCKET=pyplots-images"
     id: "deploy"
     waitFor: ["push-image"]
 

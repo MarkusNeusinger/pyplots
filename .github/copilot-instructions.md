@@ -148,10 +148,27 @@ Every implementation file should:
 
 ## Tech Stack
 
-- **Backend**: FastAPI, SQLAlchemy (async), PostgreSQL, Python 3.14+
+- **Backend**: FastAPI, SQLAlchemy (async), PostgreSQL, Python 3.10+
 - **Frontend**: React 19, TypeScript, Vite 7, MUI 7
 - **Package Manager**: uv (Python), yarn (Node.js)
 - **Linting**: Ruff (Python)
+
+## Deployment
+
+The project runs on **Google Cloud Platform** (europe-west4 region):
+
+| Service | Component | Purpose |
+|---------|-----------|---------|
+| **Cloud Run** | `pyplots-backend` | FastAPI API (auto-scaling, serverless) |
+| **Cloud Run** | `pyplots-frontend` | React SPA served via nginx |
+| **Cloud SQL** | PostgreSQL 15 | Database (Unix socket in production) |
+| **Cloud Storage** | `pyplots-images` | Preview images (GCS bucket) |
+| **Secret Manager** | `DATABASE_URL` | Secure credential storage |
+| **Cloud Build** | Triggers | Auto-deploy on push to main |
+
+Automatic deployment on push to `main`:
+- `api/**`, `core/**`, `pyproject.toml` changes → Backend redeploy
+- `app/**` changes → Frontend redeploy
 
 ## Acceptance Criteria
 

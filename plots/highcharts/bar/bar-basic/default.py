@@ -73,8 +73,8 @@ def create_plot(
             available = ", ".join(data.columns.tolist())
             raise KeyError(f"Column '{col}' not found. Available: {available}")
 
-    # Create chart
-    chart = Chart()
+    # Create chart with container ID for rendering
+    chart = Chart(container="container")
     chart.options = HighchartsOptions()
 
     # Chart configuration
@@ -133,6 +133,7 @@ def create_plot(
 if __name__ == "__main__":
     import tempfile
     import time
+    import urllib.request
     from pathlib import Path
 
     from selenium import webdriver
@@ -148,13 +149,19 @@ if __name__ == "__main__":
         sample_data, "category", "value", title="Sales by Product", xlabel="Product Category", ylabel="Sales ($)"
     )
 
+    # Download Highcharts JS (required for headless Chrome which can't load CDN)
+    highcharts_url = "https://code.highcharts.com/highcharts.js"
+    with urllib.request.urlopen(highcharts_url, timeout=30) as response:
+        highcharts_js = response.read().decode("utf-8")
+
     # Export to PNG via Selenium screenshot
+    # Note: to_js_literal() includes DOMContentLoaded wrapper and Highcharts.chart() call
     html_str = chart.to_js_literal()
     html_content = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
-    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script>{highcharts_js}</script>
 </head>
 <body style="margin:0;">
     <div id="container" style="width: 1600px; height: 900px;"></div>
@@ -171,11 +178,12 @@ if __name__ == "__main__":
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1600,900")
 
     driver = webdriver.Chrome(options=chrome_options)
     driver.get(f"file://{temp_path}")
-    time.sleep(1)  # Wait for chart to render
+    time.sleep(5)  # Wait for chart to render
     driver.save_screenshot("plot.png")
     driver.quit()
 

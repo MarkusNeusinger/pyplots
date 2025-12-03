@@ -139,6 +139,40 @@ jobs:
             --squash \
             --delete-branch
 
+      - name: Close sub-issue after merge
+        if: steps.check.outputs.should_run == 'true' && steps.sub_issue.outputs.number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SUB_ISSUE="${{ steps.sub_issue.outputs.number }}"
+          LIBRARY="${{ steps.extract.outputs.library }}"
+          SPEC_ID="${{ steps.extract.outputs.spec_id }}"
+          PR_NUM="${{ steps.check.outputs.pr_number }}"
+
+          echo "Closing sub-issue #$SUB_ISSUE after merge"
+
+          # Update labels
+          gh issue edit $SUB_ISSUE \
+            --remove-label "ai-approved" \
+            --remove-label "reviewing" \
+            --remove-label "generating" \
+            --remove-label "testing" \
+            --add-label "merged"
+
+          # Post completion comment
+          gh issue comment $SUB_ISSUE --body "## Merged
+
+          **$LIBRARY** implementation for \`$SPEC_ID\` has been merged!
+
+          - **PR:** #$PR_NUM
+
+          ---
+          :rocket: *Auto-merged by pyplots CI*"
+
+          # Close sub-issue
+          gh issue close $SUB_ISSUE --reason completed
+          echo "Sub-issue #$SUB_ISSUE closed"
+
   # ============================================================================
   # Job 2: Post-merge summary (per library)
   # ============================================================================

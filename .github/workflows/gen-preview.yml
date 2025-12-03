@@ -107,6 +107,16 @@ jobs:
           uv sync --all-extras
           uv pip install pillow
 
+      - name: Install Inter font
+        if: steps.check.outputs.should_run == 'true'
+        run: |
+          mkdir -p ~/.local/share/fonts
+          curl -sL "https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip" -o /tmp/inter.zip
+          unzip -q /tmp/inter.zip -d /tmp/inter
+          cp /tmp/inter/Inter*.ttf ~/.local/share/fonts/ 2>/dev/null || cp /tmp/inter/Inter*.otf ~/.local/share/fonts/ 2>/dev/null || true
+          fc-cache -f
+          echo "Inter font installed"
+
       - name: Find changed plot files
         if: steps.check.outputs.should_run == 'true'
         id: changed_plots
@@ -307,17 +317,29 @@ jobs:
 
           PLOT_MARKDOWN=$(cat plot_markdown.txt 2>/dev/null || echo "")
 
+          # Generate Shield.io badge URLs based on test results
+          get_badge() {
+            local version=$1
+            local status=$2
+            local color
+            case "$status" in
+              pass) color="brightgreen" ;;
+              fail) color="red" ;;
+              skip) color="lightgrey" ;;
+              *) color="lightgrey" ;;
+            esac
+            echo "![${version}](https://img.shields.io/badge/${version}-${status}-${color})"
+          }
+
+          BADGE_314=$(get_badge "3.14" "${{ steps.test_results.outputs.py314 }}")
+          BADGE_313=$(get_badge "3.13" "${{ steps.test_results.outputs.py313 }}")
+          BADGE_312=$(get_badge "3.12" "${{ steps.test_results.outputs.py312 }}")
+          BADGE_311=$(get_badge "3.11" "${{ steps.test_results.outputs.py311 }}")
+
           cat > comment_body.md << COMMENTEOF
           ## 🧪 Test Results (PR #${PR_NUM})
 
-          | Python | Status | Note |
-          |--------|--------|------|
-          | 3.14   | ✅ Pass | Primary (plot generated) |
-          | 3.13   | ℹ️ See workflow | Compatibility test |
-          | 3.12   | ℹ️ See workflow | Compatibility test |
-          | 3.11   | ℹ️ See workflow | Compatibility test |
-
-          **Note:** Code is optimized for Python 3.14.
+          **Python:** ${BADGE_314} ${BADGE_313} ${BADGE_312} ${BADGE_311}
 
           ## 📊 Plot Preview (Python 3.14)
           ${PLOT_MARKDOWN}

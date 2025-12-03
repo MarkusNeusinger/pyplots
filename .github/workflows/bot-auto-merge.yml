@@ -558,7 +558,13 @@ jobs:
             echo "Created PR #$FEATURE_PR"
 
             # Merge the PR immediately
-            gh pr merge "$FEATURE_PR" --squash --delete-branch
+            if ! gh pr merge "$FEATURE_PR" --squash --delete-branch; then
+              echo "::error::Failed to merge PR #$FEATURE_PR"
+              gh issue comment "$MAIN_ISSUE" --body "## :warning: Merge Failed
+
+          Failed to automatically merge PR #$FEATURE_PR. Please merge manually."
+              exit 1
+            fi
           fi
 
           # Post completion to main issue

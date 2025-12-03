@@ -6,6 +6,30 @@ This file provides guidance to GitHub Copilot when working with code in this rep
 
 - **No Co-authored-by in commit messages** - Never add `Co-authored-by:` lines to commit messages. Keep commit messages clean without AI attribution footers.
 
+## Task Suitability
+
+**Good tasks for Copilot:**
+- Bug fixes in existing plot implementations
+- Adding new plot types following existing patterns
+- Updating documentation
+- Writing or improving unit tests
+- Code refactoring within established patterns
+- Fixing linting/formatting issues
+- Updating dependencies (after checking security advisories)
+
+**Tasks requiring human review:**
+- Changes to core architecture or database schema
+- Security-sensitive code (authentication, API keys, credentials)
+- Complex algorithmic changes requiring domain expertise
+- Breaking changes to public APIs
+- Infrastructure or deployment configuration changes
+
+**How to iterate with Copilot:**
+- Use `@copilot` in PR comments to request changes or corrections
+- Provide specific, actionable feedback referencing line numbers
+- Link to relevant documentation or examples in the codebase
+- Request explanations if the approach is unclear
+
 ## Project Overview
 
 **pyplots** is an AI-powered platform for Python data visualization that automatically discovers, generates, tests, and maintains plotting examples. The platform is specification-driven: every plot starts as a library-agnostic Markdown spec, then AI generates implementations for all supported libraries.
@@ -178,3 +202,25 @@ Before completing any task:
 3. Code is properly formatted: `uv run ruff format --check .`
 4. Type hints are included for all new functions
 5. Docstrings follow Google style for public functions
+
+## Environment and Troubleshooting
+
+### Known Limitations
+
+- **Package Manager**: `uv` may not be available in all environments. Fallback to `pip` if needed.
+- **External Dependencies**: Some domains may be blocked. If encountering network issues, document them in the PR.
+- **Database**: Cloud SQL requires proper credentials. Use `.env.example` as template for local development.
+
+### Getting Help
+
+- **Documentation**: Check `docs/` directory for architecture, workflow, and development guides
+- **Examples**: Look at existing plot implementations in `plots/` for patterns
+- **CLAUDE.md**: Additional guidance specific to Claude AI agent workflows
+- **Issue Templates**: Use GitHub issue templates for consistent problem reporting
+
+### Common Issues
+
+- **Import errors**: Run `uv sync --all-extras` or `pip install -e ".[dev]"` to install dependencies
+- **Test failures**: Ensure you're testing only changes related to your task, not pre-existing issues
+- **Linting failures**: Run `uv run ruff check . --fix` to auto-fix common issues
+- **Type checking**: Add type hints using standard Python typing (e.g., `list[str]`, `dict[str, int]`)

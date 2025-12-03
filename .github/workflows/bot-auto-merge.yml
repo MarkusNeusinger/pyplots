@@ -129,7 +129,7 @@ jobs:
             --remove-label "ai-rejected" \
             --add-label "ai-approved"
 
-      - name: Enable auto-merge
+      - name: Merge PR directly
         if: steps.check.outputs.should_run == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -137,7 +137,7 @@ jobs:
           gh pr merge ${{ steps.check.outputs.pr_number }} \
             --repo ${{ github.repository }} \
             --squash \
-            --auto
+            --delete-branch
 
   # ============================================================================
   # Job 2: Post-merge summary (per library)
@@ -315,36 +315,53 @@ jobs:
           ---
           :robot: *PR #$PR_NUM*"
 
-      - name: Complete main issue if all done
+      - name: Create and merge feature-to-main PR
         if: steps.check.outputs.should_run == 'true' && steps.check_complete.outputs.all_done == 'true' && steps.extract.outputs.main_issue != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          MAIN_ISSUE="${{ steps.extract.outputs.main_issue }}"
           SPEC_ID="${{ steps.extract.outputs.spec_id }}"
+          MAIN_ISSUE="${{ steps.extract.outputs.main_issue }}"
           MERGED="${{ steps.check_complete.outputs.merged }}"
           NOT_FEASIBLE="${{ steps.check_complete.outputs.not_feasible }}"
 
-          # Post final summary
-          gh issue comment $MAIN_ISSUE --body "## :tada: All Libraries Complete!
+          # Check if feature branch exists
+          if ! gh api repos/${{ github.repository }}/branches/plot/$SPEC_ID &>/dev/null; then
+            echo "Feature branch plot/$SPEC_ID does not exist, skipping"
+            exit 0
+          fi
 
-          All library implementations for \`$SPEC_ID\` have been merged to the feature branch.
+          # Check if PR already exists
+          EXISTING_PR=$(gh pr list --base main --head "plot/$SPEC_ID" --json number -q '.[0].number' 2>/dev/null || echo "")
+          if [ -n "$EXISTING_PR" ]; then
+            echo "PR #$EXISTING_PR already exists for plot/$SPEC_ID -> main"
+            if gh pr merge "$EXISTING_PR" --squash --delete-branch; then
+              FEATURE_PR="$EXISTING_PR"
+            else
+              echo "::error::Failed to merge existing PR #$EXISTING_PR"
+              exit 1
+            fi
+          else
+            # Create and merge feature PR using reusable script
+            .github/scripts/create-feature-pr.sh "$SPEC_ID" "$MAIN_ISSUE" "$MERGED" "$NOT_FEASIBLE"
+          fi
+
+          # Post completion to main issue
+          gh issue comment "$MAIN_ISSUE" --body "## :tada: All Complete!
+
+          All library implementations for \`$SPEC_ID\` have been merged to main!
 
           ### Final Status
           - **Merged:** $MERGED libraries
           - **Not Feasible:** $NOT_FEASIBLE libraries
-
-          ### Next Step
-          Manually create a PR from \`plot/$SPEC_ID\` to \`main\` to complete the process.
+          - **Feature PR:** #$FEATURE_PR
 
           ---
-          :robot: *pyplots CI*"
+          :rocket: *pyplots CI*"
 
-          # Add completed label
-          gh issue edit $MAIN_ISSUE --add-label "completed"
-
-          # Close main issue
-          gh issue close $MAIN_ISSUE --reason completed
+          # Add completed label and close
+          gh issue edit "$MAIN_ISSUE" --add-label "completed"
+          gh issue close "$MAIN_ISSUE" --reason completed
 
   # ============================================================================
   # Job 3: Handle push-triggered post-merge summary
@@ -483,7 +500,7 @@ jobs:
 
           echo "Progress: $DONE/$TOTAL complete ($MERGED merged, $NOT_FEASIBLE not feasible)"
 
-      - name: Complete main issue if all done
+      - name: Create and merge feature-to-main PR
         if: steps.extract.outputs.found == 'true' && steps.check_complete.outputs.all_done == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -500,23 +517,69 @@ jobs:
             exit 0
           fi
 
-          # Post final summary
-          gh issue comment "$MAIN_ISSUE" --body "## :tada: All Libraries Complete!
+          # Check if feature branch exists
+          if ! gh api repos/${{ github.repository }}/branches/plot/$SPEC_ID &>/dev/null; then
+            echo "Feature branch plot/$SPEC_ID does not exist, skipping"
+            exit 0
+          fi
 
-          All library implementations for \`$SPEC_ID\` have been merged to the feature branch.
+          # Check if PR already exists
+          EXISTING_PR=$(gh pr list --base main --head "plot/$SPEC_ID" --json number -q '.[0].number' 2>/dev/null || echo "")
+          if [ -n "$EXISTING_PR" ]; then
+            echo "PR #$EXISTING_PR already exists for plot/$SPEC_ID -> main"
+            if gh pr merge "$EXISTING_PR" --squash --delete-branch; then
+              FEATURE_PR="$EXISTING_PR"
+            else
+              echo "::error::Failed to merge existing PR #$EXISTING_PR"
+              exit 1
+            fi
+          else
+            # Create PR from feature branch to main
+            PR_URL=$(gh pr create \
+              --base main \
+              --head "plot/$SPEC_ID" \
+              --title "feat: add $SPEC_ID implementation ($MERGED libraries)" \
+              --body "## Summary
+
+          Adds \`$SPEC_ID\` plot implementation.
+
+          ### Libraries
+          - **Merged:** $MERGED
+          - **Not Feasible:** $NOT_FEASIBLE
+
+          ### Links
+          - **Spec:** \`specs/$SPEC_ID.md\`
+          - **Parent Issue:** #$MAIN_ISSUE
+
+          ---
+          :robot: *Auto-generated by pyplots CI*")
+
+            FEATURE_PR=$(echo "$PR_URL" | sed 's|.*/||')
+            echo "Created PR #$FEATURE_PR"
+
+            # Merge the PR immediately
+            if ! gh pr merge "$FEATURE_PR" --squash --delete-branch; then
+              echo "::error::Failed to merge PR #$FEATURE_PR"
+              gh issue comment "$MAIN_ISSUE" --body "## :warning: Merge Failed
+
+          Failed to automatically merge PR #$FEATURE_PR. Please merge manually."
+              exit 1
+            fi
+          fi
+
+          # Post completion to main issue
+          gh issue comment "$MAIN_ISSUE" --body "## :tada: All Complete!
+
+          All library implementations for \`$SPEC_ID\` have been merged to main!
 
           ### Final Status
           - **Merged:** $MERGED libraries
           - **Not Feasible:** $NOT_FEASIBLE libraries
-
-          ### Next Step
-          Manually create a PR from \`plot/$SPEC_ID\` to \`main\` to complete the process.
+          - **Feature PR:** #$FEATURE_PR
 
           ---
-          :robot: *pyplots CI (push trigger)*"
+          :rocket: *pyplots CI (push trigger)*"
 
-          # Add completed label
+          # Add completed label and close
           gh issue edit "$MAIN_ISSUE" --add-label "completed"
-
-          # Close main issue
           gh issue close "$MAIN_ISSUE" --reason completed

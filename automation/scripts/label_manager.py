@@ -20,6 +20,7 @@ STATUS_LABELS = frozenset(
         "reviewing",
         "ai-approved",
         "ai-rejected",
+        "ai-review-failed",
         "merged",
         "not-feasible",
         "completed",

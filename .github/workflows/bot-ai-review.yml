@@ -169,7 +169,9 @@ jobs:
             -f content=eyes
 
       - name: Run Claude AI Quality Review
+        id: claude_review
         if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3'
+        continue-on-error: true
         timeout-minutes: 30
         uses: anthropics/claude-code-action@v1
         with:
@@ -239,8 +241,39 @@ jobs:
             - Post feedback to **Sub-Issue #${{ steps.pr.outputs.sub_issue }}**, NOT the main issue
             - Include the generated code in your review comment for documentation
 
+      - name: Handle Claude failure
+        if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3' && (steps.claude_review.outcome == 'failure' || steps.claude_review.outcome == 'cancelled')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUM="${{ steps.metadata.outputs.pr_number }}"
+          SUB_ISSUE="${{ steps.pr.outputs.sub_issue }}"
+
+          echo "::warning::Claude AI review failed or was cancelled"
+
+          # Add failure label to PR
+          gh pr edit "$PR_NUM" --add-label "ai-review-failed" 2>/dev/null || true
+
+          if [ -n "$SUB_ISSUE" ]; then
+            gh issue edit "$SUB_ISSUE" \
+              --remove-label "reviewing" \
+              --add-label "ai-review-failed" 2>/dev/null || true
+
+            gh issue comment "$SUB_ISSUE" --body "## :warning: AI Review Failed
+
+          The AI review action failed or timed out.
+
+          **Options:**
+          1. Re-run the workflow manually
+          2. Trigger a new preview generation
+          3. Request manual human review
+
+          ---
+          :robot: *Automated notification*"
+          fi
+
       - name: Trigger auto-merge if approved
-        if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3'
+        if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3' && steps.claude_review.outcome == 'success'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -257,7 +290,7 @@ jobs:
           fi
 
       - name: Trigger retry if rejected
-        if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3'
+        if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3' && steps.claude_review.outcome == 'success'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

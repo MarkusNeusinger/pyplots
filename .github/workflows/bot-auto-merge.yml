@@ -206,12 +206,12 @@ jobs:
           MAIN_ISSUE="${{ steps.main_issue.outputs.number }}"
 
           # Get all sub-issues for this main issue
-          SUB_ISSUES=$(gh issue list --search "plot-request:impl in:label" --search "Parent Issue.*#$MAIN_ISSUE" --state all --json number,labels -q '.' 2>/dev/null || echo "[]")
+          SUB_ISSUES=$(gh issue list --label "plot-request:impl" --search "Parent Issue.*#$MAIN_ISSUE" --state all --json number,labels -q '.' 2>/dev/null || echo "[]")
 
-          # Count statuses
+          # Count statuses (use 'any' to avoid double-counting issues with multiple labels)
           TOTAL=$(echo "$SUB_ISSUES" | jq 'length')
-          MERGED=$(echo "$SUB_ISSUES" | jq '[.[] | select(.labels[].name == "merged")] | length')
-          NOT_FEASIBLE=$(echo "$SUB_ISSUES" | jq '[.[] | select(.labels[].name == "not-feasible")] | length')
+          MERGED=$(echo "$SUB_ISSUES" | jq '[.[] | select(any(.labels[]; .name == "merged"))] | length')
+          NOT_FEASIBLE=$(echo "$SUB_ISSUES" | jq '[.[] | select(any(.labels[]; .name == "not-feasible"))] | length')
           DONE=$((MERGED + NOT_FEASIBLE))
 
           echo "total=$TOTAL" >> $GITHUB_OUTPUT
@@ -282,9 +282,15 @@ jobs:
           fi
 
           # Post completion to main issue
+          if [ "$NOT_FEASIBLE" -gt 0 ]; then
+            STATUS_MSG="$MERGED libraries ready, $NOT_FEASIBLE not feasible"
+          else
+            STATUS_MSG="All $MERGED libraries ready"
+          fi
+
           gh issue comment "$MAIN_ISSUE" --body "## :tada: All Libraries Complete!
 
-          All $MERGED library implementations for \`$SPEC_ID\` are ready.
+          **Status:** $STATUS_MSG
 
           **Feature PR:** #$FEATURE_PR (auto-merge enabled)
 
@@ -434,10 +440,10 @@ jobs:
           # Get all sub-issues for this main issue
           SUB_ISSUES=$(gh issue list --search "**Parent Issue:** #$MAIN_ISSUE in:body" --json number,labels -q '.')
 
-          # Count statuses
+          # Count statuses (use 'any' to avoid double-counting issues with multiple labels)
           TOTAL=$(echo "$SUB_ISSUES" | jq 'length')
-          MERGED=$(echo "$SUB_ISSUES" | jq '[.[] | select(.labels[].name == "merged")] | length')
-          NOT_FEASIBLE=$(echo "$SUB_ISSUES" | jq '[.[] | select(.labels[].name == "not-feasible")] | length')
+          MERGED=$(echo "$SUB_ISSUES" | jq '[.[] | select(any(.labels[]; .name == "merged"))] | length')
+          NOT_FEASIBLE=$(echo "$SUB_ISSUES" | jq '[.[] | select(any(.labels[]; .name == "not-feasible"))] | length')
           DONE=$((MERGED + NOT_FEASIBLE))
 
           echo "total=$TOTAL" >> $GITHUB_OUTPUT
@@ -641,10 +647,10 @@ jobs:
           # Get all sub-issues for this main issue
           SUB_ISSUES=$(gh issue list --search "**Parent Issue:** #$MAIN_ISSUE in:body" --json number,labels -q '.' 2>/dev/null || echo "[]")
 
-          # Count statuses
+          # Count statuses (use 'any' to avoid double-counting issues with multiple labels)
           TOTAL=$(echo "$SUB_ISSUES" | jq 'length')
-          MERGED=$(echo "$SUB_ISSUES" | jq '[.[] | select(.labels[].name == "merged")] | length')
-          NOT_FEASIBLE=$(echo "$SUB_ISSUES" | jq '[.[] | select(.labels[].name == "not-feasible")] | length')
+          MERGED=$(echo "$SUB_ISSUES" | jq '[.[] | select(any(.labels[]; .name == "merged"))] | length')
+          NOT_FEASIBLE=$(echo "$SUB_ISSUES" | jq '[.[] | select(any(.labels[]; .name == "not-feasible"))] | length')
           DONE=$((MERGED + NOT_FEASIBLE))
 
           echo "total=$TOTAL" >> $GITHUB_OUTPUT

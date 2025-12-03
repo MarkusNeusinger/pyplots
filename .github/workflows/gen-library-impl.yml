@@ -86,6 +86,15 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
 
+      - name: Install Inter font
+        run: |
+          mkdir -p ~/.local/share/fonts
+          curl -sL "https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip" -o /tmp/inter.zip
+          unzip -q /tmp/inter.zip -d /tmp/inter
+          cp /tmp/inter/Inter*.ttf ~/.local/share/fonts/ 2>/dev/null || cp /tmp/inter/Inter*.otf ~/.local/share/fonts/ 2>/dev/null || true
+          fc-cache -f
+          echo "Inter font installed"
+
       - name: Install library-specific dependencies
         run: |
           uv venv .venv
@@ -149,9 +158,10 @@ jobs:
 
             ### Step 1: Read required files
             1. `prompts/plot-generator.md` - Base generation rules
-            2. `prompts/quality-criteria.md` - Quality requirements
-            3. `prompts/library/${{ inputs.library }}.md` - Library-specific rules
-            4. `specs/${{ inputs.spec_id }}.md` - The specification
+            2. `prompts/default-style-guide.md` - Visual style requirements (colors, fonts, dimensions)
+            3. `prompts/quality-criteria.md` - Quality requirements
+            4. `prompts/library/${{ inputs.library }}.md` - Library-specific rules
+            5. `specs/${{ inputs.spec_id }}.md` - The specification
 
             ### Step 2: Check for previous attempts
             ${{ steps.previous_attempts.outputs.has_history == 'true' && 'IMPORTANT: There are previous failed attempts. Read /tmp/previous_attempts.md to understand what went wrong and avoid repeating the same mistakes.' || 'This is the first attempt for this library.' }}

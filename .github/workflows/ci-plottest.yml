@@ -37,6 +37,15 @@ jobs:
         run: |
           uv sync --all-extras
 
+      - name: Install Inter font
+        run: |
+          mkdir -p ~/.local/share/fonts
+          curl -sL "https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip" -o /tmp/inter.zip
+          unzip -q /tmp/inter.zip -d /tmp/inter
+          cp /tmp/inter/Inter*.ttf ~/.local/share/fonts/ 2>/dev/null || cp /tmp/inter/Inter*.otf ~/.local/share/fonts/ 2>/dev/null || true
+          fc-cache -f
+          echo "Inter font installed"
+
       - name: Find changed plot files
         id: changed_plots
         run: |

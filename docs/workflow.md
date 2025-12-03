@@ -132,13 +132,13 @@ Main Issue (#53)
 PR created → `ci-plottest.yml` runs tests across Python 3.11+ → Reports results
 
 ### Flow 5: Plot Image Generation
-Tests passed → `gen-preview.yml` generates PNG + thumbnail → Uploads to GCS with versioned paths (`plots/{spec-id}/{library}/{variant}/v{timestamp}.png`) → Stores previous version for before/after comparison
+Tests passed → `gen-preview.yml` generates PNG + thumbnail → Uploads to GCS with versioned paths (`plots/{spec-id}/{library}/{variant}/v{timestamp}.png`) → **Posts results to Sub-Issue** (per-library technical details) → Stores previous version for before/after comparison
 
 ### Flow 5.5: Auto-Tagging
 PR merged with `ai-approved` → `bot-auto-tag.yml` triggers → AI analyzes code + spec + image → Generates 5-level tag hierarchy → Stores in PostgreSQL with confidence scores
 
 ### Flow 6: AI Review
-Previews generated → `bot-ai-review.yml` triggers → Claude evaluates Spec ↔ Code ↔ Preview → **Posts results to Issue** (permanent knowledge base) → Score ≥7/10 on all criteria required → Labels: `ai-approved` or `ai-rejected`
+Previews generated → `bot-ai-review.yml` triggers → Claude evaluates Spec ↔ Code ↔ Preview → **Posts results to Sub-Issue** (per-library feedback) → Score ≥85/100 required → Labels: `ai-approved` or `ai-rejected`
 
 ### Flow 6.5: Per-Library Repair Loop
 PR labeled `ai-rejected` → `gen-update-plot.yml` triggers for that **specific library**:

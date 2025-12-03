@@ -157,10 +157,12 @@ jobs:
             --remove-label "reviewing" \
             --remove-label "generating" \
             --remove-label "testing" \
-            --add-label "merged"
+            --add-label "merged" 2>/dev/null || true
 
-          # Post completion comment
-          gh issue comment $SUB_ISSUE --body "## Merged
+          # Post completion comment (only if not already posted)
+          EXISTING_MERGED=$(gh issue view $SUB_ISSUE --json comments -q '[.comments[].body | select(startswith("## Merged"))] | length' 2>/dev/null || echo "0")
+          if [ "$EXISTING_MERGED" = "0" ]; then
+            gh issue comment $SUB_ISSUE --body "## Merged
 
           **$LIBRARY** implementation for \`$SPEC_ID\` has been merged!
 
@@ -168,13 +170,138 @@ jobs:
 
           ---
           :rocket: *Auto-merged by pyplots CI*"
+          fi
 
-          # Close sub-issue
-          gh issue close $SUB_ISSUE --reason completed
+          # Close sub-issue (ignore if already closed)
+          gh issue close $SUB_ISSUE --reason completed 2>/dev/null || true
           echo "Sub-issue #$SUB_ISSUE closed"
 
+      - name: Get main issue number
+        if: steps.check.outputs.should_run == 'true'
+        id: main_issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUM="${{ steps.check.outputs.pr_number }}"
+          SPEC_ID="${{ steps.extract.outputs.spec_id }}"
+          PR_BODY=$(gh pr view "$PR_NUM" --json body -q '.body' 2>/dev/null || echo "")
+
+          # Extract main issue from PR body
+          MAIN_ISSUE=$(echo "$PR_BODY" | grep -oP '\*\*Parent Issue:\*\* #\K\d+' | head -1 || echo "")
+
+          # Fallback: search for main issue
+          if [ -z "$MAIN_ISSUE" ]; then
+            MAIN_ISSUE=$(gh issue list --label plot-request --search "$SPEC_ID in:title" --json number -q '.[0].number' 2>/dev/null || echo "")
+          fi
+
+          echo "number=$MAIN_ISSUE" >> $GITHUB_OUTPUT
+          echo "Main issue: #$MAIN_ISSUE"
+
+      - name: Check if all libraries are done
+        if: steps.check.outputs.should_run == 'true' && steps.main_issue.outputs.number != ''
+        id: check_complete
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          MAIN_ISSUE="${{ steps.main_issue.outputs.number }}"
+
+          # Get all sub-issues for this main issue
+          SUB_ISSUES=$(gh issue list --label "plot-request:impl" --search "Parent Issue.*#$MAIN_ISSUE" --state all --json number,labels -q '.' 2>/dev/null || echo "[]")
+
+          # Count statuses (use 'any' to avoid double-counting issues with multiple labels)
+          TOTAL=$(echo "$SUB_ISSUES" | jq 'length')
+          MERGED=$(echo "$SUB_ISSUES" | jq '[.[] | select(any(.labels[]; .name == "merged"))] | length')
+          NOT_FEASIBLE=$(echo "$SUB_ISSUES" | jq '[.[] | select(any(.labels[]; .name == "not-feasible"))] | length')
+          DONE=$((MERGED + NOT_FEASIBLE))
+
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "merged=$MERGED" >> $GITHUB_OUTPUT
+          echo "not_feasible=$NOT_FEASIBLE" >> $GITHUB_OUTPUT
+
+          if [ "$DONE" -eq "$TOTAL" ] && [ "$TOTAL" -gt 0 ]; then
+            echo "all_done=true" >> $GITHUB_OUTPUT
+          else
+            echo "all_done=false" >> $GITHUB_OUTPUT
+          fi
+
+          echo "Progress: $DONE/$TOTAL complete ($MERGED merged, $NOT_FEASIBLE not feasible)"
+
+      - name: Create and merge feature-to-main PR
+        if: steps.check.outputs.should_run == 'true' && steps.check_complete.outputs.all_done == 'true' && steps.main_issue.outputs.number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SPEC_ID="${{ steps.extract.outputs.spec_id }}"
+          MAIN_ISSUE="${{ steps.main_issue.outputs.number }}"
+          MERGED="${{ steps.check_complete.outputs.merged }}"
+          NOT_FEASIBLE="${{ steps.check_complete.outputs.not_feasible }}"
+
+          # Check if main issue already completed
+          LABELS=$(gh issue view "$MAIN_ISSUE" --json labels -q '.labels[].name' 2>/dev/null || echo "")
+          if echo "$LABELS" | grep -q "completed"; then
+            echo "Main issue #$MAIN_ISSUE already completed"
+            exit 0
+          fi
+
+          # Check if feature branch exists
+          if ! gh api repos/${{ github.repository }}/branches/plot/$SPEC_ID &>/dev/null; then
+            echo "Feature branch plot/$SPEC_ID does not exist, skipping"
+            exit 0
+          fi
+
+          # Check if PR already exists
+          EXISTING_PR=$(gh pr list --base main --head "plot/$SPEC_ID" --json number -q '.[0].number' 2>/dev/null || echo "")
+          if [ -n "$EXISTING_PR" ]; then
+            echo "PR #$EXISTING_PR already exists for plot/$SPEC_ID -> main"
+            gh pr merge "$EXISTING_PR" --squash --delete-branch --auto 2>/dev/null || true
+            FEATURE_PR="$EXISTING_PR"
+          else
+            # Create PR from feature branch to main
+            FEATURE_PR=$(gh pr create \
+              --base main \
+              --head "plot/$SPEC_ID" \
+              --title "feat: add $SPEC_ID implementation ($MERGED libraries)" \
+              --body "## Summary
+          Adds \`$SPEC_ID\` plot implementation.
+
+          ### Libraries
+          - **Merged:** $MERGED
+          - **Not Feasible:** $NOT_FEASIBLE
+
+          ### Links
+          - **Spec:** \`specs/$SPEC_ID.md\`
+          - **Parent Issue:** #$MAIN_ISSUE (closes on merge)
+
+          ---
+          :robot: *Auto-generated by pyplots CI*" | sed 's|.*/||')
+
+            echo "Created PR #$FEATURE_PR"
+
+            # Enable auto-merge
+            gh pr merge "$FEATURE_PR" --squash --delete-branch --auto 2>/dev/null || true
+          fi
+
+          # Post completion to main issue
+          if [ "$NOT_FEASIBLE" -gt 0 ]; then
+            STATUS_MSG="$MERGED libraries ready, $NOT_FEASIBLE not feasible"
+          else
+            STATUS_MSG="All $MERGED libraries ready"
+          fi
+
+          gh issue comment "$MAIN_ISSUE" --body "## :tada: All Libraries Complete!
+
+          **Status:** $STATUS_MSG
+
+          **Feature PR:** #$FEATURE_PR (auto-merge enabled)
+
+          ---
+          :rocket: *pyplots CI*"
+
+          # Add completed label
+          gh issue edit "$MAIN_ISSUE" --add-label "completed" 2>/dev/null || true
+
   # ============================================================================
-  # Job 2: Post-merge summary (per library)
+  # Job 2: Post-merge summary (per library) - only for PR close events
   # ============================================================================
   post-merge-summary:
     runs-on: ubuntu-latest
@@ -265,9 +392,13 @@ jobs:
           LIBRARY="${{ steps.extract.outputs.library }}"
           SPEC_ID="${{ steps.extract.outputs.spec_id }}"
           PR_NUM="${{ github.event.pull_request.number }}"
-          MERGE_COMMIT="${{ github.event.pull_request.merge_commit_sha }}"
-          SHORT_SHA=$(echo "$MERGE_COMMIT" | cut -c1-7)
-          IMPL_FILE="${{ steps.files.outputs.impl_file }}"
+
+          # Check if already merged (skip if so)
+          LABELS=$(gh issue view "$SUB_ISSUE" --json labels -q '.labels[].name' 2>/dev/null || echo "")
+          if echo "$LABELS" | grep -q "merged"; then
+            echo "Sub-issue #$SUB_ISSUE already merged, skipping"
+            exit 0
+          fi
 
           # Update labels
           gh issue edit $SUB_ISSUE \
@@ -275,23 +406,23 @@ jobs:
             --remove-label "reviewing" \
             --remove-label "generating" \
             --remove-label "testing" \
-            --add-label "merged"
+            --add-label "merged" 2>/dev/null || true
 
-          # Post completion comment
-          gh issue comment $SUB_ISSUE --body "## Merged
+          # Post completion comment (only if not already posted)
+          EXISTING_MERGED=$(gh issue view $SUB_ISSUE --json comments -q '[.comments[].body | select(startswith("## Merged"))] | length' 2>/dev/null || echo "0")
+          if [ "$EXISTING_MERGED" = "0" ]; then
+            gh issue comment $SUB_ISSUE --body "## Merged
 
-          **$LIBRARY** implementation for \`$SPEC_ID\` has been merged to main!
+          **$LIBRARY** implementation for \`$SPEC_ID\` has been merged!
 
-          ### Details
           - **PR:** #$PR_NUM
-          - **Commit:** [$SHORT_SHA](https://github.com/${{ github.repository }}/commit/$MERGE_COMMIT)
-          - **File:** \`$IMPL_FILE\`
 
           ---
           :rocket: *Auto-merged by pyplots CI*"
+          fi
 
           # Close sub-issue
-          gh issue close $SUB_ISSUE --reason completed
+          gh issue close $SUB_ISSUE --reason completed 2>/dev/null || true
 
       - name: Check if all libraries are done
         if: steps.check.outputs.should_run == 'true'
@@ -309,10 +440,10 @@ jobs:
           # Get all sub-issues for this main issue
           SUB_ISSUES=$(gh issue list --search "**Parent Issue:** #$MAIN_ISSUE in:body" --json number,labels -q '.')
 
-          # Count statuses
+          # Count statuses (use 'any' to avoid double-counting issues with multiple labels)
           TOTAL=$(echo "$SUB_ISSUES" | jq 'length')
-          MERGED=$(echo "$SUB_ISSUES" | jq '[.[] | select(.labels[].name == "merged")] | length')
-          NOT_FEASIBLE=$(echo "$SUB_ISSUES" | jq '[.[] | select(.labels[].name == "not-feasible")] | length')
+          MERGED=$(echo "$SUB_ISSUES" | jq '[.[] | select(any(.labels[]; .name == "merged"))] | length')
+          NOT_FEASIBLE=$(echo "$SUB_ISSUES" | jq '[.[] | select(any(.labels[]; .name == "not-feasible"))] | length')
           DONE=$((MERGED + NOT_FEASIBLE))
 
           echo "total=$TOTAL" >> $GITHUB_OUTPUT
@@ -516,10 +647,10 @@ jobs:
           # Get all sub-issues for this main issue
           SUB_ISSUES=$(gh issue list --search "**Parent Issue:** #$MAIN_ISSUE in:body" --json number,labels -q '.' 2>/dev/null || echo "[]")
 
-          # Count statuses
+          # Count statuses (use 'any' to avoid double-counting issues with multiple labels)
           TOTAL=$(echo "$SUB_ISSUES" | jq 'length')
-          MERGED=$(echo "$SUB_ISSUES" | jq '[.[] | select(.labels[].name == "merged")] | length')
-          NOT_FEASIBLE=$(echo "$SUB_ISSUES" | jq '[.[] | select(.labels[].name == "not-feasible")] | length')
+          MERGED=$(echo "$SUB_ISSUES" | jq '[.[] | select(any(.labels[]; .name == "merged"))] | length')
+          NOT_FEASIBLE=$(echo "$SUB_ISSUES" | jq '[.[] | select(any(.labels[]; .name == "not-feasible"))] | length')
           DONE=$((MERGED + NOT_FEASIBLE))
 
           echo "total=$TOTAL" >> $GITHUB_OUTPUT

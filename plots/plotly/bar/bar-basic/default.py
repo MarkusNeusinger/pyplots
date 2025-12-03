@@ -84,28 +84,28 @@ def create_plot(
         go.Bar(
             x=data[category],
             y=data[value],
-            marker=dict(color=color, opacity=alpha, line=dict(color=edgecolor, width=1)),
+            marker={"color": color, "opacity": alpha, "line": {"color": edgecolor, "width": 1}},
             **kwargs,
         )
     )
 
     # Update layout with styling
     fig.update_layout(
-        title=dict(text=title, x=0.5, xanchor="center") if title else None,
-        xaxis=dict(title=dict(text=x_label, font=dict(size=14)), tickangle=-rotation, tickfont=dict(size=12)),
-        yaxis=dict(
-            title=dict(text=y_label, font=dict(size=14)),
-            tickfont=dict(size=12),
-            rangemode="tozero",
-            showgrid=True,
-            gridwidth=1,
-            gridcolor="rgba(128, 128, 128, 0.3)",
-        ),
+        title={"text": title, "x": 0.5, "xanchor": "center"} if title else None,
+        xaxis={"title": {"text": x_label, "font": {"size": 14}}, "tickangle": -rotation, "tickfont": {"size": 12}},
+        yaxis={
+            "title": {"text": y_label, "font": {"size": 14}},
+            "tickfont": {"size": 12},
+            "rangemode": "tozero",
+            "showgrid": True,
+            "gridwidth": 1,
+            "gridcolor": "rgba(128, 128, 128, 0.3)",
+        },
         template="plotly_white",
         width=figsize[0],
         height=figsize[1],
         showlegend=False,
-        margin=dict(l=80, r=40, t=80 if title else 40, b=80),
+        margin={"l": 80, "r": 40, "t": 80 if title else 40, "b": 80},
     )
 
     return fig

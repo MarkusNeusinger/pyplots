@@ -56,18 +56,11 @@ This request is very similar to an existing spec:
 ### If NEW:
 
 ```markdown
-## ✅ Spec ID Assigned
+## ✅ Spec ID: `{new-spec-id}`
 
-**Assigned ID:** `{new-spec-id}`
+**Rationale:** {1 sentence explaining why this ID was chosen}
 
-**Rationale:** {1-2 sentences explaining why this ID was chosen}
-
-**Next Steps:**
-1. A maintainer will review this request
-2. Once approved (label: `approved`), code generation will begin automatically
-3. Implementations will be created for all 8 libraries
-
-**Spec will be created at:** `specs/{new-spec-id}.md`
+Add label `approved` to begin generation.
 ```
 
 ---

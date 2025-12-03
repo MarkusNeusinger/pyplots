@@ -141,14 +141,20 @@ jobs:
         run: |
           LABELS=$(gh pr view ${{ steps.metadata.outputs.pr_number }} --json labels -q '.labels[].name' 2>/dev/null || echo "")
 
+          # Count is the CURRENT attempt number (1-based)
           if echo "$LABELS" | grep -q "ai-attempt-3"; then
             echo "count=3" >> $GITHUB_OUTPUT
+            echo "display=3" >> $GITHUB_OUTPUT
           elif echo "$LABELS" | grep -q "ai-attempt-2"; then
             echo "count=2" >> $GITHUB_OUTPUT
+            echo "display=3" >> $GITHUB_OUTPUT
           elif echo "$LABELS" | grep -q "ai-attempt-1"; then
             echo "count=1" >> $GITHUB_OUTPUT
+            echo "display=2" >> $GITHUB_OUTPUT
           else
+            # First attempt
             echo "count=0" >> $GITHUB_OUTPUT
+            echo "display=1" >> $GITHUB_OUTPUT
           fi
 
       - name: Update sub-issue label to reviewing
@@ -178,7 +184,7 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           claude_args: "--model opus"
           prompt: |
-            ## Task: AI Quality Review for **${{ steps.pr.outputs.library }}** (Attempt ${{ steps.attempts.outputs.count }}/3)
+            ## Task: AI Quality Review for **${{ steps.pr.outputs.library }}** (Attempt ${{ steps.attempts.outputs.display }}/3)
 
             Tests passed and preview images are ready. Evaluate if the **${{ steps.pr.outputs.library }}** implementation matches the specification.
 
@@ -203,7 +209,7 @@ jobs:
             6. **Post your verdict to Sub-Issue #${{ steps.pr.outputs.sub_issue }}** using this EXACT format:
 
             ```markdown
-            ## AI Review - Attempt ${{ steps.attempts.outputs.count }}/3
+            ## AI Review - Attempt ${{ steps.attempts.outputs.display }}/3
 
             ### Quality Evaluation
             | Evaluator | Score | Verdict |
@@ -239,7 +245,6 @@ jobs:
             **IMPORTANT:**
             - This is a **${{ steps.pr.outputs.library }}-only** review - focus only on this library
             - Post feedback to **Sub-Issue #${{ steps.pr.outputs.sub_issue }}**, NOT the main issue
-            - Include the generated code in your review comment for documentation
 
       - name: Handle Claude failure
         if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3' && (steps.claude_review.outcome == 'failure' || steps.claude_review.outcome == 'cancelled')

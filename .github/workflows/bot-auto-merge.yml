@@ -335,8 +335,12 @@ jobs:
           EXISTING_PR=$(gh pr list --base main --head "plot/$SPEC_ID" --json number -q '.[0].number' 2>/dev/null || echo "")
           if [ -n "$EXISTING_PR" ]; then
             echo "PR #$EXISTING_PR already exists for plot/$SPEC_ID -> main"
-            gh pr merge "$EXISTING_PR" --squash --delete-branch || true
-            FEATURE_PR="$EXISTING_PR"
+            if gh pr merge "$EXISTING_PR" --squash --delete-branch; then
+              FEATURE_PR="$EXISTING_PR"
+            else
+              echo "::error::Failed to merge existing PR #$EXISTING_PR"
+              exit 1
+            fi
           else
             # Create PR from feature branch to main
             PR_URL=$(gh pr create \

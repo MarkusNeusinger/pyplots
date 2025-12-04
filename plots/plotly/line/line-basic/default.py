@@ -17,48 +17,54 @@ def create_plot(
     data: pd.DataFrame,
     x: str,
     y: str,
+    figsize: tuple[int, int] = (10, 6),
+    color: str = "#306998",
+    linewidth: float = 2.0,
+    marker: str | None = None,
+    marker_size: int = 6,
+    alpha: float = 1.0,
     title: str | None = None,
     xlabel: str | None = None,
     ylabel: str | None = None,
-    color: str = "steelblue",
-    linewidth: float = 2.0,
-    marker: str | None = "circle",
-    markersize: int = 6,
-    alpha: float = 1.0,
-    width: int = 1600,
-    height: int = 900,
+    linestyle: str = "solid",
     **kwargs,
 ) -> go.Figure:
     """
     Create a basic line chart showing trends over a sequence using plotly.
 
+    A fundamental line chart that visualizes trends and patterns in data over
+    a continuous axis, typically time or sequential values.
+
     Args:
-        data: Input DataFrame with required columns
-        x: Column name for x-axis values
-        y: Column name for y-axis (numeric) values
-        title: Plot title (optional)
-        xlabel: Custom x-axis label (optional, defaults to x column name)
-        ylabel: Custom y-axis label (optional, defaults to y column name)
-        color: Line color (default: "steelblue")
-        linewidth: Width of the line (default: 2.0)
-        marker: Marker style for data points (default: "circle", set None to hide)
-        markersize: Size of markers (default: 6)
-        alpha: Transparency level (default: 1.0)
-        width: Figure width in pixels (default: 1600)
-        height: Figure height in pixels (default: 900)
-        **kwargs: Additional parameters passed to plotly trace
+        data: Input DataFrame with required columns.
+        x: Column name for x-axis values (numeric or temporal).
+        y: Column name for y-axis (numeric) values.
+        figsize: Figure size as (width, height) tuple (default: (10, 6)).
+            Note: This is scaled to achieve 4800x2700 px output.
+        color: Line color (default: "#306998" - Python Blue).
+        linewidth: Width of the line (default: 2.0).
+        marker: Marker style for data points (default: None).
+            Valid values: "circle", "square", "diamond", "cross", "x", etc.
+        marker_size: Size of markers if enabled (default: 6).
+        alpha: Transparency level for the line (default: 1.0).
+        title: Plot title (default: None).
+        xlabel: Custom x-axis label (default: uses column name).
+        ylabel: Custom y-axis label (default: uses column name).
+        linestyle: Line style (default: "solid").
+            Valid values: "solid", "dash", "dot", "dashdot".
+        **kwargs: Additional parameters passed to plotly trace.
 
     Returns:
-        Plotly Figure object
+        Plotly Figure object.
 
     Raises:
-        ValueError: If data is empty
-        KeyError: If required columns not found
+        ValueError: If data is empty.
+        KeyError: If required columns not found.
 
     Example:
         >>> data = pd.DataFrame({
-        ...     'month': ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-        ...     'sales': [100, 120, 90, 140, 160]
+        ...     'month': [1, 2, 3, 4, 5, 6],
+        ...     'sales': [100, 150, 130, 180, 200, 190]
         ... })
         >>> fig = create_plot(data, x='month', y='sales')
     """
@@ -71,19 +77,35 @@ def create_plot(
             available = ", ".join(data.columns)
             raise KeyError(f"Column '{col}' not found. Available columns: {available}")
 
+    # Sort data by x-axis to ensure proper line connections
+    plot_data = data.copy()
+    try:
+        plot_data = plot_data.sort_values(by=x)
+    except TypeError:
+        # If x column is not sortable (e.g., categorical), keep original order
+        pass
+
+    # Map linestyle to plotly dash format
+    dash_map = {"solid": "solid", "dash": "dash", "dashed": "dash", "dot": "dot", "dotted": "dot", "dashdot": "dashdot"}
+    dash_style = dash_map.get(linestyle, "solid")
+
     # Determine mode based on marker parameter
     mode = "lines+markers" if marker else "lines"
+
+    # Figure dimensions for 4800x2700 output (scaled by 3)
+    base_width = 1600
+    base_height = 900
 
     # Create figure
     fig = go.Figure()
 
     # Build trace configuration
     trace_kwargs = {
-        "x": data[x],
-        "y": data[y],
+        "x": plot_data[x],
+        "y": plot_data[y],
         "mode": mode,
         "name": y,
-        "line": {"color": color, "width": linewidth},
+        "line": {"color": color, "width": linewidth, "dash": dash_style},
         "opacity": alpha,
     }
 
@@ -91,7 +113,7 @@ def create_plot(
     if marker:
         trace_kwargs["marker"] = {
             "symbol": marker,
-            "size": markersize,
+            "size": marker_size,
             "color": color,
             "line": {"width": 1, "color": "white"},
         }
@@ -101,13 +123,28 @@ def create_plot(
 
     fig.add_trace(go.Scatter(**trace_kwargs))
 
+    # Set axis labels
+    x_label = xlabel if xlabel is not None else x
+    y_label = ylabel if ylabel is not None else y
+
     # Update layout with clean styling
+    # Font sizes scaled for 4800x2700 output (scale=3)
+    title_font_size = 60  # 20pt * 3
+    axis_label_font_size = 60  # 20pt * 3
+    tick_font_size = 48  # 16pt * 3
+
     fig.update_layout(
-        title={"text": title, "font": {"size": 16, "family": "Arial, sans-serif"}, "x": 0.5, "xanchor": "center"}
+        title={
+            "text": title,
+            "font": {"size": title_font_size, "family": "Arial, sans-serif"},
+            "x": 0.5,
+            "xanchor": "center",
+        }
         if title
         else None,
         xaxis={
-            "title": {"text": xlabel or x, "font": {"size": 12}},
+            "title": {"text": x_label, "font": {"size": axis_label_font_size}},
+            "tickfont": {"size": tick_font_size},
             "gridcolor": "rgba(128, 128, 128, 0.3)",
             "gridwidth": 1,
             "showgrid": True,
@@ -117,7 +154,8 @@ def create_plot(
             "linecolor": "lightgray",
         },
         yaxis={
-            "title": {"text": ylabel or y, "font": {"size": 12}},
+            "title": {"text": y_label, "font": {"size": axis_label_font_size}},
+            "tickfont": {"size": tick_font_size},
             "gridcolor": "rgba(128, 128, 128, 0.3)",
             "gridwidth": 1,
             "showgrid": True,
@@ -130,11 +168,12 @@ def create_plot(
         },
         plot_bgcolor="white",
         paper_bgcolor="white",
-        width=width,
-        height=height,
+        width=base_width,
+        height=base_height,
         showlegend=False,
         hovermode="x unified",
-        hoverlabel={"bgcolor": "white", "font_size": 12, "font_family": "Arial, sans-serif"},
+        hoverlabel={"bgcolor": "white", "font_size": tick_font_size, "font_family": "Arial, sans-serif"},
+        margin={"l": 120, "r": 60, "t": 100 if title else 60, "b": 100},
     )
 
     # Update hover template for better information display
@@ -147,25 +186,23 @@ if __name__ == "__main__":
     # Sample data for testing - monthly sales data
     sample_data = pd.DataFrame(
         {
-            "Month": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            "Sales": [120, 135, 125, 148, 162, 178, 195, 188, 172, 158, 145, 165],
+            "month": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            "sales": [120, 135, 125, 148, 162, 178, 195, 188, 172, 158, 145, 165],
         }
     )
 
     # Create plot with default settings
     fig = create_plot(
         sample_data,
-        x="Month",
-        y="Sales",
+        x="month",
+        y="sales",
         title="Monthly Sales Trend",
         xlabel="Month",
         ylabel="Sales ($)",
-        color="steelblue",
-        linewidth=2.5,
         marker="circle",
-        markersize=10,
+        marker_size=10,
     )
 
-    # Save as PNG
-    fig.write_image("plot.png", width=1600, height=900, scale=2)
+    # Save as PNG - 4800x2700 px (1600x900 * scale=3)
+    fig.write_image("plot.png", width=1600, height=900, scale=3)
     print("Plot saved to plot.png")

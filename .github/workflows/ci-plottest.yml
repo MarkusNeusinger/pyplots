@@ -16,7 +16,7 @@ jobs:
       contents: read
     strategy:
       matrix:
-        python-version: [ '3.11', '3.12', '3.13' ]
+        python-version: [ '3.12', '3.13' ]
       fail-fast: false
 
     steps:
@@ -149,7 +149,6 @@ jobs:
         id: summary
         run: |
           # Parse results
-          PY311_RESULT=$(cat result-3.11.txt 2>/dev/null | cut -d',' -f2 || echo "skipped")
           PY312_RESULT=$(cat result-3.12.txt 2>/dev/null | cut -d',' -f2 || echo "skipped")
           PY313_RESULT=$(cat result-3.13.txt 2>/dev/null | cut -d',' -f2 || echo "skipped")
 
@@ -179,7 +178,6 @@ jobs:
           fi
 
           # Build badges
-          B311=$(badge "3.11" "$PY311_RESULT")
           B312=$(badge "3.12" "$PY312_RESULT")
           B313=$(badge "3.13" "$PY313_RESULT")
 
@@ -188,7 +186,7 @@ jobs:
 
           ${MAIN_STATUS}
 
-          **Compatibility:** ${B311} ${B312} ${B313}
+          **Compatibility:** ${B312} ${B313}
           EOF
 
           cat /tmp/comment.md

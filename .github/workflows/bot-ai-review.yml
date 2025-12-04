@@ -138,8 +138,9 @@ jobs:
         id: attempts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.metadata.outputs.pr_number }}
         run: |
-          LABELS=$(gh pr view ${{ steps.metadata.outputs.pr_number }} --json labels -q '.labels[].name' 2>/dev/null || echo "")
+          LABELS=$(gh pr view "$PR_NUMBER" --json labels -q '.labels[].name' 2>/dev/null || echo "")
 
           # Count is the CURRENT attempt number (1-based)
           if echo "$LABELS" | grep -q "ai-attempt-3"; then
@@ -170,8 +171,9 @@ jobs:
         if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.metadata.outputs.pr_number }}
         run: |
-          gh api repos/${{ github.repository }}/issues/${{ steps.metadata.outputs.pr_number }}/reactions \
+          gh api "repos/${{ github.repository }}/issues/$PR_NUMBER/reactions" \
             -f content=eyes
 
       - name: Run Claude AI Quality Review
@@ -250,9 +252,9 @@ jobs:
         if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3' && (steps.claude_review.outcome == 'failure' || steps.claude_review.outcome == 'cancelled')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUM: ${{ steps.metadata.outputs.pr_number }}
+          SUB_ISSUE: ${{ steps.pr.outputs.sub_issue }}
         run: |
-          PR_NUM="${{ steps.metadata.outputs.pr_number }}"
-          SUB_ISSUE="${{ steps.pr.outputs.sub_issue }}"
 
           echo "::warning::Claude AI review failed or was cancelled"
 
@@ -281,9 +283,8 @@ jobs:
         if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3' && steps.claude_review.outcome == 'success'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUM: ${{ steps.metadata.outputs.pr_number }}
         run: |
-          PR_NUM="${{ steps.metadata.outputs.pr_number }}"
-
           # Check if PR has ai-approved label (added by Claude)
           HAS_APPROVED=$(gh pr view "$PR_NUM" --json labels -q '.labels[].name' | grep -c "ai-approved" || echo "0")
 
@@ -298,9 +299,8 @@ jobs:
         if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3' && steps.claude_review.outcome == 'success'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUM: ${{ steps.metadata.outputs.pr_number }}
         run: |
-          PR_NUM="${{ steps.metadata.outputs.pr_number }}"
-
           # Check if PR has ai-rejected label (added by Claude)
           HAS_REJECTED=$(gh pr view "$PR_NUM" --json labels -q '.labels[].name' | grep -c "ai-rejected" || echo "0")
 
@@ -315,11 +315,11 @@ jobs:
         if: steps.check.outputs.should_run == 'true' && steps.pr.outputs.skip != 'true' && steps.attempts.outputs.count == '3'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SUB_ISSUE: ${{ steps.pr.outputs.sub_issue }}
+          PR_NUM: ${{ steps.metadata.outputs.pr_number }}
+          LIBRARY: ${{ steps.pr.outputs.library }}
+          SPEC_ID: ${{ steps.pr.outputs.spec_id }}
         run: |
-          SUB_ISSUE="${{ steps.pr.outputs.sub_issue }}"
-          PR_NUM="${{ steps.metadata.outputs.pr_number }}"
-          LIBRARY="${{ steps.pr.outputs.library }}"
-          SPEC_ID="${{ steps.pr.outputs.spec_id }}"
 
           # Update PR labels
           gh pr edit "$PR_NUM" --add-label "ai-rejected"

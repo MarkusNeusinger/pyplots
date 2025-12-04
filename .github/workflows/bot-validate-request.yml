@@ -26,18 +26,23 @@ jobs:
     steps:
       - name: Check conditions
         id: check
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          LABEL_NAME: ${{ github.event.label.name }}
+          HAS_LABEL: ${{ contains(github.event.issue.labels.*.name, 'plot-request') }}
+          EVENT_ACTION: ${{ github.event.action }}
         run: |
           echo "=== Debug Info ==="
           echo "Event: ${{ github.event_name }}"
-          echo "Action: ${{ github.event.action }}"
-          echo "Issue Number: ${{ github.event.issue.number }}"
-          echo "Issue Title: ${{ github.event.issue.title }}"
+          echo "Action: $EVENT_ACTION"
+          echo "Issue Number: $ISSUE_NUMBER"
+          echo "Issue Title: $ISSUE_TITLE"
           echo "Labels: ${{ join(github.event.issue.labels.*.name, ', ') }}"
-          echo "Label added (if labeled event): ${{ github.event.label.name }}"
+          echo "Label added (if labeled event): $LABEL_NAME"
           echo "=================="
 
           # Check 1: Must have plot-request label
-          HAS_LABEL="${{ contains(github.event.issue.labels.*.name, 'plot-request') }}"
           if [[ "$HAS_LABEL" != "true" ]]; then
             echo "::notice::Skipping: Issue does not have 'plot-request' label"
             echo "should_run=false" >> $GITHUB_OUTPUT
@@ -45,16 +50,13 @@ jobs:
           fi
 
           # Check 2: Must not already have spec ID in title (indicated by [...])
-          TITLE="${{ github.event.issue.title }}"
-          if [[ "$TITLE" == *"["* ]]; then
+          if [[ "$ISSUE_TITLE" == *"["* ]]; then
             echo "::notice::Skipping: Issue title already contains spec ID"
             echo "should_run=false" >> $GITHUB_OUTPUT
             exit 0
           fi
 
           # Check 3: For labeled events, only trigger when plot-request label is added
-          EVENT_ACTION="${{ github.event.action }}"
-          LABEL_NAME="${{ github.event.label.name }}"
           if [[ "$EVENT_ACTION" == "labeled" && "$LABEL_NAME" != "plot-request" ]]; then
             echo "::notice::Skipping: Labeled event but not plot-request label"
             echo "should_run=false" >> $GITHUB_OUTPUT

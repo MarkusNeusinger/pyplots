@@ -12,6 +12,8 @@ jobs:
   test-plots:
     name: Test Plots on Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       matrix:
         python-version: [ '3.11', '3.12', '3.13', '3.14' ]

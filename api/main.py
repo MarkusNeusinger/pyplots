@@ -11,9 +11,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
-
-# Load .env file (works locally, ignored in Cloud Run if not present)
-load_dotenv()
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -25,6 +22,9 @@ try:
     GCS_AVAILABLE = True
 except ImportError:
     GCS_AVAILABLE = False
+
+# Load .env file (works locally, ignored in Cloud Run if not present)
+load_dotenv()
 
 # Configuration
 GCS_BUCKET = os.getenv("GCS_BUCKET", "pyplots-images")

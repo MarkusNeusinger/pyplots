@@ -27,10 +27,10 @@ def create_plot(
     color: str = "steelblue",
     line_width: float = 2.0,
     marker: Optional[str] = None,
-    marker_size: float = 8,
+    marker_size: float = 12,
     alpha: float = 1.0,
-    width: int = 1600,
-    height: int = 900,
+    width: int = 4800,
+    height: int = 2700,
     **kwargs,
 ) -> "Figure":
     """
@@ -46,10 +46,10 @@ def create_plot(
         color: Line color (default: "steelblue")
         line_width: Width of the line (default: 2.0)
         marker: Marker style for data points (optional, e.g., "circle", "square")
-        marker_size: Size of markers if enabled (default: 8)
+        marker_size: Size of markers if enabled (default: 12)
         alpha: Line transparency (default: 1.0)
-        width: Figure width in pixels (default: 1600)
-        height: Figure height in pixels (default: 900)
+        width: Figure width in pixels (default: 4800)
+        height: Figure height in pixels (default: 2700)
         **kwargs: Additional parameters
 
     Returns:
@@ -108,11 +108,13 @@ def create_plot(
     p.xaxis.axis_label = xlabel or x
     p.yaxis.axis_label = ylabel or y
 
-    # Styling
-    p.title.text_font_size = "14pt"
+    # Styling - font sizes for 4800x2700 resolution
+    p.title.text_font_size = "20pt"
     p.title.align = "center"
-    p.xaxis.axis_label_text_font_size = "12pt"
-    p.yaxis.axis_label_text_font_size = "12pt"
+    p.xaxis.axis_label_text_font_size = "20pt"
+    p.yaxis.axis_label_text_font_size = "20pt"
+    p.xaxis.major_label_text_font_size = "16pt"
+    p.yaxis.major_label_text_font_size = "16pt"
     p.xgrid.grid_line_alpha = 0.3
     p.ygrid.grid_line_alpha = 0.3
     p.xgrid.grid_line_dash = [6, 4]

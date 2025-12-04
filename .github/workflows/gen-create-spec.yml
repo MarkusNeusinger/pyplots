@@ -119,9 +119,9 @@ jobs:
       - name: Check if spec already exists
         if: steps.check.outputs.should_run == 'true'
         id: check_spec
+        env:
+          SPEC_ID: ${{ steps.extract_spec.outputs.spec_id }}
         run: |
-          SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
-
           if [ -f "specs/$SPEC_ID.md" ]; then
             echo "exists=true" >> $GITHUB_OUTPUT
             echo "::notice::Spec file already exists: specs/$SPEC_ID.md"
@@ -133,8 +133,9 @@ jobs:
       - name: Check if feature branch exists
         if: steps.check.outputs.should_run == 'true'
         id: check_branch
+        env:
+          SPEC_ID: ${{ steps.extract_spec.outputs.spec_id }}
         run: |
-          SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
           BRANCH="plot/$SPEC_ID"
 
           if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
@@ -147,13 +148,15 @@ jobs:
       - name: Create feature branch
         if: steps.check.outputs.should_run == 'true'
         id: create_branch
+        env:
+          SPEC_ID: ${{ steps.extract_spec.outputs.spec_id }}
+          BRANCH_EXISTS: ${{ steps.check_branch.outputs.exists }}
         run: |
-          SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
           BRANCH="plot/$SPEC_ID"
 
           echo "feature_branch=$BRANCH" >> $GITHUB_OUTPUT
 
-          if [[ "${{ steps.check_branch.outputs.exists }}" == "true" ]]; then
+          if [[ "$BRANCH_EXISTS" == "true" ]]; then
             git fetch origin "$BRANCH"
             git checkout "$BRANCH"
             echo "::notice::Checked out existing branch: $BRANCH"
@@ -206,9 +209,10 @@ jobs:
         if: steps.check.outputs.should_run == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPEC_ID: ${{ steps.extract_spec.outputs.spec_id }}
+          BRANCH: ${{ steps.create_branch.outputs.feature_branch }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
-          SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
-          BRANCH="${{ steps.create_branch.outputs.feature_branch }}"
 
           # Configure git
           git config user.name "github-actions[bot]"
@@ -224,7 +228,7 @@ jobs:
             else
               git commit -m "spec: add $SPEC_ID specification
 
-            Created from issue #${{ github.event.issue.number }}"
+            Created from issue #$ISSUE_NUMBER"
               git push -u origin "$BRANCH"
               echo "::notice::Pushed spec file to $BRANCH"
             fi
@@ -237,11 +241,11 @@ jobs:
         if: steps.check.outputs.should_run == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPEC_ID: ${{ steps.extract_spec.outputs.spec_id }}
+          BRANCH: ${{ steps.create_branch.outputs.feature_branch }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
-          SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
-          BRANCH="${{ steps.create_branch.outputs.feature_branch }}"
-
-          gh issue comment ${{ github.event.issue.number }} --body "## Spec Created
+          gh issue comment "$ISSUE_NUMBER" --body "## Spec Created
 
           **Spec ID:** \`$SPEC_ID\`
           **Branch:** \`$BRANCH\`
@@ -267,11 +271,14 @@ jobs:
       - name: Trigger gen-new-plot workflow
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPEC_ID: ${{ needs.create-spec.outputs.spec_id }}
+          FEATURE_BRANCH: ${{ needs.create-spec.outputs.feature_branch }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           gh workflow run gen-new-plot.yml \
             --repo ${{ github.repository }} \
-            -f spec_id="${{ needs.create-spec.outputs.spec_id }}" \
-            -f feature_branch="${{ needs.create-spec.outputs.feature_branch }}" \
-            -f issue_number="${{ github.event.issue.number }}"
+            -f spec_id="$SPEC_ID" \
+            -f feature_branch="$FEATURE_BRANCH" \
+            -f issue_number="$ISSUE_NUMBER"
 
-          echo "::notice::Triggered gen-new-plot.yml for ${{ needs.create-spec.outputs.spec_id }}"
+          echo "::notice::Triggered gen-new-plot.yml for $SPEC_ID"

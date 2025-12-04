@@ -30,6 +30,8 @@ jobs:
   # ============================================================================
   setup:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       spec_id: ${{ inputs.spec_id }}
       feature_branch: ${{ inputs.feature_branch }}

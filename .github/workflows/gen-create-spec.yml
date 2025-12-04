@@ -252,7 +252,7 @@ jobs:
           **File:** \`specs/$SPEC_ID.md\`
 
           ### Next Steps
-          Triggering code generation for all 8 libraries...
+          Triggering code generation for all 9 libraries...
 
           ---
           :robot: *[gen-create-spec workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"

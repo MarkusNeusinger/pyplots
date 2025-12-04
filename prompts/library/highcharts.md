@@ -84,7 +84,7 @@ html_content = f"""<!DOCTYPE html>
     <script>{highcharts_js}</script>
 </head>
 <body style="margin:0;">
-    <div id="container" style="width: 1600px; height: 900px;"></div>
+    <div id="container" style="width: 4800px; height: 2700px;"></div>
     <script>{html_str}</script>
 </body>
 </html>"""
@@ -99,7 +99,7 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=1600,900")
+chrome_options.add_argument("--window-size=4800,2700")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
@@ -113,10 +113,11 @@ Path(temp_path).unlink()  # Clean up temp file
 ## Chart Size
 
 ```python
+# Target: 4800 × 2700 px (see default-style-guide.md)
 chart.options.chart = {
     'type': 'column',  # or 'bar', 'scatter', etc.
-    'width': 1600,
-    'height': 900,
+    'width': 4800,
+    'height': 2700,
     'backgroundColor': '#ffffff'
 }
 ```

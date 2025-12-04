@@ -109,13 +109,12 @@ if __name__ == '__main__':
 
 ### Visual Quality
 
-- **Figure Size**: 16:9 aspect ratio (see library rules)
-- **DPI**: 300 for all outputs
+- **Image Size**: 4800 × 2700 px (see `prompts/default-style-guide.md`)
+- **Colors**: Use palette from style guide
 - **Axis Labels**: Always present
-- **Grid**: Subtle (`alpha=0.3`)
-- **Font Size**: At least 10pt
 - **Legend**: When multiple series or color mapping
 - **Layout**: `tight_layout()` or equivalent
+- **Grid, Fonts, Ticks**: AI discretion (focus on clarity)
 
 ### Output
 
@@ -127,10 +126,10 @@ if __name__ == '__main__':
 After code generation, check:
 
 1. **Executable?** Code runs without errors
-2. **Axes labeled?** X and Y
-3. **Grid subtle?** alpha ≤ 0.5
-4. **No overlap?** Labels/text readable
-5. **Spec fulfilled?** All requirements implemented
+2. **Axes labeled?** X and Y axes have meaningful labels
+3. **Readable?** Labels/text don't overlap, elements clear
+4. **Spec fulfilled?** All requirements implemented
+5. **Style guide?** Image size and colors match `default-style-guide.md`
 
 **Score ≥ 85** → Done
 **Score < 85** → Improve (max 3 attempts)

@@ -14,7 +14,7 @@
 
 **pyplots** is an AI-powered platform for Python data visualization that automatically discovers, generates, tests, and
 maintains plotting examples. Browse hundreds of plots across all major Python libraries - matplotlib, seaborn, plotly,
-bokeh, altair, plotnine, pygal, and highcharts.
+bokeh, altair, plotnine, pygal, highcharts, and lets-plot.
 
 **Community-driven, AI-maintained** - Propose plot ideas via GitHub Issues, AI generates the code, multi-LLM quality
 checks ensure excellence. Zero manual coding required.
@@ -62,7 +62,7 @@ specs/scatter-basic-001.md  → plots/matplotlib/scatter/scatter-basic-001/defau
                             → plots/plotly/scatter/scatter-basic-001/default.py
 ```
 
-**Issue-based workflow**: GitHub Issues as state machine for plot lifecycle. Each plot request spawns **8 parallel sub-issues** (one per library) for independent tracking.
+**Issue-based workflow**: GitHub Issues as state machine for plot lifecycle. Each plot request spawns **9 parallel sub-issues** (one per library) for independent tracking.
 
 **Multi-LLM quality checks**: Claude + Gemini + GPT evaluate generated plots. Score ≥ 85 required (median). Automatic
 feedback loops (max 3 attempts per library).
@@ -77,7 +77,7 @@ See [docs/architecture/](docs/architecture/) for details.
 
 **Frontend**: React 19 • Vite • TypeScript • MUI
 
-**Plotting**: matplotlib • seaborn • plotly • bokeh • altair • plotnine • pygal • highcharts
+**Plotting**: matplotlib • seaborn • plotly • bokeh • altair • plotnine • pygal • highcharts • lets-plot
 
 **Infrastructure**: Google Cloud Run • Cloud SQL • Cloud Storage
 
@@ -136,7 +136,7 @@ We welcome contributions! **All code is AI-generated** - you propose ideas, AI i
 
 **The workflow**:
 
-- You create Issue with plot idea → AI generates spec → **8 parallel sub-issues** spawn (one per library) → Each library generates independently → Multi-LLM quality check per library → Merged & Deployed
+- You create Issue with plot idea → AI generates spec → **9 parallel sub-issues** spawn (one per library) → Each library generates independently → Multi-LLM quality check per library → Merged & Deployed
 
 **Important**: Don't submit code directly! If a plot has quality issues, it means the spec needs improvement, not the
 code.

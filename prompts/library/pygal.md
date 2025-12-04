@@ -10,9 +10,10 @@ from pygal.style import Style
 ## Create Chart
 
 ```python
+# Target: 4800 × 2700 px (see default-style-guide.md)
 chart = pygal.Bar(
-    width=1600,
-    height=900,
+    width=4800,
+    height=2700,
     title=title,
     x_title=x_label,
     y_title=y_label

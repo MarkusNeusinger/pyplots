@@ -34,8 +34,8 @@ This file provides guidance to GitHub Copilot when working with code in this rep
 
 **pyplots** is an AI-powered platform for Python data visualization that automatically discovers, generates, tests, and maintains plotting examples. The platform is specification-driven: every plot starts as a library-agnostic Markdown spec, then AI generates implementations for all supported libraries.
 
-**Supported Libraries** (8 total):
-- matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts
+**Supported Libraries** (9 total):
+- matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts, lets-plot
 
 **Core Principle**: Community proposes plot ideas via GitHub Issues → AI generates code → Multi-LLM quality checks → Deployed.
 

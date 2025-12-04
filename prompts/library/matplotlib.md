@@ -39,9 +39,9 @@ plt.savefig('plot.png', dpi=300, bbox_inches='tight')
 ax.set_xlabel(x_label)
 ax.set_ylabel(y_label)
 ax.set_title(title)
-ax.grid(True, alpha=0.3)
 ax.legend()  # if needed
 plt.tight_layout()
+# Grid: AI discretion
 ```
 
 ## API Compatibility (3.9+)

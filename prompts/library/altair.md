@@ -13,8 +13,8 @@ chart = alt.Chart(df).mark_point().encode(
     x='col_x:Q',
     y='col_y:Q'
 ).properties(
-    width=800,
-    height=450,
+    width=1600,
+    height=900,
     title=title
 )
 ```
@@ -49,7 +49,9 @@ x='date:T'
 ## Save (PNG)
 
 ```python
-chart.save('plot.png', scale_factor=2.0)
+# Target: 4800 × 2700 px (see default-style-guide.md)
+# 1600 × 3 = 4800, 900 × 3 = 2700
+chart.save('plot.png', scale_factor=3.0)
 ```
 
 **Note**: Requires `vl-convert-python` for PNG export.

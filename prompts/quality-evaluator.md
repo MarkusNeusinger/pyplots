@@ -25,12 +25,12 @@ Evaluate the given plot implementation and assign a score from 0-100.
 
   "visual_quality": {
     "axes_labeled": {"pass": true, "score": 10, "note": ""},
-    "grid_subtle": {"pass": true, "score": 5, "note": ""},
+    "visual_clarity": {"pass": true, "score": 5, "note": ""},
     "elements_clear": {"pass": true, "score": 8, "note": ""},
     "no_overlap": {"pass": true, "score": 9, "note": ""},
     "legend_present": {"pass": true, "score": 7, "note": ""},
     "colorblind_safe": {"pass": false, "score": -6, "note": "Red-green combination"},
-    "figure_size_ok": {"pass": true, "score": 4, "note": ""},
+    "image_size_ok": {"pass": true, "score": 4, "note": "4800x2700 px"},
     "title_centered": {"pass": "n/a", "score": 0, "note": "No title in spec"}
   },
 
@@ -80,11 +80,11 @@ Evaluate the given plot implementation and assign a score from 0-100.
 ### 2. Analyze Preview
 
 - Axis labels present?
-- Grid visible but subtle?
 - Elements distinguishable?
 - Overlapping text?
 - Legend (if needed)?
 - Colorblind-safe colors?
+- Image size correct (4800×2700 px)?
 
 ### 3. Check Spec Compliance
 

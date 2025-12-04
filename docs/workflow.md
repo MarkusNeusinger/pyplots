@@ -110,8 +110,8 @@ gen-create-spec.yml
 
 Feature branch triggers **parallel generation pipeline**:
 
-1. **Orchestrator** (`gen-new-plot.yml`) creates 8 sub-issues (one per library)
-2. **8 parallel jobs** run simultaneously via `gen-library-impl.yml`:
+1. **Orchestrator** (`gen-new-plot.yml`) creates 9 sub-issues (one per library)
+2. **9 parallel jobs** run simultaneously via `gen-library-impl.yml`:
    - Each library has isolated dependencies
    - Separate Claude context (no syntax confusion)
    - **PRs target feature branch** (`plot/{spec-id}`), not main
@@ -125,7 +125,7 @@ Main Issue (#53)
 ├── Sub-Issue: [scatter-basic] matplotlib (#54) → PR #62 → plot/scatter-basic
 ├── Sub-Issue: [scatter-basic] seaborn (#55) → PR #63 → plot/scatter-basic
 ├── Sub-Issue: [scatter-basic] plotly (#56) → PR #64 → plot/scatter-basic
-└── ... (8 total, all targeting feature branch)
+└── ... (9 total, all targeting feature branch)
 ```
 
 ### Flow 4: Multi-Version Testing
@@ -180,7 +180,7 @@ Deployed plot → Added to promotion queue (prioritized by quality score) → n8
 
 ## Sub-Issue Architecture
 
-Each plot request spawns **8 parallel sub-issues** (one per library), enabling:
+Each plot request spawns **9 parallel sub-issues** (one per library), enabling:
 
 - **~8x faster** generation (parallel execution)
 - **No context pollution** (separate Claude sessions per library)
@@ -260,7 +260,7 @@ To update or regenerate an existing plot:
 5. Workflow regenerates specified implementations
 
 **Examples:**
-- `[update] scatter-basic` → Regenerate all 8 libraries
+- `[update] scatter-basic` → Regenerate all 9 libraries
 - `[update:matplotlib] heatmap-correlation` → Regenerate only matplotlib
 
 ---
@@ -468,6 +468,7 @@ Via **GitHub Issue Labels**:
 | plotnine | ggplot2 syntax for R users |
 | pygal | Minimalistic SVG charts |
 | highcharts | Interactive web charts, stock charts |
+| lets-plot | ggplot2 grammar of graphics by JetBrains |
 
 **Goal**: Prove automation pipeline works end-to-end with all libraries
 
@@ -536,7 +537,7 @@ This workflow ensures:
 
 ✅ **Fully Automated** pipeline from discovery to deployment to promotion
 ✅ **Parallel Per-Library Generation**:
-   - 8 libraries generated simultaneously (~8x faster)
+   - 9 libraries generated simultaneously (~9x faster)
    - Isolated dependencies per library
    - Independent tracking via sub-issues
    - Partial success possible (some merge while others retry)

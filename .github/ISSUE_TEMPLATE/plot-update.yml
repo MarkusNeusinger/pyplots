@@ -11,7 +11,7 @@ body:
         Use this form to update or regenerate an existing plot.
 
         **Title Format:**
-        - `[update] scatter-basic` → Regenerate all 8 libraries
+        - `[update] scatter-basic` → Regenerate all 9 libraries
         - `[update:seaborn] scatter-basic` → Regenerate only seaborn
 
         After submitting, a maintainer will add the `approved` label to trigger regeneration.
@@ -40,6 +40,7 @@ body:
         - plotnine
         - pygal
         - highcharts
+        - letsplot
     validations:
       required: false
 

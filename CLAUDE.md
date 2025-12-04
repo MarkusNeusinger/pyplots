@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **pyplots** is an AI-powered platform for Python data visualization that automatically discovers, generates, tests, and maintains plotting examples. The platform is specification-driven: every plot starts as a library-agnostic Markdown spec, then AI generates implementations for all supported libraries.
 
-**Supported Libraries** (8 total):
+**Supported Libraries** (9 total):
 - **matplotlib** - The classic standard, maximum flexibility
 - **seaborn** - Statistical visualizations, beautiful defaults
 - **plotly** - Interactive web plots, dashboards, 3D
@@ -21,6 +21,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **plotnine** - ggplot2 syntax for R users
 - **pygal** - Minimalistic SVG charts
 - **highcharts** - Interactive web charts, stock charts (requires license for commercial use)
+- **lets-plot** - ggplot2 grammar of graphics by JetBrains, interactive
 
 **Core Principle**: Community proposes plot ideas via GitHub Issues → AI generates code → Multi-LLM quality checks → Deployed.
 
@@ -96,9 +97,10 @@ specs/scatter-basic.md  → plots/matplotlib/scatter/scatter-basic/default.py
                         → plots/plotnine/scatter/scatter-basic/default.py
                         → plots/pygal/scatter/scatter-basic/default.py
                         → plots/highcharts/scatter/scatter-basic/default.py
+                        → plots/letsplot/point/scatter-basic/default.py
 ```
 
-The same spec ID links implementations across all 8 supported libraries.
+The same spec ID links implementations across all 9 supported libraries.
 
 ### Spec ID Naming Convention
 
@@ -140,7 +142,7 @@ The same spec ID links implementations across all 8 supported libraries.
 
 - **Backend**: FastAPI, SQLAlchemy (async), PostgreSQL, Python 3.10+
 - **Frontend**: React 19, Vite, TypeScript, MUI 7
-- **Plotting**: matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts
+- **Plotting**: matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts, lets-plot
 - **Package Manager**: uv (fast Python installer)
 - **Infrastructure**: Google Cloud Run, Cloud SQL, Cloud Storage
 - **Automation**: GitHub Actions (code workflows) + n8n Cloud (external services)
@@ -228,7 +230,7 @@ The `prompts/` directory contains AI agent prompts for code generation, quality 
 | File | Purpose |
 |------|---------|
 | `plot-generator.md` | Base rules for all plot implementations |
-| `library/*.md` | Library-specific rules (8 files) |
+| `library/*.md` | Library-specific rules (9 files) |
 | `quality-criteria.md` | Definition of code/visual quality |
 | `quality-evaluator.md` | Multi-LLM evaluation prompt |
 | `auto-tagger.md` | Automatic tagging across 5 dimensions |
@@ -344,7 +346,7 @@ bash .github/scripts/setup-labels.sh
 
 ### Library Labels (per-library tracking)
 
-- **`library:matplotlib`**, **`library:seaborn`**, **`library:plotly`**, **`library:bokeh`**
+- **`library:matplotlib`**, **`library:seaborn`**, **`library:plotly`**, **`library:bokeh`**, **`library:letsplot`**
 - **`library:altair`**, **`library:plotnine`**, **`library:pygal`**, **`library:highcharts`**
 
 ### Workflow Status Labels
@@ -395,8 +397,8 @@ bash .github/scripts/setup-labels.sh
    - Claude generates spec file: `specs/{spec-id}.md`
    - Dispatches `gen-new-plot.yml`
 6. **`gen-new-plot.yml` orchestrator triggers:**
-   - Creates **8 sub-issues** (one per library)
-   - Dispatches **8 parallel generation jobs** (all use feature branch as base)
+   - Creates **9 sub-issues** (one per library)
+   - Dispatches **9 parallel generation jobs** (all use feature branch as base)
 7. **Each library independently:**
    - Generates implementation in separate Claude context
    - Creates own branch: `auto/{spec-id}/{library}` FROM `plot/{spec-id}`
@@ -413,7 +415,7 @@ bash .github/scripts/setup-labels.sh
 **Benefits:**
 - ~8x faster (parallel execution)
 - No context pollution (separate Claude sessions)
-- Partial success (5/8 can merge while 3/8 retry)
+- Partial success (6/9 can merge while 3/9 retry)
 - Per-library dependency isolation
 - **Clean git history** (single merge to main per plot)
 - **Atomic feature** (spec + all implementations together)
@@ -423,7 +425,7 @@ bash .github/scripts/setup-labels.sh
 To update an existing plot implementation:
 
 1. Create issue with title: `[update] {spec-id}` (all libraries) or `[update:{library}] {spec-id}` (single library)
-   - Example: `[update] scatter-basic` - regenerate all 8 libraries
+   - Example: `[update] scatter-basic` - regenerate all 9 libraries
    - Example: `[update:seaborn] scatter-basic` - regenerate only seaborn
 2. Add label: `plot-request`
 3. Issue body can contain spec changes (Claude will update `specs/{spec-id}.md` first)

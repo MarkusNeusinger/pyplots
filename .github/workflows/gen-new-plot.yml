@@ -22,7 +22,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  LIBRARIES: "matplotlib seaborn plotly bokeh altair plotnine pygal highcharts"
+  LIBRARIES: "matplotlib seaborn plotly bokeh altair plotnine pygal highcharts letsplot"
 
 jobs:
   # ============================================================================
@@ -77,6 +77,7 @@ jobs:
       plotnine_issue: ${{ steps.create.outputs.plotnine_issue }}
       pygal_issue: ${{ steps.create.outputs.pygal_issue }}
       highcharts_issue: ${{ steps.create.outputs.highcharts_issue }}
+      letsplot_issue: ${{ steps.create.outputs.letsplot_issue }}
     permissions:
       contents: read
       issues: write
@@ -256,6 +257,19 @@ jobs:
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
+  generate-letsplot:
+    needs: [setup, create-sub-issues]
+    uses: ./.github/workflows/gen-library-impl.yml
+    with:
+      spec_id: ${{ inputs.spec_id }}
+      library: letsplot
+      main_issue_number: ${{ inputs.issue_number }}
+      sub_issue_number: ${{ needs.create-sub-issues.outputs.letsplot_issue }}
+      deps: "lets-plot>=4.5.0"
+      base_branch: ${{ inputs.feature_branch }}
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
   # ============================================================================
   # Step 4: Summary after all generations complete
   # ============================================================================
@@ -271,6 +285,7 @@ jobs:
       - generate-plotnine
       - generate-pygal
       - generate-highcharts
+      - generate-letsplot
     if: always()
     runs-on: ubuntu-latest
     permissions:
@@ -308,7 +323,7 @@ jobs:
           # Post summary comment
           gh issue comment ${{ inputs.issue_number }} --body "## Generation Complete
 
-          All 8 library generation jobs have been dispatched for \`$SPEC_ID\`.
+          All 9 library generation jobs have been dispatched for \`$SPEC_ID\`.
 
           **Feature Branch:** \`$FEATURE_BRANCH\`
 
@@ -321,6 +336,7 @@ jobs:
           - plotnine: #${{ needs.create-sub-issues.outputs.plotnine_issue }}
           - pygal: #${{ needs.create-sub-issues.outputs.pygal_issue }}
           - highcharts: #${{ needs.create-sub-issues.outputs.highcharts_issue }}
+          - letsplot: #${{ needs.create-sub-issues.outputs.letsplot_issue }}
 
           ### Next Steps
           Each library will:

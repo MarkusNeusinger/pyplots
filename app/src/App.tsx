@@ -144,7 +144,7 @@ function App() {
         const response = await fetch(`${API_URL}/specs/${selectedSpec}/images`);
         if (!response.ok) throw new Error('Failed to fetch images');
         const data = await response.json();
-        const shuffled = shuffleArray(data.images);
+        const shuffled = shuffleArray<PlotImage>(data.images as PlotImage[]);
         setImages(shuffled);
       } catch (err) {
         setError(`Error loading images: ${err}`);
@@ -334,7 +334,7 @@ function App() {
                 .map((spec, index) => (
                   <MenuItem
                     key={spec}
-                    ref={(el) => (menuItemRefs.current[index] = el)}
+                    ref={(el) => { menuItemRefs.current[index] = el; }}
                     onClick={() => {
                       setSelectedSpec(spec);
                       setMenuAnchor(null);

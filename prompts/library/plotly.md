@@ -27,15 +27,14 @@ fig.update_layout(
     xaxis_title=x_label,
     yaxis_title=y_label,
     template='plotly_white',  # Clean template
-    width=1600,
-    height=900
 )
 ```
 
 ## Save (PNG)
 
 ```python
-fig.write_image('plot.png', width=1600, height=900, scale=2)
+# Target: 4800 × 2700 px (see default-style-guide.md)
+fig.write_image('plot.png', width=1600, height=900, scale=3)
 ```
 
 **Note**: Requires `kaleido` for PNG export.

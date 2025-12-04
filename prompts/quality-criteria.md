@@ -33,18 +33,11 @@ ax.set_xlabel("")
 ax.set_xlabel("x")
 ```
 
-### VQ-002: Grid Subtle (5 points, Medium)
+### VQ-002: Visual Clarity (5 points, Medium)
 
-- Grid present but not dominant
-- Alpha ≤ 0.5
-
-```python
-# Good
-ax.grid(True, alpha=0.3)
-
-# Bad
-ax.grid(True)  # alpha=1.0
-```
+- Grid (if present) doesn't dominate the data
+- Elements are distinguishable
+- AI discretion for grid style
 
 ### VQ-003: Elements Clear (8 points, High)
 
@@ -82,10 +75,10 @@ plt.xticks(rotation=45, ha='right')
 - No red-green combinations
 - Safe palettes: viridis, tab10, colorblind
 
-### VQ-007: Figure Size (4 points, Low)
+### VQ-007: Image Size (4 points, Low)
 
-- 16:9 aspect ratio
-- Not too small (<6") or too large (>20")
+- Target: 4800 × 2700 px (16:9 aspect ratio)
+- See `prompts/default-style-guide.md`
 
 ### VQ-008: Title (3 points, Low)
 

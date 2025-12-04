@@ -11,9 +11,10 @@ from bokeh.io import export_png
 ## Create Figure
 
 ```python
+# Target: 4800 × 2700 px (see default-style-guide.md)
 p = figure(
-    width=1600,
-    height=900,
+    width=4800,
+    height=2700,
     title=title,
     x_axis_label=x_label,
     y_axis_label=y_label
@@ -57,9 +58,9 @@ export_png(p, filename='plot.png')
 ## Styling
 
 ```python
-p.grid.grid_line_alpha = 0.3
 p.xaxis.axis_label = x_label
 p.yaxis.axis_label = y_label
+# Grid: AI discretion
 ```
 
 ## Folder-Name

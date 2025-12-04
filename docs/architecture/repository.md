@@ -36,7 +36,7 @@ pyplots/
 │           ├── quality-criteria.md
 │           └── self-review-checklist.md
 │
-├── plots/                             # Library-specific implementations (8 libraries)
+├── plots/                             # Library-specific implementations (9 libraries)
 │   ├── matplotlib/                    # The classic standard
 │   │   ├── scatter/
 │   │   │   ├── scatter-basic-001/     # Implements specs/scatter-basic-001.md
@@ -86,8 +86,13 @@ pyplots/
 │   │       └── scatter-basic-001/
 │   │           └── default.py
 │   │
-│   └── highcharts/                    # Interactive web charts, stock charts
-│       └── scatter/
+│   ├── highcharts/                    # Interactive web charts, stock charts
+│   │   └── scatter/
+│   │       └── scatter-basic-001/
+│   │           └── default.py
+│   │
+│   └── letsplot/                      # ggplot2 grammar by JetBrains
+│       └── point/
 │           └── scatter-basic-001/
 │               └── default.py
 │
@@ -260,6 +265,7 @@ altair/scatter/scatter-basic-001/default.py
 plotnine/scatter/scatter-basic-001/default.py
 pygal/scatter/scatter-basic-001/default.py
 highcharts/scatter/scatter-basic-001/default.py
+letsplot/point/scatter-basic-001/default.py
 ```
 All implement the same spec: `specs/scatter-basic-001.md`
 

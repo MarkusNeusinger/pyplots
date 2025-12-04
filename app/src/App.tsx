@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -41,16 +41,27 @@ function App() {
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const shuffleButtonRef = useRef<HTMLButtonElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const menuItemRefs = useRef<(HTMLLIElement | null)[]>([]);
+
+  // Fisher-Yates shuffle algorithm
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
 
   // Shuffle to a different random spec
-  const shuffleSpec = () => {
+  const shuffleSpec = useCallback(() => {
     if (specs.length <= 1) return;
     setIsShuffling(true);
     setTimeout(() => setIsShuffling(false), 300);
     const otherSpecs = specs.filter((s) => s !== selectedSpec);
     const randomIndex = Math.floor(Math.random() * otherSpecs.length);
     setSelectedSpec(otherSpecs[randomIndex]);
-  };
+  }, [specs, selectedSpec]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -67,7 +78,10 @@ function App() {
         if (chip) setMenuAnchor(chip);
       }
       if (e.code === 'Escape') {
-        if (modalImage) setModalImage(null);
+        if (modalImage) {
+          setModalImage(null);
+          return; // Close only one element at a time
+        }
         if (menuAnchor) {
           setMenuAnchor(null);
           setSearchFilter('');
@@ -76,7 +90,7 @@ function App() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [specs, selectedSpec, modalImage, menuAnchor]);
+  }, [modalImage, menuAnchor, shuffleSpec]);
 
   // Load specs on mount
   useEffect(() => {
@@ -130,7 +144,7 @@ function App() {
         const response = await fetch(`${API_URL}/specs/${selectedSpec}/images`);
         if (!response.ok) throw new Error('Failed to fetch images');
         const data = await response.json();
-        const shuffled = [...data.images].sort(() => Math.random() - 0.5);
+        const shuffled = shuffleArray(data.images);
         setImages(shuffled);
       } catch (err) {
         setError(`Error loading images: ${err}`);
@@ -277,17 +291,22 @@ function App() {
                     }
                     if (e.key === 'ArrowDown') {
                       e.preventDefault();
-                      setHighlightedIndex((prev) => (prev + 1) % filtered.length);
+                      const newIndex = filtered.length > 0 ? (highlightedIndex + 1) % filtered.length : 0;
+                      setHighlightedIndex(newIndex);
+                      menuItemRefs.current[newIndex]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
                       return;
                     }
                     if (e.key === 'ArrowUp') {
                       e.preventDefault();
-                      setHighlightedIndex((prev) => (prev - 1 + filtered.length) % filtered.length);
+                      const newIndex = filtered.length > 0 ? (highlightedIndex - 1 + filtered.length) % filtered.length : 0;
+                      setHighlightedIndex(newIndex);
+                      menuItemRefs.current[newIndex]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
                       return;
                     }
+                    // Stop propagation for all other keys (including letters) to prevent Menu from handling them
                     e.stopPropagation();
                     if (e.key === 'Enter') {
-                      if (filtered.length > 0) {
+                      if (filtered.length > 0 && highlightedIndex < filtered.length) {
                         setSelectedSpec(filtered[highlightedIndex]);
                         setMenuAnchor(null);
                         setSearchFilter('');
@@ -315,6 +334,7 @@ function App() {
                 .map((spec, index) => (
                   <MenuItem
                     key={spec}
+                    ref={(el) => (menuItemRefs.current[index] = el)}
                     onClick={() => {
                       setSelectedSpec(spec);
                       setMenuAnchor(null);
@@ -340,6 +360,7 @@ function App() {
               ref={shuffleButtonRef}
               onClick={shuffleSpec}
               size="small"
+              aria-label="Shuffle to a different random spec"
               sx={{
                 color: '#3776AB',
                 transition: 'transform 0.5s ease',
@@ -398,6 +419,15 @@ function App() {
                       <Card
                         elevation={0}
                         onClick={() => setModalImage(img)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setModalImage(img);
+                          }
+                        }}
+                        tabIndex={0}
+                        role="button"
+                        aria-label={`View ${img.library} plot in fullscreen`}
                         sx={{
                           borderRadius: 3,
                           overflow: 'hidden',
@@ -408,6 +438,10 @@ function App() {
                             borderColor: '#e5e7eb',
                             boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
                             transform: 'scale(1.03)',
+                          },
+                          '&:focus': {
+                            outline: '2px solid #3776AB',
+                            outlineOffset: '2px',
                           },
                         }}
                       >
@@ -503,6 +537,7 @@ function App() {
       <Modal
         open={!!modalImage}
         onClose={() => setModalImage(null)}
+        aria-labelledby="plot-modal-title"
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -516,9 +551,11 @@ function App() {
             maxHeight: '90vh',
             outline: 'none',
           }}
+          role="dialog"
         >
           <IconButton
             onClick={() => setModalImage(null)}
+            aria-label="Close fullscreen image"
             sx={{
               position: 'absolute',
               top: -40,
@@ -543,6 +580,7 @@ function App() {
                 }}
               />
               <Typography
+                id="plot-modal-title"
                 sx={{
                   textAlign: 'center',
                   mt: 2,

@@ -1,6 +1,24 @@
+<p align="center">
+  <img src="public/logo.svg" alt="pyplots.ai" width="250">
+</p>
+
 # pyplots Frontend
 
 Minimal React + TypeScript + Vite + MUI frontend for the pyplots platform.
+
+## Features
+
+- **Python-colored branding** - Logo with Python blue (#3776AB) and yellow (#FFD43B)
+- **JetBrains Mono font** - Monospace font for the pythonic developer vibe
+- **Spec search & filter** - Click on spec ID to search/filter all available specs
+- **Keyboard shortcuts**:
+  - `Space` - Random shuffle to another spec
+  - `Enter` - Open spec selector with search
+  - `↑↓` - Navigate through specs in dropdown
+  - `Escape` - Close modal or dropdown
+- **URL sharing** - Specs are shareable via `?spec=scatter-basic` URL parameter
+- **Fullscreen modal** - Click any plot to view in fullscreen
+- **Responsive grid** - 1/2/3 columns based on screen size
 
 ## Tech Stack
 
@@ -8,6 +26,7 @@ Minimal React + TypeScript + Vite + MUI frontend for the pyplots platform.
 - **TypeScript** - Type safety
 - **Vite 7** - Build tool
 - **MUI 7** - Material UI components
+- **JetBrains Mono** - Google Fonts
 - **nginx** - Production web server
 
 ## Development
@@ -100,8 +119,10 @@ app/
 │   ├── App.tsx          # Main application component
 │   ├── main.tsx         # React entry point
 │   └── vite-env.d.ts    # Vite type definitions
-├── public/              # Static assets
-├── index.html           # HTML template
+├── public/
+│   ├── favicon.svg      # Python-colored "pp" favicon
+│   └── logo.svg         # Python-colored "pyplots.ai" logo
+├── index.html           # HTML template (fonts, favicon)
 ├── vite.config.ts       # Vite configuration
 ├── tsconfig.json        # TypeScript configuration
 ├── Dockerfile           # Multi-stage Docker build

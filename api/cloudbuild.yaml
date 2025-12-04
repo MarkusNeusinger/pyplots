@@ -2,7 +2,8 @@
 substitutions:
   _SERVICE_NAME: pyplots-backend
   _REGION: europe-west4
-  _MEMORY: 512Mi
+  _MEMORY: 256Mi
+  _CPU: "2"
   _MIN_INSTANCES: "0"
   _MAX_INSTANCES: "3"
 
@@ -46,6 +47,7 @@ steps:
       - "--region=${_REGION}"
       - "--platform=managed"
       - "--memory=${_MEMORY}"
+      - "--cpu=${_CPU}"
       - "--min-instances=${_MIN_INSTANCES}"
       - "--max-instances=${_MAX_INSTANCES}"
       - "--port=8000"

@@ -1,68 +1,42 @@
 # line-basic: Basic Line Chart
 
-A fundamental line chart that visualizes trends and patterns in data over a continuous axis, typically time or sequential values.
+**Spec Version:** 1.0.0
+
+## Description
+
+A fundamental line chart that displays data points connected by straight line segments. Ideal for visualizing trends over time or ordered categories, showing the progression and direction of data values.
 
 ## Data Requirements
 
-- **x**: Numeric or temporal column for x-axis values (typically time or sequence)
-- **y**: Numeric column for y-axis values
+- **x**: Numeric or datetime column for x-axis values (typically representing time or sequence)
+- **y**: Numeric column for y-axis values (the measurement or metric)
 
 ## Optional Parameters
 
-- `figsize`: Figure size as (width, height) tuple (default: (10, 6))
+- `figsize`: Figure size as (width, height) tuple (default: (16, 9))
 - `color`: Line color (default: "steelblue")
-- `linewidth`: Width of the line (default: 2)
-- `marker`: Marker style for data points (default: None)
-- `marker_size`: Size of markers if enabled (default: 6)
-- `alpha`: Transparency level for the line (default: 1.0)
+- `linewidth`: Width of the line (default: 2.0)
+- `marker`: Marker style for data points (default: "o")
+- `markersize`: Size of markers (default: 6)
+- `alpha`: Transparency level (default: 0.8)
 - `title`: Plot title (default: None)
 - `xlabel`: X-axis label (default: uses column name)
 - `ylabel`: Y-axis label (default: uses column name)
-- `linestyle`: Line style (default: "solid")
-
-## Expected Output
-
-A line chart with:
-- X and Y axes labeled with column names (or custom labels)
-- Smooth connected line through all data points
-- Grid visible but subtle (alpha <= 0.3)
-- Professional appearance with proper spacing
-- Clear trend visualization
+- `linestyle`: Line style (default: "-" solid)
 
 ## Quality Criteria
 
-- [x] Axes labeled clearly
-- [x] Grid visible but subtle
-- [x] Line clearly visible with appropriate width
-- [x] No overlapping labels
+- [x] X and Y axes are labeled with column names or custom labels
+- [x] Line clearly visible with appropriate width and color
+- [x] Grid visible but subtle (alpha ≤ 0.3)
+- [x] No overlapping axis labels or tick marks
+- [x] Data points optionally marked for clarity
 - [x] Appropriate figure size (16:9 aspect ratio)
 - [x] Type hints and validation present
-- [x] Data accurately represented
 
-## Examples
+## Expected Output
 
-### Example 1: Basic Usage
-```python
-import pandas as pd
-data = pd.DataFrame({
-    'month': [1, 2, 3, 4, 5, 6],
-    'sales': [100, 150, 130, 180, 200, 190]
-})
-fig = create_plot(data, 'month', 'sales')
-```
-
-### Example 2: Custom Styling
-```python
-fig = create_plot(
-    data,
-    'month',
-    'sales',
-    color='darkblue',
-    linewidth=3,
-    title='Monthly Sales Trend',
-    marker='o'
-)
-```
+A clean line chart with data points connected by a continuous line. The plot should have clearly labeled axes, a subtle grid for readability, and optionally markers at each data point. The line should be clearly visible against the background, with sufficient contrast. The overall design should be professional and minimal, suitable for reports and presentations.
 
 ## Tags
 
@@ -70,14 +44,8 @@ line, trend, timeseries, basic, 2d
 
 ## Use Cases
 
-- Tracking sales or revenue trends over time
-- Visualizing stock price movements
-- Displaying temperature changes throughout a period
-- Monitoring website traffic or user engagement metrics
-- Showing project progress over time
-
-## Implementation Notes
-
-- Sort data by x-axis values to ensure proper line connections
-- Handle missing/NaN values gracefully
-- Validate that columns contain numeric data
+- Tracking monthly sales figures over a year
+- Visualizing stock price movements over time
+- Monitoring temperature changes throughout a day
+- Displaying website traffic trends over weeks
+- Showing progress of a metric over time

@@ -16,7 +16,7 @@ jobs:
       contents: read
     strategy:
       matrix:
-        python-version: [ '3.11', '3.12', '3.13', '3.14' ]
+        python-version: [ '3.11', '3.12', '3.13' ]
       fail-fast: false
 
     steps:
@@ -70,8 +70,8 @@ jobs:
       - name: Test plot execution
         id: test_execution
         if: steps.changed_plots.outputs.has_plots == 'true'
-        # Only Python 3.14 is required to pass - older versions are compatibility tests
-        continue-on-error: ${{ matrix.python-version != '3.14' }}
+        # Only Python 3.13 is required to pass - older versions are compatibility tests
+        continue-on-error: ${{ matrix.python-version != '3.13' }}
         run: |
           echo "🧪 Testing plot files on Python ${{ matrix.python-version }}"
 
@@ -152,7 +152,6 @@ jobs:
           PY311_RESULT=$(cat result-3.11.txt 2>/dev/null | cut -d',' -f2 || echo "skipped")
           PY312_RESULT=$(cat result-3.12.txt 2>/dev/null | cut -d',' -f2 || echo "skipped")
           PY313_RESULT=$(cat result-3.13.txt 2>/dev/null | cut -d',' -f2 || echo "skipped")
-          PY314_RESULT=$(cat result-3.14.txt 2>/dev/null | cut -d',' -f2 || echo "skipped")
 
           # Helper function for badge
           badge() {
@@ -168,12 +167,12 @@ jobs:
           }
 
           # Build comment
-          if [ "$PY314_RESULT" == "success" ]; then
+          if [ "$PY313_RESULT" == "success" ]; then
             HEADER="## ✅ Plot Tests Passed"
-            MAIN_STATUS="**Created with Python 3.14**"
-          elif [ "$PY314_RESULT" == "failure" ]; then
+            MAIN_STATUS="**Created with Python 3.13**"
+          elif [ "$PY313_RESULT" == "failure" ]; then
             HEADER="## ❌ Plot Tests Failed"
-            MAIN_STATUS="**Python 3.14 failed** (required)"
+            MAIN_STATUS="**Python 3.13 failed** (required)"
           else
             HEADER="## ⏭️ Plot Tests Skipped"
             MAIN_STATUS="No plot files changed"

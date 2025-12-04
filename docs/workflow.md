@@ -15,7 +15,7 @@ pyplots is a **community-driven, AI-powered platform** that automatically discov
 ### Key Principles
 
 1. **Images in GCS, Code in GitHub**: Plot PNGs stored in Google Cloud Storage with version history, source code version-controlled
-2. **Multi-Version Support**: All plots tested across Python 3.11+ (3.11, 3.12, 3.13, 3.14 primary)
+2. **Multi-Version Support**: All plots tested across Python 3.11+ (3.11, 3.12, 3.13, 3.13 primary)
 3. **Hybrid Automation**: AI handles routine tasks, humans approve critical decisions
 4. **Standard Datasets**: Use well-known datasets (pandas iris, seaborn tips, kaggle) for realistic previews
 5. **Event-Based Optimization**: Update plots when LLM/library versions change, not on fixed schedules
@@ -422,9 +422,9 @@ Via **GitHub Issue Labels**:
 
 ### Multi-Version Testing
 
-**Python Versions Supported**: 3.11+ (tested on 3.11, 3.12, 3.13, 3.14)
+**Python Versions Supported**: 3.11+ (tested on 3.11, 3.12, 3.13, 3.13)
 
-**Primary Version**: Python 3.14 (required to pass, generates plot images)
+**Primary Version**: Python 3.13 (required to pass, generates plot images)
 
 **Testing Infrastructure**: GitHub Actions matrix tests all Python versions in parallel. See `ci-plottest.yml`.
 
@@ -434,13 +434,13 @@ Via **GitHub Issue Labels**:
 - Not on every commit (saves resources)
 
 **Version Compatibility Documentation**:
-- Code optimized for Python 3.14 (newest)
+- Code optimized for Python 3.13 (newest)
 - Older versions (3.11-3.13) run as compatibility tests
 - Failures in older versions don't block the PR
 
 **Test Requirements**:
-- Python 3.14 tests must pass (primary)
-- Plot images only generated with Python 3.14
+- Python 3.13 tests must pass (primary)
+- Plot images only generated with Python 3.13
 - Older version failures logged but don't block merge
 
 ---
@@ -452,7 +452,7 @@ Via **GitHub Issue Labels**:
 **Scope**:
 - 🎯 **Monitoring**: Twitter only
 - 📊 **Libraries**: All 8 supported (matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts)
-- 🐍 **Python**: 3.14+ (primary), tested on 3.11-3.14
+- 🐍 **Python**: 3.13+ (primary), tested on 3.11-3.13
 - ✋ **Approval**: Manual for all new plots
 - ✅ **Quality**: Basic Claude evaluation
 - 📱 **Promotion**: X (Twitter) posting with 2/day limit
@@ -543,7 +543,7 @@ This workflow ensures:
    - Partial success possible (some merge while others retry)
 ✅ **Multi-Layer Quality Control**:
    - Self-review loop in code generation (max 3 attempts per library)
-   - Multi-version testing across Python 3.11-3.14 (3.14 primary)
+   - Multi-version testing across Python 3.11-3.13 (3.13 primary)
    - Multi-LLM consensus validation (Claude + Gemini + GPT)
    - Feedback-driven optimization on rejection
 ✅ **Only High-Quality Plots on Website**: Failed attempts never publicly visible

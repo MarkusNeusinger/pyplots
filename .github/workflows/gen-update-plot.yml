@@ -185,7 +185,7 @@ jobs:
         if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
         uses: actions/setup-python@v6
         with:
-          python-version: '3.14'
+          python-version: '3.13'
 
       - name: Install uv
         if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'

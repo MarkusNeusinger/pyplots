@@ -64,7 +64,7 @@ jobs:
             fi
           }
 
-          echo "py314=$(get_status 3.14)" >> $GITHUB_OUTPUT
+          echo "py314=$(get_status 3.13)" >> $GITHUB_OUTPUT
           echo "py313=$(get_status 3.13)" >> $GITHUB_OUTPUT
           echo "py312=$(get_status 3.12)" >> $GITHUB_OUTPUT
           echo "py311=$(get_status 3.11)" >> $GITHUB_OUTPUT
@@ -89,11 +89,11 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
 
-      - name: Set up Python 3.14
+      - name: Set up Python 3.13
         if: steps.check.outputs.should_run == 'true'
         uses: actions/setup-python@v6
         with:
-          python-version: '3.14'
+          python-version: '3.13'
 
       - name: Install uv
         if: steps.check.outputs.should_run == 'true'
@@ -332,7 +332,7 @@ jobs:
             echo "![${version}](https://img.shields.io/badge/${version}-${status}-${color})"
           }
 
-          BADGE_314=$(get_badge "3.14" "${{ steps.test_results.outputs.py314 }}")
+          BADGE_314=$(get_badge "3.13" "${{ steps.test_results.outputs.py314 }}")
           BADGE_313=$(get_badge "3.13" "${{ steps.test_results.outputs.py313 }}")
           BADGE_312=$(get_badge "3.12" "${{ steps.test_results.outputs.py312 }}")
           BADGE_311=$(get_badge "3.11" "${{ steps.test_results.outputs.py311 }}")
@@ -342,7 +342,7 @@ jobs:
 
           **Python:** ${BADGE_314} ${BADGE_313} ${BADGE_312} ${BADGE_311}
 
-          ## 📊 Plot Preview (Python 3.14)
+          ## 📊 Plot Preview (Python 3.13)
           ${PLOT_MARKDOWN}
 
           ---
@@ -366,7 +366,7 @@ jobs:
             "bucket": "${GCS_BUCKET}",
             "base_path": "plots",
             "timestamp": "${TIMESTAMP}",
-            "python_version": "3.14",
+            "python_version": "3.13",
             "changed_files": ${{ steps.changed_plots.outputs.changed_files }}
           }
           EOF

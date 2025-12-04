@@ -294,7 +294,7 @@ Located in `.github/workflows/`:
 - **gen-create-spec.yml**: Creates feature branch `plot/{spec-id}` and generates spec file
 - **gen-new-plot.yml**: Orchestrator - creates sub-issues and triggers parallel generation
 - **gen-library-impl.yml**: Reusable workflow - generates one library implementation
-- **ci-plottest.yml**: Multi-Python-version testing (3.11-3.14)
+- **ci-plottest.yml**: Multi-Python-version testing (3.11-3.13)
 - **gen-preview.yml**: Generates preview images, uploads to GCS
 - **bot-ai-review.yml**: Per-library AI quality evaluation
 - **gen-update-plot.yml**: Per-library repair loop (max 3 attempts)
@@ -403,7 +403,7 @@ bash .github/scripts/setup-labels.sh
    - Generates implementation in separate Claude context
    - Creates own branch: `auto/{spec-id}/{library}` FROM `plot/{spec-id}`
    - Creates PR targeting **feature branch** (not main)
-   - Runs tests (Python 3.11-3.14)
+   - Runs tests (Python 3.11-3.13)
    - Generates preview image
    - AI quality review (score >= 85 required)
    - Auto-merge to feature branch if approved, or repair loop (max 3 attempts)

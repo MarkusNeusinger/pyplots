@@ -122,6 +122,8 @@ def create_plot(
 
 
 if __name__ == "__main__":
+    from bokeh.io import export_png
+
     # Sample data for testing - simulating time series data
     np.random.seed(42)
     n_points = 50
@@ -147,21 +149,6 @@ if __name__ == "__main__":
         marker_size=6,
     )
 
-    # Save as PNG using webdriver-manager for automatic chromedriver
-    from bokeh.io import export_png
-    from selenium import webdriver
-    from selenium.webdriver.chrome.options import Options
-    from selenium.webdriver.chrome.service import Service
-    from webdriver_manager.chrome import ChromeDriverManager
-
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-
-    service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=chrome_options)
-
-    export_png(fig, filename="plot.png", webdriver=driver)
-    driver.quit()
+    # Save as PNG
+    export_png(fig, filename="plot.png")
     print("Plot saved to plot.png")

@@ -1,11 +1,9 @@
 """
-line-basic: Basic Line Plot
-Implementation for: pygal
-Variant: default
-Python: 3.10+
+line-basic: Basic Line Chart
+Library: pygal
 """
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 import pandas as pd
 import pygal
@@ -13,142 +11,139 @@ from pygal.style import Style
 
 
 if TYPE_CHECKING:
-    from pygal import Line
+    pass
 
 
 def create_plot(
     data: pd.DataFrame,
     x: str,
     y: str,
-    title: Optional[str] = None,
-    xlabel: Optional[str] = None,
-    ylabel: Optional[str] = None,
-    color: str = "#3498db",
-    linewidth: int = 3,
-    show_dots: bool = True,
-    dot_size: int = 4,
-    width: int = 1600,
-    height: int = 900,
-    fill: bool = False,
+    color: str = "#306998",
+    linewidth: float = 2,
+    marker: bool = False,
+    marker_size: float = 4,
+    alpha: float = 1.0,
+    title: str | None = None,
+    xlabel: str | None = None,
+    ylabel: str | None = None,
+    linestyle: str = "solid",
     **kwargs,
-) -> "Line":
+) -> pygal.Line:
     """
-    Create a basic line plot showing trends over a continuous variable using pygal.
+    Create a basic line chart using pygal.
 
     Args:
-        data: Input DataFrame with required columns
+        data: Input DataFrame
         x: Column name for x-axis values
-        y: Column name for y-axis values (numeric)
-        title: Plot title (optional)
-        xlabel: Custom x-axis label (optional, defaults to x column name)
-        ylabel: Custom y-axis label (optional, defaults to y column name)
-        color: Line color (default: "#3498db" - blue)
-        linewidth: Width of the line in pixels (default: 3)
-        show_dots: Whether to show data point markers (default: True)
-        dot_size: Size of data point markers (default: 4)
-        width: Figure width in pixels (default: 1600)
-        height: Figure height in pixels (default: 900)
-        fill: Whether to fill area under the line (default: False)
-        **kwargs: Additional parameters for pygal configuration
+        y: Column name for y-axis values
+        color: Line color (default: "#306998" Python Blue)
+        linewidth: Width of the line (default: 2)
+        marker: Whether to show markers at data points (default: False)
+        marker_size: Size of markers if enabled (default: 4)
+        alpha: Transparency level for the line (default: 1.0)
+        title: Plot title (default: None)
+        xlabel: X-axis label (default: uses column name)
+        ylabel: Y-axis label (default: uses column name)
+        linestyle: Line style - solid, dashed, dotted (default: "solid")
+        **kwargs: Additional parameters passed to pygal.Line
 
     Returns:
-        pygal Line chart object
+        pygal.Line chart object
 
     Raises:
         ValueError: If data is empty
         KeyError: If required columns not found
 
     Example:
-        >>> data = pd.DataFrame({
-        ...     'month': [1, 2, 3, 4, 5, 6],
-        ...     'sales': [100, 120, 115, 140, 160, 155]
-        ... })
-        >>> chart = create_plot(data, x='month', y='sales')
+        >>> data = pd.DataFrame({'month': [1, 2, 3], 'sales': [100, 150, 130]})
+        >>> chart = create_plot(data, 'month', 'sales')
     """
     # Input validation
     if data.empty:
         raise ValueError("Data cannot be empty")
 
-    # Check required columns
     for col in [x, y]:
         if col not in data.columns:
             available = ", ".join(data.columns)
-            raise KeyError(f"Column '{col}' not found. Available columns: {available}")
+            raise KeyError(f"Column '{col}' not found. Available: {available}")
 
-    # Sort data by x-axis for proper line rendering
-    sorted_data = data.sort_values(by=x).copy()
+    # Sort data by x-axis values
+    plot_data = data.copy().sort_values(by=x)
 
-    # Create custom style with subtle grid
+    # Handle NaN values
+    plot_data = plot_data.dropna(subset=[x, y])
+
+    # Use column names as default labels
+    x_label = xlabel if xlabel is not None else x
+    y_label = ylabel if ylabel is not None else y
+
+    # Define custom style with PyPlots color palette
     custom_style = Style(
         background="white",
         plot_background="white",
-        foreground="#333",
-        foreground_strong="#333",
-        foreground_subtle="#666",
-        opacity=0.8,
-        opacity_hover=1.0,
+        foreground="#333333",
+        foreground_strong="#333333",
+        foreground_subtle="#666666",
         colors=(color,),
-        font_family="Arial, sans-serif",
-        guide_stroke_dasharray="3,3",
-        major_guide_stroke_dasharray="5,5",
+        opacity=alpha,
+        opacity_hover=min(alpha + 0.1, 1.0),
+        title_font_size=56,
+        label_font_size=44,
+        major_label_font_size=44,
+        legend_font_size=44,
+        tooltip_font_size=40,
     )
 
-    # Create line chart
-    line_chart = pygal.Line(
+    # Map linestyle to pygal stroke style
+    stroke_style = {"solid": None, "dashed": "5,5", "dotted": "2,2"}
+    dash_style = stroke_style.get(linestyle, None)
+
+    # Build stroke style dict
+    stroke_opts: dict = {"width": linewidth}
+    if dash_style:
+        stroke_opts["dasharray"] = dash_style
+
+    # Create chart with target dimensions 4800 x 2700 px
+    chart = pygal.Line(
+        width=4800,
+        height=2700,
         title=title,
-        x_title=xlabel or x,
-        y_title=ylabel or y,
-        width=width,
-        height=height,
+        x_title=x_label,
+        y_title=y_label,
         style=custom_style,
-        show_dots=show_dots,
-        dots_size=dot_size,
-        stroke_style={"width": linewidth},
-        fill=fill,
-        show_legend=True,
-        legend_at_bottom=False,
-        show_x_guides=True,
+        show_x_guides=False,
         show_y_guides=True,
-        print_values=False,
+        show_dots=marker,
+        dots_size=marker_size,
+        stroke_style=stroke_opts,
+        show_legend=False,
+        margin=50,
         **kwargs,
     )
 
-    # Set x-axis labels from data
-    x_values = sorted_data[x].tolist()
-    # Convert to string labels for pygal
-    line_chart.x_labels = [str(val) for val in x_values]
+    # Set x-axis labels
+    chart.x_labels = [str(val) for val in plot_data[x].tolist()]
 
     # Add data series
-    y_values = sorted_data[y].tolist()
-    series_label = ylabel if ylabel else y
-    line_chart.add(series_label, y_values)
+    chart.add(y_label, plot_data[y].tolist())
 
-    return line_chart
+    return chart
 
 
 if __name__ == "__main__":
-    # Sample data for testing - Monthly sales data
-    data = pd.DataFrame(
+    # Sample data for testing
+    sample_data = pd.DataFrame(
         {
-            "Month": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            "Sales": [120, 135, 148, 162, 175, 168, 182, 195, 178, 165, 188, 210],
+            "month": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            "sales": [100, 150, 130, 180, 200, 190, 220, 240, 210, 250, 280, 300],
         }
     )
 
-    # Create plot with custom styling
+    # Create plot
     chart = create_plot(
-        data,
-        x="Month",
-        y="Sales",
-        title="Monthly Sales Performance (2024)",
-        xlabel="Month",
-        ylabel="Sales (Units)",
-        color="#2ecc71",
-        linewidth=3,
-        show_dots=True,
-        dot_size=5,
+        sample_data, "month", "sales", title="Monthly Sales Trend", xlabel="Month", ylabel="Sales ($)", marker=True
     )
 
-    # Save as PNG
+    # Save
     chart.render_to_png("plot.png")
     print("Plot saved to plot.png")

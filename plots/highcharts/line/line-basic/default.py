@@ -89,19 +89,13 @@ def create_plot(
     chart.options = HighchartsOptions()
 
     # Title
-    chart.options.title = {
-        "text": title if title else None,
-        "style": {"fontSize": "16px", "fontWeight": "bold"},
-    }
+    chart.options.title = {"text": title if title else None, "style": {"fontSize": "16px", "fontWeight": "bold"}}
 
     # X-axis configuration
     if x_is_categorical:
         chart.options.x_axis = {
             "categories": x_values,
-            "title": {
-                "text": xlabel or x,
-                "style": {"fontSize": "12px"},
-            },
+            "title": {"text": xlabel or x, "style": {"fontSize": "12px"}},
             "labels": {"style": {"fontSize": "11px"}},
             "gridLineWidth": 1,
             "gridLineDashStyle": "Dot",
@@ -109,10 +103,7 @@ def create_plot(
         }
     else:
         chart.options.x_axis = {
-            "title": {
-                "text": xlabel or x,
-                "style": {"fontSize": "12px"},
-            },
+            "title": {"text": xlabel or x, "style": {"fontSize": "12px"}},
             "labels": {"style": {"fontSize": "11px"}},
             "gridLineWidth": 1,
             "gridLineDashStyle": "Dot",
@@ -121,10 +112,7 @@ def create_plot(
 
     # Y-axis configuration
     chart.options.y_axis = {
-        "title": {
-            "text": ylabel or y,
-            "style": {"fontSize": "12px"},
-        },
+        "title": {"text": ylabel or y, "style": {"fontSize": "12px"}},
         "labels": {"style": {"fontSize": "11px"}},
         "gridLineWidth": 1,
         "gridLineDashStyle": "Dot",
@@ -132,29 +120,14 @@ def create_plot(
     }
 
     # Chart dimensions and background
-    chart.options.chart = {
-        "type": "line",
-        "width": width,
-        "height": height,
-        "backgroundColor": "white",
-    }
+    chart.options.chart = {"type": "line", "width": width, "height": height, "backgroundColor": "white"}
 
     # Plot options for line series
-    plot_options: dict = {
-        "line": {
-            "lineWidth": linewidth,
-            "connectNulls": False,
-            "animation": False,
-        }
-    }
+    plot_options: dict = {"line": {"lineWidth": linewidth, "connectNulls": False, "animation": False}}
 
     # Handle marker configuration
     if marker:
-        marker_config: dict = {
-            "enabled": True,
-            "radius": marker_size,
-            "symbol": marker,
-        }
+        marker_config: dict = {"enabled": True, "radius": marker_size, "symbol": marker}
         plot_options["line"]["marker"] = marker_config
     else:
         plot_options["line"]["marker"] = {"enabled": False}

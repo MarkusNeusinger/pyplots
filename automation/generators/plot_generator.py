@@ -16,7 +16,9 @@ import anthropic
 from anthropic import APIConnectionError, APIError, RateLimitError
 
 
-LibraryType = Literal["matplotlib", "seaborn", "plotly", "bokeh", "altair", "plotnine", "pygal", "highcharts", "letsplot"]
+LibraryType = Literal[
+    "matplotlib", "seaborn", "plotly", "bokeh", "altair", "plotnine", "pygal", "highcharts", "letsplot"
+]
 
 
 def extract_and_validate_code(response_text: str) -> str:

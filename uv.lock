@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.13"
 
 [[package]]
@@ -961,6 +961,23 @@ wheels = [
 ]
 
 [[package]]
+name = "lets-plot"
+version = "4.8.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "palettable" },
+    { name = "pillow" },
+    { name = "pypng" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/30/3b/bacb8b53bc8ace3f5b43aaf3fdcd5044c42dcc508d186da29bebe30900b2/lets_plot-4.8.1-cp313-cp313-macosx_10_15_x86_64.whl", hash = "sha256:e3be9ec0bf39a8bf61985f6c66277965999ecd9d04b6c055d7258575eb11219e", size = 6295766, upload-time = "2025-12-01T19:15:26.781Z" },
+    { url = "https://files.pythonhosted.org/packages/60/32/b9c2ad3285e78314413a06b6fdc01035990468dc354ed1c448856161a025/lets_plot-4.8.1-cp313-cp313-macosx_12_0_arm64.whl", hash = "sha256:b6690d90318994e614a80e21935564a42f5f755d20ad79ec4fccfe8fab6ed4da", size = 5923154, upload-time = "2025-12-01T19:15:14.556Z" },
+    { url = "https://files.pythonhosted.org/packages/38/a6/835cb25a081c9fc29ed8d6c37f0d8683f4e2d61dd92e2ebfef210e001a2f/lets_plot-4.8.1-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:a535f04717e502e0346460aa8b95438690aa1b8d6db89a52277c612a87bef35c", size = 6528111, upload-time = "2025-12-01T19:15:18.149Z" },
+    { url = "https://files.pythonhosted.org/packages/74/97/660ef885b8e1ce453b474be342e4baa4999d4c5955b02611ad28d039fa0d/lets_plot-4.8.1-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:4677190573b24e83f74ed570cc1df05cd4f69362e14391237f025c860f28ca08", size = 6762131, upload-time = "2025-12-01T19:15:12.924Z" },
+    { url = "https://files.pythonhosted.org/packages/1a/e4/2e228346b4220f7ec6bedb94ebb1c6d6de63911ec4c6b00cb453d43dee1a/lets_plot-4.8.1-cp313-cp313-win_amd64.whl", hash = "sha256:924f12dbd2af321b2637d6dfe3aec65aba59dc5e1ee19151928bcb019eaf01b1", size = 5935633, upload-time = "2025-12-01T19:15:16.612Z" },
+]
+
+[[package]]
 name = "librt"
 version = "0.6.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1299,6 +1316,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/a1/d4/1fc4078c65507b51b96ca8f8c3ba19e6a61c8253c72794544580a7b6c24d/packaging-25.0.tar.gz", hash = "sha256:d443872c98d677bf60f6a1f2f8c1cb748e8fe762d2bf9d3148b5599295b0fc4f", size = 165727, upload-time = "2025-04-19T11:48:59.673Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/20/12/38679034af332785aac8774540895e234f4d07f7545804097de4b666afd8/packaging-25.0-py3-none-any.whl", hash = "sha256:29572ef2b1f17581046b3a2227d5c611fb25ec70ca1ba8554b24b0e69331a484", size = 66469, upload-time = "2025-04-19T11:48:57.875Z" },
+]
+
+[[package]]
+name = "palettable"
+version = "3.3.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/dc/3d/a5854d60850485bff12f28abfe0e17f503e866763bed61aed4990b604530/palettable-3.3.3.tar.gz", hash = "sha256:094dd7d9a5fc1cca4854773e5c1fc6a315b33bd5b3a8f47064928facaf0490a8", size = 106639, upload-time = "2023-04-19T23:13:35.864Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cf/f7/3367feadd4ab56783b0971c9b7edfbdd68e0c70ce877949a5dd2117ed4a0/palettable-3.3.3-py2.py3-none-any.whl", hash = "sha256:74e9e7d7fe5a9be065e02397558ed1777b2df0b793a6f4ce1a5ee74f74fb0caa", size = 332251, upload-time = "2023-04-19T23:13:33.996Z" },
 ]
 
 [[package]]
@@ -1683,6 +1709,7 @@ all = [
     { name = "highcharts-core" },
     { name = "httpx" },
     { name = "kaleido" },
+    { name = "lets-plot" },
     { name = "mypy" },
     { name = "plotly" },
     { name = "plotnine" },
@@ -1707,6 +1734,7 @@ plotting = [
     { name = "cairosvg" },
     { name = "highcharts-core" },
     { name = "kaleido" },
+    { name = "lets-plot" },
     { name = "plotly" },
     { name = "plotnine" },
     { name = "pygal" },
@@ -1739,6 +1767,7 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.27.0" },
     { name = "httpx", marker = "extra == 'test'", specifier = ">=0.27.0" },
     { name = "kaleido", marker = "extra == 'plotting'", specifier = ">=0.2.1" },
+    { name = "lets-plot", marker = "extra == 'plotting'", specifier = ">=4.5.0" },
     { name = "matplotlib", specifier = ">=3.8.0" },
     { name = "mypy", marker = "extra == 'typecheck'", specifier = ">=1.8.0" },
     { name = "numpy", specifier = ">=1.26.0" },
@@ -1765,6 +1794,15 @@ requires-dist = [
     { name = "webdriver-manager", marker = "extra == 'plotting'", specifier = ">=4.0.0" },
 ]
 provides-extras = ["test", "dev", "typecheck", "plotting", "all"]
+
+[[package]]
+name = "pypng"
+version = "0.20220715.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/93/cd/112f092ec27cca83e0516de0a3368dbd9128c187fb6b52aaaa7cde39c96d/pypng-0.20220715.0.tar.gz", hash = "sha256:739c433ba96f078315de54c0db975aee537cbc3e1d0ae4ed9aab0ca1e427e2c1", size = 128992, upload-time = "2022-07-15T14:11:05.301Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3e/b9/3766cc361d93edb2ce81e2e1f87dd98f314d7d513877a342d31b30741680/pypng-0.20220715.0-py3-none-any.whl", hash = "sha256:4a43e969b8f5aaafb2a415536c1a8ec7e341cd6a3f957fd5b5f32a4cfeed902c", size = 58057, upload-time = "2022-07-15T14:11:03.713Z" },
+]
 
 [[package]]
 name = "pysocks"

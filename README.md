@@ -1,6 +1,4 @@
-# pyplots
-
-**AI-powered Python plotting library that works with YOUR data.**
+<img src="app/public/logo.svg" alt="pyplots.ai" width="250">
 
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -8,7 +6,7 @@
 [![Ruff](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-lint.yml/badge.svg?branch=main)](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-lint.yml)
 [![codecov](https://codecov.io/github/MarkusNeusinger/pyplots/graph/badge.svg?token=4EGPSHH0H0)](https://codecov.io/github/MarkusNeusinger/pyplots)
 
-> Stop adapting examples to your data. Start visualizing your data directly.
+> library-agnostic, ai-powered python plotting examples. automatically generated, tested, and maintained.
 
 ---
 
@@ -77,7 +75,7 @@ See [docs/architecture/](docs/architecture/) for details.
 
 **Backend**: FastAPI • PostgreSQL • SQLAlchemy • Python 3.10+
 
-**Frontend**: Next.js 14 • TypeScript • Tailwind CSS
+**Frontend**: React 19 • Vite • TypeScript • MUI
 
 **Plotting**: matplotlib • seaborn • plotly • bokeh • altair • plotnine • pygal • highcharts
 

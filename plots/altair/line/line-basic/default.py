@@ -85,21 +85,10 @@ def create_plot(
     # Create the line chart
     line = (
         alt.Chart(plot_data)
-        .mark_line(
-            color=color,
-            strokeWidth=linewidth,
-        )
+        .mark_line(color=color, strokeWidth=linewidth)
         .encode(
-            x=alt.X(
-                x_encoding,
-                title=xlabel or x,
-                axis=alt.Axis(labelAngle=0, labelLimit=200),
-            ),
-            y=alt.Y(
-                f"{y}:Q",
-                title=ylabel or y,
-                scale=alt.Scale(zero=False),
-            ),
+            x=alt.X(x_encoding, title=xlabel or x, axis=alt.Axis(labelAngle=0, labelLimit=200)),
+            y=alt.Y(f"{y}:Q", title=ylabel or y, scale=alt.Scale(zero=False)),
             tooltip=[
                 alt.Tooltip(x_encoding, title=xlabel or x),
                 alt.Tooltip(f"{y}:Q", title=ylabel or y, format=".2f"),
@@ -111,12 +100,7 @@ def create_plot(
     if marker:
         points = (
             alt.Chart(plot_data)
-            .mark_point(
-                color=color,
-                size=marker_size,
-                filled=True,
-                shape=marker,
-            )
+            .mark_point(color=color, size=marker_size, filled=True, shape=marker)
             .encode(
                 x=alt.X(x_encoding),
                 y=alt.Y(f"{y}:Q"),
@@ -132,24 +116,11 @@ def create_plot(
 
     # Apply properties and configuration
     chart = (
-        chart_base
-        .properties(
-            width=width,
-            height=height,
-            title=alt.TitleParams(
-                text=title or "Line Chart",
-                fontSize=16,
-                anchor="middle",
-            ),
+        chart_base.properties(
+            width=width, height=height, title=alt.TitleParams(text=title or "Line Chart", fontSize=16, anchor="middle")
         )
         .configure_view(strokeWidth=0)
-        .configure_axis(
-            grid=True,
-            gridOpacity=0.3,
-            gridDash=[3, 3],
-            domainWidth=1,
-            tickWidth=1,
-        )
+        .configure_axis(grid=True, gridOpacity=0.3, gridDash=[3, 3], domainWidth=1, tickWidth=1)
     )
 
     return chart
@@ -157,10 +128,12 @@ def create_plot(
 
 if __name__ == "__main__":
     # Sample data for testing - monthly sales trend
-    sample_data = pd.DataFrame({
-        "Month": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        "Sales": [120, 150, 170, 165, 180, 220, 250, 240, 210, 190, 180, 200],
-    })
+    sample_data = pd.DataFrame(
+        {
+            "Month": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            "Sales": [120, 150, 170, 165, 180, 220, 250, 240, 210, 190, 180, 200],
+        }
+    )
 
     # Create plot with markers
     chart = create_plot(

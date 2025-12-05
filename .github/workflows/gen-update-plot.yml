@@ -204,7 +204,7 @@ jobs:
       - name: Install dependencies
         if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
         run: |
-          uv sync --all-extras
+          uv sync
 
       - name: Get AI feedback from sub-issue
         if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'

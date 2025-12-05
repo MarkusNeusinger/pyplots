@@ -60,7 +60,7 @@ jobs:
       - name: Install dependencies
         if: steps.check.outputs.should_run == 'true'
         run: |
-          uv sync --all-extras
+          uv sync
 
       - name: Extract spec ID from branch
         if: steps.check.outputs.should_run == 'true'

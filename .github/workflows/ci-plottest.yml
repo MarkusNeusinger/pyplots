@@ -16,7 +16,7 @@ jobs:
       contents: read
     strategy:
       matrix:
-        python-version: [ '3.12', '3.13' ]
+        python-version: [ '3.13' ]
       fail-fast: false
 
     steps:
@@ -31,25 +31,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        uses: astral-sh/setup-uv@v7
 
-      - name: Install dependencies
-        run: |
-          uv sync --all-extras --python ${{ matrix.python-version }}
-
-      - name: Install Inter font
-        run: |
-          mkdir -p ~/.local/share/fonts
-          curl -sL "https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip" -o /tmp/inter.zip
-          unzip -q /tmp/inter.zip -d /tmp/inter
-          cp /tmp/inter/Inter*.ttf ~/.local/share/fonts/ 2>/dev/null || cp /tmp/inter/Inter*.otf ~/.local/share/fonts/ 2>/dev/null || true
-          fc-cache -f
-          echo "Inter font installed"
-
-      - name: Find changed plot files
-        id: changed_plots
+      - name: Find changed plot files and detect libraries
+        id: detect_libs
         run: |
           # Get list of changed Python files in plots/
           CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'plots/**/*.py' || echo "")
@@ -64,37 +49,87 @@ jobs:
           echo "files<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-          echo "Changed plot files:"
-          echo "$CHANGED_FILES"
+
+          # Extract unique libraries from changed files (plots/{library}/...)
+          LIBRARIES=$(echo "$CHANGED_FILES" | sed -n 's|^plots/\([^/]*\)/.*|\1|p' | sort -u | tr '\n' ' ')
+          echo "libraries=$LIBRARIES" >> $GITHUB_OUTPUT
+          echo "Changed libraries: $LIBRARIES"
+
+      - name: Install library-specific dependencies
+        if: steps.detect_libs.outputs.has_plots == 'true'
+        run: |
+          uv venv .venv
+          source .venv/bin/activate
+
+          # Library-specific dependencies mapping (same as gen-new-plot.yml)
+          declare -A DEPS
+          DEPS[matplotlib]="matplotlib>=3.9.0 numpy>=1.26.0"
+          DEPS[seaborn]="seaborn>=0.13.0 matplotlib numpy>=1.26.0"
+          DEPS[plotly]="plotly>=5.18.0 kaleido>=0.2.1 numpy>=1.26.0"
+          DEPS[bokeh]="bokeh>=3.4.0 numpy>=1.26.0"
+          DEPS[altair]="altair>=5.2.0 vl-convert-python>=1.3.0 numpy>=1.26.0"
+          DEPS[plotnine]="plotnine>=0.13.0 numpy>=1.26.0"
+          DEPS[pygal]="pygal>=3.0.0 cairosvg>=2.7.0"
+          DEPS[highcharts]="highcharts-core>=1.10.0 numpy>=1.26.0"
+          DEPS[letsplot]="lets-plot>=4.5.0"
+
+          # Install pandas (common dependency) first
+          uv pip install pandas>=2.2.0
+
+          # Install only dependencies for changed libraries
+          for LIB in ${{ steps.detect_libs.outputs.libraries }}; do
+            if [ -n "${DEPS[$LIB]}" ]; then
+              echo "📦 Installing dependencies for $LIB: ${DEPS[$LIB]}"
+              uv pip install ${DEPS[$LIB]} || {
+                echo "⚠️ Warning: Failed to install $LIB dependencies, skipping"
+                continue
+              }
+            else
+              echo "⚠️ Unknown library: $LIB"
+            fi
+          done
+
+      - name: Install Inter font
+        run: |
+          mkdir -p ~/.local/share/fonts
+          curl -sL "https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip" -o /tmp/inter.zip
+          unzip -q /tmp/inter.zip -d /tmp/inter
+          cp /tmp/inter/Inter*.ttf ~/.local/share/fonts/ 2>/dev/null || cp /tmp/inter/Inter*.otf ~/.local/share/fonts/ 2>/dev/null || true
+          fc-cache -f
+          echo "Inter font installed"
 
       - name: Test plot execution
         id: test_execution
-        if: steps.changed_plots.outputs.has_plots == 'true'
-        # Only Python 3.13 is required to pass - older versions are compatibility tests
-        continue-on-error: ${{ matrix.python-version != '3.13' }}
+        if: steps.detect_libs.outputs.has_plots == 'true'
         run: |
+          source .venv/bin/activate
           echo "🧪 Testing plot files on Python ${{ matrix.python-version }}"
+          echo "📚 Libraries detected: ${{ steps.detect_libs.outputs.libraries }}"
 
           FAILED=0
           PASSED=0
+          SKIPPED=0
 
           while IFS= read -r file; do
             if [ -z "$file" ]; then continue; fi
 
+            # Extract library from file path
+            LIB=$(echo "$file" | sed -n 's|^plots/\([^/]*\)/.*|\1|p')
+
             echo ""
             echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            echo "📊 Testing: $file"
+            echo "📊 Testing: $file ($LIB)"
             echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
             # Run with non-interactive backend
-            if MPLBACKEND=Agg uv run python "$file" 2>&1; then
+            if MPLBACKEND=Agg python "$file" 2>&1; then
               echo "✅ PASSED: $file"
               PASSED=$((PASSED + 1))
             else
               echo "❌ FAILED: $file"
               FAILED=$((FAILED + 1))
             fi
-          done <<< "${{ steps.changed_plots.outputs.files }}"
+          done <<< "${{ steps.detect_libs.outputs.files }}"
 
           echo ""
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -111,7 +146,7 @@ jobs:
           fi
 
       - name: Skip message
-        if: steps.changed_plots.outputs.has_plots != 'true'
+        if: steps.detect_libs.outputs.has_plots != 'true'
         run: |
           echo "ℹ️ No plot files changed in this PR - skipping tests"
 
@@ -148,8 +183,7 @@ jobs:
       - name: Build summary comment
         id: summary
         run: |
-          # Parse results
-          PY312_RESULT=$(cat result-3.12.txt 2>/dev/null | cut -d',' -f2 || echo "skipped")
+          # Parse results (Python 3.13 only)
           PY313_RESULT=$(cat result-3.13.txt 2>/dev/null | cut -d',' -f2 || echo "skipped")
 
           # Helper function for badge
@@ -168,17 +202,16 @@ jobs:
           # Build comment
           if [ "$PY313_RESULT" == "success" ]; then
             HEADER="## ✅ Plot Tests Passed"
-            MAIN_STATUS="**Created with Python 3.13**"
+            MAIN_STATUS="**Tested with Python 3.13**"
           elif [ "$PY313_RESULT" == "failure" ]; then
             HEADER="## ❌ Plot Tests Failed"
-            MAIN_STATUS="**Python 3.13 failed** (required)"
+            MAIN_STATUS="**Python 3.13 tests failed**"
           else
             HEADER="## ⏭️ Plot Tests Skipped"
             MAIN_STATUS="No plot files changed"
           fi
 
-          # Build badges
-          B312=$(badge "3.12" "$PY312_RESULT")
+          # Build badge
           B313=$(badge "3.13" "$PY313_RESULT")
 
           cat > /tmp/comment.md << EOF
@@ -186,7 +219,7 @@ jobs:
 
           ${MAIN_STATUS}
 
-          **Compatibility:** ${B312} ${B313}
+          **Python:** ${B313}
           EOF
 
           cat /tmp/comment.md

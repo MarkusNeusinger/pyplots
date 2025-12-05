@@ -97,15 +97,7 @@ jobs:
 
       - name: Install uv
         if: steps.check.outputs.should_run == 'true'
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-
-      - name: Install dependencies
-        if: steps.check.outputs.should_run == 'true'
-        run: |
-          uv sync --all-extras
-          uv pip install pillow
+        uses: astral-sh/setup-uv@v7
 
       - name: Install Inter font
         if: steps.check.outputs.should_run == 'true'
@@ -134,6 +126,45 @@ jobs:
           echo "has_plots=true" >> $GITHUB_OUTPUT
           CHANGED_ARRAY=$(echo "$CHANGED_FILES" | jq -R -s -c 'split("\n") | map(select(length > 0))')
           echo "changed_files=$CHANGED_ARRAY" >> $GITHUB_OUTPUT
+
+          # Extract unique libraries from changed files
+          LIBRARIES=$(echo "$CHANGED_FILES" | sed -n 's|^plots/\([^/]*\)/.*|\1|p' | sort -u | tr '\n' ' ')
+          echo "libraries=$LIBRARIES" >> $GITHUB_OUTPUT
+          echo "Changed libraries: $LIBRARIES"
+
+      - name: Install library-specific dependencies
+        if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true'
+        run: |
+          uv venv .venv
+          source .venv/bin/activate
+
+          # Install project core dependencies (for core.images module)
+          uv pip install -e .
+
+          # Library-specific dependencies mapping (same as gen-library-impl.yml)
+          declare -A DEPS
+          DEPS[matplotlib]="matplotlib>=3.9.0 numpy>=1.26.0"
+          DEPS[seaborn]="seaborn>=0.13.0 matplotlib numpy>=1.26.0"
+          DEPS[plotly]="plotly>=5.18.0 kaleido>=0.2.1 numpy>=1.26.0"
+          DEPS[bokeh]="bokeh>=3.4.0 numpy>=1.26.0"
+          DEPS[altair]="altair>=5.2.0 vl-convert-python>=1.3.0 numpy>=1.26.0"
+          DEPS[plotnine]="plotnine>=0.13.0 numpy>=1.26.0"
+          DEPS[pygal]="pygal>=3.0.0 cairosvg>=2.7.0"
+          DEPS[highcharts]="highcharts-core>=1.10.0 numpy>=1.26.0"
+          DEPS[letsplot]="lets-plot>=4.5.0"
+
+          # Install only dependencies for changed libraries
+          for LIB in ${{ steps.changed_plots.outputs.libraries }}; do
+            if [ -n "${DEPS[$LIB]}" ]; then
+              echo "📦 Installing dependencies for $LIB: ${DEPS[$LIB]}"
+              uv pip install ${DEPS[$LIB]} || {
+                echo "⚠️ Warning: Failed to install $LIB dependencies, skipping"
+                continue
+              }
+            else
+              echo "⚠️ Unknown library: $LIB"
+            fi
+          done
 
       - name: Extract issue number and metadata from PR
         id: get_issue
@@ -195,7 +226,10 @@ jobs:
           mkdir -p plot_outputs
           echo "{}" > previous_versions.json
 
-          echo '${{ steps.changed_plots.outputs.changed_files }}' | jq -r '.[]' | while read -r file; do
+          # Activate venv once before the loop (use process substitution to avoid subshell)
+          source .venv/bin/activate
+
+          while IFS= read -r file; do
             echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             echo "📊 Processing: $file"
 
@@ -235,7 +269,7 @@ jobs:
             fi
 
             echo "🎨 Generating plot..."
-            MPLBACKEND=Agg uv run python "$file" 2>&1 | tee "${OUTPUT_DIR}/generation.log"
+            MPLBACKEND=Agg python "$file" 2>&1 | tee "${OUTPUT_DIR}/generation.log"
 
             FOUND_IMAGE=false
             for img in "plot.png" "test_output.png" "output.png" "${SPEC_ID}.png" "preview.png"; do
@@ -252,8 +286,8 @@ jobs:
             fi
 
             echo "🖼️  Processing image..."
-            uv run python -m core.images process "$FULL_FILE" "$FULL_FILE" "$THUMB_FILE" "$SPEC_ID"
-          done
+            python -m core.images process "$FULL_FILE" "$FULL_FILE" "$THUMB_FILE" "$SPEC_ID"
+          done < <(echo '${{ steps.changed_plots.outputs.changed_files }}' | jq -r '.[]')
 
       - name: Upload plots to GCS
         if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true' && steps.gcs_auth.outcome == 'success'

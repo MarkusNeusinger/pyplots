@@ -99,16 +99,6 @@ jobs:
         if: steps.check.outputs.should_run == 'true'
         uses: astral-sh/setup-uv@v7
 
-      - name: Install Inter font
-        if: steps.check.outputs.should_run == 'true'
-        run: |
-          mkdir -p ~/.local/share/fonts
-          curl -sL "https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip" -o /tmp/inter.zip
-          unzip -q /tmp/inter.zip -d /tmp/inter
-          cp /tmp/inter/Inter*.ttf ~/.local/share/fonts/ 2>/dev/null || cp /tmp/inter/Inter*.otf ~/.local/share/fonts/ 2>/dev/null || true
-          fc-cache -f
-          echo "Inter font installed"
-
       - name: Find changed plot files
         if: steps.check.outputs.should_run == 'true'
         id: changed_plots
@@ -135,36 +125,13 @@ jobs:
       - name: Install library-specific dependencies
         if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true'
         run: |
-          uv venv .venv
-          source .venv/bin/activate
-
-          # Install project core dependencies (for core.images module)
-          uv pip install -e .
-
-          # Library-specific dependencies mapping (same as gen-library-impl.yml)
-          declare -A DEPS
-          DEPS[matplotlib]="matplotlib>=3.9.0 numpy>=1.26.0"
-          DEPS[seaborn]="seaborn>=0.13.0 matplotlib numpy>=1.26.0"
-          DEPS[plotly]="plotly>=5.18.0 kaleido>=0.2.1 numpy>=1.26.0"
-          DEPS[bokeh]="bokeh>=3.4.0 numpy>=1.26.0"
-          DEPS[altair]="altair>=5.2.0 vl-convert-python>=1.3.0 numpy>=1.26.0"
-          DEPS[plotnine]="plotnine>=0.13.0 numpy>=1.26.0"
-          DEPS[pygal]="pygal>=3.0.0 cairosvg>=2.7.0"
-          DEPS[highcharts]="highcharts-core>=1.10.0 numpy>=1.26.0 selenium>=4.15.0 webdriver-manager>=4.0.0"
-          DEPS[letsplot]="lets-plot>=4.5.0"
-
-          # Install only dependencies for changed libraries
+          # Build list of extras for all changed libraries
+          EXTRAS=""
           for LIB in ${{ steps.changed_plots.outputs.libraries }}; do
-            if [ -n "${DEPS[$LIB]}" ]; then
-              echo "📦 Installing dependencies for $LIB: ${DEPS[$LIB]}"
-              uv pip install ${DEPS[$LIB]} || {
-                echo "⚠️ Warning: Failed to install $LIB dependencies, skipping"
-                continue
-              }
-            else
-              echo "⚠️ Unknown library: $LIB"
-            fi
+            EXTRAS="$EXTRAS --extra lib-${LIB}"
           done
+          echo "📦 Installing: uv sync $EXTRAS"
+          uv sync $EXTRAS
 
       - name: Extract issue number and metadata from PR
         id: get_issue

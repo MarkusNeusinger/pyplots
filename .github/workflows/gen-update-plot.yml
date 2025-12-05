@@ -191,16 +191,6 @@ jobs:
         if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
         uses: astral-sh/setup-uv@v7
 
-      - name: Install Inter font
-        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
-        run: |
-          mkdir -p ~/.local/share/fonts
-          curl -sL "https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip" -o /tmp/inter.zip
-          unzip -q /tmp/inter.zip -d /tmp/inter
-          cp /tmp/inter/Inter*.ttf ~/.local/share/fonts/ 2>/dev/null || cp /tmp/inter/Inter*.otf ~/.local/share/fonts/ 2>/dev/null || true
-          fc-cache -f
-          echo "Inter font installed"
-
       - name: Install dependencies
         if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
         run: |

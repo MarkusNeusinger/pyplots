@@ -92,6 +92,12 @@ jobs:
           source .venv/bin/activate
           uv pip install ${{ inputs.deps }} pandas>=2.2.0
 
+      - name: Setup Chrome for Highcharts
+        if: inputs.library == 'highcharts'
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
       - name: Check for previous attempts in sub-issue
         id: previous_attempts
         env:

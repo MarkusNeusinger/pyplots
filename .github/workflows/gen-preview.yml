@@ -141,7 +141,7 @@ jobs:
           # Install project core dependencies (for core.images module)
           uv pip install -e .
 
-          # Library-specific dependencies mapping (same as gen-new-plot.yml)
+          # Library-specific dependencies mapping (same as gen-library-impl.yml)
           declare -A DEPS
           DEPS[matplotlib]="matplotlib>=3.9.0 numpy>=1.26.0"
           DEPS[seaborn]="seaborn>=0.13.0 matplotlib numpy>=1.26.0"
@@ -226,7 +226,10 @@ jobs:
           mkdir -p plot_outputs
           echo "{}" > previous_versions.json
 
-          echo '${{ steps.changed_plots.outputs.changed_files }}' | jq -r '.[]' | while read -r file; do
+          # Activate venv once before the loop (use process substitution to avoid subshell)
+          source .venv/bin/activate
+
+          while IFS= read -r file; do
             echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             echo "📊 Processing: $file"
 
@@ -266,7 +269,6 @@ jobs:
             fi
 
             echo "🎨 Generating plot..."
-            source .venv/bin/activate
             MPLBACKEND=Agg python "$file" 2>&1 | tee "${OUTPUT_DIR}/generation.log"
 
             FOUND_IMAGE=false
@@ -285,7 +287,7 @@ jobs:
 
             echo "🖼️  Processing image..."
             python -m core.images process "$FULL_FILE" "$FULL_FILE" "$THUMB_FILE" "$SPEC_ID"
-          done
+          done < <(echo '${{ steps.changed_plots.outputs.changed_files }}' | jq -r '.[]')
 
       - name: Upload plots to GCS
         if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true' && steps.gcs_auth.outcome == 'success'

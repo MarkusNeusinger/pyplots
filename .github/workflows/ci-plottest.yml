@@ -61,7 +61,7 @@ jobs:
           uv venv .venv
           source .venv/bin/activate
 
-          # Library-specific dependencies mapping (same as gen-new-plot.yml)
+          # Library-specific dependencies mapping (same as gen-library-impl.yml)
           declare -A DEPS
           DEPS[matplotlib]="matplotlib>=3.9.0 numpy>=1.26.0"
           DEPS[seaborn]="seaborn>=0.13.0 matplotlib numpy>=1.26.0"
@@ -110,7 +110,6 @@ jobs:
 
           FAILED=0
           PASSED=0
-          SKIPPED=0
 
           while IFS= read -r file; do
             if [ -z "$file" ]; then continue; fi

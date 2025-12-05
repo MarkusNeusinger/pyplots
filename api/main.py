@@ -66,12 +66,9 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",  # Next.js dev server
-        "http://localhost:8000",  # API dev server
-        "http://localhost:8080",
-        "https://pyplots.ai",  # Production (future)
-        "https://*.pyplots.ai",  # Subdomains
+        "https://pyplots.ai"  # Production
     ],
+    allow_origin_regex=r"http://localhost:\d+",  # All localhost ports (dev)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

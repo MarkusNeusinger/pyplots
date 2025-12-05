@@ -58,45 +58,13 @@ jobs:
       - name: Install library-specific dependencies
         if: steps.detect_libs.outputs.has_plots == 'true'
         run: |
-          uv venv .venv
-          source .venv/bin/activate
-
-          # Library-specific dependencies mapping (same as gen-library-impl.yml)
-          declare -A DEPS
-          DEPS[matplotlib]="matplotlib>=3.9.0 numpy>=1.26.0"
-          DEPS[seaborn]="seaborn>=0.13.0 matplotlib numpy>=1.26.0"
-          DEPS[plotly]="plotly>=5.18.0 kaleido>=0.2.1 numpy>=1.26.0"
-          DEPS[bokeh]="bokeh>=3.4.0 numpy>=1.26.0"
-          DEPS[altair]="altair>=5.2.0 vl-convert-python>=1.3.0 numpy>=1.26.0"
-          DEPS[plotnine]="plotnine>=0.13.0 numpy>=1.26.0"
-          DEPS[pygal]="pygal>=3.0.0 cairosvg>=2.7.0"
-          DEPS[highcharts]="highcharts-core>=1.10.0 numpy>=1.26.0"
-          DEPS[letsplot]="lets-plot>=4.5.0"
-
-          # Install pandas (common dependency) first
-          uv pip install pandas>=2.2.0
-
-          # Install only dependencies for changed libraries
+          # Build list of extras for all changed libraries
+          EXTRAS=""
           for LIB in ${{ steps.detect_libs.outputs.libraries }}; do
-            if [ -n "${DEPS[$LIB]}" ]; then
-              echo "📦 Installing dependencies for $LIB: ${DEPS[$LIB]}"
-              uv pip install ${DEPS[$LIB]} || {
-                echo "⚠️ Warning: Failed to install $LIB dependencies, skipping"
-                continue
-              }
-            else
-              echo "⚠️ Unknown library: $LIB"
-            fi
+            EXTRAS="$EXTRAS --extra lib-${LIB}"
           done
-
-      - name: Install Inter font
-        run: |
-          mkdir -p ~/.local/share/fonts
-          curl -sL "https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip" -o /tmp/inter.zip
-          unzip -q /tmp/inter.zip -d /tmp/inter
-          cp /tmp/inter/Inter*.ttf ~/.local/share/fonts/ 2>/dev/null || cp /tmp/inter/Inter*.otf ~/.local/share/fonts/ 2>/dev/null || true
-          fc-cache -f
-          echo "Inter font installed"
+          echo "📦 Installing: uv sync $EXTRAS"
+          uv sync $EXTRAS
 
       - name: Test plot execution
         id: test_execution

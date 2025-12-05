@@ -387,7 +387,20 @@ function App() {
         <Box>
           {/* Loading State */}
           {loading && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', my: 8 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                my: 8,
+                opacity: 0,
+                animation: 'fadeInDelayed 1.5s ease-out 0.3s forwards',
+                '@keyframes fadeInDelayed': {
+                  '0%': { opacity: 0 },
+                  '100%': { opacity: 1 },
+                },
+              }}
+            >
               <Box
                 sx={{
                   position: 'relative',
@@ -502,10 +515,6 @@ function App() {
                             borderColor: '#e5e7eb',
                             boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
                             transform: 'scale(1.03)',
-                          },
-                          '&:focus': {
-                            outline: '2px solid #3776AB',
-                            outlineOffset: '2px',
                           },
                         }}
                       >

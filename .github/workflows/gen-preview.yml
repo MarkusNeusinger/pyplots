@@ -133,6 +133,12 @@ jobs:
           echo "📦 Installing: uv sync $EXTRAS"
           uv sync $EXTRAS
 
+      - name: Setup Chrome for Highcharts
+        if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true' && contains(steps.changed_plots.outputs.libraries, 'highcharts')
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
       - name: Extract issue number and metadata from PR
         id: get_issue
         if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true' && steps.get_pr.outputs.pr_number != ''

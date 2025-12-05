@@ -4,7 +4,6 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid';
@@ -134,7 +133,9 @@ function App() {
   // Load images when spec changes
   useEffect(() => {
     if (!selectedSpec) {
-      setLoading(false);
+      if (specsLoaded) {
+        setLoading(false);
+      }
       return;
     }
 
@@ -154,7 +155,7 @@ function App() {
     };
 
     fetchImages();
-  }, [selectedSpec]);
+  }, [selectedSpec, specsLoaded]);
 
   return (
     <Box
@@ -260,7 +261,13 @@ function App() {
               disableAutoFocus
               disableEnforceFocus
               TransitionProps={{
-                onEntered: () => searchInputRef.current?.focus(),
+                onEntered: () => {
+                  // Don't auto-focus on touch devices to avoid keyboard popup
+                  const isTouchDevice = window.matchMedia('(hover: none)').matches;
+                  if (!isTouchDevice) {
+                    searchInputRef.current?.focus();
+                  }
+                },
               }}
               PaperProps={{
                 sx: {
@@ -380,8 +387,65 @@ function App() {
         <Box>
           {/* Loading State */}
           {loading && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 8 }}>
-              <CircularProgress size={40} sx={{ color: '#3776AB' }} />
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', my: 8 }}>
+              <Box
+                sx={{
+                  position: 'relative',
+                  width: 100,
+                  height: 16,
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    width: 16,
+                    height: 16,
+                    borderRadius: '50%',
+                    background: '#3776AB',
+                    boxShadow: '32px 0 #3776AB',
+                    left: 0,
+                    top: 0,
+                    animation: 'ballMoveX 2s linear infinite',
+                  },
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    width: 16,
+                    height: 16,
+                    borderRadius: '50%',
+                    background: '#3776AB',
+                    left: 0,
+                    top: 0,
+                    transform: 'translateX(64px) scale(1)',
+                    zIndex: 2,
+                    animation: 'trfLoader 2s linear infinite',
+                  },
+                  '@keyframes trfLoader': {
+                    '0%, 5%': {
+                      transform: 'translateX(64px) scale(1)',
+                      background: '#3776AB',
+                    },
+                    '10%': {
+                      transform: 'translateX(64px) scale(1)',
+                      background: '#FFD43B',
+                    },
+                    '40%': {
+                      transform: 'translateX(32px) scale(1.5)',
+                      background: '#FFD43B',
+                    },
+                    '90%, 95%': {
+                      transform: 'translateX(0px) scale(1)',
+                      background: '#FFD43B',
+                    },
+                    '100%': {
+                      transform: 'translateX(0px) scale(1)',
+                      background: '#3776AB',
+                    },
+                  },
+                  '@keyframes ballMoveX': {
+                    '0%, 10%': { transform: 'translateX(0)' },
+                    '90%, 100%': { transform: 'translateX(32px)' },
+                  },
+                }}
+              />
             </Box>
           )}
 

@@ -265,7 +265,7 @@ if __name__ == "__main__":
 </html>"""
 
     # Write temp HTML and take screenshot
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
         f.write(html_content)
         temp_path = f.name
 
@@ -277,7 +277,7 @@ if __name__ == "__main__":
     chrome_options.add_argument("--window-size=1600,900")
 
     driver = webdriver.Chrome(options=chrome_options)
-    driver.get(f"file://{temp_path}")
+    driver.get(f"file:///{temp_path}")
     time.sleep(5)  # Wait for chart to render
     driver.save_screenshot("plot.png")
     driver.quit()

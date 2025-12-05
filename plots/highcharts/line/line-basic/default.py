@@ -83,7 +83,7 @@ def create_plot(
     x_is_categorical = not pd.api.types.is_numeric_dtype(data[x])
 
     # Create chart
-    chart = Chart()
+    chart = Chart(container="container")
 
     # Configure chart options
     chart.options = HighchartsOptions()
@@ -206,29 +206,37 @@ if __name__ == "__main__":
     )
 
     # Export to PNG via Selenium screenshot
+    import json
     import tempfile
     import time
     from pathlib import Path
 
+    import requests
     from selenium import webdriver
     from selenium.webdriver.chrome.options import Options
 
-    # Generate HTML content
-    html_str = chart.to_js_literal()
+    # Download Highcharts JS (CDN doesn't work with file:// protocol)
+    hc_js = requests.get("https://code.highcharts.com/highcharts.js").text
+
+    # Get chart options as JSON (to_js_literal has data format bugs)
+    opts_json = json.dumps(chart.options.to_dict())
+
     html_content = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
-    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script>{hc_js}</script>
 </head>
 <body style="margin:0;">
     <div id="container" style="width: 1600px; height: 900px;"></div>
-    <script>{html_str}</script>
+    <script>
+        Highcharts.chart('container', {opts_json});
+    </script>
 </body>
 </html>"""
 
     # Write temp HTML and take screenshot
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
         f.write(html_content)
         temp_path = f.name
 
@@ -239,8 +247,8 @@ if __name__ == "__main__":
     chrome_options.add_argument("--window-size=1600,900")
 
     driver = webdriver.Chrome(options=chrome_options)
-    driver.get(f"file://{temp_path}")
-    time.sleep(1)  # Wait for chart to render
+    driver.get(f"file:///{temp_path}")
+    time.sleep(2)  # Wait for chart to render
     driver.save_screenshot("plot.png")
     driver.quit()
 

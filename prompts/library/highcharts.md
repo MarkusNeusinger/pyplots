@@ -90,7 +90,8 @@ html_content = f"""<!DOCTYPE html>
 </html>"""
 
 # Write temp HTML and take screenshot
-with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False) as f:
+# IMPORTANT: Use encoding="utf-8" for special characters in Highcharts JS
+with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
     f.write(html_content)
     temp_path = f.name
 
@@ -146,3 +147,4 @@ def create_plot(...) -> Chart:
 2. **CDN not loading**: Using `<script src="...">` instead of inline scripts in headless Chrome
 3. **Missing modules**: BoxPlot needs `highcharts-more.js` in addition to `highcharts.js`
 4. **Screenshot timing**: Use `time.sleep(5)` for reliable rendering
+5. **Encoding errors**: Always use `encoding="utf-8"` in NamedTemporaryFile (Highcharts JS contains special Unicode characters)

@@ -66,7 +66,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://pyplots.ai",  # Production
+        "https://pyplots.ai"  # Production
     ],
     allow_origin_regex=r"http://localhost:\d+",  # All localhost ports (dev)
     allow_credentials=True,

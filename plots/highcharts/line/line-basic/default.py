@@ -216,9 +216,9 @@ if __name__ == "__main__":
     from selenium.webdriver.chrome.options import Options
 
     # Download Highcharts JS (CDN doesn't work with file:// protocol)
-    hc_js = requests.get("https://code.highcharts.com/highcharts.js").text
+    hc_js = requests.get("https://code.highcharts.com/highcharts.js", timeout=30).text
 
-    # Get chart options as JSON (to_js_literal has data format bugs)
+    # Get chart options as JSON (to_js_literal has data format bugs with line charts)
     opts_json = json.dumps(chart.options.to_dict())
 
     html_content = f"""<!DOCTYPE html>
@@ -248,7 +248,7 @@ if __name__ == "__main__":
 
     driver = webdriver.Chrome(options=chrome_options)
     driver.get(f"file:///{temp_path}")
-    time.sleep(2)  # Wait for chart to render
+    time.sleep(5)  # Wait for chart to render
     driver.save_screenshot("plot.png")
     driver.quit()
 

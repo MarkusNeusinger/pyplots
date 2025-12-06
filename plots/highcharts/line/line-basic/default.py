@@ -5,7 +5,6 @@ Variant: default
 Python: 3.10+
 
 Note: Highcharts requires a license for commercial use.
-Test: Chrome setup fix verification
 """
 
 from typing import Optional

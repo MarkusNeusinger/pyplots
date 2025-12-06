@@ -176,6 +176,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - **Documentation**: [docs/](docs/)
 - **Issues**: [GitHub Issues](https://github.com/MarkusNeusinger/pyplots/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/MarkusNeusinger/pyplots/discussions)
+- **Stats**: [Public Analytics](https://plausible.io/pyplots.ai)
 
 ---
 

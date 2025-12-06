@@ -88,8 +88,3 @@ chart = pygal.Bar(
 | `pygal.Pie()` | `pie/` |
 | `pygal.Box()` | `box/` |
 
-## Return Type
-
-```python
-def create_plot(...) -> pygal.Bar:  # or corresponding type
-```

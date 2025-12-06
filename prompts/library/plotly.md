@@ -57,8 +57,3 @@ For static outputs → `write_image()`.
 | `go.Scatter3d` | `scatter3d/` |
 | `go.Candlestick` | `candlestick/` |
 
-## Return Type
-
-```python
-def create_plot(...) -> go.Figure:
-```

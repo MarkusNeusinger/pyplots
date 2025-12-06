@@ -63,6 +63,26 @@ This request is very similar to an existing spec:
 Add label `approved` to begin generation.
 ```
 
+### If UPDATE REQUEST:
+
+Update requests have `[update]` or `[update:library]` in the title (e.g., `[update:highcharts] line-basic`).
+
+1. Extract the spec-id from the title (the part after the update marker)
+2. Verify the spec exists in `specs/`
+3. Post comment and update title:
+
+```markdown
+## 🔄 Update Request: `{spec-id}`
+
+**Existing Spec:** `{spec-id}`
+**File:** `specs/{spec-id}.md`
+**Scope:** {all libraries OR specific library from [update:library]}
+
+Add label `approved` to trigger regeneration.
+```
+
+Then update the issue title to: `[{spec-id}] [update:library] {description}`
+
 ---
 
 ## ID Format
@@ -122,32 +142,38 @@ New plot type → New spec OK
 
 ## Process
 
-1. **Read all existing specs**
+1. **Detect update requests**
+   - Check if title contains `[update]` or `[update:library]`
+   - If yes: extract spec-id from title, verify spec exists, use UPDATE template
+   - If no: continue with new spec analysis
+
+2. **Read all existing specs**
    - List files in `specs/` (excluding templates)
    - Read each to understand what exists
 
-2. **Analyze the request**
+3. **Analyze the request**
    - What plot type? (scatter, bar, line, etc.)
    - What variant? (basic, grouped, stacked, etc.)
    - What's unique? (regression, animation, etc.)
 
-3. **Compare to existing**
+4. **Compare to existing**
    - Check for exact duplicates
    - Check for similar specs
    - Note any related specs
 
-4. **Generate ID** (if new)
+5. **Generate ID** (if new)
    - Follow format rules
    - Verify uniqueness
    - Make it descriptive
 
-5. **Post comment**
+6. **Post comment**
    - Use appropriate template
    - Include rationale
 
-6. **Update issue title** (if new)
-   - Add spec ID in brackets
-   - Example: "Plot: Bar chart" → "Plot: Bar chart [bar-basic]"
+7. **Update issue title** (if new or update request)
+   - Add spec ID in brackets **at the beginning**
+   - Example (new): `Plot: Bar chart` → `[bar-basic] Plot: Bar chart`
+   - Example (update): `[update:highcharts] line-basic` → `[line-basic] [update:highcharts] Regenerate`
 
 ---
 

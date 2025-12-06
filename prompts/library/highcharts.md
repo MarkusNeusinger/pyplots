@@ -135,12 +135,6 @@ chart.options.chart = {
 | `BarSeries` | `bar/` |
 | `BoxPlotSeries` | `boxplot/` |
 
-## Return Type
-
-```python
-def create_plot(...) -> Chart:
-```
-
 ## Common Pitfalls
 
 1. **White/blank images**: Forgetting `container="container"` in Chart() constructor

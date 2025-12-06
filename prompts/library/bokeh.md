@@ -75,9 +75,3 @@ p.yaxis.axis_label = y_label
 | `p.hbar()` | `hbar/` |
 | Custom (no native) | `custom/` |
 
-## Return Type
-
-```python
-def create_plot(...) -> figure:
-    # Note: bokeh.plotting.figure (lowercase)
-```

@@ -151,7 +151,7 @@ The same spec ID links implementations across all 9 supported libraries.
 
 ## Code Standards
 
-### Python Style
+### Python Style (API, Core, Tests)
 
 - **Linter/Formatter**: Ruff (enforces PEP 8)
 - **Line Length**: 120 characters
@@ -159,23 +159,23 @@ The same spec ID links implementations across all 9 supported libraries.
 - **Docstrings**: Google style for all public functions
 - **Import Order**: Standard library → Third-party → Local
 
-Example:
+**Note:** Plot implementations in `plots/` follow a simpler KISS style - see "Implementation Guidelines" below.
+
+Example (for API/core code):
 ```python
-def create_plot(data: pd.DataFrame, x: str, y: str, **kwargs) -> Figure:
+def get_spec_by_id(spec_id: str, db: Session) -> Spec:
     """
-    Create a scatter plot from DataFrame
+    Retrieve a spec by its ID.
 
     Args:
-        data: Input DataFrame with data
-        x: Column name for x-axis
-        y: Column name for y-axis
-        **kwargs: Additional plotting parameters
+        spec_id: The unique spec identifier
+        db: Database session
 
     Returns:
-        Matplotlib Figure object
+        Spec object if found
 
     Raises:
-        ValueError: If x or y column not found in data
+        NotFoundError: If spec doesn't exist
     """
     pass
 ```
@@ -268,16 +268,42 @@ prompt: |
 
 ## Implementation Guidelines
 
-### Plot Implementation Template
+### Plot Code Style (KISS)
 
-Every implementation file should:
-1. Start with docstring describing spec ID, library, variant
-2. Define `create_plot()` function with type hints
-3. Validate inputs first (empty data, missing columns)
-4. Use sensible defaults (`figsize=(10, 6)`, `alpha=0.8`)
-5. Include grid for readability
-6. Return the Figure object
-7. Optionally include `if __name__ == '__main__':` for standalone testing
+Plot implementations should be **simple, readable scripts** - like matplotlib gallery examples:
+
+```python
+"""
+scatter-basic: Basic Scatter Plot
+Library: matplotlib
+"""
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Data
+np.random.seed(42)
+x = np.random.randn(100)
+y = x * 0.8 + np.random.randn(100) * 0.5
+
+# Plot
+fig, ax = plt.subplots(figsize=(16, 9))
+ax.scatter(x, y, alpha=0.7, s=50, color='#306998')
+
+ax.set_xlabel('X Value')
+ax.set_ylabel('Y Value')
+ax.set_title('Basic Scatter Plot')
+ax.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('plot.png', dpi=300, bbox_inches='tight')
+```
+
+**Rules:**
+- No functions, no classes
+- No `if __name__ == '__main__':`
+- No type hints or docstrings (in plot code)
+- Just: imports → data → plot → save
 
 ### Anti-Patterns to Avoid
 

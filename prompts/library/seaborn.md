@@ -70,8 +70,3 @@ palette='RdBu'
 | `sns.heatmap()` | `heatmap/` |
 | `sns.violinplot()` | `violinplot/` |
 
-## Return Type
-
-```python
-def create_plot(...) -> Figure:
-```

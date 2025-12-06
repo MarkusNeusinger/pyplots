@@ -16,6 +16,11 @@ on:
         description: "Main issue number"
         required: true
         type: string
+      target_library:
+        description: "Single library to regenerate (empty = all libraries)"
+        required: false
+        type: string
+        default: ""
 
 concurrency:
   group: spec-to-code-${{ inputs.issue_number }}
@@ -36,6 +41,7 @@ jobs:
       spec_id: ${{ inputs.spec_id }}
       feature_branch: ${{ inputs.feature_branch }}
       issue_number: ${{ inputs.issue_number }}
+      target_library: ${{ inputs.target_library }}
 
     steps:
       - name: Log inputs
@@ -44,6 +50,7 @@ jobs:
           echo "Spec ID: ${{ inputs.spec_id }}"
           echo "Feature Branch: ${{ inputs.feature_branch }}"
           echo "Issue Number: ${{ inputs.issue_number }}"
+          echo "Target Library: ${{ inputs.target_library || 'all' }}"
           echo "======================="
 
       - name: Checkout repository
@@ -97,6 +104,7 @@ jobs:
         id: create
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_LIBRARY: ${{ inputs.target_library }}
         run: |
           SPEC_ID="${{ inputs.spec_id }}"
           PARENT_NUM="${{ inputs.issue_number }}"
@@ -104,6 +112,12 @@ jobs:
           PARENT_NODE_ID=$(gh api repos/${{ github.repository }}/issues/$PARENT_NUM --jq '.node_id')
 
           for LIBRARY in ${{ env.LIBRARIES }}; do
+            # Skip if target_library is set and doesn't match
+            if [[ -n "$TARGET_LIBRARY" && "$TARGET_LIBRARY" != "$LIBRARY" ]]; then
+              echo "::notice::Skipping $LIBRARY (target: $TARGET_LIBRARY)"
+              continue
+            fi
+
             echo "Creating sub-issue for $LIBRARY..."
 
             # Check if sub-issue already exists
@@ -155,6 +169,7 @@ jobs:
   # ============================================================================
   generate-matplotlib:
     needs: [setup, create-sub-issues]
+    if: inputs.target_library == '' || inputs.target_library == 'matplotlib'
     uses: ./.github/workflows/gen-library-impl.yml
     with:
       spec_id: ${{ inputs.spec_id }}
@@ -168,6 +183,7 @@ jobs:
 
   generate-seaborn:
     needs: [setup, create-sub-issues]
+    if: inputs.target_library == '' || inputs.target_library == 'seaborn'
     uses: ./.github/workflows/gen-library-impl.yml
     with:
       spec_id: ${{ inputs.spec_id }}
@@ -181,6 +197,7 @@ jobs:
 
   generate-plotly:
     needs: [setup, create-sub-issues]
+    if: inputs.target_library == '' || inputs.target_library == 'plotly'
     uses: ./.github/workflows/gen-library-impl.yml
     with:
       spec_id: ${{ inputs.spec_id }}
@@ -194,6 +211,7 @@ jobs:
 
   generate-bokeh:
     needs: [setup, create-sub-issues]
+    if: inputs.target_library == '' || inputs.target_library == 'bokeh'
     uses: ./.github/workflows/gen-library-impl.yml
     with:
       spec_id: ${{ inputs.spec_id }}
@@ -207,6 +225,7 @@ jobs:
 
   generate-altair:
     needs: [setup, create-sub-issues]
+    if: inputs.target_library == '' || inputs.target_library == 'altair'
     uses: ./.github/workflows/gen-library-impl.yml
     with:
       spec_id: ${{ inputs.spec_id }}
@@ -220,6 +239,7 @@ jobs:
 
   generate-plotnine:
     needs: [setup, create-sub-issues]
+    if: inputs.target_library == '' || inputs.target_library == 'plotnine'
     uses: ./.github/workflows/gen-library-impl.yml
     with:
       spec_id: ${{ inputs.spec_id }}
@@ -233,6 +253,7 @@ jobs:
 
   generate-pygal:
     needs: [setup, create-sub-issues]
+    if: inputs.target_library == '' || inputs.target_library == 'pygal'
     uses: ./.github/workflows/gen-library-impl.yml
     with:
       spec_id: ${{ inputs.spec_id }}
@@ -246,6 +267,7 @@ jobs:
 
   generate-highcharts:
     needs: [setup, create-sub-issues]
+    if: inputs.target_library == '' || inputs.target_library == 'highcharts'
     uses: ./.github/workflows/gen-library-impl.yml
     with:
       spec_id: ${{ inputs.spec_id }}
@@ -259,6 +281,7 @@ jobs:
 
   generate-letsplot:
     needs: [setup, create-sub-issues]
+    if: inputs.target_library == '' || inputs.target_library == 'letsplot'
     uses: ./.github/workflows/gen-library-impl.yml
     with:
       spec_id: ${{ inputs.spec_id }}

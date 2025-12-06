@@ -83,8 +83,3 @@ geom_tile()      # Heatmap
 | `geom_bar()` | `bar/` |
 | `geom_boxplot()` | `boxplot/` |
 
-## Return Type
-
-```python
-def create_plot(...) -> ggplot:
-```

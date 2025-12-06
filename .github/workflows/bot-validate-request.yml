@@ -49,11 +49,18 @@ jobs:
             exit 0
           fi
 
-          # Check 2: Must not already have spec ID in title (indicated by [...])
-          if [[ "$ISSUE_TITLE" == *"["* ]]; then
-            echo "::notice::Skipping: Issue title already contains spec ID"
-            echo "should_run=false" >> $GITHUB_OUTPUT
-            exit 0
+          # Check 2: Must not already have spec ID in title
+          # Spec ID format: [lowercase-with-hyphens] at the beginning, NOT [update...]
+          # Valid spec-id: [scatter-basic], [line-timeseries-multi]
+          # NOT spec-id: [update], [update:matplotlib], [Update:...]
+          if [[ "$ISSUE_TITLE" =~ ^\[[a-z0-9-]+\] ]]; then
+            FIRST_BRACKET=$(echo "$ISSUE_TITLE" | grep -oP '^\[\K[a-z0-9-]+(?=\])' || echo "")
+            # Skip only if it's a valid spec-id (not an update marker)
+            if [[ -n "$FIRST_BRACKET" && ! "$FIRST_BRACKET" =~ ^update ]]; then
+              echo "::notice::Skipping: Issue title already has spec ID: $FIRST_BRACKET"
+              echo "should_run=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
           fi
 
           # Check 3: For labeled events, only trigger when plot-request label is added

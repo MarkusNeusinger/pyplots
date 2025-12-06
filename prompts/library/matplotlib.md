@@ -68,8 +68,3 @@ ax.boxplot(data, tick_labels=group_names)  # Right
 | `ax.imshow()` | `imshow/` |
 | `ax.pie()` | `pie/` |
 
-## Return Type
-
-```python
-def create_plot(...) -> Figure:
-```

@@ -2,7 +2,7 @@
 
 ## Role
 
-You validate whether a plot specification is complete and correct.
+You validate whether a plot specification is complete and follows the simplified template.
 
 ## Task
 
@@ -23,21 +23,12 @@ Markdown specification from `specs/{spec-id}.md`
   "sections": {
     "title": {"present": true, "valid": true},
     "description": {"present": true, "valid": true},
-    "data_requirements": {"present": true, "valid": true},
-    "optional_parameters": {"present": true, "valid": true},
-    "quality_criteria": {"present": true, "valid": true},
-    "expected_output": {"present": true, "valid": true},
-    "example_data": {"present": false, "valid": false}
+    "data": {"present": true, "valid": true},
+    "tags": {"present": true, "valid": true},
+    "use_cases": {"present": true, "valid": true}
   },
 
-  "issues": [
-    {
-      "severity": "warning",
-      "section": "example_data",
-      "message": "No example data provided",
-      "suggestion": "Add a ## Example Data section with sample code"
-    }
-  ],
+  "issues": [],
 
   "recommendation": "approve"
 }
@@ -54,7 +45,7 @@ Markdown specification from `specs/{spec-id}.md`
 ```
 
 **Checks**:
-- Spec ID in title present
+- Spec ID present in title
 - Descriptive title (not just ID)
 - Spec ID format: `{type}-{variant}[-{modifier}]`
 
@@ -62,103 +53,73 @@ Markdown specification from `specs/{spec-id}.md`
 
 ```markdown
 ## Description
-Short description of what the plot shows and its use cases.
+
+2-4 sentences describing what the plot shows, when to use it,
+and what makes it useful.
 ```
 
 **Checks**:
 - At least 2 sentences
-- Explains purpose of the plot
-- Not empty
+- Explains what the plot visualizes
+- Explains when/why to use it
 
-### 3. Data Requirements (Critical)
-
-```markdown
-## Data Requirements
-
-| Column | Type | Required | Description |
-|--------|------|----------|-------------|
-| x | numeric | Yes | X-axis values |
-| y | numeric | Yes | Y-axis values |
-| color | string | No | Color mapping |
-```
-
-**Checks**:
-- Table with columns: Column, Type, Required, Description
-- At least one Required=Yes column
-- Valid types: numeric, string, datetime, boolean
-
-### 4. Optional Parameters (Recommended)
+### 3. Data (Critical)
 
 ```markdown
-## Optional Parameters
+## Data
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| title | string | None | Plot title |
-| alpha | float | 0.8 | Transparency |
-```
+**Required columns:**
+- `column_name` (type) - description
 
-**Checks**:
-- If present: Table with default values
-- Defaults are sensible (not None where value expected)
-
-### 5. Quality Criteria (Recommended)
-
-```markdown
-## Quality Criteria
-
-- [ ] Axes are labeled
-- [ ] Grid is subtle
-- [ ] Points are distinguishable
-```
-
-**Checks**:
-- Checkbox list
-- Plot-specific criteria
-
-### 6. Expected Output (Optional)
-
-```markdown
-## Expected Output
-
-A scatter plot with X on the horizontal axis and Y on the vertical axis.
-Points are colored by the color column.
-```
-
-**Checks**:
-- Describes expected visual result
-
-### 7. Example Data (Optional)
-
-```markdown
-## Example Data
-
+**Example:** *(optional)*
 ```python
-data = pd.DataFrame({
-    'x': [1, 2, 3, 4, 5],
-    'y': [2, 4, 1, 3, 5],
-    'color': ['A', 'A', 'B', 'B', 'A']
-})
+data = pd.DataFrame({...})
 ```
 ```
 
 **Checks**:
-- Python code block
-- Uses all required columns
+- Has "Required columns" with at least one column
+- Each column has: name, type (numeric/categorical/datetime), description
+- Example is optional but if present must be valid Python
+
+**Valid column types**: numeric, categorical, datetime, boolean, string
+
+### 4. Tags (Required)
+
+```markdown
+## Tags
+
+scatter, correlation, basic
+```
+
+**Checks**:
+- At least 2 tags
+- Comma-separated
+
+### 5. Use Cases (Required)
+
+```markdown
+## Use Cases
+
+- Realistic scenario with domain context
+- Another use case
+```
+
+**Checks**:
+- At least 2 use cases
+- Specific and realistic (not generic)
 
 ---
 
 ## Scoring
 
-| Section | Weight | Present | Valid |
-|---------|--------|---------|-------|
-| title | 20 | +10 | +10 |
-| description | 20 | +10 | +10 |
-| data_requirements | 25 | +15 | +10 |
-| optional_parameters | 15 | +10 | +5 |
-| quality_criteria | 10 | +5 | +5 |
-| expected_output | 5 | +3 | +2 |
-| example_data | 5 | +3 | +2 |
+| Section | Weight |
+|---------|--------|
+| title | 25 |
+| description | 30 |
+| data | 25 |
+| tags | 10 |
+| use_cases | 10 |
 
 **Score ≥ 80**: Approve
 **Score 60-79**: Needs minor fixes
@@ -171,7 +132,7 @@ data = pd.DataFrame({
 Format: `{type}-{variant}[-{modifier}]`
 
 **Valid Types**:
-scatter, line, bar, histogram, boxplot, violin, heatmap, pie, area, contour, 3d, network, treemap, sankey, candlestick
+scatter, line, bar, histogram, box, violin, heatmap, pie, area, contour, 3d, network, treemap, sankey, candlestick, radar, funnel, waterfall
 
 **Valid Variants**:
 basic, grouped, stacked, horizontal, multi, animated, interactive, regression, correlation, distribution
@@ -180,12 +141,13 @@ basic, grouped, stacked, horizontal, multi, animated, interactive, regression, c
 - `scatter-basic` ✓
 - `bar-grouped-horizontal` ✓
 - `heatmap-correlation` ✓
-- `my-cool-plot` ✗ (not a valid type)
+- `pie-basic` ✓
 
 ---
 
 ## Rules
 
-- **Strict on Critical Sections**: Title, Description, Data Requirements must be perfect
-- **Tolerant on Optional**: Warnings, but no rejection
+- **Strict on Critical Sections**: Title, Description, Data must be complete
+- **Simple is Better**: Short, focused specs are preferred
+- **AI Decides Details**: Quality criteria, parameters, styling are handled by central prompts
 - **Constructive**: Always provide concrete improvement suggestions

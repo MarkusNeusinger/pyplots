@@ -78,8 +78,3 @@ chart = chart.interactive()
 | `mark_boxplot()` | `boxplot/` |
 | `mark_rect()` | `rect/` |
 
-## Return Type
-
-```python
-def create_plot(...) -> alt.Chart:
-```

@@ -108,14 +108,6 @@ geom_density()     # Density
 | `geom_histogram()` | `histogram/` |
 | `geom_tile()` | `tile/` |
 
-## Return Type
-
-```python
-from lets_plot.plot.core import PlotSpec
-
-def create_plot(...) -> PlotSpec:
-```
-
 ## Key Differences from plotnine
 
 - Uses `lets_plot` module (not `plotnine`)

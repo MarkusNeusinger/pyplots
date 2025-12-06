@@ -1,11 +1,9 @@
 """
 line-basic: Basic Line Chart
-Implementation for: altair
-Variant: default
-Python: 3.10+
+Library: altair
 """
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 import altair as alt
 import pandas as pd
@@ -14,38 +12,41 @@ import pandas as pd
 if TYPE_CHECKING:
     from altair import Chart
 
+# Style guide colors
+PYTHON_BLUE = "#306998"
+
 
 def create_plot(
     data: pd.DataFrame,
     x: str,
     y: str,
-    title: Optional[str] = None,
-    xlabel: Optional[str] = None,
-    ylabel: Optional[str] = None,
-    color: str = "steelblue",
+    title: str | None = None,
+    xlabel: str | None = None,
+    ylabel: str | None = None,
+    color: str = PYTHON_BLUE,
     linewidth: float = 2,
-    marker: Optional[str] = None,
+    marker: str | None = None,
     marker_size: int = 60,
-    width: int = 800,
-    height: int = 450,
+    alpha: float = 1.0,
+    linestyle: str = "solid",
     **kwargs,
 ) -> "Chart":
     """
-    Create a basic line chart showing trends over a continuous axis using altair.
+    Create a basic line chart showing trends over a continuous axis.
 
     Args:
         data: Input DataFrame with required columns
         x: Column name for x-axis values (typically time or sequence)
         y: Column name for y-axis values
-        title: Plot title (optional)
-        xlabel: Custom x-axis label (optional, defaults to x column name)
-        ylabel: Custom y-axis label (optional, defaults to y column name)
-        color: Line color (default: 'steelblue')
+        title: Plot title (default: None)
+        xlabel: Custom x-axis label (default: uses column name)
+        ylabel: Custom y-axis label (default: uses column name)
+        color: Line color (default: Python Blue #306998)
         linewidth: Width of the line (default: 2)
-        marker: Marker style - 'circle', 'square', 'diamond', etc. (optional)
+        marker: Marker style - 'circle', 'square', 'diamond', etc. (default: None)
         marker_size: Size of markers if enabled (default: 60)
-        width: Figure width in pixels (default: 800)
-        height: Figure height in pixels (default: 450)
+        alpha: Transparency level for the line (default: 1.0)
+        linestyle: Line style - 'solid', 'dashed', 'dotted' (default: 'solid')
         **kwargs: Additional parameters for altair chart configuration
 
     Returns:
@@ -66,7 +67,6 @@ def create_plot(
     if data.empty:
         raise ValueError("Data cannot be empty")
 
-    # Check required columns
     for col in [x, y]:
         if col not in data.columns:
             available = ", ".join(data.columns)
@@ -82,13 +82,26 @@ def create_plot(
     else:
         x_encoding = f"{x}:Q"
 
+    # Map linestyle to altair strokeDash
+    stroke_dash_map = {"solid": [], "dashed": [8, 4], "dotted": [2, 2]}
+    stroke_dash = stroke_dash_map.get(linestyle, [])
+
     # Create the line chart
     line = (
         alt.Chart(plot_data)
-        .mark_line(color=color, strokeWidth=linewidth)
+        .mark_line(color=color, strokeWidth=linewidth, opacity=alpha, strokeDash=stroke_dash)
         .encode(
-            x=alt.X(x_encoding, title=xlabel or x, axis=alt.Axis(labelAngle=0, labelLimit=200)),
-            y=alt.Y(f"{y}:Q", title=ylabel or y, scale=alt.Scale(zero=False)),
+            x=alt.X(
+                x_encoding,
+                title=xlabel or x,
+                axis=alt.Axis(labelAngle=0, labelLimit=200, labelFontSize=16, titleFontSize=20),
+            ),
+            y=alt.Y(
+                f"{y}:Q",
+                title=ylabel or y,
+                scale=alt.Scale(zero=False),
+                axis=alt.Axis(labelFontSize=16, titleFontSize=20),
+            ),
             tooltip=[
                 alt.Tooltip(x_encoding, title=xlabel or x),
                 alt.Tooltip(f"{y}:Q", title=ylabel or y, format=".2f"),
@@ -100,7 +113,7 @@ def create_plot(
     if marker:
         points = (
             alt.Chart(plot_data)
-            .mark_point(color=color, size=marker_size, filled=True, shape=marker)
+            .mark_point(color=color, size=marker_size, filled=True, shape=marker, opacity=alpha)
             .encode(
                 x=alt.X(x_encoding),
                 y=alt.Y(f"{y}:Q"),
@@ -115,10 +128,10 @@ def create_plot(
         chart_base = line
 
     # Apply properties and configuration
+    # Target: 4800 × 2700 px with scale_factor=3.0 -> 1600 × 900 base
+    title_config = alt.TitleParams(text=title, fontSize=20, anchor="middle") if title else None
     chart = (
-        chart_base.properties(
-            width=width, height=height, title=alt.TitleParams(text=title or "Line Chart", fontSize=16, anchor="middle")
-        )
+        chart_base.properties(width=1600, height=900, title=title_config)
         .configure_view(strokeWidth=0)
         .configure_axis(grid=True, gridOpacity=0.3, gridDash=[3, 3], domainWidth=1, tickWidth=1)
     )
@@ -143,12 +156,11 @@ if __name__ == "__main__":
         title="Monthly Sales Trend (2024)",
         xlabel="Month",
         ylabel="Sales (thousands)",
-        color="steelblue",
         linewidth=2.5,
         marker="circle",
         marker_size=80,
     )
 
-    # Save as PNG
-    chart.save("plot.png", scale_factor=2.0)
+    # Save as PNG - scale_factor=3.0 gives 4800 × 2700 px
+    chart.save("plot.png", scale_factor=3.0)
     print("Plot saved to plot.png")

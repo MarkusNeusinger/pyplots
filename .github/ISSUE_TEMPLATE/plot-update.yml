@@ -1,6 +1,6 @@
 name: Plot Update
 description: Request updates or regeneration of an existing plot
-title: "[update] "
+title: "[spec-id] [update] "
 labels: ["plot-request", "update"]
 body:
   - type: markdown
@@ -11,25 +11,18 @@ body:
         Use this form to update or regenerate an existing plot.
 
         **Title Format:**
-        - `[update] scatter-basic` → Regenerate all 9 libraries
-        - `[update:seaborn] scatter-basic` → Regenerate only seaborn
+        - `[scatter-basic] [update] Regenerate` → Regenerate all 9 libraries
+        - `[scatter-basic] [update:seaborn] Fix colors` → Regenerate only seaborn
+
+        Replace `[spec-id]` in the title with the actual spec ID (e.g., `scatter-basic`).
 
         After submitting, a maintainer will add the `approved` label to trigger regeneration.
-
-  - type: input
-    id: spec_id
-    attributes:
-      label: Spec ID
-      description: "The spec ID of the plot to update (will be appended to title)"
-      placeholder: "scatter-basic"
-    validations:
-      required: true
 
   - type: dropdown
     id: target_library
     attributes:
       label: Target Library (optional)
-      description: Update only a specific library, or leave empty for all
+      description: Update only a specific library, or leave empty for all. If you select a specific library, change [update] to [update:library] in the title.
       options:
         - All libraries
         - matplotlib
@@ -50,11 +43,10 @@ body:
       label: Type of Update
       description: What kind of change is this?
       options:
-        - Regenerate (use current spec)
+        - Regenerate (use current spec with new code style)
         - Spec Update (describe changes below)
         - Bug Fix (plot doesn't render correctly)
         - Visual Improvement (styling, colors, layout)
-        - Feature Addition (new parameter, option)
     validations:
       required: true
 

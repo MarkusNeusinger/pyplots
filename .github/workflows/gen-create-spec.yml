@@ -60,7 +60,7 @@ jobs:
             echo "is_update=true" >> $GITHUB_OUTPUT
             echo "::notice::This is an update request"
 
-            # Extract target library from title [update:library] or empty for all
+            # Extract target library from title [spec-id] [update:library] or empty for all
             if [[ "$ISSUE_TITLE" =~ \[update:([a-z]+)\] ]]; then
               TARGET_LIB="${BASH_REMATCH[1]}"
               echo "target_library=$TARGET_LIB" >> $GITHUB_OUTPUT
@@ -120,13 +120,11 @@ jobs:
             SPEC_ID=$(echo "$COMMENTS" | grep -oP '\*\*Existing Spec:\*\* `\K[a-z0-9-]+(?=`)' | tail -1 || echo "")
           fi
 
-          # Fallback: extract from title if in brackets [spec-id]
-          # Must be at the beginning and NOT an update marker
+          # Fallback: extract from title - spec-id is always first bracket
+          # Format: [spec-id] ... or [spec-id] [update] ... or [spec-id] [update:lib] ...
           if [ -z "$SPEC_ID" ]; then
-            FIRST_BRACKET=$(echo "$ISSUE_TITLE" | grep -oP '^\[\K[a-z0-9-]+(?=\])' || echo "")
-            # Only use if it's not an update marker
-            if [[ -n "$FIRST_BRACKET" && ! "$FIRST_BRACKET" =~ ^update ]]; then
-              SPEC_ID="$FIRST_BRACKET"
+            if [[ "$ISSUE_TITLE" =~ ^\[([a-z0-9-]+)\] ]]; then
+              SPEC_ID="${BASH_REMATCH[1]}"
             fi
           fi
 

@@ -49,21 +49,24 @@ jobs:
             exit 0
           fi
 
-          # Check 2: Must not already have spec ID in title
-          # Spec ID format: [lowercase-with-hyphens] at the beginning, NOT [update...]
-          # Valid spec-id: [scatter-basic], [line-timeseries-multi]
-          # NOT spec-id: [update], [update:matplotlib], [Update:...]
-          if [[ "$ISSUE_TITLE" =~ ^\[[a-z0-9-]+\] ]]; then
-            FIRST_BRACKET=$(echo "$ISSUE_TITLE" | grep -oP '^\[\K[a-z0-9-]+(?=\])' || echo "")
-            # Skip only if it's a valid spec-id (not an update marker)
-            if [[ -n "$FIRST_BRACKET" && ! "$FIRST_BRACKET" =~ ^update ]]; then
-              echo "::notice::Skipping: Issue title already has spec ID: $FIRST_BRACKET"
-              echo "should_run=false" >> $GITHUB_OUTPUT
-              exit 0
-            fi
+          # Check 2: Skip update requests (they already have spec-id)
+          HAS_UPDATE="${{ contains(github.event.issue.labels.*.name, 'update') }}"
+          if [[ "$HAS_UPDATE" == "true" ]]; then
+            echo "::notice::Skipping: Update request (spec-id already in title)"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
           fi
 
-          # Check 3: For labeled events, only trigger when plot-request label is added
+          # Check 3: Must not already have spec ID in title
+          # Spec ID format: [lowercase-with-hyphens] at the beginning
+          if [[ "$ISSUE_TITLE" =~ ^\[[a-z0-9-]+\] ]]; then
+            FIRST_BRACKET=$(echo "$ISSUE_TITLE" | grep -oP '^\[\K[a-z0-9-]+(?=\])' || echo "")
+            echo "::notice::Skipping: Issue title already has spec ID: $FIRST_BRACKET"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Check 4: For labeled events, only trigger when plot-request label is added
           if [[ "$EVENT_ACTION" == "labeled" && "$LABEL_NAME" != "plot-request" ]]; then
             echo "::notice::Skipping: Labeled event but not plot-request label"
             echo "should_run=false" >> $GITHUB_OUTPUT

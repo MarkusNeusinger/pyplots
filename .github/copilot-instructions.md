@@ -5,6 +5,7 @@ This file provides guidance to GitHub Copilot when working with code in this rep
 ## Important Rules
 
 - **No Co-authored-by in commit messages** - Never add `Co-authored-by:` lines to commit messages. Keep commit messages clean without AI attribution footers.
+- **Always write in English** - All output text (code comments, commit messages, PR descriptions, issue comments, documentation) must be in English, even if the user writes in another language.
 
 ## Task Suitability
 

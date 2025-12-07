@@ -16,57 +16,45 @@ from selenium.webdriver.chrome.options import Options
 
 
 # Data
-time_values = [1, 2, 3, 4, 5, 6, 7]
-value_data = [10, 15, 13, 18, 22, 19, 25]
+time_values = ["1", "2", "3", "4", "5", "6", "7"]
+data_values = [10, 15, 13, 18, 22, 19, 25]
 
-# Create chart with container specified
+# Create chart
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
 # Chart configuration
-chart.options.chart = {
-    "type": "line",
-    "width": 4800,
-    "height": 2700,
-    "backgroundColor": "#ffffff",
-    "spacing": [20, 40, 80, 40],
-}
+chart.options.chart = {"type": "line", "width": 4800, "height": 2700, "backgroundColor": "#ffffff"}
 
 # Title
-chart.options.title = {"text": "Basic Line Plot", "style": {"fontSize": "48px"}}
+chart.options.title = {"text": "Basic Line Plot", "style": {"fontSize": "60px"}}
 
 # Axes
 chart.options.x_axis = {
-    "title": {"text": "Time", "style": {"fontSize": "36px"}},
-    "categories": [str(t) for t in time_values],
-    "labels": {"style": {"fontSize": "28px"}},
+    "title": {"text": "Time", "style": {"fontSize": "48px"}},
+    "categories": time_values,
+    "labels": {"style": {"fontSize": "40px"}},
 }
 chart.options.y_axis = {
-    "title": {"text": "Value", "style": {"fontSize": "36px"}},
-    "labels": {"style": {"fontSize": "28px"}},
+    "title": {"text": "Value", "style": {"fontSize": "48px"}},
+    "labels": {"style": {"fontSize": "40px"}},
     "gridLineColor": "#e0e0e0",
 }
 
 # Legend
 chart.options.legend = {"enabled": False}
 
-# Plot options
-chart.options.plot_options = {
-    "line": {
-        "lineWidth": 4,
-        "marker": {"enabled": True, "radius": 8, "fillColor": "#306998", "lineWidth": 2, "lineColor": "#ffffff"},
-    }
-}
-
-# Create series
+# Add series
 series = LineSeries()
-series.data = value_data
+series.data = data_values
 series.name = "Value"
 series.color = "#306998"
+series.marker = {"radius": 12, "enabled": True}
+series.lineWidth = 6
 
 chart.add_series(series)
 
-# Download Highcharts JS for inline embedding
+# Download Highcharts JS
 highcharts_url = "https://code.highcharts.com/highcharts.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
@@ -95,15 +83,12 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=5000,3000")
+chrome_options.add_argument("--window-size=4800,2700")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
 time.sleep(5)
-
-# Get the chart container element and take screenshot of it
-container = driver.find_element("id", "container")
-container.screenshot("plot.png")
+driver.save_screenshot("plot.png")
 driver.quit()
 
 Path(temp_path).unlink()

@@ -17,7 +17,8 @@ from alembic import context
 # Load environment variables
 load_dotenv()
 
-# Import models to register them with Base.metadata
+# Import models to register them with Base.metadata (required for autogenerate)
+# These imports ARE used - SQLAlchemy needs them loaded to detect schema changes
 from core.database import Base, Implementation, Library, Spec  # noqa: E402, F401
 
 

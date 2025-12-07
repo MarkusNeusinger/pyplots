@@ -15,8 +15,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data - Monthly sales data
-sales = [100, 150, 130, 180, 200, 220, 195, 240, 260, 245, 280, 310]
+# Data
+months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+sales = [100, 150, 130, 180, 200, 220, 195, 240, 260, 230, 270, 310]
 
 # Create chart
 chart = Chart(container="container")
@@ -26,38 +27,39 @@ chart.options = HighchartsOptions()
 chart.options.chart = {"type": "area", "width": 4800, "height": 2700, "backgroundColor": "#ffffff"}
 
 # Title
-chart.options.title = {"text": "Basic Area Chart", "style": {"fontSize": "48px"}}
+chart.options.title = {"text": "Monthly Sales Overview", "style": {"fontSize": "48px"}}
 
 # Axes
 chart.options.x_axis = {
-    "title": {"text": "Month", "style": {"fontSize": "40px"}},
-    "categories": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    "labels": {"style": {"fontSize": "32px"}},
-    "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.1)",
+    "categories": months,
+    "title": {"text": "Month", "style": {"fontSize": "36px"}},
+    "labels": {"style": {"fontSize": "28px"}},
 }
 
 chart.options.y_axis = {
-    "title": {"text": "Sales", "style": {"fontSize": "40px"}},
-    "labels": {"style": {"fontSize": "32px"}},
+    "title": {"text": "Sales ($)", "style": {"fontSize": "36px"}},
+    "labels": {"style": {"fontSize": "28px"}},
+    "gridLineColor": "#e0e0e0",
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.1)",
 }
 
-# Legend styling
-chart.options.legend = {"itemStyle": {"fontSize": "32px"}}
-
-# Area series
+# Add series
 series = AreaSeries()
 series.data = sales
-series.name = "Monthly Sales"
-series.color = "#306998"  # Python Blue
+series.name = "Sales"
+series.color = "#306998"
 series.fill_opacity = 0.5
 series.line_width = 4
 
 chart.add_series(series)
 
-# Download Highcharts JS for inline embedding
+# Legend
+chart.options.legend = {"enabled": False}
+
+# Credits
+chart.options.credits = {"enabled": False}
+
+# Download Highcharts JS
 highcharts_url = "https://code.highcharts.com/highcharts.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
@@ -90,8 +92,8 @@ chrome_options.add_argument("--window-size=4800,2700")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
-time.sleep(5)  # Wait for chart to render
+time.sleep(5)
 driver.save_screenshot("plot.png")
 driver.quit()
 
-Path(temp_path).unlink()  # Clean up temp file
+Path(temp_path).unlink()

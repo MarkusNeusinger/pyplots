@@ -172,9 +172,22 @@ jobs:
           :rocket: *Auto-merged by pyplots CI*"
           fi
 
-          # Close sub-issue (ignore if already closed)
-          gh issue close $SUB_ISSUE --reason completed 2>/dev/null || true
-          echo "Sub-issue #$SUB_ISSUE closed"
+          # Close sub-issue with retry logic
+          for i in 1 2 3; do
+            if gh issue close $SUB_ISSUE --reason completed; then
+              echo "✓ Sub-issue #$SUB_ISSUE closed successfully"
+              break
+            else
+              echo "Attempt $i: Failed to close #$SUB_ISSUE, retrying..."
+              sleep 2
+            fi
+          done
+
+          # Verify closure
+          STATE=$(gh issue view $SUB_ISSUE --json state -q '.state' 2>/dev/null || echo "UNKNOWN")
+          if [ "$STATE" != "CLOSED" ]; then
+            echo "::warning::Sub-issue #$SUB_ISSUE may not be closed (state: $STATE)"
+          fi
 
       - name: Get main issue number
         if: steps.check.outputs.should_run == 'true'
@@ -421,8 +434,16 @@ jobs:
           :rocket: *Auto-merged by pyplots CI*"
           fi
 
-          # Close sub-issue
-          gh issue close $SUB_ISSUE --reason completed 2>/dev/null || true
+          # Close sub-issue with retry logic
+          for i in 1 2 3; do
+            if gh issue close $SUB_ISSUE --reason completed; then
+              echo "✓ Sub-issue #$SUB_ISSUE closed successfully"
+              break
+            else
+              echo "Attempt $i: Failed to close #$SUB_ISSUE, retrying..."
+              sleep 2
+            fi
+          done
 
       - name: Check if all libraries are done
         if: steps.check.outputs.should_run == 'true'

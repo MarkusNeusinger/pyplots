@@ -24,7 +24,7 @@ fig.add_trace(
         y=data["sales"],
         mode="lines",
         fill="tozeroy",
-        fillcolor="rgba(48, 105, 152, 0.4)",
+        fillcolor="rgba(48, 105, 152, 0.5)",
         line={"color": "#306998", "width": 2},
         name="Sales",
     )
@@ -32,12 +32,12 @@ fig.add_trace(
 
 # Layout
 fig.update_layout(
-    title={"text": "Monthly Sales", "font": {"size": 20}, "x": 0.5, "xanchor": "center"},
+    title={"text": "Monthly Sales Trend", "font": {"size": 20}, "x": 0.5, "xanchor": "center"},
     xaxis_title={"text": "Month", "font": {"size": 20}},
-    yaxis_title={"text": "Sales", "font": {"size": 20}},
+    yaxis_title={"text": "Sales ($)", "font": {"size": 20}},
     template="plotly_white",
-    xaxis={"tickfont": {"size": 16}, "showgrid": True, "gridcolor": "rgba(0,0,0,0.1)"},
-    yaxis={"tickfont": {"size": 16}, "showgrid": True, "gridcolor": "rgba(0,0,0,0.1)"},
+    xaxis={"tickfont": {"size": 16}, "showgrid": True, "gridcolor": "rgba(0, 0, 0, 0.1)"},
+    yaxis={"tickfont": {"size": 16}, "showgrid": True, "gridcolor": "rgba(0, 0, 0, 0.1)"},
     showlegend=False,
     margin={"l": 80, "r": 40, "t": 80, "b": 80},
 )

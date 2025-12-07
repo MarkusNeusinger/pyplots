@@ -17,7 +17,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import LIBRARIES_SEED, LibraryRepository, SpecRepository, get_db, is_db_configured
+from core.database import LIBRARIES_SEED, LibraryRepository, SpecRepository, close_db, get_db, init_db, is_db_configured
 
 
 # Try to import GCS client (optional)
@@ -46,8 +46,20 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """Manage application lifecycle."""
     logger.info("Starting pyplots API...")
+
+    # Initialize database connection
+    if is_db_configured():
+        try:
+            await init_db()
+            logger.info("Database connection initialized")
+        except Exception as e:
+            logger.error(f"Failed to initialize database: {e}")
+
     yield
+
+    # Cleanup database connection
     logger.info("Shutting down pyplots API...")
+    await close_db()
 
 
 # Create FastAPI application
@@ -252,11 +264,7 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(get_db)):
     ]
 
     data_reqs = [
-        DataRequirement(
-            name=req.get("name", ""),
-            type=req.get("type", ""),
-            description=req.get("description", ""),
-        )
+        DataRequirement(name=req.get("name", ""), type=req.get("type", ""), description=req.get("description", ""))
         for req in (spec.data_requirements or [])
     ]
 
@@ -312,12 +320,7 @@ async def get_libraries(db: AsyncSession = Depends(get_db)):
 
     return {
         "libraries": [
-            {
-                "id": lib.id,
-                "name": lib.name,
-                "version": lib.version,
-                "documentation_url": lib.documentation_url,
-            }
+            {"id": lib.id, "name": lib.name, "version": lib.version, "documentation_url": lib.documentation_url}
             for lib in libraries
         ]
     }

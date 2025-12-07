@@ -67,9 +67,7 @@ class SpecRepository:
             List of matching Spec objects
         """
         result = await self.session.execute(
-            select(Spec)
-            .where(Spec.tags.overlap(tags))
-            .options(selectinload(Spec.implementations))
+            select(Spec).where(Spec.tags.overlap(tags)).options(selectinload(Spec.implementations))
         )
         return list(result.scalars().all())
 

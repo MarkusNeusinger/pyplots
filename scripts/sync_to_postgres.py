@@ -71,11 +71,9 @@ def parse_spec_markdown(file_path: Path) -> dict:
         data_section = data_match.group(1)
         # Extract required columns: - `x` (numeric) - description
         for match in re.finditer(r"-\s+`(\w+)`\s+\((\w+)\)\s*-?\s*(.+)?", data_section):
-            data_requirements.append({
-                "name": match.group(1),
-                "type": match.group(2),
-                "description": (match.group(3) or "").strip(),
-            })
+            data_requirements.append(
+                {"name": match.group(1), "type": match.group(2), "description": (match.group(3) or "").strip()}
+            )
 
     # Parse tags section
     tags = []
@@ -130,13 +128,15 @@ def scan_implementations() -> list[dict]:
                 continue
 
             file_path = f"plots/{library}/{plot_function}/{spec_id}/{variant}.py"
-            implementations.append({
-                "spec_id": spec_id,
-                "library_id": library,
-                "plot_function": plot_function,
-                "variant": variant,
-                "file_path": file_path,
-            })
+            implementations.append(
+                {
+                    "spec_id": spec_id,
+                    "library_id": library,
+                    "plot_function": plot_function,
+                    "variant": variant,
+                    "file_path": file_path,
+                }
+            )
 
     return implementations
 
@@ -188,14 +188,18 @@ async def sync_to_database(session: AsyncSession, specs: list[dict], implementat
     spec_ids = set()
     for spec_data in specs:
         spec_ids.add(spec_data["id"])
-        stmt = insert(Spec).values(**spec_data).on_conflict_do_update(
-            index_elements=["id"],
-            set_={
-                "title": spec_data["title"],
-                "description": spec_data["description"],
-                "data_requirements": spec_data["data_requirements"],
-                "tags": spec_data["tags"],
-            },
+        stmt = (
+            insert(Spec)
+            .values(**spec_data)
+            .on_conflict_do_update(
+                index_elements=["id"],
+                set_={
+                    "title": spec_data["title"],
+                    "description": spec_data["description"],
+                    "data_requirements": spec_data["data_requirements"],
+                    "tags": spec_data["tags"],
+                },
+            )
         )
         await session.execute(stmt)
         stats["specs_synced"] += 1
@@ -219,21 +223,23 @@ async def sync_to_database(session: AsyncSession, specs: list[dict], implementat
             impl_data["spec_id"], impl_data["library_id"], impl_data["variant"]
         )
 
-        stmt = insert(Implementation).values(**impl_data).on_conflict_do_update(
-            constraint="uq_implementation",
-            set_={
-                "plot_function": impl_data["plot_function"],
-                "file_path": impl_data["file_path"],
-                "preview_url": impl_data["preview_url"],
-            },
+        stmt = (
+            insert(Implementation)
+            .values(**impl_data)
+            .on_conflict_do_update(
+                constraint="uq_implementation",
+                set_={
+                    "plot_function": impl_data["plot_function"],
+                    "file_path": impl_data["file_path"],
+                    "preview_url": impl_data["preview_url"],
+                },
+            )
         )
         await session.execute(stmt)
         stats["impls_synced"] += 1
 
     # Remove implementations that no longer exist in repo
-    result = await session.execute(
-        select(Implementation.spec_id, Implementation.library_id, Implementation.variant)
-    )
+    result = await session.execute(select(Implementation.spec_id, Implementation.library_id, Implementation.variant))
     existing_impls = [(row[0], row[1], row[2]) for row in result.fetchall()]
 
     removed_impls = [impl for impl in existing_impls if impl not in impl_keys]

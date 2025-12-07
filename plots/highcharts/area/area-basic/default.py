@@ -38,9 +38,10 @@ chart.options.title = {"text": "Monthly Sales Trend", "style": {"fontSize": "48p
 chart.options.x_axis = {
     "title": {"text": "Month", "style": {"fontSize": "40px"}},
     "categories": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    "labels": {"style": {"fontSize": "32px"}},
+    "labels": {"style": {"fontSize": "32px"}, "enabled": True},
     "gridLineWidth": 1,
     "gridLineColor": "rgba(0, 0, 0, 0.1)",
+    "tickmarkPlacement": "on",
 }
 
 chart.options.y_axis = {
@@ -93,12 +94,16 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2700")
+chrome_options.add_argument("--window-size=4800,2800")
 
 driver = webdriver.Chrome(options=chrome_options)
+driver.set_window_size(4800, 2800)
 driver.get(f"file://{temp_path}")
 time.sleep(5)
-driver.save_screenshot("plot.png")
+
+# Get the container element and screenshot it directly
+container = driver.find_element("id", "container")
+container.screenshot("plot.png")
 driver.quit()
 
 Path(temp_path).unlink()

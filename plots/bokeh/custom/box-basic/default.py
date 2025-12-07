@@ -133,5 +133,5 @@ p.yaxis.major_label_text_font_size = "16pt"
 p.ygrid.grid_line_alpha = 0.3
 p.xgrid.visible = False
 
-# Save
+# Save as PNG (requires selenium + webdriver)
 export_png(p, filename="plot.png")

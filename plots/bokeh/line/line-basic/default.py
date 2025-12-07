@@ -35,7 +35,7 @@ p.xaxis.major_label_text_font_size = "16pt"
 p.yaxis.major_label_text_font_size = "16pt"
 p.grid.grid_line_alpha = 0.3
 
-# Setup Chrome webdriver for PNG export
+# Setup Chrome webdriver for PNG export (uses webdriver-manager to auto-install driver)
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")

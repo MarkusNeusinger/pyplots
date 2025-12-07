@@ -5,15 +5,16 @@ Library: matplotlib
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 
 # Data
 np.random.seed(42)
-values = np.random.normal(100, 15, 500)
+data = pd.DataFrame({"value": np.random.normal(100, 15, 500)})
 
 # Create plot
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.hist(values, bins=30, alpha=0.8, color="#306998", edgecolor="white", linewidth=0.5)
+ax.hist(data["value"], bins=30, alpha=0.8, color="#306998", edgecolor="white", linewidth=0.5)
 
 # Labels and styling
 ax.set_xlabel("Value", fontsize=20)

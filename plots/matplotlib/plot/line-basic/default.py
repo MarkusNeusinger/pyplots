@@ -7,20 +7,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-# Data
+# Data - simulating time series data (e.g., monthly values)
 np.random.seed(42)
-time = np.arange(1, 31)
-base_value = 10
-trend = 0.5 * time
-noise = np.random.randn(30) * 2
-value = base_value + trend + noise
+time = np.arange(1, 13)  # 12 months
+base_trend = np.linspace(10, 30, 12)
+noise = np.random.randn(12) * 2
+value = base_trend + noise
 
-# Plot
+# Create plot
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.plot(time, value, color="#306998", linewidth=2, marker="o", markersize=4)
+ax.plot(time, value, linewidth=2, color="#306998", marker="o", markersize=6)
 
 # Labels and styling
-ax.set_xlabel("Time (days)", fontsize=20)
+ax.set_xlabel("Month", fontsize=20)
 ax.set_ylabel("Value", fontsize=20)
 ax.set_title("Basic Line Plot", fontsize=20)
 ax.tick_params(axis="both", labelsize=16)

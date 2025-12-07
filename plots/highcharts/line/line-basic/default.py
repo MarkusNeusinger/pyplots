@@ -92,12 +92,16 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2700")
+chrome_options.add_argument("--window-size=4900,2800")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
 time.sleep(5)
-driver.save_screenshot("plot.png")
+
+# Capture the container element to get exact chart dimensions
+container = driver.find_element("id", "container")
+container.screenshot("plot.png")
+
 driver.quit()
 
 Path(temp_path).unlink()

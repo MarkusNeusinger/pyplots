@@ -24,4 +24,4 @@ ax.tick_params(axis="both", labelsize=16)
 ax.grid(True, alpha=0.3, axis="y")
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300)
+plt.savefig("plot.png", dpi=300, bbox_inches="tight")

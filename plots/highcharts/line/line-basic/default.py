@@ -10,51 +10,57 @@ from pathlib import Path
 
 from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
-from highcharts_core.options.series.area import LineSeries  # noqa: E501 - LineSeries is in area module
+from highcharts_core.options.series.area import LineSeries
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
 # Data
-time_values = [1, 2, 3, 4, 5, 6, 7]
-values = [10, 15, 13, 18, 22, 19, 25]
+time_values = ["1", "2", "3", "4", "5", "6", "7"]
+value_data = [10, 15, 13, 18, 22, 19, 25]
 
-# Create chart with container
+# Create chart
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart settings
-chart.options.chart = {"type": "line", "width": 4800, "height": 2700, "backgroundColor": "#ffffff"}
+# Chart configuration
+chart.options.chart = {
+    "type": "line",
+    "width": 4800,
+    "height": 2700,
+    "backgroundColor": "#ffffff",
+    "style": {"fontFamily": "Arial, sans-serif"},
+}
 
 # Title
-chart.options.title = {"text": "Basic Line Plot", "style": {"fontSize": "40px"}}
+chart.options.title = {"text": "Basic Line Plot", "style": {"fontSize": "48px"}}
 
 # Axes
 chart.options.x_axis = {
-    "title": {"text": "Time", "style": {"fontSize": "32px"}},
-    "categories": [str(t) for t in time_values],
-    "labels": {"style": {"fontSize": "28px"}},
+    "title": {"text": "Time", "style": {"fontSize": "40px"}},
+    "categories": time_values,
+    "labels": {"style": {"fontSize": "32px"}},
 }
 chart.options.y_axis = {
-    "title": {"text": "Value", "style": {"fontSize": "32px"}},
-    "labels": {"style": {"fontSize": "28px"}},
+    "title": {"text": "Value", "style": {"fontSize": "40px"}},
+    "labels": {"style": {"fontSize": "32px"}},
     "gridLineColor": "#e0e0e0",
 }
 
+# Legend
+chart.options.legend = {"enabled": False}
+
 # Create series
 series = LineSeries()
-series.data = values
+series.data = value_data
 series.name = "Value"
 series.color = "#306998"
-series.marker = {"enabled": True, "radius": 8}
 series.line_width = 4
+series.marker = {"enabled": True, "radius": 8, "fillColor": "#306998"}
 
 chart.add_series(series)
 
-# Legend
-chart.options.legend = {"itemStyle": {"fontSize": "28px"}}
-
-# Download Highcharts JS for inline embedding
+# Download Highcharts JS for headless Chrome
 highcharts_url = "https://code.highcharts.com/highcharts.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")

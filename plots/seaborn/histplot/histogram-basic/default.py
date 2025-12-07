@@ -22,7 +22,7 @@ ax.set_xlabel("Value", fontsize=20)
 ax.set_ylabel("Frequency", fontsize=20)
 ax.set_title("Basic Histogram", fontsize=20)
 ax.tick_params(axis="both", labelsize=16)
-ax.grid(True, alpha=0.3, axis="y")
+ax.grid(True, alpha=0.3, linestyle="-", linewidth=0.5)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

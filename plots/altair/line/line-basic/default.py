@@ -26,10 +26,10 @@ points = alt.Chart(data).mark_point(size=100, color="#306998", filled=True).enco
 # Combine and configure chart
 chart = (
     (line + points)
-    .properties(width=1536, height=811, title=alt.Title("Basic Line Plot", fontSize=20))
+    .properties(width=1600, height=900, title=alt.Title("Basic Line Plot", fontSize=20))
     .configure_view(strokeWidth=0)
     .configure_axis(grid=True, gridOpacity=0.3)
 )
 
-# Save as PNG (1536 × 811 at scale 3 = 4800 × 2700 px)
+# Save as PNG (1600 × 900 at scale 3 = 4800 × 2700 px)
 chart.save("plot.png", scale_factor=3.0)

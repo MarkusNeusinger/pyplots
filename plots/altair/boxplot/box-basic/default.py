@@ -38,6 +38,7 @@ chart = (
     )
     .properties(width=1600, height=900, title=alt.Title("Basic Box Plot", fontSize=20))
     .configure_view(strokeWidth=0)
+    .configure_axis(grid=True, gridOpacity=0.3)
 )
 
 # Save (4800 × 2700 px via scale_factor=3)

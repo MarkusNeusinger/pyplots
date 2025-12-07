@@ -33,10 +33,10 @@ data = pd.DataFrame(
     }
 )
 
-# Compute boxplot statistics for each group
-groups = ["A", "B", "C", "D"]
-boxplot_data = []
-outliers_data = []
+# Calculate box plot statistics for each group
+groups = data["group"].unique()
+box_data = []
+outlier_data = []
 
 for i, group in enumerate(groups):
     values = data[data["group"] == group]["value"].values
@@ -44,68 +44,86 @@ for i, group in enumerate(groups):
     median = np.percentile(values, 50)
     q3 = np.percentile(values, 75)
     iqr = q3 - q1
-    whisker_low = q1 - 1.5 * iqr
-    whisker_high = q3 + 1.5 * iqr
+    whisker_low = max(values.min(), q1 - 1.5 * iqr)
+    whisker_high = min(values.max(), q3 + 1.5 * iqr)
 
-    # Actual whisker ends are the most extreme data within bounds
-    low = values[values >= whisker_low].min()
-    high = values[values <= whisker_high].max()
+    # Find actual whisker values (closest data points within IQR range)
+    lower_whisker = values[values >= q1 - 1.5 * iqr].min()
+    upper_whisker = values[values <= q3 + 1.5 * iqr].max()
 
-    boxplot_data.append([low, q1, median, q3, high])
+    box_data.append([lower_whisker, q1, median, q3, upper_whisker])
 
-    # Outliers
-    outlier_values = values[(values < whisker_low) | (values > whisker_high)]
-    for val in outlier_values:
-        outliers_data.append([i, val])
+    # Collect outliers
+    outliers = values[(values < q1 - 1.5 * iqr) | (values > q3 + 1.5 * iqr)]
+    for outlier in outliers:
+        outlier_data.append([i, outlier])
 
 # Create chart
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-chart.options.chart = {"type": "boxplot", "width": 4800, "height": 2700, "backgroundColor": "#ffffff"}
+# Chart configuration
+chart.options.chart = {
+    "type": "boxplot",
+    "width": 4800,
+    "height": 2700,
+    "backgroundColor": "#ffffff",
+    "style": {"fontFamily": "sans-serif"},
+}
 
-chart.options.title = {"text": "Basic Box Plot", "style": {"fontSize": "48px"}}
+# Title
+chart.options.title = {"text": "Basic Box Plot", "style": {"fontSize": "60px", "fontWeight": "bold"}}
 
+# X-axis
 chart.options.x_axis = {
-    "categories": groups,
-    "title": {"text": "Group", "style": {"fontSize": "40px"}},
-    "labels": {"style": {"fontSize": "32px"}},
+    "categories": list(groups),
+    "title": {"text": "Group", "style": {"fontSize": "48px"}},
+    "labels": {"style": {"fontSize": "40px"}},
 }
 
+# Y-axis
 chart.options.y_axis = {
-    "title": {"text": "Value", "style": {"fontSize": "40px"}},
-    "labels": {"style": {"fontSize": "32px"}},
+    "title": {"text": "Value", "style": {"fontSize": "48px"}},
+    "labels": {"style": {"fontSize": "40px"}},
+    "gridLineColor": "#e0e0e0",
+    "gridLineWidth": 1,
 }
 
-chart.options.legend = {"enabled": False}
+# Legend
+chart.options.legend = {"enabled": True, "itemStyle": {"fontSize": "40px"}}
 
-# Boxplot series
-boxplot_series = BoxPlotSeries()
-boxplot_series.name = "Distribution"
-boxplot_series.data = boxplot_data
-boxplot_series.color = "#306998"
-boxplot_series.fillColor = "rgba(48, 105, 152, 0.4)"
-boxplot_series.lineWidth = 3
-boxplot_series.medianWidth = 4
-boxplot_series.medianColor = "#DC2626"
-boxplot_series.whiskerLength = "60%"
-boxplot_series.whiskerWidth = 3
+# Colors from style guide
+colors = ["#306998", "#FFD43B", "#DC2626", "#059669", "#8B5CF6", "#F97316"]
 
-chart.add_series(boxplot_series)
+# Box plot series
+box_series = BoxPlotSeries()
+box_series.name = "Distribution"
+box_series.data = box_data
+box_series.color = colors[0]
+box_series.fillColor = "#306998"
+box_series.medianColor = "#ffffff"
+box_series.medianWidth = 4
+box_series.stemWidth = 3
+box_series.whiskerWidth = 3
+box_series.whiskerLength = "50%"
 
-# Outliers as scatter series
-if outliers_data:
+chart.add_series(box_series)
+
+# Outliers series (if any)
+if outlier_data:
     from highcharts_core.options.series.scatter import ScatterSeries
 
     outlier_series = ScatterSeries()
     outlier_series.name = "Outliers"
-    outlier_series.data = outliers_data
-    outlier_series.color = "#DC2626"
-    outlier_series.marker = {"radius": 6, "symbol": "circle"}
-
+    outlier_series.data = outlier_data
+    outlier_series.color = colors[2]
+    outlier_series.marker = {"symbol": "circle", "radius": 8, "fillColor": colors[2]}
     chart.add_series(outlier_series)
 
-# Download Highcharts JS and highcharts-more.js (needed for boxplot)
+# Plot options
+chart.options.plot_options = {"boxplot": {"colorByPoint": True, "colors": colors[:4]}}
+
+# Download Highcharts JS files (required for headless Chrome)
 highcharts_url = "https://code.highcharts.com/highcharts.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
@@ -139,15 +157,12 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=5000,3000")
+chrome_options.add_argument("--window-size=4800,2700")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
 time.sleep(5)
-
-# Screenshot the container element for exact dimensions
-container = driver.find_element("id", "container")
-container.screenshot("plot.png")
+driver.save_screenshot("plot.png")
 driver.quit()
 
 Path(temp_path).unlink()

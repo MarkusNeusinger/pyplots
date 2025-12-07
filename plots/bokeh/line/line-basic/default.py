@@ -41,7 +41,7 @@ chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
 
-# Use system chromedriver
+# Use system chromedriver (pre-installed on GitHub Actions runners)
 service = Service()
 driver = webdriver.Chrome(service=service, options=chrome_options)
 

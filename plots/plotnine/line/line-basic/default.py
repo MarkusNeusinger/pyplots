@@ -4,7 +4,7 @@ Library: plotnine
 """
 
 import pandas as pd
-from plotnine import aes, geom_line, geom_point, ggplot, labs, theme, theme_minimal
+from plotnine import aes, element_text, geom_line, geom_point, ggplot, labs, theme, theme_minimal
 
 
 # Data
@@ -17,7 +17,12 @@ plot = (
     + geom_point(color="#306998", size=4)
     + labs(x="Time", y="Value", title="Basic Line Plot")
     + theme_minimal()
-    + theme(figure_size=(16, 9))
+    + theme(
+        figure_size=(16, 9),
+        plot_title=element_text(size=20),
+        axis_title=element_text(size=20),
+        axis_text=element_text(size=16),
+    )
 )
 
 # Save

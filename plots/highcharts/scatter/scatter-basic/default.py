@@ -21,45 +21,47 @@ np.random.seed(42)
 x = np.random.randn(100) * 2 + 10
 y = x * 0.8 + np.random.randn(100) * 2
 
-# Create chart with container specified
+# Create chart
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
 # Chart configuration
-chart.options.chart = {"type": "scatter", "width": 4800, "height": 2700, "backgroundColor": "#ffffff"}
+chart.options.chart = {
+    "type": "scatter",
+    "width": 4800,
+    "height": 2700,
+    "backgroundColor": "#ffffff",
+    "spacing": [20, 20, 60, 20],
+}
 
 # Title
 chart.options.title = {"text": "Basic Scatter Plot", "style": {"fontSize": "48px"}}
 
 # Axes
 chart.options.x_axis = {
-    "title": {"text": "X Value", "style": {"fontSize": "36px"}},
-    "labels": {"style": {"fontSize": "28px"}},
+    "title": {"text": "X Value", "style": {"fontSize": "40px"}},
+    "labels": {"style": {"fontSize": "32px"}},
     "gridLineWidth": 1,
     "gridLineColor": "rgba(0, 0, 0, 0.1)",
 }
-
 chart.options.y_axis = {
-    "title": {"text": "Y Value", "style": {"fontSize": "36px"}},
-    "labels": {"style": {"fontSize": "28px"}},
+    "title": {"text": "Y Value", "style": {"fontSize": "40px"}},
+    "labels": {"style": {"fontSize": "32px"}},
     "gridLineWidth": 1,
     "gridLineColor": "rgba(0, 0, 0, 0.1)",
 }
 
-# Legend
+# Legend (not needed for single series but show it for clarity)
 chart.options.legend = {"enabled": False}
 
-# Create scatter series
+# Series
 series = ScatterSeries()
 series.data = [[float(xi), float(yi)] for xi, yi in zip(x, y, strict=True)]
 series.name = "Data"
 series.color = "#306998"
-series.marker = {"radius": 10, "fillColor": "#306998", "lineWidth": 0, "states": {"hover": {"enabled": True}}}
+series.marker = {"radius": 8, "fillColor": "#306998", "lineWidth": 0, "states": {"hover": {"enabled": True}}}
 
 chart.add_series(series)
-
-# Credits
-chart.options.credits = {"enabled": False}
 
 # Download Highcharts JS for inline embedding
 highcharts_url = "https://code.highcharts.com/highcharts.js"
@@ -90,12 +92,15 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2700")
+chrome_options.add_argument("--window-size=4900,2800")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
 time.sleep(5)
-driver.save_screenshot("plot.png")
+
+# Screenshot the container element directly for exact dimensions
+container = driver.find_element("id", "container")
+container.screenshot("plot.png")
 driver.quit()
 
 Path(temp_path).unlink()

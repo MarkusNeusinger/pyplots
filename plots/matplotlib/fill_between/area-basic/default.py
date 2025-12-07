@@ -30,7 +30,7 @@ ax.set_xticklabels(data["month"])
 # Labels and styling
 ax.set_xlabel("Month", fontsize=20)
 ax.set_ylabel("Sales", fontsize=20)
-ax.set_title("Monthly Sales Volume", fontsize=20)
+ax.set_title("Basic Area Chart", fontsize=20)
 ax.tick_params(axis="both", labelsize=16)
 ax.grid(True, alpha=0.3, linestyle="--")
 

@@ -14,7 +14,7 @@ y = x * 0.8 + np.random.randn(100) * 1.5
 
 # Create plot
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.scatter(x, y, alpha=0.7, s=50, color="#306998")
+ax.scatter(x, y, alpha=0.7, s=80, color="#306998")
 
 # Labels and styling
 ax.set_xlabel("X Value", fontsize=20)

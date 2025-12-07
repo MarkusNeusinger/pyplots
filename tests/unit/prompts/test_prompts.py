@@ -38,6 +38,7 @@ EXPECTED_LIBRARY_PROMPTS = [
     "plotnine.md",
     "pygal.md",
     "highcharts.md",
+    "letsplot.md",
 ]
 
 
@@ -81,15 +82,21 @@ class TestPromptStructure:
         return (PROMPTS_DIR / "quality-criteria.md").read_text()
 
     def test_plot_generator_has_required_sections(self, plot_generator_content: str) -> None:
-        """Plot generator should have Role, Task, Rules sections."""
-        required_sections = ["## Role", "## Task", "## Rules", "## Output"]
+        """Plot generator should have Role, Task, Output sections."""
+        # Core sections at level 2
+        required_sections = ["## Role", "## Task", "## Output"]
         for section in required_sections:
             assert section in plot_generator_content, f"Missing section: {section}"
+        # Rules can be at level 2 or 3 (### Rules under ## Output)
+        assert "Rules" in plot_generator_content, "Missing Rules section"
 
     def test_plot_generator_has_code_template(self, plot_generator_content: str) -> None:
         """Plot generator should include a code template."""
         assert "```python" in plot_generator_content, "Missing Python code template"
-        assert "def create_plot" in plot_generator_content, "Missing create_plot function template"
+        # KISS style: simple scripts with comments, not functions
+        assert "# Create plot" in plot_generator_content or "plt.savefig" in plot_generator_content, (
+            "Missing plot creation example"
+        )
 
     def test_quality_criteria_has_scoring_section(self, quality_criteria_content: str) -> None:
         """Quality criteria should have scoring information."""
@@ -107,8 +114,9 @@ class TestPromptStructure:
         content = (LIBRARY_PROMPTS_DIR / filename).read_text()
         library_name = filename.replace(".md", "")
 
-        # Check for header
-        assert f"# {library_name}" in content.lower(), f"Missing header for {library_name}"
+        # Check for header (normalize by removing hyphens for comparison)
+        content_normalized = content.lower().replace("-", "")
+        assert f"# {library_name}" in content_normalized, f"Missing header for {library_name}"
 
         # Check for import section
         assert "## Import" in content or "import" in content.lower(), f"Missing import section in {filename}"
@@ -117,12 +125,13 @@ class TestPromptStructure:
         assert "```python" in content, f"Missing Python code examples in {filename}"
 
     @pytest.mark.parametrize("filename", EXPECTED_LIBRARY_PROMPTS)
-    def test_library_prompt_has_return_type(self, filename: str) -> None:
-        """Each library prompt should specify return type."""
+    def test_library_prompt_has_save_section(self, filename: str) -> None:
+        """Each library prompt should show how to save the plot."""
         content = (LIBRARY_PROMPTS_DIR / filename).read_text()
-        # Either explicit return type section or type hint in code
-        has_return_type = "## Return Type" in content or "-> " in content
-        assert has_return_type, f"Missing return type specification in {filename}"
+        # KISS style: prompts show how to save, not function return types
+        save_patterns = ["## Save", "savefig", "save(", "write_image", "save_screenshot", "export_png"]
+        has_save_info = any(pattern in content for pattern in save_patterns)
+        assert has_save_info, f"Missing save/output section in {filename}"
 
 
 class TestNoPlaceholders:

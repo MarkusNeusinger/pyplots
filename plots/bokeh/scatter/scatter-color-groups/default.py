@@ -3,14 +3,30 @@ scatter-color-groups: Scatter Plot with Color Groups
 Library: bokeh
 """
 
-import seaborn as sns
+import numpy as np
+import pandas as pd
 from bokeh.io import export_png
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
 
 
-# Data
-data = sns.load_dataset("iris")
+# Data - Iris-like dataset
+np.random.seed(42)
+n_per_group = 50
+
+data = pd.DataFrame({
+    "sepal_length": np.concatenate([
+        np.random.normal(5.0, 0.35, n_per_group),
+        np.random.normal(5.9, 0.50, n_per_group),
+        np.random.normal(6.6, 0.60, n_per_group),
+    ]),
+    "sepal_width": np.concatenate([
+        np.random.normal(3.4, 0.38, n_per_group),
+        np.random.normal(2.8, 0.30, n_per_group),
+        np.random.normal(3.0, 0.30, n_per_group),
+    ]),
+    "species": ["setosa"] * n_per_group + ["versicolor"] * n_per_group + ["virginica"] * n_per_group,
+})
 
 # Color palette (from style guide)
 colors = ["#306998", "#FFD43B", "#DC2626", "#059669", "#8B5CF6", "#F97316"]

@@ -10,9 +10,9 @@ import pandas as pd
 # Data
 data = pd.DataFrame({"time": [1, 2, 3, 4, 5, 6, 7], "value": [10, 15, 13, 18, 22, 19, 25]})
 
-# Plot
+# Create plot
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.plot(data["time"], data["value"], color="#306998", linewidth=2, marker="o", markersize=6)
+ax.plot(data["time"], data["value"], linewidth=2, color="#306998", marker="o", markersize=8)
 
 # Labels and styling
 ax.set_xlabel("Time", fontsize=20)

@@ -23,17 +23,17 @@ custom_style = Style(
     foreground_strong="#333333",
     foreground_subtle="#666666",
     colors=("#306998", "#FFD43B", "#DC2626", "#059669", "#8B5CF6", "#F97316"),
-    title_font_size=48,
-    label_font_size=40,
-    legend_font_size=36,
-    value_font_size=32,
+    title_font_size=60,
+    label_font_size=48,
+    major_label_font_size=48,
+    legend_font_size=48,
 )
 
 # Create box plot
 chart = pygal.Box(
     width=4800,
     height=2700,
-    title="Basic Box Plot",
+    title="Distribution Comparison Across Groups",
     x_title="Group",
     y_title="Value",
     style=custom_style,
@@ -42,10 +42,10 @@ chart = pygal.Box(
 )
 
 # Add data series
-chart.add("A", group_a)
-chart.add("B", group_b)
-chart.add("C", group_c)
-chart.add("D", group_d)
+chart.add("Group A", group_a)
+chart.add("Group B", group_b)
+chart.add("Group C", group_c)
+chart.add("Group D", group_d)
 
 # Save
 chart.render_to_png("plot.png")

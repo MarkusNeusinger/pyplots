@@ -39,18 +39,16 @@ class Base(DeclarativeBase):
     pass
 
 
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
+async def get_db() -> AsyncGenerator[AsyncSession | None, None]:
     """
     Dependency that provides a database session.
 
     Yields:
-        AsyncSession: Database session for the request
-
-    Raises:
-        RuntimeError: If DATABASE_URL is not configured
+        AsyncSession if database is configured, None otherwise
     """
     if AsyncSessionLocal is None:
-        raise RuntimeError("DATABASE_URL not configured")
+        yield None
+        return
 
     async with AsyncSessionLocal() as session:
         try:

@@ -13,7 +13,7 @@ from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
-from core.database import Base
+from core.database.connection import Base
 
 
 class Spec(Base):
@@ -64,7 +64,7 @@ class Implementation(Base):
     library_id: Mapped[str] = mapped_column(String, ForeignKey("libraries.id", ondelete="CASCADE"), nullable=False)
     plot_function: Mapped[str] = mapped_column(String, nullable=False)  # e.g., "scatter", "bar"
     variant: Mapped[str] = mapped_column(String, nullable=False, default="default")
-    file_path: Mapped[str] = mapped_column(String, nullable=False)  # e.g., "plots/matplotlib/scatter/scatter-basic/default.py"
+    file_path: Mapped[str] = mapped_column(String, nullable=False)
     preview_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # GCS URL
     python_version: Mapped[str] = mapped_column(String, default="3.12+")
     tested: Mapped[bool] = mapped_column(Boolean, default=False)

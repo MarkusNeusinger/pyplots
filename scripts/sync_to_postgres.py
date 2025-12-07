@@ -26,7 +26,7 @@ from sqlalchemy import delete, select  # noqa: E402
 from sqlalchemy.dialects.postgresql import insert  # noqa: E402
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine  # noqa: E402
 
-from core.models import LIBRARIES_SEED, Implementation, Library, Spec  # noqa: E402
+from core.database import LIBRARIES_SEED, Implementation, Library, Spec  # noqa: E402
 
 
 # Configuration

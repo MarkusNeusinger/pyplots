@@ -208,27 +208,29 @@ class TestSpecsEndpoint:
         """Specs endpoint should return a list of specs."""
         response = client.get("/specs")
         data = response.json()
-        assert "specs" in data
-        assert isinstance(data["specs"], list)
+        assert isinstance(data, list)
+        # Each item should have at least 'id' and 'title'
+        if data:
+            assert "id" in data[0]
+            assert "title" in data[0]
 
     def test_returns_known_specs(self, client: TestClient) -> None:
         """Specs endpoint should return known spec IDs."""
         response = client.get("/specs")
-        data = response.json()
-        specs = data["specs"]
+        specs = response.json()
         # Should contain some of our known specs
         assert len(specs) > 0
-        # Check for at least one known spec
-        known_specs = {"scatter-basic", "bar-basic", "box-basic", "histogram-basic", "pie-basic-labeled", "area-basic"}
-        assert any(spec in known_specs for spec in specs)
+        spec_ids = [s["id"] for s in specs]
+        known_specs = {"scatter-basic", "bar-basic", "box-basic", "histogram-basic", "pie-basic", "area-basic"}
+        assert any(spec_id in known_specs for spec_id in spec_ids)
 
     def test_excludes_template_files(self, client: TestClient) -> None:
         """Specs endpoint should exclude template and versioning files."""
         response = client.get("/specs")
-        data = response.json()
-        specs = data["specs"]
-        assert ".template" not in specs
-        assert "VERSIONING" not in specs
+        specs = response.json()
+        spec_ids = [s["id"] for s in specs]
+        assert ".template" not in spec_ids
+        assert "VERSIONING" not in spec_ids
 
 
 class TestSpecImagesEndpoint:

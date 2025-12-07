@@ -18,8 +18,7 @@ from alembic import context
 load_dotenv()
 
 # Import models to register them with Base.metadata
-from core.database import Base  # noqa: E402
-from core.models import Implementation, Library, Spec  # noqa: E402, F401
+from core.database import Base, Implementation, Library, Spec  # noqa: E402, F401
 
 
 # Alembic Config object

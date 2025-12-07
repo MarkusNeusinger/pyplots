@@ -52,8 +52,7 @@ plot = (
         plot_title=element_text(size=20),
         axis_title=element_text(size=20),
         axis_text=element_text(size=16),
-        legend_title=element_text(size=16),
-        legend_text=element_text(size=16),
+        legend_position="none",
     )
     + ggsize(1600, 900)
 )

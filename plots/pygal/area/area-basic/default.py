@@ -7,7 +7,7 @@ import pygal
 from pygal.style import Style
 
 
-# Data
+# Data - monthly sales example from spec
 months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
 sales = [100, 150, 130, 180, 200, 220]
 
@@ -29,7 +29,7 @@ custom_style = Style(
     opacity_hover=0.7,
 )
 
-# Create chart
+# Create area chart (Line chart with fill=True)
 chart = pygal.Line(
     width=4800,
     height=2700,

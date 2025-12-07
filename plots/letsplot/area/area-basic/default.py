@@ -9,6 +9,7 @@ from lets_plot import (
     aes,
     element_text,
     geom_area,
+    geom_line,
     ggplot,
     ggsave,
     ggsize,
@@ -30,7 +31,8 @@ data = pd.DataFrame(
 # Plot
 plot = (
     ggplot(data, aes(x="month_num", y="sales"))
-    + geom_area(fill="#306998", alpha=0.7, color="#306998", size=2)
+    + geom_area(fill="#306998", alpha=0.5)
+    + geom_line(color="#306998", size=2)
     + scale_x_continuous(breaks=list(range(len(months))), labels=months)
     + labs(x="Month", y="Sales", title="Basic Area Chart")
     + theme_minimal()

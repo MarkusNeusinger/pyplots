@@ -40,10 +40,13 @@ chart.options.x_axis = {
     "title": {"text": "Time", "style": {"fontSize": "40px"}},
     "categories": time_values,
     "labels": {"style": {"fontSize": "32px"}},
+    "lineWidth": 2,
+    "tickWidth": 2,
 }
 chart.options.y_axis = {
     "title": {"text": "Value", "style": {"fontSize": "40px"}},
     "labels": {"style": {"fontSize": "32px"}},
+    "gridLineWidth": 1,
     "gridLineColor": "#e0e0e0",
 }
 
@@ -89,7 +92,7 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2700")
+chrome_options.add_argument("--window-size=4900,2800")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")

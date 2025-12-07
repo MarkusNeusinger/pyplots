@@ -9,10 +9,6 @@ from bokeh.io import export_png
 from bokeh.models import ColumnDataSource, FixedTicker, Whisker
 from bokeh.palettes import Category10_4
 from bokeh.plotting import figure
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 
 
 # Data
@@ -137,14 +133,5 @@ p.yaxis.major_label_text_font_size = "16pt"
 p.ygrid.grid_line_alpha = 0.3
 p.xgrid.visible = False
 
-# Save - using webdriver for PNG export
-chrome_options = Options()
-chrome_options.add_argument("--headless")
-chrome_options.add_argument("--no-sandbox")
-chrome_options.add_argument("--disable-dev-shm-usage")
-
-service = Service(ChromeDriverManager().install())
-driver = webdriver.Chrome(service=service, options=chrome_options)
-
-export_png(p, filename="plot.png", webdriver=driver)
-driver.quit()
+# Save
+export_png(p, filename="plot.png")

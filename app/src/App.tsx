@@ -98,18 +98,20 @@ function App() {
         const response = await fetch(`${API_URL}/specs`);
         if (!response.ok) throw new Error('Failed to fetch specs');
         const data = await response.json();
-        setSpecs(data.specs);
+        // API returns array of {id, title, ...} objects - extract IDs
+        const specIds = Array.isArray(data) ? data.map((s: { id: string }) => s.id) : data.specs || [];
+        setSpecs(specIds);
 
         // Check URL for spec parameter
         const urlParams = new URLSearchParams(window.location.search);
         const specFromUrl = urlParams.get('spec');
 
-        if (specFromUrl && data.specs.includes(specFromUrl)) {
+        if (specFromUrl && specIds.includes(specFromUrl)) {
           setSelectedSpec(specFromUrl);
-        } else if (data.specs.length > 0) {
+        } else if (specIds.length > 0) {
           // Select random spec
-          const randomIndex = Math.floor(Math.random() * data.specs.length);
-          setSelectedSpec(data.specs[randomIndex]);
+          const randomIndex = Math.floor(Math.random() * specIds.length);
+          setSelectedSpec(specIds[randomIndex]);
         }
       } catch (err) {
         setError(`Error loading specs: ${err}`);

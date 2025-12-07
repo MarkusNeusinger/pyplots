@@ -7,6 +7,9 @@ on:
     types:
       - completed
 
+# Default to minimal permissions - jobs specify what they need
+permissions: {}
+
 jobs:
   generate-previews:
     name: Generate Previews and Post to Issue
@@ -88,6 +91,7 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Python 3.13
         if: steps.check.outputs.should_run == 'true'

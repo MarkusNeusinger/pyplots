@@ -5,7 +5,7 @@ Library: plotnine
 
 import numpy as np
 import pandas as pd
-from plotnine import aes, geom_point, ggplot, labs, theme, theme_minimal
+from plotnine import aes, element_text, geom_point, ggplot, labs, theme, theme_minimal
 
 
 # Data
@@ -21,7 +21,12 @@ plot = (
     + geom_point(alpha=0.7, size=3, color="#306998")
     + labs(x="X Value", y="Y Value", title="Basic Scatter Plot")
     + theme_minimal()
-    + theme(figure_size=(16, 9))
+    + theme(
+        figure_size=(16, 9),
+        plot_title=element_text(size=20),
+        axis_title=element_text(size=20),
+        axis_text=element_text(size=16),
+    )
 )
 
 # Save

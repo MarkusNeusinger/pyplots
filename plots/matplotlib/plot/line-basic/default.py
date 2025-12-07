@@ -4,18 +4,23 @@ Library: matplotlib
 """
 
 import matplotlib.pyplot as plt
-import pandas as pd
+import numpy as np
 
 
 # Data
-data = pd.DataFrame({"time": [1, 2, 3, 4, 5, 6, 7], "value": [10, 15, 13, 18, 22, 19, 25]})
+np.random.seed(42)
+time = np.arange(1, 31)
+base_value = 10
+trend = 0.5 * time
+noise = np.random.randn(30) * 2
+value = base_value + trend + noise
 
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.plot(data["time"], data["value"], color="#306998", linewidth=2, marker="o", markersize=6)
+ax.plot(time, value, color="#306998", linewidth=2, marker="o", markersize=4)
 
 # Labels and styling
-ax.set_xlabel("Time", fontsize=20)
+ax.set_xlabel("Time (days)", fontsize=20)
 ax.set_ylabel("Value", fontsize=20)
 ax.set_title("Basic Line Plot", fontsize=20)
 ax.tick_params(axis="both", labelsize=16)

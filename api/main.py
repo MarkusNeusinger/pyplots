@@ -8,11 +8,19 @@ import logging
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Optional
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
+from core.database import get_db, is_db_configured
+from core.models import Implementation, Library, Spec
 
 
 # Try to import GCS client (optional)
@@ -195,6 +203,170 @@ async def get_spec_images(spec_id: str):
 
     images = get_latest_images_for_spec(spec_id)
     return {"spec_id": spec_id, "images": images}
+
+
+# ============================================================================
+# Database-backed Endpoints (v2)
+# ============================================================================
+
+
+class DataRequirement(BaseModel):
+    """Data requirement for a spec."""
+
+    name: str
+    type: str
+    description: str = ""
+
+
+class ImplementationResponse(BaseModel):
+    """Implementation details."""
+
+    library_id: str
+    library_name: str
+    plot_function: str
+    variant: str
+    file_path: str
+    preview_url: Optional[str] = None
+    quality_score: Optional[float] = None
+
+
+class SpecDetailResponse(BaseModel):
+    """Detailed spec response with implementations."""
+
+    id: str
+    title: str
+    description: Optional[str] = None
+    data_requirements: list[DataRequirement] = []
+    tags: list[str] = []
+    implementations: list[ImplementationResponse] = []
+
+
+class SpecListItem(BaseModel):
+    """Spec list item with summary info."""
+
+    id: str
+    title: str
+    description: Optional[str] = None
+    tags: list[str] = []
+    library_count: int = 0
+
+
+@app.get("/v2/specs", response_model=list[SpecListItem])
+async def get_specs_v2(db: AsyncSession = Depends(get_db)):
+    """
+    Get list of all specs with metadata from database.
+
+    Returns specs with title, description, tags, and implementation count.
+    Falls back to filesystem if database is not configured.
+    """
+    if not is_db_configured():
+        # Fallback to filesystem
+        spec_ids = list_spec_ids()
+        return [SpecListItem(id=spec_id, title=spec_id) for spec_id in spec_ids]
+
+    result = await db.execute(select(Spec).options(selectinload(Spec.implementations)))
+    specs = result.scalars().all()
+
+    return [
+        SpecListItem(
+            id=spec.id,
+            title=spec.title,
+            description=spec.description,
+            tags=spec.tags or [],
+            library_count=len(spec.implementations),
+        )
+        for spec in specs
+    ]
+
+
+@app.get("/v2/specs/{spec_id}", response_model=SpecDetailResponse)
+async def get_spec_detail(spec_id: str, db: AsyncSession = Depends(get_db)):
+    """
+    Get detailed spec information including all implementations.
+
+    Args:
+        spec_id: The specification ID (e.g., 'scatter-basic')
+
+    Returns:
+        Full spec details with all library implementations and preview URLs
+    """
+    if not is_db_configured():
+        raise HTTPException(status_code=503, detail="Database not configured")
+
+    result = await db.execute(
+        select(Spec)
+        .where(Spec.id == spec_id)
+        .options(selectinload(Spec.implementations).selectinload(Implementation.library))
+    )
+    spec = result.scalar_one_or_none()
+
+    if not spec:
+        raise HTTPException(status_code=404, detail=f"Spec '{spec_id}' not found")
+
+    # Build implementations list with library names
+    implementations = []
+    for impl in spec.implementations:
+        implementations.append(
+            ImplementationResponse(
+                library_id=impl.library_id,
+                library_name=impl.library.name if impl.library else impl.library_id,
+                plot_function=impl.plot_function,
+                variant=impl.variant,
+                file_path=impl.file_path,
+                preview_url=impl.preview_url,
+                quality_score=impl.quality_score,
+            )
+        )
+
+    # Parse data requirements from JSON
+    data_reqs = []
+    if spec.data_requirements:
+        for req in spec.data_requirements:
+            data_reqs.append(
+                DataRequirement(
+                    name=req.get("name", ""),
+                    type=req.get("type", ""),
+                    description=req.get("description", ""),
+                )
+            )
+
+    return SpecDetailResponse(
+        id=spec.id,
+        title=spec.title,
+        description=spec.description,
+        data_requirements=data_reqs,
+        tags=spec.tags or [],
+        implementations=implementations,
+    )
+
+
+@app.get("/v2/libraries")
+async def get_libraries(db: AsyncSession = Depends(get_db)):
+    """
+    Get list of all supported plotting libraries.
+
+    Returns library information including name, version, and documentation URL.
+    """
+    if not is_db_configured():
+        # Return hardcoded list if DB not available
+        from core.models import LIBRARIES_SEED
+
+        return {"libraries": LIBRARIES_SEED}
+
+    result = await db.execute(select(Library).where(Library.active == True))  # noqa: E712
+    libraries = result.scalars().all()
+
+    return {
+        "libraries": [
+            {
+                "id": lib.id,
+                "name": lib.name,
+                "version": lib.version,
+                "documentation_url": lib.documentation_url,
+            }
+            for lib in libraries
+        ]
+    }
 
 
 if __name__ == "__main__":

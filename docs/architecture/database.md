@@ -410,38 +410,47 @@ def downgrade():
 
 ## Connection Management
 
+### Connection Modes
+
+pyplots supports two connection modes (priority order):
+
+| Mode | Environment | Variable | Description |
+|------|-------------|----------|-------------|
+| Direct URL | Local development | `DATABASE_URL` | Connects via public IP |
+| Cloud SQL Connector | Cloud Run | `INSTANCE_CONNECTION_NAME` | Uses IAM auth, no public IP needed |
+
+### Local Development (Direct Connection)
+
+```bash
+# .env
+DATABASE_URL=postgresql+asyncpg://user:pass@34.x.x.x:5432/pyplots
+```
+
+Requires IP to be authorized in Cloud SQL Authorized Networks.
+
+### Cloud Run (Cloud SQL Connector)
+
+```bash
+# Set via Secret Manager / cloudbuild.yaml
+INSTANCE_CONNECTION_NAME=project:region:instance
+DB_USER=pyplots
+DB_PASS=xxx
+DB_NAME=pyplots
+```
+
+Uses `cloud-sql-python-connector[asyncpg]` for secure connection without exposing public IP.
+
 ### Connection Pooling
 
 ```python
-# core/database.py
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
-
+# core/database/connection.py
 engine = create_async_engine(
-    DATABASE_URL,
-    pool_size=5,        # Connections in pool
-    max_overflow=10,    # Additional connections if needed
-    pool_pre_ping=True  # Verify connection before use
+    "postgresql+asyncpg://",
+    async_creator=get_conn,  # Cloud SQL Connector
+    pool_size=5,             # Connections in pool
+    max_overflow=10,         # Additional connections if needed
+    pool_pre_ping=True       # Verify connection before use
 )
-
-AsyncSessionLocal = sessionmaker(
-    engine,
-    class_=AsyncSession,
-    expire_on_commit=False
-)
-```
-
-### Private IP Connection
-
-**Cloud SQL** is accessed via Private IP (not public):
-- API runs on Cloud Run in same VPC
-- No public IP exposure
-- Reduced latency
-- Better security
-
-**Connection String**:
-```
-postgresql+asyncpg://user:pass@10.x.x.x:5432/pyplots
 ```
 
 ---

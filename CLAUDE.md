@@ -202,6 +202,22 @@ def get_spec_by_id(spec_id: str, db: Session) -> Spec:
 
 **Connection**: PostgreSQL via SQLAlchemy async + asyncpg
 
+**Connection Modes** (priority order):
+1. `DATABASE_URL` - Direct connection (local development via public IP)
+2. `INSTANCE_CONNECTION_NAME` - Cloud SQL Connector (Cloud Run, uses IAM auth)
+
+**Local Development**:
+```bash
+# Copy environment template
+cp .env.example .env
+
+# Edit .env with your DATABASE_URL
+DATABASE_URL=postgresql+asyncpg://user:pass@host:5432/pyplots
+
+# Test connection
+uv run python -c "from core.database import is_db_configured; print(is_db_configured())"
+```
+
 **What's Stored**:
 - Spec metadata (title, description, tags)
 - Implementation metadata (library, variant, quality score)
@@ -220,6 +236,9 @@ uv run alembic revision --autogenerate -m "description"
 
 # Apply migrations
 uv run alembic upgrade head
+
+# Check current revision
+uv run alembic current
 ```
 
 ## Prompts System

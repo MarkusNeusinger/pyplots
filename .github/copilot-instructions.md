@@ -204,6 +204,23 @@ Before completing any task:
 4. Type hints are included for all new functions
 5. Docstrings follow Google style for public functions
 
+## Database
+
+**Connection**: PostgreSQL via SQLAlchemy async + asyncpg
+
+**Connection Modes** (priority order):
+1. `DATABASE_URL` - Direct connection (local development)
+2. `INSTANCE_CONNECTION_NAME` - Cloud SQL Connector (Cloud Run)
+
+**Local Setup**:
+```bash
+cp .env.example .env
+# Edit .env with DATABASE_URL
+uv run alembic upgrade head
+```
+
+**Note**: The API works without database in limited mode (filesystem fallback for specs).
+
 ## Environment and Troubleshooting
 
 ### Known Limitations

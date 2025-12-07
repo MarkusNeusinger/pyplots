@@ -43,6 +43,13 @@ cd pyplots
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv sync --all-extras
 
+# Database setup (optional - API works without DB in limited mode)
+cp .env.example .env
+# Edit .env with your DATABASE_URL
+
+# Run migrations
+uv run alembic upgrade head
+
 # Start backend
 uv run uvicorn api.main:app --reload
 

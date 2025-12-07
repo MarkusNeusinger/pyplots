@@ -47,5 +47,5 @@ p.ygrid.grid_line_alpha = 0.3
 # Ensure y-axis starts at zero
 p.y_range.start = 0
 
-# Save as PNG
+# Save output
 export_png(p, filename="plot.png")

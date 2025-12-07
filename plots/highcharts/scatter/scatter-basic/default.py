@@ -8,60 +8,49 @@ import time
 import urllib.request
 from pathlib import Path
 
-import numpy as np
 from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
 from highcharts_core.options.series.scatter import ScatterSeries
-from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
 # Data
-np.random.seed(42)
-x = np.random.randn(100) * 2 + 10
-y = x * 0.8 + np.random.randn(100) * 2
+x = [1, 2, 3, 4, 5, 6, 7, 8]
+y = [2.1, 4.3, 3.2, 5.8, 4.9, 7.2, 6.1, 8.5]
 
-# Create chart
+# Create chart with container
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
 # Chart configuration
-chart.options.chart = {
-    "type": "scatter",
-    "width": 4800,
-    "height": 2700,
-    "backgroundColor": "#ffffff",
-    "spacing": [20, 20, 60, 20],
-}
+chart.options.chart = {"type": "scatter", "width": 4800, "height": 2700, "backgroundColor": "#ffffff"}
 
 # Title
-chart.options.title = {"text": "Basic Scatter Plot", "style": {"fontSize": "48px"}}
+chart.options.title = {"text": "Basic Scatter Plot", "style": {"fontSize": "60px"}}
 
 # Axes
 chart.options.x_axis = {
-    "title": {"text": "X Value", "style": {"fontSize": "40px"}},
-    "labels": {"style": {"fontSize": "32px"}},
+    "title": {"text": "X Value", "style": {"fontSize": "48px"}},
+    "labels": {"style": {"fontSize": "40px"}},
     "gridLineWidth": 1,
     "gridLineColor": "rgba(0, 0, 0, 0.1)",
 }
 chart.options.y_axis = {
-    "title": {"text": "Y Value", "style": {"fontSize": "40px"}},
-    "labels": {"style": {"fontSize": "32px"}},
+    "title": {"text": "Y Value", "style": {"fontSize": "48px"}},
+    "labels": {"style": {"fontSize": "40px"}},
     "gridLineWidth": 1,
     "gridLineColor": "rgba(0, 0, 0, 0.1)",
 }
 
-# Legend (not needed for single series but show it for clarity)
+# Legend (not needed for single series, but kept minimal)
 chart.options.legend = {"enabled": False}
 
-# Series
+# Add series
 series = ScatterSeries()
-series.data = [[float(xi), float(yi)] for xi, yi in zip(x, y, strict=True)]
+series.data = list(zip(x, y, strict=False))
 series.name = "Data"
-series.color = "#306998"
-series.marker = {"radius": 8, "fillColor": "#306998", "lineWidth": 0, "states": {"hover": {"enabled": True}}}
-
+series.marker = {"radius": 20, "fillColor": "#306998", "lineWidth": 2, "lineColor": "#306998"}
 chart.add_series(series)
 
 # Download Highcharts JS for inline embedding
@@ -93,20 +82,15 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4900,2800")
+chrome_options.add_argument("--window-size=5000,3000")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
 time.sleep(5)
 
-# Screenshot the full window and crop to exact dimensions
-driver.save_screenshot("plot_raw.png")
+# Screenshot the chart container element for exact dimensions
+container = driver.find_element("id", "container")
+container.screenshot("plot.png")
 driver.quit()
-
-# Crop to exact dimensions (4800 x 2700)
-with Image.open("plot_raw.png") as img:
-    cropped = img.crop((0, 0, 4800, 2700))
-    cropped.save("plot.png")
-Path("plot_raw.png").unlink()
 
 Path(temp_path).unlink()

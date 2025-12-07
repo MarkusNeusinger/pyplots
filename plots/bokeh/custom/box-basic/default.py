@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 from bokeh.io import export_png
 from bokeh.models import ColumnDataSource, FixedTicker, Whisker
-from bokeh.palettes import Category10_4
 from bokeh.plotting import figure
 
 
@@ -73,7 +72,8 @@ p = figure(
 
 source = ColumnDataSource(data=stats)
 box_width = 0.5
-colors = Category10_4
+# Style guide color palette
+colors = ["#306998", "#FFD43B", "#DC2626", "#059669"]
 
 # Draw boxes (Q1 to Q3)
 for i, color in enumerate(colors):

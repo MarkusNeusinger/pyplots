@@ -16,10 +16,10 @@ fig.add_trace(go.Scatter(x=time, y=value, mode="lines", line={"color": "#306998"
 
 # Layout
 fig.update_layout(
-    title={"text": "Basic Line Plot", "font": {"size": 20}},
+    title={"text": "Basic Line Plot", "font": {"size": 20}, "x": 0.5},
     xaxis_title="Time",
     yaxis_title="Value",
-    xaxis={"tickfont": {"size": 16}, "title_font": {"size": 20}},
+    xaxis={"tickfont": {"size": 16}, "title_font": {"size": 20}, "gridcolor": "rgba(0,0,0,0.1)"},
     yaxis={"tickfont": {"size": 16}, "title_font": {"size": 20}, "gridcolor": "rgba(0,0,0,0.1)"},
     template="plotly_white",
     showlegend=False,

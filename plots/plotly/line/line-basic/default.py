@@ -3,19 +3,19 @@ line-basic: Basic Line Plot
 Library: plotly
 """
 
-import pandas as pd
 import plotly.graph_objects as go
 
 
 # Data
-data = pd.DataFrame({"time": [1, 2, 3, 4, 5, 6, 7], "value": [10, 15, 13, 18, 22, 19, 25]})
+time = [1, 2, 3, 4, 5, 6, 7]
+value = [10, 15, 13, 18, 22, 19, 25]
 
 # Create plot
 fig = go.Figure()
 fig.add_trace(
     go.Scatter(
-        x=data["time"],
-        y=data["value"],
+        x=time,
+        y=value,
         mode="lines+markers",
         line={"color": "#306998", "width": 2},
         marker={"size": 8, "color": "#306998"},
@@ -26,18 +26,10 @@ fig.add_trace(
 # Layout
 fig.update_layout(
     title={"text": "Basic Line Plot", "font": {"size": 20}, "x": 0.5, "xanchor": "center"},
-    xaxis={
-        "title": {"text": "Time", "font": {"size": 20}},
-        "tickfont": {"size": 16},
-        "gridcolor": "rgba(0,0,0,0.1)",
-        "showgrid": True,
-    },
-    yaxis={
-        "title": {"text": "Value", "font": {"size": 20}},
-        "tickfont": {"size": 16},
-        "gridcolor": "rgba(0,0,0,0.1)",
-        "showgrid": True,
-    },
+    xaxis_title="Time",
+    yaxis_title="Value",
+    xaxis={"tickfont": {"size": 16}, "title_font": {"size": 20}, "showgrid": True, "gridcolor": "rgba(0,0,0,0.1)"},
+    yaxis={"tickfont": {"size": 16}, "title_font": {"size": 20}, "showgrid": True, "gridcolor": "rgba(0,0,0,0.1)"},
     template="plotly_white",
     showlegend=False,
 )

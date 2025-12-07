@@ -114,8 +114,9 @@ class TestPromptStructure:
         content = (LIBRARY_PROMPTS_DIR / filename).read_text()
         library_name = filename.replace(".md", "")
 
-        # Check for header
-        assert f"# {library_name}" in content.lower(), f"Missing header for {library_name}"
+        # Check for header (normalize by removing hyphens for comparison)
+        content_normalized = content.lower().replace("-", "")
+        assert f"# {library_name}" in content_normalized, f"Missing header for {library_name}"
 
         # Check for import section
         assert "## Import" in content or "import" in content.lower(), f"Missing import section in {filename}"

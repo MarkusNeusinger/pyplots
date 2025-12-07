@@ -5,7 +5,7 @@ Library: letsplot
 
 import numpy as np
 import pandas as pd
-from lets_plot import LetsPlot, aes, element_text, geom_point, ggplot, ggsave, ggsize, labs, theme
+from lets_plot import LetsPlot, aes, element_text, geom_point, ggplot, ggsave, ggsize, labs, theme, theme_minimal
 
 
 LetsPlot.setup_html()
@@ -23,6 +23,7 @@ plot = (
     + geom_point(color="#306998", size=4, alpha=0.7)
     + labs(x="X Value", y="Y Value", title="Basic Scatter Plot")
     + ggsize(1600, 900)
+    + theme_minimal()
     + theme(plot_title=element_text(size=20), axis_title=element_text(size=20), axis_text=element_text(size=16))
 )
 

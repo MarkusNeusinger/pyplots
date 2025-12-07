@@ -19,7 +19,7 @@ data = pd.DataFrame({"x": x, "y": y})
 chart = (
     alt.Chart(data)
     .mark_point(filled=True, opacity=0.7, size=100, color="#306998")
-    .encode(x=alt.X("x:Q", title="X Value"), y=alt.Y("y:Q", title="Y Value"))
+    .encode(x=alt.X("x:Q", title="X Value"), y=alt.Y("y:Q", title="Y Value"), tooltip=["x:Q", "y:Q"])
     .properties(width=1600, height=900, title="Basic Scatter Plot")
     .configure_axis(labelFontSize=16, titleFontSize=20)
     .configure_title(fontSize=20)

@@ -131,26 +131,31 @@ jobs:
             PLOT_CONTENT=""
           fi
 
-          # Create prompt for Claude
-          cat > /tmp/tag_prompt.txt << 'PROMPTEOF'
-          Analyze this plot specification and implementation to generate a hierarchical tag structure.
+          # Create prompt for Claude (Security: avoid sed with user content)
+          # Export variables so Python can access them, then use Python for safe string handling
+          export SPEC_CONTENT PLOT_CONTENT
+          python3 << 'PYEOF'
+          import os
+          spec = os.environ.get('SPEC_CONTENT', '')
+          plot = os.environ.get('PLOT_CONTENT', '')
+          prompt = f"""Analyze this plot specification and implementation to generate a hierarchical tag structure.
 
           ## Specification:
-          ${SPEC_CONTENT}
+          {spec}
 
           ## Implementation (example):
-          ${PLOT_CONTENT}
+          {plot}
 
           ## Task:
           Generate a 5-level tag hierarchy for this plot. Format as JSON:
-          {
+          {{
             "level1_category": "visualization_type",
             "level2_type": "specific_chart_type",
             "level3_style": "style_variant",
             "level4_features": ["feature1", "feature2"],
             "level5_use_cases": ["use_case1", "use_case2"],
             "search_tags": ["tag1", "tag2", "tag3"]
-          }
+          }}
 
           Categories:
           - Level 1: Main category (scatter, bar, line, heatmap, distribution, comparison, etc.)
@@ -159,12 +164,10 @@ jobs:
           - Level 4: Features used (gridlines, annotations, legends, colors, etc.)
           - Level 5: Use cases (exploratory, presentation, publication, dashboard, etc.)
 
-          Return ONLY valid JSON, no markdown formatting.
-          PROMPTEOF
-
-          # Replace placeholders
-          sed -i "s|\${SPEC_CONTENT}|${SPEC_CONTENT}|g" /tmp/tag_prompt.txt
-          sed -i "s|\${PLOT_CONTENT}|${PLOT_CONTENT}|g" /tmp/tag_prompt.txt
+          Return ONLY valid JSON, no markdown formatting."""
+          with open('/tmp/tag_prompt.txt', 'w') as f:
+              f.write(prompt)
+          PYEOF
 
           # Call Claude API (with timeout)
           RESPONSE=$(curl -s --max-time 60 --connect-timeout 10 https://api.anthropic.com/v1/messages \

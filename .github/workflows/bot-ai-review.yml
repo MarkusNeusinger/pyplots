@@ -19,7 +19,17 @@ jobs:
     steps:
       - name: Check conditions
         id: check
+        env:
+          HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
+          BASE_REPO: ${{ github.repository }}
         run: |
+          # Security: Skip if workflow run is from a fork (untrusted code)
+          if [[ "$HEAD_REPO" != "$BASE_REPO" ]]; then
+            echo "::notice::Skipping: Workflow run is from fork '$HEAD_REPO', not '$BASE_REPO'"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
           CONCLUSION="${{ github.event.workflow_run.conclusion }}"
 
           if [[ "$CONCLUSION" != "success" ]]; then

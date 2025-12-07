@@ -341,17 +341,20 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           TARGET_LIBRARY: ${{ needs.create-spec.outputs.target_library }}
         run: |
-          # Build command with optional target_library
-          CMD="gh workflow run gen-new-plot.yml --repo ${{ github.repository }}"
-          CMD="$CMD -f spec_id=\"$SPEC_ID\""
-          CMD="$CMD -f feature_branch=\"$FEATURE_BRANCH\""
-          CMD="$CMD -f issue_number=\"$ISSUE_NUMBER\""
-
+          # Security: Direct execution instead of eval to prevent command injection
           if [[ -n "$TARGET_LIBRARY" ]]; then
-            CMD="$CMD -f target_library=\"$TARGET_LIBRARY\""
             echo "::notice::Triggering gen-new-plot.yml for $SPEC_ID (library: $TARGET_LIBRARY)"
+            gh workflow run gen-new-plot.yml \
+              --repo "${{ github.repository }}" \
+              -f spec_id="$SPEC_ID" \
+              -f feature_branch="$FEATURE_BRANCH" \
+              -f issue_number="$ISSUE_NUMBER" \
+              -f target_library="$TARGET_LIBRARY"
           else
             echo "::notice::Triggering gen-new-plot.yml for $SPEC_ID (all libraries)"
+            gh workflow run gen-new-plot.yml \
+              --repo "${{ github.repository }}" \
+              -f spec_id="$SPEC_ID" \
+              -f feature_branch="$FEATURE_BRANCH" \
+              -f issue_number="$ISSUE_NUMBER"
           fi
-
-          eval $CMD

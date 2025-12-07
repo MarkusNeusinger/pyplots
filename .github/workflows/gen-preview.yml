@@ -312,25 +312,24 @@ jobs:
                 PREV_URL=$(echo "$PREV_VERSIONS" | jq -r --arg key "$KEY" '.[$key].url // empty')
                 PREV_COUNT=$(echo "$PREV_VERSIONS" | jq -r --arg key "$KEY" '.[$key].count // 0')
 
+                # Security: Use unquoted heredoc for direct variable expansion (safer than sed)
                 if [ -n "$PREV_URL" ] && [ "$PREV_URL" != "null" ]; then
                   NEW_COUNT=$((PREV_COUNT + 1))
-                  cat >> plot_markdown.txt << 'PLOTEOF'
-          ### ${LIBRARY} (${VARIANT}) - UPDATE
+                  cat >> plot_markdown.txt << PLOTEOF
+### ${LIBRARY} (${VARIANT}) - UPDATE
 
-          | Before | After |
-          |--------|-------|
-          | ![Before](${PREV_URL}) | ![After](${NEW_URL}) |
+| Before | After |
+|--------|-------|
+| ![Before](${PREV_URL}) | ![After](${NEW_URL}) |
 
-          [View version history (${NEW_COUNT} versions)](${HISTORY_URL})
-          PLOTEOF
-                  sed -i "s|\${LIBRARY}|${LIBRARY}|g; s|\${VARIANT}|${VARIANT}|g; s|\${PREV_URL}|${PREV_URL}|g; s|\${NEW_URL}|${NEW_URL}|g; s|\${NEW_COUNT}|${NEW_COUNT}|g; s|\${HISTORY_URL}|${HISTORY_URL}|g" plot_markdown.txt
+[View version history (${NEW_COUNT} versions)](${HISTORY_URL})
+PLOTEOF
                 else
-                  cat >> plot_markdown.txt << 'PLOTEOF'
-          ### ${LIBRARY} (${VARIANT}) - NEW
+                  cat >> plot_markdown.txt << PLOTEOF
+### ${LIBRARY} (${VARIANT}) - NEW
 
-          ![${LIBRARY} ${VARIANT}](${NEW_URL})
-          PLOTEOF
-                  sed -i "s|\${LIBRARY}|${LIBRARY}|g; s|\${VARIANT}|${VARIANT}|g; s|\${NEW_URL}|${NEW_URL}|g" plot_markdown.txt
+![${LIBRARY} ${VARIANT}](${NEW_URL})
+PLOTEOF
                 fi
                 echo "" >> plot_markdown.txt
               fi

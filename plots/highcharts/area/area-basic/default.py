@@ -15,40 +15,32 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data - Monthly sales example
-sales = [100, 150, 130, 180, 200, 220, 195, 240, 280, 310, 290, 350]
+# Data
+months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+sales = [120, 135, 148, 162, 175, 195, 210, 198, 185, 170, 158, 190]
 
-# Create chart
+# Create chart with container (required for headless export)
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
 # Chart configuration
-chart.options.chart = {
-    "type": "area",
-    "width": 4800,
-    "height": 2700,
-    "backgroundColor": "#ffffff",
-    "style": {"fontFamily": "Arial, sans-serif"},
-}
+chart.options.chart = {"type": "area", "width": 4800, "height": 2700, "backgroundColor": "#ffffff"}
 
 # Title
-chart.options.title = {"text": "Monthly Sales Trend", "style": {"fontSize": "48px"}}
+chart.options.title = {"text": "Monthly Sales", "style": {"fontSize": "48px"}}
 
-# Axes
+# X-axis with categories
 chart.options.x_axis = {
+    "categories": months,
     "title": {"text": "Month", "style": {"fontSize": "40px"}},
-    "categories": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    "labels": {"style": {"fontSize": "32px"}, "enabled": True},
-    "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.1)",
-    "tickmarkPlacement": "on",
+    "labels": {"style": {"fontSize": "32px"}},
 }
 
+# Y-axis
 chart.options.y_axis = {
-    "title": {"text": "Sales ($)", "style": {"fontSize": "40px"}},
+    "title": {"text": "Sales", "style": {"fontSize": "40px"}},
     "labels": {"style": {"fontSize": "32px"}},
-    "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.1)",
+    "gridLineColor": "#e0e0e0",
 }
 
 # Legend
@@ -59,13 +51,13 @@ series = AreaSeries()
 series.data = sales
 series.name = "Sales"
 series.color = "#306998"
-series.fill_opacity = 0.5
-series.line_width = 4
-series.marker = {"enabled": True, "radius": 6, "fillColor": "#306998", "lineWidth": 2, "lineColor": "#ffffff"}
+series.fill_opacity = 0.6
+series.line_width = 3
+series.marker = {"enabled": True, "radius": 6, "fillColor": "#306998"}
 
 chart.add_series(series)
 
-# Download Highcharts JS
+# Download Highcharts JS for inline embedding
 highcharts_url = "https://code.highcharts.com/highcharts.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
@@ -94,16 +86,12 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2800")
+chrome_options.add_argument("--window-size=4800,2700")
 
 driver = webdriver.Chrome(options=chrome_options)
-driver.set_window_size(4800, 2800)
 driver.get(f"file://{temp_path}")
 time.sleep(5)
-
-# Get the container element and screenshot it directly
-container = driver.find_element("id", "container")
-container.screenshot("plot.png")
+driver.save_screenshot("plot.png")
 driver.quit()
 
 Path(temp_path).unlink()

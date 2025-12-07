@@ -66,8 +66,8 @@ jobs:
           echo "📦 Installing: uv sync $EXTRAS"
           uv sync $EXTRAS
 
-      - name: Setup Chrome for Highcharts
-        if: steps.detect_libs.outputs.has_plots == 'true' && contains(steps.detect_libs.outputs.libraries, 'highcharts')
+      - name: Setup Chrome for Selenium-based libraries
+        if: steps.detect_libs.outputs.has_plots == 'true' && (contains(steps.detect_libs.outputs.libraries, 'highcharts') || contains(steps.detect_libs.outputs.libraries, 'bokeh'))
         uses: browser-actions/setup-chrome@v1
         with:
           chrome-version: stable

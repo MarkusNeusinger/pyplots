@@ -200,7 +200,9 @@ jobs:
               **Attempt:** ${{ inputs.attempt }}/3
 
               ## Implementation
-              - \`plots/${{ inputs.library }}/{plot_type}/${{ inputs.spec_id }}/default.py\`"
+              - \`plots/${{ inputs.library }}/{plot_type}/${{ inputs.spec_id }}/default.py\`
+
+              Closes #${{ inputs.sub_issue_number }}"
               ```
 
             ### Important

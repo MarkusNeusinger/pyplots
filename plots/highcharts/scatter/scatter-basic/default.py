@@ -12,6 +12,7 @@ import numpy as np
 from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
 from highcharts_core.options.series.scatter import ScatterSeries
+from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -98,9 +99,14 @@ driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
 time.sleep(5)
 
-# Screenshot the container element directly for exact dimensions
-container = driver.find_element("id", "container")
-container.screenshot("plot.png")
+# Screenshot the full window and crop to exact dimensions
+driver.save_screenshot("plot_raw.png")
 driver.quit()
+
+# Crop to exact dimensions (4800 x 2700)
+with Image.open("plot_raw.png") as img:
+    cropped = img.crop((0, 0, 4800, 2700))
+    cropped.save("plot.png")
+Path("plot_raw.png").unlink()
 
 Path(temp_path).unlink()

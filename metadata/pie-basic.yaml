@@ -1,0 +1,85 @@
+# Metadata for pie-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: pie-basic
+title: Basic Pie Chart
+
+tags:
+  plot_type: [pie, donut, proportion]
+  domain: [statistics, general, business]
+  features: [basic, proportional, percentage]
+  audience: [beginner]
+  data_type: [categorical, numeric]
+
+implementations:
+  matplotlib:
+    plot_function: pie
+    variant: default
+    file_path: plots/matplotlib/pie/pie-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  seaborn:
+    plot_function: pie
+    variant: default
+    file_path: plots/seaborn/pie/pie-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  plotly:
+    plot_function: pie
+    variant: default
+    file_path: plots/plotly/pie/pie-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  bokeh:
+    plot_function: custom
+    variant: default
+    file_path: plots/bokeh/custom/pie-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  altair:
+    plot_function: arc
+    variant: default
+    file_path: plots/altair/arc/pie-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  plotnine:
+    plot_function: pie
+    variant: default
+    file_path: plots/plotnine/pie/pie-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  pygal:
+    plot_function: pie
+    variant: default
+    file_path: plots/pygal/pie/pie-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  highcharts:
+    plot_function: pie
+    variant: default
+    file_path: plots/highcharts/pie/pie-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  letsplot:
+    plot_function: pie
+    variant: default
+    file_path: plots/letsplot/pie/pie-basic/default.py
+    preview_url: null
+    current: null
+    history: []

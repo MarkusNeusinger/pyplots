@@ -1,0 +1,85 @@
+# Metadata for scatter-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: scatter-basic
+title: Basic Scatter Plot
+
+tags:
+  plot_type: [scatter, point]
+  domain: [statistics, general]
+  features: [basic, 2d, correlation]
+  audience: [beginner]
+  data_type: [numeric, continuous]
+
+implementations:
+  matplotlib:
+    plot_function: scatter
+    variant: default
+    file_path: plots/matplotlib/scatter/scatter-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  seaborn:
+    plot_function: scatterplot
+    variant: default
+    file_path: plots/seaborn/scatterplot/scatter-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  plotly:
+    plot_function: scatter
+    variant: default
+    file_path: plots/plotly/scatter/scatter-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  bokeh:
+    plot_function: scatter
+    variant: default
+    file_path: plots/bokeh/scatter/scatter-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  altair:
+    plot_function: point
+    variant: default
+    file_path: plots/altair/point/scatter-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  plotnine:
+    plot_function: point
+    variant: default
+    file_path: plots/plotnine/point/scatter-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  pygal:
+    plot_function: xy
+    variant: default
+    file_path: plots/pygal/xy/scatter-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  highcharts:
+    plot_function: scatter
+    variant: default
+    file_path: plots/highcharts/scatter/scatter-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  letsplot:
+    plot_function: point
+    variant: default
+    file_path: plots/letsplot/point/scatter-basic/default.py
+    preview_url: null
+    current: null
+    history: []

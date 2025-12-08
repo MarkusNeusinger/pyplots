@@ -1,8 +1,13 @@
 name: "Sync: PostgreSQL"
 run-name: "Sync specs to DB: ${{ github.ref_name }}"
 
-# Syncs specs and implementations from main branch to PostgreSQL.
+# Syncs specs, metadata, and implementations from main branch to PostgreSQL.
 # This ensures the database only contains data for code that is actually in main.
+#
+# Data sources:
+# - specs/*.md: Spec descriptions, data requirements
+# - metadata/*.yaml: Structured tags, generation info, quality scores
+# - plots/**/*.py: Implementation files
 
 on:
   push:
@@ -10,6 +15,7 @@ on:
       - main
     paths:
       - 'specs/**'
+      - 'metadata/**'
       - 'plots/**'
   workflow_dispatch:  # Allow manual trigger
 
@@ -52,7 +58,12 @@ jobs:
       run: |
         echo "### Sync Complete" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "Specs and implementations have been synced to PostgreSQL." >> $GITHUB_STEP_SUMMARY
+        echo "Specs, metadata, and implementations have been synced to PostgreSQL." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Data synced:**" >> $GITHUB_STEP_SUMMARY
+        echo "- specs/*.md (descriptions, data requirements)" >> $GITHUB_STEP_SUMMARY
+        echo "- metadata/*.yaml (tags, generation info, quality scores)" >> $GITHUB_STEP_SUMMARY
+        echo "- plots/**/*.py (implementation files)" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "**Trigger:** \`${{ github.event_name }}\`" >> $GITHUB_STEP_SUMMARY
         echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY

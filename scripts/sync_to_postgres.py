@@ -4,6 +4,10 @@ Sync specs and implementations from repository to PostgreSQL.
 
 This script is run by GitHub Actions on push to main branch.
 It ensures the database only contains data for code that is actually in main.
+
+Data sources:
+- specs/*.md: Spec descriptions, data requirements
+- metadata/*.yaml: Structured tags, generation info, quality scores
 """
 
 import asyncio
@@ -11,7 +15,10 @@ import logging
 import os
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
+
+import yaml
 
 
 # Add project root to path
@@ -32,6 +39,7 @@ from core.database import LIBRARIES_SEED, Implementation, Library, Spec  # noqa:
 # Configuration
 BASE_DIR = Path(__file__).parent.parent
 SPECS_DIR = BASE_DIR / "specs"
+METADATA_DIR = BASE_DIR / "metadata"
 PLOTS_DIR = BASE_DIR / "plots"
 GCS_BUCKET = os.getenv("GCS_BUCKET", "pyplots-images")
 DATABASE_URL = os.getenv("DATABASE_URL", "")
@@ -39,6 +47,27 @@ DATABASE_URL = os.getenv("DATABASE_URL", "")
 # Logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
+
+
+def parse_metadata_yaml(file_path: Path) -> dict | None:
+    """
+    Parse a metadata YAML file and extract all metadata.
+
+    Args:
+        file_path: Path to the .yaml file
+
+    Returns:
+        Dict with spec_id, title, tags, implementations or None if invalid
+    """
+    try:
+        content = file_path.read_text(encoding="utf-8")
+        data = yaml.safe_load(content)
+        if not data or "spec_id" not in data:
+            return None
+        return data
+    except Exception as e:
+        logger.error(f"Failed to parse metadata {file_path}: {e}")
+        return None
 
 
 def parse_spec_markdown(file_path: Path) -> dict:
@@ -163,7 +192,9 @@ def get_gcs_preview_url(spec_id: str, library: str, variant: str = "default") ->
     return base_url
 
 
-async def sync_to_database(session: AsyncSession, specs: list[dict], implementations: list[dict]) -> dict:
+async def sync_to_database(
+    session: AsyncSession, specs: list[dict], implementations: list[dict], metadata: dict[str, dict]
+) -> dict:
     """
     Sync specs and implementations to the database.
 
@@ -171,8 +202,9 @@ async def sync_to_database(session: AsyncSession, specs: list[dict], implementat
 
     Args:
         session: Database session
-        specs: List of spec dictionaries
-        implementations: List of implementation dictionaries
+        specs: List of spec dictionaries (from markdown files)
+        implementations: List of implementation dictionaries (from plots/ directory)
+        metadata: Dict of spec_id -> metadata (from metadata/*.yaml)
 
     Returns:
         Dict with counts of synced/removed items
@@ -184,10 +216,20 @@ async def sync_to_database(session: AsyncSession, specs: list[dict], implementat
         stmt = insert(Library).values(**lib_data).on_conflict_do_nothing(index_elements=["id"])
         await session.execute(stmt)
 
-    # Upsert specs
+    # Upsert specs (merge data from markdown and metadata YAML)
     spec_ids = set()
     for spec_data in specs:
-        spec_ids.add(spec_data["id"])
+        spec_id = spec_data["id"]
+        spec_ids.add(spec_id)
+
+        # Merge structured_tags from metadata if available
+        meta = metadata.get(spec_id, {})
+        spec_data["structured_tags"] = meta.get("tags")
+
+        # Use title from metadata if available (it may be more accurate)
+        if meta.get("title"):
+            spec_data["title"] = meta["title"]
+
         stmt = (
             insert(Spec)
             .values(**spec_data)
@@ -198,6 +240,7 @@ async def sync_to_database(session: AsyncSession, specs: list[dict], implementat
                     "description": spec_data["description"],
                     "data_requirements": spec_data["data_requirements"],
                     "tags": spec_data["tags"],
+                    "structured_tags": spec_data["structured_tags"],
                 },
             )
         )
@@ -212,28 +255,61 @@ async def sync_to_database(session: AsyncSession, specs: list[dict], implementat
         stats["specs_removed"] = len(removed_spec_ids)
         logger.info(f"Removed {len(removed_spec_ids)} specs no longer in repo")
 
-    # Upsert implementations
+    # Upsert implementations (merge data from plots/ and metadata YAML)
     impl_keys = set()
     for impl_data in implementations:
-        key = (impl_data["spec_id"], impl_data["library_id"], impl_data["variant"])
+        spec_id = impl_data["spec_id"]
+        library_id = impl_data["library_id"]
+        variant = impl_data["variant"]
+        key = (spec_id, library_id, variant)
         impl_keys.add(key)
 
-        # Add preview URL
-        impl_data["preview_url"] = get_gcs_preview_url(
-            impl_data["spec_id"], impl_data["library_id"], impl_data["variant"]
-        )
+        # Get metadata for this implementation
+        meta = metadata.get(spec_id, {})
+        impl_meta = meta.get("implementations", {}).get(library_id, {})
+
+        # Add preview URL from metadata or generate default
+        impl_data["preview_url"] = impl_meta.get("preview_url") or get_gcs_preview_url(spec_id, library_id, variant)
+
+        # Add generation metadata from YAML
+        current = impl_meta.get("current", {})
+        if current:
+            # Parse generated_at if it's a string
+            generated_at = current.get("generated_at")
+            if isinstance(generated_at, str):
+                try:
+                    generated_at = datetime.fromisoformat(generated_at.replace("Z", "+00:00"))
+                except ValueError:
+                    generated_at = None
+            impl_data["generated_at"] = generated_at
+            impl_data["generated_by"] = current.get("generated_by")
+            impl_data["workflow_run"] = current.get("workflow_run")
+            impl_data["issue_number"] = current.get("issue")
+            impl_data["quality_score"] = current.get("quality_score")
+
+        # Build update set - only include fields we want to update
+        update_set = {
+            "plot_function": impl_data["plot_function"],
+            "file_path": impl_data["file_path"],
+            "preview_url": impl_data["preview_url"],
+        }
+
+        # Add optional fields if present
+        if "generated_at" in impl_data:
+            update_set["generated_at"] = impl_data.get("generated_at")
+        if "generated_by" in impl_data:
+            update_set["generated_by"] = impl_data.get("generated_by")
+        if "workflow_run" in impl_data:
+            update_set["workflow_run"] = impl_data.get("workflow_run")
+        if "issue_number" in impl_data:
+            update_set["issue_number"] = impl_data.get("issue_number")
+        if "quality_score" in impl_data and impl_data.get("quality_score") is not None:
+            update_set["quality_score"] = impl_data["quality_score"]
 
         stmt = (
             insert(Implementation)
             .values(**impl_data)
-            .on_conflict_do_update(
-                constraint="uq_implementation",
-                set_={
-                    "plot_function": impl_data["plot_function"],
-                    "file_path": impl_data["file_path"],
-                    "preview_url": impl_data["preview_url"],
-                },
-            )
+            .on_conflict_do_update(constraint="uq_implementation", set_=update_set)
         )
         await session.execute(stmt)
         stats["impls_synced"] += 1
@@ -267,7 +343,20 @@ async def main() -> int:
 
     logger.info("Starting sync to PostgreSQL...")
     logger.info(f"Specs directory: {SPECS_DIR}")
+    logger.info(f"Metadata directory: {METADATA_DIR}")
     logger.info(f"Plots directory: {PLOTS_DIR}")
+
+    # Parse all metadata YAML files
+    metadata: dict[str, dict] = {}
+    if METADATA_DIR.exists():
+        for meta_file in METADATA_DIR.glob("*.yaml"):
+            if meta_file.stem == "schema":
+                continue  # Skip schema file
+            meta_data = parse_metadata_yaml(meta_file)
+            if meta_data and "spec_id" in meta_data:
+                metadata[meta_data["spec_id"]] = meta_data
+                logger.debug(f"Parsed metadata: {meta_data['spec_id']}")
+    logger.info(f"Found {len(metadata)} metadata files")
 
     # Parse all specs
     specs = []
@@ -294,7 +383,7 @@ async def main() -> int:
 
     try:
         async with async_session() as session:
-            stats = await sync_to_database(session, specs, implementations)
+            stats = await sync_to_database(session, specs, implementations, metadata)
 
         logger.info("Sync completed successfully!")
         logger.info(f"  Specs synced: {stats['specs_synced']}, removed: {stats['specs_removed']}")

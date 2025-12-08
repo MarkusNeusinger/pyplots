@@ -1,0 +1,85 @@
+# Metadata for histogram-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: histogram-basic
+title: Basic Histogram
+
+tags:
+  plot_type: [histogram, distribution]
+  domain: [statistics, general]
+  features: [basic, distribution, frequency]
+  audience: [beginner]
+  data_type: [numeric, continuous]
+
+implementations:
+  matplotlib:
+    plot_function: hist
+    variant: default
+    file_path: plots/matplotlib/hist/histogram-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  seaborn:
+    plot_function: histplot
+    variant: default
+    file_path: plots/seaborn/histplot/histogram-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  plotly:
+    plot_function: histogram
+    variant: default
+    file_path: plots/plotly/histogram/histogram-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  bokeh:
+    plot_function: quad
+    variant: default
+    file_path: plots/bokeh/quad/histogram-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  altair:
+    plot_function: bar
+    variant: default
+    file_path: plots/altair/bar/histogram-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  plotnine:
+    plot_function: histogram
+    variant: default
+    file_path: plots/plotnine/histogram/histogram-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  pygal:
+    plot_function: histogram
+    variant: default
+    file_path: plots/pygal/histogram/histogram-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  highcharts:
+    plot_function: histogram
+    variant: default
+    file_path: plots/highcharts/histogram/histogram-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  letsplot:
+    plot_function: histogram
+    variant: default
+    file_path: plots/letsplot/histogram/histogram-basic/default.py
+    preview_url: null
+    current: null
+    history: []

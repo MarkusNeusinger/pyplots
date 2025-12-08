@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import uuid4
 
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
@@ -27,6 +27,8 @@ class Spec(Base):
     data_requirements: Mapped[dict] = mapped_column(JSONB, nullable=False, default=list)
     optional_params: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
     tags: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)
+    # Structured tags from metadata/*.yaml (plot_type, domain, features, audience, data_type)
+    structured_tags: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 
@@ -71,6 +73,17 @@ class Implementation(Base):
     quality_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
+
+    # Generation metadata (from metadata/*.yaml)
+    generated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    generated_by: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # Model ID, e.g., "claude-opus-4-5-20251101"
+    workflow_run: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # GitHub Actions workflow run ID
+    issue_number: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # GitHub Issue number
+
+    # Quality evaluation details
+    evaluator_scores: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)  # [{"model": "...", "score": 92}, ...]
+    quality_feedback: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    improvements_suggested: Mapped[Optional[list]] = mapped_column(JSONB, nullable=True)  # ["suggestion1", "suggestion2"]
 
     # Relationships
     spec: Mapped["Spec"] = relationship("Spec", back_populates="implementations")

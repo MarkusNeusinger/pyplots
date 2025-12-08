@@ -1,0 +1,85 @@
+# Metadata for area-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: area-basic
+title: Basic Area Chart
+
+tags:
+  plot_type: [area, filled]
+  domain: [statistics, general, timeseries]
+  features: [basic, continuous, cumulative]
+  audience: [beginner]
+  data_type: [numeric, temporal]
+
+implementations:
+  matplotlib:
+    plot_function: fill_between
+    variant: default
+    file_path: plots/matplotlib/fill_between/area-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  seaborn:
+    plot_function: fill_between
+    variant: default
+    file_path: plots/seaborn/fill_between/area-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  plotly:
+    plot_function: scatter
+    variant: default
+    file_path: plots/plotly/scatter/area-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  bokeh:
+    plot_function: varea
+    variant: default
+    file_path: plots/bokeh/varea/area-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  altair:
+    plot_function: area
+    variant: default
+    file_path: plots/altair/area/area-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  plotnine:
+    plot_function: area
+    variant: default
+    file_path: plots/plotnine/area/area-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  pygal:
+    plot_function: area
+    variant: default
+    file_path: plots/pygal/area/area-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  highcharts:
+    plot_function: area
+    variant: default
+    file_path: plots/highcharts/area/area-basic/default.py
+    preview_url: null
+    current: null
+    history: []
+
+  letsplot:
+    plot_function: area
+    variant: default
+    file_path: plots/letsplot/area/area-basic/default.py
+    preview_url: null
+    current: null
+    history: []

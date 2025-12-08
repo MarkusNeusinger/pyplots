@@ -124,6 +124,7 @@ The same spec ID links implementations across all 9 supported libraries.
 ### Directory Structure
 
 - **`specs/`**: Library-agnostic plot specifications (Markdown)
+- **`metadata/`**: Per-spec metadata (tags, generation info, quality scores) - synced to PostgreSQL
 - **`plots/{library}/{plot_type}/{spec_id}/{variant}.py`**: Library-specific implementations
 - **`core/`**: Shared business logic (database, repositories, config)
 - **`api/`**: FastAPI backend (routers, schemas, dependencies)
@@ -138,6 +139,56 @@ The same spec ID links implementations across all 9 supported libraries.
 2. **Async Everything**: FastAPI + SQLAlchemy async + asyncpg
 3. **Clean Repo**: Only production code in git. Quality reports → GitHub Issues. Preview images → GCS.
 4. **Issue-Based Workflow**: GitHub Issues as state machine for plot lifecycle
+
+### Metadata System
+
+The `metadata/` directory stores structured metadata for each spec that is synced to PostgreSQL:
+
+**File structure:** `metadata/{spec-id}.yaml`
+
+```yaml
+spec_id: scatter-basic
+title: Basic Scatter Plot
+
+# Spec-level tags (same for all library implementations)
+tags:
+  plot_type: [scatter, point]
+  domain: [statistics, general]
+  features: [basic, 2d, correlation]
+  audience: [beginner]
+  data_type: [numeric, continuous]
+
+# Per-library implementation metadata
+implementations:
+  matplotlib:
+    plot_function: scatter
+    variant: default
+    file_path: plots/matplotlib/scatter/scatter-basic/default.py
+    preview_url: gs://pyplots-images/scatter-basic/matplotlib/v2025-01-15.png
+    current:
+      generated_at: 2025-01-15T10:30:00Z
+      generated_by: claude-opus-4-5-20251101
+      workflow_run: 12345678
+      issue: 53
+      quality_score: 92
+    history:
+      - version: 1
+        generated_at: 2025-01-10T08:00:00Z
+        generated_by: claude-sonnet-4-20250514
+        quality_score: 78
+        feedback: |
+          Missing grid lines.
+          Font sizes too small.
+        improvements_suggested:
+          - "Add grid with alpha=0.3"
+          - "Increase font sizes to 16+"
+```
+
+**Key points:**
+- Tags are at spec level (same for all libraries)
+- Generation info tracks which model created the code
+- History preserves all previous attempts with feedback
+- `sync-postgres.yml` workflow syncs to database on push to main
 
 ## Tech Stack
 
@@ -218,16 +269,20 @@ DATABASE_URL=postgresql+asyncpg://user:pass@host:5432/pyplots
 uv run python -c "from core.database import is_db_configured; print(is_db_configured())"
 ```
 
-**What's Stored**:
-- Spec metadata (title, description, tags)
-- Implementation metadata (library, variant, quality score)
+**What's Stored** (synced from `metadata/*.yaml`):
+- Spec metadata (title, description, tags, structured_tags)
+- Implementation metadata (library, variant, quality score, generation info)
 - GCS URLs for preview images
 - Social media promotion queue
 
-**What's NOT Stored**:
-- Plot code (in repository)
+**What's in Repository** (source of truth):
+- Plot code (`plots/`)
+- Spec descriptions (`specs/*.md`)
+- Metadata (`metadata/*.yaml`) - synced to DB via `sync-postgres.yml`
+
+**What's NOT Stored in DB**:
 - Preview images (in GCS)
-- Quality reports (in GitHub Issues)
+- Detailed quality reports (in GitHub Issues, summary in metadata)
 
 **Migrations**: Managed with Alembic
 ```bash

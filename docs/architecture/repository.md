@@ -184,18 +184,42 @@ tags:
 
 implementations:
   matplotlib:
-    preview_url: https://storage.googleapis.com/...
+    preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/matplotlib/latest.png
     current:
-      generated_at: 2025-01-15T10:30:00Z
+      version: 2
+      date: 2025-01-15T10:30:00Z
+      issue: 53
       generated_by: claude-opus-4-5-20251101
       quality_score: 92
-    history: []
+    history:
+      - version: 0
+        date: 2025-01-10T08:00:00Z
+        issue: 42
+        generated_by: claude-sonnet-4-20250514
+        quality_score: 65
 ```
 
 **Key Points**:
 - Tags are at spec level (same for all libraries)
-- Generation info tracks AI model used
-- History preserves previous attempts with feedback
+- Version numbers match GCS history files (`v0.png`, `v1.png`, etc.)
+- Each version tracks date, issue, model, and quality score
+
+### GCS Storage
+
+Preview images are stored in Google Cloud Storage (not in repo):
+
+```
+gs://pyplots-images/
+├── plots/{spec-id}/{library}/           # Live (after merge)
+│   ├── latest.png, latest_thumb.png
+│   ├── latest.html                      # Optional (interactive)
+│   └── history/v0.png, v1.png, ...
+│
+└── staging/{spec-id}/{library}/         # Temp (review)
+    └── preview.png, preview.html
+```
+
+**Interactive libraries** (`.html`): plotly, bokeh, altair, highcharts, pygal, letsplot
 
 ---
 

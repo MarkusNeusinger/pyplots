@@ -171,24 +171,24 @@ tags:
 # Per-library implementation metadata
 implementations:
   matplotlib:
-    preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/matplotlib/default/
+    preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/matplotlib/latest.png
     current:
-      generated_at: 2025-01-15T10:30:00Z
-      generated_by: claude-opus-4-5-20251101
-      workflow_run: 12345678
+      version: 2
+      date: 2025-01-15T10:30:00Z
       issue: 53
+      generated_by: claude-opus-4-5-20251101
       quality_score: 92
     history:
+      - version: 0
+        date: 2025-01-10T08:00:00Z
+        issue: 42
+        generated_by: claude-sonnet-4-20250514
+        quality_score: 65
       - version: 1
-        generated_at: 2025-01-10T08:00:00Z
+        date: 2025-01-12T14:20:00Z
+        issue: 42
         generated_by: claude-sonnet-4-20250514
         quality_score: 78
-        feedback: |
-          Missing grid lines.
-          Font sizes too small.
-        improvements_suggested:
-          - "Add grid with alpha=0.3"
-          - "Increase font sizes to 16+"
 ```
 
 **Key points:**
@@ -196,9 +196,32 @@ implementations:
 - Contributors credited via `suggested` field
 - Tags are at spec level (same for all libraries)
 - Generation info tracks which model created the code
-- History preserves all previous attempts with feedback
+- Version numbers (0, 1, 2...) match GCS history files (`v0.png`, `v1.png`, etc.)
 - `sync-postgres.yml` workflow syncs to database on push to main
 - Database stores full spec content (markdown) and implementation code (Python source)
+
+### GCS Storage Structure
+
+Preview images are stored in Google Cloud Storage (`pyplots-images` bucket):
+
+```
+gs://pyplots-images/
+├── plots/{spec-id}/{library}/           # Live images (after merge to main)
+│   ├── latest.png                       # Current version
+│   ├── latest_thumb.png                 # Thumbnail
+│   ├── latest.html                      # Optional (interactive libraries)
+│   └── history/
+│       ├── v0.png, v0.html              # First version
+│       ├── v1.png, v1.html              # After improvement
+│       └── ...
+│
+└── staging/{spec-id}/{library}/         # Temp images (during review)
+    ├── preview.png                      # Overwritten each attempt
+    └── preview.html                     # Optional
+```
+
+**Interactive libraries** (generate `.html`): plotly, bokeh, altair, highcharts, pygal, letsplot
+**PNG only**: matplotlib, seaborn, plotnine
 
 ## Tech Stack
 

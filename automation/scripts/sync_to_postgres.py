@@ -205,19 +205,18 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
     }
 
 
-def get_gcs_preview_url(spec_id: str, library: str, variant: str = "default") -> str:
+def get_gcs_preview_url(spec_id: str, library: str) -> str:
     """
     Get the GCS preview URL for an implementation.
 
     Args:
         spec_id: The specification ID
         library: The library name
-        variant: The variant name (default: "default")
 
     Returns:
-        Public GCS URL
+        Public GCS URL for latest.png
     """
-    return f"https://storage.googleapis.com/{GCS_BUCKET}/plots/{spec_id}/{library}/{variant}/"
+    return f"https://storage.googleapis.com/{GCS_BUCKET}/plots/{spec_id}/{library}/latest.png"
 
 
 async def sync_to_database(session: AsyncSession, plots: list[dict]) -> dict:

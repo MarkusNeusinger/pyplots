@@ -22,40 +22,88 @@ tags:
   data_type:
   - numeric            # numeric, categorical, datetime, continuous
 
+# Implementation metadata per library
+# GCS URLs: https://storage.googleapis.com/pyplots-images/plots/{spec-id}/{library}/latest.png
+# Interactive libraries also have .html: plotly, bokeh, altair, highcharts, pygal, letsplot
 implementations:
   matplotlib:
-    preview_url: null
-    current: null
-    history: []
+    preview_url: null  # Set after first successful merge to main
+    current:           # Current live version
+      version: null    # Integer: 0, 1, 2, ...
+      date: null       # ISO 8601 timestamp
+      issue: null      # GitHub issue number
+      generated_by: null  # Model ID (e.g., claude-opus-4-5-20251101)
+      quality_score: null # 0-100
+    history: []        # Previous versions (same fields as current)
   seaborn:
     preview_url: null
-    current: null
+    current:
+      version: null
+      date: null
+      issue: null
+      generated_by: null
+      quality_score: null
     history: []
   plotly:
     preview_url: null
-    current: null
+    current:
+      version: null
+      date: null
+      issue: null
+      generated_by: null
+      quality_score: null
     history: []
   bokeh:
     preview_url: null
-    current: null
+    current:
+      version: null
+      date: null
+      issue: null
+      generated_by: null
+      quality_score: null
     history: []
   altair:
     preview_url: null
-    current: null
+    current:
+      version: null
+      date: null
+      issue: null
+      generated_by: null
+      quality_score: null
     history: []
   plotnine:
     preview_url: null
-    current: null
+    current:
+      version: null
+      date: null
+      issue: null
+      generated_by: null
+      quality_score: null
     history: []
   pygal:
     preview_url: null
-    current: null
+    current:
+      version: null
+      date: null
+      issue: null
+      generated_by: null
+      quality_score: null
     history: []
   highcharts:
     preview_url: null
-    current: null
+    current:
+      version: null
+      date: null
+      issue: null
+      generated_by: null
+      quality_score: null
     history: []
   letsplot:
     preview_url: null
-    current: null
+    current:
+      version: null
+      date: null
+      issue: null
+      generated_by: null
+      quality_score: null
     history: []

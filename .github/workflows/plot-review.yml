@@ -1,18 +1,19 @@
 name: "Plot: Review"
-run-name: "Review: ${{ github.event.workflow_run.head_branch || github.event.pull_request.head.ref }}"
+run-name: "Review: ${{ github.event.pull_request.head.ref }}"
 
-# Triggers when plot-generator creates a PR (via workflow_run)
+# Triggers when a PR is opened/updated from auto/* branches
 # Reviews the implementation quality using AI
 
 on:
-  workflow_run:
-    workflows: ["Plot: Generator"]
-    types: [completed]
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - 'plot/**'  # PRs targeting feature branches
 
 jobs:
   ai-review:
-    # Only run if generator was successful
-    if: github.event.workflow_run.conclusion == 'success'
+    # Only run for auto/* branches (generated implementations)
+    if: startsWith(github.event.pull_request.head.ref, 'auto/')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -22,67 +23,28 @@ jobs:
       actions: write
 
     steps:
-      - name: Check conditions
-        id: check
-        env:
-          HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
-          BASE_REPO: ${{ github.repository }}
-        run: |
-          # Security: Skip if workflow run is from a fork (untrusted code)
-          if [[ "$HEAD_REPO" != "$BASE_REPO" ]]; then
-            echo "::notice::Skipping: Workflow run is from fork '$HEAD_REPO', not '$BASE_REPO'"
-            echo "should_run=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          echo "should_run=true" >> $GITHUB_OUTPUT
-
-      - name: Checkout code
-        if: steps.check.outputs.should_run == 'true'
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Get PR from workflow run
-        if: steps.check.outputs.should_run == 'true'
+      - name: Extract PR info
         id: get_pr
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          HEAD_BRANCH="${{ github.event.workflow_run.head_branch }}"
-
-          # Get PR for this branch
-          PR_DATA=$(gh pr list --head "$HEAD_BRANCH" --json number,headRefName,baseRefName --limit 1)
-
-          if [ -z "$PR_DATA" ] || [ "$PR_DATA" = "[]" ]; then
-            echo "::notice::No PR found for branch $HEAD_BRANCH"
-            echo "skip=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          PR_NUMBER=$(echo "$PR_DATA" | jq -r '.[0].number')
-          HEAD_REF=$(echo "$PR_DATA" | jq -r '.[0].headRefName')
-
-          # Check if auto/ branch (format: auto/{spec-id}/{library})
-          if [[ ! "$HEAD_REF" =~ ^auto/ ]]; then
-            echo "::notice::Not an auto/ branch, skipping AI review"
-            echo "skip=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          # Extract spec-id and library from branch name
+          # Extract spec-id and library from branch name (auto/{spec-id}/{library})
           SPEC_ID=$(echo "$HEAD_REF" | cut -d'/' -f2)
           LIBRARY=$(echo "$HEAD_REF" | cut -d'/' -f3)
 
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
           echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
           echo "library=$LIBRARY" >> $GITHUB_OUTPUT
-          echo "skip=false" >> $GITHUB_OUTPUT
 
-          echo "::notice::Found PR #$PR_NUMBER for $LIBRARY implementation of $SPEC_ID"
+          echo "::notice::PR #$PR_NUMBER for $LIBRARY implementation of $SPEC_ID"
+
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Get main issue number from PR
-        if: steps.check.outputs.should_run == 'true' && steps.get_pr.outputs.skip != 'true'
         id: issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -99,7 +61,6 @@ jobs:
           echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
 
       - name: Setup Google Cloud authentication
-        if: steps.check.outputs.should_run == 'true' && steps.get_pr.outputs.skip != 'true'
         id: gcs_auth
         continue-on-error: true
         uses: google-github-actions/auth@v3
@@ -107,11 +68,11 @@ jobs:
           credentials_json: ${{ secrets.GCS_SA_KEY }}
 
       - name: Setup gcloud CLI
-        if: steps.check.outputs.should_run == 'true' && steps.get_pr.outputs.skip != 'true' && steps.gcs_auth.outcome == 'success'
+        if: steps.gcs_auth.outcome == 'success'
         uses: google-github-actions/setup-gcloud@v3
 
       - name: Download plot images from GCS staging
-        if: steps.check.outputs.should_run == 'true' && steps.get_pr.outputs.skip != 'true' && steps.gcs_auth.outcome == 'success'
+        if: steps.gcs_auth.outcome == 'success'
         run: |
           SPEC_ID="${{ steps.get_pr.outputs.spec_id }}"
           LIBRARY="${{ steps.get_pr.outputs.library }}"
@@ -125,7 +86,6 @@ jobs:
           ls -la plot_images/ 2>/dev/null || echo "No images found"
 
       - name: Check attempt count
-        if: steps.check.outputs.should_run == 'true' && steps.get_pr.outputs.skip != 'true'
         id: attempts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -150,7 +110,7 @@ jobs:
           fi
 
       - name: React with eyes emoji
-        if: steps.check.outputs.should_run == 'true' && steps.get_pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3'
+        if: steps.attempts.outputs.count != '3'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ steps.get_pr.outputs.pr_number }}
@@ -160,7 +120,7 @@ jobs:
 
       - name: Run Claude AI Quality Review
         id: claude_review
-        if: steps.check.outputs.should_run == 'true' && steps.get_pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3'
+        if: steps.attempts.outputs.count != '3'
         continue-on-error: true
         timeout-minutes: 30
         uses: anthropics/claude-code-action@v1
@@ -236,7 +196,7 @@ jobs:
 
       - name: Extract and save quality score
         id: score
-        if: steps.check.outputs.should_run == 'true' && steps.get_pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3' && steps.claude_review.outcome == 'success'
+        if: steps.attempts.outputs.count != '3' && steps.claude_review.outcome == 'success'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -276,7 +236,7 @@ jobs:
           cat review_results/${LIBRARY}.json
 
       - name: Upload review result artifact
-        if: steps.check.outputs.should_run == 'true' && steps.get_pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3' && steps.claude_review.outcome == 'success'
+        if: steps.attempts.outputs.count != '3' && steps.claude_review.outcome == 'success'
         uses: actions/upload-artifact@v5
         with:
           name: review-${{ steps.get_pr.outputs.spec_id }}-${{ steps.get_pr.outputs.library }}
@@ -284,7 +244,7 @@ jobs:
           retention-days: 7
 
       - name: Handle Claude failure
-        if: steps.check.outputs.should_run == 'true' && steps.get_pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3' && (steps.claude_review.outcome == 'failure' || steps.claude_review.outcome == 'cancelled')
+        if: steps.attempts.outputs.count != '3' && (steps.claude_review.outcome == 'failure' || steps.claude_review.outcome == 'cancelled')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUM: ${{ steps.get_pr.outputs.pr_number }}
@@ -306,7 +266,7 @@ jobs:
           :robot: *Automated notification*"
 
       - name: Trigger auto-merge if approved
-        if: steps.check.outputs.should_run == 'true' && steps.get_pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3' && steps.claude_review.outcome == 'success'
+        if: steps.attempts.outputs.count != '3' && steps.claude_review.outcome == 'success'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUM: ${{ steps.get_pr.outputs.pr_number }}
@@ -322,7 +282,7 @@ jobs:
           fi
 
       - name: Mark as failed after 3 attempts
-        if: steps.check.outputs.should_run == 'true' && steps.get_pr.outputs.skip != 'true' && steps.attempts.outputs.count == '3'
+        if: steps.attempts.outputs.count == '3'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUM: ${{ steps.get_pr.outputs.pr_number }}

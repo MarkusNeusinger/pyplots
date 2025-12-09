@@ -91,6 +91,7 @@ jobs:
             ### Issue Details
             - **Title:** ${{ github.event.issue.title }}
             - **Number:** #${{ github.event.issue.number }}
+            - **Author:** ${{ github.event.issue.user.login }}
             - **Is Update:** ${{ steps.check.outputs.is_update }}
             - **Body:**
             ```
@@ -125,7 +126,10 @@ jobs:
                - Read metadata template: `prompts/templates/metadata.yaml`
                - Create directory: `plots/{spec-id}/`
                - Create: `plots/{spec-id}/spec.md` (follow template structure)
-               - Create: `plots/{spec-id}/metadata.yaml` (replace placeholders)
+               - Create: `plots/{spec-id}/metadata.yaml` with:
+                 - `created`: Use `$(date -u +"%Y-%m-%dT%H:%M:%SZ")` for current timestamp
+                 - `issue`: ${{ github.event.issue.number }}
+                 - `suggested`: ${{ github.event.issue.user.login }}
                - Create empty folder: `plots/{spec-id}/implementations/`
 
             6. **Commit and push:**

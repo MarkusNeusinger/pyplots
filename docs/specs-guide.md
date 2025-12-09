@@ -2,9 +2,21 @@
 
 ## Overview
 
-Plot specifications are **library-agnostic descriptions** of what a plot should show. They live in `specs/` as Markdown files.
+Plot specifications are **library-agnostic descriptions** of what a plot should show. They live in `plots/{spec-id}/spec.md`.
 
 **Key Principle**: A spec describes **WHAT** to visualize, not **HOW** to implement it.
+
+---
+
+## File Location
+
+Each spec lives in its own directory:
+```
+plots/{spec-id}/
+├── spec.md              ← Specification file
+├── metadata.yaml        ← Tags, generation info
+└── implementations/     ← Library code
+```
 
 ---
 
@@ -94,7 +106,7 @@ Rules:
 1. **User creates GitHub Issue** with plot idea
 2. **Bot assigns spec ID** and validates request
 3. **Maintainer adds `approved` label**
-4. **AI generates spec file** in `specs/`
+4. **AI generates spec file** in `plots/{spec-id}/spec.md`
 5. **AI generates implementations** for all 9 libraries
 6. **Quality check** runs automatically
 7. **Auto-merge** if quality passes
@@ -115,4 +127,4 @@ Rules:
 
 ---
 
-*See `specs/.template.md` for the full template.*
+*See `templates/spec.md` for the full template.*

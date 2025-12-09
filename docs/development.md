@@ -221,7 +221,7 @@ See [CLAUDE.md](../CLAUDE.md) for:
 
 **Option 2: Pull Request (Advanced)**
 
-1. Create spec file: `specs/{spec-id}.md`
+1. Create spec directory: `plots/{spec-id}/` with spec.md
 2. Implement for at least one library
 3. Add tests
 4. Create PR with previews
@@ -267,8 +267,8 @@ Closes #123
 
 See [CLAUDE.md](../CLAUDE.md) for:
 - Directory structure
-- Implementation file naming (`plots/{library}/{plot_type}/{spec_id}/{variant}.py`)
-- Test file naming (`tests/unit/plots/{library}/test_{spec_id}.py`)
+- Implementation file naming (`plots/{spec-id}/implementations/{library}.py`)
+- Test file naming (`tests/unit/plots/test_{spec_id}.py`)
 
 ---
 
@@ -282,14 +282,9 @@ See [CLAUDE.md](../CLAUDE.md) for:
 
 ### Update an Existing Implementation
 1. Create GitHub issue referencing original
-2. Update implementation file
-3. Run tests: `pytest tests/unit/plots/{library}/test_{spec_id}.py`
+2. Update implementation file in `plots/{spec-id}/implementations/{library}.py`
+3. Run tests: `uv run pytest tests/unit/plots/test_{spec_id}.py`
 4. Create PR → Quality check runs automatically
-
-### Add a Style Variant
-1. Create new file: `plots/{library}/{plot_type}/{spec_id}/{style}_style.py`
-2. Add test
-3. Add to database
 
 ---
 
@@ -320,7 +315,7 @@ uv sync --reinstall
 
 ```python
 # Run implementation standalone
-python plots/matplotlib/scatter/scatter_basic_001/default.py
+python plots/scatter-basic/implementations/matplotlib.py
 
 # Add debug prints
 print(f"Data shape: {data.shape}")
@@ -354,7 +349,7 @@ pytest --pdb
 
 ### Q: How do I test plot generation locally?
 
-**A**: Run implementation file directly: `python plots/matplotlib/scatter/scatter_basic_001/default.py`
+**A**: Run implementation file directly: `python plots/scatter-basic/implementations/matplotlib.py`
 
 ### Q: Do I need to implement for all libraries?
 

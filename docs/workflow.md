@@ -93,8 +93,9 @@ Approved issue triggers **feature branch creation**:
 
 1. **Spec Creator** (`gen-create-spec.yml`) runs when `approved` label is added:
    - Creates feature branch: `plot/{spec-id}`
-   - Claude generates specification file: `specs/{spec-id}.md`
-   - Commits spec to feature branch
+   - Claude generates specification file: `plots/{spec-id}/spec.md`
+   - Creates metadata file: `plots/{spec-id}/metadata.yaml`
+   - Commits to feature branch
    - Dispatches code generation workflow
 
 ```
@@ -102,7 +103,8 @@ Main Issue (#53) + [approved] label
        ↓
 gen-create-spec.yml
   ├─ Creates branch: plot/scatter-basic
-  ├─ Creates: specs/scatter-basic.md
+  ├─ Creates: plots/scatter-basic/spec.md
+  ├─ Creates: plots/scatter-basic/metadata.yaml
   └─ Dispatches: gen-new-plot.yml
 ```
 
@@ -194,7 +196,7 @@ Each plot request spawns **9 parallel sub-issues** (one per library), enabling:
 ```mermaid
 graph LR
     A[Main Issue<br/>plot-request + approved] --> A1[Create Feature Branch<br/>plot/spec-id]
-    A1 --> A2[Generate Spec<br/>specs/spec-id.md]
+    A1 --> A2[Generate Spec<br/>plots/spec-id/spec.md]
     A2 --> B[Orchestrator]
     B --> C1[Sub-Issue<br/>matplotlib]
     B --> C2[Sub-Issue<br/>seaborn]
@@ -243,7 +245,7 @@ Each attempt is documented in the sub-issue with:
 
 ### Status
 - **PR:** #123
-- **File:** `plots/seaborn/heatmap/heatmap-correlation/default.py`
+- **File:** `plots/heatmap-correlation/implementations/seaborn.py`
 - **Workflow:** [link]
 ```
 
@@ -276,7 +278,7 @@ graph TD
     C -->|Rejected| Z[End]
 
     D0 -->|Create plot/spec-id branch| D0a[Generate Spec File]
-    D0a -->|specs/spec-id.md| D[Flow 3: Parallel Generation]
+    D0a -->|plots/spec-id/spec.md| D[Flow 3: Parallel Generation]
 
     D -->|Create 8 Sub-Issues| D1[Orchestrator]
     D1 --> D2[8 Parallel Jobs]

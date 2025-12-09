@@ -46,8 +46,9 @@ jobs:
               fi
             fi
 
-            # Check if this is the main issue with plot-request label
-            if echo "$LABELS" | grep -q "plot-request"; then
+            # Check if this is the main issue with plot-request AND in-progress label
+            # (only sync after generation has started, not on initial plot-request)
+            if echo "$LABELS" | grep -q "plot-request" && echo "$LABELS" | grep -q "in-progress"; then
               echo "parent_number=$ISSUE_NUM" >> $GITHUB_OUTPUT
               echo "should_sync=true" >> $GITHUB_OUTPUT
               exit 0
@@ -124,7 +125,7 @@ jobs:
         run: |
 
           # Define all libraries
-          LIBRARIES="matplotlib seaborn plotly bokeh altair plotnine pygal highcharts"
+          LIBRARIES="matplotlib seaborn plotly bokeh altair plotnine pygal highcharts letsplot"
 
           # Start building the table
           cat > /tmp/status_table.md << 'TABLEEOF'

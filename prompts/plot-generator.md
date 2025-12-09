@@ -10,7 +10,7 @@ Create a Python script for the specified plot type and library. The code should 
 
 ## Input
 
-1. **Spec**: Markdown specification from `specs/{spec-id}.md`
+1. **Spec**: Markdown specification from `plots/{spec-id}/spec.md`
 2. **Library**: matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts, or letsplot
 3. **Library Rules**: Specific rules from `prompts/library/{library}.md`
 

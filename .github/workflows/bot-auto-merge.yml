@@ -282,7 +282,7 @@ jobs:
           - **Not Feasible:** $NOT_FEASIBLE
 
           ### Links
-          - **Spec:** \`specs/$SPEC_ID.md\`
+          - **Spec:** \`plots/$SPEC_ID/spec.md\`
           - **Parent Issue:** #$MAIN_ISSUE
 
           Closes #$MAIN_ISSUE
@@ -394,8 +394,8 @@ jobs:
           SPEC_ID="${{ steps.extract.outputs.spec_id }}"
           LIBRARY="${{ steps.extract.outputs.library }}"
 
-          # Find implementation file for this library
-          IMPL_FILE=$(find plots/$LIBRARY -name "default.py" -path "*/$SPEC_ID/*" 2>/dev/null | head -1 || echo "")
+          # Get implementation file path
+          IMPL_FILE="plots/${SPEC_ID}/implementations/${LIBRARY}.py"
           echo "impl_file=$IMPL_FILE" >> $GITHUB_OUTPUT
 
       - name: Update sub-issue to merged
@@ -621,8 +621,8 @@ jobs:
             exit 0
           fi
 
-          # Find implementation file
-          IMPL_FILE=$(find plots/$LIBRARY -name "default.py" -path "*/${SPEC_ID}/*" 2>/dev/null | head -1 || echo "")
+          # Get implementation file path
+          IMPL_FILE="plots/${SPEC_ID}/implementations/${LIBRARY}.py"
 
           # Update labels
           gh issue edit "$SUB_ISSUE" \
@@ -736,7 +736,7 @@ jobs:
           - **Not Feasible:** $NOT_FEASIBLE
 
           ### Links
-          - **Spec:** \`specs/$SPEC_ID.md\`
+          - **Spec:** \`plots/$SPEC_ID/spec.md\`
           - **Parent Issue:** #$MAIN_ISSUE
 
           Closes #$MAIN_ISSUE

@@ -11,7 +11,7 @@ You are generating ONLY the **${LIBRARY}** implementation. Focus exclusively on 
 1. `prompts/plot-generator.md` - Base generation rules
 2. `prompts/quality-criteria.md` - Quality requirements
 3. `prompts/library/${LIBRARY}.md` - Library-specific rules
-4. `specs/${SPEC_ID}.md` - The specification
+4. `plots/${SPEC_ID}/spec.md` - The specification
 
 ### Step 2: Check for Previous Attempts
 
@@ -21,17 +21,15 @@ ${PREVIOUS_ATTEMPTS_CONTEXT}
 
 Create the implementation file at the correct path:
 ```
-plots/${LIBRARY}/{plot_type}/${SPEC_ID}/default.py
+plots/${SPEC_ID}/implementations/${LIBRARY}.py
 ```
-
-Determine `{plot_type}` from the spec (e.g., scatter, bar, line, heatmap).
 
 ### Step 4: Test the Implementation
 
 Run the implementation to verify it works:
 ```bash
 source .venv/bin/activate
-MPLBACKEND=Agg python plots/${LIBRARY}/{plot_type}/${SPEC_ID}/default.py
+MPLBACKEND=Agg python plots/${SPEC_ID}/implementations/${LIBRARY}.py
 ```
 
 ### Step 5: Create PR
@@ -50,7 +48,7 @@ Implements `${SPEC_ID}` for **${LIBRARY}** library.
 **Attempt:** ${ATTEMPT}/3
 
 ## Implementation
-- `plots/${LIBRARY}/{plot_type}/${SPEC_ID}/default.py`
+- `plots/${SPEC_ID}/implementations/${LIBRARY}.py`
 ```
 
 ## Important Notes

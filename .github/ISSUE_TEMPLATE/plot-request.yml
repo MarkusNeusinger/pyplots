@@ -1,6 +1,6 @@
 name: Plot Request
 description: Propose a new plot type for pyplots
-title: "Plot: "
+title: ""
 labels: ["plot-request"]
 body:
   - type: markdown
@@ -11,9 +11,9 @@ body:
         Describe the plot you'd like to see. Our AI will:
         1. Check for similar existing plots
         2. Assign a descriptive spec ID (e.g., `scatter-regression-linear`)
-        3. Generate implementations once approved
+        3. Create the specification for review
 
-        **No need to specify an ID** - just describe what you want!
+        **After submission:** A maintainer will review and add the `approved` label to start code generation.
 
   - type: textarea
     id: description

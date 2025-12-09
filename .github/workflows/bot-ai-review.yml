@@ -202,12 +202,12 @@ jobs:
 
             ### Your Task
 
-            1. **Read the spec file**: `specs/${{ steps.pr.outputs.spec_id }}.md`
+            1. **Read the spec file**: `plots/${{ steps.pr.outputs.spec_id }}/spec.md`
                - Note all quality criteria listed
                - Understand the expected visual output
 
             2. **Read the ${{ steps.pr.outputs.library }} implementation**:
-               - `plots/${{ steps.pr.outputs.library }}/*/${{ steps.pr.outputs.spec_id }}/default.py`
+               - `plots/${{ steps.pr.outputs.spec_id }}/implementations/${{ steps.pr.outputs.library }}.py`
 
             3. **Read library-specific rules**:
                - `prompts/library/${{ steps.pr.outputs.library }}.md`

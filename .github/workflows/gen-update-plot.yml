@@ -238,8 +238,8 @@ jobs:
           SPEC_ID="${{ steps.extract_info.outputs.spec_id }}"
           LIBRARY="${{ steps.extract_info.outputs.library }}"
 
-          # Find plot file for this library and spec
-          PLOT_FILE=$(find plots/$LIBRARY -name "default.py" -path "*/${SPEC_ID}/*" 2>/dev/null | head -1 || echo "")
+          # Get plot file path
+          PLOT_FILE="plots/${SPEC_ID}/implementations/${LIBRARY}.py"
 
           if [ -n "$PLOT_FILE" ] && [ -f "$PLOT_FILE" ]; then
             echo "plot_file=$PLOT_FILE" >> $GITHUB_OUTPUT
@@ -249,7 +249,7 @@ jobs:
           fi
 
           # Check spec file
-          if [ -f "specs/${SPEC_ID}.md" ]; then
+          if [ -f "plots/${SPEC_ID}/spec.md" ]; then
             echo "spec_exists=true" >> $GITHUB_OUTPUT
           else
             echo "spec_exists=false" >> $GITHUB_OUTPUT
@@ -291,7 +291,7 @@ jobs:
           CURRENT_CODE=$(cat "$PLOT_FILE")
 
           # Read spec
-          SPEC_CONTENT=$(cat "specs/${SPEC_ID}.md")
+          SPEC_CONTENT=$(cat "plots/${SPEC_ID}/spec.md")
 
           # Read library-specific rules
           LIBRARY_RULES=$(cat "prompts/library/${LIBRARY}.md" 2>/dev/null || echo "No library-specific rules found")

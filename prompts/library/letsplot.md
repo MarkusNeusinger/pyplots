@@ -95,18 +95,9 @@ geom_density()     # Density
 + facet_grid(x='row_var', y='col_var')
 ```
 
-## Folder Name
+## Output File
 
-`plots/letsplot/{geom}/`
-
-| Geom | Folder |
-|------|--------|
-| `geom_point()` | `point/` |
-| `geom_line()` | `line/` |
-| `geom_bar()` | `bar/` |
-| `geom_boxplot()` | `boxplot/` |
-| `geom_histogram()` | `histogram/` |
-| `geom_tile()` | `tile/` |
+`plots/{spec-id}/implementations/letsplot.py`
 
 ## Key Differences from plotnine
 

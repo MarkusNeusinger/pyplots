@@ -54,17 +54,7 @@ ax.boxplot(data, labels=group_names)  # Wrong
 ax.boxplot(data, tick_labels=group_names)  # Right
 ```
 
-## Folder Name
+## Output File
 
-`plots/matplotlib/{plot_function}/`
-
-| Function | Folder |
-|----------|--------|
-| `ax.scatter()` | `scatter/` |
-| `ax.plot()` | `plot/` |
-| `ax.bar()` | `bar/` |
-| `ax.boxplot()` | `boxplot/` |
-| `ax.hist()` | `hist/` |
-| `ax.imshow()` | `imshow/` |
-| `ax.pie()` | `pie/` |
+`plots/{spec-id}/implementations/matplotlib.py`
 

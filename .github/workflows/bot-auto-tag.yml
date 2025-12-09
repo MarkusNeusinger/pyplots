@@ -97,7 +97,7 @@ jobs:
           SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
 
           # Read spec file
-          SPEC_FILE="specs/${SPEC_ID}.md"
+          SPEC_FILE="plots/${SPEC_ID}/spec.md"
           if [ -f "$SPEC_FILE" ]; then
             SPEC_CONTENT=$(cat "$SPEC_FILE")
             echo "spec_exists=true" >> $GITHUB_OUTPUT
@@ -106,8 +106,8 @@ jobs:
             SPEC_CONTENT=""
           fi
 
-          # Find plot files
-          PLOT_FILES=$(find plots -name "*.py" -path "*/${SPEC_ID}/*" 2>/dev/null | head -5)
+          # Find implementation files
+          PLOT_FILES=$(find "plots/${SPEC_ID}/implementations" -name "*.py" 2>/dev/null | head -5)
           echo "plot_files<<EOF" >> $GITHUB_OUTPUT
           echo "$PLOT_FILES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -121,7 +121,7 @@ jobs:
           SPEC_ID="${{ steps.extract_spec.outputs.spec_id }}"
 
           # Read spec content
-          SPEC_CONTENT=$(cat "specs/${SPEC_ID}.md")
+          SPEC_CONTENT=$(cat "plots/${SPEC_ID}/spec.md")
 
           # Read first plot file as example
           PLOT_FILE=$(echo "${{ steps.read_files.outputs.plot_files }}" | head -1)

@@ -34,7 +34,7 @@ load_dotenv()
 # Configuration
 GCS_BUCKET = os.getenv("GCS_BUCKET", "pyplots-images")
 BASE_DIR = Path(__file__).parent.parent
-SPECS_DIR = BASE_DIR / "specs"
+PLOTS_DIR = BASE_DIR / "plots"
 
 
 # Configure logging
@@ -125,11 +125,11 @@ class ImplementationResponse(BaseModel):
 
     library_id: str
     library_name: str
-    plot_function: str
     variant: str
     file_path: str
     preview_url: Optional[str] = None
     quality_score: Optional[float] = None
+    code: Optional[str] = None
 
 
 class SpecDetailResponse(BaseModel):
@@ -138,6 +138,7 @@ class SpecDetailResponse(BaseModel):
     id: str
     title: str
     description: Optional[str] = None
+    content: Optional[str] = None
     data_requirements: list[DataRequirement] = []
     tags: list[str] = []
     implementations: list[ImplementationResponse] = []
@@ -160,11 +161,11 @@ class SpecListItem(BaseModel):
 
 def list_spec_ids_from_filesystem() -> list[str]:
     """List spec IDs from filesystem (fallback when DB not configured)."""
-    if not SPECS_DIR.exists():
+    if not PLOTS_DIR.exists():
         return []
 
-    excluded = {".template", "VERSIONING"}
-    return sorted([f.stem for f in SPECS_DIR.glob("*.md") if f.stem not in excluded])
+    # Each subdirectory in plots/ is a spec (containing spec.md)
+    return sorted([d.name for d in PLOTS_DIR.iterdir() if d.is_dir() and (d / "spec.md").exists()])
 
 
 def get_images_from_gcs(spec_id: str) -> list[dict]:
@@ -254,11 +255,11 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(get_db)):
         ImplementationResponse(
             library_id=impl.library_id,
             library_name=impl.library.name if impl.library else impl.library_id,
-            plot_function=impl.plot_function,
             variant=impl.variant,
             file_path=impl.file_path,
             preview_url=impl.preview_url,
             quality_score=impl.quality_score,
+            code=impl.code,
         )
         for impl in spec.implementations
     ]
@@ -272,6 +273,7 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(get_db)):
         id=spec.id,
         title=spec.title,
         description=spec.description,
+        content=spec.content,
         data_requirements=data_reqs,
         tags=spec.tags or [],
         implementations=implementations,

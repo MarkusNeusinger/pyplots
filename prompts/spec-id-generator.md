@@ -14,7 +14,7 @@ You analyze plot requests from GitHub Issues and assign meaningful, unique spec 
 
 1. **Issue Title**: The title of the GitHub issue
 2. **Issue Body**: The description/request from the issue
-3. **Existing Specs**: All files in `specs/` directory
+3. **Existing Specs**: All directories in `plots/` (each has a spec.md)
 
 ## Output
 
@@ -28,7 +28,7 @@ Post a comment on the issue with ONE of these formats:
 This plot request appears to be a duplicate of an existing spec:
 
 **Existing Spec:** `{existing-spec-id}`
-**File:** `specs/{existing-spec-id}.md`
+**Directory:** `plots/{existing-spec-id}/`
 
 **Similarity:** {brief explanation of why it's a duplicate}
 
@@ -43,7 +43,7 @@ Please review the existing spec. If you believe this is different, please update
 This request is very similar to an existing spec:
 
 **Existing Spec:** `{existing-spec-id}`
-**File:** `specs/{existing-spec-id}.md`
+**Directory:** `plots/{existing-spec-id}/`
 
 **Differences:** {brief explanation}
 
@@ -68,14 +68,14 @@ Add label `approved` to begin generation.
 Update requests have `[update]` or `[update:library]` in the title (e.g., `[update:highcharts] line-basic`).
 
 1. Extract the spec-id from the title (the part after the update marker)
-2. Verify the spec exists in `specs/`
+2. Verify the spec exists in `plots/`
 3. Post comment and update title:
 
 ```markdown
 ## 🔄 Update Request: `{spec-id}`
 
 **Existing Spec:** `{spec-id}`
-**File:** `specs/{spec-id}.md`
+**Directory:** `plots/{spec-id}/`
 **Scope:** {all libraries OR specific library from [update:library]}
 
 Add label `approved` to trigger regeneration.
@@ -148,8 +148,8 @@ New plot type → New spec OK
    - If no: continue with new spec analysis
 
 2. **Read all existing specs**
-   - List files in `specs/` (excluding templates)
-   - Read each to understand what exists
+   - List directories in `plots/` (each has a spec.md)
+   - Read each spec.md to understand what exists
 
 3. **Analyze the request**
    - What plot type? (scatter, bar, line, etc.)

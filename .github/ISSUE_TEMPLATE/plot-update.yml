@@ -1,6 +1,6 @@
 name: Plot Update
 description: Request updates or regeneration of an existing plot
-title: "[spec-id] [update] "
+title: "[SPEC-ID] [update] "
 labels: ["plot-request", "update"]
 body:
   - type: markdown
@@ -8,21 +8,30 @@ body:
       value: |
         ## Plot Update Request
 
-        Use this form to update or regenerate an existing plot.
+        Use this to update or regenerate an existing plot.
 
-        **Title Format:**
-        - `[scatter-basic] [update] Regenerate` → Regenerate all 9 libraries
-        - `[scatter-basic] [update:seaborn] Fix colors` → Regenerate only seaborn
+        **Important:** Replace `SPEC-ID` in the title with the actual spec ID!
 
-        Replace `[spec-id]` in the title with the actual spec ID (e.g., `scatter-basic`).
+        **Title Examples:**
+        - `[scatter-basic] [update] Regenerate all` - All 9 libraries
+        - `[scatter-basic] [update:seaborn] Fix colors` - Only seaborn
 
-        After submitting, a maintainer will add the `approved` label to trigger regeneration.
+        **After submission:** A maintainer will review and add the `approved` label to start regeneration.
+
+  - type: input
+    id: spec_id
+    attributes:
+      label: Spec ID
+      description: "The spec ID to update (e.g., scatter-basic). Must match the title!"
+      placeholder: "scatter-basic"
+    validations:
+      required: true
 
   - type: dropdown
     id: target_library
     attributes:
-      label: Target Library (optional)
-      description: Update only a specific library, or leave empty for all. If you select a specific library, change [update] to [update:library] in the title.
+      label: Target Library
+      description: "Update specific library or all? If specific, change [update] to [update:library] in title."
       options:
         - All libraries
         - matplotlib
@@ -35,7 +44,7 @@ body:
         - highcharts
         - letsplot
     validations:
-      required: false
+      required: true
 
   - type: dropdown
     id: update_type
@@ -54,7 +63,7 @@ body:
     id: changes
     attributes:
       label: Requested Changes
-      description: Describe the changes to the spec or implementation (Claude will update the spec first if needed)
+      description: Describe the changes to the spec or implementation
       placeholder: |
         - Add grid lines for better readability
         - Change default color scheme to colorblind-friendly

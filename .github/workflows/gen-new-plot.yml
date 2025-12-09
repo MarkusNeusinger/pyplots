@@ -65,7 +65,7 @@ jobs:
 
       - name: Verify spec file exists
         run: |
-          SPEC_FILE="specs/${{ inputs.spec_id }}.md"
+          SPEC_FILE="plots/${{ inputs.spec_id }}/spec.md"
           if [ ! -f "$SPEC_FILE" ]; then
             echo "::error::Spec file not found: $SPEC_FILE"
             echo "::error::The feature branch should contain the spec file"
@@ -137,7 +137,7 @@ jobs:
             SUB_BODY="## [$SPEC_ID] $LIBRARY Implementation
 
           **Parent Issue:** #$PARENT_NUM
-          **Spec:** \`specs/$SPEC_ID.md\`
+          **Spec:** \`plots/$SPEC_ID/spec.md\`
           **Library:** $LIBRARY
           **Feature Branch:** \`$FEATURE_BRANCH\`
 

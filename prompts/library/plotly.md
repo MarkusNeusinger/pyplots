@@ -44,16 +44,7 @@ fig.write_image('plot.png', width=1600, height=900, scale=3)
 Plotly is interactive by default (hover, zoom, pan).
 For static outputs → `write_image()`.
 
-## Folder-Name
+## Output File
 
-`plots/plotly/{trace_type}/`
-
-| Trace | Folder |
-|-------|--------|
-| `go.Scatter` | `scatter/` |
-| `go.Bar` | `bar/` |
-| `go.Box` | `box/` |
-| `go.Heatmap` | `heatmap/` |
-| `go.Scatter3d` | `scatter3d/` |
-| `go.Candlestick` | `candlestick/` |
+`plots/{spec-id}/implementations/plotly.py`
 

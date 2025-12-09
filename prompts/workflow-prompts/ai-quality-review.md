@@ -13,12 +13,12 @@ Evaluate if the **${LIBRARY}** implementation matches the specification for `${S
 ## Your Task
 
 ### 1. Read the Spec File
-`specs/${SPEC_ID}.md`
+`plots/${SPEC_ID}/spec.md`
 - Note all quality criteria listed
 - Understand the expected visual output
 
 ### 2. Read the Implementation
-`plots/${LIBRARY}/*/${SPEC_ID}/default.py`
+`plots/${SPEC_ID}/implementations/${LIBRARY}.py`
 
 ### 3. Read Library-Specific Rules
 `prompts/library/${LIBRARY}.md`

@@ -1154,7 +1154,7 @@ Each plot type in this catalog can become a spec file. Priority order suggestion
 5. **SVG/Minimal** (svg-line, svg-radar, svg-worldmap)
 6. **Scientific** (spectrum-plot, survival-curve, forest-plot)
 
-To create a spec, use the format: `specs/{spec-id}.md`
+To create a spec, use the format: `plots/{spec-id}/spec.md`
 
 ---
 

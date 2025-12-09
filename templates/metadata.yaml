@@ -1,32 +1,26 @@
-# Metadata for pie-basic
+# Metadata for {spec-id}
 # Auto-synced to PostgreSQL on push to main
 
-spec_id: pie-basic
-title: Basic Pie Chart
+spec_id: {spec-id}
+title: {Title}
 
 # Spec-level tracking
-created_at: null
-created_by_issue: null
-updated_at: null
+created_at: null       # ISO 8601 timestamp when spec was created
+created_by_issue: null # GitHub issue number that triggered creation
+updated_at: null       # ISO 8601 timestamp of last spec update
 
 tags:
   plot_type:
-  - pie
-  - donut
-  - proportion
+  - {type}             # scatter, bar, line, pie, histogram, box, area, etc.
   domain:
-  - statistics
-  - general
-  - business
+  - general            # statistics, science, business, finance, etc.
   features:
-  - basic
-  - proportional
-  - percentage
+  - basic              # basic, grouped, stacked, animated, interactive, etc.
   audience:
-  - beginner
+  - beginner           # beginner, intermediate, advanced
   data_type:
-  - categorical
-  - numeric
+  - numeric            # numeric, categorical, datetime, continuous
+
 implementations:
   matplotlib:
     preview_url: null

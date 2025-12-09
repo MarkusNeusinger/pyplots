@@ -3,6 +3,12 @@
 
 spec_id: box-basic
 title: Basic Box Plot
+
+# Spec-level tracking
+created_at: null
+created_by_issue: null
+updated_at: null
+
 tags:
   plot_type:
   - box

@@ -152,6 +152,11 @@ Each plot directory contains a `metadata.yaml` file that is synced to PostgreSQL
 spec_id: scatter-basic
 title: Basic Scatter Plot
 
+# Spec-level tracking
+created_at: 2025-01-10T08:00:00Z
+created_by_issue: 42
+updated_at: 2025-01-15T10:30:00Z
+
 # Spec-level tags (same for all library implementations)
 tags:
   plot_type: [scatter, point]
@@ -184,6 +189,7 @@ implementations:
 ```
 
 **Key points:**
+- Spec-level tracking: `created_at`, `created_by_issue`, `updated_at`
 - Tags are at spec level (same for all libraries)
 - Generation info tracks which model created the code
 - History preserves all previous attempts with feedback

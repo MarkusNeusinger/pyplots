@@ -6,7 +6,7 @@ on:
     types: [ opened, synchronize, reopened ]
     paths:
       - 'plots/**/*.py'
-      - 'specs/**/*.md'
+      - 'plots/**/spec.md'
 
 jobs:
   test-plots:

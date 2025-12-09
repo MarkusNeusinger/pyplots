@@ -153,6 +153,9 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
     # Add structured tags from metadata
     spec_data["structured_tags"] = metadata.get("tags")
 
+    # Add spec update history
+    spec_data["updates"] = metadata.get("updates")
+
     # Scan implementations
     implementations = []
     if implementations_dir.exists():
@@ -188,6 +191,12 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
                 "workflow_run": current.get("workflow_run"),
                 "issue_number": current.get("issue"),
                 "quality_score": current.get("quality_score"),
+                # Quality evaluation details
+                "evaluator_scores": current.get("evaluator_scores"),
+                "quality_feedback": current.get("quality_feedback"),
+                "improvements_suggested": current.get("improvements_suggested"),
+                # Version history
+                "history": impl_meta.get("history"),
             })
 
     return {
@@ -251,6 +260,7 @@ async def sync_to_database(session: AsyncSession, plots: list[dict]) -> dict:
                     "data_requirements": spec["data_requirements"],
                     "tags": spec["tags"],
                     "structured_tags": spec.get("structured_tags"),
+                    "updates": spec.get("updates"),
                 },
             )
         )
@@ -269,7 +279,11 @@ async def sync_to_database(session: AsyncSession, plots: list[dict]) -> dict:
             }
 
             # Add optional fields
-            for field in ["generated_at", "generated_by", "workflow_run", "issue_number", "quality_score"]:
+            optional_fields = [
+                "generated_at", "generated_by", "workflow_run", "issue_number", "quality_score",
+                "evaluator_scores", "quality_feedback", "improvements_suggested", "history"
+            ]
+            for field in optional_fields:
                 if impl.get(field) is not None:
                     update_set[field] = impl[field]
 

@@ -27,6 +27,7 @@ class Spec(Base):
 
     # From spec.md
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Prose text
+    content: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Full markdown from spec.md
     applications: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)  # Use cases
     data: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)  # Data requirements
     notes: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)  # Optional hints
@@ -36,6 +37,7 @@ class Spec(Base):
     issue: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # GitHub issue number
     suggested: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # GitHub username
     tags: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)  # {plot_type, domain, features, audience, data_type}
+    updates: Mapped[Optional[list]] = mapped_column(JSONB, nullable=True)  # Spec update history
 
     # System
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
@@ -92,6 +94,15 @@ class Implementation(Base):
     generated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     generated_by: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # Model ID
     issue: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # GitHub Issue
+    workflow_run: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # GitHub Actions run ID
+
+    # Quality evaluation details
+    evaluator_scores: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)  # Per-LLM scores
+    quality_feedback: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Evaluation feedback
+    improvements_suggested: Mapped[Optional[list]] = mapped_column(JSONB, nullable=True)  # Suggested fixes
+
+    # Version history
+    history: Mapped[Optional[list]] = mapped_column(JSONB, nullable=True)  # Previous versions
 
     # System
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())

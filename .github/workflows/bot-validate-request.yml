@@ -112,7 +112,7 @@ jobs:
 
             ### Process
             1. Read `prompts/spec-id-generator.md` for full instructions
-            2. List all existing specs in `specs/` directory
+            2. List all existing specs in `plots/` directory (each subfolder has a spec.md)
             3. Analyze the request and check for duplicates
             4. Post comment using `gh issue comment ${{ github.event.issue.number }} --body "..."`
             5. If NEW: Update title with `gh issue edit ${{ github.event.issue.number }} --title "..."`

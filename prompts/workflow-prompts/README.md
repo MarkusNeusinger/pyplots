@@ -34,7 +34,7 @@ These prompts use `${VARIABLE}` placeholders that must be substituted before use
 | `${PR_NUMBER}` | Pull request number | `42` |
 | `${SUB_ISSUE_NUMBER}` | Library-specific sub-issue | `100` |
 | `${MAIN_ISSUE_NUMBER}` | Parent issue number | `99` |
-| `${PLOT_FILE}` | Path to implementation file | `plots/matplotlib/scatter/scatter-basic/default.py` |
+| `${PLOT_FILE}` | Path to implementation file | `plots/scatter-basic/implementations/matplotlib.py` |
 | `${CURRENT_CODE}` | Current implementation code | Python source |
 | `${SPEC_CONTENT}` | Spec file contents | Markdown |
 | `${LIBRARY_RULES}` | Library-specific rules | Markdown |

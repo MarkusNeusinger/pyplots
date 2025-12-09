@@ -158,29 +158,27 @@ jobs:
             2. `prompts/default-style-guide.md` - Visual style requirements (colors, fonts, dimensions)
             3. `prompts/quality-criteria.md` - Quality requirements
             4. `prompts/library/${{ inputs.library }}.md` - Library-specific rules
-            5. `specs/${{ inputs.spec_id }}.md` - The specification
+            5. `plots/${{ inputs.spec_id }}/spec.md` - The specification
 
             ### Step 2: Check for previous attempts
             ${{ steps.previous_attempts.outputs.has_history == 'true' && 'IMPORTANT: There are previous failed attempts. Read /tmp/previous_attempts.md to understand what went wrong and avoid repeating the same mistakes.' || 'This is the first attempt for this library.' }}
 
             ### Step 3: Generate implementation
             Create the implementation file at the correct path:
-            - `plots/${{ inputs.library }}/{plot_type}/${{ inputs.spec_id }}/default.py`
-
-            Determine {plot_type} from the spec (e.g., scatter, bar, line, heatmap).
+            - `plots/${{ inputs.spec_id }}/implementations/${{ inputs.library }}.py`
 
             ### Step 4: Test the implementation
             Run the implementation to verify it works:
             ```bash
             source .venv/bin/activate
-            MPLBACKEND=Agg python plots/${{ inputs.library }}/{plot_type}/${{ inputs.spec_id }}/default.py
+            MPLBACKEND=Agg python plots/${{ inputs.spec_id }}/implementations/${{ inputs.library }}.py
             ```
 
             ### Step 5: Format the code
             IMPORTANT: Run ruff to format and lint the code before committing:
             ```bash
-            uv run ruff format plots/${{ inputs.library }}/{plot_type}/${{ inputs.spec_id }}/default.py
-            uv run ruff check --fix plots/${{ inputs.library }}/{plot_type}/${{ inputs.spec_id }}/default.py
+            uv run ruff format plots/${{ inputs.spec_id }}/implementations/${{ inputs.library }}.py
+            uv run ruff check --fix plots/${{ inputs.spec_id }}/implementations/${{ inputs.library }}.py
             ```
 
             ### Step 6: Create PR (only if implementation is successful)
@@ -200,7 +198,7 @@ jobs:
               **Attempt:** ${{ inputs.attempt }}/3
 
               ## Implementation
-              - \`plots/${{ inputs.library }}/{plot_type}/${{ inputs.spec_id }}/default.py\`
+              - \`plots/${{ inputs.spec_id }}/implementations/${{ inputs.library }}.py\`
 
               Closes #${{ inputs.sub_issue_number }}"
               ```
@@ -236,8 +234,8 @@ jobs:
           ATTEMPT="${{ inputs.attempt }}"
           PR_NUMBER="${{ steps.pr.outputs.pr_number }}"
 
-          # Find the generated plot file
-          PLOT_FILE=$(find plots/$LIBRARY -name "default.py" -path "*/${SPEC_ID}/*" 2>/dev/null | head -1 || echo "")
+          # Get the implementation file path
+          PLOT_FILE="plots/${SPEC_ID}/implementations/${LIBRARY}.py"
 
           # Read the code if it exists
           if [ -f "$PLOT_FILE" ]; then

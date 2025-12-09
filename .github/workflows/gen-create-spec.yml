@@ -143,14 +143,14 @@ jobs:
           SPEC_ID: ${{ steps.extract_spec.outputs.spec_id }}
           IS_UPDATE: ${{ steps.check.outputs.is_update }}
         run: |
-          if [ -f "specs/$SPEC_ID.md" ]; then
+          if [ -f "plots/$SPEC_ID/spec.md" ]; then
             echo "exists=true" >> $GITHUB_OUTPUT
-            echo "::notice::Spec file exists: specs/$SPEC_ID.md"
+            echo "::notice::Spec file exists: plots/$SPEC_ID/spec.md"
           else
             echo "exists=false" >> $GITHUB_OUTPUT
             # For updates, spec MUST exist
             if [[ "$IS_UPDATE" == "true" ]]; then
-              echo "::error::Update request but spec file does not exist: specs/$SPEC_ID.md"
+              echo "::error::Update request but spec file does not exist: plots/$SPEC_ID/spec.md"
               exit 1
             fi
             echo "::notice::Spec file does not exist yet (will be created)"
@@ -222,23 +222,27 @@ jobs:
 
             ### Instructions
 
-            1. Read the template: `specs/.template.md`
-            2. Read an example spec for reference: `specs/scatter-basic.md`
-            3. Read the spec validator rules: `prompts/spec-validator.md`
+            1. Read the template: `templates/spec.md`
+            2. Read the metadata template: `templates/metadata.yaml`
+            3. Read an example spec for reference: `plots/scatter-basic/spec.md`
+            4. Read the spec validator rules: `prompts/spec-validator.md`
 
-            4. Create the spec file at: `specs/${{ steps.extract_spec.outputs.spec_id }}.md`
+            5. Create the plot directory and files:
+               - Create directory: `plots/${{ steps.extract_spec.outputs.spec_id }}/`
+               - Create spec file: `plots/${{ steps.extract_spec.outputs.spec_id }}/spec.md`
+               - Create metadata file: `plots/${{ steps.extract_spec.outputs.spec_id }}/metadata.yaml`
+               - Create implementations folder: `plots/${{ steps.extract_spec.outputs.spec_id }}/implementations/`
                - Follow the template structure exactly
-               - Keep it simple and focused (description, data, tags, use cases)
-               - Include example data if helpful (inline or dataset reference)
+               - Keep it simple and focused (Description, Applications, Data, Notes)
                - Include realistic use cases with domain context
 
-            5. Do NOT commit or push - just create the file
+            6. Do NOT commit or push - just create the files
 
             ### Quality Requirements
-            - All required sections: Title, Description, Data, Tags, Use Cases
+            - Spec must have sections: Title, Description, Applications, Data, Notes
             - Description should clearly explain what the plot visualizes
-            - Data section should list required columns with types
-            - Use cases should be realistic and varied
+            - Data section should list required variables with types
+            - Applications should be realistic and varied
             - Keep it concise - AI uses central prompts for implementation details
 
       - name: Commit and push spec file
@@ -261,9 +265,9 @@ jobs:
             exit 0
           fi
 
-          # For new specs: check if spec file was created
-          if [ -f "specs/$SPEC_ID.md" ]; then
-            git add "specs/$SPEC_ID.md"
+          # For new specs: check if spec directory was created
+          if [ -d "plots/$SPEC_ID" ] && [ -f "plots/$SPEC_ID/spec.md" ]; then
+            git add "plots/$SPEC_ID/"
 
             # Check if there are changes to commit
             if git diff --cached --quiet; then
@@ -273,10 +277,10 @@ jobs:
 
             Created from issue #$ISSUE_NUMBER"
               git push -u origin "$BRANCH"
-              echo "::notice::Pushed spec file to $BRANCH"
+              echo "::notice::Pushed spec files to $BRANCH"
             fi
           else
-            echo "::error::Spec file was not created by Claude"
+            echo "::error::Spec directory was not created by Claude"
             exit 1
           fi
 
@@ -313,7 +317,7 @@ jobs:
 
           **Spec ID:** \`$SPEC_ID\`
           **Branch:** \`$BRANCH\`
-          **File:** \`specs/$SPEC_ID.md\`
+          **Directory:** \`plots/$SPEC_ID/\`
 
           ### Next Steps
           Triggering code generation for all 9 libraries...

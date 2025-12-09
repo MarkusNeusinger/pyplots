@@ -63,15 +63,7 @@ p.yaxis.axis_label = y_label
 # Grid: AI discretion
 ```
 
-## Folder-Name
+## Output File
 
-`plots/bokeh/{glyph_method}/`
-
-| Method | Folder |
-|--------|--------|
-| `p.scatter()` | `scatter/` |
-| `p.line()` | `line/` |
-| `p.vbar()` | `vbar/` |
-| `p.hbar()` | `hbar/` |
-| Custom (no native) | `custom/` |
+`plots/{spec-id}/implementations/bokeh.py`
 

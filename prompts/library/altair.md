@@ -66,15 +66,7 @@ chart = chart.interactive()
 .encode(tooltip=['col_x', 'col_y'])
 ```
 
-## Folder-Name
+## Output File
 
-`plots/altair/{mark_type}/`
-
-| Mark | Folder |
-|------|--------|
-| `mark_point()` | `point/` |
-| `mark_line()` | `line/` |
-| `mark_bar()` | `bar/` |
-| `mark_boxplot()` | `boxplot/` |
-| `mark_rect()` | `rect/` |
+`plots/{spec-id}/implementations/altair.py`
 

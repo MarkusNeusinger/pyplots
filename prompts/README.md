@@ -46,7 +46,7 @@ See `workflow-prompts/README.md` for variable reference and usage.
     ${PROMPT_LIB}
 
     ## Spec
-    $(cat specs/${{ inputs.spec_id }}.md)"
+    $(cat plots/${{ inputs.spec_id }}/spec.md)"
 ```
 
 ## Prompt Structure

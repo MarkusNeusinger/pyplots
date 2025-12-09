@@ -91,7 +91,6 @@ jobs:
             ### Issue Details
             - **Title:** ${{ github.event.issue.title }}
             - **Number:** #${{ github.event.issue.number }}
-            - **Author:** ${{ github.event.issue.user.login }}
             - **Is Update:** ${{ steps.check.outputs.is_update }}
             - **Body:**
             ```

@@ -12,10 +12,20 @@ on:
     branches:
       - 'plot/**'  # PRs targeting feature branches
 
+  # Manual trigger for reviewing specific PRs
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to review'
+        required: true
+        type: string
+
 jobs:
   ai-review:
-    # Only run for auto/* branches (generated implementations)
-    if: startsWith(github.event.pull_request.head.ref, 'auto/')
+    # Run for auto/* branches OR manual workflow_dispatch
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.event.pull_request.head.ref, 'auto/')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -28,9 +38,27 @@ jobs:
       - name: Extract PR info
         id: get_pr
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # For pull_request_target
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_NUMBER_EVENT: ${{ github.event.pull_request.number }}
+          # For workflow_dispatch
+          PR_NUMBER_INPUT: ${{ inputs.pr_number }}
         run: |
+          # Determine PR number based on trigger type
+          if [ -n "$PR_NUMBER_INPUT" ]; then
+            # workflow_dispatch - lookup PR info
+            PR_NUMBER="$PR_NUMBER_INPUT"
+            PR_DATA=$(gh pr view "$PR_NUMBER" --json headRefName,headRefOid)
+            HEAD_REF=$(echo "$PR_DATA" | jq -r '.headRefName')
+            HEAD_SHA=$(echo "$PR_DATA" | jq -r '.headRefOid')
+            echo "head_sha=$HEAD_SHA" >> $GITHUB_OUTPUT
+          else
+            # pull_request_target
+            PR_NUMBER="$PR_NUMBER_EVENT"
+            echo "head_sha=${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
+          fi
+
           # Extract spec-id and library from branch name (auto/{spec-id}/{library})
           SPEC_ID=$(echo "$HEAD_REF" | cut -d'/' -f2)
           LIBRARY=$(echo "$HEAD_REF" | cut -d'/' -f3)
@@ -45,7 +73,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           # Checkout PR head to review the actual implementation
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ steps.get_pr.outputs.head_sha }}
           fetch-depth: 0
 
       - name: Get main issue number from PR

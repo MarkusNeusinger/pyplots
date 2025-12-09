@@ -10,7 +10,7 @@ body:
 
         Describe the plot you'd like to see. Our AI will:
         1. Check for similar existing plots
-        2. Assign a descriptive spec ID (e.g., `scatter-regression-linear`)
+        2. Assign a spec ID (e.g., `scatter-regression-linear`)
         3. Create the specification for review
 
         **After submission:** A maintainer will review and add the `approved` label to start code generation.
@@ -18,53 +18,43 @@ body:
   - type: textarea
     id: description
     attributes:
-      label: What should this plot show?
-      description: Describe the visualization you need (1-3 sentences)
-      placeholder: "A scatter plot with a linear regression line that shows the correlation between two variables, including confidence intervals."
+      label: Description
+      description: What does this plot visualize? When should you use it? (2-4 sentences)
+      placeholder: "A scatter plot with a linear regression line that shows the correlation between two variables. Useful for identifying trends and making predictions based on the relationship between variables."
     validations:
       required: true
 
   - type: textarea
-    id: use_cases
+    id: applications
     attributes:
-      label: Use Cases (optional)
-      description: When would someone use this plot?
+      label: Applications
+      description: Realistic scenarios where this plot would be used (with domain context)
       placeholder: |
-        - Analyzing relationship between marketing spend and sales
+        - Analyzing relationship between marketing spend and sales revenue
         - Visualizing correlation in scientific experiments
+        - Predicting house prices based on square footage
     validations:
       required: false
 
-  - type: dropdown
-    id: plot_type
+  - type: textarea
+    id: data
     attributes:
-      label: Plot Type
-      description: What type of visualization is this?
-      options:
-        - scatter
-        - line
-        - bar
-        - histogram
-        - heatmap
-        - box
-        - violin
-        - pie
-        - area
-        - other
+      label: Data
+      description: What data does this plot need? (columns, types, size)
+      placeholder: |
+        - `x` (numeric) - independent variable
+        - `y` (numeric) - dependent variable
+        - Size: 50-500 points
     validations:
       required: false
 
-  - type: checkboxes
-    id: features
+  - type: textarea
+    id: notes
     attributes:
-      label: Features (optional)
-      description: Select any special features you'd like
-      options:
-        - label: grouped
-        - label: stacked
-        - label: horizontal
-        - label: animated
-        - label: interactive
-        - label: 3d
-        - label: regression
-        - label: annotations
+      label: Notes
+      description: Optional implementation hints or special requirements
+      placeholder: |
+        - Show confidence interval band
+        - Display R² value in legend
+    validations:
+      required: false

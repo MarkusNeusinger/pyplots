@@ -37,7 +37,7 @@ on:
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN:
         required: true
-      GCS_SA_KEY:
+      GCS_CREDENTIALS:
         required: false
 
 jobs:
@@ -218,21 +218,21 @@ jobs:
         id: gcs_upload
         if: steps.pr.outputs.pr_exists == 'true'
         env:
-          GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+          GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
         run: |
           IMPL_DIR="plots/${{ inputs.spec_id }}/implementations"
           STAGING_PATH="gs://pyplots-images/staging/${{ inputs.spec_id }}/${{ inputs.library }}"
           PUBLIC_URL="https://storage.googleapis.com/pyplots-images/staging/${{ inputs.spec_id }}/${{ inputs.library }}"
 
           # Check if we have GCS credentials
-          if [ -z "$GCS_SA_KEY" ]; then
-            echo "::warning::GCS_SA_KEY not configured - skipping upload"
+          if [ -z "$GCS_CREDENTIALS" ]; then
+            echo "::warning::GCS_CREDENTIALS not configured - skipping upload"
             echo "uploaded=false" >> $GITHUB_OUTPUT
             exit 0
           fi
 
           # Authenticate
-          echo "$GCS_SA_KEY" > /tmp/gcs-key.json
+          echo "$GCS_CREDENTIALS" > /tmp/gcs-key.json
           gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
 
           # Upload PNG if exists (with public read access)

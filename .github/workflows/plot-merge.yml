@@ -138,6 +138,82 @@ jobs:
             --squash \
             --delete-branch
 
+      - name: Extract quality score from PR labels
+        if: steps.check.outputs.should_run == 'true'
+        id: quality
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUM="${{ steps.check.outputs.pr_number }}"
+
+          # Get quality score from label (format: quality:XX)
+          LABELS=$(gh pr view "$PR_NUM" --json labels -q '.labels[].name' 2>/dev/null || echo "")
+          SCORE=$(echo "$LABELS" | grep -oP 'quality:\K\d+' | head -1 || echo "")
+
+          if [ -n "$SCORE" ]; then
+            echo "score=$SCORE" >> $GITHUB_OUTPUT
+            echo "Quality score: $SCORE"
+          else
+            echo "score=" >> $GITHUB_OUTPUT
+            echo "No quality score found in labels"
+          fi
+
+      - name: Checkout feature branch for metadata update
+        if: steps.check.outputs.should_run == 'true'
+        uses: actions/checkout@v6
+        with:
+          ref: plot/${{ steps.extract.outputs.spec_id }}
+          fetch-depth: 0
+
+      - name: Update metadata.yaml for this library
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPEC_ID: ${{ steps.extract.outputs.spec_id }}
+          LIBRARY: ${{ steps.extract.outputs.library }}
+          MAIN_ISSUE: ${{ steps.main_issue.outputs.number }}
+          QUALITY_SCORE: ${{ steps.quality.outputs.score }}
+          PR_NUM: ${{ steps.check.outputs.pr_number }}
+        run: |
+          METADATA_FILE="plots/${SPEC_ID}/metadata.yaml"
+
+          # Install yq for YAML manipulation
+          wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          chmod +x /usr/local/bin/yq
+
+          # Create implementations section if not exists
+          yq -i '.implementations //= {}' "$METADATA_FILE"
+          yq -i ".implementations.${LIBRARY} //= {}" "$METADATA_FILE"
+
+          # Update this library's metadata
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          yq -i ".implementations.${LIBRARY}.preview_url = \"https://storage.googleapis.com/pyplots-images/plots/${SPEC_ID}/${LIBRARY}/plot.png\"" "$METADATA_FILE"
+          yq -i ".implementations.${LIBRARY}.current.generated_at = \"${TIMESTAMP}\"" "$METADATA_FILE"
+          yq -i ".implementations.${LIBRARY}.current.generated_by = \"claude-opus-4-5-20251101\"" "$METADATA_FILE"
+          yq -i ".implementations.${LIBRARY}.current.workflow_run = ${{ github.run_id }}" "$METADATA_FILE"
+          yq -i ".implementations.${LIBRARY}.current.issue = ${MAIN_ISSUE:-0}" "$METADATA_FILE"
+
+          if [ -n "$QUALITY_SCORE" ]; then
+            yq -i ".implementations.${LIBRARY}.current.quality_score = ${QUALITY_SCORE}" "$METADATA_FILE"
+          fi
+
+          echo "Updated metadata for ${LIBRARY}:"
+          cat "$METADATA_FILE"
+
+          # Commit and push
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add "$METADATA_FILE"
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(${LIBRARY}): update metadata for ${SPEC_ID}"
+            git push origin "plot/${SPEC_ID}"
+            echo "::notice::Metadata updated for ${LIBRARY}"
+          else
+            echo "::notice::No metadata changes for ${LIBRARY}"
+          fi
+
       - name: Post progress to main issue
         if: steps.check.outputs.should_run == 'true' && steps.main_issue.outputs.number != ''
         env:
@@ -236,124 +312,26 @@ jobs:
 
           echo "Progress: $DONE/9 complete ($MERGED merged, $NOT_FEASIBLE not feasible)"
 
-      - name: Checkout feature branch for metadata update
+      - name: Checkout feature branch
         if: steps.info.outputs.skip != 'true' && steps.check_complete.outputs.all_done == 'true' && steps.info.outputs.main_issue != ''
         uses: actions/checkout@v6
         with:
           ref: plot/${{ steps.info.outputs.spec_id }}
           fetch-depth: 0
 
-      - name: Update metadata.yaml with quality scores
+      - name: Verify metadata exists
         if: steps.info.outputs.skip != 'true' && steps.check_complete.outputs.all_done == 'true' && steps.info.outputs.main_issue != ''
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           SPEC_ID="${{ steps.info.outputs.spec_id }}"
-          MAIN_ISSUE="${{ steps.info.outputs.main_issue }}"
           METADATA_FILE="plots/${SPEC_ID}/metadata.yaml"
-          FEATURE_BRANCH="plot/$SPEC_ID"
 
-          # Install PyYAML
-          pip install pyyaml -q
-
-          # Get all merged PRs for this spec
-          MERGED_PRS=$(gh pr list --base "$FEATURE_BRANCH" --state merged --json number,headRefName,comments -q '.' 2>/dev/null || echo "[]")
-
-          echo "Found $(echo "$MERGED_PRS" | jq 'length') merged PRs"
-
-          # Export for Python script BEFORE running it
-          export MERGED_PRS_JSON="$MERGED_PRS"
-
-          # Extract quality scores from PR comments and update metadata
-          python3 << 'EOF'
-          import yaml
-          import json
-          import re
-          import os
-          from datetime import datetime
-
-          spec_id = os.environ['SPEC_ID']
-          main_issue = int(os.environ['MAIN_ISSUE'])
-          metadata_file = os.environ['METADATA_FILE']
-          merged_prs_json = os.environ.get('MERGED_PRS_JSON', '[]')
-
-          # Load merged PRs data
-          try:
-              merged_prs = json.loads(merged_prs_json)
-          except:
-              merged_prs = []
-
-          # Load existing metadata
-          if os.path.exists(metadata_file):
-              with open(metadata_file) as f:
-                  data = yaml.safe_load(f) or {}
-          else:
-              data = {'spec_id': spec_id, 'implementations': {}}
-
-          if 'implementations' not in data:
-              data['implementations'] = {}
-
-          # Process each merged PR
-          for pr in merged_prs:
-              head_ref = pr.get('headRefName', '')
-              # Extract library from branch name: auto/{spec-id}/{library}
-              parts = head_ref.split('/')
-              if len(parts) >= 3 and parts[0] == 'auto':
-                  library = parts[2]
-              else:
-                  continue
-
-              # Find quality score in comments
-              quality_score = None
-              for comment in pr.get('comments', []):
-                  body = comment.get('body', '')
-                  # Look for pattern: | Claude | XX/100 |
-                  match = re.search(r'\| Claude \| (\d+)/100 \|', body)
-                  if match:
-                      quality_score = int(match.group(1))
-                      break
-
-              if library not in data['implementations']:
-                  data['implementations'][library] = {
-                      'preview_url': None,
-                      'current': None,
-                      'history': []
-                  }
-
-              impl = data['implementations'][library]
-
-              # Update current implementation info
-              impl['current'] = {
-                  'version': len(impl.get('history', [])) + 1,
-                  'date': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
-                  'issue': main_issue,
-                  'generated_by': 'claude-opus-4-5-20251101',
-                  'quality_score': quality_score
-              }
-
-              # Set preview URL (production path after merge)
-              impl['preview_url'] = f'https://storage.googleapis.com/pyplots-images/plots/{spec_id}/{library}/plot.png'
-
-              print(f"Updated {library}: score={quality_score}")
-
-          # Write updated metadata
-          with open(metadata_file, 'w') as f:
-              yaml.dump(data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
-
-          print(f"Metadata updated: {metadata_file}")
-          EOF
-
-          # Commit metadata changes
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          git add "$METADATA_FILE"
-          if ! git diff --cached --quiet; then
-            git commit -m "chore: update metadata with quality scores for $SPEC_ID"
-            git push origin "$FEATURE_BRANCH"
-            echo "::notice::Metadata updated and pushed"
+          # Note: Per-library metadata updates happen in the auto-merge job
+          # This step just verifies the metadata file exists
+          if [ -f "$METADATA_FILE" ]; then
+            echo "Metadata file exists:"
+            cat "$METADATA_FILE"
           else
-            echo "::notice::No metadata changes needed"
+            echo "::warning::Metadata file not found: $METADATA_FILE"
           fi
 
       - name: Create and merge feature-to-main PR
@@ -564,7 +542,7 @@ jobs:
         if: steps.check.outputs.should_run == 'true'
         uses: google-github-actions/auth@v3
         with:
-          credentials_json: ${{ secrets.GCS_SA_KEY }}
+          credentials_json: ${{ secrets.GCS_CREDENTIALS }}
 
       - name: Setup gcloud CLI
         if: steps.check.outputs.should_run == 'true'

@@ -61,18 +61,22 @@ uv run uvicorn api.main:app --reload
 ## Architecture
 
 **Specification-first design**: Every plot starts as a Markdown spec (library-agnostic), then AI generates
-implementations for all major libraries.
+implementations for all 9 supported libraries.
 
 ```
-specs/scatter-basic-001.md  → plots/matplotlib/scatter/scatter-basic-001/default.py
-                            → plots/seaborn/scatterplot/scatter-basic-001/default.py
-                            → plots/plotly/scatter/scatter-basic-001/default.py
+plots/scatter-basic/
+├── spec.md              # Library-agnostic specification
+├── metadata.yaml        # Tags, generation info, quality scores
+└── implementations/
+    ├── matplotlib.py
+    ├── seaborn.py
+    ├── plotly.py
+    └── ... (6 more)
 ```
 
-**Issue-based workflow**: GitHub Issues as state machine for plot lifecycle. Each plot request spawns **9 parallel sub-issues** (one per library) for independent tracking.
+**Issue-based workflow**: GitHub Issues as state machine for plot lifecycle. Status tracked via live-updating table (no sub-issues). Each library generates in parallel, creating PRs to a feature branch.
 
-**Multi-LLM quality checks**: Claude + Gemini + GPT evaluate generated plots. Score ≥ 85 required (median). Automatic
-feedback loops (max 3 attempts per library).
+**AI quality review**: Claude evaluates generated plots (score ≥ 85 required). Automatic feedback loops (max 3 attempts per library). Quality scores flow via PR labels → metadata.yaml.
 
 See [docs/architecture/](docs/architecture/) for details.
 
@@ -106,12 +110,15 @@ Most plotting libraries are fully open source. Note these exceptions:
 
 ```
 pyplots/
-├── specs/              # Plot specifications (Markdown)
-├── plots/              # Library-specific implementations
+├── plots/              # Plot-centric directories (spec + metadata + implementations)
+│   └── {spec-id}/
+│       ├── spec.md
+│       ├── metadata.yaml
+│       └── implementations/
+├── prompts/            # AI agent prompts
 ├── core/               # Shared business logic
 ├── api/                # FastAPI backend
-├── app/                # Next.js frontend
-├── automation/         # AI code generation
+├── app/                # React frontend (Vite + MUI)
 ├── tests/              # Test suite (pytest)
 └── docs/               # Documentation
 ```
@@ -143,7 +150,12 @@ We welcome contributions! **All code is AI-generated** - you propose ideas, AI i
 
 **The workflow**:
 
-- You create Issue with plot idea → AI generates spec → **9 parallel sub-issues** spawn (one per library) → Each library generates independently → Multi-LLM quality check per library → Merged & Deployed
+1. You create Issue with plot idea + add `plot-request` label
+2. AI generates spec, creates feature branch
+3. Maintainer reviews and adds `approved` label
+4. 9 library implementations generate in parallel (tracked via live status table)
+5. AI quality review per library (score ≥ 85 required)
+6. Auto-merge to feature branch, then to main
 
 **Important**: Don't submit code directly! If a plot has quality issues, it means the spec needs improvement, not the
 code.

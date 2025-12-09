@@ -138,7 +138,7 @@ jobs:
       base_branch: ${{ needs.setup.outputs.feature_branch }}
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+      GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
 
   batch-1-seaborn:
     needs: setup
@@ -151,7 +151,7 @@ jobs:
       base_branch: ${{ needs.setup.outputs.feature_branch }}
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+      GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
 
   batch-1-plotnine:
     needs: setup
@@ -164,7 +164,7 @@ jobs:
       base_branch: ${{ needs.setup.outputs.feature_branch }}
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+      GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
 
   # ============================================================================
   # Update status after Batch 1
@@ -184,6 +184,9 @@ jobs:
           MATPLOTLIB_RESULT: ${{ needs.batch-1-matplotlib.result }}
           SEABORN_RESULT: ${{ needs.batch-1-seaborn.result }}
           PLOTNINE_RESULT: ${{ needs.batch-1-plotnine.result }}
+          MATPLOTLIB_PR: ${{ needs.batch-1-matplotlib.outputs.pr_number }}
+          SEABORN_PR: ${{ needs.batch-1-seaborn.outputs.pr_number }}
+          PLOTNINE_PR: ${{ needs.batch-1-plotnine.outputs.pr_number }}
         run: |
           # Determine status icons
           get_status() {
@@ -195,18 +198,31 @@ jobs:
             esac
           }
 
+          # Format PR link or dash
+          get_pr_link() {
+            if [ -n "$1" ] && [ "$1" != "" ]; then
+              echo "#$1"
+            else
+              echo "-"
+            fi
+          }
+
           MPL_STATUS=$(get_status "$MATPLOTLIB_RESULT")
           SNS_STATUS=$(get_status "$SEABORN_RESULT")
           P9_STATUS=$(get_status "$PLOTNINE_RESULT")
+
+          MPL_PR=$(get_pr_link "$MATPLOTLIB_PR")
+          SNS_PR=$(get_pr_link "$SEABORN_PR")
+          P9_PR=$(get_pr_link "$PLOTNINE_PR")
 
           TABLE_BODY=$(cat << EOF
           ## 🚀 Implementation Status
 
           | Library | Status | PR | Quality |
           |---------|--------|-----|---------|
-          | matplotlib | $MPL_STATUS | - | - |
-          | seaborn | $SNS_STATUS | - | - |
-          | plotnine | $P9_STATUS | - | - |
+          | matplotlib | $MPL_STATUS | $MPL_PR | - |
+          | seaborn | $SNS_STATUS | $SNS_PR | - |
+          | plotnine | $P9_STATUS | $P9_PR | - |
           | plotly | ⏳ Generating | - | - |
           | bokeh | ⏳ Generating | - | - |
           | altair | ⏳ Generating | - | - |
@@ -239,7 +255,7 @@ jobs:
       base_branch: ${{ needs.setup.outputs.feature_branch }}
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+      GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
 
   batch-2-bokeh:
     needs: [setup, update-1]
@@ -253,7 +269,7 @@ jobs:
       base_branch: ${{ needs.setup.outputs.feature_branch }}
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+      GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
 
   batch-2-altair:
     needs: [setup, update-1]
@@ -267,7 +283,7 @@ jobs:
       base_branch: ${{ needs.setup.outputs.feature_branch }}
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+      GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
 
   # ============================================================================
   # Update status after Batch 2
@@ -290,6 +306,12 @@ jobs:
           PLOTLY_RESULT: ${{ needs.batch-2-plotly.result }}
           BOKEH_RESULT: ${{ needs.batch-2-bokeh.result }}
           ALTAIR_RESULT: ${{ needs.batch-2-altair.result }}
+          MATPLOTLIB_PR: ${{ needs.batch-1-matplotlib.outputs.pr_number }}
+          SEABORN_PR: ${{ needs.batch-1-seaborn.outputs.pr_number }}
+          PLOTNINE_PR: ${{ needs.batch-1-plotnine.outputs.pr_number }}
+          PLOTLY_PR: ${{ needs.batch-2-plotly.outputs.pr_number }}
+          BOKEH_PR: ${{ needs.batch-2-bokeh.outputs.pr_number }}
+          ALTAIR_PR: ${{ needs.batch-2-altair.outputs.pr_number }}
         run: |
           get_status() {
             case "$1" in
@@ -300,6 +322,14 @@ jobs:
             esac
           }
 
+          get_pr_link() {
+            if [ -n "$1" ] && [ "$1" != "" ]; then
+              echo "#$1"
+            else
+              echo "-"
+            fi
+          }
+
           MPL_STATUS=$(get_status "$MATPLOTLIB_RESULT")
           SNS_STATUS=$(get_status "$SEABORN_RESULT")
           P9_STATUS=$(get_status "$PLOTNINE_RESULT")
@@ -307,17 +337,24 @@ jobs:
           BOK_STATUS=$(get_status "$BOKEH_RESULT")
           ALT_STATUS=$(get_status "$ALTAIR_RESULT")
 
+          MPL_PR=$(get_pr_link "$MATPLOTLIB_PR")
+          SNS_PR=$(get_pr_link "$SEABORN_PR")
+          P9_PR=$(get_pr_link "$PLOTNINE_PR")
+          PLY_PR=$(get_pr_link "$PLOTLY_PR")
+          BOK_PR=$(get_pr_link "$BOKEH_PR")
+          ALT_PR=$(get_pr_link "$ALTAIR_PR")
+
           TABLE_BODY=$(cat << EOF
           ## 🚀 Implementation Status
 
           | Library | Status | PR | Quality |
           |---------|--------|-----|---------|
-          | matplotlib | $MPL_STATUS | - | - |
-          | seaborn | $SNS_STATUS | - | - |
-          | plotnine | $P9_STATUS | - | - |
-          | plotly | $PLY_STATUS | - | - |
-          | bokeh | $BOK_STATUS | - | - |
-          | altair | $ALT_STATUS | - | - |
+          | matplotlib | $MPL_STATUS | $MPL_PR | - |
+          | seaborn | $SNS_STATUS | $SNS_PR | - |
+          | plotnine | $P9_STATUS | $P9_PR | - |
+          | plotly | $PLY_STATUS | $PLY_PR | - |
+          | bokeh | $BOK_STATUS | $BOK_PR | - |
+          | altair | $ALT_STATUS | $ALT_PR | - |
           | highcharts | ⏳ Generating | - | - |
           | pygal | ⏳ Generating | - | - |
           | letsplot | ⏳ Generating | - | - |
@@ -347,7 +384,7 @@ jobs:
       base_branch: ${{ needs.setup.outputs.feature_branch }}
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+      GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
 
   batch-3-pygal:
     needs: [setup, update-2]
@@ -361,7 +398,7 @@ jobs:
       base_branch: ${{ needs.setup.outputs.feature_branch }}
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+      GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
 
   batch-3-letsplot:
     needs: [setup, update-2]
@@ -375,7 +412,7 @@ jobs:
       base_branch: ${{ needs.setup.outputs.feature_branch }}
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+      GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
 
   # ============================================================================
   # Final Summary
@@ -411,6 +448,16 @@ jobs:
           HIGHCHARTS_RESULT: ${{ needs.batch-3-highcharts.result }}
           PYGAL_RESULT: ${{ needs.batch-3-pygal.result }}
           LETSPLOT_RESULT: ${{ needs.batch-3-letsplot.result }}
+          # PR numbers from generator outputs
+          MATPLOTLIB_PR: ${{ needs.batch-1-matplotlib.outputs.pr_number }}
+          SEABORN_PR: ${{ needs.batch-1-seaborn.outputs.pr_number }}
+          PLOTNINE_PR: ${{ needs.batch-1-plotnine.outputs.pr_number }}
+          PLOTLY_PR: ${{ needs.batch-2-plotly.outputs.pr_number }}
+          BOKEH_PR: ${{ needs.batch-2-bokeh.outputs.pr_number }}
+          ALTAIR_PR: ${{ needs.batch-2-altair.outputs.pr_number }}
+          HIGHCHARTS_PR: ${{ needs.batch-3-highcharts.outputs.pr_number }}
+          PYGAL_PR: ${{ needs.batch-3-pygal.outputs.pr_number }}
+          LETSPLOT_PR: ${{ needs.batch-3-letsplot.outputs.pr_number }}
         run: |
           get_status() {
             case "$1" in
@@ -422,6 +469,14 @@ jobs:
             esac
           }
 
+          get_pr_link() {
+            if [ -n "$1" ] && [ "$1" != "" ]; then
+              echo "#$1"
+            else
+              echo "-"
+            fi
+          }
+
           MPL_STATUS=$(get_status "$MATPLOTLIB_RESULT")
           SNS_STATUS=$(get_status "$SEABORN_RESULT")
           P9_STATUS=$(get_status "$PLOTNINE_RESULT")
@@ -431,6 +486,16 @@ jobs:
           HC_STATUS=$(get_status "$HIGHCHARTS_RESULT")
           PYG_STATUS=$(get_status "$PYGAL_RESULT")
           LP_STATUS=$(get_status "$LETSPLOT_RESULT")
+
+          MPL_PR=$(get_pr_link "$MATPLOTLIB_PR")
+          SNS_PR=$(get_pr_link "$SEABORN_PR")
+          P9_PR=$(get_pr_link "$PLOTNINE_PR")
+          PLY_PR=$(get_pr_link "$PLOTLY_PR")
+          BOK_PR=$(get_pr_link "$BOKEH_PR")
+          ALT_PR=$(get_pr_link "$ALTAIR_PR")
+          HC_PR=$(get_pr_link "$HIGHCHARTS_PR")
+          PYG_PR=$(get_pr_link "$PYGAL_PR")
+          LP_PR=$(get_pr_link "$LETSPLOT_PR")
 
           # Count successes
           SUCCESS_COUNT=0
@@ -453,15 +518,15 @@ jobs:
 
           | Library | Status | PR | Quality |
           |---------|--------|-----|---------|
-          | matplotlib | $MPL_STATUS | - | - |
-          | seaborn | $SNS_STATUS | - | - |
-          | plotnine | $P9_STATUS | - | - |
-          | plotly | $PLY_STATUS | - | - |
-          | bokeh | $BOK_STATUS | - | - |
-          | altair | $ALT_STATUS | - | - |
-          | highcharts | $HC_STATUS | - | - |
-          | pygal | $PYG_STATUS | - | - |
-          | letsplot | $LP_STATUS | - | - |
+          | matplotlib | $MPL_STATUS | $MPL_PR | - |
+          | seaborn | $SNS_STATUS | $SNS_PR | - |
+          | plotnine | $P9_STATUS | $P9_PR | - |
+          | plotly | $PLY_STATUS | $PLY_PR | - |
+          | bokeh | $BOK_STATUS | $BOK_PR | - |
+          | altair | $ALT_STATUS | $ALT_PR | - |
+          | highcharts | $HC_STATUS | $HC_PR | - |
+          | pygal | $PYG_STATUS | $PYG_PR | - |
+          | letsplot | $LP_STATUS | $LP_PR | - |
 
           $PROGRESS
 

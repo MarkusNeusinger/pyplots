@@ -100,7 +100,7 @@ jobs:
         continue-on-error: true
         uses: google-github-actions/auth@v3
         with:
-          credentials_json: ${{ secrets.GCS_SA_KEY }}
+          credentials_json: ${{ secrets.GCS_CREDENTIALS }}
 
       - name: Setup gcloud CLI
         if: steps.gcs_auth.outcome == 'success'
@@ -269,6 +269,18 @@ jobs:
           EOF
 
           cat review_results/${LIBRARY}.json
+
+      - name: Add quality score label to PR
+        if: steps.attempts.outputs.count != '3' && steps.claude_review.outcome == 'success' && steps.score.outputs.score != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUM: ${{ steps.get_pr.outputs.pr_number }}
+          SCORE: ${{ steps.score.outputs.score }}
+        run: |
+          # Add quality score label (format: quality:XX)
+          LABEL="quality:${SCORE}"
+          gh pr edit "$PR_NUM" --add-label "$LABEL" 2>/dev/null || true
+          echo "::notice::Added label $LABEL to PR #$PR_NUM"
 
       - name: Upload review result artifact
         if: steps.attempts.outputs.count != '3' && steps.claude_review.outcome == 'success'

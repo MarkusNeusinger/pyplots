@@ -153,9 +153,13 @@ spec_id: scatter-basic
 title: Basic Scatter Plot
 
 # Spec-level tracking
-created_at: 2025-01-10T08:00:00Z
-created_by_issue: 42
-updated_at: 2025-01-15T10:30:00Z
+created: 2025-01-10T08:00:00Z
+issue: 42
+suggested: CoolContributor123
+updates:
+  - date: 2025-01-15T10:30:00Z
+    issue: 58
+    changes: "Added Notes section"
 
 # Spec-level tags (same for all library implementations)
 tags:
@@ -189,7 +193,8 @@ implementations:
 ```
 
 **Key points:**
-- Spec-level tracking: `created_at`, `created_by_issue`, `updated_at`
+- Spec-level tracking: `created`, `issue`, `suggested`, `updates`
+- Contributors credited via `suggested` field
 - Tags are at spec level (same for all libraries)
 - Generation info tracks which model created the code
 - History preserves all previous attempts with feedback

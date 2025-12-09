@@ -5,9 +5,10 @@ spec_id: histogram-basic
 title: Basic Histogram
 
 # Spec-level tracking
-created_at: null
-created_by_issue: null
-updated_at: null
+created: null
+issue: null
+suggested: pyplots
+updates: []
 
 tags:
   plot_type:

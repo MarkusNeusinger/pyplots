@@ -5,9 +5,10 @@ spec_id: {spec-id}
 title: {Title}
 
 # Spec-level tracking
-created_at: null       # ISO 8601 timestamp when spec was created
-created_by_issue: null # GitHub issue number that triggered creation
-updated_at: null       # ISO 8601 timestamp of last spec update
+created: null          # ISO 8601 timestamp
+issue: null            # GitHub issue number
+suggested: null        # GitHub username or 'pyplots' for seed plots
+updates: []            # List of spec updates [{date, issue, changes}]
 
 tags:
   plot_type:

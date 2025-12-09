@@ -1,0 +1,318 @@
+name: "Plot: Review"
+run-name: "Review: ${{ github.event.pull_request.head.ref }}"
+
+# Triggers when a PR is opened/updated from auto/* branches
+# Reviews the implementation quality using AI
+
+on:
+  # Use pull_request_target to run from base branch (has secrets access)
+  # This ensures we use the latest workflow version from main/plot/* branch
+  pull_request_target:
+    types: [opened, synchronize]
+    branches:
+      - 'plot/**'  # PRs targeting feature branches
+
+jobs:
+  ai-review:
+    # Only run for auto/* branches (generated implementations)
+    if: startsWith(github.event.pull_request.head.ref, 'auto/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: write
+
+    steps:
+      - name: Extract PR info
+        id: get_pr
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Extract spec-id and library from branch name (auto/{spec-id}/{library})
+          SPEC_ID=$(echo "$HEAD_REF" | cut -d'/' -f2)
+          LIBRARY=$(echo "$HEAD_REF" | cut -d'/' -f3)
+
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "library=$LIBRARY" >> $GITHUB_OUTPUT
+
+          echo "::notice::PR #$PR_NUMBER for $LIBRARY implementation of $SPEC_ID"
+
+      - name: Checkout PR code
+        uses: actions/checkout@v6
+        with:
+          # Checkout PR head to review the actual implementation
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Get main issue number from PR
+        id: issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_BODY=$(gh pr view ${{ steps.get_pr.outputs.pr_number }} --json body -q '.body')
+
+          # Extract parent issue number from PR body
+          ISSUE_NUMBER=$(echo "$PR_BODY" | grep -oP '\*\*Parent Issue:\*\* #\K\d+' | head -1 || echo "")
+
+          if [ -z "$ISSUE_NUMBER" ]; then
+            echo "::warning::Could not extract parent issue from PR body"
+          fi
+
+          echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Setup Google Cloud authentication
+        id: gcs_auth
+        continue-on-error: true
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: ${{ secrets.GCS_SA_KEY }}
+
+      - name: Setup gcloud CLI
+        if: steps.gcs_auth.outcome == 'success'
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Download plot images from GCS staging
+        if: steps.gcs_auth.outcome == 'success'
+        run: |
+          SPEC_ID="${{ steps.get_pr.outputs.spec_id }}"
+          LIBRARY="${{ steps.get_pr.outputs.library }}"
+
+          mkdir -p plot_images
+
+          # Download from staging path
+          gsutil -m cp "gs://pyplots-images/staging/${SPEC_ID}/${LIBRARY}/*" plot_images/ 2>/dev/null || echo "No plot images found in staging"
+
+          echo "Downloaded plot images:"
+          ls -la plot_images/ 2>/dev/null || echo "No images found"
+
+      - name: Check attempt count
+        id: attempts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.get_pr.outputs.pr_number }}
+        run: |
+          LABELS=$(gh pr view "$PR_NUMBER" --json labels -q '.labels[].name' 2>/dev/null || echo "")
+
+          # Count is the CURRENT attempt number (1-based)
+          if echo "$LABELS" | grep -q "ai-attempt-3"; then
+            echo "count=3" >> $GITHUB_OUTPUT
+            echo "display=3" >> $GITHUB_OUTPUT
+          elif echo "$LABELS" | grep -q "ai-attempt-2"; then
+            echo "count=2" >> $GITHUB_OUTPUT
+            echo "display=3" >> $GITHUB_OUTPUT
+          elif echo "$LABELS" | grep -q "ai-attempt-1"; then
+            echo "count=1" >> $GITHUB_OUTPUT
+            echo "display=2" >> $GITHUB_OUTPUT
+          else
+            # First attempt
+            echo "count=0" >> $GITHUB_OUTPUT
+            echo "display=1" >> $GITHUB_OUTPUT
+          fi
+
+      - name: React with eyes emoji
+        if: steps.attempts.outputs.count != '3'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.get_pr.outputs.pr_number }}
+        run: |
+          gh api "repos/${{ github.repository }}/issues/$PR_NUMBER/reactions" \
+            -f content=eyes
+
+      - name: Run Claude AI Quality Review
+        id: claude_review
+        if: steps.attempts.outputs.count != '3'
+        continue-on-error: true
+        timeout-minutes: 30
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--model opus"
+          prompt: |
+            ## Task: AI Quality Review for **${{ steps.get_pr.outputs.library }}** (Attempt ${{ steps.attempts.outputs.display }}/3)
+
+            The implementation has been generated and uploaded to staging. Evaluate if the **${{ steps.get_pr.outputs.library }}** implementation matches the specification.
+
+            ### Your Task
+
+            1. **Read the spec file**: `plots/${{ steps.get_pr.outputs.spec_id }}/spec.md`
+               - Note all quality criteria listed
+               - Understand the expected visual output
+
+            2. **Read the ${{ steps.get_pr.outputs.library }} implementation**:
+               - `plots/${{ steps.get_pr.outputs.spec_id }}/implementations/${{ steps.get_pr.outputs.library }}.py`
+
+            3. **Read library-specific rules**:
+               - `prompts/library/${{ steps.get_pr.outputs.library }}.md`
+
+            4. **View the plot images** in `plot_images/` directory
+               - Use your vision capabilities to analyze each image
+               - Compare with the spec requirements
+
+            5. **Evaluate against quality criteria** from `prompts/quality-criteria.md`
+
+            6. **Post your verdict as a PR comment** on PR #${{ steps.get_pr.outputs.pr_number }} using this EXACT format:
+
+            ```markdown
+            ## AI Review - Attempt ${{ steps.attempts.outputs.display }}/3
+
+            ### Quality Evaluation
+            | Evaluator | Score | Verdict |
+            |-----------|-------|---------|
+            | Claude | XX/100 | approve/reject |
+
+            ### Criteria Checklist
+            - [x] VQ-001: Axes labeled correctly
+            - [x] VQ-002: Grid is subtle
+            - [ ] VQ-003: Elements clear ← Issue here
+            - [x] CQ-001: Type hints present
+            ...
+
+            ### Issues Found
+            1. **VQ-003 FAILED**: Legend overlaps with data points
+            2. **CQ-002 PARTIAL**: Docstring missing return type
+
+            ### AI Feedback for Next Attempt
+            > Move legend outside plot area with `bbox_to_anchor=(1.05, 1)`
+            > Add return type to docstring
+
+            ### Verdict: APPROVED / REJECTED
+            ```
+
+            7. **Save the score to a file** (for metadata tracking):
+               ```bash
+               echo "XX" > quality_score.txt  # Replace XX with actual score
+               ```
+
+            8. **Take action based on result**:
+               - **APPROVED** (score >= 85):
+                 - Run: `gh pr edit ${{ steps.get_pr.outputs.pr_number }} --add-label ai-approved`
+               - **REJECTED** (score < 85):
+                 - Run: `gh pr edit ${{ steps.get_pr.outputs.pr_number }} --add-label ai-rejected`
+
+            **IMPORTANT:**
+            - This is a **${{ steps.get_pr.outputs.library }}-only** review
+            - Focus on code quality and visual accuracy
+            - ALWAYS write the score to quality_score.txt
+
+      - name: Extract and save quality score
+        id: score
+        if: steps.attempts.outputs.count != '3' && steps.claude_review.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LIBRARY="${{ steps.get_pr.outputs.library }}"
+          SPEC_ID="${{ steps.get_pr.outputs.spec_id }}"
+          PR_NUM="${{ steps.get_pr.outputs.pr_number }}"
+
+          # Try to read score from file (Claude should have created this)
+          if [ -f "quality_score.txt" ]; then
+            SCORE=$(cat quality_score.txt | tr -d '[:space:]')
+            echo "Found score from file: $SCORE"
+          else
+            # Fallback: try to parse score from latest PR comment
+            SCORE=$(gh pr view "$PR_NUM" --json comments -q '.comments[-1].body' | grep -oP '\| Claude \| \K\d+' | head -1 || echo "")
+            if [ -z "$SCORE" ]; then
+              echo "::warning::Could not extract quality score"
+              SCORE="0"
+            fi
+            echo "Extracted score from comment: $SCORE"
+          fi
+
+          echo "score=$SCORE" >> $GITHUB_OUTPUT
+
+          # Save score info to artifact
+          mkdir -p review_results
+          cat > review_results/${LIBRARY}.json << EOF
+          {
+            "library": "$LIBRARY",
+            "spec_id": "$SPEC_ID",
+            "pr_number": $PR_NUM,
+            "quality_score": $SCORE,
+            "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+            "workflow_run": ${{ github.run_id }}
+          }
+          EOF
+
+          cat review_results/${LIBRARY}.json
+
+      - name: Upload review result artifact
+        if: steps.attempts.outputs.count != '3' && steps.claude_review.outcome == 'success'
+        uses: actions/upload-artifact@v5
+        with:
+          name: review-${{ steps.get_pr.outputs.spec_id }}-${{ steps.get_pr.outputs.library }}
+          path: review_results/
+          retention-days: 7
+
+      - name: Handle Claude failure
+        if: steps.attempts.outputs.count != '3' && (steps.claude_review.outcome == 'failure' || steps.claude_review.outcome == 'cancelled')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUM: ${{ steps.get_pr.outputs.pr_number }}
+        run: |
+          echo "::warning::Claude AI review failed or was cancelled"
+
+          # Add failure label to PR
+          gh pr edit "$PR_NUM" --add-label "ai-review-failed" 2>/dev/null || true
+
+          gh pr comment "$PR_NUM" --body "## :warning: AI Review Failed
+
+          The AI review action failed or timed out.
+
+          **Options:**
+          1. Re-run the workflow manually
+          2. Request manual human review
+
+          ---
+          :robot: *Automated notification*"
+
+      - name: Trigger auto-merge if approved
+        if: steps.attempts.outputs.count != '3' && steps.claude_review.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUM: ${{ steps.get_pr.outputs.pr_number }}
+        run: |
+          # Check if PR has ai-approved label (added by Claude)
+          HAS_APPROVED=$(gh pr view "$PR_NUM" --json labels -q '.labels[].name' | grep -c "ai-approved" || echo "0")
+
+          if [[ "$HAS_APPROVED" != "0" ]]; then
+            echo "PR #$PR_NUM has ai-approved label, triggering auto-merge workflow"
+            gh workflow run plot-merge.yml -f pr_number="$PR_NUM"
+          else
+            echo "PR #$PR_NUM does not have ai-approved label, skipping auto-merge trigger"
+          fi
+
+      - name: Mark as failed after 3 attempts
+        if: steps.attempts.outputs.count == '3'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUM: ${{ steps.get_pr.outputs.pr_number }}
+          LIBRARY: ${{ steps.get_pr.outputs.library }}
+          SPEC_ID: ${{ steps.get_pr.outputs.spec_id }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
+        run: |
+          # Update PR labels
+          gh pr edit "$PR_NUM" --add-label "not-feasible"
+
+          # Post final status to PR
+          gh pr comment "$PR_NUM" --body "## AI Review - Final Status
+
+          ### Status: Not Feasible
+
+          AI Review failed after **3 attempts**. This ${LIBRARY} implementation for \`${SPEC_ID}\` could not meet quality standards.
+
+          **Options:**
+          1. Manual review and fix
+          2. Wait for improved AI capabilities
+          3. Mark this library as unsupported for this plot type
+
+          ---
+          :robot: *Automated quality check*"
+
+          # Update main issue if available
+          if [ -n "$ISSUE_NUMBER" ]; then
+            gh issue comment "$ISSUE_NUMBER" --body "**$LIBRARY** implementation failed after 3 AI review attempts. See PR #$PR_NUM for details."
+          fi

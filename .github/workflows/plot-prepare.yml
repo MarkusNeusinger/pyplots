@@ -144,12 +144,25 @@ jobs:
                gh issue edit ${{ github.event.issue.number }} --title "[{spec-id}] {original title without 'Plot: ' prefix}"
                ```
 
-            8. **Post comment with spec content:**
-               Use this format (read the actual spec.md content you created):
+            8. **Post comment with analysis and spec content:**
+               Use this format (include your analysis):
                ```bash
                gh issue comment ${{ github.event.issue.number }} --body "## ✅ Spec Ready: \`{spec-id}\`
 
                **Branch:** \`plot/{spec-id}\`
+
+               ---
+
+               ### Analysis
+
+               **Why this spec makes sense:**
+               {1-2 sentences explaining why this plot type is valuable and what use cases it serves}
+
+               **Spec-ID reasoning:**
+               {Explain how you derived the spec-id: what the type/variant/modifier mean}
+
+               **Similar existing specs:**
+               {List any related specs in the repo and explain how this one differs. If none exist, say 'None - this is a new plot category'}
 
                ---
 

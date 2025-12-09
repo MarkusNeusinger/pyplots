@@ -277,7 +277,7 @@ jobs:
 
       - name: Upload review result artifact
         if: steps.check.outputs.should_run == 'true' && steps.get_pr.outputs.skip != 'true' && steps.attempts.outputs.count != '3' && steps.claude_review.outcome == 'success'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: review-${{ steps.get_pr.outputs.spec_id }}-${{ steps.get_pr.outputs.library }}
           path: review_results/

@@ -214,7 +214,7 @@ See [CLAUDE.md](../CLAUDE.md) for:
 **Option 1: GitHub Issue (Recommended)**
 
 1. Create issue using spec template
-2. Fill in description, requirements, use cases
+2. Fill in description, applications, data requirements
 3. Add label `plot-idea`
 4. Wait for review and approval
 5. AI generates implementations automatically

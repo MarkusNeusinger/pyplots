@@ -29,30 +29,22 @@ plots/{spec-id}/
 
 {2-4 sentences: What does this plot show? When should you use it?}
 
-## Data
-
-**Required columns:**
-- `{column}` (numeric) - {what it represents}
-- `{column}` (categorical) - {what it represents}
-
-**Example:**
-```python
-import pandas as pd
-data = pd.DataFrame({
-    'x': [1, 2, 3, 4, 5],
-    'y': [2, 4, 3, 5, 4]
-})
-```
-
-## Tags
-
-{type}, {purpose}, {complexity}
-
-## Use Cases
+## Applications
 
 - {Realistic scenario 1 with domain context}
 - {Realistic scenario 2}
 - {Realistic scenario 3}
+
+## Data
+
+- `{column}` ({type}) - {what it represents}
+- `{column}` ({type}) - {what it represents}
+- Size: {recommended data size}
+- Example: {dataset reference or description}
+
+## Notes
+
+- {Optional implementation hints or special requirements}
 ```
 
 ---
@@ -65,23 +57,22 @@ Format: `# {spec-id}: {Human-Readable Title}`
 Example: `# scatter-basic: Basic Scatter Plot`
 
 ### Description
-2-4 sentences explaining:
+2-4 sentences (prose text) explaining:
 - What the plot visualizes
 - When to use it
 - What makes it useful
 
-### Data
-- **Required columns** with types (numeric, categorical, datetime)
-- **Example** (optional): Inline data, dataset reference, or omit for AI to generate
-
-### Tags
-Comma-separated keywords for discovery:
-- Type: scatter, bar, line, pie, histogram, box, area
-- Purpose: comparison, distribution, correlation, trend
-- Complexity: basic, intermediate, advanced
-
-### Use Cases
+### Applications
 3-4 realistic scenarios with domain context (finance, science, marketing, etc.)
+
+### Data
+Simple list format:
+- Required columns with types (numeric, categorical, datetime)
+- Recommended data size
+- Example dataset reference
+
+### Notes (Optional)
+Implementation hints, visual preferences, or special requirements.
 
 ---
 
@@ -117,7 +108,7 @@ Rules:
 
 ### DO
 - Be specific about data requirements
-- Use realistic use cases with domain context
+- Use realistic applications with domain context
 - Keep description concise (2-4 sentences)
 
 ### DON'T

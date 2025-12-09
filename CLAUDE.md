@@ -87,7 +87,7 @@ Everything for one plot type lives in a single directory:
 
 ```
 plots/{spec-id}/
-├── spec.md              # Description, data requirements, use cases
+├── spec.md              # Description, Applications, Data, Notes
 ├── metadata.yaml        # Tags, generation info, quality history
 └── implementations/     # Library implementations
     ├── matplotlib.py
@@ -124,7 +124,7 @@ Example: `plots/scatter-basic/` contains everything for the basic scatter plot.
 ### Directory Structure
 
 - **`plots/{spec-id}/`**: Plot-centric directories (spec, metadata, implementations together)
-  - `spec.md`: Library-agnostic specification (description, data requirements, use cases)
+  - `spec.md`: Library-agnostic specification (Description, Applications, Data, Notes)
   - `metadata.yaml`: Tags, generation info, quality scores (synced to PostgreSQL)
   - `implementations/{library}.py`: Library-specific implementations
 - **`templates/`**: Templates for new specs

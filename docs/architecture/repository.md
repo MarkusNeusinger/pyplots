@@ -6,7 +6,7 @@ pyplots follows a **plot-centric repository pattern** where everything for one p
 
 ```
 plots/{spec-id}/
-├── spec.md              # Description, data requirements, use cases
+├── spec.md              # Description, Applications, Data, Notes
 ├── metadata.yaml        # Tags, generation info, quality history
 └── implementations/     # Library implementations
     ├── matplotlib.py

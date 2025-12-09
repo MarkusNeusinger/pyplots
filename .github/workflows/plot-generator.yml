@@ -50,7 +50,7 @@ jobs:
       contents: write
       pull-requests: write
       issues: write
-      actions: read
+      actions: write  # Required for gh workflow run
       id-token: write
 
     steps:

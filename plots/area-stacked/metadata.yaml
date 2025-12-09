@@ -72,13 +72,15 @@ implementations:
       quality_score: null
     history: []
   altair:
-    preview_url: null
+    preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/altair/plot.png
     current:
       version: null
       date: null
-      issue: null
-      generated_by: null
+      issue: 561
+      generated_by: claude-opus-4-5-20251101
       quality_score: null
+      generated_at: "2025-12-09T23:55:41Z"
+      workflow_run: 20082383905
     history: []
   plotnine:
     preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/plotnine/plot.png

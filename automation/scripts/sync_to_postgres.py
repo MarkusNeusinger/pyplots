@@ -23,7 +23,7 @@ import yaml
 
 
 # Add project root to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from dotenv import load_dotenv
 
@@ -38,7 +38,7 @@ from core.database import LIBRARIES_SEED, Implementation, Library, Spec  # noqa:
 
 
 # Configuration
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 PLOTS_DIR = BASE_DIR / "plots"
 GCS_BUCKET = os.getenv("GCS_BUCKET", "pyplots-images")
 DATABASE_URL = os.getenv("DATABASE_URL", "")

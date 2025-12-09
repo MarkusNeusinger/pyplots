@@ -49,9 +49,6 @@ pyplots/
 │       └── implementations/
 │           └── ...
 │
-├── templates/                         # Templates for new specs
-│   └── spec.md                        # Spec file template
-│
 ├── prompts/                           # AI agent prompts
 │   ├── plot-generator.md              # Base rules for code generation
 │   ├── quality-criteria.md            # Quality evaluation criteria
@@ -86,8 +83,9 @@ pyplots/
 │   ├── package.json
 │   └── Dockerfile
 │
-├── scripts/                           # Utility scripts
-│   └── sync_to_postgres.py            # Sync plots/ to database
+├── automation/                        # Automation scripts
+│   └── scripts/
+│       └── sync_to_postgres.py        # Sync plots/ to database
 │
 ├── tests/                             # Test suite
 │   └── unit/
@@ -247,18 +245,12 @@ plt.savefig('plot.png', dpi=300)
 
 ---
 
-### `templates/`
-
-**Purpose**: Templates for creating new specs
-
-**Files**:
-- `spec.md` - Template for new spec files
-
----
-
 ### `prompts/`
 
 **Purpose**: AI agent prompts for code generation and quality evaluation
+
+**Subdirectories**:
+- `templates/` - Templates for new specs (`spec.md`, `metadata.yaml`)
 
 **Files**:
 - `plot-generator.md` - Base rules for all implementations

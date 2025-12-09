@@ -47,7 +47,7 @@ jobs:
 
     - name: Sync plots to database
       run: |
-        uv run python scripts/sync_to_postgres.py
+        uv run python automation/scripts/sync_to_postgres.py
       env:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
         GCS_BUCKET: ${{ vars.GCS_BUCKET || 'pyplots-images' }}

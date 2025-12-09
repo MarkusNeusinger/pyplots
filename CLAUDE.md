@@ -127,7 +127,6 @@ Example: `plots/scatter-basic/` contains everything for the basic scatter plot.
   - `spec.md`: Library-agnostic specification (Description, Applications, Data, Notes)
   - `metadata.yaml`: Tags, generation info, quality scores (synced to PostgreSQL)
   - `implementations/{library}.py`: Library-specific implementations
-- **`templates/`**: Templates for new specs
 - **`core/`**: Shared business logic (database, repositories, config)
 - **`api/`**: FastAPI backend (routers, schemas, dependencies)
 - **`app/`**: React frontend (Vite + TypeScript + MUI)

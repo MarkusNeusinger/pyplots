@@ -118,4 +118,4 @@ Rules:
 
 ---
 
-*See `templates/spec.md` for the full template.*
+*See `prompts/templates/spec.md` for the full template.*

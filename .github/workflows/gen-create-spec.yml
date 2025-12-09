@@ -222,8 +222,8 @@ jobs:
 
             ### Instructions
 
-            1. Read the template: `templates/spec.md`
-            2. Read the metadata template: `templates/metadata.yaml`
+            1. Read the template: `prompts/templates/spec.md`
+            2. Read the metadata template: `prompts/templates/metadata.yaml`
             3. Read an example spec for reference: `plots/scatter-basic/spec.md`
             4. Read the spec validator rules: `prompts/spec-validator.md`
 

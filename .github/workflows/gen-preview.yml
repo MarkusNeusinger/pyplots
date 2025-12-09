@@ -149,7 +149,7 @@ jobs:
 
       - name: Setup Chrome for Highcharts
         if: steps.check.outputs.should_run == 'true' && steps.changed_plots.outputs.has_plots == 'true' && contains(steps.changed_plots.outputs.libraries, 'highcharts')
-        uses: browser-actions/setup-chrome@v1
+        uses: browser-actions/setup-chrome@v2
         with:
           chrome-version: stable
 

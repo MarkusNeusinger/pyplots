@@ -198,7 +198,7 @@ jobs:
 
       - name: Setup Chrome for Highcharts
         if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true' && steps.extract_info.outputs.library == 'highcharts'
-        uses: browser-actions/setup-chrome@v1
+        uses: browser-actions/setup-chrome@v2
         with:
           chrome-version: stable
 

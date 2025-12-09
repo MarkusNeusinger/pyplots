@@ -1,0 +1,286 @@
+name: "Plot: Prepare"
+run-name: "Prepare: ${{ github.event.issue.title }}"
+
+# Unified workflow for NEW and UPDATE requests
+# Phase 1: Validate, assign spec-id, create branch, generate spec
+# STOPS after spec creation - waits for `approved` label before code generation
+#
+# Triggers:
+# - plot-request label added → NEW request flow
+# - plot-request + update labels → UPDATE request flow
+
+on:
+  issues:
+    types: [labeled]
+
+concurrency:
+  group: plot-prepare-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    # Only run when plot-request label is added (not other labels)
+    if: github.event.label.name == 'plot-request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      id-token: write
+
+    outputs:
+      spec_id: ${{ steps.process.outputs.spec_id }}
+      feature_branch: ${{ steps.process.outputs.feature_branch }}
+      is_update: ${{ steps.check.outputs.is_update }}
+
+    steps:
+      # ========================================================================
+      # Step 1: Check conditions
+      # ========================================================================
+      - name: Check conditions
+        id: check
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          # Check if this is an update request
+          HAS_UPDATE="${{ contains(github.event.issue.labels.*.name, 'update') }}"
+          if [[ "$HAS_UPDATE" == "true" ]]; then
+            echo "is_update=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_update=false" >> $GITHUB_OUTPUT
+          fi
+
+          # For NEW requests: skip if already has spec-id in title
+          if [[ "$ISSUE_TITLE" =~ ^\[[a-z0-9-]+\] ]] && [[ "$HAS_UPDATE" != "true" ]]; then
+            echo "::notice::Skipping: Issue already has spec ID in title"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
+      - name: Checkout repository
+        if: steps.check.outputs.should_run == 'true'
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: React with eyes emoji
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/reactions \
+            -f content=eyes
+
+      # ========================================================================
+      # Step 2: Process request (NEW or UPDATE)
+      # ========================================================================
+      - name: Process with Claude
+        if: steps.check.outputs.should_run == 'true'
+        id: process
+        timeout-minutes: 30
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--model opus"
+          prompt: |
+            ## Task: Prepare Plot Request
+
+            You are processing a plot request. Determine if this is a NEW or UPDATE request and handle accordingly.
+
+            ### Issue Details
+            - **Title:** ${{ github.event.issue.title }}
+            - **Number:** #${{ github.event.issue.number }}
+            - **Is Update:** ${{ steps.check.outputs.is_update }}
+            - **Body:**
+            ```
+            ${{ github.event.issue.body }}
+            ```
+
+            ---
+
+            ## Instructions
+
+            ### For NEW Requests (is_update=false):
+
+            1. **Read the rules:** `prompts/spec-id-generator.md`
+
+            2. **Check for duplicates:**
+               - List all existing specs: `ls plots/`
+               - Read existing spec files if titles seem similar
+               - If duplicate found: Post comment explaining which spec matches, then STOP
+
+            3. **Generate spec-id:**
+               - Format: `{type}-{variant}` or `{type}-{variant}-{modifier}`
+               - Examples: `scatter-basic`, `bar-grouped-horizontal`, `heatmap-correlation`
+               - All lowercase, hyphens only
+
+            4. **Create feature branch:**
+               ```bash
+               git checkout -b "plot/{spec-id}"
+               ```
+
+            5. **Create spec files:**
+               - Read template: `prompts/templates/spec.md`
+               - Read metadata template: `prompts/templates/metadata.yaml`
+               - Create directory: `plots/{spec-id}/`
+               - Create: `plots/{spec-id}/spec.md` (follow template structure)
+               - Create: `plots/{spec-id}/metadata.yaml` with:
+                 - `created`: Use `$(date -u +"%Y-%m-%dT%H:%M:%SZ")` for current timestamp
+                 - `issue`: ${{ github.event.issue.number }}
+                 - `suggested`: ${{ github.event.issue.user.login }}
+               - Create empty folder: `plots/{spec-id}/implementations/`
+
+            6. **Commit and push:**
+               ```bash
+               git config user.name "github-actions[bot]"
+               git config user.email "github-actions[bot]@users.noreply.github.com"
+               git add plots/{spec-id}/
+               git commit -m "spec: add {spec-id} specification
+
+               Created from issue #${{ github.event.issue.number }}"
+               git push -u origin "plot/{spec-id}"
+               ```
+
+            7. **Update issue title:**
+               ```bash
+               gh issue edit ${{ github.event.issue.number }} --title "[{spec-id}] {original title without 'Plot: ' prefix}"
+               ```
+
+            8. **Post comment with analysis and spec content:**
+               Use this format (include your analysis):
+               ```bash
+               gh issue comment ${{ github.event.issue.number }} --body "## ✅ Spec Ready: \`{spec-id}\`
+
+               **Branch:** \`plot/{spec-id}\`
+
+               ---
+
+               ### Analysis
+
+               **Why this spec makes sense:**
+               {1-2 sentences explaining why this plot type is valuable and what use cases it serves}
+
+               **Spec-ID reasoning:**
+               {Explain how you derived the spec-id: what the type/variant/modifier mean}
+
+               **Similar existing specs:**
+               {List any related specs in the repo and explain how this one differs. If none exist, say 'None - this is a new plot category'}
+
+               ---
+
+               ### spec.md
+
+               {paste full content of spec.md here}
+
+               ---
+
+               **Next:** Add \`approved\` label to start code generation.
+
+               ---
+               :robot: *[plot-prepare workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+               ```
+
+            9. **Output for workflow:**
+               After completing, print these lines exactly:
+               ```
+               SPEC_ID={spec-id}
+               FEATURE_BRANCH=plot/{spec-id}
+               ```
+
+            ---
+
+            ### For UPDATE Requests (is_update=true):
+
+            1. **Extract spec-id from title:**
+               - Title format: `[spec-id] [update] ...` or `[spec-id] [update:library] ...`
+               - Extract the first bracket content as spec-id
+
+            2. **Validate spec exists:**
+               - Check if `plots/{spec-id}/spec.md` exists
+               - If not: Post error comment and STOP
+
+            3. **Extract target library (if specified):**
+               - `[update:seaborn]` → target only seaborn
+               - `[update]` → target all libraries
+
+            4. **Analyze the update request:**
+               - Read the current spec: `plots/{spec-id}/spec.md`
+               - Read existing implementations if relevant
+               - Evaluate if the update reason is sensible:
+                 - Is this a valid improvement?
+                 - Does it make sense for this plot type?
+                 - Are there any concerns?
+
+            5. **Create feature branch:**
+               ```bash
+               git checkout -b "plot/{spec-id}"
+               git push -u origin "plot/{spec-id}"
+               ```
+
+            6. **Post comment with analysis:**
+               ```bash
+               gh issue comment ${{ github.event.issue.number }} --body "## 🔄 Update Request: \`{spec-id}\`
+
+               **Branch:** \`plot/{spec-id}\`
+               **Scope:** {library name or 'all 9 libraries'}
+
+               ---
+
+               ### Analysis
+
+               {Your assessment of the update request:
+               - Is the reason valid? Why/why not?
+               - What changes would this involve?
+               - Any concerns or suggestions?}
+
+               ---
+
+               ### Current Spec
+
+               \`\`\`markdown
+               {paste current spec.md content}
+               \`\`\`
+
+               ---
+
+               **Recommendation:** {Approve / Needs clarification / Not recommended}
+
+               **Next:** Add \`approved\` label to start regeneration.
+
+               ---
+               :robot: *[plot-prepare workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+               ```
+
+            7. **Output for workflow:**
+               ```
+               SPEC_ID={spec-id}
+               FEATURE_BRANCH=plot/{spec-id}
+               ```
+
+            ---
+
+            ## Important Rules
+            - Do NOT trigger any other workflows
+            - Do NOT add labels
+            - Do NOT close the issue
+            - STOP after posting the comment - the `approved` label triggers the next phase
+
+      # ========================================================================
+      # Step 3: Parse outputs
+      # ========================================================================
+      - name: Parse Claude outputs
+        if: steps.check.outputs.should_run == 'true'
+        id: parse
+        run: |
+          # Claude should have printed SPEC_ID and FEATURE_BRANCH
+          # These are captured in the action output
+          echo "::notice::Prepare phase complete - waiting for 'approved' label"
+
+      - name: Add rocket reaction on success
+        if: steps.check.outputs.should_run == 'true' && success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/reactions \
+            -f content=rocket

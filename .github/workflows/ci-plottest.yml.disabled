@@ -1,0 +1,241 @@
+name: "CI: Plot Tests"
+run-name: "Plot Tests: ${{ github.head_ref }}"
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    paths:
+      - 'plots/**/*.py'
+      - 'plots/**/spec.md'
+
+jobs:
+  test-plots:
+    name: Test Plots on Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        python-version: [ '3.12', '3.13' ]
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Find changed plot files and detect libraries
+        id: detect_libs
+        run: |
+          # Get list of changed Python files in plots/
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'plots/**/*.py' || echo "")
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No plot files changed"
+            echo "has_plots=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "has_plots=true" >> $GITHUB_OUTPUT
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Extract unique libraries from changed files (plots/{library}/...)
+          LIBRARIES=$(echo "$CHANGED_FILES" | sed -n 's|^plots/\([^/]*\)/.*|\1|p' | sort -u | tr '\n' ' ')
+          echo "libraries=$LIBRARIES" >> $GITHUB_OUTPUT
+          echo "Changed libraries: $LIBRARIES"
+
+      - name: Install library-specific dependencies
+        if: steps.detect_libs.outputs.has_plots == 'true'
+        run: |
+          # Build list of extras for all changed libraries
+          EXTRAS=""
+          for LIB in ${{ steps.detect_libs.outputs.libraries }}; do
+            EXTRAS="$EXTRAS --extra lib-${LIB}"
+          done
+          echo "📦 Installing: uv sync $EXTRAS"
+          uv sync $EXTRAS
+
+      - name: Setup Chrome for Selenium-based libraries
+        if: steps.detect_libs.outputs.has_plots == 'true' && (contains(steps.detect_libs.outputs.libraries, 'highcharts') || contains(steps.detect_libs.outputs.libraries, 'bokeh'))
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: Test plot execution
+        id: test_execution
+        if: steps.detect_libs.outputs.has_plots == 'true'
+        # Only Python 3.13 is required to pass - older versions are compatibility tests
+        continue-on-error: ${{ matrix.python-version != '3.13' }}
+        run: |
+          source .venv/bin/activate
+          echo "🧪 Testing plot files on Python ${{ matrix.python-version }}"
+          echo "📚 Libraries detected: ${{ steps.detect_libs.outputs.libraries }}"
+
+          FAILED=0
+          PASSED=0
+
+          while IFS= read -r file; do
+            if [ -z "$file" ]; then continue; fi
+
+            # Extract library from file path
+            LIB=$(echo "$file" | sed -n 's|^plots/\([^/]*\)/.*|\1|p')
+
+            echo ""
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "📊 Testing: $file ($LIB)"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+            # Run with non-interactive backend
+            if MPLBACKEND=Agg python "$file" 2>&1; then
+              echo "✅ PASSED: $file"
+              PASSED=$((PASSED + 1))
+            else
+              echo "❌ FAILED: $file"
+              FAILED=$((FAILED + 1))
+            fi
+          done <<< "${{ steps.detect_libs.outputs.files }}"
+
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📋 Summary: $PASSED passed, $FAILED failed"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+          # Save results for later aggregation
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+
+          if [ $FAILED -gt 0 ]; then
+            echo "::error::$FAILED plot(s) failed execution on Python ${{ matrix.python-version }}"
+            exit 1
+          fi
+
+      - name: Skip message
+        if: steps.detect_libs.outputs.has_plots != 'true'
+        run: |
+          echo "ℹ️ No plot files changed in this PR - skipping tests"
+
+      - name: Save test results
+        if: always()
+        run: |
+          mkdir -p test-results
+          echo "${{ matrix.python-version }},${{ steps.test_execution.outcome || 'skipped' }}" > test-results/result-${{ matrix.python-version }}.txt
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: test-results-${{ matrix.python-version }}
+          path: test-results/
+          retention-days: 30
+
+  # Summary job: post compact PR comment with test results
+  summary:
+    name: Post Test Summary
+    needs: test-plots
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Download all test results
+        uses: actions/download-artifact@v6
+        with:
+          pattern: test-results-*
+          merge-multiple: true
+
+      - name: Build summary comment
+        id: summary
+        run: |
+          # Parse results
+          PY312_RESULT=$(cat result-3.12.txt 2>/dev/null | cut -d',' -f2 || echo "skipped")
+          PY313_RESULT=$(cat result-3.13.txt 2>/dev/null | cut -d',' -f2 || echo "skipped")
+
+          # Helper function for badge
+          badge() {
+            local version=$1
+            local result=$2
+            if [ "$result" == "success" ]; then
+              echo "![${version}](https://img.shields.io/badge/${version}-pass-brightgreen)"
+            elif [ "$result" == "failure" ]; then
+              echo "![${version}](https://img.shields.io/badge/${version}-fail-red)"
+            else
+              echo "![${version}](https://img.shields.io/badge/${version}-skip-lightgrey)"
+            fi
+          }
+
+          # Build comment - only 3.13 determines pass/fail status
+          if [ "$PY313_RESULT" == "success" ]; then
+            HEADER="## ✅ Plot Tests Passed"
+            MAIN_STATUS="**Python 3.13 (required):** passed"
+          elif [ "$PY313_RESULT" == "failure" ]; then
+            HEADER="## ❌ Plot Tests Failed"
+            MAIN_STATUS="**Python 3.13 (required):** failed"
+          else
+            HEADER="## ⏭️ Plot Tests Skipped"
+            MAIN_STATUS="No plot files changed"
+          fi
+
+          # Build badges
+          B312=$(badge "3.12" "$PY312_RESULT")
+          B313=$(badge "3.13" "$PY313_RESULT")
+
+          cat > /tmp/comment.md << EOF
+          ${HEADER}
+
+          ${MAIN_STATUS}
+
+          **Compatibility:** ${B312} ${B313}
+
+          _Note: Only Python 3.13 is required to pass. Python 3.12 is tested for compatibility._
+          EOF
+
+          cat /tmp/comment.md
+          echo "has_comment=true" >> $GITHUB_OUTPUT
+
+      - name: Post PR comment
+        if: steps.summary.outputs.has_comment == 'true'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            const comment = fs.readFileSync('/tmp/comment.md', 'utf8');
+
+            // Find existing bot comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+
+            const botComment = comments.find(c =>
+              c.user.type === 'Bot' &&
+              c.body.includes('Plot Tests')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }

@@ -76,15 +76,7 @@ chart = pygal.Bar(
 )
 ```
 
-## Folder-Name
+## Output File
 
-`plots/pygal/{chart_type}/`
-
-| Type | Folder |
-|-----|--------|
-| `pygal.Bar()` | `bar/` |
-| `pygal.Line()` | `line/` |
-| `pygal.XY()` | `xy/` |
-| `pygal.Pie()` | `pie/` |
-| `pygal.Box()` | `box/` |
+`plots/{spec-id}/implementations/pygal.py`
 

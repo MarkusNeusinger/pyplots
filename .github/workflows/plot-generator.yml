@@ -1,0 +1,299 @@
+name: "Plot: Generator"
+run-name: "Generate: ${{ inputs.library }} for ${{ inputs.spec_id }}"
+
+# Reusable workflow - generates one library implementation
+# Includes: code generation, testing, visual self-check, GCS upload
+
+on:
+  workflow_call:
+    inputs:
+      spec_id:
+        description: "The spec ID (e.g., scatter-basic)"
+        required: true
+        type: string
+      library:
+        description: "The library to generate for"
+        required: true
+        type: string
+      main_issue_number:
+        description: "Parent issue number"
+        required: true
+        type: string
+      deps:
+        description: "Library-specific dependencies"
+        required: true
+        type: string
+      base_branch:
+        description: "Base branch to create from (e.g., plot/{spec_id})"
+        required: true
+        type: string
+    outputs:
+      success:
+        description: "Whether generation was successful"
+        value: ${{ jobs.generate.outputs.success }}
+      pr_number:
+        description: "PR number created (if any)"
+        value: ${{ jobs.generate.outputs.pr_number }}
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN:
+        required: true
+      GCS_SA_KEY:
+        required: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    outputs:
+      success: ${{ steps.result.outputs.success }}
+      pr_number: ${{ steps.pr.outputs.pr_number }}
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      actions: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install library-specific dependencies
+        run: |
+          uv venv .venv
+          source .venv/bin/activate
+          uv pip install ${{ inputs.deps }} pandas>=2.2.0 ruff
+
+      - name: Setup Chrome for Highcharts
+        if: inputs.library == 'highcharts'
+        uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: stable
+
+      - name: Create branch for this library
+        id: branch
+        run: |
+          BRANCH="auto/${{ inputs.spec_id }}/${{ inputs.library }}"
+          BASE="${{ inputs.base_branch }}"
+
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "base_branch=$BASE" >> $GITHUB_OUTPUT
+
+          # Fetch base branch first
+          git fetch origin "$BASE"
+
+          # Check if library branch exists
+          if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+            git fetch origin "$BRANCH"
+            git checkout "$BRANCH"
+            echo "branch_exists=true" >> $GITHUB_OUTPUT
+          else
+            # Create new branch FROM the base branch
+            git checkout -b "$BRANCH" "origin/$BASE"
+            echo "branch_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+          echo "::notice::Branch: $BRANCH (base: $BASE)"
+
+      - name: Run Claude Code to generate implementation
+        id: claude
+        timeout-minutes: 60
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--model opus"
+          additional_permissions: |
+            actions: read
+          prompt: |
+            ## Task: Generate ${{ inputs.library }} Implementation for ${{ inputs.spec_id }}
+
+            You are generating the **${{ inputs.library }}** implementation with self-verification.
+
+            ### Step 1: Read required files
+            1. `prompts/plot-generator.md` - Base generation rules
+            2. `prompts/default-style-guide.md` - Visual style requirements
+            3. `prompts/quality-criteria.md` - Quality requirements
+            4. `prompts/library/${{ inputs.library }}.md` - Library-specific rules
+            5. `plots/${{ inputs.spec_id }}/spec.md` - The specification
+
+            ### Step 2: Generate implementation
+            Create: `plots/${{ inputs.spec_id }}/implementations/${{ inputs.library }}.py`
+
+            The script MUST:
+            - Save as `plot.png` in the current directory
+            - For interactive libraries (plotly, bokeh, altair, highcharts, pygal, letsplot): also save `plot.html`
+
+            ### Step 3: Test and fix (up to 3 attempts)
+            Run the implementation:
+            ```bash
+            source .venv/bin/activate
+            cd plots/${{ inputs.spec_id }}/implementations
+            MPLBACKEND=Agg python ${{ inputs.library }}.py
+            ```
+
+            If it fails:
+            - Read the error message carefully
+            - Fix the issue in the code
+            - Try again (max 3 attempts total)
+
+            ### Step 4: Visual self-check
+            After successful execution, look at the generated `plot.png`:
+            - Does it match the spec description?
+            - Are axes labeled correctly?
+            - Is the visualization clear and readable?
+            - Does it follow the style guide?
+
+            If the plot looks wrong, fix the code and regenerate.
+
+            ### Step 5: Format the code
+            ```bash
+            source .venv/bin/activate
+            ruff format plots/${{ inputs.spec_id }}/implementations/${{ inputs.library }}.py
+            ruff check --fix plots/${{ inputs.spec_id }}/implementations/${{ inputs.library }}.py
+            ```
+
+            ### Step 6: Commit and create PR
+            Only if the implementation works and looks correct:
+
+            ```bash
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add plots/${{ inputs.spec_id }}/implementations/${{ inputs.library }}.py
+            git commit -m "feat(${{ inputs.library }}): implement ${{ inputs.spec_id }}"
+            git push -u origin auto/${{ inputs.spec_id }}/${{ inputs.library }}
+            ```
+
+            Then create the PR:
+            ```bash
+            gh pr create --base "${{ inputs.base_branch }}" \
+              --title "feat(${{ inputs.library }}): implement ${{ inputs.spec_id }}" \
+              --body "## Summary
+            Implements \`${{ inputs.spec_id }}\` for **${{ inputs.library }}**.
+
+            **Parent Issue:** #${{ inputs.main_issue_number }}
+            **Base Branch:** \`${{ inputs.base_branch }}\`
+
+            ## Files
+            - \`plots/${{ inputs.spec_id }}/implementations/${{ inputs.library }}.py\`
+
+            ## Preview
+            Preview will be uploaded to GCS staging after this workflow completes."
+            ```
+
+            ### Step 7: Report result
+            At the end, print exactly one of these lines:
+            - `GENERATION_SUCCESS` - if everything worked
+            - `GENERATION_FAILED: <reason>` - if it failed after all attempts
+
+            ### Important
+            - Focus ONLY on ${{ inputs.library }}
+            - If this plot type cannot be implemented in ${{ inputs.library }}, document why and print GENERATION_FAILED
+
+      - name: Get PR number
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="auto/${{ inputs.spec_id }}/${{ inputs.library }}"
+          BASE="${{ inputs.base_branch }}"
+          PR_NUMBER=$(gh pr list --head "$BRANCH" --base "$BASE" --json number -q '.[0].number' 2>/dev/null || echo "")
+
+          if [ -n "$PR_NUMBER" ]; then
+            echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+            echo "pr_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "pr_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload to GCS Staging
+        id: gcs_upload
+        if: steps.pr.outputs.pr_exists == 'true'
+        env:
+          GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+        run: |
+          IMPL_DIR="plots/${{ inputs.spec_id }}/implementations"
+          STAGING_PATH="gs://pyplots-images/staging/${{ inputs.spec_id }}/${{ inputs.library }}"
+          PUBLIC_URL="https://storage.googleapis.com/pyplots-images/staging/${{ inputs.spec_id }}/${{ inputs.library }}"
+
+          # Check if we have GCS credentials
+          if [ -z "$GCS_SA_KEY" ]; then
+            echo "::warning::GCS_SA_KEY not configured - skipping upload"
+            echo "uploaded=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Authenticate
+          echo "$GCS_SA_KEY" > /tmp/gcs-key.json
+          gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
+
+          # Upload PNG if exists (with public read access)
+          if [ -f "$IMPL_DIR/plot.png" ]; then
+            gsutil cp "$IMPL_DIR/plot.png" "${STAGING_PATH}/plot.png"
+            gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot.png" 2>/dev/null || true
+            echo "::notice::Uploaded plot.png to staging"
+            echo "png_url=${PUBLIC_URL}/plot.png" >> $GITHUB_OUTPUT
+            echo "uploaded=true" >> $GITHUB_OUTPUT
+          else
+            echo "::warning::No plot.png found in $IMPL_DIR"
+            echo "uploaded=false" >> $GITHUB_OUTPUT
+          fi
+
+          # Upload HTML if exists (interactive libraries)
+          if [ -f "$IMPL_DIR/plot.html" ]; then
+            gsutil cp "$IMPL_DIR/plot.html" "${STAGING_PATH}/plot.html"
+            gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot.html" 2>/dev/null || true
+            echo "::notice::Uploaded plot.html to staging"
+            echo "html_url=${PUBLIC_URL}/plot.html" >> $GITHUB_OUTPUT
+          fi
+
+          # Cleanup
+          rm -f /tmp/gcs-key.json
+
+      - name: Post preview to issue
+        if: steps.pr.outputs.pr_exists == 'true' && steps.gcs_upload.outputs.uploaded == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LIBRARY="${{ inputs.library }}"
+          SPEC_ID="${{ inputs.spec_id }}"
+          ISSUE="${{ inputs.main_issue_number }}"
+          PR_NUMBER="${{ steps.pr.outputs.pr_number }}"
+          PNG_URL="${{ steps.gcs_upload.outputs.png_url }}"
+          HTML_URL="${{ steps.gcs_upload.outputs.html_url }}"
+
+          # Build comment body
+          BODY="## :art: $LIBRARY Preview
+
+          ![${LIBRARY} plot](${PNG_URL})
+
+          **PR:** #${PR_NUMBER}"
+
+          if [ -n "$HTML_URL" ]; then
+            BODY="${BODY}
+          **Interactive:** [Open HTML](${HTML_URL})"
+          fi
+
+          BODY="${BODY}
+
+          ---
+          :robot: *[plot-generator](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+          gh issue comment "$ISSUE" --body "$BODY"
+
+      - name: Determine result
+        id: result
+        run: |
+          if [ "${{ steps.pr.outputs.pr_exists }}" == "true" ]; then
+            echo "success=true" >> $GITHUB_OUTPUT
+          else
+            echo "success=false" >> $GITHUB_OUTPUT
+          fi

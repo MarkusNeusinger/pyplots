@@ -123,17 +123,9 @@ chart.options.chart = {
 }
 ```
 
-## Folder-Name
+## Output File
 
-`plots/highcharts/{series_type}/`
-
-| Series | Folder |
-|--------|--------|
-| `ScatterSeries` | `scatter/` |
-| `LineSeries` | `line/` |
-| `ColumnSeries` | `bar/` |
-| `BarSeries` | `bar/` |
-| `BoxPlotSeries` | `boxplot/` |
+`plots/{spec-id}/implementations/highcharts.py`
 
 ## Common Pitfalls
 

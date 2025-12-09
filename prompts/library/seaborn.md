@@ -57,16 +57,7 @@ palette='Blues'
 palette='RdBu'
 ```
 
-## Folder Name
+## Output File
 
-`plots/seaborn/{seaborn_function}/`
-
-| Function | Folder |
-|----------|--------|
-| `sns.scatterplot()` | `scatterplot/` |
-| `sns.lineplot()` | `lineplot/` |
-| `sns.barplot()` | `barplot/` |
-| `sns.boxplot()` | `boxplot/` |
-| `sns.heatmap()` | `heatmap/` |
-| `sns.violinplot()` | `violinplot/` |
+`plots/{spec-id}/implementations/seaborn.py`
 

@@ -1,0 +1,67 @@
+name: "Sync: PostgreSQL"
+run-name: "Sync plots to DB: ${{ github.ref_name }}"
+
+# Syncs plots from main branch to PostgreSQL.
+# This ensures the database only contains data for code that is actually in main.
+#
+# New structure: plots/{spec_id}/
+# - spec.md: Spec description, data requirements, use cases
+# - metadata.yaml: Tags, implementation metadata, generation history
+# - implementations/{library}.py: Library-specific implementation code
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'plots/**'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  sync:
+    name: Sync to PostgreSQL
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.13'
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+
+    - name: Install dependencies
+      run: |
+        uv sync
+
+    - name: Run database migrations
+      run: |
+        uv run alembic upgrade head
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+    - name: Sync plots to database
+      run: |
+        uv run python automation/scripts/sync_to_postgres.py
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        GCS_BUCKET: ${{ vars.GCS_BUCKET || 'pyplots-images' }}
+
+    - name: Summary
+      run: |
+        echo "### Sync Complete" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Plots have been synced to PostgreSQL." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Structure synced:**" >> $GITHUB_STEP_SUMMARY
+        echo "- plots/{spec-id}/spec.md (descriptions, data requirements)" >> $GITHUB_STEP_SUMMARY
+        echo "- plots/{spec-id}/metadata.yaml (tags, generation info, quality scores)" >> $GITHUB_STEP_SUMMARY
+        echo "- plots/{spec-id}/implementations/*.py (code)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Trigger:** \`${{ github.event_name }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY

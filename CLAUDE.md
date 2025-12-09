@@ -81,27 +81,27 @@ yarn build        # Production build
 
 ## Architecture
 
-### Specification-First Design
+### Plot-Centric Design
 
-Every plot follows this flow:
+Everything for one plot type lives in a single directory:
+
 ```
-specs/{spec-id}.md → plots/{library}/{plot-type}/{spec-id}/default.py
+plots/{spec-id}/
+├── spec.md              # Description, Applications, Data, Notes
+├── metadata.yaml        # Tags, generation info, quality history
+└── implementations/     # Library implementations
+    ├── matplotlib.py
+    ├── seaborn.py
+    ├── plotly.py
+    ├── bokeh.py
+    ├── altair.py
+    ├── plotnine.py
+    ├── pygal.py
+    ├── highcharts.py
+    └── letsplot.py
 ```
 
-Example:
-```
-specs/scatter-basic.md  → plots/matplotlib/scatter/scatter-basic/default.py
-                        → plots/seaborn/scatterplot/scatter-basic/default.py
-                        → plots/plotly/scatter/scatter-basic/default.py
-                        → plots/bokeh/scatter/scatter-basic/default.py
-                        → plots/altair/scatter/scatter-basic/default.py
-                        → plots/plotnine/scatter/scatter-basic/default.py
-                        → plots/pygal/scatter/scatter-basic/default.py
-                        → plots/highcharts/scatter/scatter-basic/default.py
-                        → plots/letsplot/point/scatter-basic/default.py
-```
-
-The same spec ID links implementations across all 9 supported libraries.
+Example: `plots/scatter-basic/` contains everything for the basic scatter plot.
 
 ### Spec ID Naming Convention
 
@@ -123,8 +123,10 @@ The same spec ID links implementations across all 9 supported libraries.
 
 ### Directory Structure
 
-- **`specs/`**: Library-agnostic plot specifications (Markdown)
-- **`plots/{library}/{plot_type}/{spec_id}/{variant}.py`**: Library-specific implementations
+- **`plots/{spec-id}/`**: Plot-centric directories (spec, metadata, implementations together)
+  - `spec.md`: Library-agnostic specification (Description, Applications, Data, Notes)
+  - `metadata.yaml`: Tags, generation info, quality scores (synced to PostgreSQL)
+  - `implementations/{library}.py`: Library-specific implementations
 - **`core/`**: Shared business logic (database, repositories, config)
 - **`api/`**: FastAPI backend (routers, schemas, dependencies)
 - **`app/`**: React frontend (Vite + TypeScript + MUI)
@@ -138,6 +140,88 @@ The same spec ID links implementations across all 9 supported libraries.
 2. **Async Everything**: FastAPI + SQLAlchemy async + asyncpg
 3. **Clean Repo**: Only production code in git. Quality reports → GitHub Issues. Preview images → GCS.
 4. **Issue-Based Workflow**: GitHub Issues as state machine for plot lifecycle
+
+### Metadata System
+
+Each plot directory contains a `metadata.yaml` file that is synced to PostgreSQL:
+
+**File location:** `plots/{spec-id}/metadata.yaml`
+
+```yaml
+spec_id: scatter-basic
+title: Basic Scatter Plot
+
+# Spec-level tracking
+created: 2025-01-10T08:00:00Z
+issue: 42
+suggested: CoolContributor123
+updates:
+  - date: 2025-01-15T10:30:00Z
+    issue: 58
+    changes: "Added Notes section"
+
+# Spec-level tags (same for all library implementations)
+tags:
+  plot_type: [scatter, point]
+  domain: [statistics, general]
+  features: [basic, 2d, correlation]
+  audience: [beginner]
+  data_type: [numeric, continuous]
+
+# Per-library implementation metadata
+implementations:
+  matplotlib:
+    preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/matplotlib/latest.png
+    current:
+      version: 2
+      date: 2025-01-15T10:30:00Z
+      issue: 53
+      generated_by: claude-opus-4-5-20251101
+      quality_score: 92
+    history:
+      - version: 0
+        date: 2025-01-10T08:00:00Z
+        issue: 42
+        generated_by: claude-sonnet-4-20250514
+        quality_score: 65
+      - version: 1
+        date: 2025-01-12T14:20:00Z
+        issue: 42
+        generated_by: claude-sonnet-4-20250514
+        quality_score: 78
+```
+
+**Key points:**
+- Spec-level tracking: `created`, `issue`, `suggested`, `updates`
+- Contributors credited via `suggested` field
+- Tags are at spec level (same for all libraries)
+- Generation info tracks which model created the code
+- Version numbers (0, 1, 2...) match GCS history files (`v0.png`, `v1.png`, etc.)
+- `sync-postgres.yml` workflow syncs to database on push to main
+- Database stores full spec content (markdown) and implementation code (Python source)
+
+### GCS Storage Structure
+
+Preview images are stored in Google Cloud Storage (`pyplots-images` bucket):
+
+```
+gs://pyplots-images/
+├── plots/{spec-id}/{library}/           # Live images (after merge to main)
+│   ├── latest.png                       # Current version
+│   ├── latest_thumb.png                 # Thumbnail
+│   ├── latest.html                      # Optional (interactive libraries)
+│   └── history/
+│       ├── v0.png, v0.html              # First version
+│       ├── v1.png, v1.html              # After improvement
+│       └── ...
+│
+└── staging/{spec-id}/{library}/         # Temp images (during review)
+    ├── preview.png                      # Overwritten each attempt
+    └── preview.html                     # Optional
+```
+
+**Interactive libraries** (generate `.html`): plotly, bokeh, altair, highcharts, pygal, letsplot
+**PNG only**: matplotlib, seaborn, plotnine
 
 ## Tech Stack
 
@@ -193,10 +277,8 @@ def get_spec_by_id(spec_id: str, db: Session) -> Spec:
 - No numbers needed - descriptive names scale better
 - See "Spec ID Naming Convention" section above for details
 
-**Implementation Variants**:
-- `default.py`: Standard implementation (required)
-- `{style}_style.py`: Style variants (e.g., `ggplot_style.py`)
-- `py{version}.py`: Version-specific (only when necessary)
+**Implementation Files** (in `plots/{spec-id}/implementations/`):
+- `{library}.py`: One file per library (e.g., `matplotlib.py`, `seaborn.py`)
 
 ## Database
 
@@ -218,16 +300,23 @@ DATABASE_URL=postgresql+asyncpg://user:pass@host:5432/pyplots
 uv run python -c "from core.database import is_db_configured; print(is_db_configured())"
 ```
 
-**What's Stored**:
-- Spec metadata (title, description, tags)
-- Implementation metadata (library, variant, quality score)
+**What's Stored** (synced from `plots/{spec-id}/`):
+- Spec content (full markdown from spec.md)
+- Spec metadata (title, description, tags, structured_tags)
+- Implementation code (full Python source)
+- Implementation metadata (library, variant, quality score, generation info)
 - GCS URLs for preview images
 - Social media promotion queue
 
-**What's NOT Stored**:
-- Plot code (in repository)
+**What's in Repository** (source of truth):
+- Everything in `plots/{spec-id}/`:
+  - `spec.md` - specification description
+  - `metadata.yaml` - tags and generation history
+  - `implementations/*.py` - library implementations
+
+**What's NOT Stored in DB**:
 - Preview images (in GCS)
-- Quality reports (in GitHub Issues)
+- Detailed quality reports (in GitHub Issues, summary in metadata)
 
 **Migrations**: Managed with Alembic
 ```bash
@@ -282,7 +371,7 @@ prompt: |
   $(cat prompts/library/matplotlib.md)
 
   ## Spec
-  $(cat specs/scatter-basic.md)
+  $(cat plots/scatter-basic/spec.md)
 ```
 
 ## Implementation Guidelines
@@ -362,7 +451,8 @@ Main Issue (plot-request + approved)
     │
     └── gen-create-spec.yml
         ├── Creates: plot/{spec-id} branch
-        ├── Creates: specs/{spec-id}.md
+        ├── Creates: plots/{spec-id}/spec.md
+        ├── Creates: plots/{spec-id}/metadata.yaml
         └── Dispatches: gen-new-plot.yml
             │
             ├── Sub-Issue: [spec-id] matplotlib implementation
@@ -440,7 +530,8 @@ bash .github/scripts/setup-labels.sh
 4. Maintainer reviews and adds `approved` label
 5. **`gen-create-spec.yml` triggers:**
    - Creates feature branch: `plot/{spec-id}`
-   - Claude generates spec file: `specs/{spec-id}.md`
+   - Claude generates spec file: `plots/{spec-id}/spec.md`
+   - Creates metadata file: `plots/{spec-id}/metadata.yaml`
    - Dispatches `gen-new-plot.yml`
 6. **`gen-new-plot.yml` orchestrator triggers:**
    - Creates **9 sub-issues** (one per library)
@@ -474,7 +565,7 @@ To update an existing plot implementation:
    - Example: `[update] scatter-basic` - regenerate all 9 libraries
    - Example: `[update:seaborn] scatter-basic` - regenerate only seaborn
 2. Add label: `plot-request`
-3. Issue body can contain spec changes (Claude will update `specs/{spec-id}.md` first)
+3. Issue body can contain spec changes (Claude will update `plots/{spec-id}/spec.md` first)
 4. Maintainer adds `approved` label
 5. Workflow regenerates specified implementations
 
@@ -518,31 +609,24 @@ See `.env.example` for full list with comments.
 2. Add label `plot-request`
 3. `validate-plot-request.yml` automatically assigns a spec ID (e.g., `bar-grouped-errorbars`)
 4. Maintainer reviews and adds `approved` label
-5. AI automatically generates spec file in `specs/` and implementations
+5. AI automatically generates `plots/{spec-id}/` directory with spec.md, metadata.yaml, and implementations
 6. Multi-LLM quality check runs automatically on PR
 7. Human reviews PR and merges
 
 ### Updating an Existing Implementation
 
 1. Create GitHub Issue referencing original spec
-2. Update implementation file
-3. Run tests: `pytest tests/unit/plots/{library}/test_{spec_id}.py`
+2. Update implementation file in `plots/{spec-id}/implementations/{library}.py`
+3. Run tests: `uv run pytest tests/unit/plots/test_{spec_id}.py`
 4. Generate preview by running implementation standalone
 5. Create PR with new preview
 6. Quality check runs automatically
-
-### Adding a Style Variant
-
-1. Create new file: `plots/{library}/{plot_type}/{spec_id}/{style}_style.py`
-2. Add tests
-3. Update database metadata
-4. Generate preview
 
 ### Testing Plot Generation Locally
 
 ```bash
 # Run implementation file directly
-python plots/matplotlib/scatter/scatter_basic_001/default.py
+python plots/scatter-basic/implementations/matplotlib.py
 ```
 
 ## Cloud Deployment

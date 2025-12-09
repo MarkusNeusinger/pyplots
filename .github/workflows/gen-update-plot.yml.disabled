@@ -1,0 +1,478 @@
+name: "Gen: Update Plot (Repair Loop)"
+run-name: "Repair: ${{ github.event.pull_request.head.ref || github.event.inputs.pr_number }}"
+
+on:
+  pull_request:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to repair'
+        required: true
+        type: number
+
+# Prevent race conditions when multiple repairs trigger for same PR
+concurrency:
+  group: repair-${{ github.event.pull_request.number || github.event.inputs.pr_number }}
+  cancel-in-progress: false
+
+jobs:
+  update-plot:
+    name: Regenerate Plot from AI Feedback
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Check conditions
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Handle workflow_dispatch trigger
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            PR_NUM="${{ github.event.inputs.pr_number }}"
+            PR_DATA=$(gh pr view "$PR_NUM" --repo ${{ github.repository }} --json headRefName,labels)
+            BRANCH=$(echo "$PR_DATA" | jq -r '.headRefName')
+            HAS_REJECTED=$(echo "$PR_DATA" | jq -r '.labels[].name' | grep -c "ai-rejected" || echo "0")
+
+            if [[ ! "$BRANCH" =~ ^auto/ ]]; then
+              echo "::notice::Skipping: Branch '$BRANCH' is not auto/*"
+              echo "should_run=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            if [[ "$HAS_REJECTED" == "0" ]]; then
+              echo "::notice::Skipping: PR does not have ai-rejected label"
+              echo "should_run=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            echo "pr_number=$PR_NUM" >> $GITHUB_OUTPUT
+            echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Handle pull_request labeled trigger
+          LABEL="${{ github.event.label.name }}"
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+
+          if [[ "$LABEL" != "ai-rejected" ]]; then
+            echo "::notice::Skipping: Label is '$LABEL', not 'ai-rejected'"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if [[ ! "$BRANCH" =~ ^auto/ ]]; then
+            echo "::notice::Skipping: Branch '$BRANCH' is not auto/*"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
+      - name: Checkout repository
+        if: steps.check.outputs.should_run == 'true'
+        uses: actions/checkout@v6
+
+      - name: Extract spec ID, library, and sub-issue
+        if: steps.check.outputs.should_run == 'true'
+        id: extract_info
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="${{ steps.check.outputs.branch }}"
+          PR_NUM="${{ steps.check.outputs.pr_number }}"
+
+          # Get PR body
+          PR_BODY=$(gh pr view "$PR_NUM" --json body -q '.body' 2>/dev/null || echo "")
+
+          # Extract from branch: auto/{spec-id}/{library}
+          SPEC_ID=$(echo "$BRANCH" | cut -d'/' -f2)
+          LIBRARY=$(echo "$BRANCH" | cut -d'/' -f3)
+
+          # Extract sub-issue from PR body (format: **Sub-Issue:** #NUM)
+          SUB_ISSUE=$(echo "$PR_BODY" | grep -oP '\*\*Sub-Issue:\*\* #\K\d+' | head -1 || echo "")
+
+          # Extract main issue from PR body (format: **Parent Issue:** #NUM)
+          MAIN_ISSUE=$(echo "$PR_BODY" | grep -oP '\*\*Parent Issue:\*\* #\K\d+' | head -1 || echo "")
+
+          echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "library=$LIBRARY" >> $GITHUB_OUTPUT
+          echo "sub_issue=$SUB_ISSUE" >> $GITHUB_OUTPUT
+          echo "main_issue=$MAIN_ISSUE" >> $GITHUB_OUTPUT
+          echo "pr_number=$PR_NUM" >> $GITHUB_OUTPUT
+
+          echo "Spec: $SPEC_ID, Library: $LIBRARY, Sub-Issue: #$SUB_ISSUE"
+
+      - name: Check attempt count
+        if: steps.check.outputs.should_run == 'true'
+        id: check_attempts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER="${{ steps.extract_info.outputs.pr_number }}"
+          LABELS=$(gh pr view $PR_NUMBER --json labels -q '.labels[].name')
+
+          # Count existing attempts
+          ATTEMPT=0
+          if echo "$LABELS" | grep -q "ai-attempt-1"; then ATTEMPT=1; fi
+          if echo "$LABELS" | grep -q "ai-attempt-2"; then ATTEMPT=2; fi
+          if echo "$LABELS" | grep -q "ai-attempt-3"; then ATTEMPT=3; fi
+
+          NEXT_ATTEMPT=$((ATTEMPT + 1))
+
+          if [ $NEXT_ATTEMPT -gt 3 ]; then
+            echo "max_reached=true" >> $GITHUB_OUTPUT
+            echo "Maximum attempts (3) reached"
+          else
+            echo "max_reached=false" >> $GITHUB_OUTPUT
+            echo "attempt=$NEXT_ATTEMPT" >> $GITHUB_OUTPUT
+            echo "Starting attempt $NEXT_ATTEMPT"
+          fi
+
+      - name: Mark as not-feasible if max attempts reached
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER="${{ steps.extract_info.outputs.pr_number }}"
+          SUB_ISSUE="${{ steps.extract_info.outputs.sub_issue }}"
+          LIBRARY="${{ steps.extract_info.outputs.library }}"
+          SPEC_ID="${{ steps.extract_info.outputs.spec_id }}"
+
+          # Remove ai-rejected, add not-feasible to PR
+          gh pr edit $PR_NUMBER --remove-label "ai-rejected" --add-label "not-feasible"
+
+          # Update sub-issue
+          if [ -n "$SUB_ISSUE" ]; then
+            gh issue edit $SUB_ISSUE \
+              --remove-label "ai-rejected" \
+              --remove-label "reviewing" \
+              --add-label "not-feasible"
+          fi
+
+          # Post failure message
+          gh pr comment $PR_NUMBER --body "## Not Feasible
+
+          Maximum repair attempts (3) reached for **$LIBRARY** implementation of \`$SPEC_ID\`.
+
+          This PR requires manual intervention or may indicate that this plot type
+          is not feasible in $LIBRARY.
+
+          **Options:**
+          1. Manual review and fix
+          2. Close this PR and mark $LIBRARY as unsupported
+          3. Wait for improved AI capabilities
+
+          ---
+          :robot: *[gen-update-plot workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+      - name: Checkout code
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.check.outputs.branch }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: Install uv
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install dependencies
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
+        run: |
+          uv sync
+
+      - name: Setup Chrome for Highcharts
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true' && steps.extract_info.outputs.library == 'highcharts'
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: Get AI feedback from sub-issue
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
+        id: get_feedback
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SUB_ISSUE="${{ steps.extract_info.outputs.sub_issue }}"
+
+          if [ -z "$SUB_ISSUE" ]; then
+            echo "has_feedback=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Get ALL comments from sub-issue (includes all previous attempts)
+          ALL_COMMENTS=$(gh api repos/${{ github.repository }}/issues/$SUB_ISSUE/comments \
+            --jq '[.[] | .body] | join("\n\n---\n\n")' 2>/dev/null || echo "")
+
+          # Get latest AI Review comment
+          LATEST_FEEDBACK=$(gh api repos/${{ github.repository }}/issues/$SUB_ISSUE/comments \
+            --jq '[.[] | select(.body | contains("AI Review"))] | last | .body // empty')
+
+          if [ -n "$LATEST_FEEDBACK" ]; then
+            echo "$LATEST_FEEDBACK" > /tmp/latest_feedback.md
+            echo "$ALL_COMMENTS" > /tmp/all_attempts.md
+            echo "has_feedback=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_feedback=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Find current plot file
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
+        id: read_plot
+        run: |
+          SPEC_ID="${{ steps.extract_info.outputs.spec_id }}"
+          LIBRARY="${{ steps.extract_info.outputs.library }}"
+
+          # Get plot file path
+          PLOT_FILE="plots/${SPEC_ID}/implementations/${LIBRARY}.py"
+
+          if [ -n "$PLOT_FILE" ] && [ -f "$PLOT_FILE" ]; then
+            echo "plot_file=$PLOT_FILE" >> $GITHUB_OUTPUT
+            echo "plot_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "plot_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+          # Check spec file
+          if [ -f "plots/${SPEC_ID}/spec.md" ]; then
+            echo "spec_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "spec_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update labels
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER="${{ steps.extract_info.outputs.pr_number }}"
+          SUB_ISSUE="${{ steps.extract_info.outputs.sub_issue }}"
+          ATTEMPT="${{ steps.check_attempts.outputs.attempt }}"
+
+          # Remove ai-rejected, add attempt label
+          gh pr edit $PR_NUMBER --remove-label "ai-rejected" --add-label "ai-attempt-${ATTEMPT}"
+
+          # Update sub-issue
+          if [ -n "$SUB_ISSUE" ]; then
+            gh issue edit $SUB_ISSUE \
+              --remove-label "ai-rejected" \
+              --remove-label "reviewing" \
+              --add-label "generating"
+          fi
+
+      - name: Regenerate plot code
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true' && steps.get_feedback.outputs.has_feedback == 'true' && steps.read_plot.outputs.plot_exists == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          SPEC_ID="${{ steps.extract_info.outputs.spec_id }}"
+          LIBRARY="${{ steps.extract_info.outputs.library }}"
+          PLOT_FILE="${{ steps.read_plot.outputs.plot_file }}"
+          ATTEMPT="${{ steps.check_attempts.outputs.attempt }}"
+
+          echo "Regenerating $LIBRARY plot (Attempt $ATTEMPT)"
+
+          # Read current code
+          CURRENT_CODE=$(cat "$PLOT_FILE")
+
+          # Read spec
+          SPEC_CONTENT=$(cat "plots/${SPEC_ID}/spec.md")
+
+          # Read library-specific rules
+          LIBRARY_RULES=$(cat "prompts/library/${LIBRARY}.md" 2>/dev/null || echo "No library-specific rules found")
+
+          # Read style guide
+          STYLE_GUIDE=$(cat "prompts/default-style-guide.md" 2>/dev/null || echo "No style guide found")
+
+          # Read all previous attempts
+          ALL_ATTEMPTS=$(cat /tmp/all_attempts.md 2>/dev/null || echo "No previous attempts")
+
+          # Read latest feedback
+          LATEST_FEEDBACK=$(cat /tmp/latest_feedback.md)
+
+          # Create improvement prompt
+          cat > /tmp/improve_prompt.txt << 'PROMPTEOF'
+          You are improving a plot implementation based on AI review feedback.
+
+          ## Library: $LIBRARY
+
+          ## Current Code:
+          ```python
+          $CURRENT_CODE
+          ```
+
+          ## Specification:
+          $SPEC_CONTENT
+
+          ## Library-Specific Rules:
+          $LIBRARY_RULES
+
+          ## Visual Style Guide:
+          $STYLE_GUIDE
+
+          ## Previous Attempts and Feedback (IMPORTANT - learn from these):
+          $ALL_ATTEMPTS
+
+          ## Latest AI Review Feedback:
+          $LATEST_FEEDBACK
+
+          ## Task:
+          Improve the code to address ALL feedback from the latest review. Pay special attention to:
+          1. Fix any critical issues mentioned (VQ-xxx, CQ-xxx, CR-xxx codes)
+          2. Review previous attempts to avoid repeating the same mistakes
+          3. Implement improvement suggestions where feasible
+          4. Maintain code quality and readability
+          5. Keep the same function signature
+
+          Return ONLY the improved Python code, no explanations or markdown formatting.
+          PROMPTEOF
+
+          # Replace placeholders
+          python3 << PYEOF
+          import re
+
+          with open('/tmp/improve_prompt.txt', 'r') as f:
+              content = f.read()
+
+          replacements = {
+              '\$LIBRARY': '''$LIBRARY''',
+              '\$CURRENT_CODE': '''$CURRENT_CODE''',
+              '\$SPEC_CONTENT': '''$SPEC_CONTENT''',
+              '\$LIBRARY_RULES': '''$LIBRARY_RULES''',
+              '\$STYLE_GUIDE': '''$STYLE_GUIDE''',
+              '\$ALL_ATTEMPTS': '''$ALL_ATTEMPTS''',
+              '\$LATEST_FEEDBACK': '''$LATEST_FEEDBACK'''
+          }
+
+          for key, value in replacements.items():
+              content = content.replace(key, value)
+
+          with open('/tmp/improve_prompt.txt', 'w') as f:
+              f.write(content)
+          PYEOF
+
+          # Call Claude API (with timeout)
+          RESPONSE=$(curl -s --max-time 120 --connect-timeout 10 https://api.anthropic.com/v1/messages \
+            -H "Content-Type: application/json" \
+            -H "x-api-key: $ANTHROPIC_API_KEY" \
+            -H "anthropic-version: 2023-06-01" \
+            -d "{
+              \"model\": \"claude-sonnet-4-20250514\",
+              \"max_tokens\": 8192,
+              \"messages\": [{
+                \"role\": \"user\",
+                \"content\": $(cat /tmp/improve_prompt.txt | jq -Rs .)
+              }]
+            }")
+
+          # Validate API response
+          if ! echo "$RESPONSE" | jq -e '.content[0].text' > /dev/null 2>&1; then
+            echo "::error::API response invalid or empty"
+            echo "Response: $(echo "$RESPONSE" | jq -r '.error // .' 2>/dev/null || echo "$RESPONSE")"
+            exit 1
+          fi
+
+          # Extract improved code
+          IMPROVED_CODE=$(echo "$RESPONSE" | jq -r '.content[0].text // empty')
+
+          if [ -n "$IMPROVED_CODE" ]; then
+            # Clean up markdown if present
+            CLEAN_CODE=$(echo "$IMPROVED_CODE" | sed -n '/^```python/,/^```$/p' | sed '1d;$d')
+            if [ -z "$CLEAN_CODE" ]; then
+              CLEAN_CODE="$IMPROVED_CODE"
+            fi
+
+            # Write improved code
+            echo "$CLEAN_CODE" > "$PLOT_FILE"
+            echo "Updated: $PLOT_FILE"
+          else
+            echo "No improvement generated"
+            echo "API Response: $RESPONSE"
+          fi
+
+      - name: Commit and push changes
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
+        run: |
+          SPEC_ID="${{ steps.extract_info.outputs.spec_id }}"
+          LIBRARY="${{ steps.extract_info.outputs.library }}"
+          ATTEMPT="${{ steps.check_attempts.outputs.attempt }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Check if there are changes
+          if git diff --quiet; then
+            echo "No changes to commit"
+          else
+            git add plots/
+            git commit -m "fix($LIBRARY): address AI review feedback for $SPEC_ID (attempt $ATTEMPT/3)"
+
+            git push
+            echo "Changes pushed"
+          fi
+
+      - name: Post update to sub-issue
+        if: steps.check.outputs.should_run == 'true' && steps.check_attempts.outputs.max_reached != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SUB_ISSUE="${{ steps.extract_info.outputs.sub_issue }}"
+          PR_NUMBER="${{ steps.extract_info.outputs.pr_number }}"
+          ATTEMPT="${{ steps.check_attempts.outputs.attempt }}"
+          LIBRARY="${{ steps.extract_info.outputs.library }}"
+          SPEC_ID="${{ steps.extract_info.outputs.spec_id }}"
+          PLOT_FILE="${{ steps.read_plot.outputs.plot_file }}"
+
+          if [ -z "$SUB_ISSUE" ]; then
+            echo "No sub-issue to update"
+            exit 0
+          fi
+
+          # Read the updated code
+          if [ -f "$PLOT_FILE" ]; then
+            UPDATED_CODE=$(cat "$PLOT_FILE")
+          else
+            UPDATED_CODE="File not found"
+          fi
+
+          # Create comment with updated code (for documentation/learning)
+          cat > /tmp/update_comment.md << COMMENTEOF
+          ## Attempt $ATTEMPT/3 - $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          ### Regenerated Code
+          \`\`\`python
+          $UPDATED_CODE
+          \`\`\`
+
+          ### Status
+          - **PR:** #$PR_NUMBER
+          - **File:** \`$PLOT_FILE\`
+          - **Action:** Code regenerated based on AI feedback
+
+          Waiting for tests and new AI review...
+
+          ---
+          :robot: *[gen-update-plot workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*
+          COMMENTEOF
+
+          gh issue comment "$SUB_ISSUE" --body-file /tmp/update_comment.md
+
+      - name: Cleanup temporary files
+        if: always()
+        run: |
+          rm -f /tmp/improve_prompt.txt /tmp/latest_feedback.md /tmp/all_attempts.md /tmp/update_comment.md

@@ -72,14 +72,7 @@ geom_histogram() # Histogram
 geom_tile()      # Heatmap
 ```
 
-## Folder-Name
+## Output File
 
-`plots/plotnine/{geom}/`
-
-| Geom | Folder |
-|------|--------|
-| `geom_point()` | `point/` |
-| `geom_line()` | `line/` |
-| `geom_bar()` | `bar/` |
-| `geom_boxplot()` | `boxplot/` |
+`plots/{spec-id}/implementations/plotnine.py`
 

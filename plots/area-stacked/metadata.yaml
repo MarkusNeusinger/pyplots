@@ -1,0 +1,117 @@
+# Metadata for area-stacked
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: area-stacked
+title: Stacked Area Chart
+
+# Spec-level tracking
+created: 2025-12-09T23:43:08Z
+issue: 561
+suggested: MarkusNeusinger
+updates: []
+
+tags:
+  plot_type:
+  - area
+  - stacked
+  domain:
+  - business
+  - finance
+  - general
+  features:
+  - stacked
+  - multi-series
+  - time-series
+  audience:
+  - beginner
+  - intermediate
+  data_type:
+  - numeric
+  - datetime
+  - continuous
+
+# Implementation metadata per library
+# GCS URLs: https://storage.googleapis.com/pyplots-images/plots/area-stacked/{library}/latest.png
+# Interactive libraries also have .html: plotly, bokeh, altair, highcharts, pygal, letsplot
+implementations:
+  matplotlib:
+    preview_url: null
+    current:
+      version: null
+      date: null
+      issue: null
+      generated_by: null
+      quality_score: null
+    history: []
+  seaborn:
+    preview_url: null
+    current:
+      version: null
+      date: null
+      issue: null
+      generated_by: null
+      quality_score: null
+    history: []
+  plotly:
+    preview_url: null
+    current:
+      version: null
+      date: null
+      issue: null
+      generated_by: null
+      quality_score: null
+    history: []
+  bokeh:
+    preview_url: null
+    current:
+      version: null
+      date: null
+      issue: null
+      generated_by: null
+      quality_score: null
+    history: []
+  altair:
+    preview_url: null
+    current:
+      version: null
+      date: null
+      issue: null
+      generated_by: null
+      quality_score: null
+    history: []
+  plotnine:
+    preview_url: null
+    current:
+      version: null
+      date: null
+      issue: null
+      generated_by: null
+      quality_score: null
+    history: []
+  pygal:
+    preview_url: null
+    current:
+      version: null
+      date: null
+      issue: null
+      generated_by: null
+      quality_score: null
+    history: []
+  highcharts:
+    preview_url: null
+    current:
+      version: null
+      date: null
+      issue: null
+      generated_by: null
+      quality_score: null
+    history: []
+  letsplot:
+    preview_url: null
+    current:
+      version: null
+      date: null
+      issue: null
+      generated_by: null
+      quality_score: null
+    history: []

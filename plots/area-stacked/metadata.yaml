@@ -79,13 +79,15 @@ implementations:
       quality_score: null
     history: []
   plotnine:
-    preview_url: null
+    preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/plotnine/plot.png
     current:
       version: null
       date: null
-      issue: null
-      generated_by: null
-      quality_score: null
+      issue: 561
+      generated_by: claude-opus-4-5-20251101
+      quality_score: 92
+      generated_at: "2025-12-09T23:54:21Z"
+      workflow_run: 20082361597
     history: []
   pygal:
     preview_url: null

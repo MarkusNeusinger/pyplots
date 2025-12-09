@@ -1,0 +1,505 @@
+name: "Plot: Orchestrator"
+run-name: "Orchestrate: ${{ github.event.issue.title }}"
+
+# Trigger: approved label added to issue with plot-request label
+# This starts the library implementation generation in 3 batches
+
+on:
+  issues:
+    types: [labeled]
+
+concurrency:
+  group: plot-generation-queue
+  cancel-in-progress: false
+
+env:
+  # Library dependencies for each library
+  DEPS_MATPLOTLIB: "matplotlib>=3.9.0 numpy>=1.26.0"
+  DEPS_SEABORN: "seaborn>=0.13.0 matplotlib numpy>=1.26.0"
+  DEPS_PLOTNINE: "plotnine>=0.13.0 numpy>=1.26.0"
+  DEPS_PLOTLY: "plotly>=5.18.0 kaleido>=0.2.1 numpy>=1.26.0"
+  DEPS_BOKEH: "bokeh>=3.4.0 numpy>=1.26.0"
+  DEPS_ALTAIR: "altair>=5.2.0 vl-convert-python>=1.3.0 numpy>=1.26.0"
+  DEPS_HIGHCHARTS: "highcharts-core>=1.10.0 numpy>=1.26.0"
+  DEPS_PYGAL: "pygal>=3.0.0 cairosvg>=2.7.0"
+  DEPS_LETSPLOT: "lets-plot>=4.5.0"
+
+jobs:
+  # ============================================================================
+  # Setup: Extract spec_id, validate, post status table
+  # ============================================================================
+  setup:
+    runs-on: ubuntu-latest
+    if: github.event.label.name == 'approved' && contains(github.event.issue.labels.*.name, 'plot-request')
+    permissions:
+      contents: read
+      issues: write
+
+    outputs:
+      spec_id: ${{ steps.extract.outputs.spec_id }}
+      feature_branch: ${{ steps.extract.outputs.feature_branch }}
+      comment_id: ${{ steps.post_table.outputs.comment_id }}
+
+    steps:
+      - name: Extract spec_id from issue title
+        id: extract
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          echo "=== Debug Info ==="
+          echo "Issue title: $ISSUE_TITLE"
+
+          # Extract [spec-id] from title
+          SPEC_ID=$(echo "$ISSUE_TITLE" | grep -oP '^\[\K[a-z0-9-]+(?=\])' || echo "")
+
+          if [ -z "$SPEC_ID" ]; then
+            echo "::error::Could not extract spec_id from title: $ISSUE_TITLE"
+            echo "::error::Expected format: [spec-id] ..."
+            exit 1
+          fi
+
+          echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "feature_branch=plot/$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "::notice::Spec ID: $SPEC_ID"
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Verify feature branch exists
+        run: |
+          BRANCH="plot/${{ steps.extract.outputs.spec_id }}"
+          if ! git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+            echo "::error::Feature branch not found: $BRANCH"
+            echo "::error::Run plot-prepare first to create the spec and branch"
+            exit 1
+          fi
+          echo "::notice::Feature branch exists: $BRANCH"
+
+      - name: Add in-progress label
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue edit ${{ github.event.issue.number }} --add-label "in-progress"
+
+      - name: React with rocket emoji
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/reactions \
+            -f content=rocket
+
+      - name: Post initial status table
+        id: post_table
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPEC_ID: ${{ steps.extract.outputs.spec_id }}
+        run: |
+          TABLE_BODY=$(cat << 'EOF'
+          ## 🚀 Implementation Status
+
+          | Library | Status | PR | Quality |
+          |---------|--------|-----|---------|
+          | matplotlib | ⏳ Generating | - | - |
+          | seaborn | ⏳ Generating | - | - |
+          | plotnine | ⏳ Generating | - | - |
+          | plotly | ⏸️ Queued | - | - |
+          | bokeh | ⏸️ Queued | - | - |
+          | altair | ⏸️ Queued | - | - |
+          | highcharts | ⏸️ Queued | - | - |
+          | pygal | ⏸️ Queued | - | - |
+          | letsplot | ⏸️ Queued | - | - |
+
+          **Progress:** Batch 1/3 (matplotlib, seaborn, plotnine)
+
+          ---
+          :robot: *[plot-generate workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*
+          EOF
+          )
+
+          COMMENT_ID=$(gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
+            -f body="$TABLE_BODY" --jq '.id')
+
+          echo "comment_id=$COMMENT_ID" >> $GITHUB_OUTPUT
+          echo "::notice::Status comment posted: $COMMENT_ID"
+
+  # ============================================================================
+  # Batch 1: matplotlib, seaborn, plotnine (PNG-only, fast)
+  # ============================================================================
+  batch-1-matplotlib:
+    needs: setup
+    uses: ./.github/workflows/plot-generator.yml
+    with:
+      spec_id: ${{ needs.setup.outputs.spec_id }}
+      library: matplotlib
+      main_issue_number: ${{ github.event.issue.number }}
+      deps: "matplotlib>=3.9.0 numpy>=1.26.0"
+      base_branch: ${{ needs.setup.outputs.feature_branch }}
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+
+  batch-1-seaborn:
+    needs: setup
+    uses: ./.github/workflows/plot-generator.yml
+    with:
+      spec_id: ${{ needs.setup.outputs.spec_id }}
+      library: seaborn
+      main_issue_number: ${{ github.event.issue.number }}
+      deps: "seaborn>=0.13.0 matplotlib numpy>=1.26.0"
+      base_branch: ${{ needs.setup.outputs.feature_branch }}
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+
+  batch-1-plotnine:
+    needs: setup
+    uses: ./.github/workflows/plot-generator.yml
+    with:
+      spec_id: ${{ needs.setup.outputs.spec_id }}
+      library: plotnine
+      main_issue_number: ${{ github.event.issue.number }}
+      deps: "plotnine>=0.13.0 numpy>=1.26.0"
+      base_branch: ${{ needs.setup.outputs.feature_branch }}
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+
+  # ============================================================================
+  # Update status after Batch 1
+  # ============================================================================
+  update-1:
+    needs: [setup, batch-1-matplotlib, batch-1-seaborn, batch-1-plotnine]
+    if: always() && needs.setup.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Update status table for Batch 2
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.setup.outputs.comment_id }}
+          MATPLOTLIB_RESULT: ${{ needs.batch-1-matplotlib.result }}
+          SEABORN_RESULT: ${{ needs.batch-1-seaborn.result }}
+          PLOTNINE_RESULT: ${{ needs.batch-1-plotnine.result }}
+        run: |
+          # Determine status icons
+          get_status() {
+            case "$1" in
+              success) echo "✅ Done" ;;
+              failure) echo "❌ Failed" ;;
+              cancelled) echo "⏹️ Cancelled" ;;
+              *) echo "⏳ Running" ;;
+            esac
+          }
+
+          MPL_STATUS=$(get_status "$MATPLOTLIB_RESULT")
+          SNS_STATUS=$(get_status "$SEABORN_RESULT")
+          P9_STATUS=$(get_status "$PLOTNINE_RESULT")
+
+          TABLE_BODY=$(cat << EOF
+          ## 🚀 Implementation Status
+
+          | Library | Status | PR | Quality |
+          |---------|--------|-----|---------|
+          | matplotlib | $MPL_STATUS | - | - |
+          | seaborn | $SNS_STATUS | - | - |
+          | plotnine | $P9_STATUS | - | - |
+          | plotly | ⏳ Generating | - | - |
+          | bokeh | ⏳ Generating | - | - |
+          | altair | ⏳ Generating | - | - |
+          | highcharts | ⏸️ Queued | - | - |
+          | pygal | ⏸️ Queued | - | - |
+          | letsplot | ⏸️ Queued | - | - |
+
+          **Progress:** Batch 2/3 (plotly, bokeh, altair)
+
+          ---
+          :robot: *[plot-generate workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*
+          EOF
+          )
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID \
+            -X PATCH -f body="$TABLE_BODY"
+
+  # ============================================================================
+  # Batch 2: plotly, bokeh, altair (interactive)
+  # ============================================================================
+  batch-2-plotly:
+    needs: [setup, update-1]
+    if: always() && needs.setup.result == 'success'
+    uses: ./.github/workflows/plot-generator.yml
+    with:
+      spec_id: ${{ needs.setup.outputs.spec_id }}
+      library: plotly
+      main_issue_number: ${{ github.event.issue.number }}
+      deps: "plotly>=5.18.0 kaleido>=0.2.1 numpy>=1.26.0"
+      base_branch: ${{ needs.setup.outputs.feature_branch }}
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+
+  batch-2-bokeh:
+    needs: [setup, update-1]
+    if: always() && needs.setup.result == 'success'
+    uses: ./.github/workflows/plot-generator.yml
+    with:
+      spec_id: ${{ needs.setup.outputs.spec_id }}
+      library: bokeh
+      main_issue_number: ${{ github.event.issue.number }}
+      deps: "bokeh>=3.4.0 numpy>=1.26.0"
+      base_branch: ${{ needs.setup.outputs.feature_branch }}
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+
+  batch-2-altair:
+    needs: [setup, update-1]
+    if: always() && needs.setup.result == 'success'
+    uses: ./.github/workflows/plot-generator.yml
+    with:
+      spec_id: ${{ needs.setup.outputs.spec_id }}
+      library: altair
+      main_issue_number: ${{ github.event.issue.number }}
+      deps: "altair>=5.2.0 vl-convert-python>=1.3.0 numpy>=1.26.0"
+      base_branch: ${{ needs.setup.outputs.feature_branch }}
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+
+  # ============================================================================
+  # Update status after Batch 2
+  # ============================================================================
+  update-2:
+    needs: [setup, batch-1-matplotlib, batch-1-seaborn, batch-1-plotnine, batch-2-plotly, batch-2-bokeh, batch-2-altair]
+    if: always() && needs.setup.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Update status table for Batch 3
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.setup.outputs.comment_id }}
+          MATPLOTLIB_RESULT: ${{ needs.batch-1-matplotlib.result }}
+          SEABORN_RESULT: ${{ needs.batch-1-seaborn.result }}
+          PLOTNINE_RESULT: ${{ needs.batch-1-plotnine.result }}
+          PLOTLY_RESULT: ${{ needs.batch-2-plotly.result }}
+          BOKEH_RESULT: ${{ needs.batch-2-bokeh.result }}
+          ALTAIR_RESULT: ${{ needs.batch-2-altair.result }}
+        run: |
+          get_status() {
+            case "$1" in
+              success) echo "✅ Done" ;;
+              failure) echo "❌ Failed" ;;
+              cancelled) echo "⏹️ Cancelled" ;;
+              *) echo "⏳ Running" ;;
+            esac
+          }
+
+          MPL_STATUS=$(get_status "$MATPLOTLIB_RESULT")
+          SNS_STATUS=$(get_status "$SEABORN_RESULT")
+          P9_STATUS=$(get_status "$PLOTNINE_RESULT")
+          PLY_STATUS=$(get_status "$PLOTLY_RESULT")
+          BOK_STATUS=$(get_status "$BOKEH_RESULT")
+          ALT_STATUS=$(get_status "$ALTAIR_RESULT")
+
+          TABLE_BODY=$(cat << EOF
+          ## 🚀 Implementation Status
+
+          | Library | Status | PR | Quality |
+          |---------|--------|-----|---------|
+          | matplotlib | $MPL_STATUS | - | - |
+          | seaborn | $SNS_STATUS | - | - |
+          | plotnine | $P9_STATUS | - | - |
+          | plotly | $PLY_STATUS | - | - |
+          | bokeh | $BOK_STATUS | - | - |
+          | altair | $ALT_STATUS | - | - |
+          | highcharts | ⏳ Generating | - | - |
+          | pygal | ⏳ Generating | - | - |
+          | letsplot | ⏳ Generating | - | - |
+
+          **Progress:** Batch 3/3 (highcharts, pygal, letsplot)
+
+          ---
+          :robot: *[plot-generate workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*
+          EOF
+          )
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID \
+            -X PATCH -f body="$TABLE_BODY"
+
+  # ============================================================================
+  # Batch 3: highcharts, pygal, letsplot (interactive)
+  # ============================================================================
+  batch-3-highcharts:
+    needs: [setup, update-2]
+    if: always() && needs.setup.result == 'success'
+    uses: ./.github/workflows/plot-generator.yml
+    with:
+      spec_id: ${{ needs.setup.outputs.spec_id }}
+      library: highcharts
+      main_issue_number: ${{ github.event.issue.number }}
+      deps: "highcharts-core>=1.10.0 numpy>=1.26.0"
+      base_branch: ${{ needs.setup.outputs.feature_branch }}
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+
+  batch-3-pygal:
+    needs: [setup, update-2]
+    if: always() && needs.setup.result == 'success'
+    uses: ./.github/workflows/plot-generator.yml
+    with:
+      spec_id: ${{ needs.setup.outputs.spec_id }}
+      library: pygal
+      main_issue_number: ${{ github.event.issue.number }}
+      deps: "pygal>=3.0.0 cairosvg>=2.7.0"
+      base_branch: ${{ needs.setup.outputs.feature_branch }}
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+
+  batch-3-letsplot:
+    needs: [setup, update-2]
+    if: always() && needs.setup.result == 'success'
+    uses: ./.github/workflows/plot-generator.yml
+    with:
+      spec_id: ${{ needs.setup.outputs.spec_id }}
+      library: letsplot
+      main_issue_number: ${{ github.event.issue.number }}
+      deps: "lets-plot>=4.5.0"
+      base_branch: ${{ needs.setup.outputs.feature_branch }}
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      GCS_SA_KEY: ${{ secrets.GCS_SA_KEY }}
+
+  # ============================================================================
+  # Final Summary
+  # ============================================================================
+  summary:
+    needs:
+      - setup
+      - batch-1-matplotlib
+      - batch-1-seaborn
+      - batch-1-plotnine
+      - batch-2-plotly
+      - batch-2-bokeh
+      - batch-2-altair
+      - batch-3-highcharts
+      - batch-3-pygal
+      - batch-3-letsplot
+    if: always() && needs.setup.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Post final status
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.setup.outputs.comment_id }}
+          MATPLOTLIB_RESULT: ${{ needs.batch-1-matplotlib.result }}
+          SEABORN_RESULT: ${{ needs.batch-1-seaborn.result }}
+          PLOTNINE_RESULT: ${{ needs.batch-1-plotnine.result }}
+          PLOTLY_RESULT: ${{ needs.batch-2-plotly.result }}
+          BOKEH_RESULT: ${{ needs.batch-2-bokeh.result }}
+          ALTAIR_RESULT: ${{ needs.batch-2-altair.result }}
+          HIGHCHARTS_RESULT: ${{ needs.batch-3-highcharts.result }}
+          PYGAL_RESULT: ${{ needs.batch-3-pygal.result }}
+          LETSPLOT_RESULT: ${{ needs.batch-3-letsplot.result }}
+        run: |
+          get_status() {
+            case "$1" in
+              success) echo "✅ Done" ;;
+              failure) echo "❌ Failed" ;;
+              cancelled) echo "⏹️ Cancelled" ;;
+              skipped) echo "⏭️ Skipped" ;;
+              *) echo "❓ Unknown" ;;
+            esac
+          }
+
+          MPL_STATUS=$(get_status "$MATPLOTLIB_RESULT")
+          SNS_STATUS=$(get_status "$SEABORN_RESULT")
+          P9_STATUS=$(get_status "$PLOTNINE_RESULT")
+          PLY_STATUS=$(get_status "$PLOTLY_RESULT")
+          BOK_STATUS=$(get_status "$BOKEH_RESULT")
+          ALT_STATUS=$(get_status "$ALTAIR_RESULT")
+          HC_STATUS=$(get_status "$HIGHCHARTS_RESULT")
+          PYG_STATUS=$(get_status "$PYGAL_RESULT")
+          LP_STATUS=$(get_status "$LETSPLOT_RESULT")
+
+          # Count successes
+          SUCCESS_COUNT=0
+          for result in "$MATPLOTLIB_RESULT" "$SEABORN_RESULT" "$PLOTNINE_RESULT" \
+                        "$PLOTLY_RESULT" "$BOKEH_RESULT" "$ALTAIR_RESULT" \
+                        "$HIGHCHARTS_RESULT" "$PYGAL_RESULT" "$LETSPLOT_RESULT"; do
+            [ "$result" = "success" ] && SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+          done
+
+          if [ "$SUCCESS_COUNT" -eq 9 ]; then
+            PROGRESS="✅ **All 9 libraries completed successfully!**"
+          elif [ "$SUCCESS_COUNT" -gt 0 ]; then
+            PROGRESS="⚠️ **$SUCCESS_COUNT/9 libraries completed** - check failed jobs"
+          else
+            PROGRESS="❌ **All libraries failed** - check workflow logs"
+          fi
+
+          TABLE_BODY=$(cat << EOF
+          ## 🚀 Implementation Status
+
+          | Library | Status | PR | Quality |
+          |---------|--------|-----|---------|
+          | matplotlib | $MPL_STATUS | - | - |
+          | seaborn | $SNS_STATUS | - | - |
+          | plotnine | $P9_STATUS | - | - |
+          | plotly | $PLY_STATUS | - | - |
+          | bokeh | $BOK_STATUS | - | - |
+          | altair | $ALT_STATUS | - | - |
+          | highcharts | $HC_STATUS | - | - |
+          | pygal | $PYG_STATUS | - | - |
+          | letsplot | $LP_STATUS | - | - |
+
+          $PROGRESS
+
+          ---
+          :robot: *[plot-generate workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*
+          EOF
+          )
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID \
+            -X PATCH -f body="$TABLE_BODY"
+
+      - name: Update labels
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MATPLOTLIB_RESULT: ${{ needs.batch-1-matplotlib.result }}
+          SEABORN_RESULT: ${{ needs.batch-1-seaborn.result }}
+          PLOTNINE_RESULT: ${{ needs.batch-1-plotnine.result }}
+          PLOTLY_RESULT: ${{ needs.batch-2-plotly.result }}
+          BOKEH_RESULT: ${{ needs.batch-2-bokeh.result }}
+          ALTAIR_RESULT: ${{ needs.batch-2-altair.result }}
+          HIGHCHARTS_RESULT: ${{ needs.batch-3-highcharts.result }}
+          PYGAL_RESULT: ${{ needs.batch-3-pygal.result }}
+          LETSPLOT_RESULT: ${{ needs.batch-3-letsplot.result }}
+        run: |
+          # Count successes
+          SUCCESS_COUNT=0
+          for result in "$MATPLOTLIB_RESULT" "$SEABORN_RESULT" "$PLOTNINE_RESULT" \
+                        "$PLOTLY_RESULT" "$BOKEH_RESULT" "$ALTAIR_RESULT" \
+                        "$HIGHCHARTS_RESULT" "$PYGAL_RESULT" "$LETSPLOT_RESULT"; do
+            [ "$result" = "success" ] && SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+          done
+
+          # Remove in-progress label
+          gh issue edit ${{ github.event.issue.number }} --remove-label "in-progress" || true
+
+          # Add completion label
+          if [ "$SUCCESS_COUNT" -eq 9 ]; then
+            gh issue edit ${{ github.event.issue.number }} --add-label "completed"
+          elif [ "$SUCCESS_COUNT" -gt 0 ]; then
+            gh issue edit ${{ github.event.issue.number }} --add-label "partial"
+          fi

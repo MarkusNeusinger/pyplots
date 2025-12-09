@@ -1,0 +1,591 @@
+name: "Plot: Merge"
+run-name: "Merge: ${{ github.event.inputs.pr_number || github.event.pull_request.head.ref || 'push' }}"
+
+# Auto-merge PRs when ai-approved label is added
+# Also handles feature branch → main merge when all libraries complete
+
+on:
+  pull_request:
+    types: [labeled, closed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to auto-merge'
+        required: true
+        type: number
+
+jobs:
+  # ============================================================================
+  # Job 1: Enable auto-merge when ai-approved label is added or dispatched
+  # ============================================================================
+  auto-merge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Check conditions
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Handle workflow_dispatch trigger
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            PR_NUM="${{ github.event.inputs.pr_number }}"
+            PR_DATA=$(gh pr view "$PR_NUM" --repo ${{ github.repository }} --json headRefName,labels)
+            BRANCH=$(echo "$PR_DATA" | jq -r '.headRefName')
+            HAS_APPROVED=$(echo "$PR_DATA" | jq -r '.labels[].name' | grep -c "ai-approved" || echo "0")
+
+            if [[ ! "$BRANCH" =~ ^auto/ ]]; then
+              echo "::notice::Skipping: Branch '$BRANCH' is not auto/*"
+              echo "should_run=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            if [[ "$HAS_APPROVED" == "0" ]]; then
+              echo "::notice::Skipping: PR does not have ai-approved label"
+              echo "should_run=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            echo "pr_number=$PR_NUM" >> $GITHUB_OUTPUT
+            echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Handle pull_request labeled trigger
+          ACTION="${{ github.event.action }}"
+          LABEL="${{ github.event.label.name }}"
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+
+          if [[ "$ACTION" != "labeled" ]]; then
+            echo "::notice::Skipping: Action is '$ACTION', not 'labeled'"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if [[ "$LABEL" != "ai-approved" ]]; then
+            echo "::notice::Skipping: Label is '$LABEL', not 'ai-approved'"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if [[ ! "$BRANCH" =~ ^auto/ ]]; then
+            echo "::notice::Skipping: Branch '$BRANCH' is not auto/*"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
+      - name: Checkout repository
+        if: steps.check.outputs.should_run == 'true'
+        uses: actions/checkout@v6
+
+      - name: Extract info from branch
+        if: steps.check.outputs.should_run == 'true'
+        id: extract
+        run: |
+          BRANCH="${{ steps.check.outputs.branch }}"
+          # Format: auto/{spec-id}/{library}
+          SPEC_ID=$(echo "$BRANCH" | cut -d'/' -f2)
+          LIBRARY=$(echo "$BRANCH" | cut -d'/' -f3)
+
+          echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "library=$LIBRARY" >> $GITHUB_OUTPUT
+
+      - name: Get main issue from PR body
+        if: steps.check.outputs.should_run == 'true'
+        id: main_issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUM="${{ steps.check.outputs.pr_number }}"
+          SPEC_ID="${{ steps.extract.outputs.spec_id }}"
+          PR_BODY=$(gh pr view "$PR_NUM" --json body -q '.body' 2>/dev/null || echo "")
+
+          # Extract main issue from PR body
+          MAIN_ISSUE=$(echo "$PR_BODY" | grep -oP '\*\*Parent Issue:\*\* #\K\d+' | head -1 || echo "")
+
+          # Fallback: search for main issue
+          if [ -z "$MAIN_ISSUE" ]; then
+            MAIN_ISSUE=$(gh issue list --label plot-request --search "$SPEC_ID in:title" --json number -q '.[0].number' 2>/dev/null || echo "")
+          fi
+
+          echo "number=$MAIN_ISSUE" >> $GITHUB_OUTPUT
+          echo "Main issue: #$MAIN_ISSUE"
+
+      - name: React with rocket emoji
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/${{ steps.check.outputs.pr_number }}/reactions \
+            -f content=rocket
+
+      - name: Merge PR directly
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge ${{ steps.check.outputs.pr_number }} \
+            --repo ${{ github.repository }} \
+            --squash \
+            --delete-branch
+
+      - name: Post progress to main issue
+        if: steps.check.outputs.should_run == 'true' && steps.main_issue.outputs.number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          MAIN_ISSUE="${{ steps.main_issue.outputs.number }}"
+          LIBRARY="${{ steps.extract.outputs.library }}"
+          SPEC_ID="${{ steps.extract.outputs.spec_id }}"
+          PR_NUM="${{ steps.check.outputs.pr_number }}"
+
+          gh issue comment "$MAIN_ISSUE" --body "## :white_check_mark: $LIBRARY Merged
+
+          **$LIBRARY** implementation for \`$SPEC_ID\` has been merged to the feature branch.
+
+          **PR:** #$PR_NUM
+
+          ---
+          :robot: *[plot-merge workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+  # ============================================================================
+  # Job 2: Post-merge check - see if all libraries are done
+  # ============================================================================
+  check-complete:
+    needs: auto-merge
+    if: always() && needs.auto-merge.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Get info from previous job
+        id: info
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # We need to re-extract info since jobs don't share outputs easily
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            PR_NUM="${{ github.event.inputs.pr_number }}"
+          else
+            PR_NUM="${{ github.event.pull_request.number }}"
+          fi
+
+          PR_DATA=$(gh pr view "$PR_NUM" --repo ${{ github.repository }} --json headRefName,body 2>/dev/null || echo "{}")
+          BRANCH=$(echo "$PR_DATA" | jq -r '.headRefName // empty')
+
+          if [ -z "$BRANCH" ] || [[ ! "$BRANCH" =~ ^auto/ ]]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          SPEC_ID=$(echo "$BRANCH" | cut -d'/' -f2)
+          PR_BODY=$(echo "$PR_DATA" | jq -r '.body // empty')
+          MAIN_ISSUE=$(echo "$PR_BODY" | grep -oP '\*\*Parent Issue:\*\* #\K\d+' | head -1 || echo "")
+
+          if [ -z "$MAIN_ISSUE" ]; then
+            MAIN_ISSUE=$(gh issue list --label plot-request --search "$SPEC_ID in:title" --json number -q '.[0].number' 2>/dev/null || echo "")
+          fi
+
+          echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "main_issue=$MAIN_ISSUE" >> $GITHUB_OUTPUT
+          echo "skip=false" >> $GITHUB_OUTPUT
+
+      - name: Check if all libraries are done
+        if: steps.info.outputs.skip != 'true' && steps.info.outputs.main_issue != ''
+        id: check_complete
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SPEC_ID="${{ steps.info.outputs.spec_id }}"
+          MAIN_ISSUE="${{ steps.info.outputs.main_issue }}"
+
+          # Count PRs for this spec
+          # All library PRs target plot/{spec-id} branch
+          FEATURE_BRANCH="plot/$SPEC_ID"
+
+          # Get all PRs targeting the feature branch
+          ALL_PRS=$(gh pr list --base "$FEATURE_BRANCH" --state all --json number,state,mergedAt,labels -q '.' 2>/dev/null || echo "[]")
+
+          TOTAL=$(echo "$ALL_PRS" | jq 'length')
+          MERGED=$(echo "$ALL_PRS" | jq '[.[] | select(.mergedAt != null)] | length')
+          NOT_FEASIBLE=$(echo "$ALL_PRS" | jq '[.[] | select(any(.labels[]?; .name == "not-feasible"))] | length')
+
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "merged=$MERGED" >> $GITHUB_OUTPUT
+          echo "not_feasible=$NOT_FEASIBLE" >> $GITHUB_OUTPUT
+
+          # We expect 9 libraries
+          DONE=$((MERGED + NOT_FEASIBLE))
+          if [ "$DONE" -ge 9 ]; then
+            echo "all_done=true" >> $GITHUB_OUTPUT
+          else
+            echo "all_done=false" >> $GITHUB_OUTPUT
+          fi
+
+          echo "Progress: $DONE/9 complete ($MERGED merged, $NOT_FEASIBLE not feasible)"
+
+      - name: Checkout feature branch for metadata update
+        if: steps.info.outputs.skip != 'true' && steps.check_complete.outputs.all_done == 'true' && steps.info.outputs.main_issue != ''
+        uses: actions/checkout@v6
+        with:
+          ref: plot/${{ steps.info.outputs.spec_id }}
+          fetch-depth: 0
+
+      - name: Update metadata.yaml with quality scores
+        if: steps.info.outputs.skip != 'true' && steps.check_complete.outputs.all_done == 'true' && steps.info.outputs.main_issue != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SPEC_ID="${{ steps.info.outputs.spec_id }}"
+          MAIN_ISSUE="${{ steps.info.outputs.main_issue }}"
+          METADATA_FILE="plots/${SPEC_ID}/metadata.yaml"
+          FEATURE_BRANCH="plot/$SPEC_ID"
+
+          # Install PyYAML
+          pip install pyyaml -q
+
+          # Get all merged PRs for this spec
+          MERGED_PRS=$(gh pr list --base "$FEATURE_BRANCH" --state merged --json number,headRefName,comments -q '.' 2>/dev/null || echo "[]")
+
+          echo "Found $(echo "$MERGED_PRS" | jq 'length') merged PRs"
+
+          # Export for Python script BEFORE running it
+          export MERGED_PRS_JSON="$MERGED_PRS"
+
+          # Extract quality scores from PR comments and update metadata
+          python3 << 'EOF'
+          import yaml
+          import json
+          import re
+          import os
+          from datetime import datetime
+
+          spec_id = os.environ['SPEC_ID']
+          main_issue = int(os.environ['MAIN_ISSUE'])
+          metadata_file = os.environ['METADATA_FILE']
+          merged_prs_json = os.environ.get('MERGED_PRS_JSON', '[]')
+
+          # Load merged PRs data
+          try:
+              merged_prs = json.loads(merged_prs_json)
+          except:
+              merged_prs = []
+
+          # Load existing metadata
+          if os.path.exists(metadata_file):
+              with open(metadata_file) as f:
+                  data = yaml.safe_load(f) or {}
+          else:
+              data = {'spec_id': spec_id, 'implementations': {}}
+
+          if 'implementations' not in data:
+              data['implementations'] = {}
+
+          # Process each merged PR
+          for pr in merged_prs:
+              head_ref = pr.get('headRefName', '')
+              # Extract library from branch name: auto/{spec-id}/{library}
+              parts = head_ref.split('/')
+              if len(parts) >= 3 and parts[0] == 'auto':
+                  library = parts[2]
+              else:
+                  continue
+
+              # Find quality score in comments
+              quality_score = None
+              for comment in pr.get('comments', []):
+                  body = comment.get('body', '')
+                  # Look for pattern: | Claude | XX/100 |
+                  match = re.search(r'\| Claude \| (\d+)/100 \|', body)
+                  if match:
+                      quality_score = int(match.group(1))
+                      break
+
+              if library not in data['implementations']:
+                  data['implementations'][library] = {
+                      'preview_url': None,
+                      'current': None,
+                      'history': []
+                  }
+
+              impl = data['implementations'][library]
+
+              # Update current implementation info
+              impl['current'] = {
+                  'version': len(impl.get('history', [])) + 1,
+                  'date': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                  'issue': main_issue,
+                  'generated_by': 'claude-opus-4-5-20251101',
+                  'quality_score': quality_score
+              }
+
+              # Set preview URL (production path after merge)
+              impl['preview_url'] = f'https://storage.googleapis.com/pyplots-images/plots/{spec_id}/{library}/plot.png'
+
+              print(f"Updated {library}: score={quality_score}")
+
+          # Write updated metadata
+          with open(metadata_file, 'w') as f:
+              yaml.dump(data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
+
+          print(f"Metadata updated: {metadata_file}")
+          EOF
+
+          # Commit metadata changes
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add "$METADATA_FILE"
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update metadata with quality scores for $SPEC_ID"
+            git push origin "$FEATURE_BRANCH"
+            echo "::notice::Metadata updated and pushed"
+          else
+            echo "::notice::No metadata changes needed"
+          fi
+
+      - name: Create and merge feature-to-main PR
+        if: steps.info.outputs.skip != 'true' && steps.check_complete.outputs.all_done == 'true' && steps.info.outputs.main_issue != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SPEC_ID="${{ steps.info.outputs.spec_id }}"
+          MAIN_ISSUE="${{ steps.info.outputs.main_issue }}"
+          MERGED="${{ steps.check_complete.outputs.merged }}"
+          NOT_FEASIBLE="${{ steps.check_complete.outputs.not_feasible }}"
+
+          # Check if main issue already completed
+          LABELS=$(gh issue view "$MAIN_ISSUE" --json labels -q '.labels[].name' 2>/dev/null || echo "")
+          if echo "$LABELS" | grep -q "completed"; then
+            echo "Main issue #$MAIN_ISSUE already completed"
+            exit 0
+          fi
+
+          # Check if feature branch exists
+          if ! gh api repos/${{ github.repository }}/branches/plot/$SPEC_ID &>/dev/null; then
+            echo "Feature branch plot/$SPEC_ID does not exist, skipping"
+            exit 0
+          fi
+
+          # Check if PR already exists
+          EXISTING_PR=$(gh pr list --base main --head "plot/$SPEC_ID" --json number -q '.[0].number' 2>/dev/null || echo "")
+          if [ -n "$EXISTING_PR" ]; then
+            echo "PR #$EXISTING_PR already exists for plot/$SPEC_ID -> main"
+            gh pr merge "$EXISTING_PR" --squash --delete-branch --auto 2>/dev/null || true
+            FEATURE_PR="$EXISTING_PR"
+          else
+            # Create PR from feature branch to main
+            FEATURE_PR=$(gh pr create \
+              --base main \
+              --head "plot/$SPEC_ID" \
+              --title "feat: add $SPEC_ID implementation ($MERGED libraries)" \
+              --body "## Summary
+          Adds \`$SPEC_ID\` plot implementation.
+
+          ### Libraries
+          - **Merged:** $MERGED
+          - **Not Feasible:** $NOT_FEASIBLE
+
+          ### Links
+          - **Spec:** \`plots/$SPEC_ID/spec.md\`
+          - **Parent Issue:** #$MAIN_ISSUE
+
+          Closes #$MAIN_ISSUE
+
+          ---
+          :robot: *Auto-generated by pyplots CI*" | sed 's|.*/||')
+
+            echo "Created PR #$FEATURE_PR"
+
+            # Enable auto-merge
+            gh pr merge "$FEATURE_PR" --squash --delete-branch --auto 2>/dev/null || true
+          fi
+
+          # Build image gallery for the issue comment
+          LIBRARIES="matplotlib seaborn plotnine plotly bokeh altair highcharts pygal letsplot"
+          GALLERY=""
+
+          for lib in $LIBRARIES; do
+            IMG_URL="https://storage.googleapis.com/pyplots-images/staging/${SPEC_ID}/${lib}/plot.png"
+            GALLERY="${GALLERY}
+          ### ${lib}
+          ![${lib}](${IMG_URL})"
+          done
+
+          # Post completion to main issue with gallery
+          if [ "$NOT_FEASIBLE" -gt 0 ]; then
+            STATUS_MSG="$MERGED libraries ready, $NOT_FEASIBLE not feasible"
+          else
+            STATUS_MSG="All $MERGED libraries ready"
+          fi
+
+          gh issue comment "$MAIN_ISSUE" --body "## :tada: All Libraries Complete!
+
+          **Status:** $STATUS_MSG
+          **Feature PR:** #$FEATURE_PR (auto-merge enabled)
+
+          ---
+
+          ## Preview Gallery
+          ${GALLERY}
+
+          ---
+          :rocket: *[plot-merge workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+          # Add completed label
+          gh issue edit "$MAIN_ISSUE" --add-label "completed" 2>/dev/null || true
+
+  # ============================================================================
+  # Job 3: Handle PR close events (for tracking)
+  # ============================================================================
+  post-merge-summary:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: read
+
+    steps:
+      - name: Check conditions
+        id: check
+        run: |
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+
+          if [[ ! "$BRANCH" =~ ^auto/ ]]; then
+            echo "::notice::Skipping: Branch '$BRANCH' is not auto/*"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
+      - name: Extract info
+        if: steps.check.outputs.should_run == 'true'
+        id: extract
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          PR_NUM="${{ github.event.pull_request.number }}"
+          PR_BODY=$(gh pr view "$PR_NUM" --json body -q '.body' 2>/dev/null || echo "")
+
+          # Format: auto/{spec-id}/{library}
+          SPEC_ID=$(echo "$BRANCH" | cut -d'/' -f2)
+          LIBRARY=$(echo "$BRANCH" | cut -d'/' -f3)
+
+          # Extract main issue from PR body
+          MAIN_ISSUE=$(echo "$PR_BODY" | grep -oP '\*\*Parent Issue:\*\* #\K\d+' | head -1 || echo "")
+
+          # Fallback: search for main issue
+          if [ -z "$MAIN_ISSUE" ]; then
+            MAIN_ISSUE=$(gh issue list --label plot-request --search "$SPEC_ID in:title" --json number -q '.[0].number' || echo "")
+          fi
+
+          echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "library=$LIBRARY" >> $GITHUB_OUTPUT
+          echo "main_issue=$MAIN_ISSUE" >> $GITHUB_OUTPUT
+
+      - name: Post merge notification
+        if: steps.check.outputs.should_run == 'true' && steps.extract.outputs.main_issue != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          MAIN_ISSUE="${{ steps.extract.outputs.main_issue }}"
+          LIBRARY="${{ steps.extract.outputs.library }}"
+          SPEC_ID="${{ steps.extract.outputs.spec_id }}"
+          PR_NUM="${{ github.event.pull_request.number }}"
+
+          # Check if we already posted (avoid duplicates)
+          EXISTING=$(gh issue view "$MAIN_ISSUE" --json comments -q "[.comments[].body | select(contains(\"$LIBRARY Merged\") and contains(\"#$PR_NUM\"))] | length" 2>/dev/null || echo "0")
+
+          if [ "$EXISTING" != "0" ]; then
+            echo "Already posted merge notification for $LIBRARY"
+            exit 0
+          fi
+
+          gh issue comment "$MAIN_ISSUE" --body "## :white_check_mark: $LIBRARY Merged
+
+          **$LIBRARY** implementation for \`$SPEC_ID\` has been merged!
+
+          **PR:** #$PR_NUM
+
+          ---
+          :robot: *pyplots CI*"
+
+  # ============================================================================
+  # Job 4: Move GCS images from staging to production (when feature→main merged)
+  # ============================================================================
+  promote-to-production:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check if feature-to-main merge
+        id: check
+        run: |
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          BASE="${{ github.event.pull_request.base.ref }}"
+
+          # Only run for plot/{spec-id} → main merges
+          if [[ "$BASE" != "main" ]]; then
+            echo "::notice::Skipping: Base is '$BASE', not 'main'"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if [[ ! "$BRANCH" =~ ^plot/ ]]; then
+            echo "::notice::Skipping: Branch '$BRANCH' is not plot/*"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Extract spec-id from branch name: plot/{spec-id}
+          SPEC_ID=$(echo "$BRANCH" | cut -d'/' -f2)
+          echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "should_run=true" >> $GITHUB_OUTPUT
+          echo "::notice::Feature branch merged to main: $SPEC_ID"
+
+      - name: Setup Google Cloud authentication
+        if: steps.check.outputs.should_run == 'true'
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: ${{ secrets.GCS_SA_KEY }}
+
+      - name: Setup gcloud CLI
+        if: steps.check.outputs.should_run == 'true'
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Move images from staging to production
+        if: steps.check.outputs.should_run == 'true'
+        run: |
+          SPEC_ID="${{ steps.check.outputs.spec_id }}"
+          STAGING="gs://pyplots-images/staging/${SPEC_ID}"
+          PRODUCTION="gs://pyplots-images/plots/${SPEC_ID}"
+
+          echo "Moving images from staging to production for $SPEC_ID"
+
+          # Copy from staging to production (preserving structure)
+          gsutil -m cp -r "${STAGING}/*" "${PRODUCTION}/" 2>/dev/null || echo "No staging files found"
+
+          # Make production files public
+          gsutil -m acl ch -r -u AllUsers:R "${PRODUCTION}/" 2>/dev/null || true
+
+          # Delete staging files
+          gsutil -m rm -r "${STAGING}/" 2>/dev/null || echo "No staging files to delete"
+
+          echo "::notice::Images promoted to production: ${PRODUCTION}"

@@ -146,9 +146,9 @@ jobs:
         run: |
           PR_NUM="${{ steps.check.outputs.pr_number }}"
 
-          # Get quality score from label (format: quality:XX)
+          # Get quality score from label (format: score:XX)
           LABELS=$(gh pr view "$PR_NUM" --json labels -q '.labels[].name' 2>/dev/null || echo "")
-          SCORE=$(echo "$LABELS" | grep -oP 'quality:\K\d+' | head -1 || echo "")
+          SCORE=$(echo "$LABELS" | grep -oP 'score:\K\d+' | head -1 || echo "")
 
           if [ -n "$SCORE" ]; then
             echo "score=$SCORE" >> $GITHUB_OUTPUT
@@ -181,9 +181,10 @@ jobs:
           wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           chmod +x /usr/local/bin/yq
 
-          # Create implementations section if not exists
-          yq -i '.implementations //= {}' "$METADATA_FILE"
-          yq -i ".implementations.${LIBRARY} //= {}" "$METADATA_FILE"
+          # Ensure implementations section exists
+          yq -i '.implementations = (.implementations // {})' "$METADATA_FILE"
+          yq -i ".implementations.${LIBRARY} = (.implementations.${LIBRARY} // {})" "$METADATA_FILE"
+          yq -i ".implementations.${LIBRARY}.current = (.implementations.${LIBRARY}.current // {})" "$METADATA_FILE"
 
           # Update this library's metadata
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")

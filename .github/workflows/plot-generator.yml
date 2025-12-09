@@ -289,6 +289,16 @@ jobs:
 
           gh issue comment "$ISSUE" --body "$BODY"
 
+      - name: Trigger review workflow
+        if: steps.pr.outputs.pr_exists == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER="${{ steps.pr.outputs.pr_number }}"
+          echo "Triggering review workflow for PR #$PR_NUMBER"
+          gh workflow run plot-review.yml -f pr_number="$PR_NUMBER"
+          echo "::notice::Triggered plot-review.yml for PR #$PR_NUMBER"
+
       - name: Determine result
         id: result
         run: |

@@ -1,18 +1,13 @@
 name: "Plot: Review"
-run-name: "Review: ${{ github.event.pull_request.head.ref }}"
+run-name: "Review: ${{ inputs.pr_number || github.event.pull_request.head.ref }}"
 
-# Triggers when a PR is opened/updated from auto/* branches
-# Reviews the implementation quality using AI
+# Reviews implementation quality using AI
+# NOTE: pull_request_target is disabled due to OIDC token issues with claude-code-action
+# Reviews are now triggered via workflow_dispatch from plot-generator.yml
 
 on:
-  # Use pull_request_target to run from base branch (has secrets access)
-  # This ensures we use the latest workflow version from main/plot/* branch
-  pull_request_target:
-    types: [opened, synchronize]
-    branches:
-      - 'plot/**'  # PRs targeting feature branches
-
-  # Manual trigger for reviewing specific PRs
+  # Manual/programmatic trigger for reviewing specific PRs
+  # This is the primary trigger - called by plot-generator.yml after PR creation
   workflow_dispatch:
     inputs:
       pr_number:
@@ -22,10 +17,8 @@ on:
 
 jobs:
   ai-review:
-    # Run for auto/* branches OR manual workflow_dispatch
-    if: >
-      github.event_name == 'workflow_dispatch' ||
-      startsWith(github.event.pull_request.head.ref, 'auto/')
+    # Only run via workflow_dispatch (pull_request_target disabled)
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -44,24 +37,12 @@ jobs:
         id: get_pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # For pull_request_target
-          HEAD_REF: ${{ github.event.pull_request.head.ref }}
-          PR_NUMBER_EVENT: ${{ github.event.pull_request.number }}
-          # For workflow_dispatch
-          PR_NUMBER_INPUT: ${{ inputs.pr_number }}
+          PR_NUMBER: ${{ inputs.pr_number }}
         run: |
-          # Determine PR number based on trigger type
-          if [ -n "$PR_NUMBER_INPUT" ]; then
-            # workflow_dispatch - lookup PR info
-            PR_NUMBER="$PR_NUMBER_INPUT"
-            PR_DATA=$(gh pr view "$PR_NUMBER" --json headRefName,headRefOid)
-            HEAD_REF=$(echo "$PR_DATA" | jq -r '.headRefName')
-            HEAD_SHA=$(echo "$PR_DATA" | jq -r '.headRefOid')
-          else
-            # pull_request_target
-            PR_NUMBER="$PR_NUMBER_EVENT"
-            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
-          fi
+          # Get PR info via gh cli
+          PR_DATA=$(gh pr view "$PR_NUMBER" --json headRefName,headRefOid)
+          HEAD_REF=$(echo "$PR_DATA" | jq -r '.headRefName')
+          HEAD_SHA=$(echo "$PR_DATA" | jq -r '.headRefOid')
 
           # Extract spec-id and library from branch name (auto/{spec-id}/{library})
           SPEC_ID=$(echo "$HEAD_REF" | cut -d'/' -f2)
@@ -277,10 +258,26 @@ jobs:
           PR_NUM: ${{ steps.get_pr.outputs.pr_number }}
           SCORE: ${{ steps.score.outputs.score }}
         run: |
-          # Add quality score label (format: quality:XX)
-          LABEL="quality:${SCORE}"
-          gh pr edit "$PR_NUM" --add-label "$LABEL" 2>/dev/null || true
+          SCORE_NUM="${SCORE}"
+          LABEL="score:${SCORE_NUM}"
+
+          # Create label if it doesn't exist (green color for scores)
+          gh label create "$LABEL" --color "0e8a16" --description "Quality score ${SCORE_NUM}/100" 2>/dev/null || true
+
+          # Add label to PR
+          gh pr edit "$PR_NUM" --add-label "$LABEL"
           echo "::notice::Added label $LABEL to PR #$PR_NUM"
+
+          # Also add descriptive quality label
+          if [ "$SCORE_NUM" -ge 90 ]; then
+            gh pr edit "$PR_NUM" --add-label "quality:excellent" 2>/dev/null || true
+          elif [ "$SCORE_NUM" -ge 85 ]; then
+            gh pr edit "$PR_NUM" --add-label "quality:good" 2>/dev/null || true
+          elif [ "$SCORE_NUM" -ge 75 ]; then
+            gh pr edit "$PR_NUM" --add-label "quality:needs-work" 2>/dev/null || true
+          else
+            gh pr edit "$PR_NUM" --add-label "quality:poor" 2>/dev/null || true
+          fi
 
       - name: Upload review result artifact
         if: steps.attempts.outputs.count != '3' && steps.claude_review.outcome == 'success'

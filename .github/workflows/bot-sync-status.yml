@@ -12,6 +12,13 @@ on:
 
 jobs:
   sync-status:
+    # Only run for relevant events:
+    # - issues: must have plot-request:impl OR (plot-request AND in-progress)
+    # - pull_request/workflow_run: always check (step logic handles filtering)
+    if: |
+      github.event_name != 'issues' ||
+      contains(github.event.issue.labels.*.name, 'plot-request:impl') ||
+      (contains(github.event.issue.labels.*.name, 'plot-request') && contains(github.event.issue.labels.*.name, 'in-progress'))
     runs-on: ubuntu-latest
     permissions:
       contents: read

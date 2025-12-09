@@ -19,6 +19,8 @@ concurrency:
 
 jobs:
   prepare:
+    # Only run when plot-request label is added (not other labels)
+    if: github.event.label.name == 'plot-request'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -38,43 +40,20 @@ jobs:
         id: check
         env:
           ISSUE_TITLE: ${{ github.event.issue.title }}
-          LABEL_NAME: ${{ github.event.label.name }}
         run: |
-          echo "=== Debug Info ==="
-          echo "Event: ${{ github.event_name }}"
-          echo "Label added: $LABEL_NAME"
-          echo "Issue labels: ${{ join(github.event.issue.labels.*.name, ', ') }}"
-          echo "Issue title: $ISSUE_TITLE"
-          echo "=================="
-
-          # Only trigger when plot-request label is added
-          if [[ "$LABEL_NAME" != "plot-request" ]]; then
-            echo "::notice::Skipping: Not the 'plot-request' label"
-            echo "should_run=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
           # Check if this is an update request
           HAS_UPDATE="${{ contains(github.event.issue.labels.*.name, 'update') }}"
           if [[ "$HAS_UPDATE" == "true" ]]; then
             echo "is_update=true" >> $GITHUB_OUTPUT
-            echo "::notice::This is an UPDATE request"
           else
             echo "is_update=false" >> $GITHUB_OUTPUT
-            echo "::notice::This is a NEW request"
           fi
 
-          # Skip if already has spec-id in title (already processed)
-          if [[ "$ISSUE_TITLE" =~ ^\[[a-z0-9-]+\] ]]; then
-            EXISTING_ID=$(echo "$ISSUE_TITLE" | grep -oP '^\[\K[a-z0-9-]+(?=\])' || echo "")
-            # For updates, having spec-id is expected - continue
-            if [[ "$HAS_UPDATE" == "true" ]]; then
-              echo "::notice::Update request with existing spec ID: $EXISTING_ID"
-            else
-              echo "::notice::Skipping: Issue already has spec ID: $EXISTING_ID"
-              echo "should_run=false" >> $GITHUB_OUTPUT
-              exit 0
-            fi
+          # For NEW requests: skip if already has spec-id in title
+          if [[ "$ISSUE_TITLE" =~ ^\[[a-z0-9-]+\] ]] && [[ "$HAS_UPDATE" != "true" ]]; then
+            echo "::notice::Skipping: Issue already has spec ID in title"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
           fi
 
           echo "should_run=true" >> $GITHUB_OUTPUT

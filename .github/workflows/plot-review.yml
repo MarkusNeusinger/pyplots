@@ -35,6 +35,11 @@ jobs:
       actions: write
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
       - name: Extract PR info
         id: get_pr
         env:
@@ -52,11 +57,10 @@ jobs:
             PR_DATA=$(gh pr view "$PR_NUMBER" --json headRefName,headRefOid)
             HEAD_REF=$(echo "$PR_DATA" | jq -r '.headRefName')
             HEAD_SHA=$(echo "$PR_DATA" | jq -r '.headRefOid')
-            echo "head_sha=$HEAD_SHA" >> $GITHUB_OUTPUT
           else
             # pull_request_target
             PR_NUMBER="$PR_NUMBER_EVENT"
-            echo "head_sha=${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
           fi
 
           # Extract spec-id and library from branch name (auto/{spec-id}/{library})
@@ -66,15 +70,14 @@ jobs:
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
           echo "spec_id=$SPEC_ID" >> $GITHUB_OUTPUT
           echo "library=$LIBRARY" >> $GITHUB_OUTPUT
+          echo "head_sha=$HEAD_SHA" >> $GITHUB_OUTPUT
 
           echo "::notice::PR #$PR_NUMBER for $LIBRARY implementation of $SPEC_ID"
 
       - name: Checkout PR code
-        uses: actions/checkout@v6
-        with:
-          # Checkout PR head to review the actual implementation
-          ref: ${{ steps.get_pr.outputs.head_sha }}
-          fetch-depth: 0
+        run: |
+          git fetch origin ${{ steps.get_pr.outputs.head_sha }}
+          git checkout ${{ steps.get_pr.outputs.head_sha }}
 
       - name: Get main issue number from PR
         id: issue

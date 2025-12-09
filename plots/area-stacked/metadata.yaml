@@ -32,13 +32,15 @@ tags:
 # Interactive libraries also have .html: plotly, bokeh, altair, highcharts, pygal, letsplot
 implementations:
   matplotlib:
-    preview_url: null
+    preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/matplotlib/plot.png
     current:
       version: null
       date: null
-      issue: null
-      generated_by: null
-      quality_score: null
+      issue: 561
+      generated_by: claude-opus-4-5-20251101
+      quality_score: 92
+      generated_at: "2025-12-09T23:54:27Z"
+      workflow_run: 20082362671
     history: []
   seaborn:
     preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/seaborn/plot.png

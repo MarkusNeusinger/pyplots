@@ -38,33 +38,33 @@ body:
   - type: dropdown
     id: plot_type
     attributes:
-      label: Plot Category
+      label: Plot Type
       description: What type of visualization is this?
       options:
-        - Scatter / Point
-        - Line / Time Series
-        - Bar / Column
-        - Histogram / Distribution
-        - Heatmap / Matrix
-        - Box / Violin
-        - Pie / Donut
-        - Area / Stacked
-        - 3D Plot
-        - Other
+        - scatter
+        - line
+        - bar
+        - histogram
+        - heatmap
+        - box
+        - violin
+        - pie
+        - area
+        - other
     validations:
       required: false
 
   - type: checkboxes
     id: features
     attributes:
-      label: Desired Features (optional)
+      label: Features (optional)
       description: Select any special features you'd like
       options:
-        - label: Color mapping (encode additional variable)
-        - label: Size mapping (encode additional variable)
-        - label: Annotations / Labels
-        - label: Trend line / Regression
-        - label: Error bars / Confidence intervals
-        - label: Interactive (hover, zoom)
-        - label: Animation
-        - label: Multiple subplots / Facets
+        - label: grouped
+        - label: stacked
+        - label: horizontal
+        - label: animated
+        - label: interactive
+        - label: 3d
+        - label: regression
+        - label: annotations

@@ -1,6 +1,6 @@
 name: Plot Request
 description: Propose a new plot type for pyplots
-title: ""
+title: "Plot: "
 labels: ["plot-request"]
 body:
   - type: markdown

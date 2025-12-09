@@ -24,10 +24,11 @@ class Spec(Base):
     id: Mapped[str] = mapped_column(String, primary_key=True)  # e.g., "scatter-basic"
     title: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    content: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Full markdown content from spec.md
     data_requirements: Mapped[dict] = mapped_column(JSONB, nullable=False, default=list)
     optional_params: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
     tags: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)
-    # Structured tags from metadata/*.yaml (plot_type, domain, features, audience, data_type)
+    # Structured tags from metadata.yaml (plot_type, domain, features, audience, data_type)
     structured_tags: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
@@ -64,9 +65,9 @@ class Implementation(Base):
     id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=lambda: str(uuid4()))
     spec_id: Mapped[str] = mapped_column(String, ForeignKey("specs.id", ondelete="CASCADE"), nullable=False)
     library_id: Mapped[str] = mapped_column(String, ForeignKey("libraries.id", ondelete="CASCADE"), nullable=False)
-    plot_function: Mapped[str] = mapped_column(String, nullable=False)  # e.g., "scatter", "bar"
     variant: Mapped[str] = mapped_column(String, nullable=False, default="default")
-    file_path: Mapped[str] = mapped_column(String, nullable=False)
+    file_path: Mapped[str] = mapped_column(String, nullable=False)  # e.g., "plots/scatter-basic/implementations/matplotlib.py"
+    code: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Python source code
     preview_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # GCS URL
     python_version: Mapped[str] = mapped_column(String, default="3.12+")
     tested: Mapped[bool] = mapped_column(Boolean, default=False)

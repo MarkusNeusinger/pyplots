@@ -1,0 +1,29 @@
+# Specification-level metadata for sankey-basic
+# Auto-synced to PostgreSQL on push to main
+
+specification_id: sankey-basic
+title: Basic Sankey Diagram
+
+# Specification tracking
+created: 2025-12-10T23:50:57Z
+issue: 602
+suggested: MarkusNeusinger
+updates: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - sankey
+    - flow
+  domain:
+    - general
+    - business
+    - energy
+  features:
+    - basic
+    - flow-visualization
+  audience:
+    - intermediate
+  data_type:
+    - categorical
+    - numeric

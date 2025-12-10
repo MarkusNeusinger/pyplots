@@ -1,0 +1,23 @@
+specification_id: area-basic
+title: Basic Area Chart
+created: null
+issue: null
+suggested: pyplots
+updates: []
+tags:
+  plot_type:
+  - area
+  - filled
+  domain:
+  - statistics
+  - general
+  - timeseries
+  features:
+  - basic
+  - continuous
+  - cumulative
+  audience:
+  - beginner
+  data_type:
+  - numeric
+  - temporal

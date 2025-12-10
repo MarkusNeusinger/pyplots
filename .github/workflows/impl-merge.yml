@@ -1,0 +1,271 @@
+name: "Impl: Merge"
+run-name: "Merge: ${{ github.event.inputs.pr_number || github.event.pull_request.head.ref }}"
+
+# Auto-merge implementation PRs when ai-approved label is added
+# Creates per-library metadata file and promotes GCS images
+
+on:
+  pull_request:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to auto-merge'
+        required: true
+        type: number
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Check conditions
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            PR_NUM="${{ github.event.inputs.pr_number }}"
+            PR_DATA=$(gh pr view "$PR_NUM" --repo ${{ github.repository }} --json headRefName,labels)
+            BRANCH=$(echo "$PR_DATA" | jq -r '.headRefName')
+            HAS_APPROVED=$(echo "$PR_DATA" | jq -r '[.labels[].name] | any(. == "ai-approved")')
+          else
+            ACTION="${{ github.event.action }}"
+            LABEL="${{ github.event.label.name }}"
+            BRANCH="${{ github.event.pull_request.head.ref }}"
+            PR_NUM="${{ github.event.pull_request.number }}"
+
+            if [[ "$ACTION" != "labeled" || "$LABEL" != "ai-approved" ]]; then
+              echo "should_run=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            HAS_APPROVED="true"
+          fi
+
+          # Only process implementation/* branches
+          if [[ ! "$BRANCH" =~ ^implementation/ ]]; then
+            echo "::notice::Skipping: Branch '$BRANCH' is not implementation/*"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if [[ "$HAS_APPROVED" != "true" ]]; then
+            echo "::notice::Skipping: PR does not have ai-approved label"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "pr_number=$PR_NUM" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
+      - name: Checkout repository
+        if: steps.check.outputs.should_run == 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract info from branch
+        if: steps.check.outputs.should_run == 'true'
+        id: extract
+        run: |
+          BRANCH="${{ steps.check.outputs.branch }}"
+          # Format: implementation/{specification-id}/{library}
+          SPEC_ID=$(echo "$BRANCH" | cut -d'/' -f2)
+          LIBRARY=$(echo "$BRANCH" | cut -d'/' -f3)
+
+          echo "specification_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "library=$LIBRARY" >> $GITHUB_OUTPUT
+
+      - name: Get parent issue from PR body
+        if: steps.check.outputs.should_run == 'true'
+        id: issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUM="${{ steps.check.outputs.pr_number }}"
+          PR_BODY=$(gh pr view "$PR_NUM" --json body -q '.body' 2>/dev/null || echo "")
+          ISSUE=$(echo "$PR_BODY" | grep -oP '\*\*Parent Issue:\*\* #\K\d+' | head -1 || echo "")
+          echo "number=$ISSUE" >> $GITHUB_OUTPUT
+
+      - name: Extract quality score from PR labels
+        if: steps.check.outputs.should_run == 'true'
+        id: quality
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUM="${{ steps.check.outputs.pr_number }}"
+          LABELS=$(gh pr view "$PR_NUM" --json labels -q '.labels[].name' 2>/dev/null || echo "")
+          SCORE=$(echo "$LABELS" | grep -oP 'quality:\K\d+' | head -1 || echo "")
+          echo "score=$SCORE" >> $GITHUB_OUTPUT
+
+      - name: React with rocket emoji
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/${{ steps.check.outputs.pr_number }}/reactions \
+            -f content=rocket
+
+      - name: Merge PR to main
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge ${{ steps.check.outputs.pr_number }} \
+            --repo ${{ github.repository }} \
+            --squash \
+            --delete-branch
+
+      - name: Checkout main for metadata update
+        if: steps.check.outputs.should_run == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Pull latest main
+        if: steps.check.outputs.should_run == 'true'
+        run: |
+          git pull origin main
+
+      - name: Create per-library metadata file
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          SPEC_ID: ${{ steps.extract.outputs.specification_id }}
+          LIBRARY: ${{ steps.extract.outputs.library }}
+          ISSUE: ${{ steps.issue.outputs.number }}
+          QUALITY_SCORE: ${{ steps.quality.outputs.score }}
+        run: |
+          METADATA_DIR="plots/${SPEC_ID}/metadata"
+          METADATA_FILE="${METADATA_DIR}/${LIBRARY}.yaml"
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          # Ensure metadata directory exists
+          mkdir -p "$METADATA_DIR"
+
+          # Determine version (increment if file exists)
+          if [ -f "$METADATA_FILE" ]; then
+            CURRENT_VERSION=$(grep -oP 'version: \K\d+' "$METADATA_FILE" 2>/dev/null || echo "0")
+            NEW_VERSION=$((CURRENT_VERSION + 1))
+          else
+            NEW_VERSION=1
+          fi
+
+          # Create/update library metadata file
+          cat > "$METADATA_FILE" << EOF
+          # Per-library metadata for ${LIBRARY} implementation of ${SPEC_ID}
+          # Auto-generated by impl-merge.yml
+
+          library: ${LIBRARY}
+          specification_id: ${SPEC_ID}
+
+          preview_url: https://storage.googleapis.com/pyplots-images/plots/${SPEC_ID}/${LIBRARY}/plot.png
+          preview_html: null
+
+          current:
+            version: ${NEW_VERSION}
+            generated_at: ${TIMESTAMP}
+            generated_by: claude-opus-4-5-20251101
+            workflow_run: ${{ github.run_id }}
+            issue: ${ISSUE:-0}
+            quality_score: ${QUALITY_SCORE:-null}
+
+          history: []
+          EOF
+
+          echo "Created metadata file: $METADATA_FILE"
+          cat "$METADATA_FILE"
+
+      - name: Commit metadata update
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          SPEC_ID: ${{ steps.extract.outputs.specification_id }}
+          LIBRARY: ${{ steps.extract.outputs.library }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          METADATA_FILE="plots/${SPEC_ID}/metadata/${LIBRARY}.yaml"
+          git add "$METADATA_FILE"
+
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(${LIBRARY}): update metadata for ${SPEC_ID}"
+            git push origin main
+            echo "::notice::Metadata committed for ${LIBRARY}"
+          fi
+
+      - name: Promote GCS images to production
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
+          SPEC_ID: ${{ steps.extract.outputs.specification_id }}
+          LIBRARY: ${{ steps.extract.outputs.library }}
+        run: |
+          if [ -z "$GCS_CREDENTIALS" ]; then
+            echo "::warning::GCS_CREDENTIALS not configured - skipping promotion"
+            exit 0
+          fi
+
+          echo "$GCS_CREDENTIALS" > /tmp/gcs-key.json
+          gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
+
+          STAGING="gs://pyplots-images/staging/${SPEC_ID}/${LIBRARY}"
+          PRODUCTION="gs://pyplots-images/plots/${SPEC_ID}/${LIBRARY}"
+
+          # Copy from staging to production
+          gsutil -m cp -r "${STAGING}/*" "${PRODUCTION}/" 2>/dev/null || echo "No staging files to promote"
+
+          # Make production files public
+          gsutil -m acl ch -r -u AllUsers:R "${PRODUCTION}/" 2>/dev/null || true
+
+          # Clean up staging
+          gsutil -m rm -r "${STAGING}/" 2>/dev/null || true
+
+          rm -f /tmp/gcs-key.json
+          echo "::notice::Promoted images to production"
+
+      - name: Update issue labels
+        if: steps.check.outputs.should_run == 'true' && steps.issue.outputs.number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ steps.issue.outputs.number }}
+          LIBRARY: ${{ steps.extract.outputs.library }}
+        run: |
+          # Remove pending, add done
+          gh issue edit "$ISSUE" --remove-label "impl:${LIBRARY}:pending" 2>/dev/null || true
+          gh issue edit "$ISSUE" --add-label "impl:${LIBRARY}:done" 2>/dev/null || true
+
+      - name: Post success to issue
+        if: steps.check.outputs.should_run == 'true' && steps.issue.outputs.number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ steps.issue.outputs.number }}
+          LIBRARY: ${{ steps.extract.outputs.library }}
+          SPEC_ID: ${{ steps.extract.outputs.specification_id }}
+          PR_NUM: ${{ steps.check.outputs.pr_number }}
+          QUALITY_SCORE: ${{ steps.quality.outputs.score }}
+        run: |
+          BODY="## :white_check_mark: ${LIBRARY} Complete
+
+          **${LIBRARY}** implementation for \`${SPEC_ID}\` has been merged to main.
+
+          **PR:** #${PR_NUM}"
+
+          if [ -n "$QUALITY_SCORE" ]; then
+            BODY="${BODY}
+          **Quality Score:** ${QUALITY_SCORE}/100"
+          fi
+
+          BODY="${BODY}
+
+          **Preview:** [View image](https://storage.googleapis.com/pyplots-images/plots/${SPEC_ID}/${LIBRARY}/plot.png)
+
+          ---
+          :robot: *[impl-merge](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+          gh issue comment "$ISSUE" --body "$BODY"

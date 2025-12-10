@@ -1,0 +1,29 @@
+# Per-library metadata for {library} implementation of {specification-id}
+# Created/updated by impl-merge.yml after successful merge
+
+library: {library}
+specification_id: {specification-id}
+
+# Preview URLs (GCS)
+preview_url: null      # https://storage.googleapis.com/pyplots-images/plots/{specification-id}/{library}/plot.png
+preview_html: null     # For interactive libraries: plotly, bokeh, altair, highcharts, pygal, letsplot
+
+# Current live version
+current: null          # Set after first successful generation
+# current:
+#   version: 1
+#   generated_at: 2025-01-15T10:30:00Z
+#   generated_by: claude-opus-4-5-20251101
+#   workflow_run: 12345678
+#   issue: 42
+#   quality_score: 92
+
+# Version history (previous versions for rollback/comparison)
+history: []
+# history:
+#   - version: 0
+#     generated_at: 2025-01-10T08:00:00Z
+#     generated_by: claude-sonnet-4-20250514
+#     workflow_run: 12345600
+#     issue: 42
+#     quality_score: 78

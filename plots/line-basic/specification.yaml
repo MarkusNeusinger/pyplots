@@ -1,0 +1,23 @@
+specification_id: line-basic
+title: Basic Line Chart
+created: null
+issue: null
+suggested: pyplots
+updates: []
+tags:
+  plot_type:
+  - line
+  - trend
+  domain:
+  - statistics
+  - general
+  - timeseries
+  features:
+  - basic
+  - continuous
+  - trend
+  audience:
+  - beginner
+  data_type:
+  - numeric
+  - temporal

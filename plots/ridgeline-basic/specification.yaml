@@ -1,0 +1,24 @@
+specification_id: ridgeline-basic
+title: Ridgeline Plot
+created: 2025-12-09 21:00:29+00:00
+issue: 539
+suggested: MarkusNeusinger
+updates: []
+tags:
+  plot_type:
+  - ridgeline
+  - density
+  - distribution
+  domain:
+  - general
+  - statistics
+  features:
+  - basic
+  - overlapping
+  - comparison
+  audience:
+  - intermediate
+  data_type:
+  - numeric
+  - categorical
+  - continuous

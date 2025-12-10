@@ -87,89 +87,105 @@ graph TB
 ### Flow 1: Discovery & Ideation
 n8n monitors social media daily → AI extracts plot ideas → Creates GitHub issues with draft specs → Human reviews and approves
 
-### Flow 2: Feature Branch & Spec Creation
+### Flow 2: Specification Creation (with Approval Gate)
 
-Approved issue triggers **feature branch creation**:
+User adds `spec-request` label to issue → **`spec-create.yml`** runs:
 
-1. **Spec Creator** (`gen-create-spec.yml`) runs when `approved` label is added:
-   - Creates feature branch: `plot/{spec-id}`
-   - Claude generates specification file: `plots/{spec-id}/spec.md`
-   - Creates metadata file: `plots/{spec-id}/metadata.yaml`
-   - Commits to feature branch
-   - Dispatches code generation workflow
+1. Creates branch: `specification/{specification-id}`
+2. Claude generates: `plots/{specification-id}/specification.md` + `specification.yaml`
+3. Creates PR: `specification/{specification-id}` → `main`
+4. Posts analysis comment, waits for approval
 
 ```
-Main Issue (#53) + [approved] label
+Issue + [spec-request] label
        ↓
-gen-create-spec.yml
-  ├─ Creates branch: plot/scatter-basic
-  ├─ Creates: plots/scatter-basic/spec.md
-  ├─ Creates: plots/scatter-basic/metadata.yaml
-  └─ Dispatches: gen-new-plot.yml
-```
-
-### Flow 3: Parallel Code Generation
-
-Feature branch triggers **parallel generation pipeline**:
-
-1. **Orchestrator** (`gen-new-plot.yml`) creates 9 sub-issues (one per library)
-2. **9 parallel jobs** run simultaneously via `gen-library-impl.yml`:
-   - Each library has isolated dependencies
-   - Separate Claude context (no syntax confusion)
-   - **PRs target feature branch** (`plot/{spec-id}`), not main
-3. **Per-library tracking**: Each sub-issue documents attempts and status
-4. **Partial success possible**: Some libraries can merge while others retry
-
-```
-Feature Branch: plot/scatter-basic
+spec-create.yml
+  ├─ Creates branch: specification/scatter-basic
+  ├─ Creates: plots/scatter-basic/specification.md
+  ├─ Creates: plots/scatter-basic/specification.yaml
+  └─ Creates PR → main (waits for approval)
        ↓
-Main Issue (#53)
-├── Sub-Issue: [scatter-basic] matplotlib (#54) → PR #62 → plot/scatter-basic
-├── Sub-Issue: [scatter-basic] seaborn (#55) → PR #63 → plot/scatter-basic
-├── Sub-Issue: [scatter-basic] plotly (#56) → PR #64 → plot/scatter-basic
-└── ... (9 total, all targeting feature branch)
+Maintainer adds [approved] label
+       ↓
+spec-create.yml (merge job)
+  ├─ Merges PR to main
+  ├─ Adds [spec-ready] label
+  └─ sync-postgres.yml triggers
 ```
+
+**Specification is now in main, ready for implementations.**
+
+### Flow 3: Implementation Generation
+
+Implementations run **independently** - each library gets its own workflow:
+
+**Triggers:**
+- `generate:{library}` label on issue (e.g., `generate:matplotlib`)
+- `workflow_dispatch` for manual triggering
+- `bulk-generate.yml` for batch operations
+
+**Process per library:**
+1. **`impl-generate.yml`** creates branch: `implementation/{specification-id}/{library}`
+2. Claude generates code, tests, uploads preview to GCS staging
+3. Creates PR: `implementation/{specification-id}/{library}` → `main`
+4. Triggers `impl-review.yml`
+
+```
+Issue + [generate:matplotlib] label  OR  workflow_dispatch
+       ↓
+impl-generate.yml
+  ├─ Creates branch: implementation/scatter-basic/matplotlib
+  ├─ Generates: plots/scatter-basic/implementations/matplotlib.py
+  ├─ Uploads to GCS staging
+  └─ Creates PR → main, triggers impl-review.yml
+```
+
+**Key benefit**: Each library runs independently - no single point of failure!
 
 ### Flow 4: Multi-Version Testing
 PR created → `ci-plottest.yml` runs tests across Python 3.11+ → Reports results
 
-### Flow 5: Plot Image Generation
-Tests passed → `gen-preview.yml` generates PNG + thumbnail → Uploads to GCS with versioned paths (`plots/{spec-id}/{library}/{variant}/v{timestamp}.png`) → **Posts results to Sub-Issue** (per-library technical details) → Stores previous version for before/after comparison
+### Flow 5: AI Review
+PR created → **`impl-review.yml`** runs:
 
-### Flow 5.5: Auto-Tagging
-PR merged with `ai-approved` → `bot-auto-tag.yml` triggers → AI analyzes code + spec + image → Generates 5-level tag hierarchy → Stores in PostgreSQL with confidence scores
-
-### Flow 6: AI Review
-Previews generated → `bot-ai-review.yml` triggers → Claude evaluates Spec ↔ Code ↔ Preview → **Posts results to Sub-Issue** (per-library feedback) → Score ≥85/100 required → Labels: `ai-approved` or `ai-rejected`
-
-### Flow 6.5: Per-Library Repair Loop
-PR labeled `ai-rejected` → `gen-update-plot.yml` triggers for that **specific library**:
-
-1. Reads all previous attempts from sub-issue (for context/learning)
-2. Regenerates improved code with feedback
-3. Pushes to PR → Re-triggers tests
-4. Max 3 attempts per library
-5. After 3 failures: `not-feasible` label (library marked as not implementable for this spec)
-
-**Note**: Each library repairs independently - matplotlib can be on attempt 3 while plotly already merged
-
-### Flow 7: Auto-Merge (Two-Stage)
-
-**Stage 1: Library PR → Feature Branch**
-PR labeled `ai-approved` → `bot-auto-merge.yml` triggers → Squash merge to feature branch (`plot/{spec-id}`)
-
-**Stage 2: Feature Branch → Main**
-When all libraries are done (merged or not-feasible):
-1. Creates PR from `plot/{spec-id}` to `main`
-2. Enables auto-merge with squash
-3. Closes main issue with completion summary
+1. Downloads plot images from GCS staging
+2. Claude evaluates: Spec ↔ Code ↔ Preview
+3. Posts review comment with score
+4. Adds labels: `quality:XX`, `ai-approved` OR `ai-rejected`
 
 ```
-Library PRs → plot/scatter-basic (feature branch)
-                    ↓
-         All libraries complete
-                    ↓
-    plot/scatter-basic → main (single merge)
+impl-review.yml
+  ├─ Score ≥85 → [ai-approved] → triggers impl-merge.yml
+  └─ Score <85 → [ai-rejected] → triggers impl-repair.yml
+```
+
+### Flow 6: Repair Loop (max 3 attempts)
+PR labeled `ai-rejected` → **`impl-repair.yml`** triggers:
+
+1. Reads AI feedback from PR comments
+2. Claude fixes the implementation
+3. Re-uploads to GCS staging
+4. Re-triggers `impl-review.yml`
+5. After 3 failures: `not-feasible` label
+
+**Note**: Each library repairs independently - matplotlib can be on attempt 3 while seaborn already merged!
+
+### Flow 7: Auto-Merge
+
+PR labeled `ai-approved` → **`impl-merge.yml`** triggers:
+
+1. Squash-merges PR to main
+2. Creates `metadata/{library}.yaml` with quality score and generation info
+3. Promotes GCS images: staging → production
+4. Updates issue labels: `impl:{library}:done`
+5. `sync-postgres.yml` triggers automatically
+
+```
+impl-merge.yml
+  ├─ Squash merge PR → main
+  ├─ Creates: plots/scatter-basic/metadata/matplotlib.yaml
+  ├─ Promotes GCS: staging → production
+  └─ sync-postgres.yml triggers (database updated)
 ```
 
 ### Flow 8: Deployment & Maintenance
@@ -180,90 +196,74 @@ Deployed plot → Added to promotion queue (prioritized by quality score) → n8
 
 ---
 
-## Sub-Issue Architecture
+## Decoupled Architecture
 
-Each plot request spawns **9 parallel sub-issues** (one per library), enabling:
+The new architecture separates specification and implementation processes:
 
-- **~8x faster** generation (parallel execution)
-- **No context pollution** (separate Claude sessions per library)
-- **Per-library dependencies** (seaborn can use older matplotlib if needed)
-- **Partial success** (5/8 can merge while 3/8 retry)
-- **Independent tracking** (each library has its own status)
-- **Feature branch isolation** (all PRs target `plot/{spec-id}`, not main)
+**Benefits:**
+- **No single point of failure** - Each library runs independently
+- **Specifications can land in main without implementations**
+- **Partial implementations OK** - 6/9 done = fine
+- **No merge conflicts** - Per-library metadata files
+- **Flexible triggers** - Labels for single, dispatch for bulk
+- **PostgreSQL synced on every merge to main**
 
-### Sub-Issue Lifecycle
+### Implementation Lifecycle
 
 ```mermaid
 graph LR
-    A[Main Issue<br/>plot-request + approved] --> A1[Create Feature Branch<br/>plot/spec-id]
-    A1 --> A2[Generate Spec<br/>plots/spec-id/spec.md]
-    A2 --> B[Orchestrator]
-    B --> C1[Sub-Issue<br/>matplotlib]
-    B --> C2[Sub-Issue<br/>seaborn]
-    B --> C3[Sub-Issue<br/>...]
-
-    C1 --> D1{generating}
-    D1 --> E1{testing}
-    E1 --> F1{reviewing}
-    F1 -->|Score ≥85| G1[ai-approved]
-    F1 -->|Score <85| H1[ai-rejected]
-    H1 -->|Attempt <3| D1
-    H1 -->|Attempt =3| I1[not-feasible]
-    G1 --> J1[merged to<br/>feature branch]
+    A[Issue + generate:matplotlib] --> B[impl-generate.yml]
+    B --> C[PR created]
+    C --> D[impl-review.yml]
+    D -->|Score ≥85| E[ai-approved]
+    D -->|Score <85| F[ai-rejected]
+    F -->|Attempt <3| G[impl-repair.yml]
+    G --> D
+    F -->|Attempt =3| H[not-feasible]
+    E --> I[impl-merge.yml]
+    I --> J[merged to main]
+    J --> K[impl:matplotlib:done]
 ```
 
-### Sub-Issue Labels
+### Label System
 
+**Specification Labels:**
 | Label | Meaning |
 |-------|---------|
-| `plot-request:impl` | Identifies as child of main issue |
-| `library:{name}` | Which library (matplotlib, seaborn, etc.) |
-| `generating` | Code being generated |
-| `testing` | Tests running |
-| `reviewing` | AI quality review in progress |
+| `spec-request` | New specification request |
+| `spec-update` | Update existing specification |
+| `spec-ready` | Specification merged to main |
+
+**Implementation Labels:**
+| Label | Meaning |
+|-------|---------|
+| `generate:{library}` | Trigger generation (e.g., `generate:matplotlib`) |
+| `impl:{library}:pending` | Generation in progress |
+| `impl:{library}:done` | Implementation merged to main |
+| `impl:{library}:failed` | Max retries exhausted |
+
+**PR Labels:**
+| Label | Meaning |
+|-------|---------|
 | `ai-approved` | Passed review (score ≥85) |
 | `ai-rejected` | Failed review, will retry |
-| `not-feasible` | 3x failed, not implementable in this library |
-| `merged` | Successfully merged to feature branch |
-| `completed` | All implementations merged, feature branch merged to main |
-| `update` | Update request for existing spec |
-| `test` | Test issue, not a real plot |
+| `ai-attempt-1/2/3` | Retry counter |
+| `not-feasible` | 3x failed, library cannot implement |
+| `quality:XX` | Quality score (e.g., `quality:92`) |
 
-### Attempt Documentation
+### Bulk Operations
 
-Each attempt is documented in the sub-issue with:
+Use `bulk-generate.yml` for batch operations:
 
-```markdown
-## Attempt 1/3 - 2025-11-30T12:00:00Z
+```bash
+# All libraries for one spec:
+workflow_dispatch: specification_id=scatter-basic, library=all
 
-### Approach
-- Using: seaborn
-- heatmap-correlation: Correlation Matrix Heatmap
-- Create figure with figsize
-- Plot data using heatmap
-- Configure colorbar
-
-### Status
-- **PR:** #123
-- **File:** `plots/heatmap-correlation/implementations/seaborn.py`
-- **Workflow:** [link]
+# One library across all specs:
+workflow_dispatch: specification_id=all, library=matplotlib
 ```
 
-This enables learning from previous attempts during repair loops.
-
-### Updating Existing Plots
-
-To update or regenerate an existing plot:
-
-1. Create issue with title: `[update] {spec-id}` (all libraries) or `[update:seaborn] {spec-id}` (single library)
-2. Add label: `plot-request` (template adds `update` automatically)
-3. Issue body can describe spec changes (Claude updates spec first)
-4. Maintainer adds `approved` label
-5. Workflow regenerates specified implementations
-
-**Examples:**
-- `[update] scatter-basic` → Regenerate all 9 libraries
-- `[update:matplotlib] heatmap-correlation` → Regenerate only matplotlib
+**Concurrency**: Max 3 parallel implementation workflows globally.
 
 ---
 
@@ -271,42 +271,34 @@ To update or regenerate an existing plot:
 
 ```mermaid
 graph TD
-    A[Flow 1: Discovery] -->|GitHub Issue| B{Manual/Auto Approval?}
-    B -->|Manual| C[Human Reviews Issue]
-    B -->|Auto| D0[Flow 2: Create Feature Branch]
-    C -->|Approved| D0
-    C -->|Rejected| Z[End]
+    A[Flow 1: Discovery] -->|GitHub Issue| B{Human Review}
+    B -->|Add spec-request| C[Flow 2: spec-create.yml]
+    B -->|Rejected| Z[End]
 
-    D0 -->|Create plot/spec-id branch| D0a[Generate Spec File]
-    D0a -->|plots/spec-id/spec.md| D[Flow 3: Parallel Generation]
+    C -->|Creates PR| C1[Specification PR]
+    C1 -->|Maintainer adds approved| C2[Merge to main]
+    C2 -->|spec-ready label| D[Ready for implementations]
 
-    D -->|Create 8 Sub-Issues| D1[Orchestrator]
-    D1 --> D2[8 Parallel Jobs]
-    D2 -->|PR → Feature Branch| E{Tests Pass?}
+    D -->|Add generate:lib label| E[Flow 3: impl-generate.yml]
+    E -->|Creates PR| F[Implementation PR]
+    F --> G{Flow 5: impl-review.yml}
 
-    E -->|Yes| F[Flow 5: Preview Generation]
-    E -->|No| D2
-
-    F -->|PNG in GCS| G{Flow 6: AI Review}
     G -->|Score ≥85| H[ai-approved]
     G -->|Score <85| I[ai-rejected]
 
     I --> J{Attempts < 3?}
-    J -->|Yes| K[Repair Loop]
-    K --> D2
+    J -->|Yes| K[Flow 6: impl-repair.yml]
+    K --> G
     J -->|No| L[not-feasible]
 
-    H --> M[Merge to Feature Branch]
-    L --> M2{All Libraries Done?}
-    M --> M2
+    H --> M[Flow 7: impl-merge.yml]
+    M -->|Merge to main| M1[Creates metadata/lib.yaml]
+    M1 --> M2[sync-postgres.yml]
+    M2 --> N[🌐 Publicly Visible]
 
-    M2 -->|Yes| M3[Merge Feature Branch → Main]
-    M2 -->|No| Z2[Wait for others]
+    L --> L1[impl:lib:failed label]
 
-    M3 --> N[Flow 8: Deploy]
-    N --> O[🌐 Publicly Visible]
     N --> P[Flow 9: Promotion Queue]
-
     P --> Q{Daily Limit?}
     Q -->|< 2 posts| R[Post to X]
     Q -->|Limit| S[Wait]
@@ -314,15 +306,11 @@ graph TD
     S -.->|Next day| Q
 
     style A fill:#e1f5ff
-    style D0 fill:#ffe4b5
-    style D0a fill:#ffe4b5
-    style D fill:#fff4e1
-    style D1 fill:#fff4e1
-    style D2 fill:#fff4e1
+    style C fill:#ffe4b5
+    style E fill:#fff4e1
     style G fill:#f0e1ff
-    style M3 fill:#98FB98
-    style N fill:#e1ffe1
-    style O fill:#90EE90
+    style M fill:#98FB98
+    style N fill:#90EE90
     style L fill:#FF6B6B
     style P fill:#E6E6FA
     style R fill:#98FB98
@@ -537,25 +525,34 @@ Via **GitHub Issue Labels**:
 
 This workflow ensures:
 
-✅ **Fully Automated** pipeline from discovery to deployment to promotion
-✅ **Parallel Per-Library Generation**:
-   - 9 libraries generated simultaneously (~9x faster)
-   - Isolated dependencies per library
-   - Independent tracking via sub-issues
-   - Partial success possible (some merge while others retry)
+✅ **Decoupled Architecture**:
+   - Specification and implementation processes run independently
+   - No single point of failure
+   - Specifications can land in main without implementations
+   - Partial implementations OK (6/9 done = fine)
+   - Per-library metadata files (no merge conflicts!)
+
+✅ **Flexible Triggers**:
+   - Labels (`generate:matplotlib`) for single implementations
+   - `workflow_dispatch` for manual control
+   - `bulk-generate.yml` for batch operations
+   - Max 3 parallel implementations globally
+
 ✅ **Multi-Layer Quality Control**:
-   - Self-review loop in code generation (max 3 attempts per library)
-   - Multi-version testing across Python 3.11-3.13 (3.13 primary)
-   - Multi-LLM consensus validation (Claude + Gemini + GPT)
+   - AI review with vision (code + image evaluation)
+   - Self-repair loop (max 3 attempts per library)
+   - Quality scores tracked in metadata
    - Feedback-driven optimization on rejection
+
+✅ **PostgreSQL Synced on Every Merge**:
+   - `sync-postgres.yml` triggers on push to main
+   - Database always reflects repository state
+
 ✅ **Only High-Quality Plots on Website**: Failed attempts never publicly visible
 ✅ **Automated Marketing**: Queue-based social media promotion with smart rate limiting (max 2 posts/day)
 ✅ **Cost-Conscious** design leveraging existing subscriptions
-✅ **Smart Storage** with versioned GCS paths (all versions kept for history)
+✅ **Smart Storage** with GCS staging/production flow
 ✅ **Deterministic & Reproducible**: Same code = same image every time
 ✅ **Community-Driven** with AI curation and human oversight
-✅ **Event-Based Maintenance** for continuous improvement
-✅ **Phased Rollout** starting simple, scaling intelligently
-✅ **Feedback Storage**: All quality reviews saved for continuous learning
 
 The system is designed to **scale from MVP to full automation** while maintaining the highest quality standards, controlling costs, and automatically promoting the best content to the community.

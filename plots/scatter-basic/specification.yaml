@@ -1,0 +1,22 @@
+specification_id: scatter-basic
+title: Basic Scatter Plot
+created: null
+issue: null
+suggested: pyplots
+updates: []
+tags:
+  plot_type:
+  - scatter
+  - point
+  domain:
+  - statistics
+  - general
+  features:
+  - basic
+  - 2d
+  - correlation
+  audience:
+  - beginner
+  data_type:
+  - numeric
+  - continuous

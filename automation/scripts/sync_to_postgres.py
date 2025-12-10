@@ -5,10 +5,14 @@ Sync plots from repository to PostgreSQL.
 This script is run by GitHub Actions on push to main branch.
 It ensures the database only contains data for code that is actually in main.
 
-New structure (plots/{spec_id}/):
-- spec.md: Spec description, data requirements, use cases
-- metadata.yaml: Tags, implementation metadata, generation history
+New structure (plots/{specification_id}/):
+- specification.md: Spec description, data requirements, use cases
+- specification.yaml: Spec-level metadata (tags, created, issue, suggested, updates)
+- metadata/{library}.yaml: Per-library metadata (preview_url, quality_score, history)
 - implementations/{library}.py: Library-specific implementation code
+
+Legacy structure (still supported during migration):
+- spec.md + metadata.yaml (single file with all library metadata)
 """
 
 import asyncio
@@ -119,9 +123,33 @@ def parse_metadata_yaml(file_path: Path) -> dict | None:
         return None
 
 
+def parse_library_metadata_yaml(file_path: Path) -> dict | None:
+    """
+    Parse a per-library metadata/{library}.yaml file.
+
+    Args:
+        file_path: Path to the metadata file (e.g., metadata/matplotlib.yaml)
+
+    Returns:
+        Dict with library metadata or None if invalid
+    """
+    try:
+        content = file_path.read_text(encoding="utf-8")
+        data = yaml.safe_load(content)
+        if not data or "library" not in data:
+            return None
+        return data
+    except Exception as e:
+        logger.error(f"Failed to parse library metadata {file_path}: {e}")
+        return None
+
+
 def scan_plot_directory(plot_dir: Path) -> dict | None:
     """
     Scan a single plot directory and extract all data.
+
+    Supports both new structure (specification.md + specification.yaml + metadata/*.yaml)
+    and legacy structure (spec.md + metadata.yaml) during migration.
 
     Args:
         plot_dir: Path to the plot directory (e.g., plots/scatter-basic/)
@@ -130,21 +158,31 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
         Dict with spec data, metadata, and implementations
     """
     spec_id = plot_dir.name
-    spec_file = plot_dir / "spec.md"
-    metadata_file = plot_dir / "metadata.yaml"
     implementations_dir = plot_dir / "implementations"
+    metadata_dir = plot_dir / "metadata"
+
+    # Support both new (specification.md) and legacy (spec.md) file names
+    spec_file = plot_dir / "specification.md"
+    if not spec_file.exists():
+        spec_file = plot_dir / "spec.md"  # Legacy fallback
+
+    # Support both new (specification.yaml) and legacy (metadata.yaml) file names
+    spec_metadata_file = plot_dir / "specification.yaml"
+    legacy_metadata_file = plot_dir / "metadata.yaml"
 
     if not spec_file.exists():
-        logger.warning(f"No spec.md found in {plot_dir}")
+        logger.warning(f"No specification.md or spec.md found in {plot_dir}")
         return None
 
     # Parse spec
     spec_data = parse_spec_markdown(spec_file)
 
-    # Parse metadata (optional)
+    # Parse spec-level metadata (new structure: specification.yaml, legacy: metadata.yaml)
     metadata = {}
-    if metadata_file.exists():
-        metadata = parse_metadata_yaml(metadata_file) or {}
+    if spec_metadata_file.exists():
+        metadata = parse_metadata_yaml(spec_metadata_file) or {}
+    elif legacy_metadata_file.exists():
+        metadata = parse_metadata_yaml(legacy_metadata_file) or {}
 
     # Merge title from metadata if available
     if metadata.get("title"):
@@ -167,8 +205,16 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
             code = impl_file.read_text(encoding="utf-8")
             file_path = str(impl_file.relative_to(BASE_DIR))
 
-            # Get implementation metadata
-            impl_meta = metadata.get("implementations", {}).get(library_id, {})
+            # Get implementation metadata from per-library file (new) or legacy metadata.yaml
+            impl_meta = {}
+            library_metadata_file = metadata_dir / f"{library_id}.yaml"
+            if library_metadata_file.exists():
+                # New structure: metadata/{library}.yaml
+                impl_meta = parse_library_metadata_yaml(library_metadata_file) or {}
+            else:
+                # Legacy structure: metadata.yaml -> implementations -> {library}
+                impl_meta = metadata.get("implementations", {}).get(library_id, {})
+
             current = impl_meta.get("current") or {}
 
             # Parse generated_at

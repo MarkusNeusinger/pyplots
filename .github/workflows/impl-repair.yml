@@ -1,0 +1,219 @@
+name: "Impl: Repair"
+run-name: "Repair: ${{ inputs.library }} for ${{ inputs.specification_id }} (attempt ${{ inputs.attempt }})"
+
+# Repairs a rejected implementation based on AI feedback
+# Triggered by impl-review.yml when ai-rejected label is added
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to repair"
+        required: true
+        type: string
+      specification_id:
+        description: "The specification ID"
+        required: true
+        type: string
+      library:
+        description: "The library to repair"
+        required: true
+        type: string
+      attempt:
+        description: "Current attempt number (1, 2, or 3)"
+        required: true
+        type: string
+
+env:
+  DEPS_matplotlib: "matplotlib>=3.9.0 numpy>=1.26.0"
+  DEPS_seaborn: "seaborn>=0.13.0 matplotlib>=3.9.0 numpy>=1.26.0"
+  DEPS_plotly: "plotly>=5.18.0 kaleido>=0.2.1 numpy>=1.26.0"
+  DEPS_bokeh: "bokeh>=3.4.0 numpy>=1.26.0 selenium>=4.15.0 webdriver-manager>=4.0.0"
+  DEPS_altair: "altair>=5.2.0 vl-convert-python>=1.3.0 numpy>=1.26.0"
+  DEPS_plotnine: "plotnine>=0.13.0 numpy>=1.26.0"
+  DEPS_pygal: "pygal>=3.0.0 cairosvg>=2.7.0"
+  DEPS_highcharts: "highcharts-core>=1.10.0 numpy>=1.26.0 selenium>=4.15.0 webdriver-manager>=4.0.0"
+  DEPS_letsplot: "lets-plot>=4.5.0"
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      actions: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout PR branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH=$(gh pr view ${{ inputs.pr_number }} --json headRefName -q '.headRefName')
+          echo "branch=$BRANCH" >> $GITHUB_ENV
+          git fetch origin "$BRANCH"
+          git checkout "$BRANCH"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Get library dependencies
+        id: deps
+        run: |
+          DEPS_VAR="DEPS_${{ inputs.library }}"
+          DEPS="${!DEPS_VAR}"
+          echo "deps=$DEPS" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        run: |
+          uv venv .venv
+          source .venv/bin/activate
+          uv pip install ${{ steps.deps.outputs.deps }} pandas>=2.2.0 ruff
+
+      - name: Setup Chrome for Highcharts
+        if: inputs.library == 'highcharts'
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: Extract AI feedback from PR
+        id: feedback
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          FEEDBACK=$(gh pr view ${{ inputs.pr_number }} --json comments -q '
+            [.comments[] | select(.body | contains("AI Review"))] | last | .body
+          ' 2>/dev/null || echo "")
+
+          if [ -z "$FEEDBACK" ]; then
+            FEEDBACK="No specific feedback available. Review the implementation against the spec."
+          fi
+
+          echo "$FEEDBACK" > /tmp/ai_feedback.md
+
+      - name: Remove ai-rejected label
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr edit ${{ inputs.pr_number }} --remove-label "ai-rejected" 2>/dev/null || true
+
+      - name: Run Claude Code to repair implementation
+        id: claude
+        timeout-minutes: 45
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--model opus"
+          prompt: |
+            ## Task: Repair ${{ inputs.library }} Implementation for ${{ inputs.specification_id }}
+
+            This is **repair attempt ${{ inputs.attempt }}/3**. The previous implementation was rejected.
+
+            ### Step 1: Read the AI review feedback
+            Read `/tmp/ai_feedback.md` to understand what needs to be fixed.
+
+            ### Step 2: Read reference files
+            1. `prompts/library/${{ inputs.library }}.md` - Library-specific rules
+            2. `plots/${{ inputs.specification_id }}/specification.md` - The specification
+            3. `prompts/quality-criteria.md` - Quality requirements
+
+            ### Step 3: Read current implementation
+            `plots/${{ inputs.specification_id }}/implementations/${{ inputs.library }}.py`
+
+            ### Step 4: Fix the issues
+            Based on the AI feedback, fix:
+            - Visual quality issues
+            - Code quality issues
+            - Spec compliance issues
+
+            ### Step 5: Test the fix
+            ```bash
+            source .venv/bin/activate
+            cd plots/${{ inputs.specification_id }}/implementations
+            MPLBACKEND=Agg python ${{ inputs.library }}.py
+            ```
+
+            ### Step 6: Visual self-check
+            View `plot.png` and verify fixes are correct.
+
+            ### Step 7: Format the code
+            ```bash
+            source .venv/bin/activate
+            ruff format plots/${{ inputs.specification_id }}/implementations/${{ inputs.library }}.py
+            ruff check --fix plots/${{ inputs.specification_id }}/implementations/${{ inputs.library }}.py
+            ```
+
+            ### Step 8: Commit and push
+            ```bash
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add plots/${{ inputs.specification_id }}/implementations/${{ inputs.library }}.py
+            git commit -m "fix(${{ inputs.library }}): address review feedback for ${{ inputs.specification_id }}
+
+            Attempt ${{ inputs.attempt }}/3 - fixes based on AI review"
+            git push origin ${{ env.branch }}
+            ```
+
+            ### Report result
+            Print: `REPAIR_SUCCESS` or `REPAIR_FAILED: <reason>`
+
+      - name: Upload repaired plot to GCS staging
+        if: success()
+        env:
+          GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
+          SPEC_ID: ${{ inputs.specification_id }}
+          LIBRARY: ${{ inputs.library }}
+        run: |
+          IMPL_DIR="plots/${SPEC_ID}/implementations"
+          STAGING_PATH="gs://pyplots-images/staging/${SPEC_ID}/${LIBRARY}"
+
+          if [ -z "$GCS_CREDENTIALS" ]; then
+            echo "::warning::GCS_CREDENTIALS not configured"
+            exit 0
+          fi
+
+          echo "$GCS_CREDENTIALS" > /tmp/gcs-key.json
+          gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
+
+          if [ -f "$IMPL_DIR/plot.png" ]; then
+            gsutil cp "$IMPL_DIR/plot.png" "${STAGING_PATH}/plot.png"
+            gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot.png" 2>/dev/null || true
+          fi
+
+          if [ -f "$IMPL_DIR/plot.html" ]; then
+            gsutil cp "$IMPL_DIR/plot.html" "${STAGING_PATH}/plot.html"
+            gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot.html" 2>/dev/null || true
+          fi
+
+          rm -f /tmp/gcs-key.json
+
+      - name: Post repair status
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr comment ${{ inputs.pr_number }} --body "## :wrench: Repair Attempt ${{ inputs.attempt }}/3
+
+          Applied fixes based on AI review feedback.
+
+          **Status:** Repair completed, re-triggering review...
+
+          ---
+          :robot: *[impl-repair](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+      - name: Re-trigger review
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run impl-review.yml -f pr_number="${{ inputs.pr_number }}"
+          echo "::notice::Triggered impl-review.yml for PR #${{ inputs.pr_number }}"

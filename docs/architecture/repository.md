@@ -5,9 +5,13 @@
 pyplots follows a **plot-centric repository pattern** where everything for one plot type lives in a single directory:
 
 ```
-plots/{spec-id}/
-├── spec.md              # Description, Applications, Data, Notes
-├── metadata.yaml        # Tags, generation info, quality history
+plots/{specification-id}/
+├── specification.md     # Description, Applications, Data, Notes
+├── specification.yaml   # Spec-level metadata (tags, created, issue, suggested)
+├── metadata/            # Per-library metadata (one file per library)
+│   ├── matplotlib.yaml
+│   ├── seaborn.yaml
+│   └── ...
 └── implementations/     # Library implementations
     ├── matplotlib.py
     ├── seaborn.py
@@ -15,6 +19,8 @@ plots/{spec-id}/
 ```
 
 **Key Principle**: The repository contains **only production code and final specs**. Quality reports and workflow state are managed in GitHub Issues. Preview images are stored in GCS.
+
+**Key Benefit**: Per-library metadata files eliminate merge conflicts when multiple implementations are generated in parallel.
 
 ---
 
@@ -24,8 +30,12 @@ plots/{spec-id}/
 pyplots/
 ├── plots/                             # Plot-centric directories
 │   ├── scatter-basic/                 # Everything for basic scatter plot
-│   │   ├── spec.md                    # Library-agnostic specification
-│   │   ├── metadata.yaml              # Tags, generation info, quality scores
+│   │   ├── specification.md           # Library-agnostic specification
+│   │   ├── specification.yaml         # Spec-level metadata (tags, created, issue)
+│   │   ├── metadata/                  # Per-library metadata
+│   │   │   ├── matplotlib.yaml
+│   │   │   ├── seaborn.yaml
+│   │   │   └── ...
 │   │   └── implementations/           # Library-specific code
 │   │       ├── matplotlib.py
 │   │       ├── seaborn.py
@@ -38,14 +48,16 @@ pyplots/
 │   │       └── letsplot.py
 │   │
 │   ├── bar-basic/
-│   │   ├── spec.md
-│   │   ├── metadata.yaml
+│   │   ├── specification.md
+│   │   ├── specification.yaml
+│   │   ├── metadata/
 │   │   └── implementations/
 │   │       └── ...
 │   │
 │   └── heatmap-correlation/
-│       ├── spec.md
-│       ├── metadata.yaml
+│       ├── specification.md
+│       ├── specification.yaml
+│       ├── metadata/
 │       └── implementations/
 │           └── ...
 │
@@ -96,14 +108,14 @@ pyplots/
 │
 ├── .github/
 │   └── workflows/                     # GitHub Actions CI/CD
-│       ├── gen-create-spec.yml        # Creates feature branch + spec
-│       ├── gen-new-plot.yml           # Orchestrator for parallel generation
-│       ├── gen-library-impl.yml       # Per-library implementation
-│       ├── ci-plottest.yml            # Multi-Python testing
-│       ├── gen-preview.yml            # Preview image generation
-│       ├── bot-ai-review.yml          # AI quality evaluation
-│       ├── bot-auto-merge.yml         # Auto-merge approved PRs
-│       ├── sync-postgres.yml          # Sync to database on push
+│       ├── spec-create.yml            # Creates specification (branch → PR → approval)
+│       ├── spec-update.yml            # Updates existing specification
+│       ├── impl-generate.yml          # Generates single library implementation
+│       ├── impl-review.yml            # AI quality evaluation
+│       ├── impl-repair.yml            # Repairs rejected implementation
+│       ├── impl-merge.yml             # Merges approved implementation
+│       ├── bulk-generate.yml          # Batch operations (multiple specs/libraries)
+│       ├── sync-postgres.yml          # Sync to database on push to main
 │       └── ...
 │
 ├── alembic/                           # Database migrations
@@ -126,15 +138,18 @@ pyplots/
 
 ## Key Directories Explained
 
-### `plots/{spec-id}/`
+### `plots/{specification-id}/`
 
 **Purpose**: Plot-centric directories containing everything for one plot type
 
 **Structure**:
 ```
-plots/{spec-id}/
-├── spec.md              # Library-agnostic specification
-├── metadata.yaml        # Tags, generation info, quality history
+plots/{specification-id}/
+├── specification.md     # Library-agnostic specification
+├── specification.yaml   # Spec-level metadata (tags, created, issue, suggested)
+├── metadata/            # Per-library metadata
+│   ├── matplotlib.yaml  # Quality score, preview URL, generation history
+│   └── ...
 └── implementations/     # Library-specific implementations
     ├── matplotlib.py
     ├── seaborn.py
@@ -145,6 +160,7 @@ plots/{spec-id}/
 - ✅ Self-contained (spec + metadata + code together)
 - ✅ Easy to navigate (one folder = one plot type)
 - ✅ Synced to PostgreSQL via `sync-postgres.yml`
+- ✅ No merge conflicts (per-library metadata files)
 - ❌ NO preview images (stored in GCS)
 - ❌ NO quality reports (stored in GitHub Issues)
 
@@ -152,7 +168,7 @@ plots/{spec-id}/
 
 ---
 
-### `plots/{spec-id}/spec.md`
+### `plots/{specification-id}/specification.md`
 
 **Purpose**: Library-agnostic plot specification
 
@@ -162,47 +178,60 @@ plots/{spec-id}/
 - Use cases with domain context
 - Visual requirements
 
-**Naming**: Always `spec.md` (consistent across all plots)
+**Naming**: Always `specification.md` (consistent across all plots)
 
 ---
 
-### `plots/{spec-id}/metadata.yaml`
+### `plots/{specification-id}/specification.yaml`
 
-**Purpose**: Structured metadata synced to PostgreSQL
+**Purpose**: Spec-level metadata synced to PostgreSQL
 
 **Contents**:
 ```yaml
-spec_id: scatter-basic
+specification_id: scatter-basic
 title: Basic Scatter Plot
-
+created: 2025-01-10T08:00:00Z
+issue: 42
+suggested: CoolContributor123
+updates: []
 tags:
   plot_type: [scatter, point]
   domain: [statistics, general]
   features: [basic, 2d]
   audience: [beginner]
   data_type: [numeric]
-
-implementations:
-  matplotlib:
-    preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/matplotlib/latest.png
-    current:
-      version: 2
-      date: 2025-01-15T10:30:00Z
-      issue: 53
-      generated_by: claude-opus-4-5-20251101
-      quality_score: 92
-    history:
-      - version: 0
-        date: 2025-01-10T08:00:00Z
-        issue: 42
-        generated_by: claude-sonnet-4-20250514
-        quality_score: 65
 ```
 
 **Key Points**:
 - Tags are at spec level (same for all libraries)
-- Version numbers match GCS history files (`v0.png`, `v1.png`, etc.)
-- Each version tracks date, issue, model, and quality score
+- `suggested` credits the contributor who proposed the spec
+- `updates` tracks spec changes over time
+
+---
+
+### `plots/{specification-id}/metadata/{library}.yaml`
+
+**Purpose**: Per-library metadata (one file per library)
+
+**Contents**:
+```yaml
+library: matplotlib
+specification_id: scatter-basic
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/matplotlib/plot.png
+current:
+  version: 1
+  generated_at: 2025-01-15T10:30:00Z
+  generated_by: claude-opus-4-5-20251101
+  workflow_run: 12345678
+  issue: 42
+  quality_score: 92
+history: []
+```
+
+**Key Points**:
+- Each library has its own file (no merge conflicts!)
+- Created by `impl-merge.yml` when implementation is approved
+- Version history tracked in `history` array
 
 ### GCS Storage
 
@@ -315,14 +344,19 @@ plt.savefig('plot.png', dpi=300)
 
 **Purpose**: CI/CD automation via GitHub Actions
 
-**Key Workflows**:
-- `gen-create-spec.yml` - Creates feature branch and spec file
-- `gen-new-plot.yml` - Orchestrates parallel library generation
-- `gen-library-impl.yml` - Generates one library implementation
-- `ci-plottest.yml` - Multi-Python version testing
-- `gen-preview.yml` - Generates preview images
-- `bot-ai-review.yml` - AI quality evaluation
-- `sync-postgres.yml` - Syncs plots/ to database
+**Specification Workflows**:
+- `spec-create.yml` - Creates specification (branch → PR → approval → merge)
+- `spec-update.yml` - Updates existing specification
+
+**Implementation Workflows**:
+- `impl-generate.yml` - Generates single library (`generate:{lib}` label OR dispatch)
+- `impl-review.yml` - AI quality evaluation
+- `impl-repair.yml` - Repairs rejected implementation (max 3 attempts)
+- `impl-merge.yml` - Merges approved PR, creates per-library metadata
+- `bulk-generate.yml` - Batch operations (max 3 parallel)
+
+**Supporting Workflows**:
+- `sync-postgres.yml` - Syncs plots/ to database on push to main
 
 ---
 
@@ -372,11 +406,11 @@ Always named by library: `{library}.py`
 The `sync-postgres.yml` workflow syncs `plots/` to PostgreSQL on push to main:
 
 **What's Synced**:
-- Spec content (full markdown from spec.md)
-- Spec metadata (title, description, tags)
+- Spec content (full markdown from specification.md)
+- Spec metadata (title, description, tags from specification.yaml)
 - Implementation code (full Python source)
-- Implementation metadata (quality score, generation info)
-- Preview URLs from metadata.yaml
+- Implementation metadata (quality score, generation info from metadata/*.yaml)
+- Preview URLs from per-library metadata files
 
 **Source of Truth**: The `plots/` directory is authoritative. Database is derived.
 

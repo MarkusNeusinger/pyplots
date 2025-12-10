@@ -1,0 +1,334 @@
+name: "Spec: Create"
+run-name: "Create Spec: ${{ github.event.issue.title }}"
+
+# Creates new specification with approval gate
+# Flow:
+# 1. User adds `spec-request` label → creates branch + PR
+# 2. Maintainer adds `approved` label → merges PR to main
+#
+# Triggers:
+# - spec-request label added → create specification + PR
+# - approved label added (on spec-request issue) → merge PR
+
+on:
+  issues:
+    types: [labeled]
+
+concurrency:
+  group: spec-create-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  # ============================================================================
+  # Job 1: Create specification (triggered by spec-request label)
+  # ============================================================================
+  create:
+    if: github.event.label.name == 'spec-request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+
+    outputs:
+      specification_id: ${{ steps.process.outputs.specification_id }}
+      branch: ${{ steps.process.outputs.branch }}
+      pr_number: ${{ steps.pr.outputs.pr_number }}
+
+    steps:
+      - name: Check if already processed
+        id: check
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          # Skip if already has specification-id in title
+          if [[ "$ISSUE_TITLE" =~ ^\[[a-z0-9-]+\] ]]; then
+            echo "::notice::Skipping: Issue already has specification ID in title"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
+      - name: Checkout repository
+        if: steps.check.outputs.should_run == 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: React with eyes emoji
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/reactions \
+            -f content=eyes
+
+      - name: Process with Claude
+        if: steps.check.outputs.should_run == 'true'
+        id: process
+        timeout-minutes: 30
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--model opus"
+          prompt: |
+            ## Task: Create New Specification
+
+            You are creating a new plot specification.
+
+            ### Issue Details
+            - **Title:** ${{ github.event.issue.title }}
+            - **Number:** #${{ github.event.issue.number }}
+            - **Author:** ${{ github.event.issue.user.login }}
+            - **Body:**
+            ```
+            ${{ github.event.issue.body }}
+            ```
+
+            ---
+
+            ## Instructions
+
+            1. **Read the rules:** `prompts/spec-id-generator.md`
+
+            2. **Check for duplicates:**
+               - List all existing specs: `ls plots/`
+               - Read existing specification files if titles seem similar
+               - If duplicate found: Post comment explaining which spec matches, then STOP
+
+            3. **Generate specification-id:**
+               - Format: `{type}-{variant}` or `{type}-{variant}-{modifier}`
+               - Examples: `scatter-basic`, `bar-grouped-horizontal`, `heatmap-correlation`
+               - All lowercase, hyphens only
+
+            4. **Create specification branch:**
+               ```bash
+               git checkout -b "specification/{specification-id}"
+               ```
+
+            5. **Create specification files:**
+               - Read template: `prompts/templates/specification.md`
+               - Read metadata template: `prompts/templates/specification.yaml`
+               - Create directory: `plots/{specification-id}/`
+               - Create: `plots/{specification-id}/specification.md` (follow template structure)
+               - Create: `plots/{specification-id}/specification.yaml` with:
+                 - `specification_id`: the generated id
+                 - `title`: a proper title
+                 - `created`: Use `$(date -u +"%Y-%m-%dT%H:%M:%SZ")` for current timestamp
+                 - `issue`: ${{ github.event.issue.number }}
+                 - `suggested`: ${{ github.event.issue.user.login }}
+                 - `tags`: appropriate tags for this plot type
+               - Create empty folder: `plots/{specification-id}/implementations/`
+               - Create empty folder: `plots/{specification-id}/metadata/`
+
+            6. **Commit and push:**
+               ```bash
+               git config user.name "github-actions[bot]"
+               git config user.email "github-actions[bot]@users.noreply.github.com"
+               git add plots/{specification-id}/
+               git commit -m "spec: add {specification-id} specification
+
+               Created from issue #${{ github.event.issue.number }}"
+               git push -u origin "specification/{specification-id}"
+               ```
+
+            7. **Update issue title:**
+               ```bash
+               gh issue edit ${{ github.event.issue.number }} --title "[{specification-id}] {original title}"
+               ```
+
+            8. **Output for workflow:**
+               After completing, print these lines exactly:
+               ```
+               SPECIFICATION_ID={specification-id}
+               BRANCH=specification/{specification-id}
+               ```
+
+            ---
+
+            ## Important Rules
+            - Do NOT create a PR (the workflow does that)
+            - Do NOT add labels
+            - Do NOT close the issue
+            - STOP after pushing the branch
+
+      - name: Extract outputs
+        if: steps.check.outputs.should_run == 'true'
+        id: extract
+        run: |
+          # Extract specification ID from issue title (now updated by Claude)
+          TITLE=$(gh issue view ${{ github.event.issue.number }} --json title -q .title)
+          SPEC_ID=$(echo "$TITLE" | sed -n 's/^\[\([a-z0-9-]*\)\].*/\1/p')
+
+          if [[ -z "$SPEC_ID" ]]; then
+            echo "::error::Could not extract specification ID from title: $TITLE"
+            exit 1
+          fi
+
+          echo "specification_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "branch=specification/$SPEC_ID" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Pull Request
+        if: steps.check.outputs.should_run == 'true'
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPEC_ID: ${{ steps.extract.outputs.specification_id }}
+        run: |
+          # Read the specification content for PR body
+          SPEC_CONTENT=$(cat "plots/${SPEC_ID}/specification.md")
+
+          PR_URL=$(gh pr create \
+            --base main \
+            --head "specification/${SPEC_ID}" \
+            --title "spec: add ${SPEC_ID} specification" \
+            --body "$(cat <<EOF
+          ## New Specification: \`${SPEC_ID}\`
+
+          Closes #${{ github.event.issue.number }}
+
+          ---
+
+          ### specification.md
+
+          ${SPEC_CONTENT}
+
+          ---
+
+          **Next:** Add \`approved\` label to the issue to merge this PR.
+
+          ---
+          :robot: *[spec-create workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*
+          EOF
+          )")
+
+          PR_NUMBER=$(echo "$PR_URL" | grep -oE '[0-9]+$')
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "pr_url=$PR_URL" >> $GITHUB_OUTPUT
+
+      - name: Comment on issue
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPEC_ID: ${{ steps.extract.outputs.specification_id }}
+          PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
+        run: |
+          SPEC_CONTENT=$(cat "plots/${SPEC_ID}/specification.md")
+
+          gh issue comment ${{ github.event.issue.number }} --body "$(cat <<EOF
+          ## :white_check_mark: Specification Ready: \`${SPEC_ID}\`
+
+          **PR:** #${PR_NUMBER}
+          **Branch:** \`specification/${SPEC_ID}\`
+
+          ---
+
+          ### specification.md
+
+          ${SPEC_CONTENT}
+
+          ---
+
+          **Next:** Add \`approved\` label to merge this specification to main.
+
+          ---
+          :robot: *[spec-create workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*
+          EOF
+          )"
+
+      - name: Add rocket reaction on success
+        if: steps.check.outputs.should_run == 'true' && success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/reactions \
+            -f content=rocket
+
+  # ============================================================================
+  # Job 2: Merge specification (triggered by approved label)
+  # ============================================================================
+  merge:
+    if: >
+      github.event.label.name == 'approved' &&
+      contains(github.event.issue.labels.*.name, 'spec-request')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract specification ID
+        id: extract
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          SPEC_ID=$(echo "$ISSUE_TITLE" | sed -n 's/^\[\([a-z0-9-]*\)\].*/\1/p')
+
+          if [[ -z "$SPEC_ID" ]]; then
+            echo "::error::Could not extract specification ID from title: $ISSUE_TITLE"
+            exit 1
+          fi
+
+          echo "specification_id=$SPEC_ID" >> $GITHUB_OUTPUT
+
+      - name: Find and merge PR
+        id: merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPEC_ID: ${{ steps.extract.outputs.specification_id }}
+        run: |
+          # Find PR for this specification
+          PR_NUMBER=$(gh pr list --head "specification/${SPEC_ID}" --json number -q '.[0].number')
+
+          if [[ -z "$PR_NUMBER" ]]; then
+            echo "::error::No PR found for branch specification/${SPEC_ID}"
+            exit 1
+          fi
+
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+
+          # Merge the PR
+          gh pr merge "$PR_NUMBER" --squash --delete-branch
+
+          echo "::notice::Merged PR #$PR_NUMBER for specification ${SPEC_ID}"
+
+      - name: Update issue labels
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Add spec-ready label
+          gh issue edit ${{ github.event.issue.number }} --add-label "spec-ready"
+
+      - name: Comment on issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPEC_ID: ${{ steps.extract.outputs.specification_id }}
+          PR_NUMBER: ${{ steps.merge.outputs.pr_number }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} --body "$(cat <<EOF
+          ## :rocket: Specification Merged!
+
+          **Specification:** \`${SPEC_ID}\`
+          **PR:** #${PR_NUMBER} (merged)
+
+          The specification is now in \`main\` and synced to PostgreSQL.
+
+          ---
+
+          **Next:** Add \`generate:{library}\` labels to start generating implementations.
+
+          Available libraries: \`matplotlib\`, \`seaborn\`, \`plotly\`, \`bokeh\`, \`altair\`, \`plotnine\`, \`pygal\`, \`highcharts\`, \`letsplot\`
+
+          Or use workflow dispatch for bulk operations.
+
+          ---
+          :robot: *[spec-create workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*
+          EOF
+          )"

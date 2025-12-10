@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Important Rules
 
 - **Do NOT commit or push in interactive sessions** - When working with a user interactively, never run `git commit` or `git push` automatically. Always let the user review changes and commit/push manually.
-- **GitHub Actions workflows ARE allowed to commit/push** - When running as part of `plot-*.yml` workflows, creating branches, commits, and PRs is expected and required.
+- **GitHub Actions workflows ARE allowed to commit/push** - When running as part of `spec-*.yml` or `impl-*.yml` workflows, creating branches, commits, and PRs is expected and required.
 - **No Co-authored-by in commit messages** - Never add `Co-authored-by:` lines to commit messages. Keep commit messages clean without AI attribution footers.
 - **Always write in English** - All output text (code comments, commit messages, PR descriptions, issue comments, documentation) must be in English, even if the user writes in another language.
 
@@ -86,9 +86,13 @@ yarn build        # Production build
 Everything for one plot type lives in a single directory:
 
 ```
-plots/{spec-id}/
-├── spec.md              # Description, Applications, Data, Notes
-├── metadata.yaml        # Tags, generation info, quality history
+plots/{specification-id}/
+├── specification.md     # Description, Applications, Data, Notes
+├── specification.yaml   # Spec-level metadata (tags, created, issue, suggested, updates)
+├── metadata/            # Per-library metadata (one file per library)
+│   ├── matplotlib.yaml
+│   ├── seaborn.yaml
+│   └── ...
 └── implementations/     # Library implementations
     ├── matplotlib.py
     ├── seaborn.py
@@ -102,6 +106,11 @@ plots/{spec-id}/
 ```
 
 Example: `plots/scatter-basic/` contains everything for the basic scatter plot.
+
+**Key benefits of per-library metadata:**
+- No merge conflicts (each library updates only its own file)
+- Partial implementations OK (6/9 done = fine)
+- Each library runs independently
 
 ### Spec ID Naming Convention
 
@@ -123,9 +132,10 @@ Example: `plots/scatter-basic/` contains everything for the basic scatter plot.
 
 ### Directory Structure
 
-- **`plots/{spec-id}/`**: Plot-centric directories (spec, metadata, implementations together)
-  - `spec.md`: Library-agnostic specification (Description, Applications, Data, Notes)
-  - `metadata.yaml`: Tags, generation info, quality scores (synced to PostgreSQL)
+- **`plots/{specification-id}/`**: Plot-centric directories (spec, metadata, implementations together)
+  - `specification.md`: Library-agnostic specification (Description, Applications, Data, Notes)
+  - `specification.yaml`: Spec-level metadata (tags, created, issue, suggested, updates)
+  - `metadata/{library}.yaml`: Per-library metadata (preview_url, quality_score, history)
   - `implementations/{library}.py`: Library-specific implementations
 - **`prompts/`**: AI agent prompts for code generation, quality evaluation, and tagging
   - `templates/`: Spec and metadata templates
@@ -145,15 +155,13 @@ Example: `plots/scatter-basic/` contains everything for the basic scatter plot.
 
 ### Metadata System
 
-Each plot directory contains a `metadata.yaml` file that is synced to PostgreSQL:
+Plot metadata is split into two types of files to avoid merge conflicts:
 
-**File location:** `plots/{spec-id}/metadata.yaml`
+**1. Specification-level metadata:** `plots/{specification-id}/specification.yaml`
 
 ```yaml
-spec_id: scatter-basic
+specification_id: scatter-basic
 title: Basic Scatter Plot
-
-# Spec-level tracking
 created: 2025-01-10T08:00:00Z
 issue: 42
 suggested: CoolContributor123
@@ -161,44 +169,37 @@ updates:
   - date: 2025-01-15T10:30:00Z
     issue: 58
     changes: "Added Notes section"
-
-# Spec-level tags (same for all library implementations)
 tags:
   plot_type: [scatter, point]
   domain: [statistics, general]
   features: [basic, 2d, correlation]
   audience: [beginner]
   data_type: [numeric, continuous]
+```
 
-# Per-library implementation metadata (updated by plot-merge.yml)
-implementations:
-  matplotlib:
-    preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/matplotlib/plot.png
-    current:
-      generated_at: 2025-01-15T10:30:00Z
-      generated_by: claude-opus-4-5-20251101
-      workflow_run: 12345678
-      issue: 42
-      quality_score: 92
-    history:
-      - version: 1
-        generated_at: 2025-01-10T08:00:00Z
-        generated_by: claude-sonnet-4-20250514
-        quality_score: 78
-        feedback: |
-          Missing grid lines.
-          Font sizes too small.
-        improvements_suggested:
-          - "Add grid with alpha=0.3"
-          - "Increase font sizes to 16+"
+**2. Per-library metadata:** `plots/{specification-id}/metadata/{library}.yaml`
+
+```yaml
+library: matplotlib
+specification_id: scatter-basic
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/matplotlib/plot.png
+current:
+  version: 1
+  generated_at: 2025-01-15T10:30:00Z
+  generated_by: claude-opus-4-5-20251101
+  workflow_run: 12345678
+  issue: 42
+  quality_score: 92
+history: []
 ```
 
 **Key points:**
-- Spec-level tracking: `created`, `issue`, `suggested`, `updates`
+- Spec-level tracking in `specification.yaml`: `created`, `issue`, `suggested`, `updates`, `tags`
+- Per-library metadata in separate files (no merge conflicts!)
 - Contributors credited via `suggested` field
 - Tags are at spec level (same for all libraries)
-- Per-library metadata updated automatically by `plot-merge.yml` after each library PR merge
-- Quality scores flow from `plot-review.yml` via PR labels (`quality:XX`)
+- Per-library metadata updated automatically by `impl-merge.yml` after each PR merge
+- Quality scores flow from `impl-review.yml` via PR labels (`quality:XX`)
 - `sync-postgres.yml` workflow syncs to database on push to main
 - Database stores full spec content (markdown) and implementation code (Python source)
 
@@ -218,9 +219,9 @@ gs://pyplots-images/
 ```
 
 **Flow:**
-1. `plot-generator.yml` uploads to `staging/{spec-id}/{library}/`
-2. `plot-review.yml` reads from staging for AI evaluation
-3. `plot-merge.yml` promotes staging → production when feature branch merges to main
+1. `impl-generate.yml` uploads to `staging/{spec-id}/{library}/`
+2. `impl-review.yml` reads from staging for AI evaluation
+3. `impl-merge.yml` promotes staging → production when PR merges to main
 
 **Interactive libraries** (generate `.html`): plotly, bokeh, altair, highcharts, pygal, letsplot
 **PNG only**: matplotlib, seaborn, plotnine
@@ -302,18 +303,19 @@ DATABASE_URL=postgresql+asyncpg://user:pass@host:5432/pyplots
 uv run python -c "from core.database import is_db_configured; print(is_db_configured())"
 ```
 
-**What's Stored** (synced from `plots/{spec-id}/`):
-- Spec content (full markdown from spec.md)
-- Spec metadata (title, description, tags, structured_tags)
+**What's Stored** (synced from `plots/{specification-id}/`):
+- Spec content (full markdown from specification.md)
+- Spec metadata (title, description, tags, structured_tags from specification.yaml)
 - Implementation code (full Python source)
-- Implementation metadata (library, variant, quality score, generation info)
+- Implementation metadata (library, variant, quality score, generation info from metadata/*.yaml)
 - GCS URLs for preview images
 - Social media promotion queue
 
 **What's in Repository** (source of truth):
-- Everything in `plots/{spec-id}/`:
-  - `spec.md` - specification description
-  - `metadata.yaml` - tags and generation history
+- Everything in `plots/{specification-id}/`:
+  - `specification.md` - specification description
+  - `specification.yaml` - spec-level metadata (tags, created, issue, etc.)
+  - `metadata/{library}.yaml` - per-library metadata (quality score, generation history)
   - `implementations/*.py` - library implementations
 
 **What's NOT Stored in DB**:
@@ -373,7 +375,7 @@ prompt: |
   $(cat prompts/library/matplotlib.md)
 
   ## Spec
-  $(cat plots/scatter-basic/spec.md)
+  $(cat plots/scatter-basic/specification.md)
 ```
 
 ## Implementation Guidelines
@@ -426,56 +428,77 @@ plt.savefig('plot.png', dpi=300, bbox_inches='tight')
 
 Located in `.github/workflows/`:
 
-### Core Plot Pipeline (`plot-*.yml`)
+### Specification Workflows (`spec-*.yml`)
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
-| **plot-prepare.yml** | `plot-request` label | Validates request, assigns spec-id, creates `plot/{spec-id}` branch, generates spec |
-| **plot-orchestrator.yml** | `approved` label | Creates status table, dispatches 9 parallel generators in 3 batches |
-| **plot-generator.yml** | Called by orchestrator | Reusable: generates one library (code → test → preview → PR) |
-| **plot-review.yml** | PR opened from `auto/*` | AI quality review, adds `quality:XX` and `ai-approved`/`ai-rejected` labels |
-| **plot-merge.yml** | `ai-approved` label | Auto-merges PR, updates metadata.yaml, promotes GCS images to production |
+| **spec-create.yml** | `spec-request` label | Creates new specification (branch → PR → approval → merge) |
+| **spec-update.yml** | `spec-update` label | Updates existing specification |
+
+### Implementation Workflows (`impl-*.yml`)
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| **impl-generate.yml** | `generate:{library}` label OR workflow_dispatch | Generates single library implementation |
+| **impl-review.yml** | Called by impl-generate | AI quality review, adds `quality:XX` and `ai-approved`/`ai-rejected` |
+| **impl-repair.yml** | Called by impl-review (on rejection) | Fixes rejected implementation (max 3 attempts) |
+| **impl-merge.yml** | `ai-approved` label OR workflow_dispatch | Merges approved PR, creates metadata/{library}.yaml |
+| **bulk-generate.yml** | workflow_dispatch only | Dispatches multiple implementations (max 3 parallel) |
 
 ### Workflow Data Flow
 
+**Flow A: New Specification (with approval gate)**
+
 ```
-Issue + plot-request label
+Issue + spec-request label
     │
     ▼
-plot-prepare.yml
-    ├── Creates: plot/{spec-id} branch
-    ├── Creates: plots/{spec-id}/spec.md
-    ├── Creates: plots/{spec-id}/metadata.yaml
-    └── Posts: spec ready comment
+spec-create.yml
+    ├── Creates branch: specification/{specification-id}
+    ├── Creates: plots/{specification-id}/specification.md
+    ├── Creates: plots/{specification-id}/specification.yaml
+    ├── Creates PR: specification/{specification-id} → main
+    └── Posts: spec analysis comment (waits for approval)
     │
     ▼ (maintainer adds `approved` label)
     │
-plot-orchestrator.yml
-    ├── Posts: status table comment (updates live)
-    └── Dispatches 3 batches (3+3+3 libraries)
-        │
-        ▼ (parallel)
-        │
-plot-generator.yml (×9)
-    ├── Generates implementation
-    ├── Tests (MPLBACKEND=Agg)
+spec-create.yml (merge job)
+    ├── Merges PR to main
+    ├── sync-postgres.yml triggers (updates database)
+    └── Adds `spec-ready` label
+```
+
+**Flow B: Generate Implementation**
+
+```
+Issue + generate:matplotlib label  OR  workflow_dispatch
+    │
+    ▼
+impl-generate.yml
+    ├── Creates branch: implementation/{specification-id}/{library}
+    ├── Generates implementation code
+    ├── Tests with MPLBACKEND=Agg
     ├── Uploads preview to GCS staging
-    └── Creates PR: auto/{spec-id}/{library} → plot/{spec-id}
+    ├── Creates PR: implementation/{specification-id}/{library} → main
+    └── Triggers impl-review.yml
         │
-        ▼ (triggers on PR)
-        │
-plot-review.yml
+        ▼
+impl-review.yml
     ├── AI evaluates code + image
-    ├── Posts review comment
-    ├── Adds label: quality:XX
-    └── Adds label: ai-approved OR ai-rejected
-        │
-        ▼ (triggers on ai-approved)
-        │
-plot-merge.yml
-    ├── Squash-merges PR
-    ├── Updates metadata.yaml (quality_score, generated_at, etc.)
-    └── When all 9 done: merges plot/{spec-id} → main, promotes GCS images
+    ├── Posts review comment with score
+    ├── Adds labels: quality:XX, ai-approved OR ai-rejected
+    │
+    ├── If APPROVED → triggers impl-merge.yml
+    │       ├── Squash-merges PR to main
+    │       ├── Creates metadata/{library}.yaml
+    │       ├── Promotes GCS: staging → production
+    │       ├── sync-postgres.yml triggers (updates database)
+    │       └── Updates issue: impl:{library}:done
+    │
+    └── If REJECTED → triggers impl-repair.yml (max 3 attempts)
+            ├── Reads AI feedback
+            ├── Fixes implementation
+            └── Re-triggers impl-review.yml
 ```
 
 ### Supporting Workflows
@@ -486,43 +509,25 @@ plot-merge.yml
 | **ci-unittest.yml** | Unit tests on PR |
 | **sync-postgres.yml** | Syncs plots/ to database on push to main |
 
-### Feature Branch Architecture
+### Decoupled Architecture
 
-Each spec uses a **feature branch workflow** with a live status table (no sub-issues):
+The new architecture separates specification and implementation processes:
 
-```
-Main Issue #42: "Ridgeline plot"
-    │
-    ├── plot-prepare.yml creates:
-    │   ├── Branch: plot/ridgeline-basic
-    │   ├── plots/ridgeline-basic/spec.md
-    │   └── plots/ridgeline-basic/metadata.yaml
-    │
-    ├── plot-orchestrator.yml posts status table:
-    │   │
-    │   │  | Library    | Status    | PR   | Quality |
-    │   │  |------------|-----------|------|---------|
-    │   │  | matplotlib | ✅ Done   | #101 | 92      |
-    │   │  | seaborn    | ✅ Done   | #102 | 88      |
-    │   │  | plotnine   | 🔄 Review | #103 | -       |
-    │   │  | ...        | ...       | ...  | ...     |
-    │   │
-    │   └── Dispatches 9 generators in 3 batches (parallel within batch)
-    │
-    └── Each library creates PR: auto/ridgeline-basic/{library} → plot/ridgeline-basic
+**Benefits:**
+- **No single point of failure** - Each library runs independently
+- **Specifications can land in main without implementations**
+- **Partial implementations OK** - 6/9 done = fine
+- **No merge conflicts** - Per-library metadata files
+- **Flexible triggers** - Labels for single, dispatch for bulk
+- **PostgreSQL synced on every merge to main**
 
-When all 9 libraries complete:
-    PR: plot/ridgeline-basic → main (squash merge)
-    Issue #42 closed with "completed" label
-```
+**Branch naming:**
+- `specification/{specification-id}` - New specification PRs
+- `implementation/{specification-id}/{library}` - Library implementation PRs
 
-**Key design decisions:**
-- **No sub-issues** - Status tracked via live-updating table in main issue comment
-- **PRs as state** - Each library PR carries labels (`ai-approved`, `quality:XX`)
-- **Metadata per-library** - `plot-merge.yml` updates metadata.yaml immediately after each merge
-- **Parallel batches** - 3 batches of 3 libraries to avoid GitHub rate limits
-- **Feature branch isolation** - All library PRs target feature branch, not main
-- **Clean git history** - Single squash merge to main per plot spec
+**Concurrency:**
+- Global limit: max 3 implementation workflows simultaneously
+- `bulk-generate.yml` uses `max-parallel: 3` in matrix strategy
 
 ## GitHub Issue Labels
 
@@ -531,31 +536,31 @@ The project uses a structured labeling system. Setup labels with:
 bash .github/scripts/setup-labels.sh
 ```
 
-### Library Labels (per-library tracking)
+### Specification Labels
 
-- **`library:matplotlib`**, **`library:seaborn`**, **`library:plotly`**, **`library:bokeh`**, **`library:letsplot`**
-- **`library:altair`**, **`library:plotnine`**, **`library:pygal`**, **`library:highcharts`**
+- **`spec-request`** - New specification request
+- **`spec-update`** - Update existing specification
+- **`spec-ready`** - Specification merged to main, ready for implementations
 
-### Workflow Status Labels
+### Implementation Labels (on specification issue)
 
-- **`plot-request`** - Main issue requesting a new plot type
-- **`in-progress`** - Generation is running
-- **`completed`** - All library implementations merged successfully
-- **`partial`** - Some libraries completed, some failed
-- **`not-feasible`** - 3x failed, library cannot implement this plot
-- **`update`** - Update request for existing spec (use with plot-request)
-- **`test`** - Test issue, not a real plot request
+- **`generate:{library}`** - Trigger single library generation (e.g., `generate:matplotlib`)
+- **`generate:all`** - Trigger all 9 libraries via bulk-generate
+- **`impl:{library}:pending`** - Generation in progress
+- **`impl:{library}:done`** - Implementation merged to main
+- **`impl:{library}:failed`** - Max retries exhausted (3 attempts)
 
 ### PR Labels (set by workflows)
 
 - **`ai-attempt-1`**, **`ai-attempt-2`**, **`ai-attempt-3`** - Retry counter
 - **`ai-review-failed`** - AI review action failed or timed out
+- **`not-feasible`** - Library cannot implement this specification (after 3 failed attempts)
 
 ### Approval Labels (Human vs AI distinction)
 
 | Label | Meaning | Set by |
 |-------|---------|--------|
-| `approved` | Human approved for implementation | Maintainer manually |
+| `approved` | Human approved specification for merge | Maintainer manually |
 | `ai-approved` | AI quality check passed (score >= 85) | Workflow automatically |
 | `rejected` | Human rejected | Maintainer manually |
 | `ai-rejected` | AI quality check failed (score < 85) | Workflow automatically |
@@ -564,7 +569,7 @@ bash .github/scripts/setup-labels.sh
 
 Quality scores are added as labels in format `quality:XX` (e.g., `quality:92`, `quality:85`).
 
-These are set automatically by `plot-review.yml` after AI evaluation and used by `plot-merge.yml` to update metadata.yaml.
+These are set automatically by `impl-review.yml` after AI evaluation and used by `impl-merge.yml` to create metadata/{library}.yaml.
 
 ### Development Labels
 
@@ -573,65 +578,62 @@ These are set automatically by `plot-review.yml` after AI evaluation and used by
 - **`documentation`** - Documentation improvements
 - **`enhancement`** - New feature or improvement
 
-### Plot Request Workflow (Feature Branch + Parallel Per-Library)
+### New Specification Workflow
 
 1. User creates issue with descriptive title (e.g., "3D scatter plot with rotation animation")
-2. Add `plot-request` label
-3. **`plot-prepare.yml` automatically runs:**
+2. Add `spec-request` label
+3. **`spec-create.yml` automatically runs:**
    - Analyzes the request, assigns spec ID (e.g., `scatter-3d-animated`)
-   - Creates feature branch: `plot/{spec-id}`
-   - Generates spec file: `plots/{spec-id}/spec.md`
-   - Creates metadata file: `plots/{spec-id}/metadata.yaml`
+   - Creates branch: `specification/{specification-id}`
+   - Generates: `plots/{specification-id}/specification.md` + `specification.yaml`
+   - Creates PR: `specification/{specification-id}` → `main`
    - Posts comment with spec analysis (waits for approval)
 4. Maintainer reviews spec and adds `approved` label
-5. **`plot-orchestrator.yml` triggers:**
-   - Posts live status table comment (PR numbers, quality scores)
-   - Dispatches 9 generators in 3 batches (parallel within batch)
-6. **Each library (via `plot-generator.yml`):**
-   - Generates implementation (separate Claude context)
-   - Tests with `MPLBACKEND=Agg`
-   - Uploads preview to GCS staging
-   - Creates PR: `auto/{spec-id}/{library}` → `plot/{spec-id}`
-7. **`plot-review.yml` triggers on each PR:**
-   - AI evaluates code quality and visual output
-   - Posts review comment with score
-   - Adds labels: `quality:XX`, `ai-approved` or `ai-rejected`
-   - If rejected: triggers retry (max 3 attempts)
-8. **`plot-merge.yml` triggers on `ai-approved`:**
-   - Squash-merges PR to feature branch
-   - Updates `metadata.yaml` with quality score, timestamp, model
-   - When all 9 done: creates PR `plot/{spec-id}` → `main`, enables auto-merge
-   - Promotes GCS images from staging to production
+5. **`spec-create.yml` merge job triggers:**
+   - Merges PR to main
+   - Adds `spec-ready` label
+   - `sync-postgres.yml` triggers automatically
 
-**Benefits:**
-- **~8x faster** (parallel execution within batches)
-- **No sub-issues** (status tracked via live table in main issue)
-- **Partial success** (6/9 can merge while 3/9 retry)
-- **Clean git history** (single squash merge to main)
-- **Traceable data** (quality scores flow via labels → metadata.yaml)
+**Specification is now in main, ready for implementations.**
 
-### Updating Existing Plots
+### Generate Implementations
 
-To update an existing plot implementation:
+**Option A: Single library (label trigger)**
+1. Add `generate:matplotlib` label to specification issue
+2. `impl-generate.yml` triggers for that library
 
-1. Create issue with title: `[update] {spec-id}` (all libraries) or `[update:{library}] {spec-id}` (single library)
-   - Example: `[update] scatter-basic` - regenerate all 9 libraries
-   - Example: `[update:seaborn] scatter-basic` - regenerate only seaborn
-2. Add label: `plot-request`
-3. Issue body can contain spec changes (Claude will update `plots/{spec-id}/spec.md` first)
-4. Maintainer adds `approved` label
-5. Workflow regenerates specified implementations
+**Option B: Single library (manual dispatch)**
+1. Go to Actions → impl-generate.yml → Run workflow
+2. Enter specification_id and library
 
-**Issue Lifecycle:**
+**Option C: Bulk (all libraries for one spec)**
+1. Go to Actions → bulk-generate.yml → Run workflow
+2. Enter specification_id, library=all
+
+**Option D: Bulk (one library across all specs)**
+1. Go to Actions → bulk-generate.yml → Run workflow
+2. Enter specification_id=all, library=matplotlib
+
+### Updating Existing Specifications
+
+1. Create issue referencing the spec to update
+2. Add `spec-update` label
+3. `spec-update.yml` creates PR with changes
+4. Maintainer adds `approved` label to merge
+
+### Issue Lifecycle
+
 ```
-[open] plot-request → approved → in-progress → completed [closed]
-                                             → partial [closed]
+[open] spec-request → approved → spec-ready [implementations can start]
 ```
 
-**Library PR Lifecycle:**
+### Implementation PR Lifecycle
+
 ```
-[open] → ai-approved → merged [closed]
-      → ai-rejected → ai-attempt-1 → ai-attempt-2 → ai-attempt-3 → not-feasible [closed]
+[open] → impl-review
+       → ai-approved → impl-merge → impl:{library}:done
+       → ai-rejected → impl-repair (×3) → ai-attempt-1/2/3
+                                        → not-feasible (after 3 failures)
 ```
 
 **Test Issues:** When creating issues for testing workflows, add the `test` label to exclude them from production searches.
@@ -660,21 +662,23 @@ See `.env.example` for full list with comments.
 ### Adding a New Plot Type
 
 1. Create GitHub Issue with descriptive title (e.g., "Grouped bar chart with error bars")
-2. Add label `plot-request`
-3. `validate-plot-request.yml` automatically assigns a spec ID (e.g., `bar-grouped-errorbars`)
-4. Maintainer reviews and adds `approved` label
-5. AI automatically generates `plots/{spec-id}/` directory with spec.md, metadata.yaml, and implementations
-6. Multi-LLM quality check runs automatically on PR
-7. Human reviews PR and merges
+2. Add label `spec-request`
+3. `spec-create.yml` automatically:
+   - Assigns spec ID (e.g., `bar-grouped-errorbars`)
+   - Creates specification PR
+4. Maintainer reviews spec and adds `approved` label
+5. Specification merges to main
+6. Add `generate:{library}` labels to trigger implementations
+   - Or use `bulk-generate.yml` for all libraries at once
+7. Each library PR goes through AI quality review
+8. Approved implementations merge independently
 
 ### Updating an Existing Implementation
 
-1. Create GitHub Issue referencing original spec
-2. Update implementation file in `plots/{spec-id}/implementations/{library}.py`
-3. Run tests: `uv run pytest tests/unit/plots/test_{spec_id}.py`
-4. Generate preview by running implementation standalone
-5. Create PR with new preview
-6. Quality check runs automatically
+1. Use `impl-generate.yml` via workflow_dispatch
+2. Enter specification_id and library to regenerate
+3. New implementation PR goes through AI quality review
+4. Approved changes merge to main
 
 ### Testing Plot Generation Locally
 

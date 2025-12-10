@@ -1,0 +1,270 @@
+name: "Impl: Review"
+run-name: "Review: PR #${{ inputs.pr_number }}"
+
+# AI quality review for implementation PRs
+# Triggered by impl-generate.yml after PR creation
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to review'
+        required: true
+        type: string
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract PR info
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          PR_DATA=$(gh pr view "$PR_NUMBER" --json headRefName,headRefOid,body)
+          HEAD_REF=$(echo "$PR_DATA" | jq -r '.headRefName')
+          HEAD_SHA=$(echo "$PR_DATA" | jq -r '.headRefOid')
+          BODY=$(echo "$PR_DATA" | jq -r '.body')
+
+          # Extract spec-id and library from branch: implementation/{spec-id}/{library}
+          SPEC_ID=$(echo "$HEAD_REF" | cut -d'/' -f2)
+          LIBRARY=$(echo "$HEAD_REF" | cut -d'/' -f3)
+
+          # Extract issue number from PR body
+          ISSUE_NUMBER=$(echo "$BODY" | grep -oP '\*\*Parent Issue:\*\* #\K\d+' | head -1 || echo "")
+
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "specification_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "library=$LIBRARY" >> $GITHUB_OUTPUT
+          echo "head_sha=$HEAD_SHA" >> $GITHUB_OUTPUT
+          echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+
+          echo "::notice::Reviewing PR #$PR_NUMBER for $LIBRARY implementation of $SPEC_ID"
+
+      - name: Checkout PR code
+        run: |
+          git fetch origin ${{ steps.pr.outputs.head_sha }}
+          git checkout ${{ steps.pr.outputs.head_sha }}
+
+      - name: Check attempt count
+        id: attempts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
+        run: |
+          LABELS=$(gh pr view "$PR_NUMBER" --json labels -q '.labels[].name' 2>/dev/null || echo "")
+
+          if echo "$LABELS" | grep -q "ai-attempt-3"; then
+            echo "count=3" >> $GITHUB_OUTPUT
+            echo "display=3" >> $GITHUB_OUTPUT
+          elif echo "$LABELS" | grep -q "ai-attempt-2"; then
+            echo "count=2" >> $GITHUB_OUTPUT
+            echo "display=3" >> $GITHUB_OUTPUT
+          elif echo "$LABELS" | grep -q "ai-attempt-1"; then
+            echo "count=1" >> $GITHUB_OUTPUT
+            echo "display=2" >> $GITHUB_OUTPUT
+          else
+            echo "count=0" >> $GITHUB_OUTPUT
+            echo "display=1" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup GCS authentication
+        id: gcs
+        continue-on-error: true
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCS_CREDENTIALS }}
+
+      - name: Setup gcloud CLI
+        if: steps.gcs.outcome == 'success'
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Download plot images from staging
+        if: steps.gcs.outcome == 'success'
+        env:
+          SPEC_ID: ${{ steps.pr.outputs.specification_id }}
+          LIBRARY: ${{ steps.pr.outputs.library }}
+        run: |
+          mkdir -p plot_images
+          gsutil -m cp "gs://pyplots-images/staging/${SPEC_ID}/${LIBRARY}/*" plot_images/ 2>/dev/null || echo "No images found"
+          ls -la plot_images/ 2>/dev/null || echo "Empty"
+
+      - name: React with eyes emoji
+        if: steps.attempts.outputs.count != '3'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
+        run: |
+          gh api "repos/${{ github.repository }}/issues/$PR_NUMBER/reactions" -f content=eyes
+
+      - name: Run AI Quality Review
+        id: review
+        if: steps.attempts.outputs.count != '3'
+        continue-on-error: true
+        timeout-minutes: 30
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--model opus"
+          prompt: |
+            ## Task: AI Quality Review for **${{ steps.pr.outputs.library }}** (Attempt ${{ steps.attempts.outputs.display }}/3)
+
+            Review the implementation and evaluate if it meets quality standards.
+
+            ### Your Task
+
+            1. **Read the specification**: `plots/${{ steps.pr.outputs.specification_id }}/specification.md`
+
+            2. **Read the implementation**:
+               `plots/${{ steps.pr.outputs.specification_id }}/implementations/${{ steps.pr.outputs.library }}.py`
+
+            3. **Read library rules**: `prompts/library/${{ steps.pr.outputs.library }}.md`
+
+            4. **View plot images** in `plot_images/` directory
+               - Use vision to analyze each image
+               - Compare with spec requirements
+
+            5. **Evaluate against quality criteria** from `prompts/quality-criteria.md`
+
+            6. **Post verdict as PR comment** on PR #${{ steps.pr.outputs.pr_number }}:
+
+            ```markdown
+            ## AI Review - Attempt ${{ steps.attempts.outputs.display }}/3
+
+            ### Quality Score: XX/100
+
+            ### Criteria Checklist
+            - [x] VQ-001: Axes labeled correctly
+            - [x] VQ-002: Grid is subtle
+            - [ ] VQ-003: Elements clear
+            ...
+
+            ### Issues Found
+            1. **Issue**: Description
+            2. **Issue**: Description
+
+            ### AI Feedback
+            > Specific suggestions for improvement
+
+            ### Verdict: APPROVED / REJECTED
+            ```
+
+            7. **Save score to file**:
+               ```bash
+               echo "XX" > quality_score.txt
+               ```
+
+            8. **Add label based on result**:
+               - If score >= 85: `gh pr edit ${{ steps.pr.outputs.pr_number }} --add-label ai-approved`
+               - If score < 85: `gh pr edit ${{ steps.pr.outputs.pr_number }} --add-label ai-rejected`
+
+      - name: Extract quality score
+        id: score
+        if: steps.attempts.outputs.count != '3' && steps.review.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUM: ${{ steps.pr.outputs.pr_number }}
+        run: |
+          if [ -f "quality_score.txt" ]; then
+            SCORE=$(cat quality_score.txt | tr -d '[:space:]')
+          else
+            SCORE=$(gh pr view "$PR_NUM" --json comments -q '.comments[-1].body' | grep -oP 'Score: \K\d+' | head -1 || echo "0")
+          fi
+          echo "score=$SCORE" >> $GITHUB_OUTPUT
+
+      - name: Add quality score label
+        if: steps.attempts.outputs.count != '3' && steps.review.outcome == 'success' && steps.score.outputs.score != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUM: ${{ steps.pr.outputs.pr_number }}
+          SCORE: ${{ steps.score.outputs.score }}
+        run: |
+          LABEL="quality:${SCORE}"
+          gh label create "$LABEL" --color "0e8a16" --description "Quality score ${SCORE}/100" 2>/dev/null || true
+          gh pr edit "$PR_NUM" --add-label "$LABEL"
+
+      - name: Handle review failure
+        if: steps.attempts.outputs.count != '3' && steps.review.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUM: ${{ steps.pr.outputs.pr_number }}
+        run: |
+          gh pr edit "$PR_NUM" --add-label "ai-review-failed"
+          gh pr comment "$PR_NUM" --body "## :warning: AI Review Failed
+
+          The AI review action failed or timed out.
+
+          **Options:**
+          1. Re-run the workflow manually
+          2. Request manual human review
+
+          ---
+          :robot: *[impl-review](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+      - name: Take action based on verdict
+        if: steps.attempts.outputs.count != '3' && steps.review.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUM: ${{ steps.pr.outputs.pr_number }}
+          SPEC_ID: ${{ steps.pr.outputs.specification_id }}
+          LIBRARY: ${{ steps.pr.outputs.library }}
+          ATTEMPT: ${{ steps.attempts.outputs.display }}
+        run: |
+          HAS_APPROVED=$(gh pr view "$PR_NUM" --json labels -q '[.labels[].name] | any(. == "ai-approved")' || echo "false")
+          HAS_REJECTED=$(gh pr view "$PR_NUM" --json labels -q '[.labels[].name] | any(. == "ai-rejected")' || echo "false")
+
+          if [[ "$HAS_APPROVED" == "true" ]]; then
+            echo "Triggering impl-merge.yml for approved PR"
+            gh workflow run impl-merge.yml -f pr_number="$PR_NUM"
+
+          elif [[ "$HAS_REJECTED" == "true" ]]; then
+            echo "Triggering impl-repair.yml for rejected PR"
+            gh pr edit "$PR_NUM" --add-label "ai-attempt-${ATTEMPT}" 2>/dev/null || true
+            gh workflow run impl-repair.yml \
+              -f pr_number="$PR_NUM" \
+              -f specification_id="$SPEC_ID" \
+              -f library="$LIBRARY" \
+              -f attempt="$ATTEMPT"
+          fi
+
+      - name: Mark as not-feasible after 3 attempts
+        if: steps.attempts.outputs.count == '3'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUM: ${{ steps.pr.outputs.pr_number }}
+          LIBRARY: ${{ steps.pr.outputs.library }}
+          SPEC_ID: ${{ steps.pr.outputs.specification_id }}
+          ISSUE_NUMBER: ${{ steps.pr.outputs.issue_number }}
+        run: |
+          gh pr edit "$PR_NUM" --add-label "not-feasible"
+
+          gh pr comment "$PR_NUM" --body "## AI Review - Final Status
+
+          ### Status: Not Feasible
+
+          AI Review failed after **3 attempts**. This ${LIBRARY} implementation could not meet quality standards.
+
+          **Options:**
+          1. Manual review and fix
+          2. Mark this library as unsupported for this plot type
+
+          ---
+          :robot: *[impl-review](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+          if [ -n "$ISSUE_NUMBER" ]; then
+            gh issue edit "$ISSUE_NUMBER" --add-label "impl:${LIBRARY}:failed" 2>/dev/null || true
+            gh issue comment "$ISSUE_NUMBER" --body "**${LIBRARY}** implementation failed after 3 AI review attempts. See PR #${PR_NUM}."
+          fi

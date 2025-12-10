@@ -1,0 +1,24 @@
+specification_id: scatter-color-groups
+title: Scatter Plot with Color Groups
+created: null
+issue: null
+suggested: pyplots
+updates: []
+tags:
+  plot_type:
+  - scatter
+  - point
+  domain:
+  - statistics
+  - general
+  features:
+  - grouped
+  - color-coded
+  - categorical
+  - legend
+  audience:
+  - beginner
+  - intermediate
+  data_type:
+  - numeric
+  - categorical

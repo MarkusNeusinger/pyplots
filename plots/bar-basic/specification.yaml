@@ -1,0 +1,23 @@
+specification_id: bar-basic
+title: Basic Bar Chart
+created: null
+issue: null
+suggested: pyplots
+updates: []
+tags:
+  plot_type:
+  - bar
+  - column
+  domain:
+  - statistics
+  - general
+  - business
+  features:
+  - basic
+  - categorical
+  - comparison
+  audience:
+  - beginner
+  data_type:
+  - categorical
+  - numeric

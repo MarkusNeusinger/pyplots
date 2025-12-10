@@ -1,0 +1,25 @@
+specification_id: box-basic
+title: Basic Box Plot
+created: null
+issue: null
+suggested: pyplots
+updates: []
+tags:
+  plot_type:
+  - box
+  - boxplot
+  - whisker
+  domain:
+  - statistics
+  - general
+  features:
+  - basic
+  - distribution
+  - quartiles
+  - outliers
+  audience:
+  - beginner
+  - intermediate
+  data_type:
+  - numeric
+  - categorical

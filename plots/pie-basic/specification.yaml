@@ -1,0 +1,24 @@
+specification_id: pie-basic
+title: Basic Pie Chart
+created: null
+issue: null
+suggested: pyplots
+updates: []
+tags:
+  plot_type:
+  - pie
+  - donut
+  - proportion
+  domain:
+  - statistics
+  - general
+  - business
+  features:
+  - basic
+  - proportional
+  - percentage
+  audience:
+  - beginner
+  data_type:
+  - categorical
+  - numeric

@@ -1,0 +1,24 @@
+# Specification-level metadata for {specification-id}
+# Auto-synced to PostgreSQL on push to main
+
+specification_id: {specification-id}
+title: {Title}
+
+# Specification tracking
+created: null          # ISO 8601 timestamp, set by workflow
+issue: null            # GitHub issue number
+suggested: null        # GitHub username or 'pyplots' for seed plots
+updates: []            # List of spec updates [{date, issue, changes}]
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - {type}           # scatter, bar, line, pie, histogram, box, area, etc.
+  domain:
+    - general          # statistics, science, business, finance, etc.
+  features:
+    - basic            # basic, grouped, stacked, animated, interactive, etc.
+  audience:
+    - beginner         # beginner, intermediate, advanced
+  data_type:
+    - numeric          # numeric, categorical, datetime, continuous

@@ -134,3 +134,19 @@ chart.options.chart = {
 3. **Missing modules**: BoxPlot needs `highcharts-more.js` in addition to `highcharts.js`
 4. **Screenshot timing**: Use `time.sleep(5)` for reliable rendering
 5. **Encoding errors**: Always use `encoding="utf-8"` in NamedTemporaryFile (Highcharts JS contains special Unicode characters)
+6. **X-axis labels cut off in PNG**: Category labels may be clipped at the bottom. Fix by:
+   - Increase bottom margin: `chart.options.chart = {'marginBottom': 150, ...}`
+   - Or add spacingBottom: `chart.options.chart = {'spacingBottom': 80, ...}`
+   - Ensure labels have `style: {'fontSize': '24px'}` for visibility at 4800x2700
+
+## Colorblind-Safe Colors
+
+Always use colorblind-safe palettes. **Avoid red-green combinations.**
+
+```python
+# Good: Colorblind-safe palette
+colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF", "#8C564B"]
+
+# Bad: Red-green conflict (hard for deuteranopia/protanopia)
+colors = ["#DC2626", "#059669", ...]  # AVOID
+```

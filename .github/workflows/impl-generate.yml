@@ -1,0 +1,389 @@
+name: "Impl: Generate"
+run-name: "Generate: ${{ inputs.library || github.event.label.name }} for ${{ inputs.specification_id || 'issue' }}"
+
+# Generates single library implementation
+# Triggers:
+# - generate:{library} label on spec-ready issue
+# - workflow_dispatch with specification_id + library
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      specification_id:
+        description: "Specification ID (e.g., scatter-basic)"
+        required: true
+        type: string
+      library:
+        description: "Library to generate"
+        required: true
+        type: choice
+        options:
+          - matplotlib
+          - seaborn
+          - plotly
+          - bokeh
+          - altair
+          - plotnine
+          - pygal
+          - highcharts
+          - letsplot
+      issue_number:
+        description: "Issue number (optional, for tracking)"
+        required: false
+        type: string
+
+# Global concurrency: max 3 concurrent implementation workflows
+concurrency:
+  group: impl-generate-${{ inputs.specification_id || github.event.issue.number }}-${{ inputs.library || github.event.label.name }}
+  cancel-in-progress: false
+
+env:
+  # Library dependencies mapping
+  DEPS_matplotlib: "matplotlib>=3.9.0 numpy>=1.26.0"
+  DEPS_seaborn: "seaborn>=0.13.0 matplotlib>=3.9.0 numpy>=1.26.0"
+  DEPS_plotly: "plotly>=5.18.0 kaleido>=0.2.1 numpy>=1.26.0"
+  DEPS_bokeh: "bokeh>=3.4.0 numpy>=1.26.0 selenium>=4.15.0 webdriver-manager>=4.0.0"
+  DEPS_altair: "altair>=5.2.0 vl-convert-python>=1.3.0 numpy>=1.26.0"
+  DEPS_plotnine: "plotnine>=0.13.0 numpy>=1.26.0"
+  DEPS_pygal: "pygal>=3.0.0 cairosvg>=2.7.0"
+  DEPS_highcharts: "highcharts-core>=1.10.0 numpy>=1.26.0 selenium>=4.15.0 webdriver-manager>=4.0.0"
+  DEPS_letsplot: "lets-plot>=4.5.0"
+
+jobs:
+  generate:
+    # Run on label trigger OR workflow_dispatch
+    if: >
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'issues' && startsWith(github.event.label.name, 'generate:'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      actions: write
+      id-token: write
+
+    outputs:
+      success: ${{ steps.result.outputs.success }}
+      pr_number: ${{ steps.pr.outputs.pr_number }}
+
+    steps:
+      # ========================================================================
+      # Setup: Extract inputs and validate
+      # ========================================================================
+      - name: Extract inputs
+        id: inputs
+        env:
+          LABEL_NAME: ${{ github.event.label.name }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            # From workflow_dispatch
+            SPEC_ID="${{ inputs.specification_id }}"
+            LIBRARY="${{ inputs.library }}"
+            ISSUE="${{ inputs.issue_number }}"
+          else
+            # From label trigger: generate:{library}
+            LIBRARY=$(echo "$LABEL_NAME" | sed 's/^generate://')
+            # Extract spec ID from issue title: [spec-id] ...
+            SPEC_ID=$(echo "$ISSUE_TITLE" | sed -n 's/^\[\([a-z0-9-]*\)\].*/\1/p')
+            ISSUE="${{ github.event.issue.number }}"
+          fi
+
+          if [ -z "$SPEC_ID" ]; then
+            echo "::error::Could not determine specification ID"
+            exit 1
+          fi
+
+          if [ -z "$LIBRARY" ]; then
+            echo "::error::Could not determine library"
+            exit 1
+          fi
+
+          # Get library dependencies
+          DEPS_VAR="DEPS_${LIBRARY}"
+          DEPS="${!DEPS_VAR}"
+
+          echo "specification_id=$SPEC_ID" >> $GITHUB_OUTPUT
+          echo "library=$LIBRARY" >> $GITHUB_OUTPUT
+          echo "issue_number=$ISSUE" >> $GITHUB_OUTPUT
+          echo "deps=$DEPS" >> $GITHUB_OUTPUT
+
+          echo "::notice::Generating $LIBRARY for $SPEC_ID"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate specification exists
+        env:
+          SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
+        run: |
+          if [ ! -f "plots/${SPEC_ID}/specification.md" ]; then
+            echo "::error::Specification not found: plots/${SPEC_ID}/specification.md"
+            exit 1
+          fi
+
+      - name: Add pending label
+        if: steps.inputs.outputs.issue_number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LIBRARY: ${{ steps.inputs.outputs.library }}
+          ISSUE: ${{ steps.inputs.outputs.issue_number }}
+        run: |
+          gh issue edit "$ISSUE" --add-label "impl:${LIBRARY}:pending" 2>/dev/null || true
+
+      # ========================================================================
+      # Setup: Python and dependencies
+      # ========================================================================
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install dependencies
+        env:
+          DEPS: ${{ steps.inputs.outputs.deps }}
+        run: |
+          uv venv .venv
+          source .venv/bin/activate
+          uv pip install $DEPS pandas>=2.2.0 ruff
+
+      - name: Setup Chrome for Highcharts
+        if: steps.inputs.outputs.library == 'highcharts'
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      # ========================================================================
+      # Generate: Create implementation branch and code
+      # ========================================================================
+      - name: Create implementation branch
+        id: branch
+        env:
+          SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
+          LIBRARY: ${{ steps.inputs.outputs.library }}
+        run: |
+          BRANCH="implementation/${SPEC_ID}/${LIBRARY}"
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+
+          # Delete branch if exists (regeneration)
+          git push origin --delete "$BRANCH" 2>/dev/null || true
+
+          # Create fresh branch from main
+          git checkout -b "$BRANCH" origin/main
+          echo "::notice::Created branch: $BRANCH"
+
+      - name: Run Claude Code to generate implementation
+        id: claude
+        timeout-minutes: 60
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--model opus"
+          prompt: |
+            ## Task: Generate ${{ steps.inputs.outputs.library }} Implementation
+
+            You are generating the **${{ steps.inputs.outputs.library }}** implementation for **${{ steps.inputs.outputs.specification_id }}**.
+
+            ### Step 1: Read required files
+            1. `prompts/plot-generator.md` - Base generation rules
+            2. `prompts/default-style-guide.md` - Visual style requirements
+            3. `prompts/quality-criteria.md` - Quality requirements
+            4. `prompts/library/${{ steps.inputs.outputs.library }}.md` - Library-specific rules
+            5. `plots/${{ steps.inputs.outputs.specification_id }}/specification.md` - The specification
+
+            ### Step 2: Generate implementation
+            Create: `plots/${{ steps.inputs.outputs.specification_id }}/implementations/${{ steps.inputs.outputs.library }}.py`
+
+            The script MUST:
+            - Save as `plot.png` in the current directory
+            - For interactive libraries (plotly, bokeh, altair, highcharts, pygal, letsplot): also save `plot.html`
+
+            ### Step 3: Test and fix (up to 3 attempts)
+            Run the implementation:
+            ```bash
+            source .venv/bin/activate
+            cd plots/${{ steps.inputs.outputs.specification_id }}/implementations
+            MPLBACKEND=Agg python ${{ steps.inputs.outputs.library }}.py
+            ```
+
+            If it fails, fix and try again (max 3 attempts).
+
+            ### Step 4: Visual self-check
+            Look at the generated `plot.png`:
+            - Does it match the specification?
+            - Are axes labeled correctly?
+            - Is the visualization clear?
+
+            ### Step 5: Format the code
+            ```bash
+            source .venv/bin/activate
+            ruff format plots/${{ steps.inputs.outputs.specification_id }}/implementations/${{ steps.inputs.outputs.library }}.py
+            ruff check --fix plots/${{ steps.inputs.outputs.specification_id }}/implementations/${{ steps.inputs.outputs.library }}.py
+            ```
+
+            ### Step 6: Commit
+            ```bash
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add plots/${{ steps.inputs.outputs.specification_id }}/implementations/${{ steps.inputs.outputs.library }}.py
+            git commit -m "feat(${{ steps.inputs.outputs.library }}): implement ${{ steps.inputs.outputs.specification_id }}"
+            git push -u origin implementation/${{ steps.inputs.outputs.specification_id }}/${{ steps.inputs.outputs.library }}
+            ```
+
+            ### Report result
+            Print exactly one line:
+            - `GENERATION_SUCCESS` - if everything worked
+            - `GENERATION_FAILED: <reason>` - if it failed
+
+      # ========================================================================
+      # Create PR
+      # ========================================================================
+      - name: Create Pull Request
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
+          LIBRARY: ${{ steps.inputs.outputs.library }}
+          ISSUE: ${{ steps.inputs.outputs.issue_number }}
+          BRANCH: ${{ steps.branch.outputs.branch }}
+        run: |
+          # Check if PR already exists
+          EXISTING_PR=$(gh pr list --head "$BRANCH" --base main --json number -q '.[0].number' 2>/dev/null || echo "")
+
+          if [ -n "$EXISTING_PR" ]; then
+            echo "pr_number=$EXISTING_PR" >> $GITHUB_OUTPUT
+            echo "pr_exists=true" >> $GITHUB_OUTPUT
+            echo "::notice::Using existing PR #$EXISTING_PR"
+            exit 0
+          fi
+
+          # Create PR body
+          BODY="## Implementation: \`${SPEC_ID}\` - ${LIBRARY}
+
+          Implements the **${LIBRARY}** version of \`${SPEC_ID}\`.
+
+          **File:** \`plots/${SPEC_ID}/implementations/${LIBRARY}.py\`"
+
+          if [ -n "$ISSUE" ]; then
+            BODY="${BODY}
+
+          **Parent Issue:** #${ISSUE}"
+          fi
+
+          BODY="${BODY}
+
+          ---
+          :robot: *[impl-generate workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+          # Create PR
+          PR_URL=$(gh pr create --base main --head "$BRANCH" \
+            --title "feat(${LIBRARY}): implement ${SPEC_ID}" \
+            --body "$BODY")
+
+          PR_NUMBER=$(echo "$PR_URL" | grep -oE '[0-9]+$')
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "pr_exists=true" >> $GITHUB_OUTPUT
+          echo "::notice::Created PR #$PR_NUMBER"
+
+      # ========================================================================
+      # Upload to GCS Staging
+      # ========================================================================
+      - name: Upload to GCS Staging
+        id: gcs
+        if: steps.pr.outputs.pr_exists == 'true'
+        env:
+          GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
+          SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
+          LIBRARY: ${{ steps.inputs.outputs.library }}
+        run: |
+          IMPL_DIR="plots/${SPEC_ID}/implementations"
+          STAGING_PATH="gs://pyplots-images/staging/${SPEC_ID}/${LIBRARY}"
+          PUBLIC_URL="https://storage.googleapis.com/pyplots-images/staging/${SPEC_ID}/${LIBRARY}"
+
+          if [ -z "$GCS_CREDENTIALS" ]; then
+            echo "::warning::GCS_CREDENTIALS not configured - skipping upload"
+            echo "uploaded=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Authenticate
+          echo "$GCS_CREDENTIALS" > /tmp/gcs-key.json
+          gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
+
+          # Upload PNG
+          if [ -f "$IMPL_DIR/plot.png" ]; then
+            gsutil cp "$IMPL_DIR/plot.png" "${STAGING_PATH}/plot.png"
+            gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot.png" 2>/dev/null || true
+            echo "png_url=${PUBLIC_URL}/plot.png" >> $GITHUB_OUTPUT
+            echo "uploaded=true" >> $GITHUB_OUTPUT
+          else
+            echo "::warning::No plot.png found"
+            echo "uploaded=false" >> $GITHUB_OUTPUT
+          fi
+
+          # Upload HTML (interactive libraries)
+          if [ -f "$IMPL_DIR/plot.html" ]; then
+            gsutil cp "$IMPL_DIR/plot.html" "${STAGING_PATH}/plot.html"
+            gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot.html" 2>/dev/null || true
+            echo "html_url=${PUBLIC_URL}/plot.html" >> $GITHUB_OUTPUT
+          fi
+
+          rm -f /tmp/gcs-key.json
+
+      # ========================================================================
+      # Post preview and trigger review
+      # ========================================================================
+      - name: Post preview to issue
+        if: steps.inputs.outputs.issue_number != '' && steps.gcs.outputs.uploaded == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
+          LIBRARY: ${{ steps.inputs.outputs.library }}
+          ISSUE: ${{ steps.inputs.outputs.issue_number }}
+          PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
+          PNG_URL: ${{ steps.gcs.outputs.png_url }}
+          HTML_URL: ${{ steps.gcs.outputs.html_url }}
+        run: |
+          BODY="## :art: ${LIBRARY} Preview
+
+          ![${LIBRARY} plot](${PNG_URL})
+
+          **PR:** #${PR_NUMBER}"
+
+          if [ -n "$HTML_URL" ]; then
+            BODY="${BODY}
+          **Interactive:** [Open HTML](${HTML_URL})"
+          fi
+
+          BODY="${BODY}
+
+          ---
+          :robot: *[impl-generate](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+          gh issue comment "$ISSUE" --body "$BODY"
+
+      - name: Trigger review workflow
+        if: steps.pr.outputs.pr_exists == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
+        run: |
+          gh workflow run impl-review.yml -f pr_number="$PR_NUMBER"
+          echo "::notice::Triggered impl-review.yml for PR #$PR_NUMBER"
+
+      - name: Determine result
+        id: result
+        run: |
+          if [ "${{ steps.pr.outputs.pr_exists }}" == "true" ]; then
+            echo "success=true" >> $GITHUB_OUTPUT
+          else
+            echo "success=false" >> $GITHUB_OUTPUT
+          fi

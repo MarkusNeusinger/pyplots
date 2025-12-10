@@ -1,0 +1,22 @@
+specification_id: histogram-basic
+title: Basic Histogram
+created: null
+issue: null
+suggested: pyplots
+updates: []
+tags:
+  plot_type:
+  - histogram
+  - distribution
+  domain:
+  - statistics
+  - general
+  features:
+  - basic
+  - distribution
+  - frequency
+  audience:
+  - beginner
+  data_type:
+  - numeric
+  - continuous

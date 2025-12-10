@@ -1,0 +1,181 @@
+name: "Bulk: Generate"
+run-name: "Bulk: ${{ inputs.library }} for ${{ inputs.specification_id }}"
+
+# Dispatches multiple implementation workflows
+# Use for bulk operations like "update all matplotlib" or "generate all for spec"
+
+on:
+  workflow_dispatch:
+    inputs:
+      specification_id:
+        description: "Specification ID (or 'all' for all specs)"
+        required: true
+        type: string
+        default: 'all'
+      library:
+        description: "Library to generate (or 'all' for all libraries)"
+        required: true
+        type: choice
+        default: 'all'
+        options:
+          - all
+          - matplotlib
+          - seaborn
+          - plotly
+          - bokeh
+          - altair
+          - plotnine
+          - pygal
+          - highcharts
+          - letsplot
+      dry_run:
+        description: "List what would be generated without executing"
+        type: boolean
+        default: false
+
+env:
+  ALL_LIBRARIES: "matplotlib seaborn plotly bokeh altair plotnine pygal highcharts letsplot"
+
+jobs:
+  # ============================================================================
+  # Build matrix of (spec, library) pairs to generate
+  # ============================================================================
+  build-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.build.outputs.matrix }}
+      count: ${{ steps.build.outputs.count }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build generation matrix
+        id: build
+        env:
+          SPEC_INPUT: ${{ inputs.specification_id }}
+          LIBRARY_INPUT: ${{ inputs.library }}
+        run: |
+          # Get list of specifications
+          if [ "$SPEC_INPUT" == "all" ]; then
+            SPECS=$(ls -d plots/*/ 2>/dev/null | xargs -I{} basename {} | tr '\n' ' ')
+          else
+            SPECS="$SPEC_INPUT"
+          fi
+
+          # Get list of libraries
+          if [ "$LIBRARY_INPUT" == "all" ]; then
+            LIBRARIES="$ALL_LIBRARIES"
+          else
+            LIBRARIES="$LIBRARY_INPUT"
+          fi
+
+          # Build matrix JSON
+          MATRIX='{"include":['
+          FIRST=true
+          COUNT=0
+
+          for SPEC in $SPECS; do
+            # Skip if specification.md doesn't exist
+            if [ ! -f "plots/${SPEC}/specification.md" ]; then
+              echo "::warning::Skipping ${SPEC} - no specification.md found"
+              continue
+            fi
+
+            for LIB in $LIBRARIES; do
+              if [ "$FIRST" = true ]; then
+                FIRST=false
+              else
+                MATRIX="${MATRIX},"
+              fi
+              MATRIX="${MATRIX}{\"specification_id\":\"${SPEC}\",\"library\":\"${LIB}\"}"
+              COUNT=$((COUNT + 1))
+            done
+          done
+
+          MATRIX="${MATRIX}]}"
+
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+
+          echo "Generated matrix with $COUNT items:"
+          echo "$MATRIX" | jq .
+
+  # ============================================================================
+  # Display what will be generated (for review)
+  # ============================================================================
+  preview:
+    needs: build-matrix
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Preview generation plan
+        env:
+          MATRIX: ${{ needs.build-matrix.outputs.matrix }}
+          COUNT: ${{ needs.build-matrix.outputs.count }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          echo "## Bulk Generation Plan"
+          echo ""
+          echo "**Total items:** $COUNT"
+          echo "**Concurrency:** max 3 parallel"
+          echo "**Dry run:** $DRY_RUN"
+          echo ""
+          echo "### Items to generate:"
+          echo "$MATRIX" | jq -r '.include[] | "- \(.specification_id) / \(.library)"'
+
+  # ============================================================================
+  # Generate implementations (max 3 parallel)
+  # ============================================================================
+  generate:
+    needs: [build-matrix, preview]
+    if: inputs.dry_run == false && needs.build-matrix.outputs.count != '0'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    strategy:
+      matrix: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+      max-parallel: 3
+      fail-fast: false
+
+    steps:
+      - name: Trigger impl-generate for ${{ matrix.specification_id }} / ${{ matrix.library }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Triggering impl-generate.yml for ${{ matrix.specification_id }} / ${{ matrix.library }}"
+          gh workflow run impl-generate.yml \
+            --repo ${{ github.repository }} \
+            -f specification_id="${{ matrix.specification_id }}" \
+            -f library="${{ matrix.library }}"
+
+          echo "::notice::Dispatched impl-generate for ${{ matrix.specification_id }} / ${{ matrix.library }}"
+
+  # ============================================================================
+  # Summary
+  # ============================================================================
+  summary:
+    needs: [build-matrix, generate]
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Post summary
+        env:
+          COUNT: ${{ needs.build-matrix.outputs.count }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          GENERATE_RESULT: ${{ needs.generate.result }}
+        run: |
+          echo "## Bulk Generation Complete"
+          echo ""
+          echo "**Total dispatched:** $COUNT"
+
+          if [ "$DRY_RUN" == "true" ]; then
+            echo "**Mode:** Dry run (no workflows triggered)"
+          else
+            echo "**Mode:** Live execution"
+            echo "**Generate job result:** $GENERATE_RESULT"
+          fi
+
+          echo ""
+          echo "Check the Actions tab for individual impl-generate workflow runs."

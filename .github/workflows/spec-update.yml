@@ -252,7 +252,7 @@ jobs:
           fi
 
           # Merge the PR
-          gh pr merge "$PR_NUMBER" --squash --delete-branch --admin
+          gh pr merge "$PR_NUMBER" --squash --delete-branch
 
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
           echo "::notice::Merged update PR #$PR_NUMBER"

@@ -120,7 +120,7 @@ jobs:
             --repo ${{ github.repository }} \
             --squash \
             --delete-branch \
-            --admin
+           
 
       - name: Checkout main for metadata update
         if: steps.check.outputs.should_run == 'true'

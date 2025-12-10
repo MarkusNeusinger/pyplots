@@ -62,13 +62,15 @@ implementations:
       quality_score: null
     history: []
   bokeh:
-    preview_url: null
+    preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-basic/bokeh/plot.png
     current:
       version: null
       date: null
-      issue: null
-      generated_by: null
-      quality_score: null
+      issue: 571
+      generated_by: claude-opus-4-5-20251101
+      quality_score: 92
+      generated_at: "2025-12-10T07:17:08Z"
+      workflow_run: 20090537956
     history: []
   altair:
     preview_url: null

@@ -289,9 +289,10 @@ jobs:
           history: []
           EOF
 
-          # Commit metadata to branch
+          # Commit metadata to branch (pull first since Claude already pushed)
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull origin ${{ steps.branch.outputs.branch }} --rebase
           git add "$METADATA_FILE"
           git commit -m "chore(${LIBRARY}): add metadata for ${SPEC_ID}"
           git push origin ${{ steps.branch.outputs.branch }}

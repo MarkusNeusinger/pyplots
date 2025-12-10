@@ -23,3 +23,5 @@ A violin plot combines a box plot with a kernel density estimation, displaying t
 - Kernel bandwidth affects smoothness - use library defaults for consistency
 - Include inner quartile markers or mini box plot for reference statistics
 - Ensure sufficient data points per group for meaningful density estimation
+- Horizontal orientation is useful when category names are long, improving readability
+- Both vertical (default) and horizontal orientations are valid implementations

@@ -8,7 +8,10 @@ title: Basic Violin Plot
 created: 2025-12-10T20:57:23Z
 issue: 581
 suggested: MarkusNeusinger
-updates: []
+updates:
+  - date: 2025-12-10T21:00:00Z
+    issue: 585
+    changes: "Added notes about horizontal orientation option for long category names"
 
 # Classification tags (applies to all library implementations)
 tags:

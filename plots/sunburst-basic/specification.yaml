@@ -1,0 +1,32 @@
+# Specification-level metadata for sunburst-basic
+# Auto-synced to PostgreSQL on push to main
+
+specification_id: sunburst-basic
+title: Sunburst Chart
+
+# Specification tracking
+created: 2025-12-10T20:57:21Z
+issue: 582
+suggested: MarkusNeusinger
+updates: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - sunburst
+    - hierarchical
+    - radial
+  domain:
+    - business
+    - general
+    - statistics
+  features:
+    - basic
+    - part-to-whole
+    - nested
+  audience:
+    - intermediate
+  data_type:
+    - categorical
+    - numeric
+    - hierarchical

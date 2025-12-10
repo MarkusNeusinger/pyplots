@@ -97,8 +97,8 @@ jobs:
                - `plots/${{ steps.extract.outputs.specification_id }}/specification.md`
                - `plots/${{ steps.extract.outputs.specification_id }}/specification.yaml`
 
-            2. **Analyze the update request and write analysis:**
-               Create a file `.github/update-analysis.md` with a SHORT analysis (max 3-4 sentences):
+            2. **Post analysis comment:**
+               Post a SHORT comment (max 3-4 sentences) to the issue using `gh issue comment`:
                - Is this a valid/useful change?
                - What will be modified?
                - Any concerns?
@@ -133,7 +133,6 @@ jobs:
             - Do NOT create a PR (the workflow does that)
             - Do NOT add labels
             - STOP after pushing the branch
-            - Make sure `.github/update-analysis.md` exists before finishing
 
       - name: Create Pull Request
         id: pr
@@ -176,14 +175,6 @@ jobs:
           SPEC_ID: ${{ steps.extract.outputs.specification_id }}
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
         run: |
-          # Read analysis if it exists
-          if [[ -f ".github/update-analysis.md" ]]; then
-            ANALYSIS=$(cat ".github/update-analysis.md")
-          else
-            ANALYSIS="*Analysis not available*"
-          fi
-
-          # Read updated spec
           SPEC_CONTENT=$(cat "plots/${SPEC_ID}/specification.md")
 
           gh issue comment ${{ github.event.issue.number }} --body "$(cat <<EOF
@@ -191,12 +182,6 @@ jobs:
 
           **Specification:** \`${SPEC_ID}\`
           **PR:** #${PR_NUMBER}
-
-          ---
-
-          ### Analysis
-
-          ${ANALYSIS}
 
           ---
 

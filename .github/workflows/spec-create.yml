@@ -107,8 +107,8 @@ jobs:
                git checkout -b "specification/{specification-id}"
                ```
 
-            5. **Analyze the request and write analysis:**
-               Create a file `.github/spec-analysis.md` with a SHORT analysis (max 3-4 sentences):
+            5. **Post analysis comment:**
+               Post a SHORT comment (max 3-4 sentences) to the issue using `gh issue comment`:
                - Is this a valid/useful plot type?
                - Does it already exist? (check `ls plots/`)
                - Any concerns?
@@ -158,7 +158,6 @@ jobs:
             - Do NOT add labels
             - Do NOT close the issue
             - STOP after pushing the branch
-            - Make sure `.github/spec-analysis.md` exists before finishing
 
       - name: Extract outputs
         if: steps.check.outputs.should_run == 'true'
@@ -223,27 +222,12 @@ jobs:
           SPEC_ID: ${{ steps.extract.outputs.specification_id }}
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
         run: |
-          # Read analysis if it exists
-          if [[ -f ".github/spec-analysis.md" ]]; then
-            ANALYSIS=$(cat ".github/spec-analysis.md")
-          else
-            ANALYSIS="*Analysis not available*"
-          fi
-
-          # Read spec content
           SPEC_CONTENT=$(cat "plots/${SPEC_ID}/specification.md")
 
           gh issue comment ${{ github.event.issue.number }} --body "$(cat <<EOF
           ## :white_check_mark: Specification Ready: \`${SPEC_ID}\`
 
           **PR:** #${PR_NUMBER}
-          **Branch:** \`specification/${SPEC_ID}\`
-
-          ---
-
-          ### Analysis
-
-          ${ANALYSIS}
 
           ---
 

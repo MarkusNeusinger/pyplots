@@ -49,10 +49,11 @@ jobs:
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
           echo "specification_id=$SPEC_ID" >> $GITHUB_OUTPUT
           echo "library=$LIBRARY" >> $GITHUB_OUTPUT
+          echo "branch=$HEAD_REF" >> $GITHUB_OUTPUT
           echo "head_sha=$HEAD_SHA" >> $GITHUB_OUTPUT
           echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
 
-          echo "::notice::Reviewing PR #$PR_NUMBER for $LIBRARY implementation of $SPEC_ID"
+          echo "::notice::Reviewing PR #$PR_NUMBER for $LIBRARY implementation of $SPEC_ID (branch: $HEAD_REF)"
 
       - name: Checkout PR code
         run: |

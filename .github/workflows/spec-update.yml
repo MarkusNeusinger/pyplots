@@ -169,16 +169,6 @@ jobs:
           PR_NUMBER=$(echo "$PR_URL" | grep -oE '[0-9]+$')
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
 
-      - name: Trigger CI checks
-        env:
-          SPEC_ID: ${{ steps.extract.outputs.specification_id }}
-        run: |
-          # PRs created by workflows don't trigger other workflows (GitHub security)
-          # Push an empty commit to trigger CI checks
-          git checkout "specification/${SPEC_ID}-update"
-          git commit --allow-empty -m "ci: trigger status checks"
-          git push origin "specification/${SPEC_ID}-update"
-
       - name: Comment on issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

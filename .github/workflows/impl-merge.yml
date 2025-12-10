@@ -137,6 +137,7 @@ jobs:
       - name: Update quality score in metadata
         if: steps.check.outputs.should_run == 'true'
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SPEC_ID: ${{ steps.extract.outputs.specification_id }}
           LIBRARY: ${{ steps.extract.outputs.library }}
           QUALITY_SCORE: ${{ steps.quality.outputs.score }}
@@ -144,6 +145,9 @@ jobs:
           METADATA_FILE="plots/${SPEC_ID}/metadata/${LIBRARY}.yaml"
 
           if [ -f "$METADATA_FILE" ] && [ -n "$QUALITY_SCORE" ]; then
+            # Configure git auth
+            git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
+
             # Update quality_score in existing metadata file
             sed -i "s/quality_score: null/quality_score: ${QUALITY_SCORE}/" "$METADATA_FILE"
             sed -i "s/quality_score: [0-9]*/quality_score: ${QUALITY_SCORE}/" "$METADATA_FILE"

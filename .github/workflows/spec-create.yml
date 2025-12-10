@@ -294,8 +294,8 @@ jobs:
 
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
 
-          # Merge the PR
-          gh pr merge "$PR_NUMBER" --squash --delete-branch
+          # Merge the PR (--admin bypasses branch protection for bot merges)
+          gh pr merge "$PR_NUMBER" --squash --delete-branch --admin
 
           echo "::notice::Merged PR #$PR_NUMBER for specification ${SPEC_ID}"
 

@@ -65,13 +65,15 @@ implementations:
       workflow_run: 20082450292
     history: []
   bokeh:
-    preview_url: null
+    preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/bokeh/plot.png
     current:
       version: null
       date: null
-      issue: null
-      generated_by: null
-      quality_score: null
+      issue: 561
+      generated_by: claude-opus-4-5-20251101
+      quality_score: 88
+      generated_at: "2025-12-10T00:02:38Z"
+      workflow_run: 20082505141
     history: []
   altair:
     preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/altair/plot.png

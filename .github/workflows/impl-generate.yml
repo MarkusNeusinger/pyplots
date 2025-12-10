@@ -263,8 +263,8 @@ jobs:
           BRANCH: ${{ steps.branch.outputs.branch }}
         run: |
           # First sync with remote (Claude already pushed the code)
-          git fetch origin "$BRANCH"
-          git reset --hard "origin/$BRANCH"
+          git fetch origin
+          git checkout -B "$BRANCH" "origin/$BRANCH"
 
           # Now create metadata file
           METADATA_DIR="plots/${SPEC_ID}/metadata"

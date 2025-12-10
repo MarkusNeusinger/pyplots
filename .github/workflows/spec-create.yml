@@ -107,7 +107,16 @@ jobs:
                git checkout -b "specification/{specification-id}"
                ```
 
-            5. **Create specification files:**
+            5. **Analyze the request and write analysis:**
+               Create a file `.github/spec-analysis.md` with your analysis containing:
+               - **Summary:** What kind of plot is being requested (1-2 sentences)
+               - **Assessment:** Is this a valid/useful plot type for the library? Why?
+               - **Similar Specs:** List any related existing specs (if none, say "None")
+               - **Concerns:** Any potential issues or things to consider (if none, say "None")
+
+               Keep the analysis concise but informative (max 200 words total).
+
+            6. **Create specification files:**
                - Read template: `prompts/templates/specification.md`
                - Read metadata template: `prompts/templates/specification.yaml`
                - Create directory: `plots/{specification-id}/`
@@ -122,7 +131,7 @@ jobs:
                - Create empty folder: `plots/{specification-id}/implementations/`
                - Create empty folder: `plots/{specification-id}/metadata/`
 
-            6. **Commit and push:**
+            7. **Commit and push:**
                ```bash
                git config user.name "github-actions[bot]"
                git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -133,12 +142,12 @@ jobs:
                git push -u origin "specification/{specification-id}"
                ```
 
-            7. **Update issue title:**
+            8. **Update issue title:**
                ```bash
                gh issue edit ${{ github.event.issue.number }} --title "[{specification-id}] {original title}"
                ```
 
-            8. **Output for workflow:**
+            9. **Output for workflow:**
                After completing, print these lines exactly:
                ```
                SPECIFICATION_ID={specification-id}
@@ -152,6 +161,7 @@ jobs:
             - Do NOT add labels
             - Do NOT close the issue
             - STOP after pushing the branch
+            - Make sure `.github/spec-analysis.md` exists before finishing
 
       - name: Extract outputs
         if: steps.check.outputs.should_run == 'true'
@@ -216,6 +226,14 @@ jobs:
           SPEC_ID: ${{ steps.extract.outputs.specification_id }}
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
         run: |
+          # Read analysis if it exists
+          if [[ -f ".github/spec-analysis.md" ]]; then
+            ANALYSIS=$(cat ".github/spec-analysis.md")
+          else
+            ANALYSIS="*Analysis not available*"
+          fi
+
+          # Read spec content
           SPEC_CONTENT=$(cat "plots/${SPEC_ID}/specification.md")
 
           gh issue comment ${{ github.event.issue.number }} --body "$(cat <<EOF
@@ -223,6 +241,12 @@ jobs:
 
           **PR:** #${PR_NUMBER}
           **Branch:** \`specification/${SPEC_ID}\`
+
+          ---
+
+          ### Analysis
+
+          ${ANALYSIS}
 
           ---
 

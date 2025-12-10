@@ -97,10 +97,14 @@ jobs:
                - `plots/${{ steps.extract.outputs.specification_id }}/specification.md`
                - `plots/${{ steps.extract.outputs.specification_id }}/specification.yaml`
 
-            2. **Analyze the update request:**
-               - What changes are being requested?
-               - Are they valid improvements?
-               - Any concerns?
+            2. **Analyze the update request and write analysis:**
+               Create a file `.github/update-analysis.md` with your analysis containing:
+               - **Summary:** What changes are being requested (1-2 sentences)
+               - **Assessment:** Is this a valid/useful improvement? Why or why not?
+               - **Changes Made:** Bullet list of specific changes you will make
+               - **Concerns:** Any potential issues or things to consider (if none, say "None")
+
+               Keep the analysis concise but informative (max 200 words total).
 
             3. **Create update branch:**
                ```bash
@@ -111,7 +115,7 @@ jobs:
                - Modify `plots/${{ steps.extract.outputs.specification_id }}/specification.md` as needed
                - Update `plots/${{ steps.extract.outputs.specification_id }}/specification.yaml`:
                  - Add entry to `updates` array with:
-                   - `date`: current timestamp
+                   - `date`: current timestamp (ISO 8601 format)
                    - `issue`: ${{ github.event.issue.number }}
                    - `changes`: brief description of what changed
 
@@ -132,6 +136,7 @@ jobs:
             - Do NOT create a PR (the workflow does that)
             - Do NOT add labels
             - STOP after pushing the branch
+            - Make sure `.github/update-analysis.md` exists before finishing
 
       - name: Create Pull Request
         id: pr
@@ -174,11 +179,33 @@ jobs:
           SPEC_ID: ${{ steps.extract.outputs.specification_id }}
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
         run: |
+          # Read analysis if it exists
+          if [[ -f ".github/update-analysis.md" ]]; then
+            ANALYSIS=$(cat ".github/update-analysis.md")
+          else
+            ANALYSIS="*Analysis not available*"
+          fi
+
+          # Read updated spec
+          SPEC_CONTENT=$(cat "plots/${SPEC_ID}/specification.md")
+
           gh issue comment ${{ github.event.issue.number }} --body "$(cat <<EOF
           ## :pencil2: Specification Update Ready
 
           **Specification:** \`${SPEC_ID}\`
           **PR:** #${PR_NUMBER}
+
+          ---
+
+          ### Analysis
+
+          ${ANALYSIS}
+
+          ---
+
+          ### Updated specification.md
+
+          ${SPEC_CONTENT}
 
           ---
 

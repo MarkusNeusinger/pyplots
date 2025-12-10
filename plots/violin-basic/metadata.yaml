@@ -3,32 +3,29 @@
 
 spec_id: violin-basic
 title: Basic Violin Plot
-
 # Spec-level tracking
 created: 2025-12-10T07:03:39Z
 issue: 571
 suggested: MarkusNeusinger
 updates: []
-
 tags:
   plot_type:
-  - violin
-  - distribution
+    - violin
+    - distribution
   domain:
-  - statistics
-  - general
+    - statistics
+    - general
   features:
-  - basic
-  - density
-  - comparison
+    - basic
+    - density
+    - comparison
   audience:
-  - beginner
-  - intermediate
+    - beginner
+    - intermediate
   data_type:
-  - numeric
-  - categorical
-  - continuous
-
+    - numeric
+    - categorical
+    - continuous
 # Implementation metadata per library
 # GCS URLs: https://storage.googleapis.com/pyplots-images/plots/violin-basic/{library}/latest.png
 # Interactive libraries also have .html: plotly, bokeh, altair, highcharts, pygal, letsplot
@@ -43,13 +40,15 @@ implementations:
       quality_score: null
     history: []
   seaborn:
-    preview_url: null
+    preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-basic/seaborn/plot.png
     current:
       version: null
       date: null
-      issue: null
-      generated_by: null
-      quality_score: null
+      issue: 571
+      generated_by: claude-opus-4-5-20251101
+      quality_score: 91
+      generated_at: "2025-12-10T07:10:47Z"
+      workflow_run: 20090392685
     history: []
   plotly:
     preview_url: null

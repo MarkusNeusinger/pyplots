@@ -168,9 +168,7 @@ jobs:
                echo "XX" > quality_score.txt
                ```
 
-            8. **Add label based on result**:
-               - If score >= 85: `gh pr edit ${{ steps.pr.outputs.pr_number }} --add-label ai-approved`
-               - If score < 85: `gh pr edit ${{ steps.pr.outputs.pr_number }} --add-label ai-rejected`
+            8. **DO NOT add ai-approved or ai-rejected labels** - the workflow will add them after updating metadata.
 
       - name: Extract quality score
         id: score
@@ -247,15 +245,26 @@ jobs:
           ---
           :robot: *[impl-review](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
 
-      - name: Take action based on verdict
-        if: steps.attempts.outputs.count != '3' && steps.review.outcome == 'success'
+      - name: Add verdict label and take action
+        if: steps.attempts.outputs.count != '3' && steps.review.outcome == 'success' && steps.score.outputs.score != '0'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUM: ${{ steps.pr.outputs.pr_number }}
           SPEC_ID: ${{ steps.pr.outputs.specification_id }}
           LIBRARY: ${{ steps.pr.outputs.library }}
+          SCORE: ${{ steps.score.outputs.score }}
           ATTEMPT: ${{ steps.attempts.outputs.display }}
         run: |
+          # Add ai-approved or ai-rejected label based on score
+          if [ "$SCORE" -ge 85 ]; then
+            gh pr edit "$PR_NUM" --add-label "ai-approved"
+            echo "::notice::Added ai-approved label (score $SCORE >= 85)"
+          else
+            gh pr edit "$PR_NUM" --add-label "ai-rejected"
+            echo "::notice::Added ai-rejected label (score $SCORE < 85)"
+          fi
+
+          # Now check labels and take action
           HAS_APPROVED=$(gh pr view "$PR_NUM" --json labels -q '[.labels[].name] | any(. == "ai-approved")' || echo "false")
           HAS_REJECTED=$(gh pr view "$PR_NUM" --json labels -q '[.labels[].name] | any(. == "ai-rejected")' || echo "false")
 

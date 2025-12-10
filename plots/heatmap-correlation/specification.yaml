@@ -1,0 +1,30 @@
+# Specification-level metadata for heatmap-correlation
+# Auto-synced to PostgreSQL on push to main
+
+specification_id: heatmap-correlation
+title: Correlation Matrix Heatmap
+
+# Specification tracking
+created: 2025-12-10T21:23:36Z
+issue: 587
+suggested: MarkusNeusinger
+updates: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - heatmap
+    - matrix
+  domain:
+    - statistics
+    - data-science
+    - finance
+  features:
+    - correlation
+    - annotated
+    - color-mapped
+  audience:
+    - intermediate
+  data_type:
+    - numeric
+    - continuous

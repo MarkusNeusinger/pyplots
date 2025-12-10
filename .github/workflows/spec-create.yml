@@ -215,6 +215,17 @@ jobs:
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
           echo "pr_url=$PR_URL" >> $GITHUB_OUTPUT
 
+      - name: Trigger CI checks
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          SPEC_ID: ${{ steps.extract.outputs.specification_id }}
+        run: |
+          # PRs created by workflows don't trigger other workflows (GitHub security)
+          # Push an empty commit to trigger CI checks
+          git checkout "specification/${SPEC_ID}"
+          git commit --allow-empty -m "ci: trigger status checks"
+          git push origin "specification/${SPEC_ID}"
+
       - name: Comment on issue
         if: steps.check.outputs.should_run == 'true'
         env:

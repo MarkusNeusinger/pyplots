@@ -127,6 +127,15 @@ jobs:
             exit 1
           fi
 
+      - name: Reopen issue if closed
+        if: steps.inputs.outputs.issue_number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ steps.inputs.outputs.issue_number }}
+        run: |
+          # Reopen issue so it's visible during implementation
+          gh issue reopen "$ISSUE" 2>/dev/null || true
+
       - name: Add pending label
         if: steps.inputs.outputs.issue_number != ''
         env:

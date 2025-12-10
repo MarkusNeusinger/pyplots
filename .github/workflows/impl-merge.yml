@@ -183,7 +183,9 @@ jobs:
           cat "$METADATA_FILE"
 
       - name: Commit metadata update
+        id: metadata_commit
         if: steps.check.outputs.should_run == 'true'
+        continue-on-error: true  # Don't block label/comment steps if commit fails
         env:
           SPEC_ID: ${{ steps.extract.outputs.specification_id }}
           LIBRARY: ${{ steps.extract.outputs.library }}
@@ -202,6 +204,7 @@ jobs:
 
       - name: Promote GCS images to production
         if: steps.check.outputs.should_run == 'true'
+        continue-on-error: true  # Don't block label/comment steps if GCS fails
         env:
           GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
           SPEC_ID: ${{ steps.extract.outputs.specification_id }}

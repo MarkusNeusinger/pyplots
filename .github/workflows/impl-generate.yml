@@ -257,12 +257,16 @@ jobs:
       # ========================================================================
       - name: Create library metadata file
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
           LIBRARY: ${{ steps.inputs.outputs.library }}
           ISSUE: ${{ steps.inputs.outputs.issue_number }}
           BRANCH: ${{ steps.branch.outputs.branch }}
         run: |
-          # First sync with remote (Claude already pushed the code)
+          # Configure git auth (Claude's action configured it, but it's gone now)
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
+
+          # Sync with remote (Claude already pushed the code)
           git fetch origin
           git checkout -B "$BRANCH" "origin/$BRANCH"
 

@@ -119,8 +119,7 @@ jobs:
           gh pr merge ${{ steps.check.outputs.pr_number }} \
             --repo ${{ github.repository }} \
             --squash \
-            --delete-branch \
-            --admin
+            --delete-branch
 
       - name: Checkout main for metadata update
         if: steps.check.outputs.should_run == 'true'

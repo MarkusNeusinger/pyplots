@@ -1,0 +1,78 @@
+name: "CI: Lint and Format Check"
+run-name: "Lint: ${{ github.ref_name }}"
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+      - 'specification/**'
+      - 'implementation/**'
+
+jobs:
+  lint:
+    name: Run Linting
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Check for Python changes
+      id: check
+      run: |
+        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          CHANGED_FILES=$(git diff --name-only $BASE_SHA $HEAD_SHA)
+        else
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
+        fi
+
+        echo "Changed files:"
+        echo "$CHANGED_FILES"
+
+        # Check if there are any Python files changed
+        PYTHON_CHANGES=$(echo "$CHANGED_FILES" | grep '\.py$' || true)
+
+        if [[ -n "$PYTHON_CHANGES" ]]; then
+          echo "Found Python changes, will run linting"
+          echo "should_lint=true" >> $GITHUB_OUTPUT
+        else
+          echo "No Python changes, skipping linting"
+          echo "should_lint=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Set up Python
+      if: steps.check.outputs.should_lint == 'true'
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+
+    - name: Install uv
+      if: steps.check.outputs.should_lint == 'true'
+      uses: astral-sh/setup-uv@v4
+
+    - name: Install dependencies
+      if: steps.check.outputs.should_lint == 'true'
+      run: uv sync --extra dev
+
+    - name: Run linting
+      if: steps.check.outputs.should_lint == 'true'
+      run: uv run ruff check .
+
+    - name: Check code formatting
+      if: steps.check.outputs.should_lint == 'true'
+      run: uv run ruff format --check .
+
+    - name: Skip notice
+      if: steps.check.outputs.should_lint == 'false'
+      run: echo "::notice::Linting skipped - no Python files changed"

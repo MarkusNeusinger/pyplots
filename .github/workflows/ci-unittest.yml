@@ -1,0 +1,91 @@
+name: "CI: Unit Tests"
+run-name: "Tests: ${{ github.ref_name }}"
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+      - 'specification/**'
+      - 'implementation/**'
+
+jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Check for testable changes
+      id: check
+      run: |
+        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          CHANGED_FILES=$(git diff --name-only $BASE_SHA $HEAD_SHA)
+        else
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
+        fi
+
+        echo "Changed files:"
+        echo "$CHANGED_FILES"
+
+        # Check for Python changes outside plots/ (api, core, tests, automation)
+        # Plot implementations don't have unit tests
+        TESTABLE_CHANGES=$(echo "$CHANGED_FILES" | grep '\.py$' | grep -v '^plots/' || true)
+
+        if [[ -n "$TESTABLE_CHANGES" ]]; then
+          echo "Found testable Python changes, will run tests"
+          echo "should_test=true" >> $GITHUB_OUTPUT
+        else
+          echo "No testable changes (only plots/ or non-Python), skipping tests"
+          echo "should_test=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Set up Python
+      if: steps.check.outputs.should_test == 'true'
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+
+    - name: Install uv
+      if: steps.check.outputs.should_test == 'true'
+      uses: astral-sh/setup-uv@v4
+
+    - name: Install dependencies
+      if: steps.check.outputs.should_test == 'true'
+      run: uv sync --extra test
+
+    - name: Run tests with coverage
+      if: steps.check.outputs.should_test == 'true'
+      run: uv run pytest tests/unit -v --tb=short --cov=core --cov=api --cov-report=term-missing --cov-report=xml
+
+    - name: Upload coverage to GitHub Artifacts
+      if: steps.check.outputs.should_test == 'true' && always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: coverage.xml
+        retention-days: 30
+
+    - name: Upload coverage to Codecov
+      if: steps.check.outputs.should_test == 'true'
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./coverage.xml
+        fail_ci_if_error: false
+
+    - name: Skip notice
+      if: steps.check.outputs.should_test == 'false'
+      run: echo "::notice::Tests skipped - no testable Python changes (only plots/ or non-Python files)"

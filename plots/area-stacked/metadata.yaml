@@ -98,13 +98,15 @@ implementations:
       workflow_run: 20082364874
     history: []
   pygal:
-    preview_url: null
+    preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/pygal/plot.png
     current:
       version: null
       date: null
-      issue: null
-      generated_by: null
-      quality_score: null
+      issue: 561
+      generated_by: claude-opus-4-5-20251101
+      quality_score: 92
+      generated_at: "2025-12-10T07:01:46Z"
+      workflow_run: 20090192172
     history: []
   highcharts:
     preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/highcharts/plot.png

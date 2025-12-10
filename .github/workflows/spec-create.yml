@@ -108,13 +108,10 @@ jobs:
                ```
 
             5. **Analyze the request and write analysis:**
-               Create a file `.github/spec-analysis.md` with your analysis containing:
-               - **Summary:** What kind of plot is being requested (1-2 sentences)
-               - **Assessment:** Is this a valid/useful plot type for the library? Why?
-               - **Similar Specs:** List any related existing specs (if none, say "None")
-               - **Concerns:** Any potential issues or things to consider (if none, say "None")
-
-               Keep the analysis concise but informative (max 200 words total).
+               Create a file `.github/spec-analysis.md` with a SHORT analysis (max 3-4 sentences):
+               - Is this a valid/useful plot type?
+               - Does it already exist? (check `ls plots/`)
+               - Any concerns?
 
             6. **Create specification files:**
                - Read template: `prompts/templates/specification.md`

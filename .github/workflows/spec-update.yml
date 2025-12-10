@@ -98,13 +98,10 @@ jobs:
                - `plots/${{ steps.extract.outputs.specification_id }}/specification.yaml`
 
             2. **Analyze the update request and write analysis:**
-               Create a file `.github/update-analysis.md` with your analysis containing:
-               - **Summary:** What changes are being requested (1-2 sentences)
-               - **Assessment:** Is this a valid/useful improvement? Why or why not?
-               - **Changes Made:** Bullet list of specific changes you will make
-               - **Concerns:** Any potential issues or things to consider (if none, say "None")
-
-               Keep the analysis concise but informative (max 200 words total).
+               Create a file `.github/update-analysis.md` with a SHORT analysis (max 3-4 sentences):
+               - Is this a valid/useful change?
+               - What will be modified?
+               - Any concerns?
 
             3. **Create update branch:**
                ```bash

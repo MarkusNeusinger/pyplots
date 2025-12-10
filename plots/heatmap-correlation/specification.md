@@ -23,3 +23,4 @@ A correlation heatmap visualizes the pairwise correlation coefficients between m
 - Display correlation values as text annotations in each cell for precise reading
 - Consider masking the upper or lower triangle since the matrix is symmetric
 - Diagonal always contains 1.0 (self-correlation) and can be highlighted or masked
+- Optional: apply hierarchical clustering to reorder rows and columns, grouping similar variables together for better pattern visibility

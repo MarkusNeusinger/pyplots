@@ -148,9 +148,9 @@ jobs:
             # Configure git auth
             git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
 
-            # Update quality_score in existing metadata file
-            sed -i "s/quality_score: null/quality_score: ${QUALITY_SCORE}/" "$METADATA_FILE"
-            sed -i "s/quality_score: [0-9]*/quality_score: ${QUALITY_SCORE}/" "$METADATA_FILE"
+            # Update quality_score in existing metadata file (handles trailing comments)
+            sed -i "s/quality_score: null.*/quality_score: ${QUALITY_SCORE}/" "$METADATA_FILE"
+            sed -i "s/quality_score: [0-9]\+.*/quality_score: ${QUALITY_SCORE}/" "$METADATA_FILE"
 
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"

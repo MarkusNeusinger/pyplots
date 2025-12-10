@@ -31,13 +31,15 @@ tags:
 # Interactive libraries also have .html: plotly, bokeh, altair, highcharts, pygal, letsplot
 implementations:
   matplotlib:
-    preview_url: null
+    preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-basic/matplotlib/plot.png
     current:
       version: null
       date: null
-      issue: null
-      generated_by: null
-      quality_score: null
+      issue: 571
+      generated_by: claude-opus-4-5-20251101
+      quality_score: 91
+      generated_at: "2025-12-10T07:12:28Z"
+      workflow_run: 20090431034
     history: []
   seaborn:
     preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-basic/seaborn/plot.png

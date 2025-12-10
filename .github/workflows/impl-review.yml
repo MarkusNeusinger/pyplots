@@ -196,6 +196,38 @@ jobs:
           gh label create "$LABEL" --color "0e8a16" --description "Quality score ${SCORE}/100" 2>/dev/null || true
           gh pr edit "$PR_NUM" --add-label "$LABEL"
 
+      - name: Update quality score in metadata
+        if: steps.attempts.outputs.count != '3' && steps.review.outcome == 'success' && steps.score.outputs.score != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPEC_ID: ${{ steps.pr.outputs.specification_id }}
+          LIBRARY: ${{ steps.pr.outputs.library }}
+          SCORE: ${{ steps.score.outputs.score }}
+          BRANCH: ${{ steps.pr.outputs.branch }}
+        run: |
+          METADATA_FILE="plots/${SPEC_ID}/metadata/${LIBRARY}.yaml"
+
+          # Configure git auth and checkout the PR branch
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
+          git fetch origin "$BRANCH"
+          git checkout "$BRANCH"
+
+          # Update quality_score in metadata file
+          if [ -f "$METADATA_FILE" ]; then
+            sed -i "s/quality_score: null.*/quality_score: ${SCORE}/" "$METADATA_FILE"
+            sed -i "s/quality_score: [0-9]\+.*/quality_score: ${SCORE}/" "$METADATA_FILE"
+
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add "$METADATA_FILE"
+
+            if ! git diff --cached --quiet; then
+              git commit -m "chore(${LIBRARY}): set quality score ${SCORE} for ${SPEC_ID}"
+              git push origin "$BRANCH"
+              echo "::notice::Quality score ${SCORE} committed to ${BRANCH}"
+            fi
+          fi
+
       - name: Handle review failure
         if: steps.attempts.outputs.count != '3' && steps.review.outcome == 'failure'
         env:

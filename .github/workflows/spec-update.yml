@@ -220,6 +220,9 @@ jobs:
       issues: write
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Extract specification ID
         id: extract
         env:

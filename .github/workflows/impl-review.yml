@@ -172,7 +172,7 @@ jobs:
 
       - name: Extract quality score
         id: score
-        if: steps.attempts.outputs.count != '3' && steps.review.outcome == 'success'
+        if: steps.attempts.outputs.count != '3' && steps.review.conclusion == 'success'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUM: ${{ steps.pr.outputs.pr_number }}
@@ -185,7 +185,7 @@ jobs:
           echo "score=$SCORE" >> $GITHUB_OUTPUT
 
       - name: Add quality score label
-        if: steps.attempts.outputs.count != '3' && steps.review.outcome == 'success' && steps.score.outputs.score != '0'
+        if: steps.attempts.outputs.count != '3' && steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUM: ${{ steps.pr.outputs.pr_number }}
@@ -196,7 +196,7 @@ jobs:
           gh pr edit "$PR_NUM" --add-label "$LABEL"
 
       - name: Update quality score in metadata
-        if: steps.attempts.outputs.count != '3' && steps.review.outcome == 'success' && steps.score.outputs.score != '0'
+        if: steps.attempts.outputs.count != '3' && steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SPEC_ID: ${{ steps.pr.outputs.specification_id }}
@@ -228,7 +228,7 @@ jobs:
           fi
 
       - name: Handle review failure
-        if: steps.attempts.outputs.count != '3' && steps.review.outcome == 'failure'
+        if: steps.attempts.outputs.count != '3' && steps.review.conclusion == 'failure'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUM: ${{ steps.pr.outputs.pr_number }}
@@ -246,7 +246,7 @@ jobs:
           :robot: *[impl-review](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
 
       - name: Add verdict label and take action
-        if: steps.attempts.outputs.count != '3' && steps.review.outcome == 'success' && steps.score.outputs.score != '0'
+        if: steps.attempts.outputs.count != '3' && steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUM: ${{ steps.pr.outputs.pr_number }}

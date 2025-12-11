@@ -8,7 +8,7 @@ title: {Title}
 created: null          # ISO 8601 timestamp, set by workflow
 issue: null            # GitHub issue number
 suggested: null        # GitHub username or 'pyplots' for seed plots
-updates: []            # List of spec updates [{date, issue, changes}]
+history: []            # List of spec updates [{date, issue, changes}]
 
 # Classification tags (applies to all library implementations)
 tags:

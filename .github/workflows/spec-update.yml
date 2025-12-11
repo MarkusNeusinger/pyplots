@@ -111,7 +111,7 @@ jobs:
             4. **Apply updates:**
                - Modify `plots/${{ steps.extract.outputs.specification_id }}/specification.md` as needed
                - Update `plots/${{ steps.extract.outputs.specification_id }}/specification.yaml`:
-                 - Add entry to `updates` array with:
+                 - Add entry to `history` array with:
                    - `date`: current timestamp (ISO 8601 format)
                    - `issue`: ${{ github.event.issue.number }}
                    - `changes`: brief description of what changed

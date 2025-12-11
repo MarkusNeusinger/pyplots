@@ -8,7 +8,7 @@ title: Correlation Matrix Heatmap
 created: 2025-12-10T21:23:36Z
 issue: 587
 suggested: MarkusNeusinger
-updates:
+history:
   - date: 2025-12-10T21:40:30Z
     issue: 591
     changes: "Added note about optional hierarchical clustering for row/column reordering"

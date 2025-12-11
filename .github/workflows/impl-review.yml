@@ -209,7 +209,7 @@ jobs:
           # Configure git auth and checkout the PR branch
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
           git fetch origin "$BRANCH"
-          git checkout "$BRANCH"
+          git checkout -B "$BRANCH" "origin/$BRANCH"
 
           # Update quality_score in metadata file
           if [ -f "$METADATA_FILE" ]; then

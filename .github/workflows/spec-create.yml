@@ -308,7 +308,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Add spec-ready label
+          # Remove trigger, add status
+          gh issue edit ${{ github.event.issue.number }} --remove-label "spec-request" 2>/dev/null || true
           gh issue edit ${{ github.event.issue.number }} --add-label "spec-ready"
 
       - name: Comment on issue

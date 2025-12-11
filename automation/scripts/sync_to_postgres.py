@@ -52,6 +52,29 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 
+def convert_datetimes_to_strings(obj):
+    """Recursively convert datetime objects to ISO strings for JSON serialization."""
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    elif isinstance(obj, dict):
+        return {k: convert_datetimes_to_strings(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_datetimes_to_strings(item) for item in obj]
+    return obj
+
+
+def parse_bullet_points(text: str) -> list[str]:
+    """Extract bullet points from a markdown section."""
+    bullets = []
+    for line in text.strip().split("\n"):
+        line = line.strip()
+        if line.startswith("- "):
+            bullets.append(line[2:].strip())
+        elif line.startswith("* "):
+            bullets.append(line[2:].strip())
+    return bullets
+
+
 def parse_spec_markdown(file_path: Path) -> dict:
     """
     Parse a spec.md file and extract metadata.
@@ -60,7 +83,7 @@ def parse_spec_markdown(file_path: Path) -> dict:
         file_path: Path to the spec.md file
 
     Returns:
-        Dict with title, description, content, data_requirements, tags
+        Dict with title, description, applications, data, notes
     """
     content = file_path.read_text(encoding="utf-8")
     spec_id = file_path.parent.name  # Directory name is spec_id
@@ -75,30 +98,31 @@ def parse_spec_markdown(file_path: Path) -> dict:
     if desc_match:
         description = desc_match.group(1).strip()
 
-    # Parse data requirements section
-    data_requirements = []
+    # Parse applications section (bullet points)
+    applications = []
+    apps_match = re.search(r"## Applications\s*\n(.+?)(?=\n##|\Z)", content, re.DOTALL)
+    if apps_match:
+        applications = parse_bullet_points(apps_match.group(1))
+
+    # Parse data section (bullet points)
+    data = []
     data_match = re.search(r"## Data\s*\n(.+?)(?=\n##|\Z)", content, re.DOTALL)
     if data_match:
-        data_section = data_match.group(1)
-        for match in re.finditer(r"-\s+`(\w+)`\s+\((\w+)\)\s*-?\s*(.+)?", data_section):
-            data_requirements.append(
-                {"name": match.group(1), "type": match.group(2), "description": (match.group(3) or "").strip()}
-            )
+        data = parse_bullet_points(data_match.group(1))
 
-    # Parse simple tags from Tags section (if present)
-    tags = []
-    tags_match = re.search(r"## Tags\s*\n(.+?)(?=\n##|\Z)", content, re.DOTALL)
-    if tags_match:
-        tags_text = tags_match.group(1).strip()
-        tags = [t.strip() for t in tags_text.split(",") if t.strip()]
+    # Parse notes section (bullet points, optional)
+    notes = []
+    notes_match = re.search(r"## Notes\s*\n(.+?)(?=\n##|\Z)", content, re.DOTALL)
+    if notes_match:
+        notes = parse_bullet_points(notes_match.group(1))
 
     return {
         "id": spec_id,
         "title": title,
         "description": description,
-        "content": content,  # Store full markdown
-        "data_requirements": data_requirements,
-        "tags": tags,
+        "applications": applications,
+        "data": data,
+        "notes": notes,
     }
 
 
@@ -115,7 +139,8 @@ def parse_metadata_yaml(file_path: Path) -> dict | None:
     try:
         content = file_path.read_text(encoding="utf-8")
         data = yaml.safe_load(content)
-        if not data or "spec_id" not in data:
+        # Accept both spec_id and specification_id (for backwards compatibility)
+        if not data or ("spec_id" not in data and "specification_id" not in data):
             return None
         return data
     except Exception as e:
@@ -188,11 +213,25 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
     if metadata.get("title"):
         spec_data["title"] = metadata["title"]
 
-    # Add structured tags from metadata
-    spec_data["structured_tags"] = metadata.get("tags")
+    # Add spec-level metadata from YAML (convert datetimes in JSONB fields)
+    spec_data["tags"] = convert_datetimes_to_strings(metadata.get("tags"))
+    spec_data["history"] = convert_datetimes_to_strings(metadata.get("history"))
+    spec_data["issue"] = metadata.get("issue")
+    spec_data["suggested"] = metadata.get("suggested")
 
-    # Add spec update history
-    spec_data["updates"] = metadata.get("updates")
+    # Parse created timestamp (convert to naive datetime for DB)
+    # YAML auto-parses dates, so datetime comes first
+    created = metadata.get("created")
+    if isinstance(created, datetime):
+        spec_data["created"] = created.replace(tzinfo=None) if created.tzinfo else created
+    elif isinstance(created, str):
+        try:
+            dt = datetime.fromisoformat(created.replace("Z", "+00:00"))
+            spec_data["created"] = dt.replace(tzinfo=None)
+        except ValueError:
+            spec_data["created"] = None
+    else:
+        spec_data["created"] = None
 
     # Scan implementations
     implementations = []
@@ -217,32 +256,33 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
 
             current = impl_meta.get("current") or {}
 
-            # Parse generated_at
+            # Parse generated_at (strip timezone for DB compatibility)
             generated_at = current.get("generated_at")
             if isinstance(generated_at, str):
                 try:
-                    generated_at = datetime.fromisoformat(generated_at.replace("Z", "+00:00"))
+                    dt = datetime.fromisoformat(generated_at.replace("Z", "+00:00"))
+                    generated_at = dt.replace(tzinfo=None)  # Remove timezone info
                 except ValueError:
                     generated_at = None
+            elif isinstance(generated_at, datetime):
+                generated_at = generated_at.replace(tzinfo=None)
 
             implementations.append({
                 "spec_id": spec_id,
                 "library_id": library_id,
-                "variant": "default",
-                "file_path": file_path,
                 "code": code,
                 "preview_url": impl_meta.get("preview_url") or get_gcs_preview_url(spec_id, library_id),
                 "generated_at": generated_at,
                 "generated_by": current.get("generated_by"),
                 "workflow_run": current.get("workflow_run"),
-                "issue_number": current.get("issue"),
+                "issue": current.get("issue"),
                 "quality_score": current.get("quality_score"),
-                # Quality evaluation details
-                "evaluator_scores": current.get("evaluator_scores"),
+                # Quality evaluation details (convert datetimes in JSONB)
+                "evaluator_scores": convert_datetimes_to_strings(current.get("evaluator_scores")),
                 "quality_feedback": current.get("quality_feedback"),
-                "improvements_suggested": current.get("improvements_suggested"),
-                # Version history
-                "history": impl_meta.get("history"),
+                "improvements_suggested": convert_datetimes_to_strings(current.get("improvements_suggested")),
+                # Version history (convert datetimes in JSONB)
+                "history": convert_datetimes_to_strings(impl_meta.get("history")),
             })
 
     return {
@@ -301,11 +341,14 @@ async def sync_to_database(session: AsyncSession, plots: list[dict]) -> dict:
                 set_={
                     "title": spec["title"],
                     "description": spec["description"],
-                    "content": spec["content"],
-                    "data_requirements": spec["data_requirements"],
-                    "tags": spec["tags"],
-                    "structured_tags": spec.get("structured_tags"),
-                    "updates": spec.get("updates"),
+                    "applications": spec["applications"],
+                    "data": spec["data"],
+                    "notes": spec["notes"],
+                    "created": spec.get("created"),
+                    "issue": spec.get("issue"),
+                    "suggested": spec.get("suggested"),
+                    "tags": spec.get("tags"),
+                    "history": spec.get("history"),
                 },
             )
         )
@@ -314,18 +357,17 @@ async def sync_to_database(session: AsyncSession, plots: list[dict]) -> dict:
 
         # Upsert implementations
         for impl in plot_data["implementations"]:
-            key = (impl["spec_id"], impl["library_id"], impl["variant"])
+            key = (impl["spec_id"], impl["library_id"])
             impl_keys.add(key)
 
             update_set = {
-                "file_path": impl["file_path"],
                 "code": impl["code"],
                 "preview_url": impl["preview_url"],
             }
 
             # Add optional fields
             optional_fields = [
-                "generated_at", "generated_by", "workflow_run", "issue_number", "quality_score",
+                "generated_at", "generated_by", "workflow_run", "issue", "quality_score",
                 "evaluator_scores", "quality_feedback", "improvements_suggested", "history"
             ]
             for field in optional_fields:
@@ -335,7 +377,7 @@ async def sync_to_database(session: AsyncSession, plots: list[dict]) -> dict:
             stmt = (
                 insert(Implementation)
                 .values(**impl)
-                .on_conflict_do_update(constraint="uq_implementation", set_=update_set)
+                .on_conflict_do_update(constraint="uq_spec_library", set_=update_set)
             )
             await session.execute(stmt)
             stats["impls_synced"] += 1
@@ -349,17 +391,16 @@ async def sync_to_database(session: AsyncSession, plots: list[dict]) -> dict:
         logger.info(f"Removed {len(removed_spec_ids)} specs no longer in repo")
 
     # Remove implementations that no longer exist in repo
-    result = await session.execute(select(Implementation.spec_id, Implementation.library_id, Implementation.variant))
-    existing_impls = [(row[0], row[1], row[2]) for row in result.fetchall()]
+    result = await session.execute(select(Implementation.spec_id, Implementation.library_id))
+    existing_impls = [(row[0], row[1]) for row in result.fetchall()]
 
     removed_impls = [impl for impl in existing_impls if impl not in impl_keys]
     if removed_impls:
-        for spec_id, library_id, variant in removed_impls:
+        for spec_id, library_id in removed_impls:
             await session.execute(
                 delete(Implementation).where(
                     Implementation.spec_id == spec_id,
                     Implementation.library_id == library_id,
-                    Implementation.variant == variant,
                 )
             )
         stats["impls_removed"] = len(removed_impls)

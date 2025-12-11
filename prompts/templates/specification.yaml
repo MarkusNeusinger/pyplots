@@ -1,7 +1,7 @@
 # Specification-level metadata for {specification-id}
 # Auto-synced to PostgreSQL on push to main
 
-specification_id: {specification-id}
+spec_id: {specification-id}
 title: {Title}
 
 # Specification tracking

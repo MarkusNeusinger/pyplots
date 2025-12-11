@@ -174,7 +174,8 @@ jobs:
           # Create labels if they don't exist
           gh label create "impl:${LIBRARY}:done" --color "0e8a16" --description "${LIBRARY} implementation merged" 2>/dev/null || true
 
-          # Remove pending, add done
+          # Remove trigger and pending, add done
+          gh issue edit "$ISSUE" --remove-label "generate:${LIBRARY}" 2>/dev/null || true
           gh issue edit "$ISSUE" --remove-label "impl:${LIBRARY}:pending" 2>/dev/null || true
           gh issue edit "$ISSUE" --add-label "impl:${LIBRARY}:done"
 

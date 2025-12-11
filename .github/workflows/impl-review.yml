@@ -269,8 +269,9 @@ jobs:
           HAS_REJECTED=$(gh pr view "$PR_NUM" --json labels -q '[.labels[].name] | any(. == "ai-rejected")' || echo "false")
 
           if [[ "$HAS_APPROVED" == "true" ]]; then
-            # impl-merge.yml will be triggered automatically by pull_request: [labeled] event
-            echo "::notice::PR approved with ai-approved label. impl-merge.yml will trigger automatically."
+            echo "Triggering impl-merge.yml for approved PR"
+            gh workflow run impl-merge.yml -f pr_number="$PR_NUM"
+            echo "::notice::PR approved. Triggered impl-merge.yml"
 
           elif [[ "$HAS_REJECTED" == "true" ]]; then
             echo "Triggering impl-repair.yml for rejected PR"

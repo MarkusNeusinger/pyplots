@@ -16,7 +16,7 @@ jobs:
   review:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write  # Needed for pushing quality score to PR branch
       pull-requests: write
       issues: write
       id-token: write

@@ -162,9 +162,12 @@ jobs:
           ISSUE: ${{ steps.issue.outputs.number }}
           LIBRARY: ${{ steps.extract.outputs.library }}
         run: |
+          # Create labels if they don't exist
+          gh label create "impl:${LIBRARY}:done" --color "0e8a16" --description "${LIBRARY} implementation merged" 2>/dev/null || true
+
           # Remove pending, add done
           gh issue edit "$ISSUE" --remove-label "impl:${LIBRARY}:pending" 2>/dev/null || true
-          gh issue edit "$ISSUE" --add-label "impl:${LIBRARY}:done" 2>/dev/null || true
+          gh issue edit "$ISSUE" --add-label "impl:${LIBRARY}:done"
 
       - name: Post success to issue
         if: steps.check.outputs.should_run == 'true' && steps.issue.outputs.number != ''

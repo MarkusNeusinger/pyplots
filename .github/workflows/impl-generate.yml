@@ -263,12 +263,20 @@ jobs:
           ISSUE: ${{ steps.inputs.outputs.issue_number }}
           BRANCH: ${{ steps.branch.outputs.branch }}
         run: |
+          # Save plot files before git operations (they are not committed and would be lost)
+          cp "plots/${SPEC_ID}/implementations/plot.png" "/tmp/plot.png" 2>/dev/null || true
+          cp "plots/${SPEC_ID}/implementations/plot.html" "/tmp/plot.html" 2>/dev/null || true
+
           # Configure git auth (Claude's action configured it, but it's gone now)
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
 
           # Sync with remote (Claude already pushed the code)
           git fetch origin
           git checkout -B "$BRANCH" "origin/$BRANCH"
+
+          # Restore plot files after git operations
+          cp "/tmp/plot.png" "plots/${SPEC_ID}/implementations/plot.png" 2>/dev/null || true
+          cp "/tmp/plot.html" "plots/${SPEC_ID}/implementations/plot.html" 2>/dev/null || true
 
           # Now create metadata file
           METADATA_DIR="plots/${SPEC_ID}/metadata"

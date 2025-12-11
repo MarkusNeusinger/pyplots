@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="postgres" uuid="14a8863d-32b9-420c-9750-1b465342f747">
-      <driver-ref>postgresql.cloud_sql</driver-ref>
+    <data-source source="LOCAL" name="pyplots@34.7.157.136" uuid="8cb78fd6-51ec-42c2-8207-88ec2d589d19">
+      <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql:///postgres?cloudSqlInstance=pyplots:europe-west4:pyplots-db</jdbc-url>
+      <jdbc-url>jdbc:postgresql://34.7.157.136:5432/pyplots</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

@@ -1,0 +1,29 @@
+# Specification-level metadata for bar-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: bar-basic
+title: Basic Bar Chart
+
+# Specification tracking
+created: 2025-12-11T22:46:28Z
+issue: 612
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - bar
+  domain:
+    - general
+    - business
+    - statistics
+  features:
+    - basic
+    - comparison
+    - categorical
+  audience:
+    - beginner
+  data_type:
+    - categorical
+    - numeric

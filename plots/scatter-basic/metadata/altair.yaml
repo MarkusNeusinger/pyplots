@@ -13,6 +13,6 @@ current:
   generated_by: claude-opus-4-5-20251101
   workflow_run: 20150014835
   issue: 611
-  quality_score: null  # Updated after review
+  quality_score: 88
 
 history: []

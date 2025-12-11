@@ -296,7 +296,7 @@ jobs:
           preview_html: ${PREVIEW_HTML}
 
           current:
-            version: 1
+            version: 0
             generated_at: ${TIMESTAMP}
             generated_by: claude-opus-4-5-20251101
             workflow_run: ${{ github.run_id }}
@@ -421,9 +421,19 @@ jobs:
           LIBRARY: ${{ steps.inputs.outputs.library }}
           ISSUE: ${{ steps.inputs.outputs.issue_number }}
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
-          PNG_URL: ${{ steps.gcs.outputs.png_url }}
-          HTML_URL: ${{ steps.gcs.outputs.html_url }}
         run: |
+          # Use versioned production URLs (permanent, in history/ folder)
+          # These will be available after impl-merge promotes from staging
+          PNG_URL="https://storage.googleapis.com/pyplots-images/plots/${SPEC_ID}/${LIBRARY}/history/v0.png"
+          HTML_URL=""
+
+          # Set HTML_URL for interactive libraries
+          case "$LIBRARY" in
+            plotly|bokeh|altair|highcharts|pygal|letsplot)
+              HTML_URL="https://storage.googleapis.com/pyplots-images/plots/${SPEC_ID}/${LIBRARY}/history/v0.html"
+              ;;
+          esac
+
           BODY="## :art: ${LIBRARY} Preview
 
           ![${LIBRARY} plot](${PNG_URL})

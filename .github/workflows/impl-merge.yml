@@ -142,9 +142,18 @@ jobs:
 
           STAGING="gs://pyplots-images/staging/${SPEC_ID}/${LIBRARY}"
           PRODUCTION="gs://pyplots-images/plots/${SPEC_ID}/${LIBRARY}"
+          HISTORY="${PRODUCTION}/history"
 
-          # Copy from staging to production
+          # Get version from metadata (default to 0)
+          VERSION=$(yq '.current.version' "plots/${SPEC_ID}/metadata/${LIBRARY}.yaml" 2>/dev/null || echo "0")
+          echo "Version: ${VERSION}"
+
+          # 1. Copy from staging to production (current)
           gsutil -m cp -r "${STAGING}/*" "${PRODUCTION}/" 2>/dev/null || echo "No staging files to promote"
+
+          # 2. Copy versioned to history/ folder
+          gsutil cp "${STAGING}/plot.png" "${HISTORY}/v${VERSION}.png" 2>/dev/null || true
+          gsutil cp "${STAGING}/plot.html" "${HISTORY}/v${VERSION}.html" 2>/dev/null || true
 
           # Make production files public
           gsutil -m acl ch -r -u AllUsers:R "${PRODUCTION}/" 2>/dev/null || true
@@ -153,7 +162,7 @@ jobs:
           gsutil -m rm -r "${STAGING}/" 2>/dev/null || true
 
           rm -f /tmp/gcs-key.json
-          echo "::notice::Promoted images to production"
+          echo "::notice::Promoted images to production + history/v${VERSION}"
 
       - name: Update issue labels
         if: steps.check.outputs.should_run == 'true' && steps.issue.outputs.number != ''

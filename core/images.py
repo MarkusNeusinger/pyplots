@@ -114,9 +114,10 @@ def add_watermark(
     temp_draw = ImageDraw.Draw(img)
     text_h = temp_draw.textbbox((0, 0), "py", font=font)[3]
 
-    # Footer height: text + minimal padding (~half font height total padding)
-    footer_padding_v = max(4, text_h // 4)  # Small vertical padding
-    footer_height = text_h + footer_padding_v * 2
+    # Footer height: text + minimal padding
+    footer_padding_top = max(4, text_h // 4)  # Minimal space above
+    footer_padding_bottom = max(2, text_h // 8)  # Minimal space below
+    footer_height = text_h + footer_padding_top + footer_padding_bottom
 
     # Create new image with footer
     new_height = img.height + footer_height
@@ -137,8 +138,8 @@ def add_watermark(
     ai_w = draw.textbbox((0, 0), ".ai", font=font)[2]
     url_w = py_w + plots_w + ai_w
 
-    # Position: centered vertically in footer
-    y = img.height + footer_padding_v
+    # Position: text starts after top padding
+    y = img.height + footer_padding_top
     url_x = img.width - url_w - padding
     spec_x = padding
 

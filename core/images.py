@@ -102,9 +102,9 @@ def add_watermark(
 
     # Auto-scale font size and padding based on image width
     if font_size is None:
-        font_size = max(24, int(img.width * 0.01))  # ~1% of width, min 24px
+        font_size = max(24, int(img.width * 0.0135))  # ~1.35% of width, min 24px
     if padding is None:
-        padding = max(15, int(img.width * 0.005))  # ~0.5% of width, min 15px
+        padding = max(15, int(img.width * 0.008))  # ~0.8% of width, min 15px
 
     font = _get_font(font_size)
     alpha = int(255 * 0.95)

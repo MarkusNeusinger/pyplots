@@ -1,22 +1,25 @@
 # Per-library metadata for {library} implementation of {specification-id}
-# Created/updated by impl-merge.yml after successful merge
+# Created/updated by impl-generate.yml after successful generation
 
 library: {library}
 specification_id: {specification-id}
 
-# Preview URLs (GCS)
-preview_url: null      # https://storage.googleapis.com/pyplots-images/plots/{specification-id}/{library}/plot.png
+# Preview URLs (GCS - filled by workflow)
+preview_url: https://storage.googleapis.com/pyplots-images/plots/{specification-id}/{library}/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/{specification-id}/{library}/plot_thumb.png
 preview_html: null     # For interactive libraries: plotly, bokeh, altair, highcharts, pygal, letsplot
 
 # Current live version
-current: null          # Set after first successful generation
-# current:
-#   version: 1
-#   generated_at: 2025-01-15T10:30:00Z
-#   generated_by: claude-opus-4-5-20251101
-#   workflow_run: 12345678
-#   issue: 42
-#   quality_score: 92
+current:
+  version: 0
+  generated_at: {timestamp}
+  generated_by: claude-opus-4-5-20251101
+  workflow_run: {workflow_run}
+  issue: {issue}
+  quality_score: null    # Updated after AI review
+  # Version info (filled by workflow)
+  python_version: "{python_version}"
+  library_version: "{library_version}"
 
 # Version history (previous versions for rollback/comparison)
 history: []
@@ -27,3 +30,5 @@ history: []
 #     workflow_run: 12345600
 #     issue: 42
 #     quality_score: 78
+#     python_version: "3.13"
+#     library_version: "3.9.0"

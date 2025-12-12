@@ -17,7 +17,6 @@ Legacy structure (still supported during migration):
 
 import asyncio
 import logging
-import os
 import re
 import sys
 from datetime import datetime
@@ -36,16 +35,15 @@ load_dotenv()
 
 from sqlalchemy import delete, select  # noqa: E402
 from sqlalchemy.dialects.postgresql import insert  # noqa: E402
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine  # noqa: E402
+from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E402
 
-from core.database import LIBRARIES_SEED, Implementation, Library, Spec  # noqa: E402
+from core.database import LIBRARIES_SEED, Impl, Library, Spec  # noqa: E402
+from core.database.connection import close_db, get_db_context, init_db, is_db_configured  # noqa: E402
 
 
 # Configuration
 BASE_DIR = Path(__file__).parent.parent.parent
 PLOTS_DIR = BASE_DIR / "plots"
-GCS_BUCKET = os.getenv("GCS_BUCKET", "pyplots-images")
-DATABASE_URL = os.getenv("DATABASE_URL", "")
 
 # Logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -242,7 +240,6 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
 
             library_id = impl_file.stem  # e.g., "matplotlib", "seaborn"
             code = impl_file.read_text(encoding="utf-8")
-            file_path = str(impl_file.relative_to(BASE_DIR))
 
             # Get implementation metadata from per-library file (new) or legacy metadata.yaml
             impl_meta = {}
@@ -267,42 +264,34 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
             elif isinstance(generated_at, datetime):
                 generated_at = generated_at.replace(tzinfo=None)
 
-            implementations.append({
-                "spec_id": spec_id,
-                "library_id": library_id,
-                "code": code,
-                "preview_url": impl_meta.get("preview_url") or get_gcs_preview_url(spec_id, library_id),
-                "generated_at": generated_at,
-                "generated_by": current.get("generated_by"),
-                "workflow_run": current.get("workflow_run"),
-                "issue": current.get("issue"),
-                "quality_score": current.get("quality_score"),
-                # Quality evaluation details (convert datetimes in JSONB)
-                "evaluator_scores": convert_datetimes_to_strings(current.get("evaluator_scores")),
-                "quality_feedback": current.get("quality_feedback"),
-                "improvements_suggested": convert_datetimes_to_strings(current.get("improvements_suggested")),
-                # Version history (convert datetimes in JSONB)
-                "history": convert_datetimes_to_strings(impl_meta.get("history")),
-            })
+            implementations.append(
+                {
+                    "spec_id": spec_id,
+                    "library_id": library_id,
+                    "code": code,
+                    # Preview URLs (from metadata YAML, filled by workflow)
+                    "preview_url": impl_meta.get("preview_url"),
+                    "preview_thumb": impl_meta.get("preview_thumb"),
+                    "preview_html": impl_meta.get("preview_html"),
+                    # Versions (from metadata YAML, filled by workflow)
+                    "python_version": current.get("python_version"),
+                    "library_version": current.get("library_version"),
+                    # Generation metadata
+                    "generated_at": generated_at,
+                    "generated_by": current.get("generated_by"),
+                    "workflow_run": current.get("workflow_run"),
+                    "issue": current.get("issue"),
+                    "quality_score": current.get("quality_score"),
+                    # Quality evaluation details (convert datetimes in JSONB)
+                    "evaluator_scores": convert_datetimes_to_strings(current.get("evaluator_scores")),
+                    "quality_feedback": current.get("quality_feedback"),
+                    "improvements_suggested": convert_datetimes_to_strings(current.get("improvements_suggested")),
+                    # Version history (convert datetimes in JSONB)
+                    "history": convert_datetimes_to_strings(impl_meta.get("history")),
+                }
+            )
 
-    return {
-        "spec": spec_data,
-        "implementations": implementations,
-    }
-
-
-def get_gcs_preview_url(spec_id: str, library: str) -> str:
-    """
-    Get the GCS preview URL for an implementation.
-
-    Args:
-        spec_id: The specification ID
-        library: The library name
-
-    Returns:
-        Public GCS URL for latest.png
-    """
-    return f"https://storage.googleapis.com/{GCS_BUCKET}/plots/{spec_id}/{library}/latest.png"
+    return {"spec": spec_data, "implementations": implementations}
 
 
 async def sync_to_database(session: AsyncSession, plots: list[dict]) -> dict:
@@ -360,25 +349,30 @@ async def sync_to_database(session: AsyncSession, plots: list[dict]) -> dict:
             key = (impl["spec_id"], impl["library_id"])
             impl_keys.add(key)
 
-            update_set = {
-                "code": impl["code"],
-                "preview_url": impl["preview_url"],
-            }
+            update_set = {"code": impl["code"]}
 
-            # Add optional fields
+            # Add optional fields (only if not None)
             optional_fields = [
-                "generated_at", "generated_by", "workflow_run", "issue", "quality_score",
-                "evaluator_scores", "quality_feedback", "improvements_suggested", "history"
+                "preview_url",
+                "preview_thumb",
+                "preview_html",
+                "python_version",
+                "library_version",
+                "generated_at",
+                "generated_by",
+                "workflow_run",
+                "issue",
+                "quality_score",
+                "evaluator_scores",
+                "quality_feedback",
+                "improvements_suggested",
+                "history",
             ]
             for field in optional_fields:
                 if impl.get(field) is not None:
                     update_set[field] = impl[field]
 
-            stmt = (
-                insert(Implementation)
-                .values(**impl)
-                .on_conflict_do_update(constraint="uq_spec_library", set_=update_set)
-            )
+            stmt = insert(Impl).values(**impl).on_conflict_do_update(constraint="uq_impl", set_=update_set)
             await session.execute(stmt)
             stats["impls_synced"] += 1
 
@@ -390,21 +384,16 @@ async def sync_to_database(session: AsyncSession, plots: list[dict]) -> dict:
         stats["specs_removed"] = len(removed_spec_ids)
         logger.info(f"Removed {len(removed_spec_ids)} specs no longer in repo")
 
-    # Remove implementations that no longer exist in repo
-    result = await session.execute(select(Implementation.spec_id, Implementation.library_id))
+    # Remove impls that no longer exist in repo
+    result = await session.execute(select(Impl.spec_id, Impl.library_id))
     existing_impls = [(row[0], row[1]) for row in result.fetchall()]
 
     removed_impls = [impl for impl in existing_impls if impl not in impl_keys]
     if removed_impls:
         for spec_id, library_id in removed_impls:
-            await session.execute(
-                delete(Implementation).where(
-                    Implementation.spec_id == spec_id,
-                    Implementation.library_id == library_id,
-                )
-            )
+            await session.execute(delete(Impl).where(Impl.spec_id == spec_id, Impl.library_id == library_id))
         stats["impls_removed"] = len(removed_impls)
-        logger.info(f"Removed {len(removed_impls)} implementations no longer in repo")
+        logger.info(f"Removed {len(removed_impls)} impls no longer in repo")
 
     await session.commit()
     return stats
@@ -412,8 +401,8 @@ async def sync_to_database(session: AsyncSession, plots: list[dict]) -> dict:
 
 async def main() -> int:
     """Main entry point for the sync script."""
-    if not DATABASE_URL:
-        logger.error("DATABASE_URL environment variable not set")
+    if not is_db_configured():
+        logger.error("No database configuration found (DATABASE_URL or INSTANCE_CONNECTION_NAME)")
         return 1
 
     logger.info("Starting sync to PostgreSQL...")
@@ -438,12 +427,10 @@ async def main() -> int:
     total_impls = sum(len(p["implementations"]) for p in plots)
     logger.info(f"Found {total_impls} implementations")
 
-    # Create database connection
-    engine = create_async_engine(DATABASE_URL, pool_pre_ping=True)
-    async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-
+    # Initialize database connection (uses Cloud SQL Connector if INSTANCE_CONNECTION_NAME is set)
     try:
-        async with async_session() as session:
+        await init_db()
+        async with get_db_context() as session:
             stats = await sync_to_database(session, plots)
 
         logger.info("Sync completed successfully!")
@@ -456,7 +443,7 @@ async def main() -> int:
         return 1
 
     finally:
-        await engine.dispose()
+        await close_db()
 
 
 if __name__ == "__main__":

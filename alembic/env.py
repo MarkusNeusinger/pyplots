@@ -1,5 +1,9 @@
 """
 Alembic environment configuration for async migrations.
+
+Supports two connection modes:
+1. DATABASE_URL - Direct connection (local development)
+2. INSTANCE_CONNECTION_NAME - Cloud SQL Connector (GitHub Actions, Cloud Run)
 """
 
 import asyncio
@@ -9,7 +13,7 @@ from logging.config import fileConfig
 from dotenv import load_dotenv
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
-from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlalchemy.ext.asyncio import async_engine_from_config, create_async_engine
 
 from alembic import context
 
@@ -19,17 +23,23 @@ load_dotenv()
 
 # Import models to register them with Base.metadata (required for autogenerate)
 # These imports ARE used - SQLAlchemy needs them loaded to detect schema changes
-from core.database import Base, Implementation, Library, Spec  # noqa: E402, F401
+from core.database import Base, Impl, Library, Spec  # noqa: E402, F401
 
 
 # Alembic Config object
 config = context.config
 
-# Override sqlalchemy.url with DATABASE_URL from environment
-database_url = os.getenv("DATABASE_URL", "")
-if database_url:
+# Environment variables
+DATABASE_URL = os.getenv("DATABASE_URL", "")
+INSTANCE_CONNECTION_NAME = os.getenv("INSTANCE_CONNECTION_NAME", "")
+DB_USER = os.getenv("DB_USER", "postgres")
+DB_PASS = os.getenv("DB_PASS", "")
+DB_NAME = os.getenv("DB_NAME", "pyplots")
+
+# Override sqlalchemy.url with DATABASE_URL from environment (for direct connections)
+if DATABASE_URL:
     # Escape % characters for configparser (double them)
-    config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
+    config.set_main_option("sqlalchemy.url", DATABASE_URL.replace("%", "%%"))
 
 # Setup logging
 if config.config_file_name is not None:
@@ -63,20 +73,47 @@ def do_run_migrations(connection: Connection) -> None:
         context.run_migrations()
 
 
+async def _create_cloud_sql_engine():
+    """Create engine using Cloud SQL Python Connector."""
+    from google.cloud.sql.connector import Connector, IPTypes
+
+    connector = Connector()
+
+    async def get_conn():
+        conn = await connector.connect_async(
+            INSTANCE_CONNECTION_NAME, "asyncpg", user=DB_USER, password=DB_PASS, db=DB_NAME, ip_type=IPTypes.PUBLIC
+        )
+        return conn
+
+    engine = create_async_engine("postgresql+asyncpg://", async_creator=get_conn, poolclass=pool.NullPool)
+
+    return engine, connector
+
+
 async def run_async_migrations() -> None:
     """
     Run migrations in 'online' mode with async engine.
 
-    Creates an Engine and associates a connection with the context.
+    Supports both direct DATABASE_URL and Cloud SQL Connector.
     """
-    connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}), prefix="sqlalchemy.", poolclass=pool.NullPool
-    )
+    connector = None
 
-    async with connectable.connect() as connection:
-        await connection.run_sync(do_run_migrations)
+    if INSTANCE_CONNECTION_NAME and not DATABASE_URL:
+        # Use Cloud SQL Connector
+        connectable, connector = await _create_cloud_sql_engine()
+    else:
+        # Use direct connection via DATABASE_URL
+        connectable = async_engine_from_config(
+            config.get_section(config.config_ini_section, {}), prefix="sqlalchemy.", poolclass=pool.NullPool
+        )
 
-    await connectable.dispose()
+    try:
+        async with connectable.connect() as connection:
+            await connection.run_sync(do_run_migrations)
+    finally:
+        await connectable.dispose()
+        if connector:
+            await connector.close_async()
 
 
 def run_migrations_online() -> None:

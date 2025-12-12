@@ -65,8 +65,11 @@ implementations for all 9 supported libraries.
 
 ```
 plots/scatter-basic/
-├── spec.md              # Library-agnostic specification
-├── metadata.yaml        # Tags, generation info, quality scores
+├── specification.md     # Library-agnostic specification
+├── specification.yaml   # Tags, created, issue, suggested
+├── metadata/            # Per-library metadata (quality scores, preview URLs)
+│   ├── matplotlib.yaml
+│   └── ...
 └── implementations/
     ├── matplotlib.py
     ├── seaborn.py
@@ -76,7 +79,7 @@ plots/scatter-basic/
 
 **Issue-based workflow**: GitHub Issues as state machine for plot lifecycle. Status tracked via live-updating table (no sub-issues). Each library generates in parallel, creating PRs to a feature branch.
 
-**AI quality review**: Claude evaluates generated plots (score ≥ 85 required). Automatic feedback loops (max 3 attempts per library). Quality scores flow via PR labels → metadata.yaml.
+**AI quality review**: Claude evaluates generated plots (score ≥ 85 required). Automatic feedback loops (max 3 attempts per library). Quality scores flow via PR labels → per-library metadata files.
 
 See [docs/architecture/](docs/architecture/) for details.
 
@@ -112,8 +115,9 @@ Most plotting libraries are fully open source. Note these exceptions:
 pyplots/
 ├── plots/              # Plot-centric directories (spec + metadata + implementations)
 │   └── {spec-id}/
-│       ├── spec.md
-│       ├── metadata.yaml
+│       ├── specification.md
+│       ├── specification.yaml
+│       ├── metadata/
 │       └── implementations/
 ├── prompts/            # AI agent prompts
 ├── core/               # Shared business logic
@@ -150,7 +154,7 @@ We welcome contributions! **All code is AI-generated** - you propose ideas, AI i
 
 **The workflow**:
 
-1. You create Issue with plot idea + add `plot-request` label
+1. You create Issue with plot idea + add `spec-request` label
 2. AI generates spec, creates feature branch
 3. Maintainer reviews and adds `approved` label
 4. 9 library implementations generate in parallel (tracked via live status table)

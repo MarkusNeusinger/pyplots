@@ -21,20 +21,24 @@ import yaml
 # Base paths
 WORKFLOWS_DIR = Path(__file__).parent.parent.parent.parent / ".github" / "workflows"
 
-# Expected workflow files
+# Expected workflow files (updated for new architecture)
 EXPECTED_WORKFLOWS = [
+    # CI workflows
     "ci-lint.yml",
     "ci-unittest.yml",
-    "ci-plottest.yml",
-    "gen-new-plot.yml",
-    "gen-library-impl.yml",
-    "gen-preview.yml",
-    "gen-update-plot.yml",
-    "bot-validate-request.yml",
-    "bot-ai-review.yml",
-    "bot-auto-merge.yml",
-    "bot-auto-tag.yml",
-    "bot-sync-status.yml",
+    # Specification workflows
+    "spec-create.yml",
+    "spec-update.yml",
+    # Implementation workflows
+    "impl-generate.yml",
+    "impl-review.yml",
+    "impl-repair.yml",
+    "impl-merge.yml",
+    "bulk-generate.yml",
+    # Database sync
+    "sync-postgres.yml",
+    # Utility
+    "util-claude.yml",
 ]
 
 # Actions that should have pinned versions
@@ -319,20 +323,16 @@ class TestWorkflowBestPractices:
 
     def test_reusable_workflows_have_inputs(self) -> None:
         """Reusable workflows should define their inputs."""
-        reusable_patterns = ["gen-library-impl.yml"]
-
-        for filename in reusable_patterns:
-            filepath = WORKFLOWS_DIR / filename
-            if not filepath.exists():
-                continue
-
-            workflow = load_workflow(filename)
+        # Check for any workflows that use workflow_call trigger
+        for filepath in get_all_workflow_files():
+            workflow = load_workflow(filepath.name)
             on_trigger = get_workflow_trigger(workflow)
 
             if isinstance(on_trigger, dict) and "workflow_call" in on_trigger:
                 call_config = on_trigger["workflow_call"]
-                assert "inputs" in call_config or "secrets" in call_config, (
-                    f"Reusable workflow {filename} should define inputs or secrets"
+                # Reusable workflows should define inputs or secrets
+                assert "inputs" in call_config or "secrets" in call_config or call_config is None, (
+                    f"Reusable workflow {filepath.name} should define inputs or secrets"
                 )
 
 

@@ -83,26 +83,24 @@ def add_watermark(
     font_size: int | None = None,
     padding: int | None = None,
 ) -> None:
-    """Add pyplots.ai branded watermark to an image.
+    """Add pyplots.ai branded watermark footer to an image.
 
-    Adds pyplots.ai (in brand colors) to bottom-right and spec_id to bottom-left.
-    Uses JetBrains Mono Bold font with gray shadow for readability.
+    Adds a white footer strip below the image with spec_id (left) and pyplots.ai (right).
+    Uses JetBrains Mono Bold font and brand colors.
     Font size and padding scale automatically based on image width.
 
     Args:
         input_path: Path to the source image.
         output_path: Path where the watermarked image will be saved.
         spec_id: Spec ID for bottom-left corner (e.g., "scatter-basic").
-        font_size: Size of the watermark font in pixels. If None, auto-scales (~1% of width).
-        padding: Padding from the image edge in pixels. If None, auto-scales (~0.5% of width).
+        font_size: Size of the watermark font in pixels. If None, auto-scales (~1.35% of width).
+        padding: Padding from the image edge in pixels. If None, auto-scales (~0.8% of width).
 
     Raises:
         FileNotFoundError: If input_path does not exist.
         PIL.UnidentifiedImageError: If input is not a valid image.
     """
-    img = Image.open(input_path).convert("RGBA")
-    overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
-    draw = ImageDraw.Draw(overlay)
+    img = Image.open(input_path).convert("RGB")
 
     # Auto-scale font size and padding based on image width
     if font_size is None:
@@ -111,44 +109,49 @@ def add_watermark(
         padding = max(15, int(img.width * 0.008))  # ~0.8% of width, min 15px
 
     font = _get_font(font_size)
-    alpha = int(255 * 0.95)
 
-    # Brand colors
-    py_color = _hex_to_rgba(PYPLOTS_BLUE, alpha)
-    plots_color = _hex_to_rgba(PYPLOTS_YELLOW, alpha)
-    ai_color = _hex_to_rgba(PYPLOTS_DARK, alpha)
-    shadow_color = (50, 50, 50, 150)  # Gray shadow
+    # Measure text height for footer
+    temp_draw = ImageDraw.Draw(img)
+    text_h = temp_draw.textbbox((0, 0), "py", font=font)[3]
 
-    # Measure text dimensions
+    # Footer height: text + minimal padding (~half font height total padding)
+    footer_padding_v = max(4, text_h // 4)  # Small vertical padding
+    footer_height = text_h + footer_padding_v * 2
+
+    # Create new image with footer
+    new_height = img.height + footer_height
+    result = Image.new("RGB", (img.width, new_height), (255, 255, 255))
+    result.paste(img, (0, 0))
+
+    # Draw on footer
+    draw = ImageDraw.Draw(result)
+
+    # Brand colors (RGB, no alpha needed on white background)
+    py_color = tuple(int(PYPLOTS_BLUE.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4))
+    plots_color = tuple(int(PYPLOTS_YELLOW.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4))
+    ai_color = tuple(int(PYPLOTS_DARK.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4))
+
+    # Measure text widths
     py_w = draw.textbbox((0, 0), "py", font=font)[2]
     plots_w = draw.textbbox((0, 0), "plots", font=font)[2]
     ai_w = draw.textbbox((0, 0), ".ai", font=font)[2]
     url_w = py_w + plots_w + ai_w
-    text_h = draw.textbbox((0, 0), "py", font=font)[3]
 
-    # Position: bottom with padding
-    y = img.height - text_h - padding
+    # Position: centered vertically in footer
+    y = img.height + footer_padding_v
     url_x = img.width - url_w - padding
     spec_x = padding
-    shadow_offset = 2
 
-    # Draw pyplots.ai with shadow (right side)
-    # Shadow first
-    draw.text((url_x + shadow_offset, y + shadow_offset), "py", font=font, fill=shadow_color)
-    draw.text((url_x + py_w + shadow_offset, y + shadow_offset), "plots", font=font, fill=shadow_color)
-    draw.text((url_x + py_w + plots_w + shadow_offset, y + shadow_offset), ".ai", font=font, fill=shadow_color)
-    # Colored text
+    # Draw pyplots.ai (right side)
     draw.text((url_x, y), "py", font=font, fill=py_color)
     draw.text((url_x + py_w, y), "plots", font=font, fill=plots_color)
     draw.text((url_x + py_w + plots_w, y), ".ai", font=font, fill=ai_color)
 
-    # Draw spec_id with shadow (left side)
+    # Draw spec_id (left side)
     if spec_id:
-        draw.text((spec_x + shadow_offset, y + shadow_offset), spec_id, font=font, fill=shadow_color)
         draw.text((spec_x, y), spec_id, font=font, fill=py_color)
 
-    result = Image.alpha_composite(img, overlay)
-    result.convert("RGB").save(output_path, optimize=True)
+    result.save(output_path, optimize=True)
 
 
 def optimize_png(input_path: str | Path, output_path: str | Path | None = None, quality: int = 80) -> int:

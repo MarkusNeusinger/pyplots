@@ -64,16 +64,17 @@ class TestAddWatermark:
     """Tests for add_watermark function."""
 
     def test_adds_watermark_to_image(self, sample_image: Path, tmp_path: Path) -> None:
-        """Watermark should be added to the image."""
+        """Watermark should be added to the image as a footer."""
         output_path = tmp_path / "watermarked.png"
         add_watermark(sample_image, output_path)
 
         assert output_path.exists()
 
-        # Verify the image was created and has same dimensions
+        # Verify the image was created with footer (taller than original)
         result_img = Image.open(output_path)
         original_img = Image.open(sample_image)
-        assert result_img.size == original_img.size
+        assert result_img.width == original_img.width
+        assert result_img.height > original_img.height  # Footer adds height
 
     def test_with_spec_id_basic(self, sample_image: Path, tmp_path: Path) -> None:
         """Function should accept spec_id for left watermark."""
@@ -105,7 +106,9 @@ class TestProcessPlotImage:
         assert thumb_path.exists()
         assert result["output"] == str(output_path)
         assert result["thumbnail"] == str(thumb_path)
-        assert result["thumb_size"] == (600, 450)
+        # Thumbnail width should be 600, height varies due to footer
+        assert result["thumb_size"][0] == 600
+        assert result["thumb_size"][1] > 450  # Original 450 + footer
 
     def test_without_thumbnail(self, sample_image: Path, tmp_path: Path) -> None:
         """Should work without creating a thumbnail."""

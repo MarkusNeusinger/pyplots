@@ -77,7 +77,7 @@ def create_thumbnail(input_path: str | Path, output_path: str | Path, width: int
 
 
 def add_watermark(
-    input_path: str | Path, output_path: str | Path, spec_id: str | None = None, font_size: int = 48, padding: int = 40
+    input_path: str | Path, output_path: str | Path, spec_id: str | None = None, font_size: int = 48, padding: int = 25
 ) -> None:
     """Add pyplots.ai branded watermark to an image.
 
@@ -259,7 +259,7 @@ def add_html_watermark(html_content: str, spec_id: str) -> str:
       .pyplots-watermark {
         display: flex;
         justify-content: space-between;
-        padding: 12px 20px;
+        padding: 10px 15px;
         font-family: 'JetBrains Mono', monospace;
         font-weight: 700;
         font-size: 14px;

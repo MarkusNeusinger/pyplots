@@ -77,19 +77,20 @@ def create_thumbnail(input_path: str | Path, output_path: str | Path, width: int
 
 
 def add_watermark(
-    input_path: str | Path, output_path: str | Path, spec_id: str | None = None, font_size: int = 48, padding: int = 25
+    input_path: str | Path, output_path: str | Path, spec_id: str | None = None, font_size: int | None = None, padding: int | None = None
 ) -> None:
     """Add pyplots.ai branded watermark to an image.
 
     Adds pyplots.ai (in brand colors) to bottom-right and spec_id to bottom-left.
     Uses JetBrains Mono Bold font with gray shadow for readability.
+    Font size and padding scale automatically based on image width.
 
     Args:
         input_path: Path to the source image.
         output_path: Path where the watermarked image will be saved.
         spec_id: Spec ID for bottom-left corner (e.g., "scatter-basic").
-        font_size: Size of the watermark font in pixels.
-        padding: Padding from the image edge in pixels.
+        font_size: Size of the watermark font in pixels. If None, auto-scales (~1% of width).
+        padding: Padding from the image edge in pixels. If None, auto-scales (~0.5% of width).
 
     Raises:
         FileNotFoundError: If input_path does not exist.
@@ -98,6 +99,12 @@ def add_watermark(
     img = Image.open(input_path).convert("RGBA")
     overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
+
+    # Auto-scale font size and padding based on image width
+    if font_size is None:
+        font_size = max(24, int(img.width * 0.01))  # ~1% of width, min 24px
+    if padding is None:
+        padding = max(15, int(img.width * 0.005))  # ~0.5% of width, min 15px
 
     font = _get_font(font_size)
     alpha = int(255 * 0.95)

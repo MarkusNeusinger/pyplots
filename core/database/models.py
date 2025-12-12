@@ -1,7 +1,7 @@
 """
 SQLAlchemy ORM models for pyplots.
 
-Defines database tables for specs, libraries, and implementations.
+Defines database tables for specs, libraries, and impls.
 """
 
 from datetime import datetime
@@ -35,16 +35,16 @@ class Spec(Base):
     created: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)  # When spec was created
     issue: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # GitHub issue number
     suggested: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # GitHub username
-    tags: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)  # {plot_type, domain, features, audience, data_type}
+    tags: Mapped[Optional[dict]] = mapped_column(
+        JSONB, nullable=True
+    )  # {plot_type, domain, features, audience, data_type}
     history: Mapped[Optional[list]] = mapped_column(JSONB, nullable=True)  # Spec update history
 
     # System
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 
     # Relationships
-    implementations: Mapped[list["Implementation"]] = relationship(
-        "Implementation", back_populates="spec", cascade="all, delete-orphan"
-    )
+    impls: Mapped[list["Impl"]] = relationship("Impl", back_populates="spec", cascade="all, delete-orphan")
 
 
 class Library(Base):
@@ -58,15 +58,13 @@ class Library(Base):
     documentation_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
 
     # Relationships
-    implementations: Mapped[list["Implementation"]] = relationship(
-        "Implementation", back_populates="library", cascade="all, delete-orphan"
-    )
+    impls: Mapped[list["Impl"]] = relationship("Impl", back_populates="library", cascade="all, delete-orphan")
 
 
-class Implementation(Base):
+class Impl(Base):
     """Library-specific implementation of a spec."""
 
-    __tablename__ = "implementations"
+    __tablename__ = "impls"
 
     # Identification
     id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=lambda: str(uuid4()))
@@ -76,13 +74,13 @@ class Implementation(Base):
     # Code
     code: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Python source
 
-    # Previews
+    # Previews (filled by workflow, synced from metadata YAML)
     preview_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # Full PNG
     preview_thumb: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # Thumbnail PNG
     preview_html: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # Interactive HTML
 
-    # Creation versions
-    python_version: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # e.g., "3.12"
+    # Creation versions (filled by workflow)
+    python_version: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # e.g., "3.13"
     library_version: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # e.g., "3.9.0"
 
     # Test matrix: [{"py": "3.11", "lib": "3.8.5", "ok": true}, ...]
@@ -107,11 +105,11 @@ class Implementation(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 
     # Relationships
-    spec: Mapped["Spec"] = relationship("Spec", back_populates="implementations")
-    library: Mapped["Library"] = relationship("Library", back_populates="implementations")
+    spec: Mapped["Spec"] = relationship("Spec", back_populates="impls")
+    library: Mapped["Library"] = relationship("Library", back_populates="impls")
 
     # Unique constraint
-    __table_args__ = (UniqueConstraint("spec_id", "library_id", name="uq_spec_library"),)
+    __table_args__ = (UniqueConstraint("spec_id", "library_id", name="uq_impl"),)
 
 
 # Seed data for libraries

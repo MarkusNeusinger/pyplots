@@ -10,7 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from core.database.models import Implementation, Library, Spec
+from core.database.models import Impl, Library, Spec
 
 
 class SpecRepository:
@@ -26,7 +26,7 @@ class SpecRepository:
         Returns:
             List of Spec objects with implementations loaded
         """
-        result = await self.session.execute(select(Spec).options(selectinload(Spec.implementations)))
+        result = await self.session.execute(select(Spec).options(selectinload(Spec.impls)))
         return list(result.scalars().all())
 
     async def get_by_id(self, spec_id: str) -> Optional[Spec]:
@@ -40,9 +40,7 @@ class SpecRepository:
             Spec object or None if not found
         """
         result = await self.session.execute(
-            select(Spec)
-            .where(Spec.id == spec_id)
-            .options(selectinload(Spec.implementations).selectinload(Implementation.library))
+            select(Spec).where(Spec.id == spec_id).options(selectinload(Spec.impls).selectinload(Impl.library))
         )
         return result.scalar_one_or_none()
 
@@ -67,7 +65,7 @@ class SpecRepository:
             List of matching Spec objects
         """
         result = await self.session.execute(
-            select(Spec).where(Spec.tags.overlap(tags)).options(selectinload(Spec.implementations))
+            select(Spec).where(Spec.tags.overlap(tags)).options(selectinload(Spec.impls))
         )
         return list(result.scalars().all())
 
@@ -78,20 +76,15 @@ class LibraryRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_all(self, active_only: bool = True) -> list[Library]:
+    async def get_all(self) -> list[Library]:
         """
         Get all libraries.
-
-        Args:
-            active_only: If True, only return active libraries
 
         Returns:
             List of Library objects
         """
-        query = select(Library)
-        if active_only:
-            query = query.where(Library.active == True)  # noqa: E712
-        result = await self.session.execute(query.order_by(Library.name))
+        query = select(Library).order_by(Library.name)
+        result = await self.session.execute(query)
         return list(result.scalars().all())
 
     async def get_by_id(self, library_id: str) -> Optional[Library]:
@@ -108,13 +101,13 @@ class LibraryRepository:
         return result.scalar_one_or_none()
 
 
-class ImplementationRepository:
-    """Repository for Implementation operations."""
+class ImplRepository:
+    """Repository for Impl operations."""
 
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_spec(self, spec_id: str) -> list[Implementation]:
+    async def get_by_spec(self, spec_id: str) -> list[Impl]:
         """
         Get all implementations for a spec.
 
@@ -122,17 +115,14 @@ class ImplementationRepository:
             spec_id: The specification ID
 
         Returns:
-            List of Implementation objects
+            List of Impl objects
         """
         result = await self.session.execute(
-            select(Implementation)
-            .where(Implementation.spec_id == spec_id)
-            .options(selectinload(Implementation.library))
-            .order_by(Implementation.library_id)
+            select(Impl).where(Impl.spec_id == spec_id).options(selectinload(Impl.library)).order_by(Impl.library_id)
         )
         return list(result.scalars().all())
 
-    async def get_by_library(self, library_id: str) -> list[Implementation]:
+    async def get_by_library(self, library_id: str) -> list[Impl]:
         """
         Get all implementations for a library.
 
@@ -140,35 +130,23 @@ class ImplementationRepository:
             library_id: The library ID
 
         Returns:
-            List of Implementation objects
+            List of Impl objects
         """
         result = await self.session.execute(
-            select(Implementation)
-            .where(Implementation.library_id == library_id)
-            .options(selectinload(Implementation.spec))
-            .order_by(Implementation.spec_id)
+            select(Impl).where(Impl.library_id == library_id).options(selectinload(Impl.spec)).order_by(Impl.spec_id)
         )
         return list(result.scalars().all())
 
-    async def get_by_spec_and_library(
-        self, spec_id: str, library_id: str, variant: str = "default"
-    ) -> Optional[Implementation]:
+    async def get_by_spec_and_library(self, spec_id: str, library_id: str) -> Optional[Impl]:
         """
         Get a specific implementation.
 
         Args:
             spec_id: The specification ID
             library_id: The library ID
-            variant: The variant name (default: "default")
 
         Returns:
-            Implementation object or None if not found
+            Impl object or None if not found
         """
-        result = await self.session.execute(
-            select(Implementation).where(
-                Implementation.spec_id == spec_id,
-                Implementation.library_id == library_id,
-                Implementation.variant == variant,
-            )
-        )
+        result = await self.session.execute(select(Impl).where(Impl.spec_id == spec_id, Impl.library_id == library_id))
         return result.scalar_one_or_none()

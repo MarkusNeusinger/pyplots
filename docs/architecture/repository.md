@@ -239,16 +239,19 @@ Preview images are stored in Google Cloud Storage (not in repo):
 
 ```
 gs://pyplots-images/
-├── plots/{spec-id}/{library}/           # Live (after merge)
-│   ├── latest.png, latest_thumb.png
-│   ├── latest.html                      # Optional (interactive)
-│   └── history/v0.png, v1.png, ...
+├── plots/{spec-id}/{library}/           # Production (after merge)
+│   ├── plot.png                         # Full-size watermarked image
+│   ├── plot_thumb.png                   # Thumbnail (600px width)
+│   ├── plot.html                        # Optional (interactive libraries)
+│   └── history/                         # Version history
 │
-└── staging/{spec-id}/{library}/         # Temp (review)
-    └── preview.png, preview.html
+└── staging/{spec-id}/{library}/         # Temp (during review)
+    └── plot.png, plot.html
 ```
 
 **Interactive libraries** (`.html`): plotly, bokeh, altair, highcharts, pygal, letsplot
+
+**Image Processing**: Images are watermarked with pyplots.ai branding and optimized with pngquant.
 
 ---
 

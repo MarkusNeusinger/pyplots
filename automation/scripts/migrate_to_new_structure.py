@@ -19,7 +19,6 @@ import argparse
 import logging
 import shutil
 import sys
-from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -50,7 +49,7 @@ def migrate_plot_directory(plot_dir: Path, dry_run: bool = False) -> bool:
 
     # Check if already migrated
     if (plot_dir / "specification.md").exists():
-        logger.info(f"  Already migrated (specification.md exists)")
+        logger.info("  Already migrated (specification.md exists)")
         return True
 
     # Check for legacy files
@@ -58,20 +57,20 @@ def migrate_plot_directory(plot_dir: Path, dry_run: bool = False) -> bool:
     legacy_metadata = plot_dir / "metadata.yaml"
 
     if not legacy_spec.exists():
-        logger.warning(f"  No spec.md found, skipping")
+        logger.warning("  No spec.md found, skipping")
         return False
 
     # Step 1: Rename spec.md -> specification.md
     new_spec = plot_dir / "specification.md"
     if dry_run:
-        logger.info(f"  [DRY RUN] Would rename: spec.md -> specification.md")
+        logger.info("  [DRY RUN] Would rename: spec.md -> specification.md")
     else:
         shutil.move(legacy_spec, new_spec)
-        logger.info(f"  Renamed: spec.md -> specification.md")
+        logger.info("  Renamed: spec.md -> specification.md")
 
     # Step 2: Split metadata.yaml
     if not legacy_metadata.exists():
-        logger.info(f"  No metadata.yaml found, creating empty specification.yaml")
+        logger.info("  No metadata.yaml found, creating empty specification.yaml")
         if not dry_run:
             spec_yaml = {
                 "specification_id": spec_id,
@@ -108,21 +107,24 @@ def migrate_plot_directory(plot_dir: Path, dry_run: bool = False) -> bool:
         "issue": legacy_data.get("issue"),
         "suggested": legacy_data.get("suggested"),
         "updates": legacy_data.get("updates", []),
-        "tags": legacy_data.get("tags", {
-            "plot_type": [],
-            "domain": ["general"],
-            "features": ["basic"],
-            "audience": ["beginner"],
-            "data_type": ["numeric"],
-        }),
+        "tags": legacy_data.get(
+            "tags",
+            {
+                "plot_type": [],
+                "domain": ["general"],
+                "features": ["basic"],
+                "audience": ["beginner"],
+                "data_type": ["numeric"],
+            },
+        ),
     }
 
     if dry_run:
-        logger.info(f"  [DRY RUN] Would create: specification.yaml")
+        logger.info("  [DRY RUN] Would create: specification.yaml")
     else:
         with open(plot_dir / "specification.yaml", "w") as f:
             yaml.dump(spec_yaml, f, default_flow_style=False, sort_keys=False)
-        logger.info(f"  Created: specification.yaml")
+        logger.info("  Created: specification.yaml")
 
     # Create metadata/{library}.yaml for each implementation
     implementations = legacy_data.get("implementations", {})
@@ -130,10 +132,10 @@ def migrate_plot_directory(plot_dir: Path, dry_run: bool = False) -> bool:
         metadata_dir = plot_dir / "metadata"
 
         if dry_run:
-            logger.info(f"  [DRY RUN] Would create: metadata/ directory")
+            logger.info("  [DRY RUN] Would create: metadata/ directory")
         else:
             metadata_dir.mkdir(exist_ok=True)
-            logger.info(f"  Created: metadata/ directory")
+            logger.info("  Created: metadata/ directory")
 
         for library_id, impl_data in implementations.items():
             library_yaml = {
@@ -154,10 +156,10 @@ def migrate_plot_directory(plot_dir: Path, dry_run: bool = False) -> bool:
 
     # Step 3: Delete legacy metadata.yaml
     if dry_run:
-        logger.info(f"  [DRY RUN] Would delete: metadata.yaml")
+        logger.info("  [DRY RUN] Would delete: metadata.yaml")
     else:
         legacy_metadata.unlink()
-        logger.info(f"  Deleted: metadata.yaml")
+        logger.info("  Deleted: metadata.yaml")
 
     return True
 

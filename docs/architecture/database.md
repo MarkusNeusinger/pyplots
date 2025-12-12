@@ -48,17 +48,21 @@ pyplots uses **PostgreSQL** (Cloud SQL) to store metadata about plots, specs, an
 ### Tables
 
 ```sql
--- Generic plot specifications
+-- Plot specifications (library-agnostic)
 CREATE TABLE specs
 (
-    id                VARCHAR PRIMARY KEY,      -- "scatter-basic-001"
-    title             VARCHAR NOT NULL,         -- "Basic 2D Scatter Plot"
-    description       TEXT,                     -- Full description
-    data_requirements JSONB   NOT NULL,         -- [{"name": "x", "type": "numeric", ...}]
-    optional_params   JSONB,                    -- [{"name": "color", "type": "string", ...}]
-    tags              VARCHAR[] DEFAULT '{}',   -- ["correlation", "bivariate", "basic"]
-    created_at        TIMESTAMP DEFAULT NOW(),
-    updated_at        TIMESTAMP DEFAULT NOW()
+    id          VARCHAR PRIMARY KEY,      -- "scatter-basic"
+    title       VARCHAR NOT NULL,         -- "Basic Scatter Plot"
+    description TEXT,                     -- From specification.md
+    applications VARCHAR[],               -- Use cases
+    data        VARCHAR[],                -- Data requirements
+    notes       VARCHAR[],                -- Optional hints
+    created     TIMESTAMP,                -- When spec was created
+    issue       INTEGER,                  -- GitHub issue number
+    suggested   VARCHAR,                  -- GitHub username who suggested
+    tags        JSONB,                    -- {plot_type, domain, features, audience, data_type}
+    history     JSONB,                    -- Spec update history
+    updated_at  TIMESTAMP DEFAULT NOW()
 );
 
 -- Supported plotting libraries
@@ -66,81 +70,57 @@ CREATE TABLE libraries
 (
     id                VARCHAR PRIMARY KEY,      -- "matplotlib", "seaborn", "plotly"
     name              VARCHAR NOT NULL,         -- "Matplotlib"
-    version           VARCHAR,                  -- "3.8.0"
-    documentation_url VARCHAR,                  -- "https://matplotlib.org"
-    active            BOOLEAN DEFAULT true,     -- Is this library currently supported?
-    created_at        TIMESTAMP DEFAULT NOW()
+    version           VARCHAR,                  -- "3.9.0"
+    documentation_url VARCHAR                   -- "https://matplotlib.org"
 );
 
 -- Library-specific implementations
-CREATE TABLE implementations
+CREATE TABLE impls
 (
-    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    spec_id        VARCHAR NOT NULL REFERENCES specs (id) ON DELETE CASCADE,
-    library_id     VARCHAR NOT NULL REFERENCES libraries (id) ON DELETE CASCADE,
-    plot_function  VARCHAR NOT NULL,                     -- "scatter", "bar", "heatmap"
-    variant        VARCHAR NOT NULL,                     -- "default", "ggplot_style", "py310"
-    file_path      VARCHAR NOT NULL,                     -- "plots/matplotlib/scatter/scatter-basic-001/default.py"
-    preview_url    VARCHAR,                              -- GCS URL: gs://pyplots-images/previews/...
-    python_version VARCHAR          DEFAULT '3.10+',     -- "3.10+", "3.11+", "3.10-3.12", "all"
-    tested         BOOLEAN          DEFAULT false,       -- Has this been tested?
-    quality_score  FLOAT,                                -- 0-100 (median of LLM scores)
-    created_at     TIMESTAMP        DEFAULT NOW(),
-    updated_at     TIMESTAMP        DEFAULT NOW(),
-    UNIQUE (spec_id, library_id, variant)
-);
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    spec_id         VARCHAR NOT NULL REFERENCES specs (id) ON DELETE CASCADE,
+    library_id      VARCHAR NOT NULL REFERENCES libraries (id) ON DELETE CASCADE,
 
--- AI-generated and human-added tags
-CREATE TABLE tags
-(
-    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    spec_id    VARCHAR NOT NULL REFERENCES specs (id) ON DELETE CASCADE,
-    tag        VARCHAR NOT NULL,                         -- "correlation", "finance", "3d"
-    confidence FLOAT            DEFAULT 1.0,             -- AI confidence (0-1)
-    created_by VARCHAR          DEFAULT 'ai',            -- "ai" or "human"
-    created_at TIMESTAMP        DEFAULT NOW(),
-    UNIQUE (spec_id, tag)
-);
+    -- Code
+    code            TEXT,                       -- Python source code
 
--- Social media promotion queue
-CREATE TABLE promotion_queue
-(
-    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    spec_id       VARCHAR NOT NULL REFERENCES specs (id) ON DELETE CASCADE,
-    priority      VARCHAR          DEFAULT 'medium',     -- "high", "medium", "low"
-    quality_score FLOAT,                                 -- Copy of implementation quality_score
-    preview_url   VARCHAR,                               -- GCS URL for social media image
-    created_at    TIMESTAMP        DEFAULT NOW(),
-    posted_at     TIMESTAMP,                             -- NULL if not yet posted
-    status        VARCHAR          DEFAULT 'queued',     -- "queued", "posted", "failed"
-    attempt_count INT              DEFAULT 0,            -- How many times we tried to post
-    platform      VARCHAR          DEFAULT 'twitter'     -- "twitter", "linkedin", "reddit"
-);
+    -- Preview URLs (GCS)
+    preview_url     VARCHAR,                    -- Full PNG: gs://pyplots-images/plots/.../plot.png
+    preview_thumb   VARCHAR,                    -- Thumbnail: gs://pyplots-images/plots/.../plot_thumb.png
+    preview_html    VARCHAR,                    -- Interactive: gs://pyplots-images/plots/.../plot.html
 
--- User-generated plots (optional, for analytics)
-CREATE TABLE plot_usage
-(
-    id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    spec_id      VARCHAR REFERENCES specs (id) ON DELETE SET NULL,
-    library_id   VARCHAR REFERENCES libraries (id) ON DELETE SET NULL,
-    variant      VARCHAR,
-    user_session VARCHAR,                                -- Anonymous session ID
-    data_shape   JSONB,                                  -- {"rows": 100, "columns": 3}
-    success      BOOLEAN,                                -- Did plot generation succeed?
-    error_type   VARCHAR,                                -- If failed, what error?
-    created_at   TIMESTAMP        DEFAULT NOW()
+    -- Version info
+    python_version  VARCHAR,                    -- e.g., "3.13"
+    library_version VARCHAR,                    -- e.g., "3.9.0"
+
+    -- Test results: [{"py": "3.11", "lib": "3.8.5", "ok": true}, ...]
+    tested          JSONB,
+
+    -- Quality & Generation
+    quality_score   FLOAT,                      -- 0-100
+    generated_at    TIMESTAMP,
+    generated_by    VARCHAR,                    -- Model ID: "claude-opus-4-5-20251101"
+    issue           INTEGER,                    -- GitHub Issue number
+    workflow_run    BIGINT,                     -- GitHub Actions run ID
+
+    -- Evaluation details
+    evaluator_scores      JSONB,                -- Per-LLM scores
+    quality_feedback      TEXT,                 -- Evaluation feedback
+    improvements_suggested JSONB,               -- Suggested fixes
+
+    -- Version history
+    history         JSONB,
+    updated_at      TIMESTAMP DEFAULT NOW(),
+
+    UNIQUE (spec_id, library_id)
 );
 
 -- Indexes for performance
-CREATE INDEX idx_implementations_spec ON implementations (spec_id);
-CREATE INDEX idx_implementations_library ON implementations (library_id);
-CREATE INDEX idx_tags_spec ON tags (spec_id);
-CREATE INDEX idx_tags_tag ON tags (tag);                -- For tag search
-CREATE INDEX idx_plot_usage_spec ON plot_usage (spec_id);
-CREATE INDEX idx_plot_usage_created ON plot_usage (created_at);
-CREATE INDEX idx_promotion_queue_status ON promotion_queue (status, created_at);
-CREATE INDEX idx_promotion_queue_posted ON promotion_queue (posted_at);
+CREATE INDEX idx_impls_spec ON impls (spec_id);
+CREATE INDEX idx_impls_library ON impls (library_id);
 ```
+
+**Note**: The `tags` and `promotion_queue` tables are planned but not yet implemented.
 
 ---
 
@@ -148,29 +128,33 @@ CREATE INDEX idx_promotion_queue_posted ON promotion_queue (posted_at);
 
 ### `specs`
 
-**Purpose**: Store generic plot specifications
+**Purpose**: Store library-agnostic plot specifications
 
 **Key Fields**:
-- `id` - Spec identifier (e.g., "scatter-basic-001")
-- `data_requirements` - JSONB array of required parameters
-- `optional_params` - JSONB array of optional parameters
-- `tags` - Array of keywords for search
+- `id` - Spec identifier (e.g., "scatter-basic")
+- `title` - Display title
+- `description` - Full description from specification.md
+- `applications` - Use cases array
+- `data` - Data requirements array
+- `tags` - JSONB with structured tags (plot_type, domain, features, audience, data_type)
 
 **Example Row**:
 ```json
 {
-  "id": "scatter-basic-001",
-  "title": "Basic 2D Scatter Plot",
-  "description": "Create a simple scatter plot...",
-  "data_requirements": [
-    {"name": "x", "type": "numeric", "description": "X-axis values"},
-    {"name": "y", "type": "numeric", "description": "Y-axis values"}
-  ],
-  "optional_params": [
-    {"name": "color", "type": "string|column", "default": null},
-    {"name": "alpha", "type": "float", "default": 0.8}
-  ],
-  "tags": ["correlation", "bivariate", "basic", "2d"]
+  "id": "scatter-basic",
+  "title": "Basic Scatter Plot",
+  "description": "A fundamental scatter plot showing relationship between two variables...",
+  "applications": ["Show correlation", "Compare distributions"],
+  "data": ["x: numeric values", "y: numeric values"],
+  "notes": ["Use alpha for overlapping points"],
+  "created": "2025-01-10T08:00:00Z",
+  "issue": 42,
+  "suggested": "CoolContributor",
+  "tags": {
+    "plot_type": ["scatter", "point"],
+    "domain": ["statistics"],
+    "features": ["basic", "2d"]
+  }
 }
 ```
 
@@ -180,196 +164,88 @@ CREATE INDEX idx_promotion_queue_posted ON promotion_queue (posted_at);
 
 **Purpose**: Track supported plotting libraries
 
-**Key Fields**:
-- `id` - Library identifier (e.g., "matplotlib")
-- `version` - Current version supported
-- `active` - Is this library currently supported?
-
 **Example Rows**:
 ```sql
 INSERT INTO libraries (id, name, version, documentation_url) VALUES
-('matplotlib', 'Matplotlib', '3.8.0', 'https://matplotlib.org'),
+('matplotlib', 'Matplotlib', '3.9.0', 'https://matplotlib.org'),
 ('seaborn', 'Seaborn', '0.13.0', 'https://seaborn.pydata.org'),
-('plotly', 'Plotly', '5.18.0', 'https://plotly.com/python');
+('plotly', 'Plotly', '5.18.0', 'https://plotly.com/python'),
+('altair', 'Altair', '5.2.0', 'https://altair-viz.github.io');
 ```
 
 ---
 
-### `implementations`
+### `impls`
 
 **Purpose**: Track library-specific implementations of specs
 
 **Key Fields**:
 - `spec_id` - References spec
-- `library_id` - Which library (matplotlib, seaborn, etc.)
-- `variant` - Which variant (default, ggplot_style, py310, etc.)
-- `file_path` - Relative path in repository
-- `preview_url` - GCS URL to preview image
-- `quality_score` - Median LLM quality score (0-100)
-- `python_version` - Which Python versions supported
+- `library_id` - Which library
+- `code` - Full Python source code
+- `preview_url` - GCS URL to full-size image
+- `preview_thumb` - GCS URL to thumbnail
+- `preview_html` - GCS URL to interactive HTML (optional)
+- `quality_score` - AI quality score (0-100)
+- `python_version` - Python version used for generation
+- `library_version` - Library version used
 
 **Example Row**:
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
-  "spec_id": "scatter-basic-001",
+  "spec_id": "scatter-basic",
   "library_id": "matplotlib",
-  "plot_function": "scatter",
-  "variant": "default",
-  "file_path": "plots/matplotlib/scatter/scatter-basic-001/default.py",
-  "preview_url": "gs://pyplots-images/previews/matplotlib/scatter-basic-001/default/v1705603200.png",
-  "python_version": "3.10+",
-  "tested": true,
-  "quality_score": 92.0
-}
-```
-
-**Unique Constraint**: `(spec_id, library_id, variant)`
-- Same spec can have multiple libraries
-- Same library can have multiple variants
-- But combination must be unique
-
----
-
-### `tags`
-
-**Purpose**: Searchable tags for plots
-
-**Key Fields**:
-- `spec_id` - Which spec this tag belongs to
-- `tag` - Keyword (lowercase)
-- `confidence` - AI confidence (0-1, for AI-generated tags)
-- `created_by` - "ai" or "human"
-
-**Example Rows**:
-```sql
-INSERT INTO tags (spec_id, tag, confidence, created_by) VALUES
-('scatter-basic-001', 'correlation', 1.0, 'human'),
-('scatter-basic-001', 'bivariate', 1.0, 'human'),
-('scatter-basic-001', 'exploratory', 0.95, 'ai');
-```
-
-**Tag Sources**:
-- Human-defined in spec (confidence = 1.0)
-- AI-suggested based on description (confidence < 1.0)
-
----
-
-### `promotion_queue`
-
-**Purpose**: Social media promotion queue
-
-**Key Fields**:
-- `spec_id` - Which plot to promote
-- `priority` - high/medium/low (based on quality_score)
-- `status` - queued/posted/failed
-- `attempt_count` - Retry counter
-- `platform` - Which social platform
-
-**Example Row**:
-```json
-{
-  "id": "660e8400-e29b-41d4-a716-446655440000",
-  "spec_id": "scatter-basic-001",
-  "priority": "high",
+  "code": "import matplotlib.pyplot as plt\n...",
+  "preview_url": "https://storage.googleapis.com/pyplots-images/plots/scatter-basic/matplotlib/plot.png",
+  "preview_thumb": "https://storage.googleapis.com/pyplots-images/plots/scatter-basic/matplotlib/plot_thumb.png",
+  "preview_html": null,
+  "python_version": "3.13",
+  "library_version": "3.9.0",
   "quality_score": 92.0,
-  "preview_url": "gs://pyplots-images/previews/matplotlib/scatter-basic-001/default/v1705603200.png",
-  "status": "posted",
-  "posted_at": "2025-01-18T15:00:00Z",
-  "platform": "twitter"
+  "generated_at": "2025-01-15T10:30:00Z",
+  "generated_by": "claude-opus-4-5-20251101",
+  "issue": 42,
+  "workflow_run": 12345678
 }
 ```
 
-**Queue Logic**:
-- Items ordered by: `priority DESC, quality_score DESC, created_at ASC`
-- Rate limit: Max 2 posts per day
-- Failed items retry max 3 times
-
----
-
-### `plot_usage`
-
-**Purpose**: Anonymous usage analytics (optional)
-
-**Key Fields**:
-- `spec_id` - Which plot was used
-- `library_id` - Which library
-- `data_shape` - Size of user data
-- `success` - Did it work?
-
-**Privacy**:
-- No user data stored
-- No personally identifiable information
-- Anonymous session IDs only
-- Data auto-deleted after 90 days
-
-**Example Row**:
-```json
-{
-  "id": "770e8400-e29b-41d4-a716-446655440000",
-  "spec_id": "scatter-basic-001",
-  "library_id": "matplotlib",
-  "variant": "default",
-  "user_session": "anon_abc123",
-  "data_shape": {"rows": 150, "columns": 3},
-  "success": true
-}
-```
+**Unique Constraint**: `(spec_id, library_id)` - one implementation per spec per library
 
 ---
 
 ## Data Access Patterns
 
-### 1. Browse All Plots
+### 1. Browse All Plots (with implementation count)
 
 ```sql
 SELECT s.id, s.title, s.description, s.tags,
        COUNT(DISTINCT i.library_id) as library_count,
        MAX(i.quality_score) as best_quality_score
 FROM specs s
-LEFT JOIN implementations i ON s.id = i.spec_id
-WHERE i.tested = true
+LEFT JOIN impls i ON s.id = i.spec_id
 GROUP BY s.id, s.title, s.description, s.tags
-ORDER BY best_quality_score DESC, s.created_at DESC;
+ORDER BY best_quality_score DESC, s.updated_at DESC;
 ```
 
 ### 2. Get Implementations for a Spec
 
 ```sql
 SELECT i.*, l.name as library_name
-FROM implementations i
+FROM impls i
 JOIN libraries l ON i.library_id = l.id
-WHERE i.spec_id = 'scatter-basic-001'
-  AND i.tested = true
+WHERE i.spec_id = 'scatter-basic'
 ORDER BY i.quality_score DESC;
 ```
 
-### 3. Search by Tags
+### 3. Search by Tags (JSONB)
 
 ```sql
-SELECT DISTINCT s.*
+SELECT s.*
 FROM specs s
-JOIN tags t ON s.id = t.spec_id
-WHERE t.tag IN ('correlation', 'finance')
-ORDER BY s.created_at DESC;
-```
-
-### 4. Get Next Item from Promotion Queue
-
-```sql
-SELECT *
-FROM promotion_queue
-WHERE status = 'queued'
-  AND (posted_at IS NULL OR DATE(posted_at) < CURRENT_DATE)
-ORDER BY
-  CASE priority
-    WHEN 'high' THEN 1
-    WHEN 'medium' THEN 2
-    WHEN 'low' THEN 3
-  END,
-  quality_score DESC,
-  created_at ASC
-LIMIT 1;
+WHERE s.tags->'plot_type' ? 'scatter'
+  AND s.tags->'domain' ? 'statistics'
+ORDER BY s.updated_at DESC;
 ```
 
 ---
@@ -398,10 +274,10 @@ alembic downgrade -1
 def upgrade():
     op.create_table('specs', ...)
     op.create_table('libraries', ...)
-    op.create_table('implementations', ...)
+    op.create_table('impls', ...)
 
 def downgrade():
-    op.drop_table('implementations')
+    op.drop_table('impls')
     op.drop_table('libraries')
     op.drop_table('specs')
 ```
@@ -482,8 +358,7 @@ gcloud sql backups create \
 Strategic indexes for common queries:
 - Spec lookups by ID (primary key)
 - Implementation searches by spec_id and library_id
-- Tag searches by tag value
-- Promotion queue ordering
+- JSONB GIN index for tag searches
 
 ### Query Optimization
 
@@ -492,16 +367,9 @@ Use `EXPLAIN ANALYZE` for slow queries:
 EXPLAIN ANALYZE
 SELECT s.*, COUNT(i.id) as impl_count
 FROM specs s
-LEFT JOIN implementations i ON s.id = i.spec_id
+LEFT JOIN impls i ON s.id = i.spec_id
 GROUP BY s.id;
 ```
-
-### Caching
-
-Redis cache (optional) for frequent queries:
-- Spec metadata
-- Library list
-- Popular tag combinations
 
 ---
 
@@ -510,38 +378,32 @@ Redis cache (optional) for frequent queries:
 ### New Plot Flow
 
 ```
-1. Spec created
-   → INSERT INTO specs
+1. Spec created (via spec-create.yml)
+   → INSERT INTO specs (from specification.md + specification.yaml)
 
-2. Implementations generated
-   → INSERT INTO implementations (tested=false, quality_score=NULL)
+2. Implementation generated (via impl-generate.yml)
+   → INSERT INTO impls (code, preview URLs, quality_score)
 
-3. Quality check passes
-   → UPDATE implementations SET tested=true, quality_score=92
-
-4. Deployment
-   → INSERT INTO promotion_queue
+3. Sync on merge (via sync-postgres.yml)
+   → Database updated from plots/ directory
 ```
 
 ### Update Flow
 
 ```
 1. New version of implementation
-   → UPDATE implementations SET preview_url=..., quality_score=..., updated_at=NOW()
+   → UPDATE impls SET preview_url=..., quality_score=..., updated_at=NOW()
 
-2. Old GCS images auto-deleted (30 days)
-   → Database still references latest URL
+2. Old GCS images moved to history/
+   → Database references latest URLs
 ```
 
 ### Deletion Flow
 
 ```
-1. Spec deprecated
-   → UPDATE specs SET active=false (soft delete)
-
-2. Complete removal (rare)
+1. Complete removal (rare)
    → DELETE FROM specs WHERE id=...
-   → Cascade deletes implementations, tags, etc.
+   → Cascade deletes impls
 ```
 
 ---
@@ -581,7 +443,7 @@ await session.execute(f"SELECT * FROM specs WHERE id = '{spec_id}'")
 
 **Status**: 📋 **Planned** (not currently implemented)
 
-**Current State**: All tags are stored in PostgreSQL `tags` table (simple array). This is sufficient for MVP and early growth.
+**Current State**: Tags are stored as JSONB in the `specs.tags` column with structured categories (plot_type, domain, features, audience, data_type). This is sufficient for MVP and early growth.
 
 **Future Consideration**: As the platform scales beyond 10,000+ specs with complex multi-dimensional search requirements, consider adding Firestore for advanced tag functionality.
 

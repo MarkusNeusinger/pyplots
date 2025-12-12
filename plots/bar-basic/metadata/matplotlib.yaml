@@ -4,7 +4,9 @@
 library: matplotlib
 specification_id: bar-basic
 
+# Preview URLs (filled by workflow)
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-basic/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-basic/matplotlib/plot_thumb.png
 preview_html: null
 
 current:
@@ -14,5 +16,8 @@ current:
   workflow_run: 20150015715
   issue: 612
   quality_score: 92
+  # Version info (filled by workflow)
+  python_version: "3.13"
+  library_version: "3.9.0"
 
 history: []

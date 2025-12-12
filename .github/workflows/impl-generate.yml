@@ -156,13 +156,21 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v4
 
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pngquant
+          # Download JetBrains Mono font for watermarks
+          curl -sL "https://raw.githubusercontent.com/JetBrains/JetBrainsMono/master/fonts/ttf/JetBrainsMono-Bold.ttf" \
+            -o /tmp/JetBrainsMono-Bold.ttf
+
       - name: Install dependencies
         env:
           DEPS: ${{ steps.inputs.outputs.deps }}
         run: |
           uv venv .venv
           source .venv/bin/activate
-          uv pip install $DEPS pandas>=2.2.0 ruff
+          uv pip install $DEPS pandas>=2.2.0 ruff Pillow>=10.0.0
 
       - name: Setup Chrome for Highcharts
         if: steps.inputs.outputs.library == 'highcharts'
@@ -285,6 +293,27 @@ jobs:
 
           mkdir -p "$METADATA_DIR"
 
+          # Get Python version
+          PYTHON_VERSION=$(python3 --version 2>&1 | grep -oE '[0-9]+\.[0-9]+' | head -1)
+
+          # Get library version from pip
+          source .venv/bin/activate
+          LIBRARY_VERSION=$(pip show "${LIBRARY}" 2>/dev/null | grep -i "^Version:" | awk '{print $2}' || echo "")
+          # Handle special cases for library names
+          if [ -z "$LIBRARY_VERSION" ]; then
+            case "$LIBRARY" in
+              letsplot)
+                LIBRARY_VERSION=$(pip show "lets-plot" 2>/dev/null | grep -i "^Version:" | awk '{print $2}' || echo "unknown")
+                ;;
+              highcharts)
+                LIBRARY_VERSION=$(pip show "highcharts-core" 2>/dev/null | grep -i "^Version:" | awk '{print $2}' || echo "unknown")
+                ;;
+              *)
+                LIBRARY_VERSION="unknown"
+                ;;
+            esac
+          fi
+
           # Determine preview_html for interactive libraries
           PREVIEW_HTML="null"
           case "$LIBRARY" in
@@ -300,7 +329,9 @@ jobs:
           library: ${LIBRARY}
           specification_id: ${SPEC_ID}
 
+          # Preview URLs (filled by workflow)
           preview_url: https://storage.googleapis.com/pyplots-images/plots/${SPEC_ID}/${LIBRARY}/plot.png
+          preview_thumb: https://storage.googleapis.com/pyplots-images/plots/${SPEC_ID}/${LIBRARY}/plot_thumb.png
           preview_html: ${PREVIEW_HTML}
 
           current:
@@ -309,7 +340,10 @@ jobs:
             generated_by: claude-opus-4-5-20251101
             workflow_run: ${{ github.run_id }}
             issue: ${ISSUE:-0}
-            quality_score: null  # Updated after review
+            quality_score: null
+            # Version info (filled by workflow)
+            python_version: "${PYTHON_VERSION}"
+            library_version: "${LIBRARY_VERSION}"
 
           history: []
           EOF
@@ -321,7 +355,34 @@ jobs:
           git commit -m "chore(${LIBRARY}): add metadata for ${SPEC_ID}"
           git push origin "$BRANCH"
 
-          echo "::notice::Created metadata file: $METADATA_FILE"
+          echo "::notice::Created metadata file: $METADATA_FILE (py${PYTHON_VERSION}, ${LIBRARY}==${LIBRARY_VERSION})"
+
+      # ========================================================================
+      # Process images: watermark + thumbnail
+      # ========================================================================
+      - name: Process plot images
+        env:
+          SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
+          LIBRARY: ${{ steps.inputs.outputs.library }}
+        run: |
+          IMPL_DIR="plots/${SPEC_ID}/implementations"
+
+          if [ ! -f "$IMPL_DIR/plot.png" ]; then
+            echo "::warning::No plot.png found - skipping image processing"
+            exit 0
+          fi
+
+          source .venv/bin/activate
+
+          # Process PNG: add watermark and create thumbnail
+          python -m core.images process \
+            "$IMPL_DIR/plot.png" \
+            "$IMPL_DIR/plot.png" \
+            "$IMPL_DIR/plot_thumb.png" \
+            "$SPEC_ID"
+
+          echo "::notice::Processed images: watermark added, thumbnail created"
+          ls -la "$IMPL_DIR/"
 
       # ========================================================================
       # Create PR
@@ -398,7 +459,7 @@ jobs:
           echo "$GCS_CREDENTIALS" > /tmp/gcs-key.json
           gcloud auth activate-service-account --key-file=/tmp/gcs-key.json
 
-          # Upload PNG
+          # Upload PNG (with watermark)
           if [ -f "$IMPL_DIR/plot.png" ]; then
             gsutil cp "$IMPL_DIR/plot.png" "${STAGING_PATH}/plot.png"
             gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot.png" 2>/dev/null || true
@@ -407,6 +468,14 @@ jobs:
           else
             echo "::warning::No plot.png found"
             echo "uploaded=false" >> $GITHUB_OUTPUT
+          fi
+
+          # Upload thumbnail
+          if [ -f "$IMPL_DIR/plot_thumb.png" ]; then
+            gsutil cp "$IMPL_DIR/plot_thumb.png" "${STAGING_PATH}/plot_thumb.png"
+            gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot_thumb.png" 2>/dev/null || true
+            echo "thumb_url=${PUBLIC_URL}/plot_thumb.png" >> $GITHUB_OUTPUT
+            echo "::notice::Uploaded thumbnail"
           fi
 
           # Upload HTML (interactive libraries)

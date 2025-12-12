@@ -4,37 +4,30 @@ FastAPI backend for pyplots platform.
 AI-powered Python plotting examples that work with YOUR data.
 """
 
-import logging
-import os
-from contextlib import asynccontextmanager
-from pathlib import Path
-from typing import Optional
+# Load .env file FIRST, before any other imports that might read env vars
+from dotenv import load_dotenv  # noqa: E402, I001
 
-from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from core.database import LIBRARIES_SEED, LibraryRepository, SpecRepository, close_db, get_db, init_db, is_db_configured
-
-
-# Try to import GCS client (optional)
-try:
-    from google.cloud import storage
-
-    GCS_AVAILABLE = True
-except ImportError:
-    GCS_AVAILABLE = False
-
-# Load .env file (works locally, ignored in Cloud Run if not present)
 load_dotenv()
 
-# Configuration
-GCS_BUCKET = os.getenv("GCS_BUCKET", "pyplots-images")
-BASE_DIR = Path(__file__).parent.parent
-PLOTS_DIR = BASE_DIR / "plots"
+import logging  # noqa: E402
+from contextlib import asynccontextmanager  # noqa: E402
+from typing import Optional  # noqa: E402
+
+from fastapi import Depends, FastAPI, HTTPException  # noqa: E402
+from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
+from fastapi.responses import JSONResponse  # noqa: E402
+from pydantic import BaseModel  # noqa: E402
+from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E402
+
+from core.database import (  # noqa: E402
+    LIBRARIES_SEED,
+    LibraryRepository,
+    SpecRepository,
+    close_db,
+    get_db,
+    init_db,
+    is_db_configured,
+)
 
 
 # Configure logging
@@ -112,24 +105,20 @@ async def hello(name: str):
 # ============================================================================
 
 
-class DataRequirement(BaseModel):
-    """Data requirement for a spec."""
-
-    name: str
-    type: str
-    description: str = ""
-
-
 class ImplementationResponse(BaseModel):
     """Implementation details."""
 
     library_id: str
     library_name: str
-    variant: str
-    file_path: str
     preview_url: Optional[str] = None
+    preview_thumb: Optional[str] = None
+    preview_html: Optional[str] = None
     quality_score: Optional[float] = None
     code: Optional[str] = None
+    generated_at: Optional[str] = None
+    generated_by: Optional[str] = None
+    python_version: Optional[str] = None
+    library_version: Optional[str] = None
 
 
 class SpecDetailResponse(BaseModel):
@@ -138,9 +127,12 @@ class SpecDetailResponse(BaseModel):
     id: str
     title: str
     description: Optional[str] = None
-    content: Optional[str] = None
-    data_requirements: list[DataRequirement] = []
-    tags: list[str] = []
+    applications: list[str] = []
+    data: list[str] = []
+    notes: list[str] = []
+    tags: Optional[dict] = None
+    issue: Optional[int] = None
+    suggested: Optional[str] = None
     implementations: list[ImplementationResponse] = []
 
 
@@ -150,53 +142,8 @@ class SpecListItem(BaseModel):
     id: str
     title: str
     description: Optional[str] = None
-    tags: list[str] = []
+    tags: Optional[dict] = None
     library_count: int = 0
-
-
-# ============================================================================
-# Helper Functions (Filesystem Fallback)
-# ============================================================================
-
-
-def list_spec_ids_from_filesystem() -> list[str]:
-    """List spec IDs from filesystem (fallback when DB not configured)."""
-    if not PLOTS_DIR.exists():
-        return []
-
-    # Each subdirectory in plots/ is a spec (containing spec.md)
-    return sorted([d.name for d in PLOTS_DIR.iterdir() if d.is_dir() and (d / "spec.md").exists()])
-
-
-def get_images_from_gcs(spec_id: str) -> list[dict]:
-    """Get latest plot images for a spec from GCS."""
-    if not GCS_AVAILABLE:
-        logger.warning("GCS client not available - returning empty image list")
-        return []
-
-    try:
-        client = storage.Client()
-        bucket = client.bucket(GCS_BUCKET)
-        prefix = f"plots/{spec_id}/"
-        blobs = list(bucket.list_blobs(prefix=prefix))
-
-        # Group by library, find newest image (excluding thumbnails)
-        library_images: dict[str, str] = {}
-        for blob in blobs:
-            if blob.name.endswith(".png") and "_thumb" not in blob.name:
-                parts = blob.name.split("/")
-                if len(parts) >= 4:
-                    library = parts[2]
-                    if library not in library_images or blob.name > library_images[library]:
-                        library_images[library] = blob.name
-
-        return [
-            {"library": lib, "url": f"https://storage.googleapis.com/{GCS_BUCKET}/{path}"}
-            for lib, path in sorted(library_images.items())
-        ]
-    except Exception as e:
-        logger.error(f"Error fetching images from GCS: {e}")
-        return []
 
 
 # ============================================================================
@@ -209,25 +156,21 @@ async def get_specs(db: AsyncSession = Depends(get_db)):
     """
     Get list of all specs with metadata.
 
-    Returns specs with title, description, tags, and implementation count.
-    Falls back to filesystem if database is not configured.
+    Returns only specs that have at least one implementation.
     """
     if not is_db_configured():
-        spec_ids = list_spec_ids_from_filesystem()
-        return [SpecListItem(id=spec_id, title=spec_id) for spec_id in spec_ids]
+        raise HTTPException(status_code=503, detail="Database not configured")
 
     repo = SpecRepository(db)
     specs = await repo.get_all()
 
+    # Only return specs with at least one implementation
     return [
         SpecListItem(
-            id=spec.id,
-            title=spec.title,
-            description=spec.description,
-            tags=spec.tags or [],
-            library_count=len(spec.implementations),
+            id=spec.id, title=spec.title, description=spec.description, tags=spec.tags, library_count=len(spec.impls)
         )
         for spec in specs
+        if spec.impls  # Filter: only specs with implementations
     ]
 
 
@@ -251,54 +194,66 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(get_db)):
     if not spec:
         raise HTTPException(status_code=404, detail=f"Spec '{spec_id}' not found")
 
-    implementations = [
+    # Only return spec if it has implementations
+    if not spec.impls:
+        raise HTTPException(status_code=404, detail=f"Spec '{spec_id}' has no implementations")
+
+    impls = [
         ImplementationResponse(
             library_id=impl.library_id,
             library_name=impl.library.name if impl.library else impl.library_id,
-            variant=impl.variant,
-            file_path=impl.file_path,
             preview_url=impl.preview_url,
+            preview_thumb=impl.preview_thumb,
+            preview_html=impl.preview_html,
             quality_score=impl.quality_score,
             code=impl.code,
+            generated_at=impl.generated_at.isoformat() if impl.generated_at else None,
+            generated_by=impl.generated_by,
+            python_version=impl.python_version,
+            library_version=impl.library_version,
         )
-        for impl in spec.implementations
-    ]
-
-    data_reqs = [
-        DataRequirement(name=req.get("name", ""), type=req.get("type", ""), description=req.get("description", ""))
-        for req in (spec.data_requirements or [])
+        for impl in spec.impls
     ]
 
     return SpecDetailResponse(
         id=spec.id,
         title=spec.title,
         description=spec.description,
-        content=spec.content,
-        data_requirements=data_reqs,
-        tags=spec.tags or [],
-        implementations=implementations,
+        applications=spec.applications or [],
+        data=spec.data or [],
+        notes=spec.notes or [],
+        tags=spec.tags,
+        issue=spec.issue,
+        suggested=spec.suggested,
+        implementations=impls,
     )
 
 
 @app.get("/specs/{spec_id}/images")
 async def get_spec_images(spec_id: str, db: AsyncSession = Depends(get_db)):
     """
-    Get latest plot images for a specification across all libraries.
+    Get plot images for a specification across all libraries.
 
-    Fetches from GCS directly for the most up-to-date images.
+    Returns preview_url, preview_thumb, and preview_html from database.
     """
-    # Verify spec exists in DB or filesystem
-    if is_db_configured():
-        repo = SpecRepository(db)
-        spec = await repo.get_by_id(spec_id)
-        if not spec:
-            raise HTTPException(status_code=404, detail=f"Spec '{spec_id}' not found")
-    else:
-        available_specs = list_spec_ids_from_filesystem()
-        if spec_id not in available_specs:
-            raise HTTPException(status_code=404, detail=f"Spec '{spec_id}' not found")
+    if not is_db_configured():
+        raise HTTPException(status_code=503, detail="Database not configured")
 
-    images = get_images_from_gcs(spec_id)
+    repo = SpecRepository(db)
+    spec = await repo.get_by_id(spec_id)
+
+    if not spec:
+        raise HTTPException(status_code=404, detail=f"Spec '{spec_id}' not found")
+
+    if not spec.impls:
+        raise HTTPException(status_code=404, detail=f"Spec '{spec_id}' has no implementations")
+
+    images = [
+        {"library": impl.library_id, "url": impl.preview_url, "thumb": impl.preview_thumb, "html": impl.preview_html}
+        for impl in spec.impls
+        if impl.preview_url  # Only include if there's a preview
+    ]
+
     return {"spec_id": spec_id, "images": images}
 
 
@@ -318,7 +273,7 @@ async def get_libraries(db: AsyncSession = Depends(get_db)):
         return {"libraries": LIBRARIES_SEED}
 
     repo = LibraryRepository(db)
-    libraries = await repo.get_all(active_only=True)
+    libraries = await repo.get_all()
 
     return {
         "libraries": [

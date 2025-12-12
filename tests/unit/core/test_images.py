@@ -66,7 +66,7 @@ class TestAddWatermark:
     def test_adds_watermark_to_image(self, sample_image: Path, tmp_path: Path) -> None:
         """Watermark should be added to the image."""
         output_path = tmp_path / "watermarked.png"
-        add_watermark(sample_image, output_path, text="pyplots.ai")
+        add_watermark(sample_image, output_path)
 
         assert output_path.exists()
 
@@ -75,17 +75,18 @@ class TestAddWatermark:
         original_img = Image.open(sample_image)
         assert result_img.size == original_img.size
 
-    def test_custom_watermark_text(self, sample_image: Path, tmp_path: Path) -> None:
-        """Function should accept custom watermark text."""
+    def test_with_spec_id_basic(self, sample_image: Path, tmp_path: Path) -> None:
+        """Function should accept spec_id for left watermark."""
         output_path = tmp_path / "watermarked.png"
-        add_watermark(sample_image, output_path, text="Custom Watermark")
+        add_watermark(sample_image, output_path, spec_id="scatter-basic")
 
         assert output_path.exists()
 
-    def test_custom_opacity(self, sample_image: Path, tmp_path: Path) -> None:
-        """Function should accept custom opacity."""
+    def test_auto_scaling(self, sample_image: Path, tmp_path: Path) -> None:
+        """Function should auto-scale font size and padding based on image width."""
         output_path = tmp_path / "watermarked.png"
-        add_watermark(sample_image, output_path, opacity=0.5)
+        # Default auto-scaling should work without explicit font_size/padding
+        add_watermark(sample_image, output_path)
 
         assert output_path.exists()
 
@@ -98,7 +99,7 @@ class TestProcessPlotImage:
         output_path = tmp_path / "output.png"
         thumb_path = tmp_path / "thumb.png"
 
-        result = process_plot_image(sample_image, output_path, thumb_path, watermark_text="pyplots.ai")
+        result = process_plot_image(sample_image, output_path, thumb_path, spec_id="scatter-basic")
 
         assert output_path.exists()
         assert thumb_path.exists()
@@ -221,9 +222,7 @@ class TestAddWatermarkExtended:
     def test_all_custom_params(self, sample_image: Path, tmp_path: Path) -> None:
         """Should accept all custom parameters together."""
         output_path = tmp_path / "watermarked.png"
-        add_watermark(
-            sample_image, output_path, text="Custom Text", spec_id="my-spec", opacity=0.8, font_size=18, padding=15
-        )
+        add_watermark(sample_image, output_path, spec_id="my-spec", font_size=18, padding=15)
 
         assert output_path.exists()
 

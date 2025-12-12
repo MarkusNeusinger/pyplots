@@ -77,7 +77,11 @@ def create_thumbnail(input_path: str | Path, output_path: str | Path, width: int
 
 
 def add_watermark(
-    input_path: str | Path, output_path: str | Path, spec_id: str | None = None, font_size: int | None = None, padding: int | None = None
+    input_path: str | Path,
+    output_path: str | Path,
+    spec_id: str | None = None,
+    font_size: int | None = None,
+    padding: int | None = None,
 ) -> None:
     """Add pyplots.ai branded watermark to an image.
 

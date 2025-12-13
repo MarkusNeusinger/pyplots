@@ -15,7 +15,6 @@ Legacy structure (still supported during migration):
 - spec.md + metadata.yaml (single file with all library metadata)
 """
 
-import asyncio
 import logging
 import re
 import sys
@@ -35,10 +34,10 @@ load_dotenv()
 
 from sqlalchemy import delete, select  # noqa: E402
 from sqlalchemy.dialects.postgresql import insert  # noqa: E402
-from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E402
+from sqlalchemy.orm import Session  # noqa: E402
 
 from core.database import LIBRARIES_SEED, Impl, Library, Spec  # noqa: E402
-from core.database.connection import close_db, get_db_context, init_db, is_db_configured  # noqa: E402
+from core.database.connection import close_db_sync, get_db_context_sync, init_db_sync, is_db_configured  # noqa: E402
 
 
 # Configuration
@@ -294,7 +293,7 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
     return {"spec": spec_data, "implementations": implementations}
 
 
-async def sync_to_database(session: AsyncSession, plots: list[dict]) -> dict:
+def sync_to_database(session: Session, plots: list[dict]) -> dict:
     """
     Sync plots to the database.
 
@@ -310,7 +309,7 @@ async def sync_to_database(session: AsyncSession, plots: list[dict]) -> dict:
     # Ensure libraries exist
     for lib_data in LIBRARIES_SEED:
         stmt = insert(Library).values(**lib_data).on_conflict_do_nothing(index_elements=["id"])
-        await session.execute(stmt)
+        session.execute(stmt)
 
     # Collect all spec IDs and implementation keys
     spec_ids = set()
@@ -341,7 +340,7 @@ async def sync_to_database(session: AsyncSession, plots: list[dict]) -> dict:
                 },
             )
         )
-        await session.execute(stmt)
+        session.execute(stmt)
         stats["specs_synced"] += 1
 
         # Upsert implementations
@@ -373,33 +372,33 @@ async def sync_to_database(session: AsyncSession, plots: list[dict]) -> dict:
                     update_set[field] = impl[field]
 
             stmt = insert(Impl).values(**impl).on_conflict_do_update(constraint="uq_impl", set_=update_set)
-            await session.execute(stmt)
+            session.execute(stmt)
             stats["impls_synced"] += 1
 
     # Remove specs that no longer exist in repo
-    result = await session.execute(select(Spec.id).where(Spec.id.notin_(spec_ids)))
+    result = session.execute(select(Spec.id).where(Spec.id.notin_(spec_ids)))
     removed_spec_ids = [row[0] for row in result.fetchall()]
     if removed_spec_ids:
-        await session.execute(delete(Spec).where(Spec.id.in_(removed_spec_ids)))
+        session.execute(delete(Spec).where(Spec.id.in_(removed_spec_ids)))
         stats["specs_removed"] = len(removed_spec_ids)
         logger.info(f"Removed {len(removed_spec_ids)} specs no longer in repo")
 
     # Remove impls that no longer exist in repo
-    result = await session.execute(select(Impl.spec_id, Impl.library_id))
+    result = session.execute(select(Impl.spec_id, Impl.library_id))
     existing_impls = [(row[0], row[1]) for row in result.fetchall()]
 
     removed_impls = [impl for impl in existing_impls if impl not in impl_keys]
     if removed_impls:
         for spec_id, library_id in removed_impls:
-            await session.execute(delete(Impl).where(Impl.spec_id == spec_id, Impl.library_id == library_id))
+            session.execute(delete(Impl).where(Impl.spec_id == spec_id, Impl.library_id == library_id))
         stats["impls_removed"] = len(removed_impls)
         logger.info(f"Removed {len(removed_impls)} impls no longer in repo")
 
-    await session.commit()
+    session.commit()
     return stats
 
 
-async def main() -> int:
+def main() -> int:
     """Main entry point for the sync script."""
     if not is_db_configured():
         logger.error("No database configuration found (DATABASE_URL or INSTANCE_CONNECTION_NAME)")
@@ -427,11 +426,11 @@ async def main() -> int:
     total_impls = sum(len(p["implementations"]) for p in plots)
     logger.info(f"Found {total_impls} implementations")
 
-    # Initialize database connection (uses Cloud SQL Connector if INSTANCE_CONNECTION_NAME is set)
+    # Initialize database connection (uses sync pg8000 for Cloud SQL Connector)
     try:
-        await init_db()
-        async with get_db_context() as session:
-            stats = await sync_to_database(session, plots)
+        init_db_sync()
+        with get_db_context_sync() as session:
+            stats = sync_to_database(session, plots)
 
         logger.info("Sync completed successfully!")
         logger.info(f"  Specs synced: {stats['specs_synced']}, removed: {stats['specs_removed']}")
@@ -443,9 +442,9 @@ async def main() -> int:
         return 1
 
     finally:
-        await close_db()
+        close_db_sync()
 
 
 if __name__ == "__main__":
-    exit_code = asyncio.run(main())
+    exit_code = main()
     sys.exit(exit_code)

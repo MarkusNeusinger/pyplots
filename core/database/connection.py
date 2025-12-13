@@ -9,7 +9,7 @@ Supports two connection modes:
 import logging
 import os
 from collections.abc import AsyncGenerator
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, contextmanager
 from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -30,6 +30,7 @@ ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 # Global instances
 engine = None
 AsyncSessionLocal: Optional[async_sessionmaker] = None
+_sync_session_factory = None
 _connector = None
 
 
@@ -39,32 +40,26 @@ class Base(DeclarativeBase):
     pass
 
 
-async def _create_cloud_sql_engine():
-    """Create engine using Cloud SQL Python Connector."""
+def _create_cloud_sql_engine_sync():
+    """Create sync engine using Cloud SQL Python Connector with pg8000.
+
+    Used for GitHub Actions scripts where async Cloud SQL Connector has event loop issues.
+    """
     global _connector
 
     from google.cloud.sql.connector import Connector, IPTypes
+    from sqlalchemy import create_engine
 
-    # Create connector instance
     _connector = Connector()
 
-    # Use PUBLIC IP (no VPC needed, free)
-    ip_type = IPTypes.PUBLIC
-
-    # Check if running on Cloud Run (automatic auth)
-    is_cloud_run = os.getenv("K_SERVICE") is not None
-    if is_cloud_run:
-        logger.info("Running on Cloud Run - using automatic IAM authentication")
-
-    async def get_conn():
-        conn = await _connector.connect_async(
-            INSTANCE_CONNECTION_NAME, "asyncpg", user=DB_USER, password=DB_PASS, db=DB_NAME, ip_type=ip_type
+    def get_conn():
+        return _connector.connect(
+            INSTANCE_CONNECTION_NAME, "pg8000", user=DB_USER, password=DB_PASS, db=DB_NAME, ip_type=IPTypes.PUBLIC
         )
-        return conn
 
-    engine = create_async_engine(
-        "postgresql+asyncpg://",
-        async_creator=get_conn,
+    engine = create_engine(
+        "postgresql+pg8000://",
+        creator=get_conn,
         pool_size=5,
         max_overflow=10,
         pool_pre_ping=True,
@@ -103,9 +98,34 @@ def _create_direct_engine():
     return engine
 
 
+def init_db_sync() -> None:
+    """
+    Initialize sync database connection (for scripts in GitHub Actions).
+
+    Uses pg8000 sync driver with Cloud SQL Connector to avoid event loop issues.
+    """
+    global engine, _sync_session_factory
+
+    if engine is not None:
+        return  # Already initialized
+
+    if DATABASE_URL:
+        # For DATABASE_URL, create async engine (used locally)
+        engine = _create_direct_engine()
+    elif INSTANCE_CONNECTION_NAME:
+        # Use sync pg8000 driver for Cloud SQL Connector
+        engine = _create_cloud_sql_engine_sync()
+        from sqlalchemy.orm import sessionmaker
+
+        _sync_session_factory = sessionmaker(engine, expire_on_commit=False)
+    else:
+        logger.warning("No database configuration found - running without database")
+        return
+
+
 async def init_db() -> None:
     """
-    Initialize database connection.
+    Initialize async database connection (for FastAPI).
 
     Priority:
     1. DATABASE_URL (direct connection) - for local development
@@ -120,13 +140,9 @@ async def init_db() -> None:
     if DATABASE_URL:
         engine = _create_direct_engine()
     elif INSTANCE_CONNECTION_NAME:
-        # Cloud SQL Connector - requires ADC or runs on Cloud Run
-        try:
-            engine = await _create_cloud_sql_engine()
-        except Exception as e:
-            logger.error(f"Cloud SQL Connector failed: {e}")
-            logger.error("Set DATABASE_URL for local development or configure ADC")
-            raise
+        # For async, use sync pg8000 wrapped - Cloud Run should use DATABASE_URL
+        engine = _create_cloud_sql_engine_sync()
+        logger.warning("Using sync Cloud SQL engine - consider using DATABASE_URL for async support")
     else:
         logger.warning("No database configuration found - running without database")
         return
@@ -134,8 +150,24 @@ async def init_db() -> None:
     AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
+def close_db_sync() -> None:
+    """Close sync database connections and cleanup."""
+    global engine, _sync_session_factory, _connector
+
+    if engine:
+        engine.dispose()
+        engine = None
+        _sync_session_factory = None
+        logger.info("Database engine disposed")
+
+    if _connector:
+        _connector.close()
+        _connector = None
+        logger.info("Cloud SQL connector closed")
+
+
 async def close_db() -> None:
-    """Close database connections and cleanup."""
+    """Close async database connections and cleanup."""
     global engine, AsyncSessionLocal, _connector
 
     if engine:
@@ -145,7 +177,7 @@ async def close_db() -> None:
         logger.info("Database engine disposed")
 
     if _connector:
-        await _connector.close_async()
+        _connector.close()  # Use sync close
         _connector = None
         logger.info("Cloud SQL connector closed")
 
@@ -201,3 +233,29 @@ async def get_db_context() -> AsyncGenerator[AsyncSession, None]:
 def is_db_configured() -> bool:
     """Check if database is configured (credentials available)."""
     return bool(INSTANCE_CONNECTION_NAME or DATABASE_URL)
+
+
+@contextmanager
+def get_db_context_sync():
+    """
+    Sync context manager for database session (for scripts in GitHub Actions).
+
+    Usage:
+        with get_db_context_sync() as session:
+            # Use session here
+    """
+    if engine is None:
+        init_db_sync()
+
+    if _sync_session_factory is None:
+        raise RuntimeError("Database not configured for sync access")
+
+    session = _sync_session_factory()
+    try:
+        yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()

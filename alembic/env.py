@@ -73,47 +73,41 @@ def do_run_migrations(connection: Connection) -> None:
         context.run_migrations()
 
 
-async def _create_cloud_sql_engine():
-    """Create engine using Cloud SQL Python Connector."""
-    from google.cloud.sql.connector import Connector, IPTypes
-
-    connector = Connector()
-
-    async def get_conn():
-        conn = await connector.connect_async(
-            INSTANCE_CONNECTION_NAME, "asyncpg", user=DB_USER, password=DB_PASS, db=DB_NAME, ip_type=IPTypes.PUBLIC
-        )
-        return conn
-
-    engine = create_async_engine("postgresql+asyncpg://", async_creator=get_conn, poolclass=pool.NullPool)
-
-    return engine, connector
-
-
 async def run_async_migrations() -> None:
     """
     Run migrations in 'online' mode with async engine.
 
     Supports both direct DATABASE_URL and Cloud SQL Connector.
     """
-    connector = None
-
     if INSTANCE_CONNECTION_NAME and not DATABASE_URL:
-        # Use Cloud SQL Connector
-        connectable, connector = await _create_cloud_sql_engine()
+        # Use Cloud SQL Connector - must be created in same event loop
+        from google.cloud.sql.connector import Connector, IPTypes
+
+        async with Connector() as connector:
+
+            async def get_conn():
+                return await connector.connect_async(
+                    INSTANCE_CONNECTION_NAME, "asyncpg", user=DB_USER, password=DB_PASS, db=DB_NAME, ip_type=IPTypes.PUBLIC
+                )
+
+            connectable = create_async_engine("postgresql+asyncpg://", async_creator=get_conn, poolclass=pool.NullPool)
+
+            try:
+                async with connectable.connect() as connection:
+                    await connection.run_sync(do_run_migrations)
+            finally:
+                await connectable.dispose()
     else:
         # Use direct connection via DATABASE_URL
         connectable = async_engine_from_config(
             config.get_section(config.config_ini_section, {}), prefix="sqlalchemy.", poolclass=pool.NullPool
         )
 
-    try:
-        async with connectable.connect() as connection:
-            await connection.run_sync(do_run_migrations)
-    finally:
-        await connectable.dispose()
-        if connector:
-            await connector.close_async()
+        try:
+            async with connectable.connect() as connection:
+                await connection.run_sync(do_run_migrations)
+        finally:
+            await connectable.dispose()
 
 
 def run_migrations_online() -> None:

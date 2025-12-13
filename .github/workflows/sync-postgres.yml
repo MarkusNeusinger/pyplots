@@ -39,17 +39,28 @@ jobs:
       run: |
         uv sync
 
+    - name: Setup GCP authentication
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCS_CREDENTIALS }}
+
     - name: Run database migrations
       run: |
         uv run alembic upgrade head
       env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        INSTANCE_CONNECTION_NAME: ${{ secrets.INSTANCE_CONNECTION_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASS: ${{ secrets.DB_PASS }}
+        DB_NAME: ${{ secrets.DB_NAME }}
 
     - name: Sync plots to database
       run: |
         uv run python automation/scripts/sync_to_postgres.py
       env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        INSTANCE_CONNECTION_NAME: ${{ secrets.INSTANCE_CONNECTION_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASS: ${{ secrets.DB_PASS }}
+        DB_NAME: ${{ secrets.DB_NAME }}
         GCS_BUCKET: ${{ vars.GCS_BUCKET || 'pyplots-images' }}
 
     - name: Summary

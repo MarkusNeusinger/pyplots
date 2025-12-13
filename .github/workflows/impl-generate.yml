@@ -293,25 +293,32 @@ jobs:
 
           mkdir -p "$METADATA_DIR"
 
-          # Get Python version (e.g., "3.13" from "Python 3.13.0")
-          PYTHON_VERSION=$(python3 --version 2>&1 | awk '{print $2}' | cut -d. -f1,2)
+          # Get Python version (e.g., "3.13.1" from "Python 3.13.1")
+          PYTHON_VERSION=$(python3 --version 2>&1 | awk '{print $2}')
 
           # Get library version from pip
+          # Map library names to pip package names
           source .venv/bin/activate
-          LIBRARY_VERSION=$(pip show "${LIBRARY}" 2>/dev/null | grep -i "^Version:" | awk '{print $2}' || echo "")
-          # Handle special cases for library names
+
+          get_pip_version() {
+            pip show "$1" 2>/dev/null | grep -i "^Version:" | awk '{print $2}'
+          }
+
+          case "$LIBRARY" in
+            letsplot)
+              LIBRARY_VERSION=$(get_pip_version "lets-plot")
+              ;;
+            highcharts)
+              LIBRARY_VERSION=$(get_pip_version "highcharts-core")
+              ;;
+            *)
+              LIBRARY_VERSION=$(get_pip_version "$LIBRARY")
+              ;;
+          esac
+
+          # Fallback if version is empty
           if [ -z "$LIBRARY_VERSION" ]; then
-            case "$LIBRARY" in
-              letsplot)
-                LIBRARY_VERSION=$(pip show "lets-plot" 2>/dev/null | grep -i "^Version:" | awk '{print $2}' || echo "unknown")
-                ;;
-              highcharts)
-                LIBRARY_VERSION=$(pip show "highcharts-core" 2>/dev/null | grep -i "^Version:" | awk '{print $2}' || echo "unknown")
-                ;;
-              *)
-                LIBRARY_VERSION="unknown"
-                ;;
-            esac
+            LIBRARY_VERSION="unknown"
           fi
 
           # Determine preview_html for interactive libraries

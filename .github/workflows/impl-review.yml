@@ -182,6 +182,13 @@ jobs:
           else
             SCORE=$(gh pr view "$PR_NUM" --json comments -q '.comments[-1].body' | grep -oP 'Score: \K\d+' | head -1 || echo "0")
           fi
+
+          # Validate score is a number between 1-100, default to 0 if invalid
+          if ! [[ "$SCORE" =~ ^[0-9]+$ ]] || [ "$SCORE" -lt 1 ] || [ "$SCORE" -gt 100 ]; then
+            echo "::warning::Invalid quality score '$SCORE', defaulting to 0"
+            SCORE="0"
+          fi
+
           echo "score=$SCORE" >> $GITHUB_OUTPUT
 
       - name: Add quality score label

@@ -27,7 +27,7 @@ fig.add_trace(
 
 # Layout
 fig.update_layout(
-    title={"text": "Sales by Product Category", "font": {"size": 40}, "x": 0.5, "xanchor": "center"},
+    title={"text": "bar-basic · plotly · pyplots.ai", "font": {"size": 40}, "x": 0.5, "xanchor": "center"},
     xaxis={"title": {"text": "Product Category", "font": {"size": 40}}, "tickfont": {"size": 32}},
     yaxis={
         "title": {"text": "Sales ($)", "font": {"size": 40}},

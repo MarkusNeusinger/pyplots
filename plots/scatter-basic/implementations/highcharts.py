@@ -34,32 +34,38 @@ chart.options.chart = {
     "marginBottom": 150,
 }
 
-# Title
-chart.options.title = {"text": "Basic Scatter Plot", "style": {"fontSize": "48px"}}
+# Title (required format: spec-id · library · pyplots.ai)
+chart.options.title = {
+    "text": "scatter-basic · highcharts · pyplots.ai",
+    "style": {"fontSize": "72px", "fontWeight": "bold"},
+}
 
-# Axes
+# Axes (scaled for 4800x2700 px)
 chart.options.x_axis = {
-    "title": {"text": "X Value", "style": {"fontSize": "36px"}},
-    "labels": {"style": {"fontSize": "28px"}},
+    "title": {"text": "X Value", "style": {"fontSize": "48px"}},
+    "labels": {"style": {"fontSize": "36px"}},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.1)",
+    "gridLineColor": "rgba(0, 0, 0, 0.15)",
+    "gridLineDashStyle": "Dash",
 }
 chart.options.y_axis = {
-    "title": {"text": "Y Value", "style": {"fontSize": "36px"}},
-    "labels": {"style": {"fontSize": "28px"}},
+    "title": {"text": "Y Value", "style": {"fontSize": "48px"}},
+    "labels": {"style": {"fontSize": "36px"}},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.1)",
+    "gridLineColor": "rgba(0, 0, 0, 0.15)",
+    "gridLineDashStyle": "Dash",
 }
 
-# Legend
+# Legend and credits
 chart.options.legend = {"enabled": False}
+chart.options.credits = {"enabled": False}
 
-# Create scatter series
+# Create scatter series with Python Blue color and transparency
 series = ScatterSeries()
 series.data = [[float(xi), float(yi)] for xi, yi in zip(x, y, strict=True)]
 series.name = "Data"
-series.color = "rgba(48, 105, 152, 0.7)"
-series.marker = {"radius": 8, "symbol": "circle"}
+series.color = "rgba(48, 105, 152, 0.7)"  # Python Blue with alpha
+series.marker = {"radius": 18, "symbol": "circle"}  # Larger markers for 4800x2700
 
 chart.add_series(series)
 

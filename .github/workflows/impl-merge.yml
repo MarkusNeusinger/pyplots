@@ -230,3 +230,11 @@ jobs:
           :robot: *[impl-merge](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
 
           gh issue comment "$ISSUE" --body "$BODY"
+
+      - name: Trigger database sync
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run sync-postgres.yml
+          echo "::notice::Triggered sync-postgres.yml"

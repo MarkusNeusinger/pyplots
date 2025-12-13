@@ -17,6 +17,10 @@ on:
       - 'plots/**'
   workflow_dispatch:  # Allow manual trigger
 
+concurrency:
+  group: sync-postgres
+  cancel-in-progress: false  # Queue instead of cancel
+
 jobs:
   sync:
     name: Sync to PostgreSQL

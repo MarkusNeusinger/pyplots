@@ -9,13 +9,16 @@ import altair as alt
 ## Create Chart
 
 ```python
-chart = alt.Chart(df).mark_point().encode(
+chart = alt.Chart(df).mark_point(size=150).encode(  # size ~3-4x default
     x='col_x:Q',
     y='col_y:Q'
 ).properties(
     width=1600,
     height=900,
-    title=title
+    title=alt.Title(title, fontSize=28)
+).configure_axis(
+    labelFontSize=18,
+    titleFontSize=22
 )
 ```
 

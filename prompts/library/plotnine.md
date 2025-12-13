@@ -22,10 +22,21 @@ plot = (
 )
 ```
 
-## Figure Size
+## Figure Size & Sizing for 4800×2700 px
 
 ```python
-plot = plot + theme(figure_size=(16, 9))
+plot = plot + theme(
+    figure_size=(16, 9),
+    text=element_text(size=14),           # Base text
+    axis_title=element_text(size=20),     # Axis labels
+    axis_text=element_text(size=16),      # Tick labels
+    plot_title=element_text(size=24),     # Title
+    legend_text=element_text(size=16)
+)
+
+# Element sizes in geoms
++ geom_point(size=4)    # ~3-4x default
++ geom_line(size=1.5)   # line width
 ```
 
 ## Save (PNG)

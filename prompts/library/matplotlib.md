@@ -33,15 +33,32 @@ plt.scatter(x, y)
 plt.savefig('plot.png', dpi=300, bbox_inches='tight')
 ```
 
+## Sizing for 4800×2700 px
+
+```python
+# Text sizes
+ax.set_title(title, fontsize=24)
+ax.set_xlabel(x_label, fontsize=20)
+ax.set_ylabel(y_label, fontsize=20)
+ax.tick_params(axis='both', labelsize=16)
+ax.legend(fontsize=16)
+
+# Element sizes
+ax.scatter(x, y, s=200)      # s=150-300 (not s=50!)
+ax.plot(x, y, linewidth=3)   # linewidth=2-4 (not 1!)
+
+# Grid
+ax.grid(True, alpha=0.3, linestyle='--')
+```
+
 ## Styling
 
 ```python
-ax.set_xlabel(x_label)
-ax.set_ylabel(y_label)
-ax.set_title(title)
-ax.legend()  # if needed
+ax.set_xlabel(x_label, fontsize=20)
+ax.set_ylabel(y_label, fontsize=20)
+ax.set_title(title, fontsize=24)
+ax.legend(fontsize=16)  # if needed
 plt.tight_layout()
-# Grid: AI discretion
 ```
 
 ## API Compatibility (3.9+)

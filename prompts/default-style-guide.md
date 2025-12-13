@@ -1,19 +1,14 @@
 # PyPlots.ai Default Style Guide
 
-Minimal style requirements for consistent visualizations.
+Style requirements for consistent visualizations at **4800 × 2700 px**.
 
-## Color Palette
+## Important: Large Canvas Size
 
-Use colors in this order for data series:
+pyplots renders at **4800 × 2700 px** (much larger than standard plots). All element sizes must be scaled for visibility!
 
-| #  | Name          | Hex       |
-|----|---------------|-----------|
-| 1  | Python Blue   | #306998   |
-| 2  | Python Yellow | #FFD43B   |
-| 3  | Signal Red    | #DC2626   |
-| 4  | Teal Green    | #059669   |
-| 5  | Violet        | #8B5CF6   |
-| 6  | Orange        | #F97316   |
+**Common Mistake:** Using default/standard sizes results in tiny, hard-to-see elements.
+
+---
 
 ## Dimensions
 
@@ -22,27 +17,59 @@ Use colors in this order for data series:
 | Image Size       | 4800 × 2700 px   |
 | Aspect Ratio     | 16:9             |
 
-## Typography & Lines (Recommended)
+---
 
-These values typically work well at 4800 × 2700 px:
+## Color Palette
 
-| Element          | Size   |
-|------------------|--------|
-| Title            | 20pt   |
-| Axis Labels      | 20pt   |
-| Tick Labels      | 16pt   |
-| Legend           | 16pt   |
-| Annotations      | 14pt   |
-| Line Width       | 2 px   |
-| Marker Size      | 4 px   |
+Primary colors (always use these first):
+
+| #  | Name          | Hex       |
+|----|---------------|-----------|
+| 1  | Python Blue   | #306998   |
+| 2  | Python Yellow | #FFD43B   |
+
+For additional colors: AI chooses appropriate, colorblind-safe colors.
+
+---
+
+## Visual Sizing Principles
+
+Since we render at 4800 × 2700 px, elements must be **visually prominent**:
+
+### Text
+- **Title**: Large and clearly readable
+- **Axis labels**: Prominent, not tiny
+- **Tick labels**: Readable at full image size
+- **Legend**: Easy to read
+
+### Data Elements
+- **Points/Markers**: Clearly visible, not tiny dots
+- **Lines**: Thick enough to see clearly
+- **Bars**: With subtle edges for definition
+
+### General Rules
+- Elements should be **~3-4x larger** than standard defaults
+- When in doubt, make it bigger
+- Test: Would this be readable on a 4K monitor?
+
+---
+
+## Grid
+
+- Subtle, not dominant
+- Low opacity (around 30%)
+- Should enhance readability, not distract
+
+---
 
 ## AI Discretion
 
-The following are left to AI judgment based on the specific visualization:
+The AI decides based on the specific library and visualization:
 
+- Exact sizes and parameters (library-specific)
 - Font family
-- Grid style and visibility
-- Tick configuration
-- Legend placement and styling
+- Grid style (on/off, dashed/solid)
+- Legend placement
+- Additional colors beyond the primary two
 
-Focus on **clarity and readability** for the specific plot type.
+**Priority:** Clarity and readability at 4800 × 2700 px.

@@ -19,11 +19,23 @@ plot = (
 )
 ```
 
-## Figure Size
+## Figure Size & Sizing for 4800×2700 px
 
 ```python
-# Target: 4800 × 2700 px (see default-style-guide.md)
-plot = plot + ggsize(1600, 900)  # Base size, scaled 3x on export
+# Base size (scaled 3x on export = 4800 × 2700 px)
+plot = plot + ggsize(1600, 900)
+
+# Text and element sizes
+plot = plot + theme(
+    axis_title=element_text(size=20),
+    axis_text=element_text(size=16),
+    plot_title=element_text(size=24),
+    legend_text=element_text(size=16)
+)
+
+# Element sizes in geoms
++ geom_point(size=4)    # ~3-4x default
++ geom_line(size=1.5)   # line width
 ```
 
 ## Save (PNG)

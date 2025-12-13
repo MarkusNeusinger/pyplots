@@ -111,15 +111,31 @@ driver.quit()
 Path(temp_path).unlink()  # Clean up temp file
 ```
 
-## Chart Size
+## Sizing for 4800×2700 px
 
 ```python
-# Target: 4800 × 2700 px (see default-style-guide.md)
 chart.options.chart = {
-    'type': 'column',  # or 'bar', 'scatter', etc.
+    'type': 'column',
     'width': 4800,
     'height': 2700,
     'backgroundColor': '#ffffff'
+}
+
+# Text sizes
+chart.options.title = {'text': title, 'style': {'fontSize': '28px'}}
+chart.options.x_axis = {
+    'title': {'text': x_label, 'style': {'fontSize': '22px'}},
+    'labels': {'style': {'fontSize': '18px'}}
+}
+chart.options.y_axis = {
+    'title': {'text': y_label, 'style': {'fontSize': '22px'}},
+    'labels': {'style': {'fontSize': '18px'}}
+}
+
+# Marker sizes (in plotOptions)
+chart.options.plot_options = {
+    'scatter': {'marker': {'radius': 8}},  # ~3-4x default
+    'line': {'lineWidth': 3}
 }
 ```
 

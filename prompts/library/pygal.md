@@ -52,7 +52,7 @@ chart.render_to_file('plot.svg')
 chart.render_to_png('plot.png')
 ```
 
-## Styling
+## Sizing for 4800×2700 px
 
 ```python
 custom_style = Style(
@@ -61,7 +61,13 @@ custom_style = Style(
     foreground='#333',
     foreground_strong='#333',
     foreground_subtle='#666',
-    colors=('#3498db', '#2ecc71', '#e74c3c', '#9b59b6')
+    colors=('#306998', '#FFD43B'),  # pyplots primary colors
+    title_font_size=28,
+    label_font_size=18,
+    major_label_font_size=16,
+    legend_font_size=16,
+    value_font_size=14,
+    stroke_width=3              # line width
 )
 
 chart = pygal.Bar(style=custom_style)

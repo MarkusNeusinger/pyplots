@@ -32,15 +32,16 @@ np.random.seed(42)
 x = np.random.randn(100) * 2 + 10
 y = x * 0.8 + np.random.randn(100) * 2
 
-# Create plot
+# Create plot (4800x2700 px)
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.scatter(x, y, alpha=0.7, s=50, color='#306998')
+ax.scatter(x, y, alpha=0.7, s=200, color='#306998')  # s=200 for visibility!
 
-# Labels and styling
-ax.set_xlabel('X Value')
-ax.set_ylabel('Y Value')
-ax.set_title('scatter-basic · matplotlib · pyplots.ai')  # Always use this format!
-ax.grid(True, alpha=0.3)
+# Labels and styling (scaled font sizes!)
+ax.set_xlabel('X Value', fontsize=20)
+ax.set_ylabel('Y Value', fontsize=20)
+ax.set_title('scatter-basic · matplotlib · pyplots.ai', fontsize=24)
+ax.tick_params(axis='both', labelsize=16)
+ax.grid(True, alpha=0.3, linestyle='--')
 
 plt.tight_layout()
 plt.savefig('plot.png', dpi=300, bbox_inches='tight')
@@ -82,21 +83,44 @@ The middot (·) separator is required. No color or style requirements - the AI d
 5. **Style** - Labels, title, grid, etc.
 6. **Save** - Always save as `plot.png`
 
-### Rules
+### Rules (Code Quality Criteria)
 
-- **No functions** - Just sequential code
-- **No `if __name__ == '__main__':`** - Not needed
-- **No type hints or docstrings** - Keep it simple
-- **Use comments** - Where logic isn't obvious
-- **KISS** - Keep It Simple, Stupid
+Must pass criteria from `prompts/quality-criteria.md`:
+
+- **KISS Structure** (CQ-01): Imports → Data → Plot → Save (no functions/classes)
+- **Reproducibility** (CQ-02): Use `np.random.seed(42)` or deterministic data
+- **Library Idioms** (CQ-03): Use best practices (e.g., `fig, ax = plt.subplots()`)
+- **Clean Imports** (CQ-04): Only import what you use
+- **Helpful Comments** (CQ-05): Comments where logic isn't obvious
+- **No Deprecated API** (CQ-06): Use current functions
+- **Output Correct** (CQ-07): Save as `plot.png`
+
+**Forbidden:**
+- Functions or classes
+- `if __name__ == '__main__':`
+- Type hints or docstrings (keep it simple)
 
 ## Visual Quality
 
-- **Image Size**: 4800 × 2700 px (see `prompts/default-style-guide.md`)
-- **Colors**: Use palette from style guide when appropriate
-- **Axis Labels**: Always present and meaningful
-- **Legend**: When multiple series or color mapping
-- **Layout**: `tight_layout()` or equivalent
+Must pass criteria from `prompts/quality-criteria.md`.
+
+**IMPORTANT: Large Canvas Size!**
+
+pyplots renders at **4800 × 2700 px** - standard/default element sizes are too small!
+
+- Elements should be **~3-4x larger** than library defaults
+- See `prompts/default-style-guide.md` for principles
+- See `prompts/library/{library}.md` for library-specific sizes
+
+**Criteria:**
+- **Image Size** (VQ-08): 4800 × 2700 px (16:9)
+- **Element Clarity** (VQ-04): Points, lines, bars clearly visible - not tiny!
+- **Colors** (VQ-03): Use Python Blue (#306998) and Yellow (#FFD43B) first, colorblind-safe
+- **Axis Labels** (VQ-01): Present and meaningful, large enough to read
+- **Title** (SC-06): Format `{spec-id} · {library} · pyplots.ai`
+- **No Overlap** (VQ-02): Labels and text must not overlap
+- **Legend** (VQ-07): When multiple series, don't cover data
+- **Layout** (VQ-05): No cut-off content
 
 ## Output File
 

@@ -31,6 +31,23 @@ fig = g.figure
 plt.savefig('plot.png', dpi=300, bbox_inches='tight')
 ```
 
+## Sizing for 4800×2700 px
+
+```python
+# Text sizes (seaborn uses matplotlib underneath)
+ax.set_title(title, fontsize=24)
+ax.set_xlabel(x_label, fontsize=20)
+ax.set_ylabel(y_label, fontsize=20)
+ax.tick_params(axis='both', labelsize=16)
+
+# Or use sns.set_context for global scaling
+sns.set_context("talk", font_scale=1.2)
+
+# Element sizes in seaborn functions
+sns.scatterplot(..., s=200)           # marker size
+sns.lineplot(..., linewidth=3)        # line width
+```
+
 ## API Compatibility (0.14+)
 
 ```python

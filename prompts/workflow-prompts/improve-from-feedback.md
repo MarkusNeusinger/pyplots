@@ -39,11 +39,13 @@ Improve the code to address ALL feedback from the latest review.
 
 ### Priority Checklist
 
-1. **Critical Issues** - Fix any VQ-xxx (Visual Quality), CQ-xxx (Code Quality), or CR-xxx (Criteria) failures
-2. **Previous Mistakes** - Review previous attempts to avoid repeating the same errors
-3. **Improvement Suggestions** - Implement suggestions where feasible
-4. **Code Quality** - Maintain readability and follow library conventions
-5. **API Compatibility** - Keep the same function signature
+Address issues by area (see `prompts/quality-criteria.md`):
+
+1. **Spec Compliance (SC-xx)** - Fix plot type, data mapping, missing features, title format
+2. **Visual Quality (VQ-xx)** - Fix labels, overlaps, colors, layout issues
+3. **Code Quality (CQ-xx)** - Fix structure, imports, reproducibility, idioms
+4. **Previous Mistakes** - Review previous attempts to avoid repeating the same errors
+5. **All Feedback** - Implement all suggestions from the latest review
 
 ## Output
 

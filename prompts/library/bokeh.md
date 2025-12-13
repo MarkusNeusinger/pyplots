@@ -55,12 +55,19 @@ export_png(p, filename='plot.png')
 
 **Note**: Requires `selenium` and WebDriver for PNG export.
 
-## Styling
+## Sizing for 4800×2700 px
 
 ```python
-p.xaxis.axis_label = x_label
-p.yaxis.axis_label = y_label
-# Grid: AI discretion
+# Text sizes
+p.title.text_font_size = '28pt'
+p.xaxis.axis_label_text_font_size = '22pt'
+p.yaxis.axis_label_text_font_size = '22pt'
+p.xaxis.major_label_text_font_size = '18pt'
+p.yaxis.major_label_text_font_size = '18pt'
+
+# Element sizes
+p.scatter(..., size=15)        # ~3-4x default
+p.line(..., line_width=3)
 ```
 
 ## Output File

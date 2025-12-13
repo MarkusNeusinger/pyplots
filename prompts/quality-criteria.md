@@ -2,204 +2,438 @@
 
 Definition of what makes a high-quality plot implementation.
 
+## Overview
+
+Quality is evaluated across **3 areas**:
+
+| Area | Weight | Focus |
+|------|--------|-------|
+| **Spec Compliance** | 40% | Does the plot match the specification? |
+| **Visual Quality** | 40% | Is the plot professional and beautiful? |
+| **Code Quality** | 20% | Is the code clean and idiomatic? |
+
 ## Scoring
 
-**Range**: 0-100 points
-**Pass Threshold**: ≥ 85
+**Range**: 0-100 points (simply add up all criteria)
+**Pass Threshold**: >= 85
 
 | Score | Rating |
 |-------|--------|
-| ≥ 90 | Excellent |
+| >= 90 | Excellent |
 | 85-89 | Good (acceptable) |
 | 75-84 | Needs improvement |
 | < 75 | Rejected |
 
 ---
 
-## Visual Quality
+## 1. Spec Compliance (40 Points)
 
-### VQ-001: Axes Labeled (10 points, Critical)
+**Question**: Does the plot match what the specification requested?
 
-- X and Y axes have meaningful labels
-- Not empty, not just "x" or "y"
+| ID | Criterion | Points | Description |
+|----|-----------|--------|-------------|
+| SC-01 | **Plot Type** | 12 | Correct chart type (scatter != line != bar) |
+| SC-02 | **Data Mapping** | 8 | X/Y data correctly assigned, no mix-ups |
+| SC-03 | **Required Features** | 8 | All features mentioned in spec are implemented |
+| SC-04 | **Data Range** | 4 | Axis ranges show all data appropriately |
+| SC-05 | **Legend Accuracy** | 4 | Legend labels match the data series |
+| SC-06 | **Title Format** | 4 | Uses `{spec-id} · {library} · pyplots.ai` format |
+
+### SC-01: Plot Type (12 points)
+
+The generated plot must be the correct visualization type.
+
+```
+Spec says "scatter plot" -> Must use scatter/point markers
+Spec says "bar chart"    -> Must use bars, not lines
+Spec says "heatmap"      -> Must use color matrix, not scatter
+```
+
+### SC-02: Data Mapping (8 points)
+
+Data columns are correctly mapped to visual elements.
+
+```
+# Good: X and Y match spec description
+ax.scatter(df['age'], df['income'])  # age on X, income on Y
+
+# Bad: Swapped X and Y
+ax.scatter(df['income'], df['age'])  # Wrong mapping!
+```
+
+### SC-03: Required Features (8 points)
+
+All features explicitly mentioned in the spec are present.
+
+```
+Spec mentions:
+- "color by category" -> Must have color encoding
+- "with trend line"   -> Must include regression line
+- "logarithmic scale" -> Must use log scale
+```
+
+### SC-04: Data Range (4 points)
+
+Axis ranges display all data points appropriately.
+
+```
+# Good: All data visible with reasonable padding
+ax.set_xlim(data.min() - margin, data.max() + margin)
+
+# Bad: Data cut off or excessive whitespace
+ax.set_xlim(0, 100)  # When data ranges 50-200
+```
+
+### SC-05: Legend Accuracy (4 points)
+
+Legend entries match the actual data series.
+
+```python
+# Good: Labels match what's plotted
+ax.scatter(x, y1, label='Sales 2023')
+ax.scatter(x, y2, label='Sales 2024')
+
+# Bad: Misleading labels
+ax.scatter(x, y1, label='Revenue')  # Actually plotting sales
+```
+
+### SC-06: Title Format (4 points)
+
+Title follows the pyplots.ai format.
 
 ```python
 # Good
-ax.set_xlabel("Age (years)")
-ax.set_ylabel("Income ($)")
+ax.set_title('scatter-basic · matplotlib · pyplots.ai')
+ax.set_title('Stock Prices · candle-ohlc · plotly · pyplots.ai')
 
 # Bad
-ax.set_xlabel("")
-ax.set_xlabel("x")
+ax.set_title('My Scatter Plot')
+ax.set_title('scatter-basic')  # Missing library and pyplots.ai
 ```
 
-### VQ-002: Visual Clarity (5 points, Medium)
+---
 
-- Grid (if present) doesn't dominate the data
-- Elements are distinguishable
-- AI discretion for grid style
+## 2. Visual Quality (40 Points)
 
-### VQ-003: Elements Clear (8 points, High)
+**Question**: Does the plot look professional and appealing?
 
-- Data points/bars/lines clearly visible
-- Appropriate size, alpha, contrast
+| ID | Criterion | Points | Description |
+|----|-----------|--------|-------------|
+| VQ-01 | **Axis Labels** | 8 | Meaningful labels (not "x", "y", or empty) |
+| VQ-02 | **No Overlap** | 7 | Text/labels don't overlap, everything readable |
+| VQ-03 | **Color Choice** | 6 | Harmonious, distinguishable, colorblind-safe |
+| VQ-04 | **Element Clarity** | 6 | Points/bars/lines clearly visible (size, alpha) |
+| VQ-05 | **Layout Balance** | 5 | Good proportions, no cut-off content |
+| VQ-06 | **Grid Subtlety** | 3 | Grid (if present) is subtle, not dominant |
+| VQ-07 | **Legend Placement** | 3 | Legend doesn't obscure data |
+| VQ-08 | **Image Size** | 2 | 4800x2700 px, 16:9 aspect ratio |
+
+### VQ-01: Axis Labels (8 points)
+
+Axes have meaningful, descriptive labels.
 
 ```python
 # Good
-ax.scatter(x, y, s=50, alpha=0.8)
+ax.set_xlabel('Age (years)')
+ax.set_ylabel('Income ($)')
 
 # Bad
-ax.scatter(x, y, s=5, alpha=0.1)
+ax.set_xlabel('x')
+ax.set_xlabel('')
+# No labels at all
 ```
 
-### VQ-004: No Overlap (9 points, High)
+### VQ-02: No Overlap (7 points)
 
-- Labels, ticks, legend don't overlap
-- Text is readable
+All text elements are readable without overlapping.
 
 ```python
-# Good (when many labels)
+# Good: Rotated labels when needed
 plt.xticks(rotation=45, ha='right')
 
-# Bad
-# Overlapping labels ignored
+# Good: Adjusted font size for many categories
+ax.tick_params(labelsize=10)
+
+# Bad: Overlapping tick labels ignored
 ```
 
-### VQ-005: Legend Present (7 points, Medium)
+### VQ-03: Color Choice (6 points)
 
-- Legend present when >1 series or color mapping
-- Not needed for single series without mapping
+Colors are harmonious and colorblind-safe.
 
-### VQ-006: Colorblind Safe (6 points, Medium)
+**Primary colors (use first):**
+- Python Blue: `#306998`
+- Python Yellow: `#FFD43B`
 
-- No red-green combinations
-- Safe palettes: viridis, tab10, colorblind
+For additional colors: AI chooses appropriate, colorblind-safe colors.
 
-### VQ-007: Image Size (4 points, Low)
+**Bad:** Red-green combinations (not colorblind-safe)
 
-- Target: 4800 × 2700 px (16:9 aspect ratio)
-- See `prompts/default-style-guide.md`
+**Good alternatives for more colors:** `viridis`, `tab10`, or other colorblind-safe palettes
 
-### VQ-008: Title (3 points, Low)
+### VQ-04: Element Clarity (6 points)
 
-- If provided: centered and clear
-- Not required if not in spec
+Data elements are clearly visible at 4800×2700 px. Default/standard sizes are too small!
 
----
+**Rule:** Elements should be **~3-4x larger** than library defaults.
 
-## Code Quality
+See `prompts/default-style-guide.md` for principles and `prompts/library/{library}.md` for library-specific guidance.
 
-### CQ-001: Type Hints (7 points, Medium)
+**Check:**
+- Are markers/points clearly visible (not tiny dots)?
+- Are lines thick enough to see clearly?
+- Would this be readable on a 4K monitor at full size?
+
+**Scaling guide by data density:**
+- Few points (<50): Larger markers
+- Medium points (50-200): Medium markers
+- Many points (>200): Smaller markers with transparency
+
+### VQ-05: Layout Balance (5 points)
+
+Plot has good proportions with no cut-off content.
 
 ```python
-# Good
-def create_plot(data: pd.DataFrame, x: str) -> Figure:
+# Good: Tight layout applied
+plt.tight_layout()
+plt.savefig('plot.png', bbox_inches='tight')
 
-# Bad
-def create_plot(data, x):
+# Bad: Labels cut off at edges
 ```
 
-### CQ-002: Docstring (8 points, High)
+### VQ-06: Grid Subtlety (3 points)
 
-Google-style with Args, Returns, Raises, Example.
+Grid enhances readability without dominating.
 
 ```python
-def create_plot(...):
-    """
-    Short description.
+# Good: Subtle grid
+ax.grid(True, alpha=0.3, linestyle='--')
 
-    Args:
-        data: Input DataFrame
-        x: Column name for X axis
-
-    Returns:
-        Matplotlib Figure
-
-    Raises:
-        ValueError: If data is empty
-
-    Example:
-        >>> fig = create_plot(df, 'age')
-    """
+# Bad: Overpowering grid
+ax.grid(True, linewidth=2, color='black')
 ```
 
-### CQ-003: Input Validation (10 points, Critical)
+### VQ-07: Legend Placement (3 points)
+
+Legend is visible and doesn't cover data.
 
 ```python
-# Good
-if data.empty:
-    raise ValueError("Data cannot be empty")
+# Good: Outside or in empty area
+ax.legend(loc='upper right')
+ax.legend(bbox_to_anchor=(1.05, 1))
 
-if x not in data.columns:
-    raise KeyError(f"Column '{x}' not found")
-
-# Bad
-# No validation
+# Bad: Legend covers data points
 ```
 
-### CQ-004: Clear Error Messages (6 points, Medium)
+### VQ-08: Image Size (2 points)
+
+Output image has correct dimensions.
 
 ```python
-# Good
-raise KeyError(f"Column '{x}' not found. Available: {list(data.columns)}")
+# Good: 4800x2700 px (16:9)
+fig, ax = plt.subplots(figsize=(16, 9))
+plt.savefig('plot.png', dpi=300)  # 16*300=4800, 9*300=2700
 
-# Bad
-raise KeyError("Column not found")
-```
-
-### CQ-005: No Magic Numbers (4 points, Low)
-
-```python
-# Good
-def create_plot(..., size: float = 50):
-    ax.scatter(x, y, s=size)
-
-# Bad
-ax.scatter(x, y, s=50)  # What is 50?
+# For other libraries
+fig.write_image('plot.png', width=4800, height=2700)
 ```
 
 ---
 
-## Correctness
+## 3. Code Quality (20 Points)
 
-### CR-001: Data Accurate (10 points, Critical)
+**Question**: Is the code clean, readable, and idiomatic?
 
-- Correct columns used
-- No X/Y confusion
+| ID | Criterion | Points | Description |
+|----|-----------|--------|-------------|
+| CQ-01 | **KISS Structure** | 5 | Imports -> Data -> Plot -> Save (no functions/classes) |
+| CQ-02 | **Reproducibility** | 4 | Uses `np.random.seed(42)` or deterministic data |
+| CQ-03 | **Library Idioms** | 4 | Follows library best practices |
+| CQ-04 | **Clean Imports** | 2 | Only used imports, sensible aliases |
+| CQ-05 | **Helpful Comments** | 2 | Comments where logic isn't obvious |
+| CQ-06 | **No Deprecated API** | 2 | No deprecated functions or methods |
+| CQ-07 | **Output Correct** | 1 | Saves as `plot.png` |
 
-### CR-002: Spec Compliance (10 points, Critical)
+### CQ-01: KISS Structure (5 points)
 
-- All required parameters implemented
-- All optional parameters with defaults
+Code follows simple sequential structure without functions or classes.
 
-### CR-003: Edge Cases (5 points, Medium)
+```python
+# Good: Simple sequential structure
+"""
+scatter-basic: Basic Scatter Plot
+Library: matplotlib
+"""
 
-- Empty data → ValueError
-- NaN values → Graceful handling
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Data
+np.random.seed(42)
+x = np.random.randn(100)
+y = x * 0.8 + np.random.randn(100) * 0.5
+
+# Plot
+fig, ax = plt.subplots(figsize=(16, 9))
+ax.scatter(x, y, alpha=0.7, s=50)
+
+# Style
+ax.set_xlabel('X Value')
+ax.set_ylabel('Y Value')
+ax.set_title('scatter-basic · matplotlib · pyplots.ai')
+
+plt.tight_layout()
+plt.savefig('plot.png', dpi=300, bbox_inches='tight')
+```
+
+```python
+# Bad: Unnecessary complexity
+def create_plot(data):
+    ...
+
+if __name__ == '__main__':
+    create_plot(data)
+```
+
+### CQ-02: Reproducibility (4 points)
+
+Same code produces same output every time.
+
+```python
+# Good: Fixed seed
+np.random.seed(42)
+x = np.random.randn(100)
+
+# Good: Deterministic data
+x = [1, 2, 3, 4, 5]
+y = [2, 4, 6, 8, 10]
+
+# Good: Standard dataset
+df = sns.load_dataset('iris')
+
+# Bad: Random without seed
+x = np.random.randn(100)  # Different every run!
+```
+
+### CQ-03: Library Idioms (4 points)
+
+Code uses library-specific best practices.
+
+```python
+# matplotlib - Good
+fig, ax = plt.subplots(figsize=(16, 9))
+ax.scatter(x, y)
+
+# matplotlib - Bad (old style)
+plt.figure(figsize=(16, 9))
+plt.scatter(x, y)
+
+# seaborn - Good
+fig, ax = plt.subplots(figsize=(16, 9))
+sns.scatterplot(data=df, x='x', y='y', ax=ax)
+
+# plotly - Good
+fig = px.scatter(df, x='x', y='y')
+fig.update_layout(width=4800, height=2700)
+```
+
+### CQ-04: Clean Imports (2 points)
+
+Only import what's used, with standard aliases.
+
+```python
+# Good
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+# Bad: Unused imports
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns  # Never used!
+from datetime import datetime  # Never used!
+```
+
+### CQ-05: Helpful Comments (2 points)
+
+Comments explain non-obvious logic, not obvious code.
+
+```python
+# Good: Explains why
+# Offset by 0.4 to center bars between tick marks
+ax.bar(x - 0.4, y1, width=0.4)
+ax.bar(x, y2, width=0.4)
+
+# Bad: States the obvious
+# Create scatter plot
+ax.scatter(x, y)
+
+# Bad: No comments on complex logic
+ax.bar(x - width/2, y1, width)
+ax.bar(x + width/2, y2, width)
+```
+
+### CQ-06: No Deprecated API (2 points)
+
+Uses current, non-deprecated functions.
+
+```python
+# Good: Current API
+fig, ax = plt.subplots()
+ax.set_xlabel('X')
+
+# Bad: Deprecated
+plt.xlabel('X')  # Use ax.set_xlabel instead
+df.append(row)   # Use pd.concat instead
+```
+
+### CQ-07: Output Correct (1 point)
+
+Saves output as `plot.png`.
+
+```python
+# Good
+plt.savefig('plot.png', dpi=300, bbox_inches='tight')
+fig.write_image('plot.png', width=4800, height=2700)
+
+# Bad
+plt.savefig('output.png')
+plt.savefig('matplotlib_scatter.png')
+plt.show()  # No file saved!
+```
 
 ---
 
-## Scoring Formula
+## Evaluation Checklist
 
-```
-Start: 50 points
+Quick reference for reviewers:
 
-For each criterion MET: +weight
-For each criterion FAILED: -weight
-N/A criteria: 0
+### Spec Compliance (40 pts)
+- [ ] SC-01: Correct plot type (12)
+- [ ] SC-02: Data mapped correctly (8)
+- [ ] SC-03: All required features present (8)
+- [ ] SC-04: Appropriate data range (4)
+- [ ] SC-05: Legend labels accurate (4)
+- [ ] SC-06: Title format correct (4)
 
-Result: Clamp between 0-100
-```
+### Visual Quality (40 pts)
+- [ ] VQ-01: Meaningful axis labels (8)
+- [ ] VQ-02: No overlapping text (7)
+- [ ] VQ-03: Good color choice (6)
+- [ ] VQ-04: Clear data elements (6)
+- [ ] VQ-05: Balanced layout (5)
+- [ ] VQ-06: Subtle grid (3)
+- [ ] VQ-07: Well-placed legend (3)
+- [ ] VQ-08: Correct image size (2)
 
-**Example**:
-```
-50 (base)
-+10 (axes_labeled)
-+5  (grid_subtle)
-+8  (elements_clear)
-+9  (no_overlap)
-+7  (legend)
--6  (colorblind FAILED)
-+4  (figure_size)
-= 87 → PASS
-```
+### Code Quality (20 pts)
+- [ ] CQ-01: KISS structure (5)
+- [ ] CQ-02: Reproducible output (4)
+- [ ] CQ-03: Library idioms (4)
+- [ ] CQ-04: Clean imports (2)
+- [ ] CQ-05: Helpful comments (2)
+- [ ] CQ-06: No deprecated API (2)
+- [ ] CQ-07: Saves as plot.png (1)
+
+**Total: ___ / 100**

@@ -10,11 +10,11 @@ import matplotlib.pyplot as plt
 categories = ["Electronics", "Clothing", "Home & Garden", "Sports", "Books", "Toys"]
 values = [45200, 32800, 28500, 21300, 18900, 15600]
 
-# Create plot
+# Create plot (4800x2700 px)
 fig, ax = plt.subplots(figsize=(16, 9))
 
 # Bar chart with Python Blue color
-bars = ax.bar(categories, values, color="#306998", width=0.6, edgecolor="white", linewidth=1)
+bars = ax.bar(categories, values, color="#306998", width=0.6, edgecolor="white", linewidth=1.5)
 
 # Add value labels on top of bars
 for bar, value in zip(bars, values, strict=True):
@@ -26,19 +26,19 @@ for bar, value in zip(bars, values, strict=True):
         textcoords="offset points",
         ha="center",
         va="bottom",
-        fontsize=14,
+        fontsize=16,
     )
 
 # Labels and styling
 ax.set_xlabel("Product Category", fontsize=20)
 ax.set_ylabel("Sales ($)", fontsize=20)
-ax.set_title("Product Sales by Category", fontsize=20)
+ax.set_title("bar-basic · matplotlib · pyplots.ai", fontsize=24)
 
 # Style tick labels
 ax.tick_params(axis="both", labelsize=16)
 
 # Subtle grid on y-axis only
-ax.yaxis.grid(True, alpha=0.3, linestyle="-")
+ax.yaxis.grid(True, alpha=0.3, linestyle="--")
 ax.set_axisbelow(True)
 
 # Remove top and right spines for cleaner look

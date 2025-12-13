@@ -21,8 +21,9 @@ dependencies = [
     # Database
     "sqlalchemy[asyncio]>=2.0.0",
     "asyncpg>=0.29.0",
+    "pg8000>=1.31.0",  # Sync driver for Cloud SQL Connector in GitHub Actions
     "alembic>=1.13.0",
-    "cloud-sql-python-connector[asyncpg]>=1.18.0",  # Cloud SQL Connector (async)
+    "cloud-sql-python-connector[asyncpg,pg8000]>=1.18.0",  # Cloud SQL Connector
     # Data & Plotting
     "pandas>=2.2.0",
     "numpy>=1.26.0",

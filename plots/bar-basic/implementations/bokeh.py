@@ -15,14 +15,13 @@ values = [42500, 31200, 28700, 19800, 15400, 12600]
 # Create ColumnDataSource
 source = ColumnDataSource(data={"categories": categories, "values": values})
 
-# Create figure with categorical x-axis
-# Target: 4800 × 2700 px (16:9 aspect ratio)
+# Create figure with categorical x-axis (4800 × 2700 px)
 p = figure(
     x_range=categories,
     width=4800,
     height=2700,
-    title="Product Sales by Category",
-    x_axis_label="Category",
+    title="bar-basic · bokeh · pyplots.ai",
+    x_axis_label="Product Category",
     y_axis_label="Sales ($)",
     toolbar_location=None,
 )
@@ -44,7 +43,7 @@ labels = LabelSet(
 )
 p.add_layout(labels)
 
-# Styling
+# Styling for 4800×2700 px
 p.title.text_font_size = "36pt"
 p.title.align = "center"
 p.xaxis.axis_label_text_font_size = "28pt"
@@ -55,6 +54,7 @@ p.yaxis.major_label_text_font_size = "24pt"
 # Grid styling
 p.xgrid.grid_line_color = None
 p.ygrid.grid_line_alpha = 0.3
+p.ygrid.grid_line_dash = "dashed"
 
 # Y-axis starts at 0
 p.y_range.start = 0

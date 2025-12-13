@@ -14,12 +14,12 @@ y = x * 0.8 + np.random.randn(150) * 1.5
 
 # Create plot
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.scatter(x, y, alpha=0.7, s=60, color="#306998", edgecolors="white", linewidths=0.5)
+ax.scatter(x, y, alpha=0.7, s=200, color="#306998", edgecolors="white", linewidths=0.5)
 
 # Labels and styling
 ax.set_xlabel("X Value", fontsize=20)
 ax.set_ylabel("Y Value", fontsize=20)
-ax.set_title("Basic Scatter Plot", fontsize=20)
+ax.set_title("scatter-basic · matplotlib · pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
 ax.grid(True, alpha=0.3, linestyle="--")
 

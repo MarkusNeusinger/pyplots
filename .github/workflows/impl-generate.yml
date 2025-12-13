@@ -160,9 +160,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y pngquant
-          # Download JetBrains Mono font for watermarks
-          curl -sL "https://raw.githubusercontent.com/JetBrains/JetBrainsMono/master/fonts/ttf/JetBrainsMono-Bold.ttf" \
-            -o /tmp/JetBrainsMono-Bold.ttf
 
       - name: Install dependencies
         env:
@@ -365,12 +362,11 @@ jobs:
           echo "::notice::Created metadata file: $METADATA_FILE (py${PYTHON_VERSION}, ${LIBRARY}==${LIBRARY_VERSION})"
 
       # ========================================================================
-      # Process images: watermark + thumbnail
+      # Process images: optimize + thumbnail
       # ========================================================================
       - name: Process plot images
         env:
           SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
-          LIBRARY: ${{ steps.inputs.outputs.library }}
         run: |
           IMPL_DIR="plots/${SPEC_ID}/implementations"
 
@@ -381,14 +377,13 @@ jobs:
 
           source .venv/bin/activate
 
-          # Process PNG: add watermark and create thumbnail
+          # Process PNG: optimize and create thumbnail
           python -m core.images process \
             "$IMPL_DIR/plot.png" \
             "$IMPL_DIR/plot.png" \
-            "$IMPL_DIR/plot_thumb.png" \
-            "$SPEC_ID"
+            "$IMPL_DIR/plot_thumb.png"
 
-          echo "::notice::Processed images: watermark added, thumbnail created"
+          echo "::notice::Processed images: optimized + thumbnail created"
           ls -la "$IMPL_DIR/"
 
       # ========================================================================

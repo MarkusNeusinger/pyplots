@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
-from core.images import add_watermark, create_thumbnail, optimize_png, process_plot_image
+from core.images import create_thumbnail, optimize_png, process_plot_image
 
 
 @pytest.fixture
@@ -59,56 +59,66 @@ class TestCreateThumbnail:
         assert width == 400
         assert output_path.exists()
 
+    def test_default_width(self, sample_image: Path, tmp_path: Path) -> None:
+        """Should use default width of 600 if not specified."""
+        output_path = tmp_path / "thumb.png"
+        width, height = create_thumbnail(sample_image, output_path)
 
-class TestAddWatermark:
-    """Tests for add_watermark function."""
+        assert width == 600
+        assert height == 450  # 800x600 -> 600x450 (4:3 ratio)
 
-    def test_adds_watermark_to_image(self, sample_image: Path, tmp_path: Path) -> None:
-        """Watermark should be added to the image as a footer."""
-        output_path = tmp_path / "watermarked.png"
-        add_watermark(sample_image, output_path)
+    def test_portrait_image(self, tmp_path: Path) -> None:
+        """Should handle portrait orientation images."""
+        # Create portrait image (600x800)
+        img_path = tmp_path / "portrait.png"
+        img = Image.new("RGB", (600, 800), color=(100, 150, 200))
+        img.save(img_path)
 
-        assert output_path.exists()
+        output_path = tmp_path / "thumb.png"
+        width, height = create_thumbnail(img_path, output_path, width=300)
 
-        # Verify the image was created with footer (taller than original)
+        assert width == 300
+        assert height == 400  # Maintains 3:4 ratio
+
+    def test_square_image(self, tmp_path: Path) -> None:
+        """Should handle square images."""
+        # Create square image
+        img_path = tmp_path / "square.png"
+        img = Image.new("RGB", (500, 500), color=(100, 150, 200))
+        img.save(img_path)
+
+        output_path = tmp_path / "thumb.png"
+        width, height = create_thumbnail(img_path, output_path, width=250)
+
+        assert width == 250
+        assert height == 250
+
+    def test_very_small_width(self, sample_image: Path, tmp_path: Path) -> None:
+        """Should handle very small thumbnail widths."""
+        output_path = tmp_path / "tiny.png"
+        width, height = create_thumbnail(sample_image, output_path, width=50)
+
+        assert width == 50
         result_img = Image.open(output_path)
-        original_img = Image.open(sample_image)
-        assert result_img.width == original_img.width
-        assert result_img.height > original_img.height  # Footer adds height
-
-    def test_with_spec_id_basic(self, sample_image: Path, tmp_path: Path) -> None:
-        """Function should accept spec_id for left watermark."""
-        output_path = tmp_path / "watermarked.png"
-        add_watermark(sample_image, output_path, spec_id="scatter-basic")
-
-        assert output_path.exists()
-
-    def test_auto_scaling(self, sample_image: Path, tmp_path: Path) -> None:
-        """Function should auto-scale font size and padding based on image width."""
-        output_path = tmp_path / "watermarked.png"
-        # Default auto-scaling should work without explicit font_size/padding
-        add_watermark(sample_image, output_path)
-
-        assert output_path.exists()
+        assert result_img.width == 50
 
 
 class TestProcessPlotImage:
     """Tests for process_plot_image function."""
 
-    def test_creates_watermarked_image_and_thumbnail(self, sample_image: Path, tmp_path: Path) -> None:
-        """Should create both watermarked image and thumbnail."""
+    def test_creates_optimized_image_and_thumbnail(self, sample_image: Path, tmp_path: Path) -> None:
+        """Should create both optimized image and thumbnail."""
         output_path = tmp_path / "output.png"
         thumb_path = tmp_path / "thumb.png"
 
-        result = process_plot_image(sample_image, output_path, thumb_path, spec_id="scatter-basic")
+        result = process_plot_image(sample_image, output_path, thumb_path)
 
         assert output_path.exists()
         assert thumb_path.exists()
         assert result["output"] == str(output_path)
         assert result["thumbnail"] == str(thumb_path)
-        # Thumbnail width should be 600, height varies due to footer
         assert result["thumb_size"][0] == 600
-        assert result["thumb_size"][1] > 450  # Original 450 + footer
+        assert result["thumb_size"][1] == 450  # Original 800x600 -> 600x450
 
     def test_without_thumbnail(self, sample_image: Path, tmp_path: Path) -> None:
         """Should work without creating a thumbnail."""
@@ -118,25 +128,6 @@ class TestProcessPlotImage:
 
         assert output_path.exists()
         assert "thumbnail" not in result
-
-    def test_without_watermark(self, sample_image: Path, tmp_path: Path) -> None:
-        """Should work without adding watermark."""
-        output_path = tmp_path / "output.png"
-        thumb_path = tmp_path / "thumb.png"
-
-        process_plot_image(sample_image, output_path, thumb_path, add_watermark_flag=False)
-
-        assert output_path.exists()
-        assert thumb_path.exists()
-
-    def test_with_spec_id(self, sample_image: Path, tmp_path: Path) -> None:
-        """Should add spec_id to bottom-left corner."""
-        output_path = tmp_path / "output.png"
-
-        result = process_plot_image(sample_image, output_path, spec_id="histogram-basic", add_watermark_flag=True)
-
-        assert output_path.exists()
-        assert result["output"] == str(output_path)
 
     def test_without_optimization(self, sample_image: Path, tmp_path: Path) -> None:
         """Should work without PNG optimization."""
@@ -198,85 +189,6 @@ class TestOptimizePng:
         assert output_path.exists()
 
 
-class TestAddWatermarkExtended:
-    """Extended tests for add_watermark function."""
-
-    def test_with_spec_id(self, sample_image: Path, tmp_path: Path) -> None:
-        """Should add spec_id to bottom-left corner."""
-        output_path = tmp_path / "watermarked.png"
-        add_watermark(sample_image, output_path, spec_id="scatter-basic")
-
-        assert output_path.exists()
-
-    def test_custom_font_size(self, sample_image: Path, tmp_path: Path) -> None:
-        """Should accept custom font size."""
-        output_path = tmp_path / "watermarked.png"
-        add_watermark(sample_image, output_path, font_size=30)
-
-        assert output_path.exists()
-
-    def test_custom_padding(self, sample_image: Path, tmp_path: Path) -> None:
-        """Should accept custom padding."""
-        output_path = tmp_path / "watermarked.png"
-        add_watermark(sample_image, output_path, padding=20)
-
-        assert output_path.exists()
-
-    def test_all_custom_params(self, sample_image: Path, tmp_path: Path) -> None:
-        """Should accept all custom parameters together."""
-        output_path = tmp_path / "watermarked.png"
-        add_watermark(sample_image, output_path, spec_id="my-spec", font_size=18, padding=15)
-
-        assert output_path.exists()
-
-
-class TestCreateThumbnailExtended:
-    """Extended tests for create_thumbnail function."""
-
-    def test_default_width(self, sample_image: Path, tmp_path: Path) -> None:
-        """Should use default width of 600 if not specified."""
-        output_path = tmp_path / "thumb.png"
-        width, height = create_thumbnail(sample_image, output_path)
-
-        assert width == 600
-        assert height == 450  # 800x600 -> 600x450 (4:3 ratio)
-
-    def test_portrait_image(self, tmp_path: Path) -> None:
-        """Should handle portrait orientation images."""
-        # Create portrait image (600x800)
-        img_path = tmp_path / "portrait.png"
-        img = Image.new("RGB", (600, 800), color=(100, 150, 200))
-        img.save(img_path)
-
-        output_path = tmp_path / "thumb.png"
-        width, height = create_thumbnail(img_path, output_path, width=300)
-
-        assert width == 300
-        assert height == 400  # Maintains 3:4 ratio
-
-    def test_square_image(self, tmp_path: Path) -> None:
-        """Should handle square images."""
-        # Create square image
-        img_path = tmp_path / "square.png"
-        img = Image.new("RGB", (500, 500), color=(100, 150, 200))
-        img.save(img_path)
-
-        output_path = tmp_path / "thumb.png"
-        width, height = create_thumbnail(img_path, output_path, width=250)
-
-        assert width == 250
-        assert height == 250
-
-    def test_very_small_width(self, sample_image: Path, tmp_path: Path) -> None:
-        """Should handle very small thumbnail widths."""
-        output_path = tmp_path / "tiny.png"
-        width, height = create_thumbnail(sample_image, output_path, width=50)
-
-        assert width == 50
-        result_img = Image.open(output_path)
-        assert result_img.width == 50
-
-
 class TestErrorCases:
     """Tests for error handling."""
 
@@ -284,11 +196,6 @@ class TestErrorCases:
         """Should raise FileNotFoundError for missing input."""
         with pytest.raises(FileNotFoundError):
             create_thumbnail(tmp_path / "nonexistent.png", tmp_path / "out.png")
-
-    def test_watermark_file_not_found(self, tmp_path: Path) -> None:
-        """Should raise FileNotFoundError for missing input."""
-        with pytest.raises(FileNotFoundError):
-            add_watermark(tmp_path / "nonexistent.png", tmp_path / "out.png")
 
     def test_optimize_file_not_found(self, tmp_path: Path) -> None:
         """Should raise FileNotFoundError for missing input."""
@@ -305,8 +212,8 @@ class TestImageFormats:
         img = Image.new("RGBA", (400, 300), color=(100, 150, 200, 128))
         img.save(img_path)
 
-        output_path = tmp_path / "watermarked.png"
-        add_watermark(img_path, output_path)
+        output_path = tmp_path / "processed.png"
+        result = process_plot_image(img_path, output_path)
 
         assert output_path.exists()
 

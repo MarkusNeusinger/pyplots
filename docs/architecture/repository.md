@@ -240,7 +240,7 @@ Preview images are stored in Google Cloud Storage (not in repo):
 ```
 gs://pyplots-images/
 ├── plots/{spec-id}/{library}/           # Production (after merge)
-│   ├── plot.png                         # Full-size watermarked image
+│   ├── plot.png                         # Full-size optimized image
 │   ├── plot_thumb.png                   # Thumbnail (600px width)
 │   ├── plot.html                        # Optional (interactive libraries)
 │   └── history/                         # Version history
@@ -251,7 +251,7 @@ gs://pyplots-images/
 
 **Interactive libraries** (`.html`): plotly, bokeh, altair, highcharts, pygal, letsplot
 
-**Image Processing**: Images are watermarked with pyplots.ai branding and optimized with pngquant.
+**Image Processing**: Images are optimized with pngquant. Branding is included in the plot title itself (e.g., `scatter-basic · matplotlib · pyplots.ai`).
 
 ---
 

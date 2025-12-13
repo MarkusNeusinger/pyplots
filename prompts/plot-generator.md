@@ -39,12 +39,39 @@ ax.scatter(x, y, alpha=0.7, s=50, color='#306998')
 # Labels and styling
 ax.set_xlabel('X Value')
 ax.set_ylabel('Y Value')
-ax.set_title('Basic Scatter Plot')
+ax.set_title('scatter-basic · matplotlib · pyplots.ai')  # Always use this format!
 ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('plot.png', dpi=300, bbox_inches='tight')
 ```
+
+## Title Format (MANDATORY)
+
+**Always use this format for the plot title:**
+
+```
+{spec-id} · {library} · pyplots.ai
+```
+
+Examples:
+- `scatter-basic · matplotlib · pyplots.ai`
+- `bar-grouped · seaborn · pyplots.ai`
+- `heatmap-correlation · plotly · pyplots.ai`
+
+**Optional descriptive prefix**: If the spec-id alone doesn't explain the example data well, add a descriptive title before it:
+
+```
+{Descriptive Title} · {spec-id} · {library} · pyplots.ai
+```
+
+Examples:
+- `Tesla Stock 2024 · candle-ohlc · matplotlib · pyplots.ai`
+- `Sales by Region · bar-grouped · seaborn · pyplots.ai`
+
+Only add the descriptive prefix when it adds value - most basic plots don't need it.
+
+The middot (·) separator is required. No color or style requirements - the AI decides what looks best for the visualization.
 
 ### Structure
 

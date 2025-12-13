@@ -29,7 +29,9 @@ plot = (
         size=14,
         label_format="${,}",
     )
-    + labs(x="Product Category", y="Sales ($)", title="Product Sales by Category")  # noqa: F405
+    + labs(  # noqa: F405
+        x="Product Category", y="Sales ($)", title="bar-basic · letsplot · pyplots.ai"
+    )
     + scale_y_continuous(limits=[0, 55000])  # noqa: F405
     + ggsize(1600, 900)  # noqa: F405
     + theme_minimal()  # noqa: F405

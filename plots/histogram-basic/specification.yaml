@@ -1,0 +1,28 @@
+# Specification-level metadata for histogram-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: histogram-basic
+title: Basic Histogram
+
+# Specification tracking
+created: 2025-12-13T23:33:19Z
+issue: 654
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - histogram
+    - distribution
+  domain:
+    - statistics
+    - general
+  features:
+    - basic
+    - frequency
+  audience:
+    - beginner
+  data_type:
+    - numeric
+    - continuous

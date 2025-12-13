@@ -27,14 +27,14 @@ chart_options = {
         "marginBottom": 250,
         "style": {"fontFamily": "Arial, sans-serif"},
     },
-    "title": {"text": "Product Sales by Category", "style": {"fontSize": "48px", "fontWeight": "bold"}},
+    "title": {"text": "bar-basic · highcharts · pyplots.ai", "style": {"fontSize": "48px", "fontWeight": "bold"}},
     "xAxis": {
         "categories": categories,
-        "title": {"text": "Category", "style": {"fontSize": "36px"}},
+        "title": {"text": "Product Category", "style": {"fontSize": "36px"}},
         "labels": {"style": {"fontSize": "28px"}},
     },
     "yAxis": {
-        "title": {"text": "Sales ($)", "style": {"fontSize": "36px"}},
+        "title": {"text": "Sales (Units)", "style": {"fontSize": "36px"}},
         "labels": {"style": {"fontSize": "28px"}},
         "gridLineColor": "#e0e0e0",
     },

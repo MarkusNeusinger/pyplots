@@ -20,11 +20,11 @@ plot = (
     ggplot(data, aes(x="category", y="value"))
     + geom_bar(stat="identity", fill="#306998", width=0.7)
     + geom_text(aes(label="value"), va="bottom", size=14, format_string="${:,.0f}")
-    + labs(x="Product Category", y="Sales ($)", title="Quarterly Sales by Product Category")
+    + labs(x="Product Category", y="Sales ($)", title="bar-basic · plotnine · pyplots.ai")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        plot_title=element_text(size=20),
+        plot_title=element_text(size=24),
         axis_title=element_text(size=20),
         axis_text=element_text(size=16),
         axis_text_x=element_text(rotation=0, ha="center"),

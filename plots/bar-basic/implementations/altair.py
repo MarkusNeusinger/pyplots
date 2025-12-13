@@ -7,7 +7,7 @@ import altair as alt
 import pandas as pd
 
 
-# Data
+# Data - Product sales by category
 data = pd.DataFrame(
     {
         "category": ["Electronics", "Clothing", "Home & Garden", "Sports", "Books", "Toys", "Food"],
@@ -24,16 +24,18 @@ chart = (
             "category:N",
             title="Product Category",
             sort="-y",
-            axis=alt.Axis(labelAngle=-45, labelFontSize=16, titleFontSize=20),
+            axis=alt.Axis(labelAngle=-45, labelFontSize=18, titleFontSize=22),
         ),
-        y=alt.Y("value:Q", title="Sales ($)", axis=alt.Axis(labelFontSize=16, titleFontSize=20)),
+        y=alt.Y("value:Q", title="Sales ($)", axis=alt.Axis(labelFontSize=18, titleFontSize=22)),
         tooltip=[alt.Tooltip("category:N", title="Category"), alt.Tooltip("value:Q", title="Sales", format="$,.0f")],
     )
-    .properties(width=1600, height=900, title=alt.Title(text="Product Sales by Category", fontSize=24))
+    .properties(width=1500, height=712, title=alt.Title(text="bar-basic · altair · pyplots.ai", fontSize=28))
     .configure_view(strokeWidth=0)
-    .configure_axis(grid=True, gridOpacity=0.3)
+    .configure_axis(grid=True, gridOpacity=0.3, gridDash=[4, 4])
 )
 
-# Save as PNG and HTML
+# Save as PNG (1600 * 3 = 4800, 900 * 3 = 2700)
 chart.save("plot.png", scale_factor=3.0)
+
+# Save interactive HTML
 chart.save("plot.html")

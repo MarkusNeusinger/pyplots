@@ -111,16 +111,38 @@ jobs:
           gh api repos/${{ github.repository }}/issues/${{ steps.check.outputs.pr_number }}/reactions \
             -f content=rocket
 
-      - name: Merge PR to main
+      - name: Merge PR to main (with retry)
         if: steps.check.outputs.should_run == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr merge ${{ steps.check.outputs.pr_number }} \
-            --repo ${{ github.repository }} \
-            --squash \
-            --delete-branch \
-           
+          PR_NUM="${{ steps.check.outputs.pr_number }}"
+          MAX_ATTEMPTS=5
+
+          for attempt in $(seq 1 $MAX_ATTEMPTS); do
+            echo "::notice::Merge attempt $attempt/$MAX_ATTEMPTS"
+
+            # Update branch before merge attempt
+            gh pr update-branch "$PR_NUM" --repo ${{ github.repository }} 2>/dev/null || true
+            sleep 2
+
+            if gh pr merge "$PR_NUM" \
+              --repo ${{ github.repository }} \
+              --squash \
+              --delete-branch; then
+              echo "::notice::Merge successful on attempt $attempt"
+              exit 0
+            fi
+
+            if [ $attempt -lt $MAX_ATTEMPTS ]; then
+              DELAY=$((attempt * 10))
+              echo "::warning::Merge failed, retrying in ${DELAY}s..."
+              sleep $DELAY
+            fi
+          done
+
+          echo "::error::Merge failed after $MAX_ATTEMPTS attempts"
+          exit 1
 
       # Note: quality_score is now set by impl-review.yml before merge
       # The PR already contains the updated metadata when merged

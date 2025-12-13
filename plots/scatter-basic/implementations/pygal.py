@@ -13,19 +13,19 @@ np.random.seed(42)
 x = np.random.randn(100) * 2 + 10
 y = x * 0.8 + np.random.randn(100) * 2
 
-# Custom style matching pyplots palette
+# Custom style for 4800x2700 px canvas
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998",),
-    title_font_size=48,
-    label_font_size=36,
-    major_label_font_size=32,
-    legend_font_size=32,
-    tooltip_font_size=28,
+    colors=("#306998",),  # Python Blue
+    title_font_size=72,
+    label_font_size=48,
+    major_label_font_size=42,
+    legend_font_size=42,
+    tooltip_font_size=36,
     opacity=0.7,
     opacity_hover=0.9,
 )
@@ -35,12 +35,12 @@ chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
-    title="Basic Scatter Plot",
+    title="scatter-basic · pygal · pyplots.ai",
     x_title="X Value",
     y_title="Y Value",
     show_legend=False,
     stroke=False,
-    dots_size=8,
+    dots_size=12,
     show_x_guides=True,
     show_y_guides=True,
 )

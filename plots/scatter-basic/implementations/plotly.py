@@ -15,32 +15,32 @@ y = x * 0.8 + np.random.randn(100) * 2
 # Create figure
 fig = go.Figure()
 
-fig.add_trace(
-    go.Scatter(x=x, y=y, mode="markers", marker={"size": 10, "color": "#306998", "opacity": 0.7}, name="Data Points")
-)
+fig.add_trace(go.Scatter(x=x, y=y, mode="markers", marker={"size": 16, "color": "#306998", "opacity": 0.7}))
 
 # Layout
 fig.update_layout(
-    title={"text": "Basic Scatter Plot", "font": {"size": 40}, "x": 0.5, "xanchor": "center"},
+    title={"text": "scatter-basic · plotly · pyplots.ai", "font": {"size": 28}, "x": 0.5, "xanchor": "center"},
     xaxis={
-        "title": {"text": "X Value", "font": {"size": 40}},
-        "tickfont": {"size": 32},
+        "title": {"text": "X Value", "font": {"size": 22}},
+        "tickfont": {"size": 18},
         "showgrid": True,
         "gridwidth": 1,
-        "gridcolor": "rgba(128, 128, 128, 0.3)",
+        "gridcolor": "rgba(0,0,0,0.1)",
     },
     yaxis={
-        "title": {"text": "Y Value", "font": {"size": 40}},
-        "tickfont": {"size": 32},
+        "title": {"text": "Y Value", "font": {"size": 22}},
+        "tickfont": {"size": 18},
         "showgrid": True,
         "gridwidth": 1,
-        "gridcolor": "rgba(128, 128, 128, 0.3)",
+        "gridcolor": "rgba(0,0,0,0.1)",
     },
     template="plotly_white",
     showlegend=False,
-    margin={"l": 100, "r": 50, "t": 100, "b": 100},
+    margin={"l": 80, "r": 40, "t": 80, "b": 80},
 )
 
-# Save
+# Save as PNG (4800x2700 px)
 fig.write_image("plot.png", width=1600, height=900, scale=3)
+
+# Save interactive HTML
 fig.write_html("plot.html")

@@ -11,13 +11,13 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-basic/high
 
 current:
   version: 0
-  generated_at: 2025-12-13T07:49:29Z
+  generated_at: 2025-12-13T23:14:13Z
   generated_by: claude-opus-4-5-20251101
-  workflow_run: 20188986993
+  workflow_run: 20199224406
   issue: 612
-  quality_score: 91
+  quality_score: 94
   # Version info (filled by workflow)
-  python_version: "3.13"
-  library_version: ""
+  python_version: "3.13.11"
+  library_version: "unknown"
 
 history: []

@@ -80,23 +80,25 @@ async def run_async_migrations() -> None:
     Supports both direct DATABASE_URL and Cloud SQL Connector.
     """
     if INSTANCE_CONNECTION_NAME and not DATABASE_URL:
-        # Use Cloud SQL Connector - must be created in same event loop
+        # Use Cloud SQL Connector with synchronous connect (avoids event loop issues)
         from google.cloud.sql.connector import Connector, IPTypes
 
-        async with Connector() as connector:
+        connector = Connector()
 
-            async def get_conn():
-                return await connector.connect_async(
-                    INSTANCE_CONNECTION_NAME, "asyncpg", user=DB_USER, password=DB_PASS, db=DB_NAME, ip_type=IPTypes.PUBLIC
-                )
+        def get_conn_sync():
+            # Use sync connect - Cloud SQL Connector handles async internally
+            return connector.connect(
+                INSTANCE_CONNECTION_NAME, "asyncpg", user=DB_USER, password=DB_PASS, db=DB_NAME, ip_type=IPTypes.PUBLIC
+            )
 
-            connectable = create_async_engine("postgresql+asyncpg://", async_creator=get_conn, poolclass=pool.NullPool)
+        connectable = create_async_engine("postgresql+asyncpg://", async_creator=get_conn_sync, poolclass=pool.NullPool)
 
-            try:
-                async with connectable.connect() as connection:
-                    await connection.run_sync(do_run_migrations)
-            finally:
-                await connectable.dispose()
+        try:
+            async with connectable.connect() as connection:
+                await connection.run_sync(do_run_migrations)
+        finally:
+            await connectable.dispose()
+            connector.close()
     else:
         # Use direct connection via DATABASE_URL
         connectable = async_engine_from_config(

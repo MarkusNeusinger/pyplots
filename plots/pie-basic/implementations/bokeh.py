@@ -19,14 +19,17 @@ total = sum(values)
 percentages = [v / total * 100 for v in values]
 angles = [v / total * 2 * math.pi for v in values]
 
-# Calculate start and end angles for each slice
+# Calculate start and end angles for each slice (counter-clockwise from top)
+# Bokeh wedges are drawn counter-clockwise, so start_angle < end_angle
 start_angles = []
 end_angles = []
 current_angle = math.pi / 2  # Start from top (90 degrees)
 for angle in angles:
-    start_angles.append(current_angle)
-    current_angle -= angle  # Go clockwise
-    end_angles.append(current_angle)
+    end_angle = current_angle
+    start_angle = current_angle - angle  # End before start for CCW order
+    start_angles.append(start_angle)
+    end_angles.append(end_angle)
+    current_angle = start_angle  # Continue from where we left off
 
 # Colors - Python Blue and Yellow first, then distinct colorblind-safe palette
 colors = ["#306998", "#FFD43B", "#E74C3C", "#9B59B6", "#27AE60"]
@@ -35,6 +38,10 @@ colors = ["#306998", "#FFD43B", "#E74C3C", "#9B59B6", "#27AE60"]
 mid_angles = [(start_angles[i] + end_angles[i]) / 2 for i in range(len(categories))]
 radius = 0.85  # Pie radius
 label_radius = radius * 0.65  # Labels at 65% of radius
+
+# Explosion offset for the largest slice (Engineering at index 0)
+explode_radius = 0.05
+explode_index = 0  # Engineering is the largest
 
 # Create figure (4800 x 2700 px)
 p = figure(
@@ -50,9 +57,17 @@ p = figure(
 # Draw pie wedges and collect renderers for legend
 renderers = []
 for i in range(len(categories)):
+    # Apply explosion offset to the largest slice
+    if i == explode_index:
+        offset_x = explode_radius * math.cos(mid_angles[i])
+        offset_y = explode_radius * math.sin(mid_angles[i])
+    else:
+        offset_x = 0
+        offset_y = 0
+
     r = p.wedge(
-        x=0,
-        y=0,
+        x=offset_x,
+        y=offset_y,
         radius=radius,
         start_angle=start_angles[i],
         end_angle=end_angles[i],
@@ -64,8 +79,16 @@ for i in range(len(categories)):
 
 # Add percentage labels on slices
 for i in range(len(categories)):
-    x = label_radius * math.cos(mid_angles[i])
-    y = label_radius * math.sin(mid_angles[i])
+    # Account for explosion offset in label position
+    if i == explode_index:
+        offset_x = explode_radius * math.cos(mid_angles[i])
+        offset_y = explode_radius * math.sin(mid_angles[i])
+    else:
+        offset_x = 0
+        offset_y = 0
+
+    x = label_radius * math.cos(mid_angles[i]) + offset_x
+    y = label_radius * math.sin(mid_angles[i]) + offset_y
     # Use dark text for yellow slice, white for others
     text_color = "#333333" if colors[i] == "#FFD43B" else "white"
     label = Label(
@@ -88,11 +111,11 @@ legend_items = [
 legend = Legend(
     items=legend_items,
     location="center_right",
-    label_text_font_size="24pt",
-    glyph_width=40,
-    glyph_height=40,
-    spacing=20,
-    padding=30,
+    label_text_font_size="28pt",
+    glyph_width=50,
+    glyph_height=50,
+    spacing=25,
+    padding=40,
     background_fill_alpha=0.9,
     border_line_color="#cccccc",
 )

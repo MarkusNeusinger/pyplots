@@ -13,10 +13,6 @@ np.random.seed(42)
 
 months = 24
 genres = ["Pop", "Rock", "Hip-Hop", "Electronic", "Jazz"]
-time_labels = [
-    f"{['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i % 12]} {2023 + i // 12}"
-    for i in range(months)
-]
 
 # Generate smooth, realistic streaming data with trends
 base_values = {"Pop": 45, "Rock": 35, "Hip-Hop": 40, "Electronic": 30, "Jazz": 15}
@@ -29,26 +25,39 @@ for genre in genres:
     noise = np.random.randn(months) * 3
     values = base + trend + seasonal + noise
     values = np.maximum(values, 5)  # Ensure positive values
-    data[genre] = values.tolist()
+    data[genre] = values
 
 # Calculate centered baseline for streamgraph effect
-# Sum all values at each time point
+# Sum all values at each time point for centering calculation
 totals = np.zeros(months)
 for genre in genres:
-    totals += np.array(data[genre])
+    totals += data[genre]
 
-# Create offset data for symmetric appearance around x-axis
-# We'll shift the baseline so the visualization is centered
-half_totals = totals / 2
+# Compute streamgraph layers with centered baseline (symmetric around y=0)
+# Each layer spans from bottom_y to top_y, creating river-like flow
+layers = {}
+cumulative_bottom = -totals / 2  # Start at negative half of total (centered)
 
-# Create stacked data with offset for centered appearance
-offset_data = {}
-cumulative = -half_totals.copy()  # Start from negative half
 for genre in genres:
-    genre_values = np.array(data[genre])
-    # Store the bottom position for this layer
-    offset_data[genre] = (cumulative + genre_values / 2).tolist()
-    cumulative += genre_values
+    genre_values = data[genre]
+    top = cumulative_bottom + genre_values
+    # Store bottom and top boundaries for each layer
+    layers[genre] = {"bottom": cumulative_bottom.copy(), "top": top.copy()}
+    cumulative_bottom = top.copy()
+
+# Upsample data for smoother appearance using linear interpolation
+# This creates more points between original data for smoother polygons
+x_original = np.arange(months)
+num_points = 100  # Total points for smooth curves
+x_smooth = np.linspace(0, months - 1, num_points)
+
+smooth_layers = {}
+for genre in genres:
+    # Linear interpolation - simple but ensures no overshooting
+    smooth_layers[genre] = {
+        "bottom": np.interp(x_smooth, x_original, layers[genre]["bottom"]),
+        "top": np.interp(x_smooth, x_original, layers[genre]["top"]),
+    }
 
 # Custom style for 4800x2700 canvas
 custom_style = Style(
@@ -63,14 +72,15 @@ custom_style = Style(
     major_label_font_size=36,
     legend_font_size=42,
     value_font_size=36,
-    stroke_width=2,
+    stroke_width=0.5,
     opacity=0.85,
     opacity_hover=0.95,
     transition="100ms ease-in",
 )
 
-# Create stacked line chart with fill (area chart - closest to streamgraph in pygal)
-chart = pygal.StackedLine(
+# Create XY chart to support negative y-values for centered streamgraph
+# Using XY allows precise control over x,y coordinates for each point
+chart = pygal.XY(
     width=4800,
     height=2700,
     title="streamgraph-basic · pygal · pyplots.ai",
@@ -78,26 +88,36 @@ chart = pygal.StackedLine(
     y_title="Streaming Hours (millions)",
     style=custom_style,
     fill=True,
+    stroke=True,
     show_dots=False,
     show_y_guides=True,
     show_x_guides=False,
-    x_label_rotation=45,
-    truncate_label=10,
-    show_minor_x_labels=False,
-    legend_at_bottom=False,
+    legend_at_bottom=True,  # Move legend to bottom to avoid overlap
     legend_box_size=30,
     margin=50,
     spacing=20,
-    interpolate="cubic",  # Smooth curves
+    xrange=(0, months - 1),
 )
 
-# Set x-axis labels (show every 3rd month to avoid crowding)
-chart.x_labels = time_labels
-chart.x_labels_major = [time_labels[i] for i in range(0, months, 3)]
-
-# Add data series
+# Add each genre as an XY series with polygon fill for streamgraph effect
+# Each layer is defined by its bottom and top boundaries
 for genre in genres:
-    chart.add(genre, data[genre])
+    bottom = smooth_layers[genre]["bottom"]
+    top = smooth_layers[genre]["top"]
+
+    # Create polygon points: go forward along top, backward along bottom
+    # This creates a closed shape for the filled area
+    points = []
+
+    # Top edge (left to right)
+    for i in range(num_points):
+        points.append((x_smooth[i], top[i]))
+
+    # Bottom edge (right to left) to close the polygon
+    for i in range(num_points - 1, -1, -1):
+        points.append((x_smooth[i], bottom[i]))
+
+    chart.add(genre, points)
 
 # Save as PNG and HTML
 chart.render_to_png("plot.png")

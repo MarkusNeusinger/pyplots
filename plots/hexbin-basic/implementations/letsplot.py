@@ -10,7 +10,7 @@ from lets_plot import (
     aes,
     element_line,
     element_text,
-    geom_bin2d,
+    geom_hex,
     ggplot,
     ggsize,
     labs,
@@ -40,10 +40,10 @@ y = np.concatenate([cluster1_y, cluster2_y, cluster3_y])
 
 df = pd.DataFrame({"x": x, "y": y})
 
-# Plot - 2D binning to show density (lets-plot doesn't have native hexbin, using geom_bin2d)
+# Plot - Hexagonal binning to show density patterns
 plot = (
     ggplot(df, aes(x="x", y="y"))
-    + geom_bin2d(bins=[30, 30])
+    + geom_hex(bins=[30, 30])
     + scale_fill_viridis(name="Count", option="viridis")
     + labs(x="X Coordinate", y="Y Coordinate", title="hexbin-basic · letsplot · pyplots.ai")
     + theme_minimal()

@@ -25,7 +25,8 @@ flows = [
 
 df = pd.DataFrame(flows)
 
-# Canvas dimensions - 1600x900 produces ~4800x2700 with scale_factor=3.0 (16:9 aspect ratio)
+# Target output: 4800x2700 px (16:9 aspect ratio) with scale_factor=3.0
+# Internal canvas: 1600x900 pixels
 width = 1600
 height = 900
 node_width = 80
@@ -214,18 +215,19 @@ labels_chart = (
     )
 )
 
-# Combine all layers
+# Combine all layers with autosize to ensure exact dimensions
 chart = (
     alt.layer(links_chart, nodes_chart, labels_chart)
     .properties(
         width=width,
         height=height,
         title=alt.Title(text="sankey-basic · altair · pyplots.ai", fontSize=28, anchor="middle"),
+        autosize=alt.AutoSizeParams(type="fit", contains="padding"),
     )
     .configure_view(strokeWidth=0)
     .configure_legend(padding=10, cornerRadius=5, fillColor="#FFFFFF", strokeColor="#DDDDDD")
 )
 
-# Save
+# Save as PNG (4800x2700 px with scale_factor=3.0)
 chart.save("plot.png", scale_factor=3.0)
 chart.save("plot.html")

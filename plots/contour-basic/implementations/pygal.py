@@ -17,14 +17,26 @@ x = np.linspace(-3, 3, grid_size)
 y = np.linspace(-3, 3, grid_size)
 X, Y = np.meshgrid(x, y)
 
-# Create a 2D Gaussian function
+# Create a 2D Gaussian function with two peaks
 Z = np.exp(-(X**2 + Y**2) / 2) + 0.5 * np.exp(-((X - 1.5) ** 2 + (Y + 1) ** 2) / 1.5)
 
-# Use matplotlib to extract contour lines
+# Use matplotlib to extract contour lines (pygal has no native contour support)
 fig_temp, ax_temp = plt.subplots()
-levels = np.linspace(Z.min(), Z.max(), 12)
+levels = np.linspace(Z.min(), Z.max(), 8)  # 8 levels for clarity
 contour = ax_temp.contour(X, Y, Z, levels=levels)
 plt.close(fig_temp)
+
+# Viridis-inspired color palette for 8 levels (sequential, colorblind-safe)
+contour_colors = (
+    "#440154",  # Dark purple (low)
+    "#443983",  # Purple
+    "#31688e",  # Blue
+    "#21918c",  # Teal
+    "#35b779",  # Green
+    "#90d743",  # Yellow-green
+    "#fde725",  # Yellow (high)
+    "#306998",  # Python Blue for highest
+)
 
 # Custom style for 4800x2700 px canvas
 custom_style = Style(
@@ -33,29 +45,15 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    # Viridis-inspired colors for contour levels
-    colors=(
-        "#440154",
-        "#482878",
-        "#3e4989",
-        "#31688e",
-        "#26828e",
-        "#1f9e89",
-        "#35b779",
-        "#6ece58",
-        "#b5de2b",
-        "#fde725",
-        "#306998",
-        "#FFD43B",
-    ),
-    opacity=0.9,
+    colors=contour_colors,
+    opacity=1.0,
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
     legend_font_size=36,
-    value_font_size=36,
+    value_font_size=32,
     tooltip_font_size=36,
-    stroke_width=4,
+    stroke_width=6,  # Thicker lines for visibility
 )
 
 # Create XY chart for contour lines
@@ -68,17 +66,15 @@ chart = pygal.XY(
     y_title="Y Coordinate",
     show_legend=True,
     legend_at_bottom=True,
-    legend_at_bottom_columns=6,
+    legend_at_bottom_columns=4,
     stroke=True,
     show_dots=False,
     show_x_guides=True,
     show_y_guides=True,
-    x_labels_major_every=2,
-    y_labels_major_every=2,
+    truncate_legend=-1,  # Don't truncate legend text
 )
 
 # Extract contour paths from matplotlib and add to pygal
-# Use allsegs to get contour line segments (compatible with matplotlib 3.8+)
 for i, level_segments in enumerate(contour.allsegs):
     level_value = levels[i]
 
@@ -87,9 +83,9 @@ for i, level_segments in enumerate(contour.allsegs):
         all_points = []
         for segment in level_segments:
             if len(segment) > 1:
-                # Add points with None separator between disconnected segments
+                # Add None separator between disconnected segments
                 if all_points:
-                    all_points.append(None)  # Separator
+                    all_points.append(None)
                 for vertex in segment:
                     all_points.append((float(vertex[0]), float(vertex[1])))
 

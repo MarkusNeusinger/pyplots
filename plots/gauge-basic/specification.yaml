@@ -1,0 +1,29 @@
+# Specification-level metadata for gauge-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: gauge-basic
+title: Basic Gauge Chart
+
+# Specification tracking
+created: 2025-12-14T19:33:31Z
+issue: 857
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - gauge
+    - meter
+  domain:
+    - business
+    - monitoring
+    - dashboard
+  features:
+    - basic
+    - single-value
+    - kpi
+  audience:
+    - beginner
+  data_type:
+    - numeric

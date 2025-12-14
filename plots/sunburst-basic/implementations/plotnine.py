@@ -78,19 +78,13 @@ level2_agg = data.groupby(["level_1", "level_2"])["value"].sum().reset_index()
 level1_agg = level1_agg.sort_values("level_1").reset_index(drop=True)
 level1_order = level1_agg["level_1"].tolist()
 
-# Color palette - base colors for level 1 categories
+# Color palette - base colors for level 1 categories and pre-computed lighter variants
+# Using consistent colors within each branch to show relationships (as per spec Notes)
 base_colors = {"Engineering": "#306998", "Marketing": "#FFD43B", "Sales": "#4ECDC4", "Operations": "#E76F51"}
-
-
-def lighten_color(hex_color, factor=0.3):
-    """Lighten a hex color by a factor."""
-    hex_color = hex_color.lstrip("#")
-    r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
-    r = int(r + (255 - r) * factor)
-    g = int(g + (255 - g) * factor)
-    b = int(b + (255 - b) * factor)
-    return f"#{r:02x}{g:02x}{b:02x}"
-
+# Level 2 colors (25% lighter)
+mid_colors = {"Engineering": "#5b89b3", "Marketing": "#ffdf6b", "Sales": "#7edbd3", "Operations": "#ed977c"}
+# Level 3 colors (50% lighter)
+light_colors = {"Engineering": "#97b4cc", "Marketing": "#ffeb9d", "Sales": "#a6e5e1", "Operations": "#f3bfa8"}
 
 # Create figure
 fig, ax = plt.subplots(figsize=(16, 9))
@@ -151,7 +145,7 @@ for l1 in level1_order:
 for angle_info in level2_angles:
     label = angle_info["label"]
     parent = angle_info["level_1"]
-    color = lighten_color(base_colors[parent], 0.25)
+    color = mid_colors[parent]
     wedge = Wedge(
         center=(0, 0),
         r=middle_ring[1],
@@ -198,7 +192,7 @@ for l1 in level1_order:
 for angle_info in level3_angles:
     label = angle_info["label"]
     parent = angle_info["level_1"]
-    color = lighten_color(base_colors[parent], 0.5)
+    color = light_colors[parent]
     wedge = Wedge(
         center=(0, 0),
         r=outer_ring[1],
@@ -247,9 +241,7 @@ ax.set_aspect("equal")
 ax.axis("off")
 
 # Title in pyplots format
-ax.set_title(
-    "Budget Hierarchy \u00b7 sunburst-basic \u00b7 plotnine \u00b7 pyplots.ai", fontsize=26, fontweight="bold", pad=25
-)
+ax.set_title("sunburst-basic · plotnine · pyplots.ai", fontsize=26, fontweight="bold", pad=25)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")

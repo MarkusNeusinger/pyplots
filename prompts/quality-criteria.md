@@ -4,40 +4,47 @@ Definition of what makes a high-quality plot implementation.
 
 ## Overview
 
-Quality is evaluated across **3 areas**:
+Quality is evaluated across **4 areas**:
 
 | Area | Weight | Focus |
 |------|--------|-------|
-| **Spec Compliance** | 40% | Does the plot match the specification? |
-| **Visual Quality** | 40% | Is the plot professional and beautiful? |
-| **Code Quality** | 20% | Is the code clean and idiomatic? |
+| **Spec Compliance** | 35% | Does the plot match the specification? |
+| **Visual Quality** | 35% | Is the plot professional and beautiful? |
+| **Data Quality** | 15% | Are the example data realistic and comprehensive? |
+| **Code Quality** | 15% | Is the code clean and idiomatic? |
 
 ## Scoring
 
 **Range**: 0-100 points (simply add up all criteria)
-**Pass Threshold**: >= 85
+**Pass Threshold**: >= 90
 
-| Score | Rating |
+| Score | Result |
 |-------|--------|
-| >= 90 | Excellent |
-| 85-89 | Good (acceptable) |
-| 75-84 | Needs improvement |
-| < 75 | Rejected |
+| **>= 90** | ✅ Accepted - merged to main |
+| **< 90** | 🔄 Rejected - repair loop (max 3 attempts), then marked as not-feasible |
+
+**Interpretation guide** (how far off is the implementation?):
+
+| Score | Interpretation |
+|-------|----------------|
+| 85-89 | Almost there - minor fixes needed |
+| 75-84 | Significant issues - multiple fixes needed |
+| < 75 | Major problems - likely needs complete rewrite |
 
 ---
 
-## 1. Spec Compliance (40 Points)
+## 1. Spec Compliance (35 Points)
 
 **Question**: Does the plot match what the specification requested?
 
 | ID | Criterion | Points | Description |
 |----|-----------|--------|-------------|
-| SC-01 | **Plot Type** | 12 | Correct chart type (scatter != line != bar) |
-| SC-02 | **Data Mapping** | 8 | X/Y data correctly assigned, no mix-ups |
-| SC-03 | **Required Features** | 8 | All features mentioned in spec are implemented |
+| SC-01 | **Plot Type** | 10 | Correct chart type (scatter != line != bar) |
+| SC-02 | **Data Mapping** | 7 | X/Y data correctly assigned, no mix-ups |
+| SC-03 | **Required Features** | 7 | All features mentioned in spec are implemented |
 | SC-04 | **Data Range** | 4 | Axis ranges show all data appropriately |
 | SC-05 | **Legend Accuracy** | 4 | Legend labels match the data series |
-| SC-06 | **Title Format** | 4 | Uses `{spec-id} · {library} · pyplots.ai` format |
+| SC-06 | **Title Format** | 3 | Uses `{spec-id} · {library} · pyplots.ai` format |
 
 ### SC-01: Plot Type (12 points)
 
@@ -113,19 +120,19 @@ ax.set_title('scatter-basic')  # Missing library and pyplots.ai
 
 ---
 
-## 2. Visual Quality (40 Points)
+## 2. Visual Quality (35 Points)
 
 **Question**: Does the plot look professional and appealing?
 
 | ID | Criterion | Points | Description |
 |----|-----------|--------|-------------|
-| VQ-01 | **Axis Labels** | 8 | Meaningful labels (not "x", "y", or empty) |
-| VQ-02 | **No Overlap** | 7 | Text/labels don't overlap, everything readable |
-| VQ-03 | **Color Choice** | 6 | Harmonious, distinguishable, colorblind-safe |
-| VQ-04 | **Element Clarity** | 6 | Points/bars/lines clearly visible (size, alpha) |
+| VQ-01 | **Axis Labels** | 7 | Meaningful labels (not "x", "y", or empty) |
+| VQ-02 | **No Overlap** | 6 | Text/labels don't overlap, everything readable |
+| VQ-03 | **Color Choice** | 5 | Harmonious, distinguishable, colorblind-safe |
+| VQ-04 | **Element Clarity** | 5 | Points/bars/lines clearly visible (size, alpha) |
 | VQ-05 | **Layout Balance** | 5 | Good proportions, no cut-off content |
 | VQ-06 | **Grid Subtlety** | 3 | Grid (if present) is subtle, not dominant |
-| VQ-07 | **Legend Placement** | 3 | Legend doesn't obscure data |
+| VQ-07 | **Legend Placement** | 2 | Legend doesn't obscure data |
 | VQ-08 | **Image Size** | 2 | 4800x2700 px, 16:9 aspect ratio |
 
 ### VQ-01: Axis Labels (8 points)
@@ -240,18 +247,120 @@ fig.write_image('plot.png', width=4800, height=2700)
 
 ---
 
-## 3. Code Quality (20 Points)
+## 3. Data Quality (15 Points)
+
+**Question**: Are the example data realistic, comprehensive, and well-constructed?
+
+| ID | Criterion | Points | Description |
+|----|-----------|--------|-------------|
+| DQ-01 | **Feature Coverage** | 6 | Data demonstrates ALL aspects of the plot type |
+| DQ-02 | **Realistic Context** | 5 | Data represents a plausible real-world scenario |
+| DQ-03 | **Appropriate Scale** | 4 | Data values and ranges are sensible for the context |
+
+### DQ-01: Feature Coverage (6 points)
+
+The example data must demonstrate ALL visual features of the plot type.
+
+```
+# Good: Candlestick shows both bullish AND bearish candles
+ohlc_data = [
+    (100, 105, 98, 103),   # Bullish (close > open)
+    (103, 104, 95, 96),    # Bearish (close < open)
+    ...
+]
+
+# Bad: Only showing upward movement
+ohlc_data = [
+    (100, 105, 99, 104),   # Always bullish
+    (104, 110, 103, 109),  # Always bullish
+    ...  # Never see a red candle!
+]
+
+# Good: Box plot shows outliers AND varying distributions
+data = {
+    'Group A': [10, 12, 13, 14, 15, 50],  # Has outlier
+    'Group B': [20, 21, 21, 22, 22, 23],  # Tight distribution
+    'Group C': [5, 15, 25, 35, 45, 55],   # Wide distribution
+}
+
+# Bad: All groups look identical
+data = {
+    'Group A': [10, 11, 12, 13, 14],
+    'Group B': [10, 11, 12, 13, 14],
+    'Group C': [10, 11, 12, 13, 14],
+}
+```
+
+**Ask yourself**: Does this example show a user what the plot CAN do?
+
+### DQ-02: Realistic Context (5 points)
+
+The data must represent a plausible, sensible real-world scenario.
+
+```
+# Good: Sensible category-value pairing
+fuel_consumption = {
+    'SUV': 12.5,
+    'Sedan': 8.2,
+    'Electric': 0.0,
+    'Motorcycle': 4.1
+}
+
+# Bad: Absurd/nonsensical pairing
+fuel_consumption = {
+    'Bicycle': 15.0,      # Bicycles don't use fuel!
+    'Walking': 8.5,       # Makes no sense
+    'Skateboard': 12.0,   # Absurd
+}
+
+# Good: Realistic sales data
+monthly_sales = [45000, 52000, 48000, 61000, 55000, 72000]
+
+# Bad: Unrealistic patterns
+monthly_sales = [1, 1000000, 2, 999999, 3, 888888]  # Wild swings make no sense
+```
+
+**Ask yourself**: Would this data exist in the real world?
+
+### DQ-03: Appropriate Scale (4 points)
+
+Values and ranges should be appropriate for the domain.
+
+```
+# Good: Realistic temperature range
+temperatures = [18, 22, 25, 31, 28, 24, 19]  # Celsius, plausible
+
+# Bad: Impossible values
+temperatures = [150, -200, 500, -180]  # Not realistic for weather
+
+# Good: Appropriate percentages
+market_share = [35, 28, 22, 15]  # Sums to 100, reasonable distribution
+
+# Bad: Impossible percentages
+market_share = [80, 75, 60, 50]  # Sums to 265%!
+
+# Good: Appropriate data volume
+# Scatter: 50-200 points shows patterns without clutter
+# Pie: 3-7 slices is readable
+# Bar: 5-15 categories is manageable
+```
+
+**Ask yourself**: Are these values sensible for this domain?
+
+---
+
+## 4. Code Quality (15 Points)
 
 **Question**: Is the code clean, readable, and idiomatic?
 
 | ID | Criterion | Points | Description |
 |----|-----------|--------|-------------|
-| CQ-01 | **KISS Structure** | 5 | Imports -> Data -> Plot -> Save (no functions/classes) |
-| CQ-02 | **Reproducibility** | 4 | Uses `np.random.seed(42)` or deterministic data |
-| CQ-03 | **Library Idioms** | 4 | Follows library best practices |
+| CQ-01 | **KISS Structure** | 4 | Imports -> Data -> Plot -> Save (no functions/classes) |
+| CQ-02 | **Reproducibility** | 3 | Uses `np.random.seed(42)` or deterministic data |
+| CQ-03 | **Library Idioms** | 3 | Follows library best practices |
 | CQ-04 | **Clean Imports** | 2 | Only used imports, sensible aliases |
-| CQ-05 | **Helpful Comments** | 2 | Comments where logic isn't obvious |
-| CQ-06 | **No Deprecated API** | 2 | No deprecated functions or methods |
+| CQ-05 | **Helpful Comments** | 1 | Comments where logic isn't obvious |
+| CQ-06 | **No Deprecated API** | 1 | No deprecated functions or methods |
 | CQ-07 | **Output Correct** | 1 | Saves as `plot.png` |
 
 ### CQ-01: KISS Structure (5 points)
@@ -409,31 +518,36 @@ plt.show()  # No file saved!
 
 Quick reference for reviewers:
 
-### Spec Compliance (40 pts)
-- [ ] SC-01: Correct plot type (12)
-- [ ] SC-02: Data mapped correctly (8)
-- [ ] SC-03: All required features present (8)
+### Spec Compliance (35 pts)
+- [ ] SC-01: Correct plot type (10)
+- [ ] SC-02: Data mapped correctly (7)
+- [ ] SC-03: All required features present (7)
 - [ ] SC-04: Appropriate data range (4)
 - [ ] SC-05: Legend labels accurate (4)
-- [ ] SC-06: Title format correct (4)
+- [ ] SC-06: Title format correct (3)
 
-### Visual Quality (40 pts)
-- [ ] VQ-01: Meaningful axis labels (8)
-- [ ] VQ-02: No overlapping text (7)
-- [ ] VQ-03: Good color choice (6)
-- [ ] VQ-04: Clear data elements (6)
+### Visual Quality (35 pts)
+- [ ] VQ-01: Meaningful axis labels (7)
+- [ ] VQ-02: No overlapping text (6)
+- [ ] VQ-03: Good color choice (5)
+- [ ] VQ-04: Clear data elements (5)
 - [ ] VQ-05: Balanced layout (5)
 - [ ] VQ-06: Subtle grid (3)
-- [ ] VQ-07: Well-placed legend (3)
+- [ ] VQ-07: Well-placed legend (2)
 - [ ] VQ-08: Correct image size (2)
 
-### Code Quality (20 pts)
-- [ ] CQ-01: KISS structure (5)
-- [ ] CQ-02: Reproducible output (4)
-- [ ] CQ-03: Library idioms (4)
+### Data Quality (15 pts)
+- [ ] DQ-01: Feature coverage - shows ALL aspects of plot type (6)
+- [ ] DQ-02: Realistic context - plausible real-world scenario (5)
+- [ ] DQ-03: Appropriate scale - sensible values for domain (4)
+
+### Code Quality (15 pts)
+- [ ] CQ-01: KISS structure (4)
+- [ ] CQ-02: Reproducible output (3)
+- [ ] CQ-03: Library idioms (3)
 - [ ] CQ-04: Clean imports (2)
-- [ ] CQ-05: Helpful comments (2)
-- [ ] CQ-06: No deprecated API (2)
+- [ ] CQ-05: Helpful comments (1)
+- [ ] CQ-06: No deprecated API (1)
 - [ ] CQ-07: Saves as plot.png (1)
 
 **Total: ___ / 100**

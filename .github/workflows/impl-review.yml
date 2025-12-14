@@ -143,9 +143,11 @@ jobs:
 
             3. **Read library rules**: `prompts/library/${{ steps.pr.outputs.library }}.md`
 
-            4. **View plot images** in `plot_images/` directory
-               - Use vision to analyze each image
-               - Compare with spec requirements
+            4. **MANDATORY: View the plot image**
+               - You MUST use the Read tool to open `plot_images/plot.png`
+               - Visually analyze the image - this is critical for the review
+               - DO NOT skip this step - a review without seeing the image is invalid
+               - If the image cannot be read, STOP and report the error
 
             5. **Evaluate against quality criteria** from `prompts/quality-criteria.md`
 
@@ -154,13 +156,31 @@ jobs:
             ```markdown
             ## AI Review - Attempt ${{ steps.attempts.outputs.display }}/3
 
+            ### Image Description
+            > Describe what you see in the plot: colors used, axis labels, title, data representation, overall layout.
+            > This proves you actually looked at the image.
+
             ### Quality Score: XX/100
 
             ### Criteria Checklist
-            - [x] VQ-001: Axes labeled correctly
-            - [x] VQ-002: Grid is subtle
-            - [ ] VQ-003: Elements clear
-            ...
+            **Spec Compliance (35 pts)**
+            - [ ] SC-01: Correct plot type
+            - [ ] SC-02: Data mapped correctly
+            - [ ] SC-03: Required features present
+
+            **Visual Quality (35 pts)**
+            - [ ] VQ-01: Meaningful axis labels
+            - [ ] VQ-02: No overlapping text
+            - [ ] VQ-04: Clear data elements
+
+            **Data Quality (15 pts)**
+            - [ ] DQ-01: Feature coverage (shows ALL aspects of plot type)
+            - [ ] DQ-02: Realistic context (plausible scenario)
+            - [ ] DQ-03: Appropriate scale (sensible values)
+
+            **Code Quality (15 pts)**
+            - [ ] CQ-01: KISS structure
+            - [ ] CQ-02: Reproducible
 
             ### Issues Found
             1. **Issue**: Description
@@ -178,6 +198,8 @@ jobs:
                ```
 
             8. **DO NOT add ai-approved or ai-rejected labels** - the workflow will add them after updating metadata.
+
+            **IMPORTANT**: Your review MUST include the "Image Description" section. A review without an image description will be considered invalid.
 
       - name: Extract quality score
         id: score
@@ -272,12 +294,12 @@ jobs:
           ATTEMPT: ${{ steps.attempts.outputs.display }}
         run: |
           # Add ai-approved or ai-rejected label based on score
-          if [ "$SCORE" -ge 85 ]; then
+          if [ "$SCORE" -ge 90 ]; then
             gh pr edit "$PR_NUM" --add-label "ai-approved"
-            echo "::notice::Added ai-approved label (score $SCORE >= 85)"
+            echo "::notice::Added ai-approved label (score $SCORE >= 90)"
           else
             gh pr edit "$PR_NUM" --add-label "ai-rejected"
-            echo "::notice::Added ai-rejected label (score $SCORE < 85)"
+            echo "::notice::Added ai-rejected label (score $SCORE < 90)"
           fi
 
           # Now check labels and take action

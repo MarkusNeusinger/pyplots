@@ -100,8 +100,17 @@ jobs:
           LIBRARY: ${{ steps.pr.outputs.library }}
         run: |
           mkdir -p plot_images
-          gsutil -m cp "gs://pyplots-images/staging/${SPEC_ID}/${LIBRARY}/*" plot_images/ 2>/dev/null || echo "No images found"
-          ls -la plot_images/ 2>/dev/null || echo "Empty"
+          gsutil -m cp "gs://pyplots-images/staging/${SPEC_ID}/${LIBRARY}/*" plot_images/ 2>/dev/null || true
+          ls -la plot_images/
+
+      - name: Verify plot image exists
+        run: |
+          if [ ! -f "plot_images/plot.png" ]; then
+            echo "::error::No plot.png found in staging - cannot review without image"
+            echo "::error::The impl-generate workflow may have failed to produce an image"
+            exit 1
+          fi
+          echo "::notice::Found plot.png for review"
 
       - name: React with eyes emoji
         if: steps.attempts.outputs.count != '3'

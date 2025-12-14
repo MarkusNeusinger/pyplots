@@ -5,14 +5,19 @@ Library: seaborn
 
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
+import seaborn as sns
 
+
+# Apply seaborn styling
+sns.set_theme(style="white")
 
 # Data - Sales funnel example
 stages = ["Awareness", "Interest", "Consideration", "Intent", "Purchase"]
 values = [1000, 600, 400, 200, 100]
 
-# Colors for each stage (using Python Blue as base, with variations)
-colors = ["#306998", "#3d7aa8", "#4a8bb8", "#579cc8", "#FFD43B"]
+# Use seaborn color palette (Blues reversed, with Python Yellow for last stage)
+blue_colors = sns.color_palette("Blues_r", n_colors=4)
+colors = [blue_colors[i] for i in range(4)] + ["#FFD43B"]
 
 # Create figure
 fig, ax = plt.subplots(figsize=(16, 9))

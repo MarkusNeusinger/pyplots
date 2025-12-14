@@ -1,0 +1,244 @@
+"""
+sankey-basic: Basic Sankey Diagram
+Library: plotnine
+"""
+
+import sys
+
+
+sys.path = [p for p in sys.path if not p.endswith("implementations")]
+
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+from plotnine import (  # noqa: E402
+    aes,
+    annotate,
+    coord_cartesian,
+    element_blank,
+    element_text,
+    geom_polygon,
+    geom_rect,
+    geom_text,
+    ggplot,
+    labs,
+    scale_fill_manual,
+    theme,
+    theme_minimal,
+)
+
+
+# Data - Energy flow from sources to sectors
+flows = pd.DataFrame(
+    {
+        "source": ["Coal", "Coal", "Gas", "Gas", "Gas", "Nuclear", "Nuclear", "Renewables", "Renewables"],
+        "target": [
+            "Industrial",
+            "Residential",
+            "Industrial",
+            "Commercial",
+            "Residential",
+            "Commercial",
+            "Residential",
+            "Commercial",
+            "Residential",
+        ],
+        "value": [35, 15, 25, 20, 15, 18, 12, 8, 12],
+    }
+)
+
+# Define node positions
+# Left column (sources) at x=0.15, right column (targets) at x=0.85 (with margins for labels)
+sources = ["Coal", "Gas", "Nuclear", "Renewables"]
+targets = ["Industrial", "Commercial", "Residential"]
+
+# X positions with margins for labels
+x_left = 0.2
+x_right = 0.8
+
+# Calculate node sizes based on total flow
+source_totals = flows.groupby("source")["value"].sum().to_dict()
+target_totals = flows.groupby("target")["value"].sum().to_dict()
+
+total_flow = flows["value"].sum()
+
+# Node dimensions
+node_width = 0.08
+node_gap = 0.03  # Gap between nodes
+
+# Calculate source node positions (left side)
+source_positions = {}
+current_y = 1.0
+for src in sources:
+    height = source_totals[src] / total_flow * 0.8  # Scale to fit in 80% of canvas
+    source_positions[src] = {
+        "x": x_left,
+        "y_top": current_y,
+        "y_bottom": current_y - height,
+        "height": height,
+        "flow_offset": 0,  # Track where next flow starts
+    }
+    current_y = current_y - height - node_gap
+
+# Calculate target node positions (right side)
+target_positions = {}
+current_y = 1.0
+for tgt in targets:
+    height = target_totals[tgt] / total_flow * 0.8
+    target_positions[tgt] = {
+        "x": x_right,
+        "y_top": current_y,
+        "y_bottom": current_y - height,
+        "height": height,
+        "flow_offset": 0,
+    }
+    current_y = current_y - height - node_gap
+
+# Build node rectangles dataframe
+node_data = []
+for src in sources:
+    pos = source_positions[src]
+    node_data.append(
+        {
+            "name": src,
+            "xmin": pos["x"],
+            "xmax": pos["x"] + node_width,
+            "ymin": pos["y_bottom"],
+            "ymax": pos["y_top"],
+            "label_x": pos["x"] - 0.02,
+            "label_y": (pos["y_top"] + pos["y_bottom"]) / 2,
+            "side": "source",
+        }
+    )
+
+for tgt in targets:
+    pos = target_positions[tgt]
+    node_data.append(
+        {
+            "name": tgt,
+            "xmin": pos["x"] - node_width,
+            "xmax": pos["x"],
+            "ymin": pos["y_bottom"],
+            "ymax": pos["y_top"],
+            "label_x": pos["x"] + 0.02,
+            "label_y": (pos["y_top"] + pos["y_bottom"]) / 2,
+            "side": "target",
+        }
+    )
+
+nodes_df = pd.DataFrame(node_data)
+
+# Build flow polygons (curved paths between nodes)
+flow_polygons = []
+flow_colors = []
+color_map = {"Coal": "#306998", "Gas": "#FFD43B", "Nuclear": "#4ECDC4", "Renewables": "#2ECC71"}
+
+for _, row in flows.iterrows():
+    src = row["source"]
+    tgt = row["target"]
+    val = row["value"]
+
+    # Calculate flow thickness
+    flow_height = val / total_flow * 0.8
+
+    # Source connection point
+    src_pos = source_positions[src]
+    src_y_top = src_pos["y_top"] - src_pos["flow_offset"]
+    src_y_bottom = src_y_top - flow_height
+    src_pos["flow_offset"] += flow_height
+
+    # Target connection point
+    tgt_pos = target_positions[tgt]
+    tgt_y_top = tgt_pos["y_top"] - tgt_pos["flow_offset"]
+    tgt_y_bottom = tgt_y_top - flow_height
+    tgt_pos["flow_offset"] += flow_height
+
+    # Create curved flow polygon using bezier-like points
+    flow_x_left = x_left + node_width
+    flow_x_right = x_right - node_width
+    n_points = 50
+
+    # Top edge (left to right)
+    t = np.linspace(0, 1, n_points)
+    x_top = flow_x_left + (flow_x_right - flow_x_left) * t
+    y_top = src_y_top + (tgt_y_top - src_y_top) * (3 * t**2 - 2 * t**3)  # Smooth interpolation
+
+    # Bottom edge (right to left)
+    x_bottom = flow_x_right + (flow_x_left - flow_x_right) * t
+    y_bottom = tgt_y_bottom + (src_y_bottom - tgt_y_bottom) * (3 * t**2 - 2 * t**3)
+
+    # Combine into polygon
+    x_polygon = np.concatenate([x_top, x_bottom])
+    y_polygon = np.concatenate([y_top, y_bottom])
+
+    for i in range(len(x_polygon)):
+        flow_polygons.append(
+            {"x": x_polygon[i], "y": y_polygon[i], "flow_id": f"{src}_{tgt}", "source": src, "value": val}
+        )
+    flow_colors.append(color_map[src])
+
+flows_df = pd.DataFrame(flow_polygons)
+
+# Create color list for each unique flow
+unique_flows = flows_df["flow_id"].unique()
+flow_color_map = {}
+for fid in unique_flows:
+    src = fid.split("_")[0]
+    flow_color_map[fid] = color_map[src]
+
+# Node colors
+node_colors = {"source": "#306998", "target": "#666666"}
+
+# Create the plot
+plot = (
+    ggplot()
+    # Flow polygons with transparency
+    + geom_polygon(flows_df, aes(x="x", y="y", group="flow_id", fill="source"), alpha=0.5)
+    # Node rectangles
+    + geom_rect(nodes_df, aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="side"), color="white", size=0.5)
+    # Source labels (right-aligned)
+    + geom_text(
+        nodes_df[nodes_df["side"] == "source"],
+        aes(x="label_x", y="label_y", label="name"),
+        ha="right",
+        size=14,
+        color="#333333",
+        fontweight="bold",
+    )
+    # Target labels (left-aligned)
+    + geom_text(
+        nodes_df[nodes_df["side"] == "target"],
+        aes(x="label_x", y="label_y", label="name"),
+        ha="left",
+        size=14,
+        color="#333333",
+        fontweight="bold",
+    )
+    # Color scales
+    + scale_fill_manual(
+        values={
+            "Coal": "#306998",
+            "Gas": "#FFD43B",
+            "Nuclear": "#4ECDC4",
+            "Renewables": "#2ECC71",
+            "source": "#555555",
+            "target": "#888888",
+        }
+    )
+    + labs(title="Energy Flow · sankey-basic · plotnine · pyplots.ai", x="", y="")
+    + coord_cartesian(xlim=(-0.05, 1.1))  # Extend x-axis to show labels
+    + theme_minimal()
+    + theme(
+        figure_size=(16, 9),
+        plot_title=element_text(size=24, ha="center", weight="bold"),
+        axis_text=element_blank(),
+        axis_ticks=element_blank(),
+        panel_grid=element_blank(),
+        legend_position="none",
+    )
+    + annotate("text", x=x_left + node_width / 2, y=-0.05, label="Sources", size=16, color="#555555", fontweight="bold")
+    + annotate(
+        "text", x=x_right - node_width / 2, y=-0.05, label="Sectors", size=16, color="#555555", fontweight="bold"
+    )
+)
+
+plot.save("plot.png", dpi=300, verbose=False)

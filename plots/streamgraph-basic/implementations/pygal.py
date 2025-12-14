@@ -46,61 +46,63 @@ for genre in genres:
     cumulative_bottom = top.copy()
 
 # Upsample data for smoother appearance using linear interpolation
-# This creates more points between original data for smoother polygons
 x_original = np.arange(months)
-num_points = 100  # Total points for smooth curves
+num_points = 200  # More points for smoother rendering
 x_smooth = np.linspace(0, months - 1, num_points)
 
 smooth_layers = {}
 for genre in genres:
-    # Linear interpolation - simple but ensures no overshooting
+    # Linear interpolation for smooth polygon edges
     smooth_layers[genre] = {
         "bottom": np.interp(x_smooth, x_original, layers[genre]["bottom"]),
         "top": np.interp(x_smooth, x_original, layers[genre]["top"]),
     }
 
-# Custom style for 4800x2700 canvas
+# Custom style for 4800x2700 canvas with harmonious colors for adjacent layers
+# Colors chosen for good contrast between neighbors
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
+    foreground_subtle="#999999",
     colors=("#306998", "#FFD43B", "#E74C3C", "#2ECC71", "#9B59B6"),
     title_font_size=72,
     label_font_size=42,
     major_label_font_size=36,
     legend_font_size=42,
     value_font_size=36,
-    stroke_width=0.5,
-    opacity=0.85,
+    stroke_width=1,
+    opacity=0.9,
     opacity_hover=0.95,
     transition="100ms ease-in",
+    guide_stroke_color="#dddddd",
+    major_guide_stroke_color="#cccccc",
 )
 
 # Create XY chart to support negative y-values for centered streamgraph
-# Using XY allows precise control over x,y coordinates for each point
 chart = pygal.XY(
     width=4800,
     height=2700,
     title="streamgraph-basic · pygal · pyplots.ai",
-    x_title="Month",
-    y_title="Streaming Hours (millions)",
+    x_title="Time",
+    y_title="Relative Volume",  # Streamgraph shows relative magnitudes, not absolute values
     style=custom_style,
     fill=True,
     stroke=True,
     show_dots=False,
     show_y_guides=True,
     show_x_guides=False,
-    legend_at_bottom=True,  # Move legend to bottom to avoid overlap
+    legend_at_bottom=True,
     legend_box_size=30,
-    margin=50,
-    spacing=20,
+    margin=80,
+    spacing=30,
     xrange=(0, months - 1),
+    show_y_labels=False,  # Hide y-axis labels since values are relative
+    truncate_legend=-1,  # Don't truncate legend labels
 )
 
 # Add each genre as an XY series with polygon fill for streamgraph effect
-# Each layer is defined by its bottom and top boundaries
 for genre in genres:
     bottom = smooth_layers[genre]["bottom"]
     top = smooth_layers[genre]["top"]

@@ -1,0 +1,31 @@
+# Specification-level metadata for area-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: area-basic
+title: Basic Area Chart
+
+# Specification tracking
+created: 2025-12-14T09:19:27Z
+issue: 711
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - area
+    - line
+  domain:
+    - general
+    - business
+    - finance
+  features:
+    - basic
+    - filled
+    - trend
+  audience:
+    - beginner
+  data_type:
+    - numeric
+    - datetime
+    - continuous

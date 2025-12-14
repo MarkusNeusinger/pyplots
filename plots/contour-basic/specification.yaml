@@ -1,0 +1,32 @@
+# Specification-level metadata for contour-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: contour-basic
+title: Basic Contour Plot
+
+# Specification tracking
+created: 2025-12-14T19:33:12Z
+issue: 855
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - contour
+    - surface
+  domain:
+    - science
+    - geography
+    - statistics
+  features:
+    - basic
+    - 2d
+    - isolines
+  audience:
+    - beginner
+    - intermediate
+  data_type:
+    - numeric
+    - continuous
+    - grid

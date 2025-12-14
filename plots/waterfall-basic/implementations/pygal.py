@@ -18,20 +18,20 @@ changes = [150000, -45000, -35000, -22000, None]  # None = final total
 running_total = sum(c for c in changes[:-1] if c is not None)
 changes[-1] = running_total  # Set final total
 
-# Define colorblind-safe colors (avoid red-green)
+# Define colorblind-safe colors
 TOTAL_COLOR = "#306998"  # Python Blue for totals
-INCREASE_COLOR = "#306998"  # Python Blue for increases (same as totals for this data)
 DECREASE_COLOR = "#FF9800"  # Orange for decreases (colorblind-safe)
-CONNECTOR_COLOR = "#666666"  # Gray for connecting lines
+CONNECTOR_COLOR = "#555555"  # Dark gray for connecting lines
 
 # Custom style for waterfall chart
+# Colors array: index 0 for base (invisible), 1 for Total, 2 for Decrease
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("rgba(255,255,255,0)", TOTAL_COLOR, DECREASE_COLOR),
+    colors=("transparent", TOTAL_COLOR, DECREASE_COLOR),
     title_font_size=48,
     label_font_size=36,
     major_label_font_size=36,
@@ -112,8 +112,9 @@ for bar in bar_data:
         )
         connector_levels.append(bar["base"])
 
-# Add series - base is invisible spacer
-chart.add("", base_series, show_dots=False, stroke=False)
+# Add series - base is invisible spacer (no legend entry)
+chart.add("", base_series, show_dots=False, stroke=False, show_in_legend=False)
+# Series colors come from style.colors array (index 1 = Total, index 2 = Decrease)
 chart.add("Total", total_series)
 chart.add("Decrease", decrease_series)
 

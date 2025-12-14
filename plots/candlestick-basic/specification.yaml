@@ -1,0 +1,29 @@
+# Specification-level metadata for candlestick-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: candlestick-basic
+title: Basic Candlestick Chart
+
+# Specification tracking
+created: 2025-12-14T18:19:59Z
+issue: 812
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - candlestick
+    - financial
+  domain:
+    - finance
+    - trading
+  features:
+    - basic
+    - ohlc
+    - time-series
+  audience:
+    - intermediate
+  data_type:
+    - numeric
+    - datetime

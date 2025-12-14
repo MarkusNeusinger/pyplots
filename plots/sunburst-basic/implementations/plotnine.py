@@ -1,12 +1,15 @@
 """
 sunburst-basic: Basic Sunburst Chart
 Library: plotnine
+
+Note: plotnine (like ggplot2) does not have a native sunburst/pie geom.
+This implementation uses matplotlib's Wedge patches directly to create
+the sunburst visualization while following plotnine's minimal styling conventions.
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Wedge
-from plotnine import element_blank, element_text, theme, theme_minimal
 
 
 # Hierarchical data: Company budget breakdown (in thousands)
@@ -58,19 +61,7 @@ dept_palette = {
 # Build mapping from team to department
 parent_to_dept = {team: dept for dept, teams in hierarchy.items() for team in teams}
 
-# Apply plotnine theme styling to matplotlib
-plotnine_theme = theme_minimal() + theme(
-    figure_size=(16, 9),
-    plot_title=element_text(size=24, weight="bold"),
-    legend_text=element_text(size=14),
-    legend_title=element_text(size=16),
-    panel_grid=element_blank(),
-    axis_text=element_blank(),
-    axis_title=element_blank(),
-    axis_ticks=element_blank(),
-)
-
-# Create figure with plotnine-inspired styling
+# Create figure with plotnine-inspired minimal styling
 fig, ax = plt.subplots(figsize=(16, 9))
 fig.patch.set_facecolor("white")
 ax.set_facecolor("white")
@@ -184,10 +175,10 @@ for angle, r, label, span in ring3_info:
         rotation = angle - 90 if -90 <= angle <= 90 else angle + 90
         ax.text(x, y, label, ha="center", va="center", fontsize=9, rotation=rotation, color="#555555")
 
-# Set equal aspect ratio and limits
+# Set equal aspect ratio and limits (extended xlim to prevent label clipping)
 ax.set_aspect("equal")
-ax.set_xlim(-1.2, 1.5)
-ax.set_ylim(-1.1, 1.1)
+ax.set_xlim(-1.3, 1.5)
+ax.set_ylim(-1.15, 1.15)
 
 # Remove axes (plotnine-minimal style)
 ax.axis("off")

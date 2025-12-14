@@ -1,0 +1,31 @@
+# Specification-level metadata for chord-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: chord-basic
+title: Basic Chord Diagram
+
+# Specification tracking
+created: 2025-12-14T19:33:31Z
+issue: 858
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - chord
+    - flow
+    - circular
+  domain:
+    - general
+    - science
+    - business
+  features:
+    - basic
+    - relationships
+    - connections
+  audience:
+    - intermediate
+  data_type:
+    - categorical
+    - numeric

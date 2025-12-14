@@ -1,0 +1,67 @@
+"""
+polar-basic: Basic Polar Chart
+Library: plotly
+"""
+
+import numpy as np
+import plotly.graph_objects as go
+
+
+# Data - Hourly temperature readings over 24 hours (cyclical pattern)
+np.random.seed(42)
+hours = np.arange(0, 24)
+theta = hours * 15  # Convert hours to degrees (360/24 = 15 degrees per hour)
+
+# Temperature pattern: cooler at night, warmer during day
+base_temp = 15 + 10 * np.sin(np.radians(theta - 90))  # Peak at noon (hour 12 = 180 degrees)
+noise = np.random.randn(24) * 1.5
+radius = base_temp + noise
+
+# Create polar chart
+fig = go.Figure()
+
+fig.add_trace(
+    go.Scatterpolar(
+        r=radius,
+        theta=theta,
+        mode="markers+lines",
+        marker=dict(size=16, color="#306998"),
+        line=dict(width=3, color="#306998"),
+        fill="toself",
+        fillcolor="rgba(48, 105, 152, 0.2)",
+        name="Temperature",
+    )
+)
+
+# Layout with appropriate sizing for 4800x2700 px
+fig.update_layout(
+    title=dict(text="polar-basic · plotly · pyplots.ai", font=dict(size=28), x=0.5, xanchor="center"),
+    polar=dict(
+        radialaxis=dict(
+            visible=True,
+            range=[0, max(radius) * 1.1],
+            tickfont=dict(size=18),
+            title=dict(text="Temperature (°C)", font=dict(size=22)),
+            gridcolor="rgba(0, 0, 0, 0.2)",
+            gridwidth=1,
+        ),
+        angularaxis=dict(
+            tickmode="array",
+            tickvals=list(range(0, 360, 30)),
+            ticktext=["0h", "2h", "4h", "6h", "8h", "10h", "12h", "14h", "16h", "18h", "20h", "22h"],
+            tickfont=dict(size=18),
+            gridcolor="rgba(0, 0, 0, 0.2)",
+            gridwidth=1,
+            direction="clockwise",
+            rotation=90,  # Start at top (midnight)
+        ),
+        bgcolor="white",
+    ),
+    template="plotly_white",
+    showlegend=False,
+    margin=dict(l=80, r=80, t=120, b=80),
+)
+
+# Save as PNG (4800x2700 px) and HTML for interactivity
+fig.write_image("plot.png", width=1600, height=900, scale=3)
+fig.write_html("plot.html")

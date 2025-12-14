@@ -1,0 +1,31 @@
+# Specification-level metadata for heatmap-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: heatmap-basic
+title: Basic Heatmap
+
+# Specification tracking
+created: 2025-12-14T09:02:34Z
+issue: 691
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - heatmap
+    - matrix
+  domain:
+    - statistics
+    - general
+    - science
+  features:
+    - basic
+    - 2d
+    - color-mapped
+  audience:
+    - beginner
+    - intermediate
+  data_type:
+    - numeric
+    - categorical

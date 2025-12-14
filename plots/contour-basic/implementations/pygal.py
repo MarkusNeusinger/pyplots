@@ -22,20 +22,18 @@ Z = np.exp(-(X**2 + Y**2) / 2) + 0.5 * np.exp(-((X - 1.5) ** 2 + (Y + 1) ** 2) /
 
 # Use matplotlib to extract contour lines (pygal has no native contour support)
 fig_temp, ax_temp = plt.subplots()
-levels = np.linspace(Z.min(), Z.max(), 8)  # 8 levels for clarity
+levels = np.linspace(Z.min(), Z.max(), 6)  # 6 levels to fit all in legend
 contour = ax_temp.contour(X, Y, Z, levels=levels)
 plt.close(fig_temp)
 
-# Viridis-inspired color palette for 8 levels (sequential, colorblind-safe)
+# Viridis-inspired color palette for 6 levels (sequential, colorblind-safe)
 contour_colors = (
     "#440154",  # Dark purple (low)
-    "#443983",  # Purple
     "#31688e",  # Blue
     "#21918c",  # Teal
     "#35b779",  # Green
     "#90d743",  # Yellow-green
     "#fde725",  # Yellow (high)
-    "#306998",  # Python Blue for highest
 )
 
 # Custom style for 4800x2700 px canvas
@@ -65,8 +63,7 @@ chart = pygal.XY(
     x_title="X Coordinate",
     y_title="Y Coordinate",
     show_legend=True,
-    legend_at_bottom=True,
-    legend_at_bottom_columns=4,
+    legend_box_size=24,  # Larger legend color boxes
     stroke=True,
     show_dots=False,
     show_x_guides=True,

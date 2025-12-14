@@ -1,0 +1,31 @@
+# Specification-level metadata for treemap-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: treemap-basic
+title: Basic Treemap
+
+# Specification tracking
+created: 2025-12-14T11:15:11Z
+issue: 766
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - treemap
+    - hierarchical
+  domain:
+    - general
+    - business
+    - finance
+  features:
+    - basic
+    - hierarchical
+    - part-to-whole
+  audience:
+    - beginner
+    - intermediate
+  data_type:
+    - categorical
+    - numeric

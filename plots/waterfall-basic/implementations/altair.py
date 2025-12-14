@@ -79,6 +79,9 @@ color_scale = alt.Scale(
     range=["#306998", "#2E8B57", "#DC3545"],  # Blue for totals, green for positive, red for negative
 )
 
+# Explicit x-axis scale with category sort order
+x_scale = alt.Scale(domain=categories)
+
 # Create bars
 bars = (
     alt.Chart(data)
@@ -89,7 +92,7 @@ bars = (
         x=alt.X(
             "category:N",
             title="Category",
-            sort=alt.EncodingSortField(field="order", order="ascending"),
+            scale=x_scale,
             axis=alt.Axis(labelAngle=-30, labelFontSize=16, titleFontSize=20),
         ),
         y=alt.Y("start:Q", title="Amount ($)", axis=alt.Axis(labelFontSize=16, titleFontSize=20)),
@@ -111,10 +114,7 @@ labels = (
     alt.Chart(data)
     .mark_text(fontSize=14, fontWeight="bold")
     .encode(
-        x=alt.X("category:N", sort=alt.EncodingSortField(field="order", order="ascending")),
-        y=alt.Y("label_y:Q"),
-        text=alt.Text("label:N"),
-        color=alt.value("#333333"),
+        x=alt.X("category:N", scale=x_scale), y=alt.Y("label_y:Q"), text=alt.Text("label:N"), color=alt.value("#333333")
     )
 )
 
@@ -135,15 +135,15 @@ connector_df["cat_end"] = connector_df["x_end"].map(dict(zip(data["order"], data
 connectors = (
     alt.Chart(connector_df)
     .mark_rule(color="#666666", strokeWidth=1.5, strokeDash=[4, 4])
-    .encode(x=alt.X("cat_start:N", sort=categories), x2=alt.X2("cat_end:N"), y=alt.Y("y:Q"))
+    .encode(x=alt.X("cat_start:N", scale=x_scale), x2=alt.X2("cat_end:N"), y=alt.Y("y:Q"))
 )
 
-# Combine chart layers
+# Combine chart layers (bars, connectors for cumulative flow, and labels)
 chart = (
-    alt.layer(bars, labels)
+    alt.layer(bars, connectors, labels)
     .properties(
-        width=1500,
-        height=800,
+        width=1600,
+        height=900,
         title=alt.Title(text="Quarterly P&L Breakdown · waterfall-basic · altair · pyplots.ai", fontSize=28),
     )
     .configure_view(strokeWidth=0)

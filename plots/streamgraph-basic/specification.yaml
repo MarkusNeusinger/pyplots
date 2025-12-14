@@ -1,0 +1,32 @@
+# Specification-level metadata for streamgraph-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: streamgraph-basic
+title: Basic Stream Graph
+
+# Specification tracking
+created: 2025-12-14T19:38:15Z
+issue: 856
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - streamgraph
+    - area
+    - stacked
+  domain:
+    - general
+    - media
+    - business
+  features:
+    - basic
+    - time-series
+    - composition
+  audience:
+    - intermediate
+  data_type:
+    - datetime
+    - categorical
+    - numeric

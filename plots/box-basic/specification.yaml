@@ -1,0 +1,29 @@
+# Specification-level metadata for box-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: box-basic
+title: Basic Box Plot
+
+# Specification tracking
+created: 2025-12-14T08:58:33Z
+issue: 689
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - box
+    - distribution
+  domain:
+    - statistics
+    - general
+  features:
+    - basic
+    - quartiles
+    - outliers
+  audience:
+    - beginner
+  data_type:
+    - numeric
+    - categorical

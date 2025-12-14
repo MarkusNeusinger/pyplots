@@ -1,0 +1,31 @@
+# Specification-level metadata for hexbin-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: hexbin-basic
+title: Basic Hexbin Plot
+
+# Specification tracking
+created: 2025-12-14T19:33:45Z
+issue: 859
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - hexbin
+    - density
+  domain:
+    - statistics
+    - geospatial
+    - finance
+  features:
+    - basic
+    - 2d
+    - aggregation
+    - colormap
+  audience:
+    - intermediate
+  data_type:
+    - numeric
+    - continuous

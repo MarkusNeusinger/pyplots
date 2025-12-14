@@ -1,0 +1,239 @@
+"""
+chord-basic: Basic Chord Diagram
+Library: letsplot
+"""
+
+import math
+
+import numpy as np
+import pandas as pd
+from lets_plot import (
+    LetsPlot,
+    aes,
+    coord_fixed,
+    element_blank,
+    element_text,
+    geom_polygon,
+    geom_text,
+    ggplot,
+    ggsize,
+    labs,
+    scale_fill_manual,
+    scale_x_continuous,
+    scale_y_continuous,
+    theme,
+)
+from lets_plot.export import ggsave
+
+
+LetsPlot.setup_html()
+
+# Migration flow data between continents
+flows = [
+    ("Asia", "Europe", 45),
+    ("Asia", "North America", 38),
+    ("Asia", "Africa", 12),
+    ("Europe", "North America", 28),
+    ("Europe", "Asia", 22),
+    ("Europe", "Africa", 15),
+    ("Africa", "Europe", 35),
+    ("Africa", "Asia", 18),
+    ("North America", "Europe", 20),
+    ("North America", "Asia", 15),
+    ("South America", "North America", 25),
+    ("South America", "Europe", 18),
+    ("Oceania", "Asia", 14),
+    ("Oceania", "Europe", 8),
+]
+
+# Get unique entities and assign colors
+entities = list(dict.fromkeys([f[0] for f in flows] + [f[1] for f in flows]))
+colors = ["#306998", "#FFD43B", "#27AE60", "#E74C3C", "#9B59B6", "#1ABC9C"]
+entity_colors = {e: colors[i % len(colors)] for i, e in enumerate(entities)}
+
+# Calculate total flow for each entity (in + out)
+entity_totals = dict.fromkeys(entities, 0)
+for src, tgt, val in flows:
+    entity_totals[src] += val
+    entity_totals[tgt] += val
+
+# Calculate arc positions around the circle
+total_flow = sum(entity_totals.values())
+gap_angle = 0.04  # Gap between entities in radians
+total_gap = gap_angle * len(entities)
+available_angle = 2 * math.pi - total_gap
+
+# Assign angular positions to each entity
+entity_arcs = {}
+current_angle = 0
+for entity in entities:
+    arc_size = (entity_totals[entity] / total_flow) * available_angle
+    entity_arcs[entity] = {"start": current_angle, "end": current_angle + arc_size, "mid": current_angle + arc_size / 2}
+    current_angle += arc_size + gap_angle
+
+# Track offsets within each entity arc for chord placement
+entity_offsets = {e: entity_arcs[e]["start"] for e in entities}
+
+# Chord diagram radius
+outer_radius = 1.0
+inner_radius = 0.95
+chord_radius = 0.90
+
+# Build outer arc segments (the ring around the circle)
+arc_data = []
+n_arc_points = 50
+for entity in entities:
+    arc = entity_arcs[entity]
+    angles = np.linspace(arc["start"], arc["end"], n_arc_points)
+
+    # Outer edge
+    for angle in angles:
+        arc_data.append(
+            {
+                "x": outer_radius * np.cos(angle),
+                "y": outer_radius * np.sin(angle),
+                "entity": entity,
+                "arc_id": f"{entity}_arc",
+            }
+        )
+    # Inner edge (reversed)
+    for angle in reversed(angles):
+        arc_data.append(
+            {
+                "x": inner_radius * np.cos(angle),
+                "y": inner_radius * np.sin(angle),
+                "entity": entity,
+                "arc_id": f"{entity}_arc",
+            }
+        )
+
+arc_df = pd.DataFrame(arc_data)
+
+# Build chord polygons connecting entities
+chord_data = []
+chord_id = 0
+
+for src, tgt, val in flows:
+    # Calculate angular width for this flow
+    src_width = (val / total_flow) * available_angle
+    tgt_width = (val / total_flow) * available_angle
+
+    # Source arc segment
+    src_start = entity_offsets[src]
+    src_end = src_start + src_width
+    entity_offsets[src] = src_end + 0.005  # Small gap between chords
+
+    # Target arc segment
+    tgt_start = entity_offsets[tgt]
+    tgt_end = tgt_start + tgt_width
+    entity_offsets[tgt] = tgt_end + 0.005
+
+    # Create bezier-like chord using quadratic control points through center
+    n_points = 40
+
+    # Source arc points
+    src_angles = np.linspace(src_start, src_end, 10)
+    # Target arc points
+    tgt_angles = np.linspace(tgt_end, tgt_start, 10)
+
+    # Build chord polygon
+    polygon_x = []
+    polygon_y = []
+
+    # Source arc (at chord_radius)
+    for angle in src_angles:
+        polygon_x.append(chord_radius * np.cos(angle))
+        polygon_y.append(chord_radius * np.sin(angle))
+
+    # Bezier curve from source end to target start
+    src_end_x = chord_radius * np.cos(src_end)
+    src_end_y = chord_radius * np.sin(src_end)
+    tgt_start_x = chord_radius * np.cos(tgt_start)
+    tgt_start_y = chord_radius * np.sin(tgt_start)
+
+    for i in range(1, n_points):
+        t = i / n_points
+        # Quadratic bezier through origin
+        x = (1 - t) ** 2 * src_end_x + 2 * (1 - t) * t * 0 + t**2 * tgt_start_x
+        y = (1 - t) ** 2 * src_end_y + 2 * (1 - t) * t * 0 + t**2 * tgt_start_y
+        polygon_x.append(x)
+        polygon_y.append(y)
+
+    # Target arc (at chord_radius)
+    for angle in tgt_angles:
+        polygon_x.append(chord_radius * np.cos(angle))
+        polygon_y.append(chord_radius * np.sin(angle))
+
+    # Bezier curve back from target end to source start
+    tgt_end_x = chord_radius * np.cos(tgt_end)
+    tgt_end_y = chord_radius * np.sin(tgt_end)
+    src_start_x = chord_radius * np.cos(src_start)
+    src_start_y = chord_radius * np.sin(src_start)
+
+    for i in range(1, n_points):
+        t = i / n_points
+        x = (1 - t) ** 2 * tgt_end_x + 2 * (1 - t) * t * 0 + t**2 * src_start_x
+        y = (1 - t) ** 2 * tgt_end_y + 2 * (1 - t) * t * 0 + t**2 * src_start_y
+        polygon_x.append(x)
+        polygon_y.append(y)
+
+    # Add to dataframe
+    for x, y in zip(polygon_x, polygon_y, strict=False):
+        chord_data.append({"x": x, "y": y, "chord_id": f"chord_{chord_id}", "source": src, "target": tgt, "value": val})
+
+    chord_id += 1
+
+chord_df = pd.DataFrame(chord_data)
+
+# Create entity labels
+label_data = []
+label_radius = 1.12
+for entity in entities:
+    arc = entity_arcs[entity]
+    mid_angle = arc["mid"]
+    label_data.append(
+        {
+            "x": label_radius * np.cos(mid_angle),
+            "y": label_radius * np.sin(mid_angle),
+            "label": entity,
+            "angle": math.degrees(mid_angle),
+        }
+    )
+
+label_df = pd.DataFrame(label_data)
+
+# Build plot
+plot = (
+    ggplot()
+    # Chords (flows between entities)
+    + geom_polygon(
+        aes(x="x", y="y", group="chord_id", fill="source"), data=chord_df, alpha=0.6, color="white", size=0.2
+    )
+    # Outer arcs (entity segments)
+    + geom_polygon(aes(x="x", y="y", group="arc_id", fill="entity"), data=arc_df, alpha=0.9, color="white", size=0.5)
+    # Entity labels
+    + geom_text(aes(x="x", y="y", label="label"), data=label_df, size=14, color="#333333", fontface="bold")
+    + scale_fill_manual(values=colors, name="Continent")
+    + coord_fixed(ratio=1)
+    + scale_x_continuous(limits=(-1.5, 1.5))
+    + scale_y_continuous(limits=(-1.5, 1.5))
+    + labs(title="Migration Flows · chord-basic · letsplot · pyplots.ai")
+    + ggsize(1600, 900)
+    + theme(
+        plot_title=element_text(size=28, face="bold"),
+        axis_title=element_blank(),
+        axis_text=element_blank(),
+        axis_ticks=element_blank(),
+        axis_line=element_blank(),
+        panel_grid=element_blank(),
+        legend_text=element_text(size=14),
+        legend_title=element_text(size=16),
+        legend_position="right",
+    )
+)
+
+# Save as PNG
+ggsave(plot, "plot.png", path=".", scale=3)
+
+# Save as HTML
+ggsave(plot, "plot.html", path=".")

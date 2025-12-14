@@ -371,8 +371,8 @@ jobs:
           IMPL_DIR="plots/${SPEC_ID}/implementations"
 
           if [ ! -f "$IMPL_DIR/plot.png" ]; then
-            echo "::warning::No plot.png found - skipping image processing"
-            exit 0
+            echo "::error::No plot.png found - implementation failed to generate image"
+            exit 1
           fi
 
           source .venv/bin/activate
@@ -468,8 +468,8 @@ jobs:
             echo "png_url=${PUBLIC_URL}/plot.png" >> $GITHUB_OUTPUT
             echo "uploaded=true" >> $GITHUB_OUTPUT
           else
-            echo "::warning::No plot.png found"
-            echo "uploaded=false" >> $GITHUB_OUTPUT
+            echo "::error::No plot.png found - cannot continue without image"
+            exit 1
           fi
 
           # Upload thumbnail

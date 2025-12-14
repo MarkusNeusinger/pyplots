@@ -14,9 +14,15 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
+import Tooltip from '@mui/material/Tooltip';
 import SearchIcon from '@mui/icons-material/Search';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import CloseIcon from '@mui/icons-material/Close';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import CodeIcon from '@mui/icons-material/Code';
+import ImageIcon from '@mui/icons-material/Image';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const GITHUB_URL = 'https://github.com/MarkusNeusinger/pyplots'; // pyplots repo
@@ -24,6 +30,8 @@ const GITHUB_URL = 'https://github.com/MarkusNeusinger/pyplots'; // pyplots repo
 interface PlotImage {
   library: string;
   url: string;
+  html?: string;
+  code?: string;
 }
 
 function App() {
@@ -38,6 +46,8 @@ function App() {
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const [searchFilter, setSearchFilter] = useState('');
   const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const [specDescription, setSpecDescription] = useState<string>('');
+  const [showCode, setShowCode] = useState(false);
   const shuffleButtonRef = useRef<HTMLButtonElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const menuItemRefs = useRef<(HTMLLIElement | null)[]>([]);
@@ -61,6 +71,13 @@ function App() {
     const randomIndex = Math.floor(Math.random() * otherSpecs.length);
     setSelectedSpec(otherSpecs[randomIndex]);
   }, [specs, selectedSpec]);
+
+  // Copy code to clipboard
+  const copyToClipboard = useCallback(() => {
+    if (modalImage?.code) {
+      navigator.clipboard.writeText(modalImage.code);
+    }
+  }, [modalImage]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -144,10 +161,35 @@ function App() {
     const fetchImages = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${API_URL}/specs/${selectedSpec}/images`);
-        if (!response.ok) throw new Error('Failed to fetch images');
-        const data = await response.json();
-        const shuffled = shuffleArray<PlotImage>(data.images as PlotImage[]);
+        // Fetch images and spec details in parallel
+        const [imagesRes, specRes] = await Promise.all([
+          fetch(`${API_URL}/specs/${selectedSpec}/images`),
+          fetch(`${API_URL}/specs/${selectedSpec}`),
+        ]);
+
+        if (!imagesRes.ok) throw new Error('Failed to fetch images');
+        const imagesData = await imagesRes.json();
+
+        // Get description and code from spec details
+        let description = '';
+        const codeByLibrary: Record<string, string> = {};
+        if (specRes.ok) {
+          const specData = await specRes.json();
+          description = specData.description || '';
+          for (const impl of specData.implementations || []) {
+            if (impl.code) {
+              codeByLibrary[impl.library_id] = impl.code;
+            }
+          }
+        }
+        setSpecDescription(description);
+
+        // Merge code into images
+        const imagesWithCode = (imagesData.images as PlotImage[]).map((img) => ({
+          ...img,
+          code: codeByLibrary[img.library] || undefined,
+        }));
+        const shuffled = shuffleArray<PlotImage>(imagesWithCode);
         setImages(shuffled);
       } catch (err) {
         setError(`Error loading images: ${err}`);
@@ -224,26 +266,42 @@ function App() {
               mb: 5,
             }}
           >
-            <Chip
-              data-spec-chip
-              label={selectedSpec}
-              variant="outlined"
-              onClick={(e) => setMenuAnchor(e.currentTarget)}
-              sx={{
-                fontSize: '0.95rem',
-                fontWeight: 600,
-                fontFamily: '"JetBrains Mono", monospace',
-                color: '#3776AB',
-                borderColor: '#3776AB',
-                bgcolor: '#f9fafb',
-                py: 2,
-                px: 0.5,
-                cursor: 'pointer',
-                '&:hover': {
-                  bgcolor: '#e8f4fc',
+            <Tooltip
+              title={specDescription}
+              arrow
+              placement="bottom"
+              enterDelay={300}
+              slotProps={{
+                tooltip: {
+                  sx: {
+                    maxWidth: 400,
+                    fontFamily: '"JetBrains Mono", monospace',
+                    fontSize: '0.8rem',
+                  },
                 },
               }}
-            />
+            >
+              <Chip
+                data-spec-chip
+                label={selectedSpec}
+                variant="outlined"
+                onClick={(e) => setMenuAnchor(e.currentTarget)}
+                sx={{
+                  fontSize: '0.95rem',
+                  fontWeight: 600,
+                  fontFamily: '"JetBrains Mono", monospace',
+                  color: '#3776AB',
+                  borderColor: '#3776AB',
+                  bgcolor: '#f9fafb',
+                  py: 2,
+                  px: 0.5,
+                  cursor: 'pointer',
+                  '&:hover': {
+                    bgcolor: '#e8f4fc',
+                  },
+                }}
+              />
+            </Tooltip>
             <Menu
               anchorEl={menuAnchor}
               open={Boolean(menuAnchor)}
@@ -611,7 +669,10 @@ function App() {
       {/* Fullscreen Modal */}
       <Modal
         open={!!modalImage}
-        onClose={() => setModalImage(null)}
+        onClose={() => {
+          setModalImage(null);
+          setShowCode(false);
+        }}
         aria-labelledby="plot-modal-title"
         sx={{
           display: 'flex',
@@ -628,32 +689,118 @@ function App() {
           }}
           role="dialog"
         >
-          <IconButton
-            onClick={() => setModalImage(null)}
-            aria-label="Close fullscreen image"
-            sx={{
-              position: 'absolute',
-              top: -40,
-              right: 0,
-              color: '#fff',
-              '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
+          {/* Modal Header Buttons */}
+          <Box sx={{ position: 'absolute', top: -40, right: 0, display: 'flex', gap: 1 }}>
+            {modalImage?.code && (
+              <IconButton
+                onClick={() => setShowCode(!showCode)}
+                aria-label={showCode ? 'Show plot' : 'Show code'}
+                sx={{
+                  color: '#fff',
+                  '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
+                }}
+              >
+                {showCode ? <ImageIcon /> : <CodeIcon />}
+              </IconButton>
+            )}
+            <IconButton
+              onClick={() => {
+                setModalImage(null);
+                setShowCode(false);
+              }}
+              aria-label="Close"
+              sx={{
+                color: '#fff',
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+
+          {/* Modal Content */}
           {modalImage && (
             <Box>
-              <img
-                src={modalImage.url}
-                alt={`${selectedSpec} - ${modalImage.library}`}
-                style={{
-                  maxWidth: '90vw',
-                  maxHeight: '85vh',
-                  objectFit: 'contain',
-                  borderRadius: 8,
-                  backgroundColor: '#fff',
-                }}
-              />
+              {showCode ? (
+                // Code View
+                <Box
+                  sx={{
+                    position: 'relative',
+                    bgcolor: '#1e1e1e',
+                    borderRadius: 2,
+                    p: 3,
+                    maxWidth: '90vw',
+                    maxHeight: '85vh',
+                    overflow: 'auto',
+                  }}
+                >
+                  <IconButton
+                    onClick={copyToClipboard}
+                    aria-label="Copy code to clipboard"
+                    sx={{
+                      position: 'absolute',
+                      top: 8,
+                      right: 8,
+                      color: '#9ca3af',
+                      zIndex: 1,
+                      '&:hover': { color: '#fff', bgcolor: 'rgba(255,255,255,0.1)' },
+                    }}
+                  >
+                    <ContentCopyIcon fontSize="small" />
+                  </IconButton>
+                  <SyntaxHighlighter
+                    language="python"
+                    style={oneDark}
+                    customStyle={{
+                      margin: 0,
+                      borderRadius: 8,
+                      fontSize: '0.85rem',
+                      fontFamily: '"JetBrains Mono", monospace',
+                    }}
+                  >
+                    {modalImage.code || ''}
+                  </SyntaxHighlighter>
+                </Box>
+              ) : modalImage.html ? (
+                // HTML iframe (interactive plot) - scale to fit like PNG
+                <Box
+                  sx={{
+                    // Container sized to fit viewport while maintaining aspect ratio
+                    maxWidth: '90vw',
+                    maxHeight: '85vh',
+                    // Use height-based width calculation for 16:9 aspect ratio
+                    width: 'min(90vw, calc(85vh * 16 / 9))',
+                    height: 'min(85vh, calc(90vw * 9 / 16))',
+                    borderRadius: 2,
+                    overflow: 'hidden',
+                    bgcolor: '#fff',
+                  }}
+                >
+                  <iframe
+                    src={modalImage.html}
+                    title={`${selectedSpec} - ${modalImage.library}`}
+                    scrolling="no"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      border: 'none',
+                    }}
+                  />
+                </Box>
+              ) : (
+                // PNG fallback
+                <img
+                  src={modalImage.url}
+                  alt={`${selectedSpec} - ${modalImage.library}`}
+                  style={{
+                    maxWidth: '90vw',
+                    maxHeight: '85vh',
+                    objectFit: 'contain',
+                    borderRadius: 8,
+                    backgroundColor: '#fff',
+                  }}
+                />
+              )}
               <Typography
                 id="plot-modal-title"
                 sx={{

@@ -25,11 +25,11 @@ flows = [
 
 df = pd.DataFrame(flows)
 
-# Canvas dimensions
+# Canvas dimensions - 1600x900 produces ~4800x2700 with scale_factor=3.0 (16:9 aspect ratio)
 width = 1600
 height = 900
 node_width = 80
-node_padding = 30
+node_padding = 20
 
 # Compute node positions
 sources = df["source"].unique().tolist()
@@ -40,22 +40,32 @@ source_totals = df.groupby("source")["value"].sum().to_dict()
 target_totals = df.groupby("target")["value"].sum().to_dict()
 total_flow = df["value"].sum()
 
-# Available height for nodes (with padding)
-available_height = height - 100
+# Available height for nodes - reserve space for title (top) and margins
+top_margin = 80
+bottom_margin = 40
+available_height = height - top_margin - bottom_margin
 
-# Position source nodes on left
+# Position source nodes on left, vertically centered
+source_total_height = sum(source_totals.values()) / total_flow * available_height * 0.85
+source_total_with_padding = source_total_height + node_padding * (len(sources) - 1)
+start_y_sources = top_margin + (available_height - source_total_with_padding) / 2
+
 source_positions = {}
-current_y = 50
+current_y = start_y_sources
 for src in sources:
-    node_height = (source_totals[src] / total_flow) * available_height * 1.5
+    node_height = (source_totals[src] / total_flow) * available_height * 0.85
     source_positions[src] = {"y": current_y, "height": node_height}
     current_y += node_height + node_padding
 
-# Position target nodes on right
+# Position target nodes on right, vertically centered
+target_total_height = sum(target_totals.values()) / total_flow * available_height * 0.85
+target_total_with_padding = target_total_height + node_padding * (len(targets) - 1)
+start_y_targets = top_margin + (available_height - target_total_with_padding) / 2
+
 target_positions = {}
-current_y = 50
+current_y = start_y_targets
 for tgt in targets:
-    node_height = (target_totals[tgt] / total_flow) * available_height * 1.5
+    node_height = (target_totals[tgt] / total_flow) * available_height * 0.85
     target_positions[tgt] = {"y": current_y, "height": node_height}
     current_y += node_height + node_padding
 
@@ -115,33 +125,36 @@ for _, row in df.iterrows():
     tgt = row["target"]
     val = row["value"]
 
-    # Flow height proportional to value
+    # Flow height proportional to value within each node
     src_height = (val / source_totals[src]) * source_positions[src]["height"]
     tgt_height = (val / target_totals[tgt]) * target_positions[tgt]["height"]
 
-    # Start and end positions
+    # Start and end Y positions for this flow band
     src_y_top = source_y_offsets[src]
     src_y_bottom = src_y_top + src_height
     tgt_y_top = target_y_offsets[tgt]
     tgt_y_bottom = tgt_y_top + tgt_height
 
-    # Update offsets for next flow from same source/target
+    # Update offsets for stacking next flow from same source/target
     source_y_offsets[src] += src_height
     target_y_offsets[tgt] += tgt_height
 
     x_start = node_width
     x_end = width - node_width
 
-    # Generate top curve points (left to right)
+    # Generate top curve points (left to right) using smoothstep interpolation
+    # Smoothstep formula: t² * (3 - 2t) creates an S-curve that starts and ends with zero slope,
+    # producing a smooth, natural-looking flow between nodes
     top_points = []
     for i in range(num_curve_points):
-        t = i / (num_curve_points - 1)
+        t = i / (num_curve_points - 1)  # Linear parameter 0 to 1
         x = x_start + t * (x_end - x_start)
+        # Apply smoothstep to Y interpolation for curved flow appearance
         bezier_t = t * t * (3 - 2 * t)
         y = src_y_top + bezier_t * (tgt_y_top - src_y_top)
         top_points.append((x, y))
 
-    # Generate bottom curve points (right to left for closed polygon)
+    # Generate bottom curve points (right to left to close the polygon)
     bottom_points = []
     for i in range(num_curve_points - 1, -1, -1):
         t = i / (num_curve_points - 1)
@@ -150,7 +163,7 @@ for _, row in df.iterrows():
         y = src_y_bottom + bezier_t * (tgt_y_bottom - src_y_bottom)
         bottom_points.append((x, y))
 
-    # Combine into closed polygon path
+    # Combine top + bottom into closed polygon for filled area rendering
     all_points = top_points + bottom_points
     for pt_idx, (x, y) in enumerate(all_points):
         all_flow_data.append(
@@ -159,8 +172,7 @@ for _, row in df.iterrows():
 
 flows_df = pd.DataFrame(all_flow_data)
 
-# Create flow polygons using mark_line with filled area via mark_area
-# Use mark_line with filled=True to create filled shapes
+# Create flow polygons using mark_line with filled=True
 links_chart = (
     alt.Chart(flows_df)
     .mark_line(filled=True, opacity=0.5, strokeWidth=0)
@@ -170,7 +182,7 @@ links_chart = (
         color=alt.Color(
             "source:N",
             scale=alt.Scale(domain=list(source_colors.keys()), range=list(source_colors.values())),
-            legend=None,
+            legend=alt.Legend(title="Energy Source", titleFontSize=16, labelFontSize=14, orient="bottom-right"),
         ),
         detail="flow_id:N",
         order="order:Q",
@@ -211,6 +223,7 @@ chart = (
         title=alt.Title(text="sankey-basic · altair · pyplots.ai", fontSize=28, anchor="middle"),
     )
     .configure_view(strokeWidth=0)
+    .configure_legend(padding=10, cornerRadius=5, fillColor="#FFFFFF", strokeColor="#DDDDDD")
 )
 
 # Save

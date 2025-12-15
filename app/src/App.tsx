@@ -697,10 +697,14 @@ function App() {
                 aria-label={showCode ? 'Show plot' : 'Show code'}
                 sx={{
                   color: '#fff',
+                  fontSize: '0.85rem',
+                  fontFamily: '"JetBrains Mono", monospace',
+                  gap: 0.5,
                   '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
                 }}
               >
-                {showCode ? <ImageIcon /> : <CodeIcon />}
+                {showCode ? <ImageIcon fontSize="small" /> : <CodeIcon fontSize="small" />}
+                {showCode ? 'Plot' : 'Code'}
               </IconButton>
             )}
             <IconButton
@@ -761,34 +765,8 @@ function App() {
                     {modalImage.code || ''}
                   </SyntaxHighlighter>
                 </Box>
-              ) : modalImage.html ? (
-                // HTML iframe (interactive plot) - scale to fit like PNG
-                <Box
-                  sx={{
-                    // Container sized to fit viewport while maintaining aspect ratio
-                    maxWidth: '90vw',
-                    maxHeight: '85vh',
-                    // Use height-based width calculation for 16:9 aspect ratio
-                    width: 'min(90vw, calc(85vh * 16 / 9))',
-                    height: 'min(85vh, calc(90vw * 9 / 16))',
-                    borderRadius: 2,
-                    overflow: 'hidden',
-                    bgcolor: '#fff',
-                  }}
-                >
-                  <iframe
-                    src={modalImage.html}
-                    title={`${selectedSpec} - ${modalImage.library}`}
-                    scrolling="no"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      border: 'none',
-                    }}
-                  />
-                </Box>
               ) : (
-                // PNG fallback
+                // PNG image
                 <img
                   src={modalImage.url}
                   alt={`${selectedSpec} - ${modalImage.library}`}

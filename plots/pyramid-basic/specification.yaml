@@ -1,0 +1,30 @@
+# Specification-level metadata for pyramid-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: pyramid-basic
+title: Basic Pyramid Chart
+
+# Specification tracking
+created: 2025-12-15T20:44:45Z
+issue: 1000
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - pyramid
+    - bar
+  domain:
+    - demographics
+    - statistics
+    - general
+  features:
+    - basic
+    - comparison
+    - bidirectional
+  audience:
+    - beginner
+  data_type:
+    - categorical
+    - numeric

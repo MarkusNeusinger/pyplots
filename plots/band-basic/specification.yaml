@@ -1,0 +1,32 @@
+# Specification-level metadata for band-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: band-basic
+title: Basic Band Plot
+
+# Specification tracking
+created: 2025-12-15T20:42:54Z
+issue: 979
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - band
+    - area
+    - range
+  domain:
+    - statistics
+    - science
+    - forecasting
+  features:
+    - basic
+    - confidence-interval
+    - uncertainty
+  audience:
+    - intermediate
+  data_type:
+    - numeric
+    - continuous
+    - datetime

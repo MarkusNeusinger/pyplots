@@ -21,6 +21,7 @@ jobs:
       contents: write
       pull-requests: write
       issues: write
+      actions: write  # Required for gh workflow run sync-postgres.yml
 
     steps:
       - name: Check conditions

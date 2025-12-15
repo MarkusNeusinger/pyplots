@@ -1,0 +1,30 @@
+# Specification-level metadata for ecdf-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: ecdf-basic
+title: Basic ECDF Plot
+
+# Specification tracking
+created: 2025-12-15T20:42:02Z
+issue: 976
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - ecdf
+    - distribution
+    - cumulative
+  domain:
+    - statistics
+    - general
+  features:
+    - basic
+    - step-function
+    - non-parametric
+  audience:
+    - intermediate
+  data_type:
+    - numeric
+    - continuous

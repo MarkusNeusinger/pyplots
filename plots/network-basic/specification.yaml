@@ -1,0 +1,31 @@
+# Specification-level metadata for network-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: network-basic
+title: Basic Network Graph
+
+# Specification tracking
+created: 2025-12-15T20:43:57Z
+issue: 989
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - network
+    - graph
+    - node-link
+  domain:
+    - general
+    - social-science
+    - computer-science
+  features:
+    - basic
+    - relational
+    - connectivity
+  audience:
+    - intermediate
+  data_type:
+    - categorical
+    - relational

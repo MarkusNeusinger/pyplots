@@ -1,0 +1,33 @@
+# Specification-level metadata for ternary-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: ternary-basic
+title: Basic Ternary Plot
+
+# Specification tracking
+created: 2025-12-15T20:44:43Z
+issue: 1001
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - ternary
+    - triangle
+    - compositional
+  domain:
+    - science
+    - chemistry
+    - geology
+    - general
+  features:
+    - basic
+    - 2d
+    - proportional
+  audience:
+    - intermediate
+  data_type:
+    - numeric
+    - continuous
+    - compositional

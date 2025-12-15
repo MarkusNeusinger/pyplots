@@ -17,13 +17,14 @@ categories = [item[0] for item in sorted_data]
 values = [item[1] for item in sorted_data]
 
 # Custom style for 4800x2700 canvas
+# Use tuple with same color repeated for all 8 series to ensure consistent color
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998",),  # Python Blue
+    colors=("#306998",) * 8,  # Python Blue for all series
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
@@ -42,8 +43,8 @@ chart = pygal.XY(
     x_title="Sales (units)",
     style=custom_style,
     show_legend=False,  # Category names shown on y-axis
-    dots_size=25,  # Large dots for lollipop heads
-    stroke_style={"width": 4},  # Thin stem lines
+    dots_size=30,  # Large dots for clearly visible lollipop heads
+    stroke_style={"width": 8},  # Visible stems at 4800px width
     show_y_guides=True,
     show_x_guides=True,
     margin=100,
@@ -53,11 +54,11 @@ chart = pygal.XY(
 )
 
 # Create lollipop data - each category is a line from 0 to value
-# Using None for first point to hide dot at baseline, only show dot at value
+# Using node config to hide dot at baseline, only show dot at value end
 for i, (cat, val) in enumerate(zip(categories, values, strict=True)):
     y_pos = n - i  # Position from top to bottom (highest value at top)
-    # Line from baseline to value - use dict with node config to hide baseline dot
-    chart.add(cat, [{"value": (0, y_pos), "node": {"r": 0}}, {"value": (val, y_pos)}], dots_size=25)
+    # Line from baseline (x=0) to value with dot only at value end
+    chart.add(cat, [{"value": (0, y_pos), "node": {"r": 0}}, {"value": (val, y_pos)}], dots_size=30)
 
 # Save outputs
 chart.render_to_png("plot.png")

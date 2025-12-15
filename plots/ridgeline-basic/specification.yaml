@@ -1,0 +1,30 @@
+# Specification-level metadata for ridgeline-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: ridgeline-basic
+title: Basic Ridgeline Plot
+
+# Specification tracking
+created: 2025-12-15T15:39:20Z
+issue: 923
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - ridgeline
+    - density
+    - distribution
+  domain:
+    - statistics
+    - general
+  features:
+    - basic
+    - stacked
+    - comparison
+  audience:
+    - intermediate
+  data_type:
+    - numeric
+    - categorical

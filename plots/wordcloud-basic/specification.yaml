@@ -1,0 +1,28 @@
+# Specification-level metadata for wordcloud-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: wordcloud-basic
+title: Basic Word Cloud
+
+# Specification tracking
+created: 2025-12-15T20:45:54Z
+issue: 1012
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - wordcloud
+    - text
+  domain:
+    - general
+    - text-analysis
+  features:
+    - basic
+    - frequency
+  audience:
+    - beginner
+  data_type:
+    - text
+    - categorical

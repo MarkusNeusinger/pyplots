@@ -1,0 +1,29 @@
+# Specification-level metadata for rug-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: rug-basic
+title: Basic Rug Plot
+
+# Specification tracking
+created: 2025-12-15T20:43:01Z
+issue: 978
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - rug
+    - distribution
+  domain:
+    - statistics
+    - general
+  features:
+    - basic
+    - 1d
+    - marginal
+  audience:
+    - beginner
+  data_type:
+    - numeric
+    - continuous

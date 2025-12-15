@@ -1,0 +1,32 @@
+# Specification-level metadata for dumbbell-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: dumbbell-basic
+title: Basic Dumbbell Chart
+
+# Specification tracking
+created: 2025-12-15T16:37:32Z
+issue: 945
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - dumbbell
+    - dot
+    - comparison
+  domain:
+    - general
+    - business
+    - statistics
+  features:
+    - basic
+    - comparison
+    - range
+  audience:
+    - beginner
+    - intermediate
+  data_type:
+    - numeric
+    - categorical

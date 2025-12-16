@@ -31,9 +31,9 @@ ax.plot_wireframe(X, Y, Z, color="#306998", linewidth=0.8, alpha=0.9)
 ax.view_init(elev=30, azim=45)
 
 # Style axes with scaled font sizes for 4800x2700 resolution
-ax.set_xlabel("X", fontsize=20, labelpad=15)
-ax.set_ylabel("Y", fontsize=20, labelpad=15)
-ax.set_zlabel("Z", fontsize=20, labelpad=15)
+ax.set_xlabel("X Value", fontsize=20, labelpad=15)
+ax.set_ylabel("Y Value", fontsize=20, labelpad=15)
+ax.set_zlabel("Z = sin(√(x² + y²))", fontsize=20, labelpad=15)
 
 # Title in required format
 ax.set_title("wireframe-3d-basic · plotnine · pyplots.ai", fontsize=28, fontweight="bold", pad=30)

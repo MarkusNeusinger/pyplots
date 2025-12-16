@@ -28,13 +28,13 @@ except (FileNotFoundError, subprocess.SubprocessError):
     _HAS_PNGQUANT = False
 
 
-def create_thumbnail(input_path: str | Path, output_path: str | Path, width: int = 600) -> tuple[int, int]:
+def create_thumbnail(input_path: str | Path, output_path: str | Path, width: int = 1200) -> tuple[int, int]:
     """Create a thumbnail maintaining aspect ratio.
 
     Args:
         input_path: Path to the source image.
         output_path: Path where the thumbnail will be saved.
-        width: Target width in pixels (default: 600). Height is calculated to maintain aspect ratio.
+        width: Target width in pixels (default: 1200). Height is calculated to maintain aspect ratio.
 
     Returns:
         Tuple of (width, height) of the created thumbnail.
@@ -86,7 +86,7 @@ def process_plot_image(
     input_path: str | Path,
     output_path: str | Path,
     thumb_path: str | Path | None = None,
-    thumb_width: int = 600,
+    thumb_width: int = 1200,
     optimize: bool = True,
 ) -> dict[str, str | tuple[int, int] | int]:
     """Process a plot image: optimize and create thumbnail.
@@ -153,7 +153,7 @@ if __name__ == "__main__":
         if len(sys.argv) < 4:
             print_usage()
         input_file, output_file = sys.argv[2], sys.argv[3]
-        width = int(sys.argv[4]) if len(sys.argv) > 4 else 600
+        width = int(sys.argv[4]) if len(sys.argv) > 4 else 1200
         w, h = create_thumbnail(input_file, output_file, width)
         print(f"Thumbnail: {w}x{h}px")
 

@@ -7,7 +7,6 @@
 plotnine is a ggplot2-based grammar of graphics library. It does NOT support:
 - 3D plots (no wireframes, surfaces, 3D scatter)
 - Network/graph visualizations
-- Treemaps
 - Sankey diagrams
 - Geographic maps (without extensions)
 

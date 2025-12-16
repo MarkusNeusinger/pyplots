@@ -67,6 +67,102 @@ jobs:
       - name: Process with Claude
         if: steps.check.outputs.should_run == 'true'
         id: process
+        continue-on-error: true
+        timeout-minutes: 30
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--model opus"
+          prompt: |
+            ## Task: Create New Specification
+
+            You are creating a new plot specification.
+
+            ### Issue Details
+            - **Title:** ${{ github.event.issue.title }}
+            - **Number:** #${{ github.event.issue.number }}
+            - **Author:** ${{ github.event.issue.user.login }}
+            - **Body:**
+            ```
+            ${{ github.event.issue.body }}
+            ```
+
+            ---
+
+            ## Instructions
+
+            1. **Read the rules:** `prompts/spec-id-generator.md`
+
+            2. **Check for duplicates:**
+               - List all existing specs: `ls plots/`
+               - Read existing specification files if titles seem similar
+               - If duplicate found: Post comment explaining which spec matches, then STOP
+
+            3. **Generate specification-id:**
+               - Format: `{type}-{variant}` or `{type}-{variant}-{modifier}`
+               - Examples: `scatter-basic`, `bar-grouped-horizontal`, `heatmap-correlation`
+               - All lowercase, hyphens only
+
+            4. **Create specification branch:**
+               ```bash
+               git checkout -b "specification/{specification-id}"
+               ```
+
+            5. **Post analysis comment:**
+               Post a SHORT comment (max 3-4 sentences) to the issue using `gh issue comment`:
+               - Is this a valid/useful plot type?
+               - Does it already exist? (check `ls plots/`)
+               - Any concerns?
+
+            6. **Create specification files:**
+               - Read template: `prompts/templates/specification.md`
+               - Read metadata template: `prompts/templates/specification.yaml`
+               - Create directory: `plots/{specification-id}/`
+               - Create: `plots/{specification-id}/specification.md` (follow template structure)
+               - Create: `plots/{specification-id}/specification.yaml` with:
+                 - `specification_id`: the generated id
+                 - `title`: a proper title
+                 - `created`: Use `$(date -u +"%Y-%m-%dT%H:%M:%SZ")` for current timestamp
+                 - `issue`: ${{ github.event.issue.number }}
+                 - `suggested`: ${{ github.event.issue.user.login }}
+                 - `tags`: appropriate tags for this plot type
+               - Create empty folder: `plots/{specification-id}/implementations/`
+               - Create empty folder: `plots/{specification-id}/metadata/`
+
+            7. **Commit and push:**
+               ```bash
+               git config user.name "github-actions[bot]"
+               git config user.email "github-actions[bot]@users.noreply.github.com"
+               git add plots/{specification-id}/
+               git commit -m "spec: add {specification-id} specification
+
+               Created from issue #${{ github.event.issue.number }}"
+               git push -u origin "specification/{specification-id}"
+               ```
+
+            8. **Update issue title:**
+               ```bash
+               gh issue edit ${{ github.event.issue.number }} --title "[{specification-id}] {original title}"
+               ```
+
+            9. **Output for workflow:**
+               After completing, print these lines exactly:
+               ```
+               SPECIFICATION_ID={specification-id}
+               BRANCH=specification/{specification-id}
+               ```
+
+            ---
+
+            ## Important Rules
+            - Do NOT create a PR (the workflow does that)
+            - Do NOT add labels
+            - Do NOT close the issue
+            - STOP after pushing the branch
+
+      - name: Retry Claude (on failure)
+        if: steps.check.outputs.should_run == 'true' && steps.process.outcome == 'failure'
+        id: process_retry
         timeout-minutes: 30
         uses: anthropics/claude-code-action@v1
         with:
@@ -194,7 +290,7 @@ jobs:
             --body "$(cat <<EOF
           ## New Specification: \`${SPEC_ID}\`
 
-          Closes #${{ github.event.issue.number }}
+          Related to #${{ github.event.issue.number }}
 
           ---
 

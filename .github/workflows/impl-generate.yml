@@ -196,6 +196,71 @@ jobs:
 
       - name: Run Claude Code to generate implementation
         id: claude
+        continue-on-error: true
+        timeout-minutes: 60
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--model opus"
+          prompt: |
+            ## Task: Generate ${{ steps.inputs.outputs.library }} Implementation
+
+            You are generating the **${{ steps.inputs.outputs.library }}** implementation for **${{ steps.inputs.outputs.specification_id }}**.
+
+            ### Step 1: Read required files
+            1. `prompts/plot-generator.md` - Base generation rules
+            2. `prompts/default-style-guide.md` - Visual style requirements
+            3. `prompts/quality-criteria.md` - Quality requirements
+            4. `prompts/library/${{ steps.inputs.outputs.library }}.md` - Library-specific rules
+            5. `plots/${{ steps.inputs.outputs.specification_id }}/specification.md` - The specification
+
+            ### Step 2: Generate implementation
+            Create: `plots/${{ steps.inputs.outputs.specification_id }}/implementations/${{ steps.inputs.outputs.library }}.py`
+
+            The script MUST:
+            - Save as `plot.png` in the current directory
+            - For interactive libraries (plotly, bokeh, altair, highcharts, pygal, letsplot): also save `plot.html`
+
+            ### Step 3: Test and fix (up to 3 attempts)
+            Run the implementation:
+            ```bash
+            source .venv/bin/activate
+            cd plots/${{ steps.inputs.outputs.specification_id }}/implementations
+            MPLBACKEND=Agg python ${{ steps.inputs.outputs.library }}.py
+            ```
+
+            If it fails, fix and try again (max 3 attempts).
+
+            ### Step 4: Visual self-check
+            Look at the generated `plot.png`:
+            - Does it match the specification?
+            - Are axes labeled correctly?
+            - Is the visualization clear?
+
+            ### Step 5: Format the code
+            ```bash
+            source .venv/bin/activate
+            ruff format plots/${{ steps.inputs.outputs.specification_id }}/implementations/${{ steps.inputs.outputs.library }}.py
+            ruff check --fix plots/${{ steps.inputs.outputs.specification_id }}/implementations/${{ steps.inputs.outputs.library }}.py
+            ```
+
+            ### Step 6: Commit
+            ```bash
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add plots/${{ steps.inputs.outputs.specification_id }}/implementations/${{ steps.inputs.outputs.library }}.py
+            git commit -m "feat(${{ steps.inputs.outputs.library }}): implement ${{ steps.inputs.outputs.specification_id }}"
+            git push -u origin implementation/${{ steps.inputs.outputs.specification_id }}/${{ steps.inputs.outputs.library }}
+            ```
+
+            ### Report result
+            Print exactly one line:
+            - `GENERATION_SUCCESS` - if everything worked
+            - `GENERATION_FAILED: <reason>` - if it failed
+
+      - name: Retry Claude (on failure)
+        if: steps.claude.outcome == 'failure'
+        id: claude_retry
         timeout-minutes: 60
         uses: anthropics/claude-code-action@v1
         with:

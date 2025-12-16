@@ -1,5 +1,18 @@
 # plotnine
 
+## IMPORTANT: No Workarounds
+
+**If plotnine cannot implement a plot type natively, DO NOT use matplotlib as a workaround.**
+
+plotnine is a ggplot2-based grammar of graphics library. It does NOT support:
+- 3D plots (no wireframes, surfaces, 3D scatter)
+- Network/graph visualizations
+- Geographic maps (without extensions)
+
+If the specification requires features not available in plotnine's grammar of graphics, the implementation should FAIL rather than fall back to matplotlib or other libraries. Each library implementation should use only that library's native capabilities.
+
+---
+
 ## Import
 
 ```python

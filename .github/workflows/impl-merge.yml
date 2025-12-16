@@ -232,6 +232,54 @@ jobs:
 
           gh issue comment "$ISSUE" --body "$BODY"
 
+      - name: Close issue if all libraries done
+        if: steps.check.outputs.should_run == 'true' && steps.issue.outputs.number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ steps.issue.outputs.number }}
+          SPEC_ID: ${{ steps.extract.outputs.specification_id }}
+        run: |
+          # All 9 supported libraries
+          LIBRARIES="matplotlib seaborn plotly bokeh altair plotnine pygal highcharts letsplot"
+
+          # Get current labels on the issue
+          LABELS=$(gh issue view "$ISSUE" --json labels -q '.labels[].name' 2>/dev/null || echo "")
+
+          # Count done implementations
+          DONE_COUNT=0
+          for lib in $LIBRARIES; do
+            if echo "$LABELS" | grep -q "^impl:${lib}:done$"; then
+              DONE_COUNT=$((DONE_COUNT + 1))
+            fi
+          done
+
+          echo "::notice::Libraries done: $DONE_COUNT/9"
+
+          # Close issue if all 9 libraries are done
+          if [ "$DONE_COUNT" -eq 9 ]; then
+            gh issue comment "$ISSUE" --body "## :tada: All Implementations Complete!
+
+          All 9 library implementations for \`${SPEC_ID}\` have been successfully merged.
+
+          | Library | Status |
+          |---------|--------|
+          | matplotlib | :white_check_mark: |
+          | seaborn | :white_check_mark: |
+          | plotly | :white_check_mark: |
+          | bokeh | :white_check_mark: |
+          | altair | :white_check_mark: |
+          | plotnine | :white_check_mark: |
+          | pygal | :white_check_mark: |
+          | highcharts | :white_check_mark: |
+          | letsplot | :white_check_mark: |
+
+          ---
+          :robot: *[impl-merge](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+            gh issue close "$ISSUE"
+            echo "::notice::Closed issue #$ISSUE - all implementations complete"
+          fi
+
       - name: Trigger database sync
         if: steps.check.outputs.should_run == 'true'
         env:

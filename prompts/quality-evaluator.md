@@ -139,9 +139,9 @@ Simply add points for each passed criterion.
 
 | Score | Recommendation |
 |-------|----------------|
-| >= 85 | `approve` |
-| 75-84 | `request_changes` |
-| < 75 | `reject` |
+| >= 90 | `approve` |
+| 80-89 | `request_changes` |
+| < 80 | `reject` |
 
 ## Rules
 

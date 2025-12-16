@@ -79,7 +79,7 @@ plots/scatter-basic/
 
 **Issue-based workflow**: GitHub Issues as state machine for plot lifecycle. Status tracked via live-updating table (no sub-issues). Each library generates in parallel, creating PRs to a feature branch.
 
-**AI quality review**: Claude evaluates generated plots (score ≥ 85 required). Automatic feedback loops (max 3 attempts per library). Quality scores flow via PR labels → per-library metadata files.
+**AI quality review**: Claude evaluates generated plots (score ≥ 90 required). Automatic feedback loops (max 3 attempts per library). Quality scores flow via PR labels → per-library metadata files.
 
 See [docs/architecture/](docs/architecture/) for details.
 
@@ -158,7 +158,7 @@ We welcome contributions! **All code is AI-generated** - you propose ideas, AI i
 2. AI generates spec, creates feature branch
 3. Maintainer reviews and adds `approved` label
 4. 9 library implementations generate in parallel (tracked via live status table)
-5. AI quality review per library (score ≥ 85 required)
+5. AI quality review per library (score ≥ 90 required)
 6. Auto-merge to feature branch, then to main
 
 **Important**: Don't submit code directly! If a plot has quality issues, it means the spec needs improvement, not the

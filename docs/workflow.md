@@ -155,8 +155,8 @@ PR created → **`impl-review.yml`** runs:
 
 ```
 impl-review.yml
-  ├─ Score ≥85 → [ai-approved] → triggers impl-merge.yml
-  └─ Score <85 → [ai-rejected] → triggers impl-repair.yml
+  ├─ Score ≥90 → [ai-approved] → triggers impl-merge.yml
+  └─ Score <90 → [ai-rejected] → triggers impl-repair.yml
 ```
 
 ### Flow 6: Repair Loop (max 3 attempts)
@@ -215,8 +215,8 @@ graph LR
     A[Issue + generate:matplotlib] --> B[impl-generate.yml]
     B --> C[PR created]
     C --> D[impl-review.yml]
-    D -->|Score ≥85| E[ai-approved]
-    D -->|Score <85| F[ai-rejected]
+    D -->|Score ≥90| E[ai-approved]
+    D -->|Score <90| F[ai-rejected]
     F -->|Attempt <3| G[impl-repair.yml]
     G --> D
     F -->|Attempt =3| H[not-feasible]
@@ -245,7 +245,7 @@ graph LR
 **PR Labels:**
 | Label | Meaning |
 |-------|---------|
-| `ai-approved` | Passed review (score ≥85) |
+| `ai-approved` | Passed review (score ≥90) |
 | `ai-rejected` | Failed review, will retry |
 | `ai-attempt-1/2/3` | Retry counter |
 | `not-feasible` | 3x failed, library cannot implement |
@@ -283,8 +283,8 @@ graph TD
     E -->|Creates PR| F[Implementation PR]
     F --> G{Flow 5: impl-review.yml}
 
-    G -->|Score ≥85| H[ai-approved]
-    G -->|Score <85| I[ai-rejected]
+    G -->|Score ≥90| H[ai-approved]
+    G -->|Score <90| I[ai-rejected]
 
     I --> J{Attempts < 3?}
     J -->|Yes| K[Flow 6: impl-repair.yml]

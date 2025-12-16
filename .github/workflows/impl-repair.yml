@@ -110,6 +110,68 @@ jobs:
 
       - name: Run Claude Code to repair implementation
         id: claude
+        continue-on-error: true
+        timeout-minutes: 45
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--model opus"
+          prompt: |
+            ## Task: Repair ${{ inputs.library }} Implementation for ${{ inputs.specification_id }}
+
+            This is **repair attempt ${{ inputs.attempt }}/3**. The previous implementation was rejected.
+
+            ### Step 1: Read the AI review feedback
+            Read `/tmp/ai_feedback.md` to understand what needs to be fixed.
+
+            ### Step 2: Read reference files
+            1. `prompts/library/${{ inputs.library }}.md` - Library-specific rules
+            2. `plots/${{ inputs.specification_id }}/specification.md` - The specification
+            3. `prompts/quality-criteria.md` - Quality requirements
+
+            ### Step 3: Read current implementation
+            `plots/${{ inputs.specification_id }}/implementations/${{ inputs.library }}.py`
+
+            ### Step 4: Fix the issues
+            Based on the AI feedback, fix:
+            - Visual quality issues
+            - Code quality issues
+            - Spec compliance issues
+
+            ### Step 5: Test the fix
+            ```bash
+            source .venv/bin/activate
+            cd plots/${{ inputs.specification_id }}/implementations
+            MPLBACKEND=Agg python ${{ inputs.library }}.py
+            ```
+
+            ### Step 6: Visual self-check
+            View `plot.png` and verify fixes are correct.
+
+            ### Step 7: Format the code
+            ```bash
+            source .venv/bin/activate
+            ruff format plots/${{ inputs.specification_id }}/implementations/${{ inputs.library }}.py
+            ruff check --fix plots/${{ inputs.specification_id }}/implementations/${{ inputs.library }}.py
+            ```
+
+            ### Step 8: Commit and push
+            ```bash
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add plots/${{ inputs.specification_id }}/implementations/${{ inputs.library }}.py
+            git commit -m "fix(${{ inputs.library }}): address review feedback for ${{ inputs.specification_id }}
+
+            Attempt ${{ inputs.attempt }}/3 - fixes based on AI review"
+            git push origin ${{ env.branch }}
+            ```
+
+            ### Report result
+            Print: `REPAIR_SUCCESS` or `REPAIR_FAILED: <reason>`
+
+      - name: Retry Claude (on failure)
+        if: steps.claude.outcome == 'failure'
+        id: claude_retry
         timeout-minutes: 45
         uses: anthropics/claude-code-action@v1
         with:

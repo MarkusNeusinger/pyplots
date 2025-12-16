@@ -44,8 +44,15 @@ range_df = pd.DataFrame(range_data)
 # Actual values dataframe
 actual_df = pd.DataFrame({"metric": metrics, "actual": actual_pct})
 
-# Target dataframe
-target_df = pd.DataFrame({"metric": metrics, "target": target_pct})
+# Target dataframe with numeric y positions for vertical segments
+# Use index-based positioning to create visible target markers
+target_df = pd.DataFrame(
+    {
+        "metric": metrics,
+        "target": target_pct,
+        "y_idx": list(range(n_metrics)),  # Numeric index for each metric
+    }
+)
 
 # Create the plot using horizontal stacked bar for ranges
 plot = (
@@ -70,9 +77,13 @@ plot = (
         width=0.4,
         size=0.5,
     )
-    # Target marker as vertical segment
-    + geom_segment(
-        data=target_df, mapping=aes(x="target", xend="target", y="metric", yend="metric"), color="black", size=3
+    # Target marker as thin vertical line using geom_tile (narrow width acts as line)
+    + geom_tile(
+        data=target_df,
+        mapping=aes(x="target", y="metric"),
+        fill="black",
+        width=0.6,  # Very narrow width creates thin vertical line
+        height=0.55,  # Slightly taller than actual bar for visibility
     )
     # Grayscale fills for ranges
     + scale_fill_manual(
@@ -93,6 +104,7 @@ plot = (
         legend_position="bottom",
         panel_grid_major_y=element_blank(),
         panel_grid_minor=element_blank(),
+        panel_grid_major_x=element_line(size=0.5, color="#E0E0E0"),  # Subtle x grid
     )
     + ggsize(1600, 900)
 )

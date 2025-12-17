@@ -68,7 +68,7 @@ function App() {
     menuAnchor,
     setModalImage,
     setMenuAnchor,
-    setSearchFilter: () => {}, // Handled by SelectionMenu internally
+    setSearchFilter: () => {}, // No-op: SelectionMenu manages its own internal searchFilter state
     ...navigation,
   });
 

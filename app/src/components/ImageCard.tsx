@@ -154,6 +154,7 @@ export function ImageCard({
             <IconButton
               data-description-btn
               size="small"
+              aria-label="Show library description"
               onClick={(e) => {
                 e.stopPropagation();
                 onTooltipToggle(isTooltipOpen ? null : tooltipId);
@@ -193,6 +194,7 @@ export function ImageCard({
             <IconButton
               data-description-btn
               size="small"
+              aria-label="Show specification description"
               onClick={(e) => {
                 e.stopPropagation();
                 onTooltipToggle(isTooltipOpen ? null : tooltipId);

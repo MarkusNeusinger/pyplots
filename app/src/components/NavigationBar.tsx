@@ -143,6 +143,7 @@ export function NavigationBar({
               data-description-btn
               size="small"
               onClick={onDescriptionToggle}
+              aria-label="Show specification description"
               sx={{
                 ml: 0.5,
                 color: descriptionOpen ? '#3776AB' : '#9ca3af',
@@ -203,6 +204,7 @@ export function NavigationBar({
               data-description-btn
               size="small"
               onClick={onDescriptionToggle}
+              aria-label="Show library description"
               sx={{
                 ml: 0.5,
                 color: descriptionOpen ? '#3776AB' : '#9ca3af',

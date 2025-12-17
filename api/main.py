@@ -9,6 +9,7 @@ from dotenv import load_dotenv  # noqa: E402, I001
 
 load_dotenv()
 
+import html  # noqa: E402
 import logging  # noqa: E402
 from contextlib import asynccontextmanager  # noqa: E402
 from typing import Optional  # noqa: E402
@@ -436,11 +437,13 @@ async def get_sitemap(db: AsyncSession = Depends(get_db)):
         specs = await repo.get_all()
         for spec in specs:
             if spec.impls:  # Only include specs with implementations
-                xml_lines.append(f"  <url><loc>https://pyplots.ai/?spec={spec.id}</loc></url>")
+                spec_id = html.escape(spec.id)
+                xml_lines.append(f"  <url><loc>https://pyplots.ai/?spec={spec_id}</loc></url>")
 
     # Add library URLs (static list)
     for lib in LIBRARIES_SEED:
-        xml_lines.append(f"  <url><loc>https://pyplots.ai/?library={lib['id']}</loc></url>")
+        lib_id = html.escape(lib["id"])
+        xml_lines.append(f"  <url><loc>https://pyplots.ai/?library={lib_id}</loc></url>")
 
     xml_lines.append("</urlset>")
     xml = "\n".join(xml_lines)

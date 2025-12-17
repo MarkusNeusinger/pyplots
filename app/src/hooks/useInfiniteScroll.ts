@@ -7,7 +7,7 @@ interface UseInfiniteScrollProps {
   displayedImages: PlotImage[];
   hasMore: boolean;
   setDisplayedImages: React.Dispatch<React.SetStateAction<PlotImage[]>>;
-  setHasMore: (hasMore: boolean) => void;
+  setHasMore: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function useInfiniteScroll({

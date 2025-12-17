@@ -75,12 +75,12 @@ class CalendarHeatmap(Graph):
         total_weeks = (total_days + 6) // 7 + 1
 
         # Calculate cell size - leave space for labels
-        label_margin_left = 280
-        label_margin_top = 120
+        label_margin_left = 280  # Space for weekday labels
+        label_margin_top = 120  # Space for month labels
         available_width = plot_width - label_margin_left - 100
-        available_height = plot_height - label_margin_top - 200
+        available_height = plot_height - label_margin_top - 280  # Space for legend with labels
 
-        cell_size = min(available_width / total_weeks, available_height / 7) * 0.88
+        cell_size = min(available_width / total_weeks, available_height / 7) * 0.90
         gap = cell_size * 0.12
 
         # Center the grid
@@ -94,20 +94,16 @@ class CalendarHeatmap(Graph):
         plot_node = self.nodes["plot"]
         cal_group = self.svg.node(plot_node, class_="calendar-heatmap")
 
-        # Draw weekday labels on the left - ensure large readable size
-        weekday_font_size = max(cell_size * 1.0, 48)
+        # Draw weekday labels on the left - very large for 4800x2700
+        # Use style attribute to ensure proper CSS rendering
+        weekday_font_size = 48
         for i, label in enumerate(self.weekday_labels):
             y = y_offset + i * (cell_size + gap) + cell_size / 2
-            self.svg.node(
-                cal_group,
-                "text",
-                x=x_offset - 50,
-                y=y + weekday_font_size * 0.35,
-                text_anchor="end",
-                fill="#333333",
-                font_size=weekday_font_size,
-                font_weight="bold",
-            ).text = label
+            text_node = self.svg.node(cal_group, "text", x=x_offset - 30, y=y + cell_size * 0.35)
+            text_node.set("text-anchor", "end")
+            text_node.set("fill", "#333333")
+            text_node.set("style", f"font-size:{weekday_font_size}px;font-weight:bold;font-family:sans-serif")
+            text_node.text = label
 
         # Track months for labels
         month_positions = {}
@@ -152,36 +148,41 @@ class CalendarHeatmap(Graph):
                 week += 1
             current_date += timedelta(days=1)
 
-        # Draw month labels at the top
+        # Draw month labels at the top - large for 4800x2700
+        month_font_size = 42
         month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
         for (_year, month), week_pos in month_positions.items():
             x = x_offset + week_pos * (cell_size + gap)
             y = y_offset - 30
-            self.svg.node(cal_group, "text", x=x, y=y, fill="#666666", font_size=cell_size * 0.65).text = month_names[
-                month - 1
-            ]
+            text_node = self.svg.node(cal_group, "text", x=x, y=y)
+            text_node.set("fill", "#333333")
+            text_node.set("style", f"font-size:{month_font_size}px;font-weight:bold;font-family:sans-serif")
+            text_node.text = month_names[month - 1]
 
-        # Draw color scale legend at bottom
-        legend_y = y_offset + 7 * (cell_size + gap) + 60
-        legend_cell_size = cell_size * 0.9
-        legend_x = x_offset + grid_width / 2 - (len(self.cell_colors) * (legend_cell_size + 8)) / 2
-        legend_label_size = cell_size * 0.55
+        # Draw color scale legend at bottom with numeric values
+        legend_y = y_offset + 7 * (cell_size + gap) + 100
+        legend_cell_size = cell_size * 1.0
+        legend_spacing = cell_size * 0.35
+        legend_x = x_offset + grid_width / 2 - (len(self.cell_colors) * (legend_cell_size + legend_spacing)) / 2
+        legend_label_size = 36
 
-        self.svg.node(
-            cal_group,
-            "text",
-            x=legend_x - 20,
-            y=legend_y + legend_cell_size * 0.7,
-            text_anchor="end",
-            fill="#666",
-            font_size=legend_label_size,
-        ).text = "Less"
+        # "Less" label
+        text_node = self.svg.node(
+            cal_group, "text", x=legend_x - legend_spacing * 2, y=legend_y + legend_cell_size * 0.7
+        )
+        text_node.set("text-anchor", "end")
+        text_node.set("fill", "#333333")
+        text_node.set("style", f"font-size:{legend_label_size}px;font-weight:bold;font-family:sans-serif")
+        text_node.text = "Less"
 
+        # Color boxes with numeric labels
+        value_ranges = ["0", "1-3", "4-7", "8-11", "12+"]
         for i, color in enumerate(self.cell_colors):
+            box_x = legend_x + i * (legend_cell_size + legend_spacing)
             self.svg.node(
                 cal_group,
                 "rect",
-                x=legend_x + i * (legend_cell_size + 8),
+                x=box_x,
                 y=legend_y,
                 width=legend_cell_size,
                 height=legend_cell_size,
@@ -189,15 +190,25 @@ class CalendarHeatmap(Graph):
                 rx=legend_cell_size * 0.1,
                 ry=legend_cell_size * 0.1,
             )
+            # Numeric label below each color box
+            text_node = self.svg.node(
+                cal_group, "text", x=box_x + legend_cell_size / 2, y=legend_y + legend_cell_size + 35
+            )
+            text_node.set("text-anchor", "middle")
+            text_node.set("fill", "#666666")
+            text_node.set("style", f"font-size:{int(legend_label_size * 0.8)}px;font-family:sans-serif")
+            text_node.text = value_ranges[i]
 
-        self.svg.node(
+        # "More" label
+        text_node = self.svg.node(
             cal_group,
             "text",
-            x=legend_x + len(self.cell_colors) * (legend_cell_size + 8) + 15,
+            x=legend_x + len(self.cell_colors) * (legend_cell_size + legend_spacing) + legend_spacing * 2,
             y=legend_y + legend_cell_size * 0.7,
-            fill="#666",
-            font_size=legend_label_size,
-        ).text = "More"
+        )
+        text_node.set("fill", "#333333")
+        text_node.set("style", f"font-size:{legend_label_size}px;font-weight:bold;font-family:sans-serif")
+        text_node.text = "More"
 
     def _compute(self):
         """Compute the box for rendering."""
@@ -274,4 +285,5 @@ chart = CalendarHeatmap(
 chart.add("", [0])
 
 # Save output
+chart.render_to_file("plot.svg")
 chart.render_to_png("plot.png")

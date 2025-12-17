@@ -342,7 +342,15 @@ jobs:
 
           # Sync with remote (Claude already pushed the code)
           git fetch origin
-          git checkout -B "$BRANCH" "origin/$BRANCH"
+
+          # Check if remote branch exists before checkout (fixes branch-not-found error)
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            git checkout -B "$BRANCH" "origin/$BRANCH"
+          else
+            # Branch doesn't exist on remote - create fresh from main
+            echo "::warning::Remote branch $BRANCH not found, creating fresh from main"
+            git checkout -B "$BRANCH" origin/main
+          fi
 
           # Restore plot files after git operations
           cp "/tmp/plot.png" "plots/${SPEC_ID}/implementations/plot.png" 2>/dev/null || true
@@ -612,4 +620,58 @@ jobs:
             echo "success=true" >> $GITHUB_OUTPUT
           else
             echo "success=false" >> $GITHUB_OUTPUT
+          fi
+
+      # ========================================================================
+      # Failure handling: Track failures and clean up labels
+      # ========================================================================
+      - name: Handle generation failure
+        if: failure() && steps.inputs.outputs.issue_number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
+          LIBRARY: ${{ steps.inputs.outputs.library }}
+          ISSUE: ${{ steps.inputs.outputs.issue_number }}
+        run: |
+          echo "::notice::Handling generation failure for $LIBRARY/$SPEC_ID"
+
+          # Count previous failed generation runs for this spec/library
+          # Filter by both library AND spec ID to avoid counting unrelated failures
+          FAILURE_COUNT=$(gh run list \
+            --workflow=impl-generate.yml \
+            --limit 20 \
+            --json conclusion,displayTitle,createdAt \
+            -q "[.[] | select(.conclusion == \"failure\") | select(.displayTitle | (contains(\"$LIBRARY\") and contains(\"$SPEC_ID\")))] | length" \
+            2>/dev/null || echo "0")
+
+          echo "::notice::Previous failures: $FAILURE_COUNT"
+
+          # After 3 failures, mark as failed (current run is the 3rd)
+          if [ "$FAILURE_COUNT" -ge 2 ]; then
+            echo "::warning::Marking $LIBRARY as failed after multiple generation failures"
+
+            # Create failed label if needed
+            gh label create "impl:${LIBRARY}:failed" --color "d73a4a" \
+              --description "${LIBRARY} implementation failed" 2>/dev/null || true
+
+            # Remove stale labels and add failed (Fix #2: clean up duplicates)
+            gh issue edit "$ISSUE" \
+              --remove-label "generate:${LIBRARY},impl:${LIBRARY}:pending" \
+              --add-label "impl:${LIBRARY}:failed" 2>/dev/null || true
+
+            # Post failure comment
+            gh issue comment "$ISSUE" --body "## :x: ${LIBRARY} Failed
+
+          The **${LIBRARY}** implementation for \`${SPEC_ID}\` failed after multiple attempts.
+
+          This may indicate that the library cannot implement this plot type natively.
+
+          ---
+          :robot: *[impl-generate](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+          else
+            # Not enough failures yet - just clean up stale generate label
+            # Keep pending label for retry
+            gh issue edit "$ISSUE" --remove-label "generate:${LIBRARY}" 2>/dev/null || true
+            echo "::notice::Cleaned up generate label, keeping pending for retry"
           fi

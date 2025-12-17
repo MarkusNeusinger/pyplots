@@ -1,7 +1,7 @@
 # pyproject.toml
 [project]
 name = "pyplots"
-version = "0.1.0"
+version = "0.2.0"
 description = "AI-powered Python plotting examples"
 authors = [{ name = "Markus Neusinger", email = "admin@pyplots.ai" }]
 requires-python = ">=3.12"
@@ -40,6 +40,8 @@ dependencies = [
     "pyyaml>=6.0.0",
     "python-dotenv>=1.0.0",
     "pandas-stubs>=2.3.0",
+    # Caching
+    "cachetools>=5.3.0",
 ]
 
 [project.optional-dependencies]
@@ -101,6 +103,8 @@ exclude = [
     "__pycache__",
     "dist",
     "temp",
+    "plots",
+    "scripts",
 ]
 
 [tool.ruff.lint]

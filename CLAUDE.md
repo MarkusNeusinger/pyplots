@@ -6,7 +6,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **Do NOT commit or push in interactive sessions** - When working with a user interactively, never run `git commit` or `git push` automatically. Always let the user review changes and commit/push manually.
 - **GitHub Actions workflows ARE allowed to commit/push** - When running as part of `spec-*.yml` or `impl-*.yml` workflows, creating branches, commits, and PRs is expected and required.
-- **No Co-authored-by in commit messages** - Never add `Co-authored-by:` lines to commit messages. Keep commit messages clean without AI attribution footers.
 - **Always write in English** - All output text (code comments, commit messages, PR descriptions, issue comments, documentation) must be in English, even if the user writes in another language.
 
 ## Project Overview

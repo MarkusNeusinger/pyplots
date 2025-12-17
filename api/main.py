@@ -9,12 +9,13 @@ from dotenv import load_dotenv  # noqa: E402, I001
 
 load_dotenv()
 
+import html  # noqa: E402
 import logging  # noqa: E402
 from contextlib import asynccontextmanager  # noqa: E402
 from typing import Optional  # noqa: E402
 
 import httpx  # noqa: E402
-
+from cachetools import TTLCache  # noqa: E402
 from fastapi import Depends, FastAPI, HTTPException  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 from fastapi.responses import JSONResponse, Response  # noqa: E402
@@ -35,6 +36,9 @@ from core.database import (  # noqa: E402
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
+
+# Cache for DB queries (1000 entries, 10 min TTL)
+_cache: TTLCache = TTLCache(maxsize=1000, ttl=600)
 
 
 @asynccontextmanager
@@ -61,7 +65,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="pyplots API",
     description="AI-powered Python plotting examples that work with YOUR data",
-    version="0.1.0",
+    version="0.2.0",
     lifespan=lifespan,
     docs_url="/docs",
     redoc_url="/redoc",
@@ -87,13 +91,13 @@ app.add_middleware(
 @app.get("/")
 async def root():
     """Root endpoint."""
-    return {"message": "Welcome to pyplots API", "version": "0.1.0", "docs": "/docs", "health": "/health"}
+    return {"message": "Welcome to pyplots API", "version": "0.2.0", "docs": "/docs", "health": "/health"}
 
 
 @app.get("/health")
 async def health_check():
     """Health check endpoint for Cloud Run."""
-    return JSONResponse(content={"status": "healthy", "service": "pyplots-api", "version": "0.1.0"}, status_code=200)
+    return JSONResponse(content={"status": "healthy", "service": "pyplots-api", "version": "0.2.0"}, status_code=200)
 
 
 @app.get("/hello/{name}")
@@ -163,17 +167,23 @@ async def get_specs(db: AsyncSession = Depends(get_db)):
     if not is_db_configured():
         raise HTTPException(status_code=503, detail="Database not configured")
 
+    cache_key = "specs_list"
+    if cache_key in _cache:
+        return _cache[cache_key]
+
     repo = SpecRepository(db)
     specs = await repo.get_all()
 
     # Only return specs with at least one implementation
-    return [
+    result = [
         SpecListItem(
             id=spec.id, title=spec.title, description=spec.description, tags=spec.tags, library_count=len(spec.impls)
         )
         for spec in specs
         if spec.impls  # Filter: only specs with implementations
     ]
+    _cache[cache_key] = result
+    return result
 
 
 @app.get("/specs/{spec_id}", response_model=SpecDetailResponse)
@@ -189,6 +199,10 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(get_db)):
     """
     if not is_db_configured():
         raise HTTPException(status_code=503, detail="Database not configured")
+
+    cache_key = f"spec:{spec_id}"
+    if cache_key in _cache:
+        return _cache[cache_key]
 
     repo = SpecRepository(db)
     spec = await repo.get_by_id(spec_id)
@@ -217,7 +231,7 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(get_db)):
         for impl in spec.impls
     ]
 
-    return SpecDetailResponse(
+    result = SpecDetailResponse(
         id=spec.id,
         title=spec.title,
         description=spec.description,
@@ -229,6 +243,8 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(get_db)):
         suggested=spec.suggested,
         implementations=impls,
     )
+    _cache[cache_key] = result
+    return result
 
 
 @app.get("/specs/{spec_id}/images")
@@ -240,6 +256,10 @@ async def get_spec_images(spec_id: str, db: AsyncSession = Depends(get_db)):
     """
     if not is_db_configured():
         raise HTTPException(status_code=503, detail="Database not configured")
+
+    cache_key = f"spec_images:{spec_id}"
+    if cache_key in _cache:
+        return _cache[cache_key]
 
     repo = SpecRepository(db)
     spec = await repo.get_by_id(spec_id)
@@ -256,7 +276,9 @@ async def get_spec_images(spec_id: str, db: AsyncSession = Depends(get_db)):
         if impl.preview_url  # Only include if there's a preview
     ]
 
-    return {"spec_id": spec_id, "images": images}
+    result = {"spec_id": spec_id, "images": images}
+    _cache[cache_key] = result
+    return result
 
 
 # ============================================================================
@@ -269,20 +291,78 @@ async def get_libraries(db: AsyncSession = Depends(get_db)):
     """
     Get list of all supported plotting libraries.
 
-    Returns library information including name, version, and documentation URL.
+    Returns library information including name, version, documentation URL, and description.
     """
     if not is_db_configured():
         return {"libraries": LIBRARIES_SEED}
 
+    cache_key = "libraries"
+    if cache_key in _cache:
+        return _cache[cache_key]
+
     repo = LibraryRepository(db)
     libraries = await repo.get_all()
 
-    return {
+    result = {
         "libraries": [
-            {"id": lib.id, "name": lib.name, "version": lib.version, "documentation_url": lib.documentation_url}
+            {
+                "id": lib.id,
+                "name": lib.name,
+                "version": lib.version,
+                "documentation_url": lib.documentation_url,
+                "description": lib.description,
+            }
             for lib in libraries
         ]
     }
+    _cache[cache_key] = result
+    return result
+
+
+@app.get("/libraries/{library_id}/images")
+async def get_library_images(library_id: str, db: AsyncSession = Depends(get_db)):
+    """
+    Get all plot images for a specific library across all specs.
+
+    Args:
+        library_id: The library ID (e.g., 'matplotlib', 'seaborn')
+
+    Returns:
+        List of images with spec_id, preview_url, thumb, and html
+    """
+    if not is_db_configured():
+        raise HTTPException(status_code=503, detail="Database not configured")
+
+    # Validate library_id
+    valid_libraries = [lib["id"] for lib in LIBRARIES_SEED]
+    if library_id not in valid_libraries:
+        raise HTTPException(status_code=404, detail=f"Library '{library_id}' not found")
+
+    cache_key = f"lib_images:{library_id}"
+    if cache_key in _cache:
+        return _cache[cache_key]
+
+    repo = SpecRepository(db)
+    specs = await repo.get_all()
+
+    images = []
+    for spec in specs:
+        for impl in spec.impls:
+            if impl.library_id == library_id and impl.preview_url:
+                images.append(
+                    {
+                        "spec_id": spec.id,
+                        "library": impl.library_id,
+                        "url": impl.preview_url,
+                        "thumb": impl.preview_thumb,
+                        "html": impl.preview_html,
+                        "code": impl.code,
+                    }
+                )
+
+    result = {"library": library_id, "images": images}
+    _cache[cache_key] = result
+    return result
 
 
 # ============================================================================
@@ -317,7 +397,7 @@ async def download_image(spec_id: str, library: str, db: AsyncSession = Depends(
             response = await client.get(impl.preview_url)
             response.raise_for_status()
         except httpx.HTTPError as e:
-            raise HTTPException(status_code=502, detail=f"Failed to fetch image: {e}")
+            raise HTTPException(status_code=502, detail=f"Failed to fetch image: {e}") from e
 
     # Return as downloadable file
     filename = f"{spec_id}-{library}.png"
@@ -326,6 +406,50 @@ async def download_image(spec_id: str, library: str, db: AsyncSession = Depends(
         media_type="image/png",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
+
+
+# ============================================================================
+# SEO Endpoints
+# ============================================================================
+
+
+@app.get("/sitemap.xml")
+async def get_sitemap(db: AsyncSession = Depends(get_db)):
+    """
+    Generate dynamic XML sitemap for SEO.
+
+    Includes all specs with implementations and all libraries.
+    """
+    cache_key = "sitemap_xml"
+    if cache_key in _cache:
+        return Response(content=_cache[cache_key], media_type="application/xml")
+
+    # Build XML lines
+    xml_lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+        "  <url><loc>https://pyplots.ai/</loc></url>",
+    ]
+
+    # Add spec URLs (only specs with implementations)
+    if is_db_configured():
+        repo = SpecRepository(db)
+        specs = await repo.get_all()
+        for spec in specs:
+            if spec.impls:  # Only include specs with implementations
+                spec_id = html.escape(spec.id)
+                xml_lines.append(f"  <url><loc>https://pyplots.ai/?spec={spec_id}</loc></url>")
+
+    # Add library URLs (static list)
+    for lib in LIBRARIES_SEED:
+        lib_id = html.escape(lib["id"])
+        xml_lines.append(f"  <url><loc>https://pyplots.ai/?library={lib_id}</loc></url>")
+
+    xml_lines.append("</urlset>")
+    xml = "\n".join(xml_lines)
+
+    _cache[cache_key] = xml
+    return Response(content=xml, media_type="application/xml")
 
 
 if __name__ == "__main__":

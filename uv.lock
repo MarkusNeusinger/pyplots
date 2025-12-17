@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.12"
 resolution-markers = [
     "python_full_version >= '3.13'",
@@ -2408,12 +2408,13 @@ wheels = [
 
 [[package]]
 name = "pyplots"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "alembic" },
     { name = "anthropic" },
     { name = "asyncpg" },
+    { name = "cachetools" },
     { name = "cloud-sql-python-connector", extra = ["asyncpg", "pg8000"] },
     { name = "fastapi" },
     { name = "google-cloud-storage" },
@@ -2543,6 +2544,7 @@ requires-dist = [
     { name = "asyncpg", specifier = ">=0.29.0" },
     { name = "bokeh", marker = "extra == 'lib-bokeh'", specifier = ">=3.4.0" },
     { name = "bokeh", marker = "extra == 'plotting'", specifier = ">=3.3.0" },
+    { name = "cachetools", specifier = ">=5.3.0" },
     { name = "cairosvg", marker = "extra == 'lib-pygal'", specifier = ">=2.7.0" },
     { name = "cairosvg", marker = "extra == 'plotting'", specifier = ">=2.7.0" },
     { name = "cloud-sql-python-connector", extras = ["asyncpg", "pg8000"], specifier = ">=1.18.0" },

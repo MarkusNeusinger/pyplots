@@ -1,0 +1,307 @@
+import { useState, useMemo, useCallback } from 'react';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import CloseIcon from '@mui/icons-material/Close';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DownloadIcon from '@mui/icons-material/Download';
+import CodeIcon from '@mui/icons-material/Code';
+import ImageIcon from '@mui/icons-material/Image';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import type { PlotImage } from '../types';
+import { API_URL } from '../constants';
+
+interface FullscreenModalProps {
+  image: PlotImage | null;
+  selectedSpec: string;
+  onClose: () => void;
+}
+
+export function FullscreenModal({ image, selectedSpec, onClose }: FullscreenModalProps) {
+  const [showCode, setShowCode] = useState(false);
+  const [blinkCodeButton, setBlinkCodeButton] = useState(false);
+
+  // Reset state when modal opens
+  const handleOpen = useCallback(() => {
+    setShowCode(false);
+    setBlinkCodeButton(true);
+    setTimeout(() => setBlinkCodeButton(false), 1000);
+  }, []);
+
+  // Memoize syntax-highlighted code to avoid expensive re-renders
+  const highlightedCode = useMemo(() => {
+    if (!image?.code) return null;
+    return (
+      <SyntaxHighlighter
+        language="python"
+        style={oneLight}
+        customStyle={{
+          margin: 0,
+          fontSize: '0.85rem',
+          fontFamily: '"JetBrains Mono", monospace',
+          background: 'transparent',
+        }}
+      >
+        {image.code}
+      </SyntaxHighlighter>
+    );
+  }, [image?.code]);
+
+  // Copy code to clipboard
+  const copyCodeToClipboard = useCallback(() => {
+    if (image?.code) {
+      navigator.clipboard.writeText(image.code);
+    }
+  }, [image?.code]);
+
+  // Download image via backend proxy
+  const downloadImage = useCallback(() => {
+    if (image?.library && selectedSpec) {
+      const link = document.createElement('a');
+      link.href = `${API_URL}/download/${selectedSpec}/${image.library}`;
+      link.download = `${selectedSpec}-${image.library}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }, [image?.library, selectedSpec]);
+
+  const handleClose = useCallback(() => {
+    setShowCode(false);
+    onClose();
+  }, [onClose]);
+
+  return (
+    <Modal
+      open={!!image}
+      onClose={handleClose}
+      aria-labelledby="plot-modal-title"
+      disableRestoreFocus
+      onTransitionEnter={handleOpen}
+      sx={{
+        display: 'flex',
+        alignItems: { xs: 'flex-start', sm: 'center' },
+        justifyContent: 'center',
+        pt: { xs: 5, sm: 0 },
+        '@media (orientation: landscape)': {
+          alignItems: 'center',
+          pt: 0,
+        },
+      }}
+    >
+      <Box
+        sx={{
+          position: 'relative',
+          maxWidth: '90vw',
+          maxHeight: { xs: '92vh', sm: '90vh' },
+          outline: 'none',
+        }}
+        role="dialog"
+      >
+        {/* Modal Header - Close only */}
+        <Box sx={{ position: 'absolute', top: { xs: -36, sm: -40 }, right: 0, zIndex: 10 }}>
+          <IconButton
+            onClick={handleClose}
+            aria-label="Close"
+            sx={{
+              color: '#fff',
+              '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
+
+        {/* Modal Content */}
+        {image && (
+          <Box sx={{ position: 'relative' }}>
+            {/* Code View - only rendered when needed */}
+            {showCode && (
+              <Box
+                sx={{
+                  position: 'relative',
+                  bgcolor: '#fafafa',
+                  borderRadius: '8px',
+                  width: 'min(90vw, calc(85vh * 16 / 9))',
+                  height: 'min(85vh, calc(90vw * 9 / 16))',
+                  overflow: 'hidden',
+                  boxShadow: 'none',
+                  '@media (orientation: portrait)': {
+                    height: '85vh',
+                  },
+                }}
+              >
+                {/* Button bar */}
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 6,
+                    right: 16,
+                    display: 'flex',
+                    gap: 0.5,
+                    zIndex: 1,
+                  }}
+                >
+                  <Box
+                    onClick={() => setShowCode(false)}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                      px: 1,
+                      py: 0.5,
+                      borderRadius: 1,
+                      cursor: 'pointer',
+                      color: '#6b7280',
+                      bgcolor: 'rgba(255,255,255,0.9)',
+                      fontSize: '0.85rem',
+                      fontFamily: '"JetBrains Mono", monospace',
+                      '&:hover': { color: '#3776AB', bgcolor: '#fff' },
+                    }}
+                  >
+                    <ImageIcon sx={{ fontSize: 20 }} />
+                    plot
+                  </Box>
+                  <Box
+                    onClick={copyCodeToClipboard}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      px: 1,
+                      py: 0.5,
+                      borderRadius: 1,
+                      cursor: 'pointer',
+                      color: '#6b7280',
+                      bgcolor: 'rgba(255,255,255,0.9)',
+                      '&:hover': { color: '#1f2937', bgcolor: '#fff' },
+                    }}
+                  >
+                    <ContentCopyIcon sx={{ fontSize: 20 }} />
+                  </Box>
+                </Box>
+                <Box
+                  sx={{
+                    height: '100%',
+                    overflow: 'auto',
+                    p: 3,
+                  }}
+                >
+                  {highlightedCode}
+                </Box>
+              </Box>
+            )}
+            {/* PNG image - always rendered, hidden when code is shown */}
+            <Box
+              sx={{
+                position: 'relative',
+                display: showCode ? 'none' : 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                bgcolor: '#fff',
+                borderRadius: '8px',
+                width: 'min(90vw, calc(85vh * 16 / 9))',
+                height: 'min(85vh, calc(90vw * 9 / 16))',
+                overflow: 'hidden',
+                boxShadow: 'none',
+              }}
+            >
+              {/* Button bar */}
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 6,
+                  right: 16,
+                  display: 'flex',
+                  gap: 0.5,
+                  zIndex: 1,
+                }}
+              >
+                {image?.code && (
+                  <Box
+                    onClick={() => setShowCode(true)}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                      px: 1,
+                      py: 0.5,
+                      borderRadius: 1,
+                      cursor: 'pointer',
+                      color: '#6b7280',
+                      bgcolor: 'rgba(255,255,255,0.9)',
+                      fontSize: '0.85rem',
+                      fontFamily: '"JetBrains Mono", monospace',
+                      '&:hover': { color: '#3776AB', bgcolor: '#fff' },
+                      ...(blinkCodeButton && {
+                        animation: 'bounce 0.6s ease-in-out',
+                        '@keyframes bounce': {
+                          '0%, 100%': { transform: 'translateY(0)' },
+                          '25%': { transform: 'translateY(-4px)' },
+                          '50%': { transform: 'translateY(0)' },
+                          '75%': { transform: 'translateY(-2px)' },
+                        },
+                      }),
+                    }}
+                  >
+                    <CodeIcon sx={{ fontSize: 20 }} />
+                    code
+                  </Box>
+                )}
+                <Box
+                  onClick={downloadImage}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    px: 1,
+                    py: 0.5,
+                    borderRadius: 1,
+                    cursor: 'pointer',
+                    color: '#6b7280',
+                    bgcolor: 'rgba(255,255,255,0.9)',
+                    '&:hover': { color: '#1f2937', bgcolor: '#fff' },
+                    ...(blinkCodeButton && {
+                      animation: 'bounce 0.6s ease-in-out',
+                      '@keyframes bounce': {
+                        '0%, 100%': { transform: 'translateY(0)' },
+                        '25%': { transform: 'translateY(-4px)' },
+                        '50%': { transform: 'translateY(0)' },
+                        '75%': { transform: 'translateY(-2px)' },
+                      },
+                    }),
+                  }}
+                >
+                  <DownloadIcon sx={{ fontSize: 20 }} />
+                </Box>
+              </Box>
+              <img
+                src={image.url}
+                alt={`${selectedSpec} - ${image.library}`}
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  objectFit: 'contain',
+                  borderRadius: '8px',
+                }}
+              />
+            </Box>
+            <Typography
+              id="plot-modal-title"
+              sx={{
+                textAlign: 'center',
+                mt: 2,
+                color: '#fff',
+                fontWeight: 600,
+                fontFamily: '"JetBrains Mono", monospace',
+                fontSize: '1rem',
+              }}
+            >
+              {image.library}
+            </Typography>
+          </Box>
+        )}
+      </Box>
+    </Modal>
+  );
+}

@@ -5,7 +5,23 @@ Library: letsplot
 
 import numpy as np
 import pandas as pd
-from lets_plot import *  # noqa: F403
+from lets_plot import (
+    LetsPlot,
+    aes,
+    coord_fixed,
+    element_text,
+    geom_point,
+    geom_text,
+    ggplot,
+    ggsize,
+    labs,
+    scale_color_manual,
+    scale_size,
+    theme,
+    theme_void,
+    xlim,
+    ylim,
+)
 from lets_plot.export import ggsave as export_ggsave
 
 

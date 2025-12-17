@@ -24,7 +24,7 @@ from lets_plot.export import ggsave
 LetsPlot.setup_html()
 
 # Data - create a smooth surface z = sin(x) * cos(y)
-# Grid setup - 40x40 for smooth surface
+# Grid setup - 40x40 for smooth surface visualization
 n_points = 40
 x = np.linspace(-3, 3, n_points)
 y = np.linspace(-3, 3, n_points)
@@ -33,7 +33,8 @@ X, Y = np.meshgrid(x, y)
 # Surface function - classic mathematical surface with peaks and valleys
 Z = np.sin(X) * np.cos(Y)
 
-# 3D to 2D isometric projection (elevation=30, azimuth=-60 for better perspective)
+# 3D to 2D isometric projection (elevation=30, azimuth=-60)
+# This creates a convincing 3D view from a 2D library
 elev_rad = np.radians(30)
 azim_rad = np.radians(-60)
 
@@ -72,8 +73,8 @@ df = pd.DataFrame(rect_data)
 plot = (
     ggplot(df, aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="z"))
     + geom_rect(color="#306998", size=0.3, alpha=0.95)
-    + scale_fill_viridis(name="Z Value", limits=[-1, 1])
-    + labs(x="X (projected)", y="Z (height)", title="surface-basic · letsplot · pyplots.ai")
+    + scale_fill_viridis(name="Height (z)", limits=[-1, 1])
+    + labs(x="X-Y Projection", y="Elevation (z projected)", title="surface-basic · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(
         axis_title=element_text(size=20),
@@ -81,7 +82,9 @@ plot = (
         plot_title=element_text(size=24, hjust=0.5),
         legend_text=element_text(size=14),
         legend_title=element_text(size=16),
-        panel_grid=element_blank(),
+        # Disable grid lines for cleaner 3D surface appearance
+        panel_grid_major=element_blank(),
+        panel_grid_minor=element_blank(),
     )
     + ggsize(1600, 900)
 )

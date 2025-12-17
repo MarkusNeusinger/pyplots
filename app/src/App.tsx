@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -19,10 +19,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import CloseIcon from '@mui/icons-material/Close';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DownloadIcon from '@mui/icons-material/Download';
 import CodeIcon from '@mui/icons-material/Code';
 import ImageIcon from '@mui/icons-material/Image';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const GITHUB_URL = 'https://github.com/MarkusNeusinger/pyplots'; // pyplots repo
@@ -30,6 +31,7 @@ const GITHUB_URL = 'https://github.com/MarkusNeusinger/pyplots'; // pyplots repo
 interface PlotImage {
   library: string;
   url: string;
+  thumb?: string;
   html?: string;
   code?: string;
 }
@@ -48,6 +50,7 @@ function App() {
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [specDescription, setSpecDescription] = useState<string>('');
   const [showCode, setShowCode] = useState(false);
+  const [blinkCodeButton, setBlinkCodeButton] = useState(false);
   const shuffleButtonRef = useRef<HTMLButtonElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const menuItemRefs = useRef<(HTMLLIElement | null)[]>([]);
@@ -73,11 +76,50 @@ function App() {
   }, [specs, selectedSpec]);
 
   // Copy code to clipboard
-  const copyToClipboard = useCallback(() => {
+  const copyCodeToClipboard = useCallback(() => {
     if (modalImage?.code) {
       navigator.clipboard.writeText(modalImage.code);
     }
   }, [modalImage]);
+
+  // Download image via backend proxy
+  const downloadImage = useCallback(() => {
+    if (modalImage?.library && selectedSpec) {
+      const link = document.createElement('a');
+      link.href = `${API_URL}/download/${selectedSpec}/${modalImage.library}`;
+      link.download = `${selectedSpec}-${modalImage.library}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }, [modalImage, selectedSpec]);
+
+  // Handle card click - open modal and trigger code button animation
+  const handleCardClick = useCallback((img: PlotImage) => {
+    setModalImage(img);
+    setShowCode(false);
+    setBlinkCodeButton(true);
+    setTimeout(() => setBlinkCodeButton(false), 1000);
+  }, []);
+
+  // Memoize syntax-highlighted code to avoid expensive re-renders
+  const highlightedCode = useMemo(() => {
+    if (!modalImage?.code) return null;
+    return (
+      <SyntaxHighlighter
+        language="python"
+        style={oneLight}
+        customStyle={{
+          margin: 0,
+          fontSize: '0.85rem',
+          fontFamily: '"JetBrains Mono", monospace',
+          background: 'transparent',
+        }}
+      >
+        {modalImage.code}
+      </SyntaxHighlighter>
+    );
+  }, [modalImage?.code]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -209,7 +251,7 @@ function App() {
         py: 5,
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth={false} sx={{ px: { xs: 4, sm: 8, lg: 12 } }}>
         {/* Header */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           <Link
@@ -539,9 +581,9 @@ function App() {
                 No images found for this spec.
               </Alert>
             ) : (
-              <Grid container spacing={3} justifyContent="center">
+              <Grid container spacing={3} justifyContent="center" sx={{ maxWidth: 1800, mx: 'auto' }}>
                 {images.map((img, index) => (
-                  <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={img.library}>
+                  <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={img.library} sx={{ maxWidth: 600 }}>
                     <Box
                       sx={{
                         animation: 'fadeIn 0.6s ease-out',
@@ -555,11 +597,11 @@ function App() {
                     >
                       <Card
                         elevation={0}
-                        onClick={() => setModalImage(img)}
+                        onClick={() => handleCardClick(img)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
-                            setModalImage(img);
+                            handleCardClick(img);
                           }
                         }}
                         tabIndex={0}
@@ -580,7 +622,7 @@ function App() {
                       >
                         <CardMedia
                           component="img"
-                          image={img.url}
+                          image={img.thumb || img.url}
                           alt={`${selectedSpec} - ${img.library}`}
                           sx={{
                             width: '100%',
@@ -674,6 +716,7 @@ function App() {
           setShowCode(false);
         }}
         aria-labelledby="plot-modal-title"
+        disableRestoreFocus
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -697,10 +740,22 @@ function App() {
                 aria-label={showCode ? 'Show plot' : 'Show code'}
                 sx={{
                   color: '#fff',
+                  fontSize: '0.85rem',
+                  fontFamily: '"JetBrains Mono", monospace',
+                  gap: 0.5,
                   '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
+                  animation: blinkCodeButton ? 'bounce 1s ease-in-out' : 'none',
+                  '@keyframes bounce': {
+                    '0%, 100%': { transform: 'translateY(0)' },
+                    '30%': { transform: 'translateY(-8px)' },
+                    '50%': { transform: 'translateY(0)' },
+                    '70%': { transform: 'translateY(-4px)' },
+                    '85%': { transform: 'translateY(0)' },
+                  },
                 }}
               >
-                {showCode ? <ImageIcon /> : <CodeIcon />}
+                {showCode ? <ImageIcon fontSize="small" /> : <CodeIcon fontSize="small" />}
+                {showCode ? 'Plot' : 'Code'}
               </IconButton>
             )}
             <IconButton
@@ -720,87 +775,86 @@ function App() {
 
           {/* Modal Content */}
           {modalImage && (
-            <Box>
-              {showCode ? (
-                // Code View
+            <Box sx={{ position: 'relative' }}>
+              {/* Code View - only rendered when needed */}
+              {showCode && (
                 <Box
                   sx={{
                     position: 'relative',
-                    bgcolor: '#1e1e1e',
-                    borderRadius: 2,
-                    p: 3,
-                    maxWidth: '90vw',
-                    maxHeight: '85vh',
-                    overflow: 'auto',
+                    bgcolor: '#fafafa',
+                    borderRadius: '8px',
+                    width: 'min(90vw, calc(85vh * 16 / 9))',
+                    height: 'min(85vh, calc(90vw * 9 / 16))',
+                    overflow: 'hidden',
+                    boxShadow: 'none',
                   }}
                 >
                   <IconButton
-                    onClick={copyToClipboard}
+                    onClick={copyCodeToClipboard}
                     aria-label="Copy code to clipboard"
                     sx={{
                       position: 'absolute',
                       top: 8,
                       right: 8,
-                      color: '#9ca3af',
+                      color: '#6b7280',
                       zIndex: 1,
-                      '&:hover': { color: '#fff', bgcolor: 'rgba(255,255,255,0.1)' },
+                      '&:hover': { color: '#1f2937', bgcolor: 'rgba(0,0,0,0.05)' },
                     }}
                   >
                     <ContentCopyIcon fontSize="small" />
                   </IconButton>
-                  <SyntaxHighlighter
-                    language="python"
-                    style={oneDark}
-                    customStyle={{
-                      margin: 0,
-                      borderRadius: 8,
-                      fontSize: '0.85rem',
-                      fontFamily: '"JetBrains Mono", monospace',
+                  <Box
+                    sx={{
+                      height: '100%',
+                      overflow: 'auto',
+                      p: 3,
                     }}
                   >
-                    {modalImage.code || ''}
-                  </SyntaxHighlighter>
+                    {highlightedCode}
+                  </Box>
                 </Box>
-              ) : modalImage.html ? (
-                // HTML iframe (interactive plot) - scale to fit like PNG
-                <Box
+              )}
+              {/* PNG image - always rendered, hidden when code is shown */}
+              <Box
+                sx={{
+                  position: 'relative',
+                  display: showCode ? 'none' : 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  bgcolor: '#fff',
+                  borderRadius: '8px',
+                  width: 'min(90vw, calc(85vh * 16 / 9))',
+                  height: 'min(85vh, calc(90vw * 9 / 16))',
+                  overflow: 'hidden',
+                  boxShadow: 'none',
+                }}
+              >
+                <IconButton
+                  onClick={downloadImage}
+                  aria-label="Download image"
                   sx={{
-                    // Container sized to fit viewport while maintaining aspect ratio
-                    maxWidth: '90vw',
-                    maxHeight: '85vh',
-                    // Use height-based width calculation for 16:9 aspect ratio
-                    width: 'min(90vw, calc(85vh * 16 / 9))',
-                    height: 'min(85vh, calc(90vw * 9 / 16))',
-                    borderRadius: 2,
-                    overflow: 'hidden',
-                    bgcolor: '#fff',
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    color: '#6b7280',
+                    zIndex: 1,
+                    bgcolor: 'rgba(255,255,255,0.8)',
+                    '&:hover': { color: '#1f2937', bgcolor: 'rgba(255,255,255,0.95)' },
                   }}
                 >
-                  <iframe
-                    src={modalImage.html}
-                    title={`${selectedSpec} - ${modalImage.library}`}
-                    scrolling="no"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      border: 'none',
-                    }}
-                  />
-                </Box>
-              ) : (
-                // PNG fallback
+                  <DownloadIcon fontSize="small" />
+                </IconButton>
                 <img
                   src={modalImage.url}
                   alt={`${selectedSpec} - ${modalImage.library}`}
                   style={{
-                    maxWidth: '90vw',
-                    maxHeight: '85vh',
+                    maxWidth: '100%',
+                    maxHeight: '100%',
                     objectFit: 'contain',
-                    borderRadius: 8,
-                    backgroundColor: '#fff',
+                    borderRadius: '8px',
                   }}
                 />
-              )}
+              </Box>
               <Typography
                 id="plot-modal-title"
                 sx={{

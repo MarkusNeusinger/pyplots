@@ -1,0 +1,31 @@
+# Specification-level metadata for sparkline-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: sparkline-basic
+title: Basic Sparkline
+
+# Specification tracking
+created: 2025-12-15T20:45:56Z
+issue: 1011
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - sparkline
+    - line
+  domain:
+    - business
+    - finance
+    - general
+  features:
+    - basic
+    - inline
+    - minimal
+    - compact
+  audience:
+    - beginner
+  data_type:
+    - numeric
+    - sequential

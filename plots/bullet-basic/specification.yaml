@@ -1,0 +1,29 @@
+# Specification-level metadata for bullet-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: bullet-basic
+title: Basic Bullet Chart
+
+# Specification tracking
+created: 2025-12-15T20:44:46Z
+issue: 999
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - bullet
+    - bar
+  domain:
+    - business
+    - finance
+    - general
+  features:
+    - basic
+    - comparison
+    - target
+  audience:
+    - beginner
+  data_type:
+    - numeric

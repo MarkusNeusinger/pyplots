@@ -1,0 +1,32 @@
+# Specification-level metadata for rose-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: rose-basic
+title: Basic Rose Chart
+
+# Specification tracking
+created: 2025-12-15T20:44:57Z
+issue: 1003
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - rose
+    - polar
+    - radial
+  domain:
+    - general
+    - meteorology
+    - statistics
+  features:
+    - basic
+    - circular
+    - categorical
+  audience:
+    - beginner
+    - intermediate
+  data_type:
+    - categorical
+    - numeric

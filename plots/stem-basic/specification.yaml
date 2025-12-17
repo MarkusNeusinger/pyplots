@@ -1,0 +1,31 @@
+# Specification-level metadata for stem-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: stem-basic
+title: Basic Stem Plot
+
+# Specification tracking
+created: 2025-12-15T20:41:27Z
+issue: 972
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - stem
+    - discrete
+  domain:
+    - signal-processing
+    - statistics
+    - science
+  features:
+    - basic
+    - discrete-data
+    - markers
+  audience:
+    - beginner
+    - intermediate
+  data_type:
+    - numeric
+    - sequential

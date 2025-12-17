@@ -1,0 +1,201 @@
+"""
+network-basic: Basic Network Graph
+Library: plotly
+"""
+
+import numpy as np
+import plotly.graph_objects as go
+
+
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Data: A small social network with 20 people in 4 communities
+nodes = [
+    {"id": 0, "label": "Alice", "group": 0},
+    {"id": 1, "label": "Bob", "group": 0},
+    {"id": 2, "label": "Carol", "group": 0},
+    {"id": 3, "label": "David", "group": 0},
+    {"id": 4, "label": "Eve", "group": 0},
+    {"id": 5, "label": "Frank", "group": 1},
+    {"id": 6, "label": "Grace", "group": 1},
+    {"id": 7, "label": "Henry", "group": 1},
+    {"id": 8, "label": "Ivy", "group": 1},
+    {"id": 9, "label": "Jack", "group": 1},
+    {"id": 10, "label": "Kate", "group": 2},
+    {"id": 11, "label": "Leo", "group": 2},
+    {"id": 12, "label": "Mia", "group": 2},
+    {"id": 13, "label": "Noah", "group": 2},
+    {"id": 14, "label": "Olivia", "group": 2},
+    {"id": 15, "label": "Paul", "group": 3},
+    {"id": 16, "label": "Quinn", "group": 3},
+    {"id": 17, "label": "Ryan", "group": 3},
+    {"id": 18, "label": "Sara", "group": 3},
+    {"id": 19, "label": "Tom", "group": 3},
+]
+
+# Edges: Friendship connections (within and between groups)
+edges = [
+    # Group 0 internal connections
+    (0, 1),
+    (0, 2),
+    (1, 2),
+    (1, 3),
+    (2, 4),
+    (3, 4),
+    # Group 1 internal connections
+    (5, 6),
+    (5, 7),
+    (6, 8),
+    (7, 8),
+    (7, 9),
+    (8, 9),
+    # Group 2 internal connections
+    (10, 11),
+    (10, 12),
+    (11, 13),
+    (12, 13),
+    (12, 14),
+    (13, 14),
+    # Group 3 internal connections
+    (15, 16),
+    (15, 17),
+    (16, 18),
+    (17, 18),
+    (17, 19),
+    (18, 19),
+    # Cross-group connections (bridges between communities)
+    (0, 5),
+    (4, 10),
+    (9, 15),
+    (14, 19),
+    (2, 6),
+    (8, 11),
+    (13, 16),
+]
+
+# Calculate spring layout (force-directed algorithm)
+n = len(nodes)
+positions = np.random.rand(n, 2) * 2 - 1
+k = 0.4  # Optimal distance parameter
+
+for iteration in range(150):
+    displacement = np.zeros((n, 2))
+
+    # Repulsive forces between all node pairs
+    for i in range(n):
+        for j in range(i + 1, n):
+            diff = positions[i] - positions[j]
+            dist = max(np.linalg.norm(diff), 0.01)
+            force = (k * k / dist) * (diff / dist)
+            displacement[i] += force
+            displacement[j] -= force
+
+    # Attractive forces for edges
+    for src, tgt in edges:
+        diff = positions[src] - positions[tgt]
+        dist = max(np.linalg.norm(diff), 0.01)
+        force = (dist * dist / k) * (diff / dist)
+        displacement[src] -= force
+        displacement[tgt] += force
+
+    # Apply displacement with cooling
+    cooling = 1 - iteration / 150
+    for i in range(n):
+        disp_norm = np.linalg.norm(displacement[i])
+        if disp_norm > 0:
+            positions[i] += (displacement[i] / disp_norm) * min(disp_norm, 0.1 * cooling)
+
+# Normalize positions to [0.1, 0.9] range
+pos_min = positions.min(axis=0)
+pos_max = positions.max(axis=0)
+positions = (positions - pos_min) / (pos_max - pos_min + 1e-6) * 0.8 + 0.1
+pos = {node["id"]: positions[i] for i, node in enumerate(nodes)}
+
+# Calculate node degrees for sizing
+degrees = {node["id"]: 0 for node in nodes}
+for src, tgt in edges:
+    degrees[src] += 1
+    degrees[tgt] += 1
+
+# Colors for groups
+group_colors = ["#306998", "#FFD43B", "#4CAF50", "#FF7043"]
+group_names = ["Group A", "Group B", "Group C", "Group D"]
+
+# Create edge traces
+edge_x = []
+edge_y = []
+for src, tgt in edges:
+    x0, y0 = pos[src]
+    x1, y1 = pos[tgt]
+    edge_x.extend([x0, x1, None])
+    edge_y.extend([y0, y1, None])
+
+edge_trace = go.Scatter(
+    x=edge_x, y=edge_y, mode="lines", line={"width": 2, "color": "#888888"}, hoverinfo="none", showlegend=False
+)
+
+# Create node traces (one per group for legend)
+node_traces = []
+for group_id, (color, name) in enumerate(zip(group_colors, group_names, strict=True)):
+    group_nodes = [node for node in nodes if node["group"] == group_id]
+    node_x = [pos[node["id"]][0] for node in group_nodes]
+    node_y = [pos[node["id"]][1] for node in group_nodes]
+    node_sizes = [20 + degrees[node["id"]] * 5 for node in group_nodes]
+    node_labels = [node["label"] for node in group_nodes]
+    hover_text = [f"{node['label']}<br>Connections: {degrees[node['id']]}" for node in group_nodes]
+
+    node_trace = go.Scatter(
+        x=node_x,
+        y=node_y,
+        mode="markers+text",
+        marker={"size": node_sizes, "color": color, "line": {"width": 2, "color": "#333333"}},
+        text=node_labels,
+        textposition="middle center",
+        textfont={"size": 12, "color": "#222222", "family": "Arial Black"},
+        hovertext=hover_text,
+        hoverinfo="text",
+        name=name,
+        legendgroup=name,
+    )
+    node_traces.append(node_trace)
+
+# Create figure
+fig = go.Figure(data=[edge_trace] + node_traces)
+
+# Update layout
+fig.update_layout(
+    title={
+        "text": "Social Network · network-basic · plotly · pyplots.ai",
+        "font": {"size": 28},
+        "x": 0.5,
+        "xanchor": "center",
+    },
+    showlegend=True,
+    legend={
+        "title": {"text": "Communities", "font": {"size": 20}},
+        "font": {"size": 16},
+        "bgcolor": "rgba(255, 255, 255, 0.9)",
+        "bordercolor": "#333333",
+        "borderwidth": 1,
+        "x": 0.02,
+        "y": 0.98,
+        "xanchor": "left",
+        "yanchor": "top",
+    },
+    xaxis={"showgrid": False, "zeroline": False, "showticklabels": False, "range": [-0.05, 1.05]},
+    yaxis={
+        "showgrid": False,
+        "zeroline": False,
+        "showticklabels": False,
+        "range": [-0.05, 1.05],
+        "scaleanchor": "x",
+        "scaleratio": 1,
+    },
+    template="plotly_white",
+    margin={"l": 20, "r": 20, "t": 80, "b": 20},
+)
+
+# Save outputs
+fig.write_image("plot.png", width=1600, height=900, scale=3)
+fig.write_html("plot.html", include_plotlyjs=True, full_html=True)

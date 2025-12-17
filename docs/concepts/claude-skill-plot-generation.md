@@ -354,7 +354,7 @@ def generate_with_feedback_loop(
     library: str,
     rules: Rules,
     max_attempts: int = 3,
-    pass_threshold: int = 85
+    pass_threshold: int = 90
 ) -> GenerationResult:
     """
     Main generation loop with self-correction
@@ -471,7 +471,7 @@ workflow:
     action: Self-evaluate code against quality criteria
     loop:
       max_iterations: ${max_attempts}
-      continue_if: quality_score < 85
+      continue_if: quality_score < 90
       next_step: optimize
 
   - step: optimize

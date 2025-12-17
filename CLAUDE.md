@@ -561,9 +561,9 @@ bash .github/scripts/setup-labels.sh
 | Label | Meaning | Set by |
 |-------|---------|--------|
 | `approved` | Human approved specification for merge | Maintainer manually |
-| `ai-approved` | AI quality check passed (score >= 85) | Workflow automatically |
+| `ai-approved` | AI quality check passed (score >= 90) | Workflow automatically |
 | `rejected` | Human rejected | Maintainer manually |
-| `ai-rejected` | AI quality check failed (score < 85) | Workflow automatically |
+| `ai-rejected` | AI quality check failed (score < 90) | Workflow automatically |
 
 ### Quality Score Labels
 
@@ -760,5 +760,5 @@ pytest --pdb       # Debug on failure
 - **Spec improvements over code fixes**: If a plot has issues, improve the spec, not the code
 - **Your data first**: Examples work with real user data, not fake data
 - **Community-driven**: Anyone can propose plots via GitHub Issues
-- **Multi-LLM quality**: Claude + Gemini + GPT ensure quality (score ≥85 required)
+- **Multi-LLM quality**: Claude + Gemini + GPT ensure quality (score ≥90 required)
 - **Full transparency**: All feedback documented in GitHub Issues, not hidden in repo files

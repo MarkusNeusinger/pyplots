@@ -1,0 +1,30 @@
+# Specification-level metadata for quiver-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: quiver-basic
+title: Basic Quiver Plot
+
+# Specification tracking
+created: 2025-12-15T20:45:58Z
+issue: 1014
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - quiver
+    - vector
+  domain:
+    - science
+    - physics
+    - engineering
+  features:
+    - basic
+    - 2d
+    - arrows
+  audience:
+    - intermediate
+  data_type:
+    - numeric
+    - continuous

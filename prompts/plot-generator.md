@@ -99,7 +99,9 @@ Must pass criteria from `prompts/quality-criteria.md`:
 - Functions or classes
 - `if __name__ == '__main__':`
 - Type hints or docstrings (keep it simple)
+- Cross-library workarounds (e.g., matplotlib inside plotnine)
 
+> If a library cannot implement a plot type natively, **do not** fall back to another library (e.g., don't use matplotlib inside plotnine). The implementation should **fail** rather than use workarounds. Each library should demonstrate only its own native capabilities.
 ## Visual Quality
 
 Must pass criteria from `prompts/quality-criteria.md`.

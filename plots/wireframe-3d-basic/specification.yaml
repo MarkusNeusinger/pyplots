@@ -1,0 +1,33 @@
+# Specification-level metadata for wireframe-3d-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: wireframe-3d-basic
+title: Basic 3D Wireframe Plot
+
+# Specification tracking
+created: 2025-12-15T20:46:16Z
+issue: 1015
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - wireframe
+    - 3d
+    - surface
+  domain:
+    - mathematics
+    - science
+    - education
+  features:
+    - basic
+    - 3d
+    - mesh
+    - grid
+  audience:
+    - intermediate
+  data_type:
+    - numeric
+    - continuous
+    - grid

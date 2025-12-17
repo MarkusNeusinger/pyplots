@@ -1,0 +1,31 @@
+# Specification-level metadata for swarm-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: swarm-basic
+title: Basic Swarm Plot
+
+# Specification tracking
+created: 2025-12-15T20:41:54Z
+issue: 974
+suggested: MarkusNeusinger
+history: []
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - swarm
+    - beeswarm
+    - categorical
+  domain:
+    - statistics
+    - general
+  features:
+    - basic
+    - distribution
+    - individual-points
+  audience:
+    - beginner
+    - intermediate
+  data_type:
+    - numeric
+    - categorical

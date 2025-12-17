@@ -622,7 +622,7 @@ function App() {
                       >
                         <CardMedia
                           component="img"
-                          image={img.url}
+                          image={img.thumb || img.url}
                           alt={`${selectedSpec} - ${img.library}`}
                           sx={{
                             width: '100%',

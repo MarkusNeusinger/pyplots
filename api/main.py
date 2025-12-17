@@ -394,7 +394,7 @@ async def download_image(spec_id: str, library: str, db: AsyncSession = Depends(
             response = await client.get(impl.preview_url)
             response.raise_for_status()
         except httpx.HTTPError as e:
-            raise HTTPException(status_code=502, detail=f"Failed to fetch image: {e}")
+            raise HTTPException(status_code=502, detail=f"Failed to fetch image: {e}") from e
 
     # Return as downloadable file
     filename = f"{spec_id}-{library}.png"

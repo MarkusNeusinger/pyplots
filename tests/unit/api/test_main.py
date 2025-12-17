@@ -83,7 +83,7 @@ class TestRootEndpoint:
 
         data = response.json()
         assert "version" in data
-        assert data["version"] == "0.1.0"
+        assert data["version"] == "0.2.0"
 
     def test_returns_docs_url(self, client: TestClient) -> None:
         """Root endpoint should return docs URL."""
@@ -128,7 +128,7 @@ class TestHealthEndpoint:
         response = client.get("/health")
 
         data = response.json()
-        assert data["version"] == "0.1.0"
+        assert data["version"] == "0.2.0"
 
 
 class TestHelloEndpoint:
@@ -235,7 +235,7 @@ class TestAppConfiguration:
 
     def test_app_version(self) -> None:
         """App should have correct version."""
-        assert app.version == "0.1.0"
+        assert app.version == "0.2.0"
 
     def test_app_description(self) -> None:
         """App should have description."""

@@ -24,8 +24,6 @@ from lets_plot.export import ggsave
 LetsPlot.setup_html()
 
 # Data - create a smooth surface z = sin(x) * cos(y)
-np.random.seed(42)
-
 # Grid setup - 40x40 for smooth surface
 n_points = 40
 x = np.linspace(-3, 3, n_points)
@@ -74,7 +72,7 @@ df = pd.DataFrame(rect_data)
 plot = (
     ggplot(df, aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="z"))
     + geom_rect(color="#306998", size=0.3, alpha=0.95)
-    + scale_fill_viridis(name="Z Value")
+    + scale_fill_viridis(name="Z Value", limits=[-1, 1])
     + labs(x="X (projected)", y="Z (height)", title="surface-basic · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(

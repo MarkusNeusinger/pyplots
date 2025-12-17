@@ -75,7 +75,7 @@ class CalendarHeatmap(Graph):
         total_weeks = (total_days + 6) // 7 + 1
 
         # Calculate cell size - leave space for labels
-        label_margin_left = 200
+        label_margin_left = 280
         label_margin_top = 120
         available_width = plot_width - label_margin_left - 100
         available_height = plot_height - label_margin_top - 200
@@ -94,17 +94,19 @@ class CalendarHeatmap(Graph):
         plot_node = self.nodes["plot"]
         cal_group = self.svg.node(plot_node, class_="calendar-heatmap")
 
-        # Draw weekday labels on the left
+        # Draw weekday labels on the left - ensure large readable size
+        weekday_font_size = max(cell_size * 1.0, 48)
         for i, label in enumerate(self.weekday_labels):
             y = y_offset + i * (cell_size + gap) + cell_size / 2
             self.svg.node(
                 cal_group,
                 "text",
-                x=x_offset - 30,
-                y=y + 12,
+                x=x_offset - 50,
+                y=y + weekday_font_size * 0.35,
                 text_anchor="end",
-                fill="#666666",
-                font_size=cell_size * 0.6,
+                fill="#333333",
+                font_size=weekday_font_size,
+                font_weight="bold",
             ).text = label
 
         # Track months for labels
@@ -256,7 +258,7 @@ chart = CalendarHeatmap(
     width=4800,
     height=2700,
     style=custom_style,
-    title="GitHub Contributions 2024 · heatmap-calendar · pygal · pyplots.ai",
+    title="heatmap-calendar · pygal · pyplots.ai",
     dates=dates,
     values=values,
     cell_colors=github_colors,
@@ -271,27 +273,5 @@ chart = CalendarHeatmap(
 # Add a dummy series to trigger _plot (pygal requires at least one series)
 chart.add("", [0])
 
-# Save outputs
-chart.render_to_file("plot.svg")
+# Save output
 chart.render_to_png("plot.png")
-
-# Save HTML for interactive viewing
-html_content = f"""<!DOCTYPE html>
-<html>
-<head>
-    <title>heatmap-calendar · pygal · pyplots.ai</title>
-    <style>
-        body {{ margin: 0; padding: 20px; background: #f5f5f5; }}
-        .container {{ max-width: 100%; margin: 0 auto; }}
-        svg {{ max-width: 100%; height: auto; }}
-    </style>
-</head>
-<body>
-    <div class="container">
-        {chart.render(is_unicode=True)}
-    </div>
-</body>
-</html>"""
-
-with open("plot.html", "w") as f:
-    f.write(html_content)

@@ -15,6 +15,7 @@ import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Tooltip from '@mui/material/Tooltip';
+import CircularProgress from '@mui/material/CircularProgress';
 import SearchIcon from '@mui/icons-material/Search';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import CloseIcon from '@mui/icons-material/Close';
@@ -33,6 +34,7 @@ import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const GITHUB_URL = 'https://github.com/MarkusNeusinger/pyplots'; // pyplots repo
 const LIBRARIES = ['altair', 'bokeh', 'highcharts', 'letsplot', 'matplotlib', 'plotly', 'plotnine', 'pygal', 'seaborn'];
+const BATCH_SIZE = 15;
 
 interface PlotImage {
   library: string;
@@ -60,7 +62,6 @@ interface SpecInfo {
 function App() {
   const [specs, setSpecs] = useState<string[]>([]);
   const [selectedSpec, setSelectedSpec] = useState<string>('');
-  const [images, setImages] = useState<PlotImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [specsLoaded, setSpecsLoaded] = useState(false);
   const [error, setError] = useState<string>('');
@@ -82,7 +83,12 @@ function App() {
   const [libraryDocsUrl, setLibraryDocsUrl] = useState<string>('');
   const [specsData, setSpecsData] = useState<SpecInfo[]>([]);
   const [openImageTooltip, setOpenImageTooltip] = useState<string | null>(null); // Track which image tooltip is open
+  const [allImages, setAllImages] = useState<PlotImage[]>([]);        // All images from API (shuffled)
+  const [displayedImages, setDisplayedImages] = useState<PlotImage[]>([]); // Currently rendered images
+  const [hasMore, setHasMore] = useState(false);                      // Are there more images to load?
   const shuffleButtonRef = useRef<HTMLButtonElement>(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);                   // Intersection Observer target
+  const contentRef = useRef<HTMLDivElement>(null);                    // For scroll-to-content
   const searchInputRef = useRef<HTMLInputElement>(null);
   const menuItemRefs = useRef<(HTMLLIElement | null)[]>([]);
   const touchStartX = useRef<number | null>(null);
@@ -137,7 +143,9 @@ function App() {
   const shuffleLibrary = useCallback(() => {
     if (LIBRARIES.length <= 1) return;
     setIsShuffling(true);
-    setImages([]); // Clear old images
+    setAllImages([]); // Clear old images
+    setDisplayedImages([]);
+    setHasMore(false);
     setLoading(true); // Show loading animation
     setTimeout(() => setIsShuffling(false), 300);
     const otherLibraries = LIBRARIES.filter((l) => l !== selectedLibrary);
@@ -149,7 +157,9 @@ function App() {
   const goToPrevLibrary = useCallback(() => {
     if (LIBRARIES.length <= 1 || isTransitioning) return;
     setIsTransitioning(true);
-    setImages([]); // Clear images during transition
+    setAllImages([]); // Clear images during transition
+    setDisplayedImages([]);
+    setHasMore(false);
     setLoading(true); // Show loading animation
     setTimeout(() => {
       const currentIndex = LIBRARIES.indexOf(selectedLibrary);
@@ -162,7 +172,9 @@ function App() {
   const goToNextLibrary = useCallback(() => {
     if (LIBRARIES.length <= 1 || isTransitioning) return;
     setIsTransitioning(true);
-    setImages([]); // Clear images during transition
+    setAllImages([]); // Clear images during transition
+    setDisplayedImages([]);
+    setHasMore(false);
     setLoading(true); // Show loading animation
     setTimeout(() => {
       const currentIndex = LIBRARIES.indexOf(selectedLibrary);
@@ -175,7 +187,9 @@ function App() {
   const toggleViewMode = useCallback(() => {
     setIsRolling(true);
     setDescriptionOpen(false);
-    setImages([]); // Clear images to avoid stale data and duplicate keys
+    setAllImages([]); // Clear images to avoid stale data
+    setDisplayedImages([]);
+    setHasMore(false);
     setLoading(true); // Show loading animation instead of "no images" message
     setTimeout(() => {
       setViewMode((prev) => {
@@ -449,7 +463,9 @@ function App() {
           code: codeByLibrary[img.library] || undefined,
         }));
         const shuffled = shuffleArray<PlotImage>(imagesWithCode);
-        setImages(shuffled);
+        setAllImages(shuffled);
+        setDisplayedImages(shuffled.slice(0, BATCH_SIZE));
+        setHasMore(shuffled.length > BATCH_SIZE);
       } catch (err) {
         setError(`Error loading images: ${err}`);
       } finally {
@@ -478,7 +494,9 @@ function App() {
         if (!res.ok) throw new Error('Failed to fetch library images');
         const data = await res.json();
         const shuffled = shuffleArray<PlotImage>(data.images || []);
-        setImages(shuffled);
+        setAllImages(shuffled);
+        setDisplayedImages(shuffled.slice(0, BATCH_SIZE));
+        setHasMore(shuffled.length > BATCH_SIZE);
       } catch (err) {
         setError(`Error loading library images: ${err}`);
       } finally {
@@ -489,6 +507,50 @@ function App() {
 
     fetchLibraryImages();
   }, [selectedLibrary, viewMode]);
+
+  // Load more images when scrolling to the bottom
+  const loadMore = useCallback(() => {
+    if (!hasMore) return;
+
+    const currentLength = displayedImages.length;
+    const nextBatch = allImages.slice(currentLength, currentLength + BATCH_SIZE);
+
+    setDisplayedImages(prev => [...prev, ...nextBatch]);
+    setHasMore(currentLength + BATCH_SIZE < allImages.length);
+  }, [allImages, displayedImages.length, hasMore]);
+
+  // Intersection Observer to trigger loadMore - with look-ahead (preload before reaching the end)
+  useEffect(() => {
+    if (!hasMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '1200px 0px' // Trigger 1200px before visible (preload ~4 rows ahead)
+      }
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasMore, loadMore]);
+
+  // Scroll to content when spec/library changes (hide header)
+  useEffect(() => {
+    if (displayedImages.length > 0 && contentRef.current) {
+      // Small delay to ensure DOM is updated
+      setTimeout(() => {
+        contentRef.current?.scrollIntoView({ behavior: 'instant', block: 'start' });
+      }, 50);
+    }
+  }, [selectedSpec, selectedLibrary]);
 
   // Close description when clicking anywhere (except the info button itself)
   const handleContainerClick = useCallback((e: React.MouseEvent) => {
@@ -984,7 +1046,7 @@ function App() {
         {/* Content */}
         <Box>
           {/* Loading State - only show on initial load, not during navigation */}
-          {loading && !isTransitioning && images.length === 0 && (
+          {loading && !isTransitioning && displayedImages.length === 0 && (
             <Box
               sx={{
                 display: 'flex',
@@ -1061,9 +1123,9 @@ function App() {
           )}
 
           {/* Images - show even during loading if we have images (for smooth transitions) */}
-          {((viewMode === 'spec' && selectedSpec) || (viewMode === 'library' && selectedLibrary)) && (images.length > 0 || !loading) && (
+          {((viewMode === 'spec' && selectedSpec) || (viewMode === 'library' && selectedLibrary)) && (displayedImages.length > 0 || !loading) && (
             <Box>
-            {images.length === 0 ? (
+            {displayedImages.length === 0 ? (
               <Alert
                 severity="info"
                 sx={{
@@ -1084,7 +1146,7 @@ function App() {
                   opacity: isTransitioning ? 0 : 1,
                   transition: 'opacity 0.15s ease-in-out',
                 }}>
-                {images.map((img, index) => (
+                {displayedImages.map((img, index) => (
                   <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={img.spec_id ? `${img.spec_id}-${img.library}` : img.library} sx={{ maxWidth: 600 }}>
                     <Box
                       sx={{
@@ -1255,6 +1317,14 @@ function App() {
                     </Box>
                   </Grid>
                 ))}
+                {/* Load more indicator */}
+                {hasMore && (
+                  <Grid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                    <div ref={loadMoreRef}>
+                      <CircularProgress size={24} sx={{ color: '#3776AB' }} />
+                    </div>
+                  </Grid>
+                )}
               </Grid>
             )}
             </Box>

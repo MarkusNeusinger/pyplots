@@ -166,8 +166,15 @@ plot = (
     )
     # Draw nodes colored by group, sized by degree
     + geom_point(data=nodes_df, mapping=aes(x="x", y="y", color="group", size="degree"), alpha=0.9, stroke=0.5)
-    # Draw labels on top
-    + geom_text(data=nodes_df, mapping=aes(x="x", y="y", label="label"), size=10, color="#222222", fontweight="bold")
+    # Draw labels offset above nodes to prevent overlap
+    + geom_text(
+        data=nodes_df,
+        mapping=aes(x="x", y="y", label="label"),
+        size=10,
+        color="#222222",
+        fontweight="bold",
+        nudge_y=0.04,
+    )
     # Color scale for groups
     + scale_color_manual(values=group_colors, name="Community")
     # Size scale for node degrees
@@ -176,7 +183,7 @@ plot = (
     + xlim(-0.05, 1.05)
     + ylim(-0.05, 1.05)
     # Labels and title
-    + labs(title="Social Network · network-basic · plotnine · pyplots.ai")
+    + labs(title="network-basic · plotnine · pyplots.ai")
     # Theme for clean network visualization
     + theme(
         figure_size=(16, 9),

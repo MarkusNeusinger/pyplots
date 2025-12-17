@@ -269,9 +269,9 @@ jobs:
             # Build status table
             TABLE="| Library | Status |\n|---------|--------|"
             for lib in $LIBRARIES; do
-              if echo "$DONE_LIBS" | grep -q "$lib"; then
+              if echo "$DONE_LIBS" | grep -w -q "$lib"; then
                 TABLE="$TABLE\n| $lib | :white_check_mark: |"
-              elif echo "$FAILED_LIBS" | grep -q "$lib"; then
+              elif echo "$FAILED_LIBS" | grep -w -q "$lib"; then
                 TABLE="$TABLE\n| $lib | :x: (not supported) |"
               fi
             done

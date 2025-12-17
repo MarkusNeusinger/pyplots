@@ -344,7 +344,7 @@ jobs:
           git fetch origin
 
           # Check if remote branch exists before checkout (fixes branch-not-found error)
-          if git ls-remote --exit-code origin "$BRANCH" >/dev/null 2>&1; then
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
             git checkout -B "$BRANCH" "origin/$BRANCH"
           else
             # Branch doesn't exist on remote - create fresh from main
@@ -636,12 +636,12 @@ jobs:
           echo "::notice::Handling generation failure for $LIBRARY/$SPEC_ID"
 
           # Count previous failed generation runs for this spec/library
-          # Look at workflow runs from the last 24 hours
+          # Filter by both library AND spec ID to avoid counting unrelated failures
           FAILURE_COUNT=$(gh run list \
             --workflow=impl-generate.yml \
             --limit 20 \
             --json conclusion,displayTitle,createdAt \
-            -q "[.[] | select(.conclusion == \"failure\") | select(.displayTitle | contains(\"$LIBRARY\"))] | length" \
+            -q "[.[] | select(.conclusion == \"failure\") | select(.displayTitle | (contains(\"$LIBRARY\") and contains(\"$SPEC_ID\")))] | length" \
             2>/dev/null || echo "0")
 
           echo "::notice::Previous failures: $FAILURE_COUNT"

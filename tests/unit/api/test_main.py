@@ -7,7 +7,7 @@ Tests the main API endpoints:
 - Hello endpoint (/hello/{name})
 """
 
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
@@ -22,7 +22,7 @@ def client() -> TestClient:
 
 
 @pytest.fixture
-def mock_db_client() -> TestClient:
+def mock_db_client():
     """Create a test client with mocked database dependency."""
     # Create mock spec objects
     mock_impl = MagicMock()
@@ -59,8 +59,10 @@ def mock_db_client() -> TestClient:
     mock_result.scalars.return_value.all.return_value = [mock_spec1, mock_spec2]
     mock_session.execute.return_value = mock_result
 
-    client = TestClient(app)
-    yield client
+    # Patch is_db_configured to return True
+    with patch("api.main.is_db_configured", return_value=True):
+        client = TestClient(app)
+        yield client
 
     # Clean up
     app.dependency_overrides.clear()

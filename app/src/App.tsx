@@ -52,12 +52,15 @@ function App() {
   const [searchFilter, setSearchFilter] = useState('');
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [specDescription, setSpecDescription] = useState<string>('');
+  const [descriptionOpen, setDescriptionOpen] = useState(false);
   const [showCode, setShowCode] = useState(false);
   const [blinkCodeButton, setBlinkCodeButton] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const shuffleButtonRef = useRef<HTMLButtonElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const menuItemRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const touchStartX = useRef<number | null>(null);
+  const lastTapTime = useRef<number>(0);
 
   // Fisher-Yates shuffle algorithm
   const shuffleArray = <T,>(array: T[]): T[] => {
@@ -103,6 +106,35 @@ function App() {
       setSelectedSpec(sortedSpecs[nextIndex]);
     }, 150);
   }, [sortedSpecs, selectedSpec, isTransitioning]);
+
+  // Touch handlers for swipe and double-tap
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (touchStartX.current === null || modalImage) return;
+
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchEndX - touchStartX.current;
+    const minSwipeDistance = 50;
+
+    if (Math.abs(diff) > minSwipeDistance) {
+      if (diff > 0) {
+        goToPrevSpec(); // Swipe right = previous
+      } else {
+        goToNextSpec(); // Swipe left = next
+      }
+    } else {
+      // Check for double tap
+      const now = Date.now();
+      if (now - lastTapTime.current < 300) {
+        shuffleSpec();
+      }
+      lastTapTime.current = now;
+    }
+    touchStartX.current = null;
+  }, [modalImage, goToPrevSpec, goToNextSpec, shuffleSpec]);
 
   // Copy code to clipboard
   const copyCodeToClipboard = useCallback(() => {
@@ -225,6 +257,7 @@ function App() {
       const url = new URL(window.location.href);
       url.searchParams.set('spec', selectedSpec);
       window.history.replaceState({}, '', url.toString());
+      setDescriptionOpen(false); // Close description tooltip when spec changes
     }
   }, [selectedSpec, specsLoaded]);
 
@@ -284,6 +317,8 @@ function App() {
 
   return (
     <Box
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       sx={{
         minHeight: '100vh',
         bgcolor: '#fafafa',
@@ -379,12 +414,15 @@ function App() {
               <Tooltip
                 title={specDescription}
                 arrow
-                placement="right"
-                enterDelay={100}
+                placement="bottom"
+                open={descriptionOpen}
+                disableFocusListener
+                disableHoverListener
+                disableTouchListener
                 slotProps={{
                   tooltip: {
                     sx: {
-                      maxWidth: 400,
+                      maxWidth: { xs: '80vw', sm: 400 },
                       fontFamily: '"JetBrains Mono", monospace',
                       fontSize: '0.8rem',
                     },
@@ -393,9 +431,10 @@ function App() {
               >
                 <IconButton
                   size="small"
+                  onClick={() => setDescriptionOpen(!descriptionOpen)}
                   sx={{
                     ml: 0.5,
-                    color: '#9ca3af',
+                    color: descriptionOpen ? '#3776AB' : '#9ca3af',
                     '&:hover': {
                       color: '#3776AB',
                       bgcolor: 'transparent',
@@ -528,7 +567,7 @@ function App() {
             </Menu>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <Tooltip title="Previous (←)" arrow placement="bottom">
+              <Tooltip title="Previous (← / Swipe right)" arrow placement="bottom">
                 <IconButton
                   onClick={goToPrevSpec}
                   size="small"
@@ -544,7 +583,7 @@ function App() {
                   <ChevronLeftIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Random (Space)" arrow placement="bottom">
+              <Tooltip title="Random (Space / Double-tap)" arrow placement="bottom">
                 <IconButton
                   ref={shuffleButtonRef}
                   onClick={shuffleSpec}
@@ -563,7 +602,7 @@ function App() {
                   <ShuffleIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Next (→)" arrow placement="bottom">
+              <Tooltip title="Next (→ / Swipe left)" arrow placement="bottom">
                 <IconButton
                   onClick={goToNextSpec}
                   size="small"
@@ -824,45 +863,26 @@ function App() {
         disableRestoreFocus
         sx={{
           display: 'flex',
-          alignItems: 'center',
+          alignItems: { xs: 'flex-start', sm: 'center' },
           justifyContent: 'center',
+          pt: { xs: 5, sm: 0 },
+          '@media (orientation: landscape)': {
+            alignItems: 'center',
+            pt: 0,
+          },
         }}
       >
         <Box
           sx={{
             position: 'relative',
             maxWidth: '90vw',
-            maxHeight: '90vh',
+            maxHeight: { xs: '92vh', sm: '90vh' },
             outline: 'none',
           }}
           role="dialog"
         >
-          {/* Modal Header Buttons */}
-          <Box sx={{ position: 'absolute', top: -40, right: 0, display: 'flex', gap: 1 }}>
-            {modalImage?.code && (
-              <IconButton
-                onClick={() => setShowCode(!showCode)}
-                aria-label={showCode ? 'Show plot' : 'Show code'}
-                sx={{
-                  color: '#fff',
-                  fontSize: '0.85rem',
-                  fontFamily: '"JetBrains Mono", monospace',
-                  gap: 0.5,
-                  '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
-                  animation: blinkCodeButton ? 'bounce 1s ease-in-out' : 'none',
-                  '@keyframes bounce': {
-                    '0%, 100%': { transform: 'translateY(0)' },
-                    '30%': { transform: 'translateY(-8px)' },
-                    '50%': { transform: 'translateY(0)' },
-                    '70%': { transform: 'translateY(-4px)' },
-                    '85%': { transform: 'translateY(0)' },
-                  },
-                }}
-              >
-                {showCode ? <ImageIcon fontSize="small" /> : <CodeIcon fontSize="small" />}
-                {showCode ? 'Plot' : 'Code'}
-              </IconButton>
-            )}
+          {/* Modal Header - Close only */}
+          <Box sx={{ position: 'absolute', top: { xs: -36, sm: -40 }, right: 0, zIndex: 10 }}>
             <IconButton
               onClick={() => {
                 setModalImage(null);
@@ -892,22 +912,59 @@ function App() {
                     height: 'min(85vh, calc(90vw * 9 / 16))',
                     overflow: 'hidden',
                     boxShadow: 'none',
+                    '@media (orientation: portrait)': {
+                      height: '85vh',
+                    },
                   }}
                 >
-                  <IconButton
-                    onClick={copyCodeToClipboard}
-                    aria-label="Copy code to clipboard"
+                  {/* Button bar */}
+                  <Box
                     sx={{
                       position: 'absolute',
-                      top: 8,
-                      right: 8,
-                      color: '#6b7280',
+                      top: 6,
+                      right: 16,
+                      display: 'flex',
+                      gap: 0.5,
                       zIndex: 1,
-                      '&:hover': { color: '#1f2937', bgcolor: 'rgba(0,0,0,0.05)' },
                     }}
                   >
-                    <ContentCopyIcon fontSize="small" />
-                  </IconButton>
+                    <Box
+                      onClick={() => setShowCode(false)}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 0.5,
+                        px: 1,
+                        py: 0.5,
+                        borderRadius: 1,
+                        cursor: 'pointer',
+                        color: '#6b7280',
+                        bgcolor: 'rgba(255,255,255,0.9)',
+                        fontSize: '0.85rem',
+                        fontFamily: '"JetBrains Mono", monospace',
+                        '&:hover': { color: '#3776AB', bgcolor: '#fff' },
+                      }}
+                    >
+                      <ImageIcon sx={{ fontSize: 20 }} />
+                      plot
+                    </Box>
+                    <Box
+                      onClick={copyCodeToClipboard}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        px: 1,
+                        py: 0.5,
+                        borderRadius: 1,
+                        cursor: 'pointer',
+                        color: '#6b7280',
+                        bgcolor: 'rgba(255,255,255,0.9)',
+                        '&:hover': { color: '#1f2937', bgcolor: '#fff' },
+                      }}
+                    >
+                      <ContentCopyIcon sx={{ fontSize: 20 }} />
+                    </Box>
+                  </Box>
                   <Box
                     sx={{
                       height: '100%',
@@ -934,21 +991,74 @@ function App() {
                   boxShadow: 'none',
                 }}
               >
-                <IconButton
-                  onClick={downloadImage}
-                  aria-label="Download image"
+                {/* Button bar */}
+                <Box
                   sx={{
                     position: 'absolute',
-                    top: 8,
-                    right: 8,
-                    color: '#6b7280',
+                    top: 6,
+                    right: 16,
+                    display: 'flex',
+                    gap: 0.5,
                     zIndex: 1,
-                    bgcolor: 'rgba(255,255,255,0.8)',
-                    '&:hover': { color: '#1f2937', bgcolor: 'rgba(255,255,255,0.95)' },
                   }}
                 >
-                  <DownloadIcon fontSize="small" />
-                </IconButton>
+                  {modalImage?.code && (
+                    <Box
+                      onClick={() => setShowCode(true)}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 0.5,
+                        px: 1,
+                        py: 0.5,
+                        borderRadius: 1,
+                        cursor: 'pointer',
+                        color: '#6b7280',
+                        bgcolor: 'rgba(255,255,255,0.9)',
+                        fontSize: '0.85rem',
+                        fontFamily: '"JetBrains Mono", monospace',
+                        '&:hover': { color: '#3776AB', bgcolor: '#fff' },
+                        ...(blinkCodeButton && {
+                          animation: 'bounce 0.6s ease-in-out',
+                          '@keyframes bounce': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '25%': { transform: 'translateY(-4px)' },
+                            '50%': { transform: 'translateY(0)' },
+                            '75%': { transform: 'translateY(-2px)' },
+                          },
+                        }),
+                      }}
+                    >
+                      <CodeIcon sx={{ fontSize: 20 }} />
+                      code
+                    </Box>
+                  )}
+                  <Box
+                    onClick={downloadImage}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      px: 1,
+                      py: 0.5,
+                      borderRadius: 1,
+                      cursor: 'pointer',
+                      color: '#6b7280',
+                      bgcolor: 'rgba(255,255,255,0.9)',
+                      '&:hover': { color: '#1f2937', bgcolor: '#fff' },
+                      ...(blinkCodeButton && {
+                        animation: 'bounce 0.6s ease-in-out',
+                        '@keyframes bounce': {
+                          '0%, 100%': { transform: 'translateY(0)' },
+                          '25%': { transform: 'translateY(-4px)' },
+                          '50%': { transform: 'translateY(0)' },
+                          '75%': { transform: 'translateY(-2px)' },
+                        },
+                      }),
+                    }}
+                  >
+                    <DownloadIcon sx={{ fontSize: 20 }} />
+                  </Box>
+                </Box>
                 <img
                   src={modalImage.url}
                   alt={`${selectedSpec} - ${modalImage.library}`}

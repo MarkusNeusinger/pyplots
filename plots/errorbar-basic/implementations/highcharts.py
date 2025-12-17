@@ -19,16 +19,13 @@ categories = ["Sample A", "Sample B", "Sample C", "Sample D", "Sample E", "Sampl
 values = [45.2, 38.7, 52.1, 41.5, 48.3, 35.9]
 errors = [4.5, 3.2, 5.8, 3.9, 4.1, 2.8]
 
-# Prepare data for columnrange (shows error bars as ranges)
-range_data = [[val - err, val + err] for val, err in zip(values, errors, strict=True)]
+# Prepare errorbar data as [low, high] ranges
+errorbar_data = [[val - err, val + err] for val, err in zip(values, errors, strict=True)]
 
-# Prepare scatter data for mean points
-scatter_data = [[i, val] for i, val in enumerate(values)]
-
-# Chart options
+# Chart options - using errorbar series type for proper caps
 chart_options = {
     "chart": {
-        "type": "columnrange",
+        "type": "column",
         "width": 4800,
         "height": 2700,
         "backgroundColor": "#ffffff",
@@ -50,6 +47,7 @@ chart_options = {
         "labels": {"style": {"fontSize": "32px"}},
         "gridLineColor": "#e0e0e0",
         "gridLineDashStyle": "Dash",
+        "min": 25,
     },
     "legend": {
         "enabled": True,
@@ -61,22 +59,23 @@ chart_options = {
         "itemStyle": {"fontSize": "32px"},
     },
     "plotOptions": {
-        "columnrange": {"borderRadius": 0, "pointWidth": 50},
-        "scatter": {"marker": {"radius": 14, "symbol": "circle", "lineWidth": 3, "lineColor": "#306998"}},
+        "column": {"pointWidth": 80, "borderWidth": 0},
+        "errorbar": {"lineWidth": 6, "whiskerLength": "60%", "whiskerWidth": 6, "stemWidth": 6},
     },
     "series": [
-        {"name": "Error Range", "type": "columnrange", "data": range_data, "color": "#306998"},
+        {"name": "Mean Value", "type": "column", "data": values, "color": "#306998"},
         {
-            "name": "Mean Value",
-            "type": "scatter",
-            "data": scatter_data,
-            "color": "#FFD43B",
-            "marker": {"radius": 14, "symbol": "circle", "lineWidth": 3, "lineColor": "#306998"},
+            "name": "Error Range",
+            "type": "errorbar",
+            "data": errorbar_data,
+            "color": "#1a1a1a",
+            "stemColor": "#1a1a1a",
+            "whiskerColor": "#1a1a1a",
         },
     ],
 }
 
-# Download Highcharts JS and highcharts-more (needed for columnrange)
+# Download Highcharts JS and highcharts-more (needed for errorbar)
 highcharts_url = "https://code.highcharts.com/highcharts.js"
 highcharts_more_url = "https://code.highcharts.com/highcharts-more.js"
 

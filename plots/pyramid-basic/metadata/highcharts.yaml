@@ -15,7 +15,7 @@ current:
   generated_by: claude-opus-4-5-20251101
   workflow_run: 20300943134
   issue: 1000
-  quality_score: null
+  quality_score: 95
   # Version info (filled by workflow)
   python_version: "3.13.11"
   library_version: "unknown"

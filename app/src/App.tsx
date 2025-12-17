@@ -25,11 +25,14 @@ import ImageIcon from '@mui/icons-material/Image';
 import SubjectIcon from '@mui/icons-material/Subject';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import SyncIcon from '@mui/icons-material/Sync';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const GITHUB_URL = 'https://github.com/MarkusNeusinger/pyplots'; // pyplots repo
+const LIBRARIES = ['altair', 'bokeh', 'highcharts', 'letsplot', 'matplotlib', 'plotly', 'plotnine', 'pygal', 'seaborn'];
 
 interface PlotImage {
   library: string;
@@ -37,6 +40,21 @@ interface PlotImage {
   thumb?: string;
   html?: string;
   code?: string;
+  spec_id?: string;
+}
+
+interface LibraryInfo {
+  id: string;
+  name: string;
+  version?: string;
+  documentation_url?: string;
+  description?: string;
+}
+
+interface SpecInfo {
+  id: string;
+  title: string;
+  description?: string;
 }
 
 function App() {
@@ -56,6 +74,14 @@ function App() {
   const [showCode, setShowCode] = useState(false);
   const [blinkCodeButton, setBlinkCodeButton] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [viewMode, setViewMode] = useState<'spec' | 'library'>('spec');
+  const [selectedLibrary, setSelectedLibrary] = useState<string>('');
+  const [isRolling, setIsRolling] = useState(false);
+  const [librariesData, setLibrariesData] = useState<LibraryInfo[]>([]);
+  const [libraryDescription, setLibraryDescription] = useState<string>('');
+  const [libraryDocsUrl, setLibraryDocsUrl] = useState<string>('');
+  const [specsData, setSpecsData] = useState<SpecInfo[]>([]);
+  const [openImageTooltip, setOpenImageTooltip] = useState<string | null>(null); // Track which image tooltip is open
   const shuffleButtonRef = useRef<HTMLButtonElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const menuItemRefs = useRef<(HTMLLIElement | null)[]>([]);
@@ -107,13 +133,77 @@ function App() {
     }, 150);
   }, [sortedSpecs, selectedSpec, isTransitioning]);
 
+  // Shuffle to a different random library
+  const shuffleLibrary = useCallback(() => {
+    if (LIBRARIES.length <= 1) return;
+    setIsShuffling(true);
+    setImages([]); // Clear old images
+    setLoading(true); // Show loading animation
+    setTimeout(() => setIsShuffling(false), 300);
+    const otherLibraries = LIBRARIES.filter((l) => l !== selectedLibrary);
+    const randomIndex = Math.floor(Math.random() * otherLibraries.length);
+    setSelectedLibrary(otherLibraries[randomIndex]);
+  }, [selectedLibrary]);
+
+  // Navigate to previous library (alphabetically) - with fade transition
+  const goToPrevLibrary = useCallback(() => {
+    if (LIBRARIES.length <= 1 || isTransitioning) return;
+    setIsTransitioning(true);
+    setImages([]); // Clear images during transition
+    setLoading(true); // Show loading animation
+    setTimeout(() => {
+      const currentIndex = LIBRARIES.indexOf(selectedLibrary);
+      const prevIndex = currentIndex <= 0 ? LIBRARIES.length - 1 : currentIndex - 1;
+      setSelectedLibrary(LIBRARIES[prevIndex]);
+    }, 150);
+  }, [selectedLibrary, isTransitioning]);
+
+  // Navigate to next library (alphabetically) - with fade transition
+  const goToNextLibrary = useCallback(() => {
+    if (LIBRARIES.length <= 1 || isTransitioning) return;
+    setIsTransitioning(true);
+    setImages([]); // Clear images during transition
+    setLoading(true); // Show loading animation
+    setTimeout(() => {
+      const currentIndex = LIBRARIES.indexOf(selectedLibrary);
+      const nextIndex = currentIndex >= LIBRARIES.length - 1 ? 0 : currentIndex + 1;
+      setSelectedLibrary(LIBRARIES[nextIndex]);
+    }, 150);
+  }, [selectedLibrary, isTransitioning]);
+
+  // Toggle between spec and library view with roll animation
+  const toggleViewMode = useCallback(() => {
+    setIsRolling(true);
+    setDescriptionOpen(false);
+    setImages([]); // Clear images to avoid stale data and duplicate keys
+    setLoading(true); // Show loading animation instead of "no images" message
+    setTimeout(() => {
+      setViewMode((prev) => {
+        if (prev === 'spec') {
+          // Switch to library - select random library
+          const randomLib = LIBRARIES[Math.floor(Math.random() * LIBRARIES.length)];
+          setSelectedLibrary(randomLib);
+          return 'library';
+        } else {
+          // Switch to spec - select random spec
+          if (specs.length > 0) {
+            const randomSpec = specs[Math.floor(Math.random() * specs.length)];
+            setSelectedSpec(randomSpec);
+          }
+          return 'spec';
+        }
+      });
+      setIsRolling(false);
+    }, 300);
+  }, [specs]);
+
   // Touch handlers for swipe and double-tap
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
   }, []);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    if (touchStartX.current === null || modalImage) return;
+    if (touchStartX.current === null || modalImage || viewMode !== 'spec') return;
 
     const touchEndX = e.changedTouches[0].clientX;
     const diff = touchEndX - touchStartX.current;
@@ -134,7 +224,7 @@ function App() {
       lastTapTime.current = now;
     }
     touchStartX.current = null;
-  }, [modalImage, goToPrevSpec, goToNextSpec, shuffleSpec]);
+  }, [modalImage, viewMode, goToPrevSpec, goToNextSpec, shuffleSpec]);
 
   // Copy code to clipboard
   const copyCodeToClipboard = useCallback(() => {
@@ -187,17 +277,30 @@ function App() {
     const handleKeyDown = (e: KeyboardEvent) => {
       const isTyping = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA';
 
+      // Navigation shortcuts work in both spec and library mode
       if (e.code === 'Space' && !modalImage && !menuAnchor && !isTyping) {
         e.preventDefault();
-        shuffleSpec();
+        if (viewMode === 'spec') {
+          shuffleSpec();
+        } else {
+          shuffleLibrary();
+        }
       }
       if (e.code === 'ArrowLeft' && !modalImage && !menuAnchor && !isTyping) {
         e.preventDefault();
-        goToPrevSpec();
+        if (viewMode === 'spec') {
+          goToPrevSpec();
+        } else {
+          goToPrevLibrary();
+        }
       }
       if (e.code === 'ArrowRight' && !modalImage && !menuAnchor && !isTyping) {
         e.preventDefault();
-        goToNextSpec();
+        if (viewMode === 'spec') {
+          goToNextSpec();
+        } else {
+          goToNextLibrary();
+        }
       }
       if (e.code === 'Enter' && !modalImage && !menuAnchor && !isTyping) {
         e.preventDefault();
@@ -217,7 +320,7 @@ function App() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [modalImage, menuAnchor, shuffleSpec, goToPrevSpec, goToNextSpec]);
+  }, [modalImage, menuAnchor, viewMode, shuffleSpec, goToPrevSpec, goToNextSpec, shuffleLibrary, goToPrevLibrary, goToNextLibrary]);
 
   // Load specs on mount
   useEffect(() => {
@@ -226,15 +329,22 @@ function App() {
         const response = await fetch(`${API_URL}/specs`);
         if (!response.ok) throw new Error('Failed to fetch specs');
         const data = await response.json();
-        // API returns array of {id, title, ...} objects - extract IDs
-        const specIds = Array.isArray(data) ? data.map((s: { id: string }) => s.id) : data.specs || [];
+        // API returns array of {id, title, description, ...} objects
+        const specsArray = Array.isArray(data) ? data : data.specs || [];
+        const specIds = specsArray.map((s: SpecInfo) => s.id);
         setSpecs(specIds);
+        setSpecsData(specsArray);
 
-        // Check URL for spec parameter
+        // Check URL for spec or library parameter
         const urlParams = new URLSearchParams(window.location.search);
         const specFromUrl = urlParams.get('spec');
+        const libraryFromUrl = urlParams.get('library');
 
-        if (specFromUrl && specIds.includes(specFromUrl)) {
+        if (libraryFromUrl && LIBRARIES.includes(libraryFromUrl)) {
+          // Library mode from URL
+          setViewMode('library');
+          setSelectedLibrary(libraryFromUrl);
+        } else if (specFromUrl && specIds.includes(specFromUrl)) {
           setSelectedSpec(specFromUrl);
         } else if (specIds.length > 0) {
           // Select random spec
@@ -251,20 +361,57 @@ function App() {
     fetchSpecs();
   }, []);
 
-  // Update URL when spec changes
+  // Load libraries data on mount
   useEffect(() => {
-    if (selectedSpec && specsLoaded) {
-      const url = new URL(window.location.href);
+    const fetchLibraries = async () => {
+      try {
+        const response = await fetch(`${API_URL}/libraries`);
+        if (!response.ok) throw new Error('Failed to fetch libraries');
+        const data = await response.json();
+        setLibrariesData(data.libraries || []);
+      } catch (err) {
+        console.error('Error loading libraries:', err);
+      }
+    };
+    fetchLibraries();
+  }, []);
+
+  // Update library description when selected library changes
+  useEffect(() => {
+    if (viewMode === 'library' && selectedLibrary && librariesData.length > 0) {
+      const lib = librariesData.find((l) => l.id === selectedLibrary);
+      if (lib) {
+        setLibraryDescription(lib.description || '');
+        setLibraryDocsUrl(lib.documentation_url || '');
+      }
+      setDescriptionOpen(false);
+    }
+  }, [selectedLibrary, librariesData, viewMode]);
+
+  // Update URL and document title when spec/library changes
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (viewMode === 'spec' && selectedSpec && specsLoaded) {
+      url.searchParams.delete('library');
       url.searchParams.set('spec', selectedSpec);
       window.history.replaceState({}, '', url.toString());
-      setDescriptionOpen(false); // Close description tooltip when spec changes
+      document.title = `${selectedSpec} | pyplots.ai`;
+      setDescriptionOpen(false);
+    } else if (viewMode === 'library' && selectedLibrary) {
+      url.searchParams.delete('spec');
+      url.searchParams.set('library', selectedLibrary);
+      window.history.replaceState({}, '', url.toString());
+      document.title = `${selectedLibrary} plots | pyplots.ai`;
     }
-  }, [selectedSpec, specsLoaded]);
+  }, [selectedSpec, selectedLibrary, specsLoaded, viewMode]);
 
-  // Load images when spec changes
+  // Load images when spec changes (spec view mode)
   useEffect(() => {
-    if (!selectedSpec) {
-      if (specsLoaded) {
+    // Close any open tooltips when spec changes
+    setOpenImageTooltip(null);
+
+    if (viewMode !== 'spec' || !selectedSpec) {
+      if (specsLoaded && viewMode === 'spec') {
         setLoading(false);
       }
       return;
@@ -313,12 +460,54 @@ function App() {
     };
 
     fetchImages();
-  }, [selectedSpec, specsLoaded]);
+  }, [selectedSpec, specsLoaded, viewMode]);
+
+  // Load images when library changes (library view mode)
+  useEffect(() => {
+    // Close any open tooltips when library changes
+    setOpenImageTooltip(null);
+
+    if (viewMode !== 'library' || !selectedLibrary) {
+      return;
+    }
+
+    const fetchLibraryImages = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${API_URL}/libraries/${selectedLibrary}/images`);
+        if (!res.ok) throw new Error('Failed to fetch library images');
+        const data = await res.json();
+        const shuffled = shuffleArray<PlotImage>(data.images || []);
+        setImages(shuffled);
+      } catch (err) {
+        setError(`Error loading library images: ${err}`);
+      } finally {
+        setLoading(false);
+        setTimeout(() => setIsTransitioning(false), 50);
+      }
+    };
+
+    fetchLibraryImages();
+  }, [selectedLibrary, viewMode]);
+
+  // Close description when clicking anywhere (except the info button itself)
+  const handleContainerClick = useCallback((e: React.MouseEvent) => {
+    // Check if click was on a description button
+    const target = e.target as HTMLElement;
+    if (target.closest('[data-description-btn]')) return;
+    if (descriptionOpen) {
+      setDescriptionOpen(false);
+    }
+    if (openImageTooltip) {
+      setOpenImageTooltip(null);
+    }
+  }, [descriptionOpen, openImageTooltip]);
 
   return (
     <Box
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
+      onClick={handleContainerClick}
       sx={{
         minHeight: '100vh',
         bgcolor: '#fafafa',
@@ -371,8 +560,8 @@ function App() {
           </Alert>
         )}
 
-        {/* Spec Title with Shuffle - visible even during loading */}
-        {selectedSpec && (
+        {/* Spec/Library Title with Shuffle - visible even during loading */}
+        {(selectedSpec || viewMode === 'library') && (
           <Box
             sx={{
               display: 'flex',
@@ -383,67 +572,156 @@ function App() {
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {/* Invisible spacer for visual balance */}
-              <Box sx={{ width: 28, visibility: 'hidden' }} />
-              <Chip
-                data-spec-chip
-                label={selectedSpec}
-                variant="outlined"
-                onClick={(e) => setMenuAnchor(e.currentTarget)}
-                onKeyDown={(e) => {
-                  // Prevent space from triggering click (space is for shuffle)
-                  if (e.code === 'Space') {
-                    e.preventDefault();
-                  }
-                }}
-                sx={{
-                  fontSize: '0.95rem',
-                  fontWeight: 600,
-                  fontFamily: '"JetBrains Mono", monospace',
-                  color: '#3776AB',
-                  borderColor: '#3776AB',
-                  bgcolor: '#f9fafb',
-                  py: 2,
-                  px: 0.5,
-                  cursor: 'pointer',
-                  '&:hover': {
-                    bgcolor: '#e8f4fc',
-                  },
-                }}
-              />
-              <Tooltip
-                title={specDescription}
-                arrow
-                placement="bottom"
-                open={descriptionOpen}
-                disableFocusListener
-                disableHoverListener
-                disableTouchListener
-                slotProps={{
-                  tooltip: {
-                    sx: {
-                      maxWidth: { xs: '80vw', sm: 400 },
-                      fontFamily: '"JetBrains Mono", monospace',
-                      fontSize: '0.8rem',
-                    },
-                  },
-                }}
-              >
+              {/* Toggle view mode button */}
+              <Tooltip title={viewMode === 'spec' ? 'Switch to Library view' : 'Switch to Spec view'} arrow placement="bottom">
                 <IconButton
                   size="small"
-                  onClick={() => setDescriptionOpen(!descriptionOpen)}
+                  onClick={toggleViewMode}
                   sx={{
-                    ml: 0.5,
-                    color: descriptionOpen ? '#3776AB' : '#9ca3af',
+                    color: '#9ca3af',
+                    transition: 'transform 0.3s ease',
+                    transform: isRolling ? 'rotate(180deg)' : 'rotate(0deg)',
                     '&:hover': {
                       color: '#3776AB',
                       bgcolor: 'transparent',
                     },
                   }}
                 >
-                  <SubjectIcon sx={{ fontSize: 18 }} />
+                  <SyncIcon sx={{ fontSize: 20 }} />
                 </IconButton>
               </Tooltip>
+              <Box
+                sx={{
+                  perspective: '200px',
+                  overflow: 'hidden',
+                }}
+              >
+                <Chip
+                  data-spec-chip
+                  label={viewMode === 'spec' ? selectedSpec : selectedLibrary}
+                  variant="outlined"
+                  onClick={(e) => setMenuAnchor(e.currentTarget)}
+                  onKeyDown={(e) => {
+                    // Prevent space from triggering click (space is for shuffle)
+                    if (e.code === 'Space') {
+                      e.preventDefault();
+                    }
+                  }}
+                  sx={{
+                    fontSize: '0.95rem',
+                    fontWeight: 600,
+                    fontFamily: '"JetBrains Mono", monospace',
+                    color: '#3776AB',
+                    borderColor: '#3776AB',
+                    bgcolor: '#f9fafb',
+                    py: 2,
+                    px: 0.5,
+                    cursor: 'pointer',
+                    transition: 'transform 0.3s ease, opacity 0.3s ease',
+                    transform: isRolling ? 'rotateX(90deg)' : 'rotateX(0deg)',
+                    opacity: isRolling ? 0 : 1,
+                    '&:hover': {
+                      bgcolor: '#e8f4fc',
+                    },
+                  }}
+                />
+              </Box>
+              {viewMode === 'spec' && (
+                <Tooltip
+                  title={specDescription}
+                  arrow
+                  placement="bottom"
+                  open={descriptionOpen}
+                  disableFocusListener
+                  disableHoverListener
+                  disableTouchListener
+                  slotProps={{
+                    tooltip: {
+                      sx: {
+                        maxWidth: { xs: '80vw', sm: 400 },
+                        fontFamily: '"JetBrains Mono", monospace',
+                        fontSize: '0.8rem',
+                      },
+                    },
+                  }}
+                >
+                  <IconButton
+                    data-description-btn
+                    size="small"
+                    onClick={() => setDescriptionOpen(!descriptionOpen)}
+                    sx={{
+                      ml: 0.5,
+                      color: descriptionOpen ? '#3776AB' : '#9ca3af',
+                      '&:hover': {
+                        color: '#3776AB',
+                        bgcolor: 'transparent',
+                      },
+                    }}
+                  >
+                    <SubjectIcon sx={{ fontSize: 18 }} />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {viewMode === 'library' && (
+                <Tooltip
+                  title={
+                    <Box>
+                      <Typography sx={{ fontSize: '0.8rem', mb: 1 }}>{libraryDescription}</Typography>
+                      {libraryDocsUrl && (
+                        <Link
+                          href={libraryDocsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          sx={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 0.5,
+                            fontSize: '0.75rem',
+                            color: '#90caf9',
+                            textDecoration: 'underline',
+                            '&:hover': {
+                              color: '#fff',
+                            },
+                          }}
+                        >
+                          {libraryDocsUrl.replace(/^https?:\/\//, '')} <OpenInNewIcon sx={{ fontSize: 12 }} />
+                        </Link>
+                      )}
+                    </Box>
+                  }
+                  arrow
+                  placement="bottom"
+                  open={descriptionOpen}
+                  disableFocusListener
+                  disableHoverListener
+                  disableTouchListener
+                  slotProps={{
+                    tooltip: {
+                      sx: {
+                        maxWidth: { xs: '80vw', sm: 400 },
+                        fontFamily: '"JetBrains Mono", monospace',
+                        fontSize: '0.8rem',
+                      },
+                    },
+                  }}
+                >
+                  <IconButton
+                    data-description-btn
+                    size="small"
+                    onClick={() => setDescriptionOpen(!descriptionOpen)}
+                    sx={{
+                      ml: 0.5,
+                      color: descriptionOpen ? '#3776AB' : '#9ca3af',
+                      '&:hover': {
+                        color: '#3776AB',
+                        bgcolor: 'transparent',
+                      },
+                    }}
+                  >
+                    <SubjectIcon sx={{ fontSize: 18 }} />
+                  </IconButton>
+                </Tooltip>
+              )}
             </Box>
             <Menu
               anchorEl={menuAnchor}
@@ -539,86 +817,167 @@ function App() {
                   }}
                 />
               </Box>
-              {sortedSpecs
-                .filter((spec) => spec.toLowerCase().includes(searchFilter.toLowerCase()))
-                .map((spec, index) => (
-                  <MenuItem
-                    key={spec}
-                    ref={(el) => { menuItemRefs.current[index] = el; }}
-                    onClick={() => {
-                      setSelectedSpec(spec);
-                      setMenuAnchor(null);
-                      setSearchFilter('');
-                      setHighlightedIndex(0);
-                    }}
-                    onMouseEnter={() => setHighlightedIndex(index)}
+              {viewMode === 'spec' ? (
+                sortedSpecs
+                  .filter((spec) => spec.toLowerCase().includes(searchFilter.toLowerCase()))
+                  .map((spec, index) => (
+                    <MenuItem
+                      key={spec}
+                      ref={(el) => { menuItemRefs.current[index] = el; }}
+                      onClick={() => {
+                        setSelectedSpec(spec);
+                        setMenuAnchor(null);
+                        setSearchFilter('');
+                        setHighlightedIndex(0);
+                      }}
+                      onMouseEnter={() => setHighlightedIndex(index)}
+                      sx={{
+                        fontSize: '0.85rem',
+                        fontFamily: '"JetBrains Mono", monospace',
+                        bgcolor: index === highlightedIndex ? '#e8f4fc' : 'transparent',
+                        '&:hover': {
+                          bgcolor: '#e8f4fc',
+                        },
+                      }}
+                    >
+                      {spec}
+                    </MenuItem>
+                  ))
+              ) : (
+                LIBRARIES
+                  .filter((lib) => lib.toLowerCase().includes(searchFilter.toLowerCase()))
+                  .map((lib) => (
+                    <MenuItem
+                      key={lib}
+                      onClick={() => {
+                        setSelectedLibrary(lib);
+                        setMenuAnchor(null);
+                        setSearchFilter('');
+                      }}
+                      sx={{
+                        fontSize: '0.85rem',
+                        fontFamily: '"JetBrains Mono", monospace',
+                        bgcolor: lib === selectedLibrary ? '#e8f4fc' : 'transparent',
+                        '&:hover': {
+                          bgcolor: '#e8f4fc',
+                        },
+                      }}
+                    >
+                      {lib}
+                    </MenuItem>
+                  ))
+              )}
+            </Menu>
+
+            {viewMode === 'spec' && (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Tooltip title="Previous (← / Swipe right)" arrow placement="bottom">
+                  <IconButton
+                    onClick={goToPrevSpec}
+                    size="small"
+                    aria-label="Previous spec"
                     sx={{
-                      fontSize: '0.85rem',
-                      fontFamily: '"JetBrains Mono", monospace',
-                      bgcolor: index === highlightedIndex ? '#e8f4fc' : 'transparent',
+                      color: '#9ca3af',
                       '&:hover': {
+                        color: '#3776AB',
                         bgcolor: '#e8f4fc',
                       },
                     }}
                   >
-                    {spec}
-                  </MenuItem>
-                ))}
-            </Menu>
-
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <Tooltip title="Previous (← / Swipe right)" arrow placement="bottom">
-                <IconButton
-                  onClick={goToPrevSpec}
-                  size="small"
-                  aria-label="Previous spec"
-                  sx={{
-                    color: '#9ca3af',
-                    '&:hover': {
+                    <ChevronLeftIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Random (Space / Double-tap)" arrow placement="bottom">
+                  <IconButton
+                    ref={shuffleButtonRef}
+                    onClick={shuffleSpec}
+                    size="small"
+                    aria-label="Shuffle to a different random spec"
+                    sx={{
                       color: '#3776AB',
-                      bgcolor: '#e8f4fc',
-                    },
-                  }}
-                >
-                  <ChevronLeftIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Random (Space / Double-tap)" arrow placement="bottom">
-                <IconButton
-                  ref={shuffleButtonRef}
-                  onClick={shuffleSpec}
-                  size="small"
-                  aria-label="Shuffle to a different random spec"
-                  sx={{
-                    color: '#3776AB',
-                    transition: 'transform 0.5s ease',
-                    transform: isShuffling ? 'rotate(180deg)' : 'rotate(0deg)',
-                    '&:hover': {
-                      color: '#2c5d8a',
-                      bgcolor: '#e8f4fc',
-                    },
-                  }}
-                >
-                  <ShuffleIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Next (→ / Swipe left)" arrow placement="bottom">
-                <IconButton
-                  onClick={goToNextSpec}
-                  size="small"
-                  aria-label="Next spec"
-                  sx={{
-                    color: '#9ca3af',
-                    '&:hover': {
+                      transition: 'transform 0.5s ease',
+                      transform: isShuffling ? 'rotate(180deg)' : 'rotate(0deg)',
+                      '&:hover': {
+                        color: '#2c5d8a',
+                        bgcolor: '#e8f4fc',
+                      },
+                    }}
+                  >
+                    <ShuffleIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Next (→ / Swipe left)" arrow placement="bottom">
+                  <IconButton
+                    onClick={goToNextSpec}
+                    size="small"
+                    aria-label="Next spec"
+                    sx={{
+                      color: '#9ca3af',
+                      '&:hover': {
+                        color: '#3776AB',
+                        bgcolor: '#e8f4fc',
+                      },
+                    }}
+                  >
+                    <ChevronRightIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            )}
+            {viewMode === 'library' && (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Tooltip title="Previous (←)" arrow placement="bottom">
+                  <IconButton
+                    onClick={goToPrevLibrary}
+                    size="small"
+                    aria-label="Previous library"
+                    sx={{
+                      color: '#9ca3af',
+                      '&:hover': {
+                        color: '#3776AB',
+                        bgcolor: '#e8f4fc',
+                      },
+                    }}
+                  >
+                    <ChevronLeftIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Random (Space)" arrow placement="bottom">
+                  <IconButton
+                    onClick={shuffleLibrary}
+                    size="small"
+                    aria-label="Shuffle to a different random library"
+                    sx={{
                       color: '#3776AB',
-                      bgcolor: '#e8f4fc',
-                    },
-                  }}
-                >
-                  <ChevronRightIcon />
-                </IconButton>
-              </Tooltip>
-            </Box>
+                      transition: 'transform 0.5s ease',
+                      transform: isShuffling ? 'rotate(180deg)' : 'rotate(0deg)',
+                      '&:hover': {
+                        color: '#2c5d8a',
+                        bgcolor: '#e8f4fc',
+                      },
+                    }}
+                  >
+                    <ShuffleIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Next (→)" arrow placement="bottom">
+                  <IconButton
+                    onClick={goToNextLibrary}
+                    size="small"
+                    aria-label="Next library"
+                    sx={{
+                      color: '#9ca3af',
+                      '&:hover': {
+                        color: '#3776AB',
+                        bgcolor: '#e8f4fc',
+                      },
+                    }}
+                  >
+                    <ChevronRightIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            )}
           </Box>
         )}
 
@@ -702,7 +1061,7 @@ function App() {
           )}
 
           {/* Images - show even during loading if we have images (for smooth transitions) */}
-          {selectedSpec && (images.length > 0 || !loading) && (
+          {((viewMode === 'spec' && selectedSpec) || (viewMode === 'library' && selectedLibrary)) && (images.length > 0 || !loading) && (
             <Box>
             {images.length === 0 ? (
               <Alert
@@ -726,7 +1085,7 @@ function App() {
                   transition: 'opacity 0.15s ease-in-out',
                 }}>
                 {images.map((img, index) => (
-                  <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={img.library} sx={{ maxWidth: 600 }}>
+                  <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={img.spec_id ? `${img.spec_id}-${img.library}` : img.library} sx={{ maxWidth: 600 }}>
                     <Box
                       sx={{
                         animation: 'fadeIn 0.6s ease-out',
@@ -749,7 +1108,7 @@ function App() {
                         }}
                         tabIndex={0}
                         role="button"
-                        aria-label={`View ${img.library} plot in fullscreen`}
+                        aria-label={`View ${viewMode === 'library' ? img.spec_id : img.library} plot in fullscreen`}
                         sx={{
                           borderRadius: 3,
                           overflow: 'hidden',
@@ -767,7 +1126,7 @@ function App() {
                         <CardMedia
                           component="img"
                           image={img.thumb || img.url}
-                          alt={`${selectedSpec} - ${img.library}`}
+                          alt={viewMode === 'library' ? `${img.spec_id} - ${img.library}` : `${selectedSpec} - ${img.library}`}
                           sx={{
                             width: '100%',
                             aspectRatio: '16 / 10',
@@ -780,20 +1139,119 @@ function App() {
                           }}
                         />
                       </Card>
-                      {/* Library label below card */}
-                      <Typography
-                        sx={{
-                          mt: 1.5,
-                          textAlign: 'center',
-                          fontSize: '0.8rem',
-                          fontWeight: 600,
-                          fontFamily: '"JetBrains Mono", monospace',
-                          color: '#9ca3af',
-                          textTransform: 'lowercase',
-                        }}
-                      >
-                        {img.library}
-                      </Typography>
+                      {/* Label below card: library name in spec mode, spec_id in library mode + info button with swapped description */}
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 1.5 }}>
+                        <Typography
+                          sx={{
+                            textAlign: 'center',
+                            fontSize: '0.8rem',
+                            fontWeight: 600,
+                            fontFamily: '"JetBrains Mono", monospace',
+                            color: '#9ca3af',
+                            textTransform: 'lowercase',
+                          }}
+                        >
+                          {viewMode === 'library' ? img.spec_id : img.library}
+                        </Typography>
+                        {/* Info button: shows library desc in spec mode, spec desc in library mode */}
+                        {viewMode === 'spec' ? (
+                          <Tooltip
+                            title={
+                              <Box>
+                                <Typography sx={{ fontSize: '0.8rem', mb: 1 }}>
+                                  {librariesData.find(l => l.id === img.library)?.description || ''}
+                                </Typography>
+                                {librariesData.find(l => l.id === img.library)?.documentation_url && (
+                                  <Link
+                                    href={librariesData.find(l => l.id === img.library)?.documentation_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    sx={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: 0.5,
+                                      fontSize: '0.75rem',
+                                      color: '#90caf9',
+                                      textDecoration: 'underline',
+                                      '&:hover': { color: '#fff' },
+                                    }}
+                                  >
+                                    {librariesData.find(l => l.id === img.library)?.documentation_url?.replace(/^https?:\/\//, '')} <OpenInNewIcon sx={{ fontSize: 12 }} />
+                                  </Link>
+                                )}
+                              </Box>
+                            }
+                            arrow
+                            placement="bottom"
+                            open={openImageTooltip === img.library}
+                            disableFocusListener
+                            disableHoverListener
+                            disableTouchListener
+                            slotProps={{
+                              tooltip: {
+                                sx: {
+                                  maxWidth: { xs: '80vw', sm: 400 },
+                                  fontFamily: '"JetBrains Mono", monospace',
+                                  fontSize: '0.8rem',
+                                },
+                              },
+                            }}
+                          >
+                            <IconButton
+                              data-description-btn
+                              size="small"
+                              onClick={() => setOpenImageTooltip(openImageTooltip === img.library ? null : img.library)}
+                              sx={{
+                                ml: 0.25,
+                                p: 0.25,
+                                color: openImageTooltip === img.library ? '#3776AB' : '#d1d5db',
+                                '&:hover': {
+                                  color: '#3776AB',
+                                  bgcolor: 'transparent',
+                                },
+                              }}
+                            >
+                              <SubjectIcon sx={{ fontSize: 14 }} />
+                            </IconButton>
+                          </Tooltip>
+                        ) : (
+                          <Tooltip
+                            title={specsData.find(s => s.id === img.spec_id)?.description || ''}
+                            arrow
+                            placement="bottom"
+                            open={openImageTooltip === (img.spec_id || '')}
+                            disableFocusListener
+                            disableHoverListener
+                            disableTouchListener
+                            slotProps={{
+                              tooltip: {
+                                sx: {
+                                  maxWidth: { xs: '80vw', sm: 400 },
+                                  fontFamily: '"JetBrains Mono", monospace',
+                                  fontSize: '0.8rem',
+                                },
+                              },
+                            }}
+                          >
+                            <IconButton
+                              data-description-btn
+                              size="small"
+                              onClick={() => setOpenImageTooltip(openImageTooltip === img.spec_id ? null : (img.spec_id || null))}
+                              sx={{
+                                ml: 0.25,
+                                p: 0.25,
+                                color: openImageTooltip === img.spec_id ? '#3776AB' : '#d1d5db',
+                                '&:hover': {
+                                  color: '#3776AB',
+                                  bgcolor: 'transparent',
+                                },
+                              }}
+                            >
+                              <SubjectIcon sx={{ fontSize: 14 }} />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </Box>
                     </Box>
                   </Grid>
                 ))}

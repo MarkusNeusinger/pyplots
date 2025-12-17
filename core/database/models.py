@@ -56,6 +56,7 @@ class Library(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)  # e.g., "Matplotlib"
     version: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # Current version
     documentation_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Short description
 
     # Relationships
     impls: Mapped[list["Impl"]] = relationship("Impl", back_populates="library", cascade="all, delete-orphan")
@@ -112,15 +113,69 @@ class Impl(Base):
     __table_args__ = (UniqueConstraint("spec_id", "library_id", name="uq_impl"),)
 
 
-# Seed data for libraries
+# Seed data for libraries (descriptions from official websites)
 LIBRARIES_SEED = [
-    {"id": "matplotlib", "name": "Matplotlib", "version": "3.9.0", "documentation_url": "https://matplotlib.org"},
-    {"id": "seaborn", "name": "Seaborn", "version": "0.13.0", "documentation_url": "https://seaborn.pydata.org"},
-    {"id": "plotly", "name": "Plotly", "version": "5.18.0", "documentation_url": "https://plotly.com/python"},
-    {"id": "bokeh", "name": "Bokeh", "version": "3.4.0", "documentation_url": "https://bokeh.org"},
-    {"id": "altair", "name": "Altair", "version": "5.2.0", "documentation_url": "https://altair-viz.github.io"},
-    {"id": "plotnine", "name": "plotnine", "version": "0.13.0", "documentation_url": "https://plotnine.readthedocs.io"},
-    {"id": "pygal", "name": "Pygal", "version": "3.0.0", "documentation_url": "http://www.pygal.org"},
-    {"id": "highcharts", "name": "Highcharts", "version": "1.10.0", "documentation_url": "https://www.highcharts.com"},
-    {"id": "letsplot", "name": "lets-plot", "version": "4.5.0", "documentation_url": "https://lets-plot.org"},
+    {
+        "id": "altair",
+        "name": "Altair",
+        "version": "5.2.0",
+        "documentation_url": "https://altair-viz.github.io",
+        "description": "Declarative visualization library for Python. Its simple, friendly and consistent API, built on top of the powerful Vega-Lite grammar, empowers you to spend less time writing code and more time exploring your data.",
+    },
+    {
+        "id": "bokeh",
+        "name": "Bokeh",
+        "version": "3.4.0",
+        "documentation_url": "https://bokeh.org",
+        "description": "Interactive visualization library that makes it simple to create common plots, while also handling custom or specialized use-cases. Work in Python close to all the PyData tools you're already familiar with.",
+    },
+    {
+        "id": "highcharts",
+        "name": "Highcharts",
+        "version": "1.10.0",
+        "documentation_url": "https://www.highcharts.com",
+        "description": "Powerful data visualization for real-world apps. Fast to implement, endlessly flexible. Makes it easy for developers to create charts and dashboards for web and mobile platforms.",
+    },
+    {
+        "id": "letsplot",
+        "name": "lets-plot",
+        "version": "4.5.0",
+        "documentation_url": "https://lets-plot.org",
+        "description": "Multiplatform plotting library built on the principles of the Grammar of Graphics. A faithful adaptation of R's ggplot2 that extends Grammar of Graphics principles to both Python and Kotlin.",
+    },
+    {
+        "id": "matplotlib",
+        "name": "Matplotlib",
+        "version": "3.9.0",
+        "documentation_url": "https://matplotlib.org",
+        "description": "Comprehensive library for creating static, animated, and interactive visualizations in Python. Matplotlib makes easy things easy and hard things possible.",
+    },
+    {
+        "id": "plotly",
+        "name": "Plotly",
+        "version": "5.18.0",
+        "documentation_url": "https://plotly.com/python",
+        "description": "Python graphing library that makes interactive, publication-quality graphs. Create line plots, scatter plots, area charts, bar charts, error bars, box plots, histograms, heatmaps, subplots, and more.",
+    },
+    {
+        "id": "plotnine",
+        "name": "plotnine",
+        "version": "0.13.0",
+        "documentation_url": "https://plotnine.org",
+        "description": "A grammar of graphics for Python. Data visualization package based on the grammar of graphics, a coherent system for describing and building graphs. From ad-hoc plots to publication-ready figures.",
+    },
+    {
+        "id": "pygal",
+        "name": "Pygal",
+        "version": "3.0.0",
+        "documentation_url": "http://www.pygal.org",
+        "description": "Beautiful python charting. Simple python charting library that creates SVG charts that are both beautiful and easy to customize.",
+    },
+    {
+        "id": "seaborn",
+        "name": "Seaborn",
+        "version": "0.13.0",
+        "documentation_url": "https://seaborn.pydata.org",
+        "description": "Python data visualization library based on matplotlib. Provides a high-level interface for drawing attractive and informative statistical graphics.",
+    },
 ]

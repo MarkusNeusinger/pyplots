@@ -14,7 +14,7 @@ from contextlib import asynccontextmanager  # noqa: E402
 from typing import Optional  # noqa: E402
 
 import httpx  # noqa: E402
-
+from cachetools import TTLCache  # noqa: E402
 from fastapi import Depends, FastAPI, HTTPException  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 from fastapi.responses import JSONResponse, Response  # noqa: E402
@@ -35,6 +35,9 @@ from core.database import (  # noqa: E402
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
+
+# Cache for DB queries (1000 entries, 10 min TTL)
+_cache: TTLCache = TTLCache(maxsize=1000, ttl=600)
 
 
 @asynccontextmanager
@@ -163,17 +166,23 @@ async def get_specs(db: AsyncSession = Depends(get_db)):
     if not is_db_configured():
         raise HTTPException(status_code=503, detail="Database not configured")
 
+    cache_key = "specs_list"
+    if cache_key in _cache:
+        return _cache[cache_key]
+
     repo = SpecRepository(db)
     specs = await repo.get_all()
 
     # Only return specs with at least one implementation
-    return [
+    result = [
         SpecListItem(
             id=spec.id, title=spec.title, description=spec.description, tags=spec.tags, library_count=len(spec.impls)
         )
         for spec in specs
         if spec.impls  # Filter: only specs with implementations
     ]
+    _cache[cache_key] = result
+    return result
 
 
 @app.get("/specs/{spec_id}", response_model=SpecDetailResponse)
@@ -189,6 +198,10 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(get_db)):
     """
     if not is_db_configured():
         raise HTTPException(status_code=503, detail="Database not configured")
+
+    cache_key = f"spec:{spec_id}"
+    if cache_key in _cache:
+        return _cache[cache_key]
 
     repo = SpecRepository(db)
     spec = await repo.get_by_id(spec_id)
@@ -217,7 +230,7 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(get_db)):
         for impl in spec.impls
     ]
 
-    return SpecDetailResponse(
+    result = SpecDetailResponse(
         id=spec.id,
         title=spec.title,
         description=spec.description,
@@ -229,6 +242,8 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(get_db)):
         suggested=spec.suggested,
         implementations=impls,
     )
+    _cache[cache_key] = result
+    return result
 
 
 @app.get("/specs/{spec_id}/images")
@@ -240,6 +255,10 @@ async def get_spec_images(spec_id: str, db: AsyncSession = Depends(get_db)):
     """
     if not is_db_configured():
         raise HTTPException(status_code=503, detail="Database not configured")
+
+    cache_key = f"spec_images:{spec_id}"
+    if cache_key in _cache:
+        return _cache[cache_key]
 
     repo = SpecRepository(db)
     spec = await repo.get_by_id(spec_id)
@@ -256,7 +275,9 @@ async def get_spec_images(spec_id: str, db: AsyncSession = Depends(get_db)):
         if impl.preview_url  # Only include if there's a preview
     ]
 
-    return {"spec_id": spec_id, "images": images}
+    result = {"spec_id": spec_id, "images": images}
+    _cache[cache_key] = result
+    return result
 
 
 # ============================================================================
@@ -269,20 +290,76 @@ async def get_libraries(db: AsyncSession = Depends(get_db)):
     """
     Get list of all supported plotting libraries.
 
-    Returns library information including name, version, and documentation URL.
+    Returns library information including name, version, documentation URL, and description.
     """
     if not is_db_configured():
         return {"libraries": LIBRARIES_SEED}
 
+    cache_key = "libraries"
+    if cache_key in _cache:
+        return _cache[cache_key]
+
     repo = LibraryRepository(db)
     libraries = await repo.get_all()
 
-    return {
+    result = {
         "libraries": [
-            {"id": lib.id, "name": lib.name, "version": lib.version, "documentation_url": lib.documentation_url}
+            {
+                "id": lib.id,
+                "name": lib.name,
+                "version": lib.version,
+                "documentation_url": lib.documentation_url,
+                "description": lib.description,
+            }
             for lib in libraries
         ]
     }
+    _cache[cache_key] = result
+    return result
+
+
+@app.get("/libraries/{library_id}/images")
+async def get_library_images(library_id: str, db: AsyncSession = Depends(get_db)):
+    """
+    Get all plot images for a specific library across all specs.
+
+    Args:
+        library_id: The library ID (e.g., 'matplotlib', 'seaborn')
+
+    Returns:
+        List of images with spec_id, preview_url, thumb, and html
+    """
+    if not is_db_configured():
+        raise HTTPException(status_code=503, detail="Database not configured")
+
+    # Validate library_id
+    valid_libraries = [lib["id"] for lib in LIBRARIES_SEED]
+    if library_id not in valid_libraries:
+        raise HTTPException(status_code=404, detail=f"Library '{library_id}' not found")
+
+    cache_key = f"lib_images:{library_id}"
+    if cache_key in _cache:
+        return _cache[cache_key]
+
+    repo = SpecRepository(db)
+    specs = await repo.get_all()
+
+    images = []
+    for spec in specs:
+        for impl in spec.impls:
+            if impl.library_id == library_id and impl.preview_url:
+                images.append({
+                    "spec_id": spec.id,
+                    "library": impl.library_id,
+                    "url": impl.preview_url,
+                    "thumb": impl.preview_thumb,
+                    "html": impl.preview_html,
+                    "code": impl.code,
+                })
+
+    result = {"library": library_id, "images": images}
+    _cache[cache_key] = result
+    return result
 
 
 # ============================================================================

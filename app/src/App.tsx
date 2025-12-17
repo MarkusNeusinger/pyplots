@@ -15,7 +15,6 @@ import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Tooltip from '@mui/material/Tooltip';
-import CircularProgress from '@mui/material/CircularProgress';
 import SearchIcon from '@mui/icons-material/Search';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import CloseIcon from '@mui/icons-material/Close';
@@ -30,6 +29,13 @@ import SyncIcon from '@mui/icons-material/Sync';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
+// Plausible analytics (only in production)
+declare global {
+  interface Window {
+    plausible?: (event: string, options?: { props?: Record<string, string> }) => void;
+  }
+}
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const GITHUB_URL = 'https://github.com/MarkusNeusinger/pyplots'; // pyplots repo
@@ -88,7 +94,6 @@ function App() {
   const [hasMore, setHasMore] = useState(false);                      // Are there more images to load?
   const shuffleButtonRef = useRef<HTMLButtonElement>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);                   // Intersection Observer target
-  const contentRef = useRef<HTMLDivElement>(null);                    // For scroll-to-content
   const searchInputRef = useRef<HTMLInputElement>(null);
   const menuItemRefs = useRef<(HTMLLIElement | null)[]>([]);
   const touchStartX = useRef<number | null>(null);
@@ -143,10 +148,6 @@ function App() {
   const shuffleLibrary = useCallback(() => {
     if (LIBRARIES.length <= 1) return;
     setIsShuffling(true);
-    setAllImages([]); // Clear old images
-    setDisplayedImages([]);
-    setHasMore(false);
-    setLoading(true); // Show loading animation
     setTimeout(() => setIsShuffling(false), 300);
     const otherLibraries = LIBRARIES.filter((l) => l !== selectedLibrary);
     const randomIndex = Math.floor(Math.random() * otherLibraries.length);
@@ -157,10 +158,6 @@ function App() {
   const goToPrevLibrary = useCallback(() => {
     if (LIBRARIES.length <= 1 || isTransitioning) return;
     setIsTransitioning(true);
-    setAllImages([]); // Clear images during transition
-    setDisplayedImages([]);
-    setHasMore(false);
-    setLoading(true); // Show loading animation
     setTimeout(() => {
       const currentIndex = LIBRARIES.indexOf(selectedLibrary);
       const prevIndex = currentIndex <= 0 ? LIBRARIES.length - 1 : currentIndex - 1;
@@ -172,10 +169,6 @@ function App() {
   const goToNextLibrary = useCallback(() => {
     if (LIBRARIES.length <= 1 || isTransitioning) return;
     setIsTransitioning(true);
-    setAllImages([]); // Clear images during transition
-    setDisplayedImages([]);
-    setHasMore(false);
-    setLoading(true); // Show loading animation
     setTimeout(() => {
       const currentIndex = LIBRARIES.indexOf(selectedLibrary);
       const nextIndex = currentIndex >= LIBRARIES.length - 1 ? 0 : currentIndex + 1;
@@ -217,7 +210,7 @@ function App() {
   }, []);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    if (touchStartX.current === null || modalImage || viewMode !== 'spec') return;
+    if (touchStartX.current === null || modalImage) return;
 
     const touchEndX = e.changedTouches[0].clientX;
     const diff = touchEndX - touchStartX.current;
@@ -225,20 +218,22 @@ function App() {
 
     if (Math.abs(diff) > minSwipeDistance) {
       if (diff > 0) {
-        goToPrevSpec(); // Swipe right = previous
+        // Swipe right = previous
+        viewMode === 'spec' ? goToPrevSpec() : goToPrevLibrary();
       } else {
-        goToNextSpec(); // Swipe left = next
+        // Swipe left = next
+        viewMode === 'spec' ? goToNextSpec() : goToNextLibrary();
       }
     } else {
       // Check for double tap
       const now = Date.now();
       if (now - lastTapTime.current < 300) {
-        shuffleSpec();
+        viewMode === 'spec' ? shuffleSpec() : shuffleLibrary();
       }
       lastTapTime.current = now;
     }
     touchStartX.current = null;
-  }, [modalImage, viewMode, goToPrevSpec, goToNextSpec, shuffleSpec]);
+  }, [modalImage, viewMode, goToPrevSpec, goToNextSpec, shuffleSpec, goToPrevLibrary, goToNextLibrary, shuffleLibrary]);
 
   // Copy code to clipboard
   const copyCodeToClipboard = useCallback(() => {
@@ -411,11 +406,19 @@ function App() {
       window.history.replaceState({}, '', url.toString());
       document.title = `${selectedSpec} | pyplots.ai`;
       setDescriptionOpen(false);
+      // Track pageview in Plausible
+      if (typeof window.plausible === 'function') {
+        window.plausible('pageview');
+      }
     } else if (viewMode === 'library' && selectedLibrary) {
       url.searchParams.delete('spec');
       url.searchParams.set('library', selectedLibrary);
       window.history.replaceState({}, '', url.toString());
       document.title = `${selectedLibrary} plots | pyplots.ai`;
+      // Track pageview in Plausible
+      if (typeof window.plausible === 'function') {
+        window.plausible('pageview');
+      }
     }
   }, [selectedSpec, selectedLibrary, specsLoaded, viewMode]);
 
@@ -541,16 +544,6 @@ function App() {
 
     return () => observer.disconnect();
   }, [hasMore, loadMore]);
-
-  // Scroll to content when spec/library changes (hide header)
-  useEffect(() => {
-    if (displayedImages.length > 0 && contentRef.current) {
-      // Small delay to ensure DOM is updated
-      setTimeout(() => {
-        contentRef.current?.scrollIntoView({ behavior: 'instant', block: 'start' });
-      }, 50);
-    }
-  }, [selectedSpec, selectedLibrary]);
 
   // Close description when clicking anywhere (except the info button itself)
   const handleContainerClick = useCallback((e: React.MouseEvent) => {
@@ -988,7 +981,7 @@ function App() {
             )}
             {viewMode === 'library' && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Tooltip title="Previous (←)" arrow placement="bottom">
+                <Tooltip title="Previous (← / Swipe right)" arrow placement="bottom">
                   <IconButton
                     onClick={goToPrevLibrary}
                     size="small"
@@ -1004,8 +997,9 @@ function App() {
                     <ChevronLeftIcon />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Random (Space)" arrow placement="bottom">
+                <Tooltip title="Random (Space / Double-tap)" arrow placement="bottom">
                   <IconButton
+                    ref={shuffleButtonRef}
                     onClick={shuffleLibrary}
                     size="small"
                     aria-label="Shuffle to a different random library"
@@ -1022,7 +1016,7 @@ function App() {
                     <ShuffleIcon />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Next (→)" arrow placement="bottom">
+                <Tooltip title="Next (→ / Swipe left)" arrow placement="bottom">
                   <IconButton
                     onClick={goToNextLibrary}
                     size="small"
@@ -1321,7 +1315,49 @@ function App() {
                 {hasMore && (
                   <Grid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
                     <div ref={loadMoreRef}>
-                      <CircularProgress size={24} sx={{ color: '#3776AB' }} />
+                      <Box
+                        sx={{
+                          position: 'relative',
+                          width: 75,
+                          height: 12,
+                          '&::before': {
+                            content: '""',
+                            position: 'absolute',
+                            width: 12,
+                            height: 12,
+                            borderRadius: '50%',
+                            background: '#3776AB',
+                            boxShadow: '24px 0 #3776AB',
+                            left: 0,
+                            top: 0,
+                            animation: 'ballMoveX 2s linear infinite',
+                          },
+                          '&::after': {
+                            content: '""',
+                            position: 'absolute',
+                            width: 12,
+                            height: 12,
+                            borderRadius: '50%',
+                            background: '#3776AB',
+                            left: 0,
+                            top: 0,
+                            transform: 'translateX(48px) scale(1)',
+                            zIndex: 2,
+                            animation: 'trfLoader 2s linear infinite',
+                          },
+                          '@keyframes trfLoader': {
+                            '0%, 5%': { transform: 'translateX(48px) scale(1)', background: '#3776AB' },
+                            '10%': { transform: 'translateX(48px) scale(1)', background: '#FFD43B' },
+                            '40%': { transform: 'translateX(24px) scale(1.5)', background: '#FFD43B' },
+                            '90%, 95%': { transform: 'translateX(0px) scale(1)', background: '#FFD43B' },
+                            '100%': { transform: 'translateX(0px) scale(1)', background: '#3776AB' },
+                          },
+                          '@keyframes ballMoveX': {
+                            '0%, 10%': { transform: 'translateX(0)' },
+                            '90%, 100%': { transform: 'translateX(24px)' },
+                          },
+                        }}
+                      />
                     </div>
                   </Grid>
                 )}

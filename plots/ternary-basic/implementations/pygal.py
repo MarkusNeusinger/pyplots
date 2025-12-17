@@ -1,11 +1,14 @@
 """
 ternary-basic: Basic Ternary Plot
 Library: pygal
+
+Uses pygal's XML filter to add text labels for vertices since pygal lacks native annotation support.
 """
 
 import math
 
 import pygal
+from pygal.etree import etree
 from pygal.style import Style
 
 
@@ -34,7 +37,11 @@ samples = [
     (20, 40, 40),
 ]
 
-# Triangle dimensions
+# Chart dimensions
+WIDTH = 4800
+HEIGHT = 2700
+
+# Triangle dimensions in normalized coordinates (0-1)
 triangle_height = math.sqrt(3) / 2
 
 
@@ -93,10 +100,59 @@ custom_style = Style(
     stroke_width=3,
 )
 
+# Plot area margins (approximate from pygal default layout)
+PLOT_LEFT = 150
+PLOT_TOP = 200
+PLOT_WIDTH = WIDTH - 300
+PLOT_HEIGHT = HEIGHT - 400
+
+# Data range for coordinate conversion
+X_MIN, X_MAX = -0.15, 1.15
+Y_MIN, Y_MAX = -0.15, triangle_height + 0.15
+
+
+def data_to_svg(x, y):
+    """Convert data coordinates to SVG pixel coordinates."""
+    svg_x = PLOT_LEFT + (x - X_MIN) / (X_MAX - X_MIN) * PLOT_WIDTH
+    svg_y = PLOT_TOP + (1 - (y - Y_MIN) / (Y_MAX - Y_MIN)) * PLOT_HEIGHT
+    return svg_x, svg_y
+
+
+# Vertex label data (label text, x, y, anchor, baseline)
+vertex_labels = [
+    ("Sand", 0.5, triangle_height + 0.06, "middle", "auto"),  # Top
+    ("Silt", -0.05, -0.05, "end", "auto"),  # Bottom-left
+    ("Clay", 1.05, -0.05, "start", "auto"),  # Bottom-right
+]
+
+
+# XML filter to add vertex labels
+def add_vertex_labels(root):
+    """Add text labels for triangle vertices."""
+    g = etree.SubElement(root, "g")
+    g.set("class", "vertex-labels")
+
+    for label, x, y, anchor, baseline in vertex_labels:
+        svg_x, svg_y = data_to_svg(x, y)
+
+        text = etree.SubElement(g, "text")
+        text.set("x", f"{svg_x:.1f}")
+        text.set("y", f"{svg_y:.1f}")
+        text.set("text-anchor", anchor)
+        text.set("dominant-baseline", baseline)
+        text.set("fill", "#333333")
+        text.set("font-size", "56")
+        text.set("font-family", "sans-serif")
+        text.set("font-weight", "bold")
+        text.text = label
+
+    return root
+
+
 # Create XY chart
 chart = pygal.XY(
-    width=4800,
-    height=2700,
+    width=WIDTH,
+    height=HEIGHT,
     style=custom_style,
     title="Soil Composition · ternary-basic · pygal · pyplots.ai",
     show_legend=True,
@@ -107,8 +163,8 @@ chart = pygal.XY(
     show_y_labels=False,
     x_title=None,
     y_title=None,
-    range=(-0.12, triangle_height + 0.12),
-    xrange=(-0.12, 1.12),
+    range=(Y_MIN, Y_MAX),
+    xrange=(X_MIN, X_MAX),
     margin=50,
     explicit_size=True,
 )
@@ -138,6 +194,9 @@ for p1, p2 in grid_lines:
 chart.add(
     None, [{"value": p, "node": {"r": 0}} for p in triangle], stroke=True, show_dots=False, stroke_style={"width": 4}
 )
+
+# Add XML filter for vertex labels
+chart.add_xml_filter(add_vertex_labels)
 
 # Save as SVG (for HTML) and PNG
 chart.render_to_file("plot.html")

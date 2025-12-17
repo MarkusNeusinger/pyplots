@@ -22,6 +22,9 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DownloadIcon from '@mui/icons-material/Download';
 import CodeIcon from '@mui/icons-material/Code';
 import ImageIcon from '@mui/icons-material/Image';
+import SubjectIcon from '@mui/icons-material/Subject';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -51,6 +54,7 @@ function App() {
   const [specDescription, setSpecDescription] = useState<string>('');
   const [showCode, setShowCode] = useState(false);
   const [blinkCodeButton, setBlinkCodeButton] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const shuffleButtonRef = useRef<HTMLButtonElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const menuItemRefs = useRef<(HTMLLIElement | null)[]>([]);
@@ -65,6 +69,9 @@ function App() {
     return shuffled;
   };
 
+  // Sorted specs for navigation
+  const sortedSpecs = useMemo(() => [...specs].sort(), [specs]);
+
   // Shuffle to a different random spec
   const shuffleSpec = useCallback(() => {
     if (specs.length <= 1) return;
@@ -74,6 +81,28 @@ function App() {
     const randomIndex = Math.floor(Math.random() * otherSpecs.length);
     setSelectedSpec(otherSpecs[randomIndex]);
   }, [specs, selectedSpec]);
+
+  // Navigate to previous spec (alphabetically) - with fade transition
+  const goToPrevSpec = useCallback(() => {
+    if (sortedSpecs.length <= 1 || isTransitioning) return;
+    setIsTransitioning(true);
+    setTimeout(() => {
+      const currentIndex = sortedSpecs.indexOf(selectedSpec);
+      const prevIndex = currentIndex <= 0 ? sortedSpecs.length - 1 : currentIndex - 1;
+      setSelectedSpec(sortedSpecs[prevIndex]);
+    }, 150);
+  }, [sortedSpecs, selectedSpec, isTransitioning]);
+
+  // Navigate to next spec (alphabetically) - with fade transition
+  const goToNextSpec = useCallback(() => {
+    if (sortedSpecs.length <= 1 || isTransitioning) return;
+    setIsTransitioning(true);
+    setTimeout(() => {
+      const currentIndex = sortedSpecs.indexOf(selectedSpec);
+      const nextIndex = currentIndex >= sortedSpecs.length - 1 ? 0 : currentIndex + 1;
+      setSelectedSpec(sortedSpecs[nextIndex]);
+    }, 150);
+  }, [sortedSpecs, selectedSpec, isTransitioning]);
 
   // Copy code to clipboard
   const copyCodeToClipboard = useCallback(() => {
@@ -130,6 +159,14 @@ function App() {
         e.preventDefault();
         shuffleSpec();
       }
+      if (e.code === 'ArrowLeft' && !modalImage && !menuAnchor && !isTyping) {
+        e.preventDefault();
+        goToPrevSpec();
+      }
+      if (e.code === 'ArrowRight' && !modalImage && !menuAnchor && !isTyping) {
+        e.preventDefault();
+        goToNextSpec();
+      }
       if (e.code === 'Enter' && !modalImage && !menuAnchor && !isTyping) {
         e.preventDefault();
         const chip = document.querySelector('[data-spec-chip]') as HTMLElement;
@@ -148,7 +185,7 @@ function App() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [modalImage, menuAnchor, shuffleSpec]);
+  }, [modalImage, menuAnchor, shuffleSpec, goToPrevSpec, goToNextSpec]);
 
   // Load specs on mount
   useEffect(() => {
@@ -237,6 +274,8 @@ function App() {
         setError(`Error loading images: ${err}`);
       } finally {
         setLoading(false);
+        // End fade transition after images load
+        setTimeout(() => setIsTransitioning(false), 50);
       }
     };
 
@@ -308,26 +347,20 @@ function App() {
               mb: 5,
             }}
           >
-            <Tooltip
-              title={specDescription}
-              arrow
-              placement="bottom"
-              enterDelay={300}
-              slotProps={{
-                tooltip: {
-                  sx: {
-                    maxWidth: 400,
-                    fontFamily: '"JetBrains Mono", monospace',
-                    fontSize: '0.8rem',
-                  },
-                },
-              }}
-            >
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {/* Invisible spacer for visual balance */}
+              <Box sx={{ width: 28, visibility: 'hidden' }} />
               <Chip
                 data-spec-chip
                 label={selectedSpec}
                 variant="outlined"
                 onClick={(e) => setMenuAnchor(e.currentTarget)}
+                onKeyDown={(e) => {
+                  // Prevent space from triggering click (space is for shuffle)
+                  if (e.code === 'Space') {
+                    e.preventDefault();
+                  }
+                }}
                 sx={{
                   fontSize: '0.95rem',
                   fontWeight: 600,
@@ -343,7 +376,36 @@ function App() {
                   },
                 }}
               />
-            </Tooltip>
+              <Tooltip
+                title={specDescription}
+                arrow
+                placement="right"
+                enterDelay={100}
+                slotProps={{
+                  tooltip: {
+                    sx: {
+                      maxWidth: 400,
+                      fontFamily: '"JetBrains Mono", monospace',
+                      fontSize: '0.8rem',
+                    },
+                  },
+                }}
+              >
+                <IconButton
+                  size="small"
+                  sx={{
+                    ml: 0.5,
+                    color: '#9ca3af',
+                    '&:hover': {
+                      color: '#3776AB',
+                      bgcolor: 'transparent',
+                    },
+                  }}
+                >
+                  <SubjectIcon sx={{ fontSize: 18 }} />
+                </IconButton>
+              </Tooltip>
+            </Box>
             <Menu
               anchorEl={menuAnchor}
               open={Boolean(menuAnchor)}
@@ -390,7 +452,7 @@ function App() {
                     setHighlightedIndex(0);
                   }}
                   onKeyDown={(e) => {
-                    const filtered = specs.filter((s) => s.toLowerCase().includes(searchFilter.toLowerCase()));
+                    const filtered = sortedSpecs.filter((s) => s.toLowerCase().includes(searchFilter.toLowerCase()));
 
                     if (e.key === 'Escape') {
                       setMenuAnchor(null);
@@ -438,7 +500,7 @@ function App() {
                   }}
                 />
               </Box>
-              {specs
+              {sortedSpecs
                 .filter((spec) => spec.toLowerCase().includes(searchFilter.toLowerCase()))
                 .map((spec, index) => (
                   <MenuItem
@@ -465,30 +527,66 @@ function App() {
                 ))}
             </Menu>
 
-            <IconButton
-              ref={shuffleButtonRef}
-              onClick={shuffleSpec}
-              size="small"
-              aria-label="Shuffle to a different random spec"
-              sx={{
-                color: '#3776AB',
-                transition: 'transform 0.5s ease',
-                transform: isShuffling ? 'rotate(180deg)' : 'rotate(0deg)',
-                '&:hover': {
-                  color: '#2c5d8a',
-                  bgcolor: '#e8f4fc',
-                },
-              }}
-            >
-              <ShuffleIcon fontSize="small" />
-            </IconButton>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Tooltip title="Previous (←)" arrow placement="bottom">
+                <IconButton
+                  onClick={goToPrevSpec}
+                  size="small"
+                  aria-label="Previous spec"
+                  sx={{
+                    color: '#9ca3af',
+                    '&:hover': {
+                      color: '#3776AB',
+                      bgcolor: '#e8f4fc',
+                    },
+                  }}
+                >
+                  <ChevronLeftIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Random (Space)" arrow placement="bottom">
+                <IconButton
+                  ref={shuffleButtonRef}
+                  onClick={shuffleSpec}
+                  size="small"
+                  aria-label="Shuffle to a different random spec"
+                  sx={{
+                    color: '#3776AB',
+                    transition: 'transform 0.5s ease',
+                    transform: isShuffling ? 'rotate(180deg)' : 'rotate(0deg)',
+                    '&:hover': {
+                      color: '#2c5d8a',
+                      bgcolor: '#e8f4fc',
+                    },
+                  }}
+                >
+                  <ShuffleIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Next (→)" arrow placement="bottom">
+                <IconButton
+                  onClick={goToNextSpec}
+                  size="small"
+                  aria-label="Next spec"
+                  sx={{
+                    color: '#9ca3af',
+                    '&:hover': {
+                      color: '#3776AB',
+                      bgcolor: '#e8f4fc',
+                    },
+                  }}
+                >
+                  <ChevronRightIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
           </Box>
         )}
 
         {/* Content */}
         <Box>
-          {/* Loading State */}
-          {loading && (
+          {/* Loading State - only show on initial load, not during navigation */}
+          {loading && !isTransitioning && images.length === 0 && (
             <Box
               sx={{
                 display: 'flex',
@@ -564,8 +662,8 @@ function App() {
             </Box>
           )}
 
-          {/* Images */}
-          {!loading && selectedSpec && (
+          {/* Images - show even during loading if we have images (for smooth transitions) */}
+          {selectedSpec && (images.length > 0 || !loading) && (
             <Box>
             {images.length === 0 ? (
               <Alert
@@ -581,7 +679,13 @@ function App() {
                 No images found for this spec.
               </Alert>
             ) : (
-              <Grid container spacing={3} justifyContent="center" sx={{ maxWidth: 1800, mx: 'auto' }}>
+              <Grid container spacing={3} justifyContent="center" sx={{
+                  maxWidth: 1800,
+                  mx: 'auto',
+                  minHeight: '60vh',
+                  opacity: isTransitioning ? 0 : 1,
+                  transition: 'opacity 0.15s ease-in-out',
+                }}>
                 {images.map((img, index) => (
                   <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={img.library} sx={{ maxWidth: 600 }}>
                     <Box

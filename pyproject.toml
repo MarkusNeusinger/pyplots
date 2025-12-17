@@ -103,6 +103,8 @@ exclude = [
     "__pycache__",
     "dist",
     "temp",
+    "plots",
+    "scripts",
 ]
 
 [tool.ruff.lint]

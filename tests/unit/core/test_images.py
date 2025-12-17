@@ -213,7 +213,7 @@ class TestImageFormats:
         img.save(img_path)
 
         output_path = tmp_path / "processed.png"
-        result = process_plot_image(img_path, output_path)
+        process_plot_image(img_path, output_path)
 
         assert output_path.exists()
 

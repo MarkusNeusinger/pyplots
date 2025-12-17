@@ -348,14 +348,16 @@ async def get_library_images(library_id: str, db: AsyncSession = Depends(get_db)
     for spec in specs:
         for impl in spec.impls:
             if impl.library_id == library_id and impl.preview_url:
-                images.append({
-                    "spec_id": spec.id,
-                    "library": impl.library_id,
-                    "url": impl.preview_url,
-                    "thumb": impl.preview_thumb,
-                    "html": impl.preview_html,
-                    "code": impl.code,
-                })
+                images.append(
+                    {
+                        "spec_id": spec.id,
+                        "library": impl.library_id,
+                        "url": impl.preview_url,
+                        "thumb": impl.preview_thumb,
+                        "html": impl.preview_html,
+                        "code": impl.code,
+                    }
+                )
 
     result = {"library": library_id, "images": images}
     _cache[cache_key] = result

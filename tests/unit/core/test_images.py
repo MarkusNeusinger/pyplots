@@ -60,12 +60,12 @@ class TestCreateThumbnail:
         assert output_path.exists()
 
     def test_default_width(self, sample_image: Path, tmp_path: Path) -> None:
-        """Should use default width of 600 if not specified."""
+        """Should use default width of 1200 if not specified."""
         output_path = tmp_path / "thumb.png"
         width, height = create_thumbnail(sample_image, output_path)
 
-        assert width == 600
-        assert height == 450  # 800x600 -> 600x450 (4:3 ratio)
+        assert width == 1200  # Default width is 1200
+        assert height == 900  # Original 800x600 scaled to 1200x900 (4:3 ratio)
 
     def test_portrait_image(self, tmp_path: Path) -> None:
         """Should handle portrait orientation images."""
@@ -117,8 +117,8 @@ class TestProcessPlotImage:
         assert thumb_path.exists()
         assert result["output"] == str(output_path)
         assert result["thumbnail"] == str(thumb_path)
-        assert result["thumb_size"][0] == 600
-        assert result["thumb_size"][1] == 450  # Original 800x600 -> 600x450
+        assert result["thumb_size"][0] == 1200  # Default width is 1200
+        assert result["thumb_size"][1] == 900  # Original 800x600 scaled to 1200x900
 
     def test_without_thumbnail(self, sample_image: Path, tmp_path: Path) -> None:
         """Should work without creating a thumbnail."""

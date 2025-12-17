@@ -247,7 +247,7 @@ function App() {
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: '#fff',
+        bgcolor: '#fafafa',
         py: 5,
       }}
     >
@@ -610,12 +610,13 @@ function App() {
                         sx={{
                           borderRadius: 3,
                           overflow: 'hidden',
-                          border: '1px solid #f3f4f6',
+                          border: '2px solid rgba(55, 118, 171, 0.2)',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                           transition: 'all 0.3s ease',
                           cursor: 'pointer',
                           '&:hover': {
-                            borderColor: '#e5e7eb',
-                            boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                            border: '2px solid rgba(55, 118, 171, 0.4)',
+                            boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
                             transform: 'scale(1.03)',
                           },
                         }}
@@ -626,7 +627,7 @@ function App() {
                           alt={`${selectedSpec} - ${img.library}`}
                           sx={{
                             width: '100%',
-                            aspectRatio: '4 / 3',
+                            aspectRatio: '16 / 10',
                             objectFit: 'contain',
                             bgcolor: '#fff',
                           }}

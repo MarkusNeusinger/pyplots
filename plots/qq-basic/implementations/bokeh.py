@@ -1,0 +1,119 @@
+"""
+qq-basic: Basic Q-Q Plot
+Library: bokeh
+"""
+
+import numpy as np
+from bokeh.io import export_png, output_file, save
+from bokeh.models import ColumnDataSource, Slope
+from bokeh.plotting import figure
+
+
+# Data - sample with slight right skew to show Q-Q plot characteristics
+np.random.seed(42)
+n = 100
+sample = np.concatenate(
+    [
+        np.random.normal(0, 1, 85),  # Main normal component
+        np.random.normal(2, 0.5, 15),  # Right tail values to show deviation
+    ]
+)
+np.random.shuffle(sample)
+
+# Calculate Q-Q values
+sorted_sample = np.sort(sample)
+n_points = len(sorted_sample)
+
+# Compute theoretical quantiles using inverse normal CDF approximation
+# Abramowitz and Stegun rational approximation coefficients
+prob = (np.arange(1, n_points + 1) - 0.5) / n_points
+prob = np.clip(prob, 1e-10, 1 - 1e-10)
+
+a = [
+    -3.969683028665376e01,
+    2.209460984245205e02,
+    -2.759285104469687e02,
+    1.383577518672690e02,
+    -3.066479806614716e01,
+    2.506628277459239e00,
+]
+b = [-5.447609879822406e01, 1.615858368580409e02, -1.556989798598866e02, 6.680131188771972e01, -1.328068155288572e01]
+c = [
+    -7.784894002430293e-03,
+    -3.223964580411365e-01,
+    -2.400758277161838e00,
+    -2.549732539343734e00,
+    4.374664141464968e00,
+    2.938163982698783e00,
+]
+d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e00, 3.754408661907416e00]
+
+p_low = 0.02425
+p_high = 1 - p_low
+theoretical_quantiles = np.zeros_like(prob, dtype=float)
+
+# Lower region
+mask_low = prob < p_low
+if np.any(mask_low):
+    q = np.sqrt(-2 * np.log(prob[mask_low]))
+    theoretical_quantiles[mask_low] = (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / (
+        (((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1
+    )
+
+# Central region
+mask_central = (prob >= p_low) & (prob <= p_high)
+if np.any(mask_central):
+    q = prob[mask_central] - 0.5
+    r = q * q
+    theoretical_quantiles[mask_central] = (
+        (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5])
+        * q
+        / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1)
+    )
+
+# Upper region
+mask_high = prob > p_high
+if np.any(mask_high):
+    q = np.sqrt(-2 * np.log(1 - prob[mask_high]))
+    theoretical_quantiles[mask_high] = -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / (
+        (((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1
+    )
+
+# Create ColumnDataSource
+source = ColumnDataSource(data={"theoretical": theoretical_quantiles, "sample": sorted_sample})
+
+# Create figure (4800 × 2700 px)
+p = figure(
+    width=4800,
+    height=2700,
+    title="qq-basic · bokeh · pyplots.ai",
+    x_axis_label="Theoretical Quantiles",
+    y_axis_label="Sample Quantiles",
+    toolbar_location=None,
+)
+
+# Add reference line (y=x)
+slope = Slope(gradient=1, y_intercept=0, line_color="#FFD43B", line_width=4, line_dash="dashed")
+p.add_layout(slope)
+
+# Plot Q-Q points
+p.scatter(x="theoretical", y="sample", source=source, size=20, color="#306998", alpha=0.7)
+
+# Styling for 4800×2700 px
+p.title.text_font_size = "36pt"
+p.xaxis.axis_label_text_font_size = "28pt"
+p.yaxis.axis_label_text_font_size = "28pt"
+p.xaxis.major_label_text_font_size = "22pt"
+p.yaxis.major_label_text_font_size = "22pt"
+
+# Grid styling
+p.grid.grid_line_alpha = 0.3
+p.grid.grid_line_dash = "dashed"
+
+# Background
+p.background_fill_color = "#fafafa"
+
+# Save as PNG and HTML
+export_png(p, filename="plot.png")
+output_file("plot.html")
+save(p)

@@ -1,6 +1,6 @@
 {
   "name": "pyplots-website",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "pyplots Frontend - AI-powered plotting examples",
   "private": true,
   "type": "module",

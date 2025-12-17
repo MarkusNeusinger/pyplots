@@ -70,20 +70,24 @@ yarn build        # Production build
 
 ## Architecture
 
-### Specification-First Design
+### Plot-Centric Design
 
-Every plot follows this flow:
+Everything for one plot type lives in a single directory:
+
 ```
-specs/{spec-id}.md → plots/{library}/{plot-type}/{spec-id}/default.py
+plots/{spec-id}/
+├── specification.md     # Library-agnostic description
+├── specification.yaml   # Tags, created, issue, suggested
+├── metadata/            # Per-library metadata
+│   ├── matplotlib.yaml
+│   └── ...
+└── implementations/     # Library implementations
+    ├── matplotlib.py
+    ├── seaborn.py
+    └── ...
 ```
 
-Example:
-```
-specs/scatter-basic.md  → plots/matplotlib/scatter/scatter-basic/default.py
-                        → plots/seaborn/scatterplot/scatter-basic/default.py
-                        → plots/plotly/scatter/scatter-basic/default.py
-                        → (and 5 more libraries...)
-```
+Example: `plots/scatter-basic/` contains everything for the basic scatter plot.
 
 ### Spec ID Naming Convention
 
@@ -93,48 +97,45 @@ Examples: `scatter-basic`, `scatter-color-mapped`, `bar-grouped-horizontal`, `he
 
 ### Directory Structure
 
-- **`specs/`**: Library-agnostic plot specifications (Markdown)
-- **`plots/{library}/{plot_type}/{spec_id}/{variant}.py`**: Library-specific implementations
+- **`plots/{spec-id}/`**: Plot-centric directories (spec + metadata + implementations)
+- **`prompts/`**: AI agent prompts for code generation and quality evaluation
 - **`core/`**: Shared business logic (database, repositories, config)
 - **`api/`**: FastAPI backend (routers, schemas, dependencies)
 - **`app/`**: React frontend (React 19 + TypeScript + Vite 7 + MUI 7)
-- **`rules/`**: Versioned rules for AI code generation and quality evaluation
 - **`tests/unit/`**: Unit tests mirroring source structure
 - **`docs/`**: Architecture and workflow documentation
 
 ## GitHub Issue Labels
 
-### Workflow Status Labels
+### Specification Labels
 
-- **`plot-request`** - Main plot request issue
-- **`plot-request:impl`** - Library implementation sub-issue (child of main)
-- **`generating`** - Code is being generated
-- **`testing`** - Tests are running
-- **`reviewing`** - Quality review in progress
-- **`merged`** - Successfully merged to main
-- **`not-feasible`** - 3x failed, not implementable in this library
-- **`completed`** - All library implementations complete
-- **`update`** - Update request for existing spec
-- **`test`** - Test issue, not a real plot request
+- **`spec-request`** - New specification request
+- **`spec-update`** - Update existing specification
+- **`spec-ready`** - Specification merged to main, ready for implementations
 
-### Updating Existing Plots
+### Implementation Labels
 
-To update an existing plot:
-1. Create issue with title: `[update] {spec-id}` (all libraries) or `[update:library] {spec-id}` (single library)
-2. Add label: `plot-request`
-3. Issue body can contain spec changes (Claude updates spec first)
-4. Maintainer adds `approved` label
-5. Workflow regenerates specified implementations
+- **`generate:{library}`** - Trigger single library generation (e.g., `generate:matplotlib`)
+- **`generate:all`** - Trigger all 9 libraries via bulk-generate
+- **`impl:{library}:done`** - Implementation merged to main
+- **`impl:{library}:failed`** - Max retries exhausted (3 attempts)
 
-**Issue Lifecycle:**
+### PR Labels (set by workflows)
+
+- **`approved`** - Human approved specification for merge
+- **`ai-approved`** - AI quality check passed (score >= 90)
+- **`ai-rejected`** - AI quality check failed (score < 90)
+- **`quality:XX`** - Quality score (e.g., `quality:92`)
+
+**Specification Lifecycle:**
 ```
-[open] plot-request → approved → in-progress → completed [closed]
+[open] spec-request → approved → spec-ready [implementations can start]
 ```
 
-**Sub-Issue Lifecycle:**
+**Implementation PR Lifecycle:**
 ```
-[open] generating → testing → reviewing → merged [closed]
-                                        → not-feasible [closed]
+[open] → impl-review → ai-approved → impl-merge → impl:{library}:done
+                     → ai-rejected → impl-repair (×3)
 ```
 
 ## Code Standards
@@ -154,16 +155,34 @@ To update an existing plot:
 - **Naming**: `test_{what_it_does}`
 - **Fixtures**: Use pytest fixtures in `tests/conftest.py`
 
-### Plot Implementation Template
+### Plot Implementation Style (KISS)
 
-Every implementation file should:
-1. Start with docstring describing spec ID, library, variant
-2. Define `create_plot()` function with type hints
-3. Validate inputs first (empty data, missing columns)
-4. Validate data types (numeric columns)
-5. Use sensible defaults (`figsize=(16, 9)`, `alpha=0.6`)
-6. Include grid for readability
-7. Return the Figure object
+Plot implementations are **simple, readable scripts** - like matplotlib gallery examples:
+
+```python
+"""
+scatter-basic: Basic Scatter Plot
+Library: matplotlib
+"""
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Data
+np.random.seed(42)
+x = np.random.randn(100)
+y = x * 0.8 + np.random.randn(100) * 0.5
+
+# Plot
+fig, ax = plt.subplots(figsize=(16, 9))
+ax.scatter(x, y, alpha=0.7, s=50, color='#306998')
+ax.set_title('Basic Scatter Plot')
+
+plt.tight_layout()
+plt.savefig('plot.png', dpi=300, bbox_inches='tight')
+```
+
+**Rules:** No functions, no classes, no `if __name__ == '__main__'`. Just: imports → data → plot → save.
 
 ### Anti-Patterns to Avoid
 

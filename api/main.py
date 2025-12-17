@@ -64,7 +64,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="pyplots API",
     description="AI-powered Python plotting examples that work with YOUR data",
-    version="0.1.0",
+    version="0.2.0",
     lifespan=lifespan,
     docs_url="/docs",
     redoc_url="/redoc",
@@ -90,13 +90,13 @@ app.add_middleware(
 @app.get("/")
 async def root():
     """Root endpoint."""
-    return {"message": "Welcome to pyplots API", "version": "0.1.0", "docs": "/docs", "health": "/health"}
+    return {"message": "Welcome to pyplots API", "version": "0.2.0", "docs": "/docs", "health": "/health"}
 
 
 @app.get("/health")
 async def health_check():
     """Health check endpoint for Cloud Run."""
-    return JSONResponse(content={"status": "healthy", "service": "pyplots-api", "version": "0.1.0"}, status_code=200)
+    return JSONResponse(content={"status": "healthy", "service": "pyplots-api", "version": "0.2.0"}, status_code=200)
 
 
 @app.get("/hello/{name}")
@@ -403,6 +403,48 @@ async def download_image(spec_id: str, library: str, db: AsyncSession = Depends(
         media_type="image/png",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
+
+
+# ============================================================================
+# SEO Endpoints
+# ============================================================================
+
+
+@app.get("/sitemap.xml")
+async def get_sitemap(db: AsyncSession = Depends(get_db)):
+    """
+    Generate dynamic XML sitemap for SEO.
+
+    Includes all specs with implementations and all libraries.
+    """
+    cache_key = "sitemap_xml"
+    if cache_key in _cache:
+        return Response(content=_cache[cache_key], media_type="application/xml")
+
+    # Build XML lines
+    xml_lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+        "  <url><loc>https://pyplots.ai/</loc></url>",
+    ]
+
+    # Add spec URLs (only specs with implementations)
+    if is_db_configured():
+        repo = SpecRepository(db)
+        specs = await repo.get_all()
+        for spec in specs:
+            if spec.impls:  # Only include specs with implementations
+                xml_lines.append(f"  <url><loc>https://pyplots.ai/?spec={spec.id}</loc></url>")
+
+    # Add library URLs (static list)
+    for lib in LIBRARIES_SEED:
+        xml_lines.append(f"  <url><loc>https://pyplots.ai/?library={lib['id']}</loc></url>")
+
+    xml_lines.append("</urlset>")
+    xml = "\n".join(xml_lines)
+
+    _cache[cache_key] = xml
+    return Response(content=xml, media_type="application/xml")
 
 
 if __name__ == "__main__":

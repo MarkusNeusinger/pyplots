@@ -4,15 +4,19 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from PIL import Image
+
 from core.images import create_thumbnail
+
 
 # List all thumbnails
 print("Listing thumbnails...", flush=True)
 result = subprocess.run(["gsutil", "ls", "gs://pyplots-images/plots/**/plot_thumb.png"],
                        capture_output=True, text=True)
-thumbs = [l.strip() for l in result.stdout.strip().split("\n") if l.strip()]
+thumbs = [line.strip() for line in result.stdout.strip().split("\n") if line.strip()]
 print(f"Found {len(thumbs)} thumbnails", flush=True)
 
 # Check each one
@@ -29,7 +33,7 @@ with tempfile.TemporaryDirectory() as tmpdir:
                 lib = url.split("/")[5]
                 small.append((url, spec, lib))
                 print(f"  SMALL: {spec}/{lib} ({img.width}px)", flush=True)
-        except Exception as e:
+        except Exception:
             pass
         if (i+1) % 50 == 0:
             print(f"  Progress: {i+1}/{len(thumbs)}", flush=True)

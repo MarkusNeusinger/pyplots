@@ -2,13 +2,14 @@
 ternary-basic: Basic Ternary Plot
 Library: pygal
 
-Uses pygal's XML filter to add text labels for vertices since pygal lacks native annotation support.
+Pygal lacks native ternary support, so we render the triangle and grid
+as XY series, then add vertex labels using PIL for PNG output.
 """
 
 import math
 
 import pygal
-from pygal.etree import etree
+from PIL import Image, ImageDraw, ImageFont
 from pygal.style import Style
 
 
@@ -41,50 +42,51 @@ samples = [
 WIDTH = 4800
 HEIGHT = 2700
 
-# Triangle dimensions in normalized coordinates (0-1)
-triangle_height = math.sqrt(3) / 2
+# Triangle geometry
+TRIANGLE_HEIGHT = math.sqrt(3) / 2
 
-
-# Convert ternary coordinates to Cartesian (for equilateral triangle)
-def ternary_to_cartesian(a, b, c):
-    """Convert (a, b, c) ternary coords to (x, y) Cartesian coords.
-    a = Sand (top vertex), b = Silt (bottom-left), c = Clay (bottom-right)
-    """
-    total = a + b + c
-    a, b, c = a / total, b / total, c / total
+# Convert ternary coordinates to Cartesian
+# a = Sand (top vertex), b = Silt (bottom-left), c = Clay (bottom-right)
+points = []
+for sand, silt, clay in samples:
+    total = sand + silt + clay
+    a, b, c = sand / total, silt / total, clay / total
     x = 0.5 * (2 * c + a)
-    y = triangle_height * a
-    return x, y
-
-
-# Convert all samples to Cartesian coordinates
-points = [ternary_to_cartesian(s[0], s[1], s[2]) for s in samples]
+    y = TRIANGLE_HEIGHT * a
+    points.append((x, y))
 
 # Triangle vertices and outline
 triangle = [
     (0, 0),  # Bottom-left (Silt)
     (1, 0),  # Bottom-right (Clay)
-    (0.5, triangle_height),  # Top (Sand)
+    (0.5, TRIANGLE_HEIGHT),  # Top (Sand)
     (0, 0),  # Close the triangle
 ]
 
-# Grid lines at 20% intervals (clipped to triangle)
+# Grid lines at 20% intervals
 grid_lines = []
 for pct in [20, 40, 60, 80]:
+    frac = pct / 100
     # Lines parallel to bottom edge (constant Sand %)
-    p1 = ternary_to_cartesian(pct, 100 - pct, 0)
-    p2 = ternary_to_cartesian(pct, 0, 100 - pct)
+    p1_a, p1_b, p1_c = frac, 1 - frac, 0
+    p2_a, p2_b, p2_c = frac, 0, 1 - frac
+    p1 = (0.5 * (2 * p1_c + p1_a), TRIANGLE_HEIGHT * p1_a)
+    p2 = (0.5 * (2 * p2_c + p2_a), TRIANGLE_HEIGHT * p2_a)
     grid_lines.append((p1, p2))
     # Lines parallel to left edge (constant Clay %)
-    p1 = ternary_to_cartesian(0, 100 - pct, pct)
-    p2 = ternary_to_cartesian(100 - pct, 0, pct)
+    p1_a, p1_b, p1_c = 0, 1 - frac, frac
+    p2_a, p2_b, p2_c = 1 - frac, 0, frac
+    p1 = (0.5 * (2 * p1_c + p1_a), TRIANGLE_HEIGHT * p1_a)
+    p2 = (0.5 * (2 * p2_c + p2_a), TRIANGLE_HEIGHT * p2_a)
     grid_lines.append((p1, p2))
     # Lines parallel to right edge (constant Silt %)
-    p1 = ternary_to_cartesian(0, pct, 100 - pct)
-    p2 = ternary_to_cartesian(100 - pct, pct, 0)
+    p1_a, p1_b, p1_c = 0, frac, 1 - frac
+    p2_a, p2_b, p2_c = 1 - frac, frac, 0
+    p1 = (0.5 * (2 * p1_c + p1_a), TRIANGLE_HEIGHT * p1_a)
+    p2 = (0.5 * (2 * p2_c + p2_a), TRIANGLE_HEIGHT * p2_a)
     grid_lines.append((p1, p2))
 
-# Custom style for pyplots (4800 x 2700 px)
+# Custom style for 4800 x 2700 px
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -100,61 +102,16 @@ custom_style = Style(
     stroke_width=3,
 )
 
-# Plot area margins (approximate from pygal default layout)
-PLOT_LEFT = 150
-PLOT_TOP = 200
-PLOT_WIDTH = WIDTH - 300
-PLOT_HEIGHT = HEIGHT - 400
-
-# Data range for coordinate conversion
+# Data range for coordinate conversion (with padding)
 X_MIN, X_MAX = -0.15, 1.15
-Y_MIN, Y_MAX = -0.15, triangle_height + 0.15
-
-
-def data_to_svg(x, y):
-    """Convert data coordinates to SVG pixel coordinates."""
-    svg_x = PLOT_LEFT + (x - X_MIN) / (X_MAX - X_MIN) * PLOT_WIDTH
-    svg_y = PLOT_TOP + (1 - (y - Y_MIN) / (Y_MAX - Y_MIN)) * PLOT_HEIGHT
-    return svg_x, svg_y
-
-
-# Vertex label data (label text, x, y, anchor, baseline)
-vertex_labels = [
-    ("Sand", 0.5, triangle_height + 0.06, "middle", "auto"),  # Top
-    ("Silt", -0.05, -0.05, "end", "auto"),  # Bottom-left
-    ("Clay", 1.05, -0.05, "start", "auto"),  # Bottom-right
-]
-
-
-# XML filter to add vertex labels
-def add_vertex_labels(root):
-    """Add text labels for triangle vertices."""
-    g = etree.SubElement(root, "g")
-    g.set("class", "vertex-labels")
-
-    for label, x, y, anchor, baseline in vertex_labels:
-        svg_x, svg_y = data_to_svg(x, y)
-
-        text = etree.SubElement(g, "text")
-        text.set("x", f"{svg_x:.1f}")
-        text.set("y", f"{svg_y:.1f}")
-        text.set("text-anchor", anchor)
-        text.set("dominant-baseline", baseline)
-        text.set("fill", "#333333")
-        text.set("font-size", "56")
-        text.set("font-family", "sans-serif")
-        text.set("font-weight", "bold")
-        text.text = label
-
-    return root
-
+Y_MIN, Y_MAX = -0.15, TRIANGLE_HEIGHT + 0.15
 
 # Create XY chart
 chart = pygal.XY(
     width=WIDTH,
     height=HEIGHT,
     style=custom_style,
-    title="Soil Composition · ternary-basic · pygal · pyplots.ai",
+    title="ternary-basic · pygal · pyplots.ai",
     show_legend=True,
     stroke=False,
     show_x_guides=False,
@@ -169,12 +126,12 @@ chart = pygal.XY(
     explicit_size=True,
 )
 
-# Add data points first (so they appear in legend with correct color)
+# Add data points with tooltips
 chart.add(
     "Soil Samples",
     [
-        {"value": p, "label": f"Sand: {samples[i][0]}%, Silt: {samples[i][1]}%, Clay: {samples[i][2]}%"}
-        for i, p in enumerate(points)
+        {"value": points[i], "label": f"Sand: {samples[i][0]}%, Silt: {samples[i][1]}%, Clay: {samples[i][2]}%"}
+        for i in range(len(samples))
     ],
     stroke=False,
     dots_size=18,
@@ -195,9 +152,39 @@ chart.add(
     None, [{"value": p, "node": {"r": 0}} for p in triangle], stroke=True, show_dots=False, stroke_style={"width": 4}
 )
 
-# Add XML filter for vertex labels
-chart.add_xml_filter(add_vertex_labels)
-
 # Save as SVG (for HTML) and PNG
 chart.render_to_file("plot.html")
 chart.render_to_png("plot.png")
+
+# Add vertex labels using PIL
+img = Image.open("plot.png")
+draw = ImageDraw.Draw(img)
+
+# Calculate plot area (approximate from pygal layout)
+PLOT_LEFT = 150
+PLOT_TOP = 200
+PLOT_WIDTH = WIDTH - 300
+PLOT_HEIGHT = HEIGHT - 400
+
+# Map data coordinates to pixel coordinates
+# Y is inverted in SVG/image coordinates
+sand_x = PLOT_LEFT + (0.5 - X_MIN) / (X_MAX - X_MIN) * PLOT_WIDTH
+sand_y = PLOT_TOP + (1 - (TRIANGLE_HEIGHT + 0.08 - Y_MIN) / (Y_MAX - Y_MIN)) * PLOT_HEIGHT
+silt_x = PLOT_LEFT + (-0.08 - X_MIN) / (X_MAX - X_MIN) * PLOT_WIDTH
+silt_y = PLOT_TOP + (1 - (-0.06 - Y_MIN) / (Y_MAX - Y_MIN)) * PLOT_HEIGHT
+clay_x = PLOT_LEFT + (1.08 - X_MIN) / (X_MAX - X_MIN) * PLOT_WIDTH
+clay_y = PLOT_TOP + (1 - (-0.06 - Y_MIN) / (Y_MAX - Y_MIN)) * PLOT_HEIGHT
+
+# Try to load a font, fall back to default
+try:
+    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 56)
+except OSError:
+    font = ImageFont.load_default()
+
+# Draw vertex labels
+draw.text((sand_x, sand_y), "Sand", fill="#333333", font=font, anchor="mm")
+draw.text((silt_x, silt_y), "Silt", fill="#333333", font=font, anchor="rm")
+draw.text((clay_x, clay_y), "Clay", fill="#333333", font=font, anchor="lm")
+
+# Save final image
+img.save("plot.png")

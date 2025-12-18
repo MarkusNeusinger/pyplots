@@ -5,7 +5,7 @@ import Alert from '@mui/material/Alert';
 
 import type { PlotImage, LibraryInfo, SpecInfo } from './types';
 import { API_URL, LIBRARIES, BATCH_SIZE } from './constants';
-import { useNavigation, useTouchGestures, useKeyboardShortcuts, useInfiniteScroll } from './hooks';
+import { useNavigation, useTouchGestures, useKeyboardShortcuts, useInfiniteScroll, useAnalytics } from './hooks';
 import { Header, Footer, NavigationBar, SelectionMenu, ImagesGrid, FullscreenModal } from './components';
 
 // Fisher-Yates shuffle algorithm
@@ -80,8 +80,14 @@ function App() {
     setHasMore,
   });
 
+  const { trackPageview, trackEvent } = useAnalytics();
+
   // Toggle between spec and library view with roll animation
   const toggleViewMode = useCallback(() => {
+    const fromMode = viewMode;
+    const toMode = fromMode === 'spec' ? 'library' : 'spec';
+    trackEvent('toggle_view_mode', { from: fromMode, to: toMode });
+
     setIsRolling(true);
     setDescriptionOpen(false);
     setAllImages([]);
@@ -104,12 +110,16 @@ function App() {
       });
       setIsRolling(false);
     }, 300);
-  }, [specs]);
+  }, [specs, viewMode, trackEvent]);
 
   // Handle card click - open modal
-  const handleCardClick = useCallback((img: PlotImage) => {
-    setModalImage(img);
-  }, []);
+  const handleCardClick = useCallback(
+    (img: PlotImage) => {
+      setModalImage(img);
+      trackEvent('modal_open', { spec: selectedSpec, library: img.library });
+    },
+    [selectedSpec, trackEvent]
+  );
 
   // Close description when clicking anywhere
   const handleContainerClick = useCallback((e: React.MouseEvent) => {
@@ -189,19 +199,15 @@ function App() {
       window.history.replaceState({}, '', url.toString());
       document.title = `${selectedSpec} | pyplots.ai`;
       setDescriptionOpen(false);
-      if (typeof window.plausible === 'function') {
-        window.plausible('pageview', { url: url.toString() });
-      }
+      trackPageview(); // Reads automatically from window.location.search
     } else if (viewMode === 'library' && selectedLibrary) {
       url.searchParams.delete('spec');
       url.searchParams.set('library', selectedLibrary);
       window.history.replaceState({}, '', url.toString());
       document.title = `${selectedLibrary} plots | pyplots.ai`;
-      if (typeof window.plausible === 'function') {
-        window.plausible('pageview', { url: url.toString() });
-      }
+      trackPageview(); // Reads automatically from window.location.search
     }
-  }, [selectedSpec, selectedLibrary, specsLoaded, viewMode]);
+  }, [selectedSpec, selectedLibrary, specsLoaded, viewMode, trackPageview]);
 
   // Load images when spec changes (spec view mode)
   useEffect(() => {
@@ -317,6 +323,7 @@ function App() {
               shuffleLibrary={navigation.shuffleLibrary}
               goToPrevLibrary={navigation.goToPrevLibrary}
               goToNextLibrary={navigation.goToNextLibrary}
+              onTrackEvent={trackEvent}
             />
 
             <SelectionMenu
@@ -329,6 +336,7 @@ function App() {
               selectedLibrary={selectedLibrary}
               onSelectSpec={setSelectedSpec}
               onSelectLibrary={setSelectedLibrary}
+              onTrackEvent={trackEvent}
             />
           </>
         )}
@@ -355,13 +363,14 @@ function App() {
           </Alert>
         )}
 
-        <Footer />
+        <Footer onTrackEvent={trackEvent} />
       </Container>
 
       <FullscreenModal
         image={modalImage}
         selectedSpec={selectedSpec}
         onClose={() => setModalImage(null)}
+        onTrackEvent={trackEvent}
       />
     </Box>
   );

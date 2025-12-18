@@ -17,6 +17,7 @@ interface SelectionMenuProps {
   selectedLibrary: string;
   onSelectSpec: (spec: string) => void;
   onSelectLibrary: (library: string) => void;
+  onTrackEvent?: (name: string, props?: Record<string, string | undefined>) => void;
 }
 
 export function SelectionMenu({
@@ -28,6 +29,7 @@ export function SelectionMenu({
   selectedLibrary,
   onSelectSpec,
   onSelectLibrary,
+  onTrackEvent,
 }: SelectionMenuProps) {
   const [searchFilter, setSearchFilter] = useState('');
   const [highlightedIndex, setHighlightedIndex] = useState(0);
@@ -42,11 +44,13 @@ export function SelectionMenu({
 
   const handleSelectSpec = (spec: string) => {
     onSelectSpec(spec);
+    onTrackEvent?.('menu_select', { mode: 'spec', value: spec });
     handleClose();
   };
 
   const handleSelectLibrary = (library: string) => {
     onSelectLibrary(library);
+    onTrackEvent?.('menu_select', { mode: 'library', value: library });
     handleClose();
   };
 

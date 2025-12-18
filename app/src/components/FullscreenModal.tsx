@@ -17,9 +17,10 @@ interface FullscreenModalProps {
   image: PlotImage | null;
   selectedSpec: string;
   onClose: () => void;
+  onTrackEvent?: (name: string, props?: Record<string, string | undefined>) => void;
 }
 
-export function FullscreenModal({ image, selectedSpec, onClose }: FullscreenModalProps) {
+export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: FullscreenModalProps) {
   const [showCode, setShowCode] = useState(false);
   const [blinkCodeButton, setBlinkCodeButton] = useState(false);
 
@@ -53,8 +54,9 @@ export function FullscreenModal({ image, selectedSpec, onClose }: FullscreenModa
   const copyCodeToClipboard = useCallback(() => {
     if (image?.code) {
       navigator.clipboard.writeText(image.code);
+      onTrackEvent?.('copy_code', { spec: selectedSpec, library: image.library });
     }
-  }, [image?.code]);
+  }, [image?.code, image?.library, onTrackEvent, selectedSpec]);
 
   // Download image via backend proxy
   const downloadImage = useCallback(() => {
@@ -65,13 +67,15 @@ export function FullscreenModal({ image, selectedSpec, onClose }: FullscreenModa
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      onTrackEvent?.('download_image', { spec: selectedSpec, library: image.library });
     }
-  }, [image?.library, selectedSpec]);
+  }, [image?.library, selectedSpec, onTrackEvent]);
 
   const handleClose = useCallback(() => {
     setShowCode(false);
+    onTrackEvent?.('modal_close', { spec: selectedSpec, library: image?.library });
     onClose();
-  }, [onClose]);
+  }, [onClose, onTrackEvent, selectedSpec, image?.library]);
 
   return (
     <Modal
@@ -145,7 +149,10 @@ export function FullscreenModal({ image, selectedSpec, onClose }: FullscreenModa
                   }}
                 >
                   <Box
-                    onClick={() => setShowCode(false)}
+                    onClick={() => {
+                      setShowCode(false);
+                      onTrackEvent?.('view_image', { spec: selectedSpec, library: image?.library });
+                    }}
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
@@ -220,7 +227,10 @@ export function FullscreenModal({ image, selectedSpec, onClose }: FullscreenModa
               >
                 {image?.code && (
                   <Box
-                    onClick={() => setShowCode(true)}
+                    onClick={() => {
+                      setShowCode(true);
+                      onTrackEvent?.('view_code', { spec: selectedSpec, library: image?.library });
+                    }}
                     sx={{
                       display: 'flex',
                       alignItems: 'center',

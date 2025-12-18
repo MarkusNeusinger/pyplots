@@ -31,6 +31,7 @@ interface NavigationBarProps {
   shuffleLibrary: () => void;
   goToPrevLibrary: () => void;
   goToNextLibrary: () => void;
+  onTrackEvent?: (name: string, props?: Record<string, string | undefined>) => void;
 }
 
 export function NavigationBar({
@@ -52,6 +53,7 @@ export function NavigationBar({
   shuffleLibrary,
   goToPrevLibrary,
   goToNextLibrary,
+  onTrackEvent,
 }: NavigationBarProps) {
   const shuffleButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -142,7 +144,10 @@ export function NavigationBar({
             <IconButton
               data-description-btn
               size="small"
-              onClick={onDescriptionToggle}
+              onClick={() => {
+                onDescriptionToggle();
+                onTrackEvent?.('description_toggle', { mode: 'spec', open: String(!descriptionOpen) });
+              }}
               aria-label="Show specification description"
               sx={{
                 ml: 0.5,
@@ -203,7 +208,10 @@ export function NavigationBar({
             <IconButton
               data-description-btn
               size="small"
-              onClick={onDescriptionToggle}
+              onClick={() => {
+                onDescriptionToggle();
+                onTrackEvent?.('description_toggle', { mode: 'library', open: String(!descriptionOpen) });
+              }}
               aria-label="Show library description"
               sx={{
                 ml: 0.5,
@@ -225,7 +233,10 @@ export function NavigationBar({
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <Tooltip title="Previous (← / Swipe right)" arrow placement="bottom">
             <IconButton
-              onClick={goToPrevSpec}
+              onClick={() => {
+                goToPrevSpec();
+                onTrackEvent?.('navigate_prev', { mode: 'spec' });
+              }}
               size="small"
               aria-label="Previous spec"
               sx={{
@@ -242,7 +253,10 @@ export function NavigationBar({
           <Tooltip title="Random (Space / Double-tap)" arrow placement="bottom">
             <IconButton
               ref={shuffleButtonRef}
-              onClick={shuffleSpec}
+              onClick={() => {
+                shuffleSpec();
+                onTrackEvent?.('navigate_shuffle', { mode: 'spec' });
+              }}
               size="small"
               aria-label="Shuffle to a different random spec"
               sx={{
@@ -260,7 +274,10 @@ export function NavigationBar({
           </Tooltip>
           <Tooltip title="Next (→ / Swipe left)" arrow placement="bottom">
             <IconButton
-              onClick={goToNextSpec}
+              onClick={() => {
+                goToNextSpec();
+                onTrackEvent?.('navigate_next', { mode: 'spec' });
+              }}
               size="small"
               aria-label="Next spec"
               sx={{
@@ -280,7 +297,10 @@ export function NavigationBar({
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <Tooltip title="Previous (← / Swipe right)" arrow placement="bottom">
             <IconButton
-              onClick={goToPrevLibrary}
+              onClick={() => {
+                goToPrevLibrary();
+                onTrackEvent?.('navigate_prev', { mode: 'library' });
+              }}
               size="small"
               aria-label="Previous library"
               sx={{
@@ -297,7 +317,10 @@ export function NavigationBar({
           <Tooltip title="Random (Space / Double-tap)" arrow placement="bottom">
             <IconButton
               ref={shuffleButtonRef}
-              onClick={shuffleLibrary}
+              onClick={() => {
+                shuffleLibrary();
+                onTrackEvent?.('navigate_shuffle', { mode: 'library' });
+              }}
               size="small"
               aria-label="Shuffle to a different random library"
               sx={{
@@ -315,7 +338,10 @@ export function NavigationBar({
           </Tooltip>
           <Tooltip title="Next (→ / Swipe left)" arrow placement="bottom">
             <IconButton
-              onClick={goToNextLibrary}
+              onClick={() => {
+                goToNextLibrary();
+                onTrackEvent?.('navigate_next', { mode: 'library' });
+              }}
               size="small"
               aria-label="Next library"
               sx={{

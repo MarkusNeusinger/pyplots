@@ -54,11 +54,11 @@
     </script>
 
     <!-- Privacy-friendly analytics by Plausible (production only) -->
-    <script async src="https://plausible.io/js/pa-VsZKkJS49nA8_SUzShW2z.js"></script>
+    <script async src="/js/script.js"></script>
     <script>
       window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
       if (location.hostname === 'pyplots.ai') {
-        plausible.init({ autoCapturePageviews: false });
+        plausible.init({ autoCapturePageviews: false, endpoint: '/api/event' });
       }
     </script>
   </head>

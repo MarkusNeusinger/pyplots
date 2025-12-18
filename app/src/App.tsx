@@ -190,7 +190,7 @@ function App() {
       document.title = `${selectedSpec} | pyplots.ai`;
       setDescriptionOpen(false);
       if (typeof window.plausible === 'function') {
-        window.plausible('pageview', { u: url.toString() });
+        window.plausible('pageview', { url: url.toString() });
       }
     } else if (viewMode === 'library' && selectedLibrary) {
       url.searchParams.delete('spec');
@@ -198,7 +198,7 @@ function App() {
       window.history.replaceState({}, '', url.toString());
       document.title = `${selectedLibrary} plots | pyplots.ai`;
       if (typeof window.plausible === 'function') {
-        window.plausible('pageview', { u: url.toString() });
+        window.plausible('pageview', { url: url.toString() });
       }
     }
   }, [selectedSpec, selectedLibrary, specsLoaded, viewMode]);

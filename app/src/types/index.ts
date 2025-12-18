@@ -26,6 +26,6 @@ export interface SpecInfo {
 // Plausible analytics (only in production)
 declare global {
   interface Window {
-    plausible?: (event: string, options?: { props?: Record<string, string> }) => void;
+    plausible?: (event: string, options?: { u?: string; props?: Record<string, string> }) => void;
   }
 }

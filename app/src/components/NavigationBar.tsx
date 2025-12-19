@@ -146,7 +146,7 @@ export function NavigationBar({
               size="small"
               onClick={() => {
                 onDescriptionToggle();
-                onTrackEvent?.('description_toggle', { mode: 'spec', open: String(!descriptionOpen) });
+                onTrackEvent?.('description_toggle', { mode: 'spec', spec: selectedSpec, open: String(!descriptionOpen) });
               }}
               aria-label="Show specification description"
               sx={{
@@ -210,7 +210,7 @@ export function NavigationBar({
               size="small"
               onClick={() => {
                 onDescriptionToggle();
-                onTrackEvent?.('description_toggle', { mode: 'library', open: String(!descriptionOpen) });
+                onTrackEvent?.('description_toggle', { mode: 'library', library: selectedLibrary, open: String(!descriptionOpen) });
               }}
               aria-label="Show library description"
               sx={{
@@ -235,7 +235,7 @@ export function NavigationBar({
             <IconButton
               onClick={() => {
                 goToPrevSpec();
-                onTrackEvent?.('navigate_prev', { mode: 'spec' });
+                onTrackEvent?.('navigate_prev', { mode: 'spec', spec: selectedSpec });
               }}
               size="small"
               aria-label="Previous spec"
@@ -255,7 +255,7 @@ export function NavigationBar({
               ref={shuffleButtonRef}
               onClick={() => {
                 shuffleSpec();
-                onTrackEvent?.('navigate_shuffle', { mode: 'spec' });
+                onTrackEvent?.('navigate_shuffle', { mode: 'spec', spec: selectedSpec });
               }}
               size="small"
               aria-label="Shuffle to a different random spec"
@@ -276,7 +276,7 @@ export function NavigationBar({
             <IconButton
               onClick={() => {
                 goToNextSpec();
-                onTrackEvent?.('navigate_next', { mode: 'spec' });
+                onTrackEvent?.('navigate_next', { mode: 'spec', spec: selectedSpec });
               }}
               size="small"
               aria-label="Next spec"
@@ -299,7 +299,7 @@ export function NavigationBar({
             <IconButton
               onClick={() => {
                 goToPrevLibrary();
-                onTrackEvent?.('navigate_prev', { mode: 'library' });
+                onTrackEvent?.('navigate_prev', { mode: 'library', library: selectedLibrary });
               }}
               size="small"
               aria-label="Previous library"
@@ -319,7 +319,7 @@ export function NavigationBar({
               ref={shuffleButtonRef}
               onClick={() => {
                 shuffleLibrary();
-                onTrackEvent?.('navigate_shuffle', { mode: 'library' });
+                onTrackEvent?.('navigate_shuffle', { mode: 'library', library: selectedLibrary });
               }}
               size="small"
               aria-label="Shuffle to a different random library"
@@ -340,7 +340,7 @@ export function NavigationBar({
             <IconButton
               onClick={() => {
                 goToNextLibrary();
-                onTrackEvent?.('navigate_next', { mode: 'library' });
+                onTrackEvent?.('navigate_next', { mode: 'library', library: selectedLibrary });
               }}
               size="small"
               aria-label="Next library"

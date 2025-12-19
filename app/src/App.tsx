@@ -86,7 +86,7 @@ function App() {
   const toggleViewMode = useCallback(() => {
     const fromMode = viewMode;
     const toMode = fromMode === 'spec' ? 'library' : 'spec';
-    trackEvent('toggle_view_mode', { from: fromMode, to: toMode });
+    trackEvent('toggle_view_mode', { from: fromMode, to: toMode, spec: selectedSpec, library: selectedLibrary });
 
     setIsRolling(true);
     setDescriptionOpen(false);
@@ -110,7 +110,7 @@ function App() {
       });
       setIsRolling(false);
     }, 300);
-  }, [specs, viewMode, trackEvent]);
+  }, [specs, viewMode, trackEvent, selectedSpec, selectedLibrary]);
 
   // Handle card click - open modal
   const handleCardClick = useCallback(
@@ -363,7 +363,7 @@ function App() {
           </Alert>
         )}
 
-        <Footer onTrackEvent={trackEvent} />
+        <Footer onTrackEvent={trackEvent} selectedSpec={selectedSpec} selectedLibrary={selectedLibrary} />
       </Container>
 
       <FullscreenModal

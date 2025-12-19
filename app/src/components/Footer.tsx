@@ -4,9 +4,11 @@ import { GITHUB_URL } from '../constants';
 
 interface FooterProps {
   onTrackEvent?: (name: string, props?: Record<string, string | undefined>) => void;
+  selectedSpec?: string;
+  selectedLibrary?: string;
 }
 
-export function Footer({ onTrackEvent }: FooterProps) {
+export function Footer({ onTrackEvent, selectedSpec, selectedLibrary }: FooterProps) {
   return (
     <Box sx={{ textAlign: 'center', mt: 8, pt: 5, borderTop: '1px solid #f3f4f6' }}>
       <Box
@@ -24,7 +26,7 @@ export function Footer({ onTrackEvent }: FooterProps) {
           href="https://www.linkedin.com/in/markus-neusinger/"
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() => onTrackEvent?.('external_link', { destination: 'linkedin' })}
+          onClick={() => onTrackEvent?.('external_link', { destination: 'linkedin', spec: selectedSpec, library: selectedLibrary })}
           sx={{
             color: '#9ca3af',
             textDecoration: 'none',
@@ -38,7 +40,7 @@ export function Footer({ onTrackEvent }: FooterProps) {
           href={GITHUB_URL}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() => onTrackEvent?.('external_link', { destination: 'github' })}
+          onClick={() => onTrackEvent?.('external_link', { destination: 'github', spec: selectedSpec, library: selectedLibrary })}
           sx={{
             color: '#9ca3af',
             textDecoration: 'none',

@@ -235,7 +235,7 @@ export function NavigationBar({
             <IconButton
               onClick={() => {
                 goToPrevSpec();
-                onTrackEvent?.('navigate_prev', { mode: 'spec', spec: selectedSpec });
+                onTrackEvent?.('navigate_prev', { mode: 'spec', spec: selectedSpec, input_method: 'mouse' });
               }}
               size="small"
               aria-label="Previous spec"
@@ -255,7 +255,7 @@ export function NavigationBar({
               ref={shuffleButtonRef}
               onClick={() => {
                 shuffleSpec();
-                onTrackEvent?.('navigate_shuffle', { mode: 'spec', spec: selectedSpec });
+                onTrackEvent?.('navigate_shuffle', { mode: 'spec', spec: selectedSpec, input_method: 'mouse' });
               }}
               size="small"
               aria-label="Shuffle to a different random spec"
@@ -276,7 +276,7 @@ export function NavigationBar({
             <IconButton
               onClick={() => {
                 goToNextSpec();
-                onTrackEvent?.('navigate_next', { mode: 'spec', spec: selectedSpec });
+                onTrackEvent?.('navigate_next', { mode: 'spec', spec: selectedSpec, input_method: 'mouse' });
               }}
               size="small"
               aria-label="Next spec"
@@ -299,7 +299,7 @@ export function NavigationBar({
             <IconButton
               onClick={() => {
                 goToPrevLibrary();
-                onTrackEvent?.('navigate_prev', { mode: 'library', library: selectedLibrary });
+                onTrackEvent?.('navigate_prev', { mode: 'library', library: selectedLibrary, input_method: 'mouse' });
               }}
               size="small"
               aria-label="Previous library"
@@ -319,7 +319,7 @@ export function NavigationBar({
               ref={shuffleButtonRef}
               onClick={() => {
                 shuffleLibrary();
-                onTrackEvent?.('navigate_shuffle', { mode: 'library', library: selectedLibrary });
+                onTrackEvent?.('navigate_shuffle', { mode: 'library', library: selectedLibrary, input_method: 'mouse' });
               }}
               size="small"
               aria-label="Shuffle to a different random library"
@@ -340,7 +340,7 @@ export function NavigationBar({
             <IconButton
               onClick={() => {
                 goToNextLibrary();
-                onTrackEvent?.('navigate_next', { mode: 'library', library: selectedLibrary });
+                onTrackEvent?.('navigate_next', { mode: 'library', library: selectedLibrary, input_method: 'mouse' });
               }}
               size="small"
               aria-label="Next library"

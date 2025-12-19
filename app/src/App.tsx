@@ -48,6 +48,8 @@ function App() {
   const [libraryDocsUrl, setLibraryDocsUrl] = useState<string>('');
 
   // Custom hooks
+  const { trackPageview, trackEvent } = useAnalytics();
+
   const navigation = useNavigation({
     specs,
     selectedSpec,
@@ -60,6 +62,9 @@ function App() {
     viewMode,
     modalImage,
     ...navigation,
+    onTrackEvent: trackEvent,
+    selectedSpec,
+    selectedLibrary,
   });
 
   useKeyboardShortcuts({
@@ -70,6 +75,9 @@ function App() {
     setMenuAnchor,
     setSearchFilter: () => {}, // No-op: SelectionMenu manages its own internal searchFilter state
     ...navigation,
+    onTrackEvent: trackEvent,
+    selectedSpec,
+    selectedLibrary,
   });
 
   const { loadMoreRef } = useInfiniteScroll({
@@ -79,8 +87,6 @@ function App() {
     setDisplayedImages,
     setHasMore,
   });
-
-  const { trackPageview, trackEvent } = useAnalytics();
 
   // Toggle between spec and library view with roll animation
   const toggleViewMode = useCallback(() => {

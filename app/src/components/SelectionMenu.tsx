@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -35,6 +35,14 @@ export function SelectionMenu({
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const menuItemRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    };
+  }, []);
 
   const handleClose = () => {
     onClose();
@@ -102,8 +110,17 @@ export function SelectionMenu({
           placeholder="search..."
           value={searchFilter}
           onChange={(e) => {
-            setSearchFilter(e.target.value);
+            const query = e.target.value;
+            setSearchFilter(query);
             setHighlightedIndex(0);
+
+            // Debounced search filter tracking
+            if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+            if (query.trim().length >= 2) {
+              searchDebounceRef.current = setTimeout(() => {
+                onTrackEvent?.('search_filter', { mode: viewMode, query: query.trim() });
+              }, 500);
+            }
           }}
           onKeyDown={(e) => {
             const filtered = viewMode === 'spec' ? filteredSpecs : filteredLibraries;

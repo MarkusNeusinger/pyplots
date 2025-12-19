@@ -14,6 +14,9 @@ interface UseKeyboardShortcutsProps {
   shuffleLibrary: () => void;
   goToPrevLibrary: () => void;
   goToNextLibrary: () => void;
+  onTrackEvent?: (name: string, props?: Record<string, string | undefined>) => void;
+  selectedSpec?: string;
+  selectedLibrary?: string;
 }
 
 export function useKeyboardShortcuts({
@@ -29,6 +32,9 @@ export function useKeyboardShortcuts({
   shuffleLibrary,
   goToPrevLibrary,
   goToNextLibrary,
+  onTrackEvent,
+  selectedSpec,
+  selectedLibrary,
 }: UseKeyboardShortcutsProps) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -38,24 +44,30 @@ export function useKeyboardShortcuts({
       if (e.code === 'Space' && !modalImage && !menuAnchor && !isTyping) {
         e.preventDefault();
         if (viewMode === 'spec') {
+          onTrackEvent?.('navigate_shuffle', { mode: 'spec', spec: selectedSpec, input_method: 'keyboard' });
           shuffleSpec();
         } else {
+          onTrackEvent?.('navigate_shuffle', { mode: 'library', library: selectedLibrary, input_method: 'keyboard' });
           shuffleLibrary();
         }
       }
       if (e.code === 'ArrowLeft' && !modalImage && !menuAnchor && !isTyping) {
         e.preventDefault();
         if (viewMode === 'spec') {
+          onTrackEvent?.('navigate_prev', { mode: 'spec', spec: selectedSpec, input_method: 'keyboard' });
           goToPrevSpec();
         } else {
+          onTrackEvent?.('navigate_prev', { mode: 'library', library: selectedLibrary, input_method: 'keyboard' });
           goToPrevLibrary();
         }
       }
       if (e.code === 'ArrowRight' && !modalImage && !menuAnchor && !isTyping) {
         e.preventDefault();
         if (viewMode === 'spec') {
+          onTrackEvent?.('navigate_next', { mode: 'spec', spec: selectedSpec, input_method: 'keyboard' });
           goToNextSpec();
         } else {
+          onTrackEvent?.('navigate_next', { mode: 'library', library: selectedLibrary, input_method: 'keyboard' });
           goToNextLibrary();
         }
       }
@@ -77,5 +89,5 @@ export function useKeyboardShortcuts({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [modalImage, menuAnchor, viewMode, shuffleSpec, goToPrevSpec, goToNextSpec, shuffleLibrary, goToPrevLibrary, goToNextLibrary, setModalImage, setMenuAnchor, setSearchFilter]);
+  }, [modalImage, menuAnchor, viewMode, shuffleSpec, goToPrevSpec, goToNextSpec, shuffleLibrary, goToPrevLibrary, goToNextLibrary, setModalImage, setMenuAnchor, setSearchFilter, onTrackEvent, selectedSpec, selectedLibrary]);
 }

@@ -10,6 +10,9 @@ interface UseTouchGesturesProps {
   goToPrevLibrary: () => void;
   goToNextLibrary: () => void;
   shuffleLibrary: () => void;
+  onTrackEvent?: (name: string, props?: Record<string, string | undefined>) => void;
+  selectedSpec?: string;
+  selectedLibrary?: string;
 }
 
 export function useTouchGestures({
@@ -21,6 +24,9 @@ export function useTouchGestures({
   goToPrevLibrary,
   goToNextLibrary,
   shuffleLibrary,
+  onTrackEvent,
+  selectedSpec,
+  selectedLibrary,
 }: UseTouchGesturesProps) {
   const touchStartX = useRef<number | null>(null);
   const lastTapTime = useRef<number>(0);
@@ -39,21 +45,39 @@ export function useTouchGestures({
     if (Math.abs(diff) > minSwipeDistance) {
       if (diff > 0) {
         // Swipe right = previous
-        viewMode === 'spec' ? goToPrevSpec() : goToPrevLibrary();
+        if (viewMode === 'spec') {
+          onTrackEvent?.('navigate_prev', { mode: 'spec', spec: selectedSpec, input_method: 'touch' });
+          goToPrevSpec();
+        } else {
+          onTrackEvent?.('navigate_prev', { mode: 'library', library: selectedLibrary, input_method: 'touch' });
+          goToPrevLibrary();
+        }
       } else {
         // Swipe left = next
-        viewMode === 'spec' ? goToNextSpec() : goToNextLibrary();
+        if (viewMode === 'spec') {
+          onTrackEvent?.('navigate_next', { mode: 'spec', spec: selectedSpec, input_method: 'touch' });
+          goToNextSpec();
+        } else {
+          onTrackEvent?.('navigate_next', { mode: 'library', library: selectedLibrary, input_method: 'touch' });
+          goToNextLibrary();
+        }
       }
     } else {
       // Check for double tap
       const now = Date.now();
       if (now - lastTapTime.current < 300) {
-        viewMode === 'spec' ? shuffleSpec() : shuffleLibrary();
+        if (viewMode === 'spec') {
+          onTrackEvent?.('navigate_shuffle', { mode: 'spec', spec: selectedSpec, input_method: 'touch' });
+          shuffleSpec();
+        } else {
+          onTrackEvent?.('navigate_shuffle', { mode: 'library', library: selectedLibrary, input_method: 'touch' });
+          shuffleLibrary();
+        }
       }
       lastTapTime.current = now;
     }
     touchStartX.current = null;
-  }, [modalImage, viewMode, goToPrevSpec, goToNextSpec, shuffleSpec, goToPrevLibrary, goToNextLibrary, shuffleLibrary]);
+  }, [modalImage, viewMode, goToPrevSpec, goToNextSpec, shuffleSpec, goToPrevLibrary, goToNextLibrary, shuffleLibrary, onTrackEvent, selectedSpec, selectedLibrary]);
 
   return {
     handleTouchStart,

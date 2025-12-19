@@ -54,9 +54,14 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
   const copyCodeToClipboard = useCallback(() => {
     if (image?.code) {
       navigator.clipboard.writeText(image.code);
-      onTrackEvent?.('copy_code', { spec: selectedSpec, library: image.library });
+      onTrackEvent?.('copy_code', { spec: selectedSpec, library: image.library, method: 'button' });
     }
   }, [image?.code, image?.library, onTrackEvent, selectedSpec]);
+
+  // Track native copy events (Ctrl+C, Cmd+C, right-click copy)
+  const handleNativeCopy = useCallback(() => {
+    onTrackEvent?.('copy_code', { spec: selectedSpec, library: image?.library, method: 'native' });
+  }, [onTrackEvent, selectedSpec, image?.library]);
 
   // Download image via backend proxy
   const downloadImage = useCallback(() => {
@@ -189,6 +194,7 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
                   </Box>
                 </Box>
                 <Box
+                  onCopy={handleNativeCopy}
                   sx={{
                     height: '100%',
                     overflow: 'auto',

@@ -1,10 +1,18 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
+import Tooltip from '@mui/material/Tooltip';
 
-export function Header() {
+interface HeaderProps {
+  stats?: { specs: number; plots: number; libraries: number } | null;
+}
+
+export function Header({ stats }: HeaderProps) {
+  const tooltipText = stats
+    ? `${stats.plots} plots across ${stats.libraries} libraries`
+    : 'loading...';
   return (
-    <Box sx={{ textAlign: 'center', mb: 6 }}>
+    <Box sx={{ textAlign: 'center', mb: 4 }}>
       <Link
         href="https://pyplots.ai"
         target="_blank"
@@ -37,7 +45,37 @@ export function Header() {
           fontSize: '1rem',
         }}
       >
-        library-agnostic, ai-powered python plotting examples. automatically generated, tested, and maintained.
+        library-agnostic, ai-powered python plotting examples.
+      </Typography>
+      <Typography
+        variant="body1"
+        sx={{
+          maxWidth: 560,
+          mx: 'auto',
+          mt: 1.5,
+          lineHeight: 1.8,
+          fontFamily: '"JetBrains Mono", monospace',
+          color: '#374151',
+          fontSize: '1.05rem',
+          fontWeight: 500,
+        }}
+      >
+        get inspired
+        <Tooltip title={tooltipText} arrow placement="top">
+          <Box
+            component="sup"
+            sx={{
+              color: '#3776AB',
+              cursor: 'help',
+              fontSize: '0.65rem',
+              ml: 0.25,
+              '&:hover': { color: '#FFD43B' },
+            }}
+          >
+            ✦
+          </Box>
+        </Tooltip>
+        . grab the code. make it yours.
       </Typography>
     </Box>
   );

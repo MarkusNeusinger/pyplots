@@ -74,7 +74,10 @@ export function NavigationBar({
             size="small"
             onClick={onToggleViewMode}
             sx={{
+              mr: 1,
+              p: 0.5,
               color: '#9ca3af',
+              bgcolor: 'transparent',
               transition: 'transform 0.3s ease',
               transform: isRolling ? 'rotate(180deg)' : 'rotate(0deg)',
               '&:hover': {
@@ -150,8 +153,10 @@ export function NavigationBar({
               }}
               aria-label="Show specification description"
               sx={{
-                ml: 0.5,
+                ml: 1,
+                p: 0.5,
                 color: descriptionOpen ? '#3776AB' : '#9ca3af',
+                bgcolor: 'transparent',
                 '&:hover': {
                   color: '#3776AB',
                   bgcolor: 'transparent',
@@ -214,8 +219,10 @@ export function NavigationBar({
               }}
               aria-label="Show library description"
               sx={{
-                ml: 0.5,
+                ml: 1,
+                p: 0.5,
                 color: descriptionOpen ? '#3776AB' : '#9ca3af',
+                bgcolor: 'transparent',
                 '&:hover': {
                   color: '#3776AB',
                   bgcolor: 'transparent',

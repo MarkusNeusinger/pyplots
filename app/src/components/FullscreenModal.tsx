@@ -8,6 +8,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DownloadIcon from '@mui/icons-material/Download';
 import CodeIcon from '@mui/icons-material/Code';
 import ImageIcon from '@mui/icons-material/Image';
+import CheckIcon from '@mui/icons-material/Check';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import type { PlotImage } from '../types';
@@ -23,11 +24,15 @@ interface FullscreenModalProps {
 export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: FullscreenModalProps) {
   const [showCode, setShowCode] = useState(false);
   const [blinkCodeButton, setBlinkCodeButton] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [downloaded, setDownloaded] = useState(false);
 
   // Reset state when modal opens
   const handleOpen = useCallback(() => {
     setShowCode(false);
     setBlinkCodeButton(true);
+    setCopied(false);
+    setDownloaded(false);
     setTimeout(() => setBlinkCodeButton(false), 1000);
   }, []);
 
@@ -54,33 +59,41 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
   const copyCodeToClipboard = useCallback(() => {
     if (image?.code) {
       navigator.clipboard.writeText(image.code);
-      onTrackEvent?.('copy_code', { spec: selectedSpec, library: image.library, method: 'button' });
+      setCopied(true);
+      const specId = selectedSpec || image.spec_id;
+      onTrackEvent?.('copy_code', { spec: specId, library: image.library, method: 'button' });
+      setTimeout(() => setCopied(false), 2000);
     }
-  }, [image?.code, image?.library, onTrackEvent, selectedSpec]);
+  }, [image?.code, image?.library, image?.spec_id, onTrackEvent, selectedSpec]);
 
   // Track native copy events (Ctrl+C, Cmd+C, right-click copy)
   const handleNativeCopy = useCallback(() => {
-    onTrackEvent?.('copy_code', { spec: selectedSpec, library: image?.library, method: 'native' });
-  }, [onTrackEvent, selectedSpec, image?.library]);
+    const specId = selectedSpec || image?.spec_id;
+    onTrackEvent?.('copy_code', { spec: specId, library: image?.library, method: 'native' });
+  }, [onTrackEvent, selectedSpec, image?.library, image?.spec_id]);
 
   // Download image via backend proxy
   const downloadImage = useCallback(() => {
-    if (image?.library && selectedSpec) {
+    const specId = selectedSpec || image?.spec_id;
+    if (image?.library && specId) {
       const link = document.createElement('a');
-      link.href = `${API_URL}/download/${selectedSpec}/${image.library}`;
-      link.download = `${selectedSpec}-${image.library}.png`;
+      link.href = `${API_URL}/download/${specId}/${image.library}`;
+      link.download = `${specId}-${image.library}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      onTrackEvent?.('download_image', { spec: selectedSpec, library: image.library });
+      setDownloaded(true);
+      onTrackEvent?.('download_image', { spec: specId, library: image.library });
+      setTimeout(() => setDownloaded(false), 2000);
     }
-  }, [image?.library, selectedSpec, onTrackEvent]);
+  }, [image?.library, image?.spec_id, selectedSpec, onTrackEvent]);
 
   const handleClose = useCallback(() => {
     setShowCode(false);
-    onTrackEvent?.('modal_close', { spec: selectedSpec, library: image?.library });
+    const specId = selectedSpec || image?.spec_id;
+    onTrackEvent?.('modal_close', { spec: specId, library: image?.library });
     onClose();
-  }, [onClose, onTrackEvent, selectedSpec, image?.library]);
+  }, [onClose, onTrackEvent, selectedSpec, image?.library, image?.spec_id]);
 
   return (
     <Modal
@@ -156,7 +169,7 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
                   <Box
                     onClick={() => {
                       setShowCode(false);
-                      onTrackEvent?.('view_image', { spec: selectedSpec, library: image?.library });
+                      onTrackEvent?.('view_image', { spec: selectedSpec || image?.spec_id, library: image?.library });
                     }}
                     sx={{
                       display: 'flex',
@@ -185,12 +198,13 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
                       py: 0.5,
                       borderRadius: 1,
                       cursor: 'pointer',
-                      color: '#6b7280',
+                      color: copied ? '#22c55e' : '#6b7280',
                       bgcolor: 'rgba(255,255,255,0.9)',
-                      '&:hover': { color: '#1f2937', bgcolor: '#fff' },
+                      transition: 'color 0.2s ease',
+                      '&:hover': { color: copied ? '#22c55e' : '#1f2937', bgcolor: '#fff' },
                     }}
                   >
-                    <ContentCopyIcon sx={{ fontSize: 20 }} />
+                    {copied ? <CheckIcon sx={{ fontSize: 20 }} /> : <ContentCopyIcon sx={{ fontSize: 20 }} />}
                   </Box>
                 </Box>
                 <Box
@@ -235,7 +249,7 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
                   <Box
                     onClick={() => {
                       setShowCode(true);
-                      onTrackEvent?.('view_code', { spec: selectedSpec, library: image?.library });
+                      onTrackEvent?.('view_code', { spec: selectedSpec || image?.spec_id, library: image?.library });
                     }}
                     sx={{
                       display: 'flex',
@@ -274,9 +288,10 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
                     py: 0.5,
                     borderRadius: 1,
                     cursor: 'pointer',
-                    color: '#6b7280',
+                    color: downloaded ? '#22c55e' : '#6b7280',
                     bgcolor: 'rgba(255,255,255,0.9)',
-                    '&:hover': { color: '#1f2937', bgcolor: '#fff' },
+                    transition: 'color 0.2s ease',
+                    '&:hover': { color: downloaded ? '#22c55e' : '#1f2937', bgcolor: '#fff' },
                     ...(blinkCodeButton && {
                       animation: 'bounce 0.6s ease-in-out',
                       '@keyframes bounce': {
@@ -288,7 +303,7 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
                     }),
                   }}
                 >
-                  <DownloadIcon sx={{ fontSize: 20 }} />
+                  {downloaded ? <CheckIcon sx={{ fontSize: 20 }} /> : <DownloadIcon sx={{ fontSize: 20 }} />}
                 </Box>
               </Box>
               <img

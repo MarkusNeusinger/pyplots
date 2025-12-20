@@ -19,6 +19,7 @@ interface ImagesGridProps {
   loadMoreRef: React.RefObject<HTMLDivElement | null>;
   onTooltipToggle: (id: string | null) => void;
   onCardClick: (image: PlotImage) => void;
+  onTrackEvent?: (name: string, props?: Record<string, string | undefined>) => void;
 }
 
 export function ImagesGrid({
@@ -35,6 +36,7 @@ export function ImagesGrid({
   loadMoreRef,
   onTooltipToggle,
   onCardClick,
+  onTrackEvent,
 }: ImagesGridProps) {
   const showContent = (viewMode === 'spec' && selectedSpec) || (viewMode === 'library' && selectedLibrary);
 
@@ -108,6 +110,7 @@ export function ImagesGrid({
                   openTooltip={openTooltip}
                   onTooltipToggle={onTooltipToggle}
                   onClick={() => onCardClick(image)}
+                  onTrackEvent={onTrackEvent}
                 />
               </Grid>
             ))}

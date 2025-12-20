@@ -1,3 +1,4 @@
+import { useState, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
@@ -7,6 +8,8 @@ import Tooltip from '@mui/material/Tooltip';
 import Link from '@mui/material/Link';
 import SubjectIcon from '@mui/icons-material/Subject';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import CheckIcon from '@mui/icons-material/Check';
 import type { PlotImage, LibraryInfo, SpecInfo } from '../types';
 
 interface ImageCardProps {
@@ -19,6 +22,7 @@ interface ImageCardProps {
   openTooltip: string | null;
   onTooltipToggle: (id: string | null) => void;
   onClick: () => void;
+  onTrackEvent?: (name: string, props?: Record<string, string | undefined>) => void;
 }
 
 export function ImageCard({
@@ -31,13 +35,26 @@ export function ImageCard({
   openTooltip,
   onTooltipToggle,
   onClick,
+  onTrackEvent,
 }: ImageCardProps) {
+  const [copied, setCopied] = useState(false);
+
   const label = viewMode === 'library' ? image.spec_id : image.library;
   const tooltipId = viewMode === 'spec' ? image.library : (image.spec_id || '');
   const isTooltipOpen = openTooltip === tooltipId;
 
   const libraryInfo = librariesData.find(l => l.id === image.library);
   const specInfo = specsData.find(s => s.id === image.spec_id);
+
+  const handleCopyCode = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (image.code) {
+      navigator.clipboard.writeText(image.code);
+      setCopied(true);
+      onTrackEvent?.('copy_code', { spec: image.spec_id || selectedSpec, library: image.library, method: 'card' });
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }, [image.code, image.library, image.spec_id, selectedSpec, onTrackEvent]);
 
   return (
     <Box
@@ -64,6 +81,7 @@ export function ImageCard({
         role="button"
         aria-label={`View ${viewMode === 'library' ? image.spec_id : image.library} plot in fullscreen`}
         sx={{
+          position: 'relative',
           borderRadius: 3,
           overflow: 'hidden',
           border: '2px solid rgba(55, 118, 171, 0.2)',
@@ -75,8 +93,45 @@ export function ImageCard({
             boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
             transform: 'scale(1.03)',
           },
+          '&:hover .copy-button': {
+            opacity: 1,
+          },
         }}
       >
+        {/* Copy Code Button */}
+        {image.code && (
+          <Tooltip
+            title={copied ? "Code copied!" : "Copy code"}
+            placement="left"
+            arrow
+          >
+            <Box
+              className="copy-button"
+              onClick={handleCopyCode}
+              aria-label="Copy code to clipboard"
+              sx={{
+                position: 'absolute',
+                top: 12,
+                right: 12,
+                zIndex: 2,
+                opacity: copied ? 1 : 0,
+                transition: 'all 0.2s ease',
+                color: copied ? '#22c55e' : '#6b7280',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
+                '&:hover': {
+                  color: copied ? '#22c55e' : '#374151',
+                  transform: 'scale(1.1)',
+                },
+              }}
+            >
+              {copied ? <CheckIcon sx={{ fontSize: 22 }} /> : <ContentCopyIcon sx={{ fontSize: 20 }} />}
+            </Box>
+          </Tooltip>
+        )}
         <CardMedia
           component="img"
           image={image.thumb || image.url}

@@ -29,6 +29,7 @@ function App() {
   // Data state
   const [specsData, setSpecsData] = useState<SpecInfo[]>([]);
   const [librariesData, setLibrariesData] = useState<LibraryInfo[]>([]);
+  const [stats, setStats] = useState<{ specs: number; plots: number; libraries: number } | null>(null);
   const [allImages, setAllImages] = useState<PlotImage[]>([]);
   const [displayedImages, setDisplayedImages] = useState<PlotImage[]>([]);
   const [hasMore, setHasMore] = useState(false);
@@ -156,9 +157,11 @@ function App() {
           setSelectedLibrary(libraryFromUrl);
         } else if (specFromUrl && specIds.includes(specFromUrl)) {
           setSelectedSpec(specFromUrl);
-        } else if (specIds.length > 0) {
-          const randomIndex = Math.floor(Math.random() * specIds.length);
-          setSelectedSpec(specIds[randomIndex]);
+        } else {
+          // Default: Start in library mode with random library for more variety
+          const randomLib = LIBRARIES[Math.floor(Math.random() * LIBRARIES.length)];
+          setViewMode('library');
+          setSelectedLibrary(randomLib);
         }
       } catch (err) {
         setError(`Error loading specs: ${err}`);
@@ -182,6 +185,21 @@ function App() {
       }
     };
     fetchLibraries();
+  }, []);
+
+  // Load stats on mount
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch(`${API_URL}/stats`);
+        if (!response.ok) throw new Error('Failed to fetch stats');
+        const data = await response.json();
+        setStats(data);
+      } catch (err) {
+        console.error('Error loading stats:', err);
+      }
+    };
+    fetchStats();
   }, []);
 
   // Update library description when selected library changes
@@ -300,7 +318,7 @@ function App() {
       sx={{ minHeight: '100vh', bgcolor: '#fafafa', py: 5 }}
     >
       <Container maxWidth={false} sx={{ px: { xs: 4, sm: 8, lg: 12 } }}>
-        <Header />
+        <Header stats={stats} />
 
         {error && (
           <Alert severity="error" sx={{ mb: 4, maxWidth: 500, mx: 'auto' }}>
@@ -361,6 +379,7 @@ function App() {
           loadMoreRef={loadMoreRef}
           onTooltipToggle={setOpenImageTooltip}
           onCardClick={handleCardClick}
+          onTrackEvent={trackEvent}
         />
 
         {!loading && specsLoaded && specs.length === 0 && (

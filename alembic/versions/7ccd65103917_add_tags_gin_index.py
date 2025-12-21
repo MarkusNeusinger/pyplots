@@ -7,14 +7,15 @@ Create Date: 2025-12-21 22:24:19.543818
 GIN index on specs.tags JSONB column for fast tag filtering.
 Supports queries like: WHERE tags->'plot_type' ? 'scatter'
 """
+
 from typing import Sequence, Union
 
 from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision: str = '7ccd65103917'
-down_revision: Union[str, None] = 'b26e9f4b532d'
+revision: str = "7ccd65103917"
+down_revision: Union[str, None] = "b26e9f4b532d"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

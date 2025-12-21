@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 slope-basic: Basic Slope Chart (Slopegraph)
-Library: highcharts
+Library: highcharts 1.10.3 | Python 3.13.11
+Quality: 96/100 | Created: 2025-12-17
 """
 
 import tempfile

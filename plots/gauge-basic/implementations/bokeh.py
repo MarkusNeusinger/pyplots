@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 gauge-basic: Basic Gauge Chart
-Library: bokeh
+Library: bokeh 3.8.1 | Python 3.13.11
+Quality: 99/100 | Created: 2025-12-14
 """
 
 import numpy as np

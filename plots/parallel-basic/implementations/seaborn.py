@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 parallel-basic: Basic Parallel Coordinates Plot
-Library: seaborn
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-14
 """
 
 import matplotlib.pyplot as plt

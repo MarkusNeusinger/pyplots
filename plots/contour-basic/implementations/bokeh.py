@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 contour-basic: Basic Contour Plot
-Library: bokeh
+Library: bokeh 3.8.1 | Python 3.13.11
+Quality: 93/100 | Created: 2025-12-14
 """
 
 import numpy as np

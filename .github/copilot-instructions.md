@@ -160,9 +160,10 @@ Examples: `scatter-basic`, `scatter-color-mapped`, `bar-grouped-horizontal`, `he
 Plot implementations are **simple, readable scripts** - like matplotlib gallery examples:
 
 ```python
-"""
+""" pyplots.ai
 scatter-basic: Basic Scatter Plot
-Library: matplotlib
+Library: matplotlib 3.10.0 | Python 3.13
+Quality: 92/100 | Created: 2025-01-10
 """
 
 import matplotlib.pyplot as plt
@@ -182,6 +183,7 @@ plt.tight_layout()
 plt.savefig('plot.png', dpi=300, bbox_inches='tight')
 ```
 
+**Header format:** 4-line docstring with pyplots.ai branding, spec-id, library version, quality score.
 **Rules:** No functions, no classes, no `if __name__ == '__main__'`. Just: imports → data → plot → save.
 
 ### Anti-Patterns to Avoid

@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 ridgeline-basic: Basic Ridgeline Plot
-Library: bokeh
+Library: bokeh 3.8.1 | Python 3.13.11
+Quality: 94/100 | Created: 2025-12-15
 """
 
 import numpy as np

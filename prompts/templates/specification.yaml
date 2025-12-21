@@ -5,10 +5,10 @@ spec_id: {specification-id}
 title: {Title}
 
 # Specification tracking
-created: null          # ISO 8601 timestamp, set by workflow
+created: null          # ISO 8601 timestamp, set by workflow on first creation
+updated: null          # ISO 8601 timestamp, set by workflow on any change
 issue: null            # GitHub issue number
 suggested: null        # GitHub username or 'pyplots' for seed plots
-history: []            # List of spec updates [{date, issue, changes}]
 
 # Classification tags (applies to all library implementations)
 # See docs/concepts/tagging-system.md for detailed guidelines

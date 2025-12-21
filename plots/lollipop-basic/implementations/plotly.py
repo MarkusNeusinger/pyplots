@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 lollipop-basic: Basic Lollipop Chart
-Library: plotly
+Library: plotly 6.5.0 | Python 3.13.11
+Quality: 95/100 | Created: 2025-12-15
 """
 
 import plotly.graph_objects as go

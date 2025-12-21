@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 treemap-basic: Basic Treemap
-Library: altair
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 88/100 | Created: 2025-12-14
 """
 
 import altair as alt

@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 sunburst-basic: Basic Sunburst Chart
-Library: altair
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 90/100 | Created: 2025-12-14
 """
 
 import altair as alt

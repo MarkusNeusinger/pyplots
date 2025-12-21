@@ -188,24 +188,23 @@ plots/{specification-id}/
 
 **Contents**:
 ```yaml
-specification_id: scatter-basic
+spec_id: scatter-basic
 title: Basic Scatter Plot
 created: 2025-01-10T08:00:00Z
+updated: 2025-01-15T10:30:00Z
 issue: 42
 suggested: CoolContributor123
-updates: []
 tags:
   plot_type: [scatter, point]
   domain: [statistics, general]
   features: [basic, 2d]
-  audience: [beginner]
   data_type: [numeric]
 ```
 
 **Key Points**:
 - Tags are at spec level (same for all libraries)
 - `suggested` credits the contributor who proposed the spec
-- `updates` tracks spec changes over time
+- `updated` timestamp set on any change (git history for details)
 
 ---
 
@@ -217,21 +216,39 @@ tags:
 ```yaml
 library: matplotlib
 specification_id: scatter-basic
+
+# Timestamps
+created: 2025-01-10T08:00:00Z
+updated: 2025-01-15T10:30:00Z
+
+# Generation
+generated_by: claude-opus-4-5-20251101
+workflow_run: 12345678
+issue: 42
+
+# Versions
+python_version: "3.13"
+library_version: "3.10.0"
+
+# Previews
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/matplotlib/plot.png
-current:
-  version: 1
-  generated_at: 2025-01-15T10:30:00Z
-  generated_by: claude-opus-4-5-20251101
-  workflow_run: 12345678
-  issue: 42
-  quality_score: 92
-history: []
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/matplotlib/plot_thumb.png
+preview_html: null
+
+# Quality
+quality_score: 92
+
+# Review feedback (used by AI for regeneration)
+review:
+  strengths: ["Clean code structure"]
+  weaknesses: ["Grid could be more subtle"]
+  improvements: ["Consider colorblind-friendly palette"]
 ```
 
 **Key Points**:
 - Each library has its own file (no merge conflicts!)
-- Created by `impl-merge.yml` when implementation is approved
-- Version history tracked in `history` array
+- Created by `impl-generate.yml`, updated by `impl-review.yml`
+- Review feedback persisted for AI to improve on regeneration
 
 ### GCS Storage
 
@@ -272,9 +289,10 @@ gs://pyplots-images/
 
 **Code Style** (KISS):
 ```python
-"""
+""" pyplots.ai
 scatter-basic: Basic Scatter Plot
-Library: matplotlib
+Library: matplotlib 3.10.0 | Python 3.13
+Quality: 92/100 | Created: 2025-01-10
 """
 
 import matplotlib.pyplot as plt
@@ -293,6 +311,12 @@ ax.set_title('Basic Scatter Plot')
 plt.tight_layout()
 plt.savefig('plot.png', dpi=300)
 ```
+
+**Header Format** (4 lines):
+1. `""" pyplots.ai` - Branding
+2. `{spec-id}: {Title}` - Identification
+3. `Library: {lib} {version} | Python {version}` - Versions
+4. `Quality: {score}/100 | Created: {date}` - Quality + date
 
 **Rules**:
 - No functions, no classes

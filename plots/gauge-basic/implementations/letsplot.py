@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 gauge-basic: Basic Gauge Chart
-Library: letsplot
+Library: letsplot 4.8.1 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-14
 """
 
 import math

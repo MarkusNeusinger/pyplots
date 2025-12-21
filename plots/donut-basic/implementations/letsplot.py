@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 donut-basic: Basic Donut Chart
-Library: lets-plot
+Library: letsplot 4.8.1 | Python 3.13.11
+Quality: 90/100 | Created: 2025-12-14
 """
 
 import pandas as pd

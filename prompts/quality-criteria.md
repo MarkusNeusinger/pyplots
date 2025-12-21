@@ -369,9 +369,10 @@ Code follows simple sequential structure without functions or classes.
 
 ```python
 # Good: Simple sequential structure
-"""
+""" pyplots.ai
 scatter-basic: Basic Scatter Plot
-Library: matplotlib
+Library: matplotlib 3.10.0 | Python 3.13
+Quality: 92/100 | Created: 2025-01-10
 """
 
 import matplotlib.pyplot as plt

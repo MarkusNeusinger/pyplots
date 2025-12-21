@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 quiver-basic: Basic Quiver Plot
-Library: bokeh
+Library: bokeh 3.8.1 | Python 3.13.11
+Quality: 93/100 | Created: 2025-12-16
 """
 
 import numpy as np

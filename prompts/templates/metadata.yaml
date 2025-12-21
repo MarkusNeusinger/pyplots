@@ -1,0 +1,32 @@
+# Per-library metadata for {specification-id}/{library}
+# Auto-synced to PostgreSQL on push to main
+
+library: {library}
+specification_id: {specification-id}
+
+# Timestamps
+created: null          # ISO 8601, first generation
+updated: null          # ISO 8601, last update
+
+# Generation info
+generated_by: null     # Model ID (e.g., claude-opus-4-5-20251101)
+workflow_run: null     # GitHub Actions run ID
+issue: null            # GitHub issue number
+
+# Versions used during generation
+python_version: null   # e.g., "3.13.4"
+library_version: null  # e.g., "3.9.0"
+
+# Preview URLs (GCS, filled by workflow)
+preview_url: null      # Full PNG
+preview_thumb: null    # Thumbnail PNG
+preview_html: null     # Interactive HTML (plotly, bokeh, altair, etc.)
+
+# Quality score (0-100, filled by impl-review)
+quality_score: null
+
+# Review feedback (filled by impl-review, read by impl-generate for improvements)
+review:
+  strengths: []        # What's good about this implementation
+  weaknesses: []       # What needs improvement
+  improvements: []     # Specific suggestions for next generation

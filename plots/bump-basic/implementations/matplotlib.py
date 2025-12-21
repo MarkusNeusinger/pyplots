@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 bump-basic: Basic Bump Chart
-Library: matplotlib
+Library: matplotlib 3.10.8 | Python 3.13.11
+Quality: 94/100 | Created: 2025-12-17
 """
 
 import matplotlib.pyplot as plt

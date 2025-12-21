@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 arc-basic: Basic Arc Diagram
-Library: matplotlib
+Library: matplotlib 3.10.8 | Python 3.13.11
+Quality: 93/100 | Created: 2025-12-17
 """
 
 import matplotlib.patches as mpatches

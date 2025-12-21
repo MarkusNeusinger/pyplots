@@ -1,9 +1,7 @@
-"""
+""" pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
-Library: pygal
-
-Uses pygal's XML filter to add packed circle elements.
-Pygal doesn't have native packed bubbles, so we use circle packing algorithm.
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-16
 """
 
 import math

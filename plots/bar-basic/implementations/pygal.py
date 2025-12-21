@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 bar-basic: Basic Bar Chart
-Library: pygal
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 96/100 | Created: 2025-12-13
 """
 
 import pygal

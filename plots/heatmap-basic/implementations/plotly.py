@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 heatmap-basic: Basic Heatmap
-Library: plotly
+Library: plotly 6.5.0 | Python 3.13.11
+Quality: 94/100 | Created: 2025-12-14
 """
 
 import numpy as np

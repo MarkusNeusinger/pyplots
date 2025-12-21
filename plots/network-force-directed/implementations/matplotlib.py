@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 network-force-directed: Force-Directed Graph
-Library: matplotlib
+Library: matplotlib 3.10.8 | Python 3.13.11
+Quality: 93/100 | Created: 2025-12-17
 """
 
 import matplotlib.pyplot as plt

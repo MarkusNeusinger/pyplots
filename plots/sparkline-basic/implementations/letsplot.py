@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 sparkline-basic: Basic Sparkline
-Library: lets-plot
+Library: letsplot 4.8.1 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-16
 """
 
 import numpy as np

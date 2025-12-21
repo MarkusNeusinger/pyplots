@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 step-basic: Basic Step Plot
-Library: altair
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 95/100 | Created: 2025-12-15
 """
 
 # Workaround for altair.py file shadowing the altair module

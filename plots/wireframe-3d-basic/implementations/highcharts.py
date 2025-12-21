@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 wireframe-3d-basic: Basic 3D Wireframe Plot
-Library: highcharts
+Library: highcharts 1.10.3 | Python 3.13.11
+Quality: 93/100 | Created: 2025-12-16
 """
 
 import json

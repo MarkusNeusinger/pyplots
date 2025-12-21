@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 sankey-basic: Basic Sankey Diagram
-Library: bokeh
+Library: bokeh 3.8.1 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-14
 """
 
 import numpy as np

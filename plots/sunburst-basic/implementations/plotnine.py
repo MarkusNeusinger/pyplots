@@ -1,10 +1,7 @@
-"""
+""" pyplots.ai
 sunburst-basic: Basic Sunburst Chart
-Library: plotnine
-
-Note: plotnine (like ggplot2) does not have a native sunburst/pie geom.
-This implementation uses matplotlib's Wedge patches directly to create
-the sunburst visualization while following plotnine's minimal styling conventions.
+Library: plotnine 0.15.1 | Python 3.13.11
+Quality: 100/100 | Created: 2025-12-14
 """
 
 import matplotlib.pyplot as plt

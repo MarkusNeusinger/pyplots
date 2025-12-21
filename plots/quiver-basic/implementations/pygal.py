@@ -1,10 +1,7 @@
-"""
+""" pyplots.ai
 quiver-basic: Basic Quiver Plot
-Library: pygal
-
-Note: pygal does not have native quiver plot support.
-This implementation creates a quiver plot using custom SVG generation
-with cairosvg for PNG export, following pygal's visual style.
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-16
 """
 
 import math

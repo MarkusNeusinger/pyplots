@@ -1,10 +1,7 @@
-"""
+""" pyplots.ai
 rose-basic: Basic Rose Chart
-Library: pygal
-
-Note: Pygal doesn't have a native rose/Nightingale chart type, so this implementation
-creates a custom SVG rose chart using the same styling conventions as pygal and
-outputs both SVG (as HTML) and PNG using cairosvg.
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-17
 """
 
 import math

@@ -1,10 +1,7 @@
-"""
+""" pyplots.ai
 sunburst-basic: Basic Sunburst Chart
-Library: pygal
-
-Note: pygal does not have native sunburst chart support.
-This implementation creates a sunburst using custom SVG generation
-with cairosvg for PNG export, following pygal's visual style.
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 89/100 | Created: 2025-12-14
 """
 
 import math

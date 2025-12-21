@@ -1,10 +1,7 @@
-"""
+""" pyplots.ai
 candlestick-basic: Basic Candlestick Chart
-Library: pygal
-
-Note: pygal does not have a native candlestick chart type.
-This implementation creates a custom candlestick visualization
-by generating SVG directly and embedding it in a pygal-style output.
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 88/100 | Created: 2025-12-14
 """
 
 import math

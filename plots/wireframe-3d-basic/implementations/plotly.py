@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 wireframe-3d-basic: Basic 3D Wireframe Plot
-Library: plotly
+Library: plotly 6.5.0 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-16
 """
 
 import numpy as np

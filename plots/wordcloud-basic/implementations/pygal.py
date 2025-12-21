@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 wordcloud-basic: Basic Word Cloud
-Library: pygal
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-16
 """
 
 import xml.etree.ElementTree as ET

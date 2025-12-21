@@ -182,24 +182,34 @@ jobs:
             - [ ] CQ-01: KISS structure
             - [ ] CQ-02: Reproducible
 
-            ### Issues Found
-            1. **Issue**: Description
-            2. **Issue**: Description
+            ### Strengths
+            - Strength 1
+            - Strength 2
 
-            ### AI Feedback
-            > Specific suggestions for improvement
+            ### Weaknesses
+            - Weakness 1
+
+            ### Improvements
+            - Improvement 1
+            - Improvement 2
 
             ### Verdict: APPROVED / REJECTED
             ```
 
-            7. **Save score to file**:
+            7. **Save review data to files** (for the workflow to parse):
                ```bash
                echo "XX" > quality_score.txt
+
+               # Save structured feedback as JSON (one array per file)
+               echo '["Strength 1", "Strength 2"]' > review_strengths.json
+               echo '["Weakness 1"]' > review_weaknesses.json
+               echo '["Improvement 1", "Improvement 2"]' > review_improvements.json
                ```
 
             8. **DO NOT add ai-approved or ai-rejected labels** - the workflow will add them after updating metadata.
 
             **IMPORTANT**: Your review MUST include the "Image Description" section. A review without an image description will be considered invalid.
+            **IMPORTANT**: The Strengths/Weaknesses/Improvements sections are saved to the metadata for future regeneration. Be specific!
 
       - name: Extract quality score
         id: score
@@ -233,7 +243,11 @@ jobs:
           gh label create "$LABEL" --color "0e8a16" --description "Quality score ${SCORE}/100" 2>/dev/null || true
           gh pr edit "$PR_NUM" --add-label "$LABEL"
 
-      - name: Update quality score in metadata
+      - name: Install Python dependencies for metadata update
+        if: steps.attempts.outputs.count != '3' && steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
+        run: pip install pyyaml
+
+      - name: Update metadata and implementation header
         if: steps.attempts.outputs.count != '3' && steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -243,26 +257,128 @@ jobs:
           BRANCH: ${{ steps.pr.outputs.branch }}
         run: |
           METADATA_FILE="plots/${SPEC_ID}/metadata/${LIBRARY}.yaml"
+          IMPL_FILE="plots/${SPEC_ID}/implementations/${LIBRARY}.py"
 
           # Configure git auth and checkout the PR branch
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
           git fetch origin "$BRANCH"
           git checkout -B "$BRANCH" "origin/$BRANCH"
 
-          # Update quality_score in metadata file
+          # Read review feedback from JSON files (created by Claude)
+          STRENGTHS="[]"
+          WEAKNESSES="[]"
+          IMPROVEMENTS="[]"
+
+          if [ -f "review_strengths.json" ]; then
+            STRENGTHS=$(cat review_strengths.json)
+          fi
+          if [ -f "review_weaknesses.json" ]; then
+            WEAKNESSES=$(cat review_weaknesses.json)
+          fi
+          if [ -f "review_improvements.json" ]; then
+            IMPROVEMENTS=$(cat review_improvements.json)
+          fi
+
+          # Update metadata file with quality score and review feedback
           if [ -f "$METADATA_FILE" ]; then
+            # Update quality_score
             sed -i "s/quality_score: null.*/quality_score: ${SCORE}/" "$METADATA_FILE"
             sed -i "s/quality_score: [0-9]\+.*/quality_score: ${SCORE}/" "$METADATA_FILE"
 
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add "$METADATA_FILE"
+            # Update updated timestamp
+            TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+            sed -i "s/^updated: .*/updated: ${TIMESTAMP}/" "$METADATA_FILE"
 
-            if ! git diff --cached --quiet; then
-              git commit -m "chore(${LIBRARY}): set quality score ${SCORE} for ${SPEC_ID}"
-              git push origin "$BRANCH"
-              echo "::notice::Quality score ${SCORE} committed to ${BRANCH}"
-            fi
+            # Update review section using Python for proper YAML handling
+            python3 -c "
+          import yaml
+          import json
+          import sys
+
+          metadata_file = '$METADATA_FILE'
+          strengths = '$STRENGTHS'
+          weaknesses = '$WEAKNESSES'
+          improvements = '$IMPROVEMENTS'
+
+          with open(metadata_file, 'r') as f:
+              data = yaml.safe_load(f)
+
+          if 'review' not in data:
+              data['review'] = {}
+
+          try:
+              data['review']['strengths'] = json.loads(strengths)
+          except:
+              data['review']['strengths'] = []
+
+          try:
+              data['review']['weaknesses'] = json.loads(weaknesses)
+          except:
+              data['review']['weaknesses'] = []
+
+          try:
+              data['review']['improvements'] = json.loads(improvements)
+          except:
+              data['review']['improvements'] = []
+
+          with open(metadata_file, 'w') as f:
+              yaml.dump(data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
+          "
+
+            echo "::notice::Updated metadata with quality score ${SCORE} and review feedback"
+          fi
+
+          # Update implementation header with quality score
+          if [ -f "$IMPL_FILE" ]; then
+            # Get library and python versions from metadata
+            LIBRARY_VERSION=$(python3 -c "import yaml; print(yaml.safe_load(open('$METADATA_FILE'))['library_version'])" 2>/dev/null || echo "unknown")
+            PYTHON_VERSION=$(python3 -c "import yaml; print(yaml.safe_load(open('$METADATA_FILE'))['python_version'])" 2>/dev/null || echo "3.13")
+            CREATED_DATE=$(python3 -c "import yaml; print(yaml.safe_load(open('$METADATA_FILE'))['created'][:10])" 2>/dev/null || echo "$(date +%Y-%m-%d)")
+
+            # Get title from specification.yaml
+            TITLE=$(python3 -c "import yaml; print(yaml.safe_load(open('plots/${SPEC_ID}/specification.yaml'))['title'])" 2>/dev/null || echo "${SPEC_ID}")
+
+            # Replace old header using Python
+            python3 -c "
+          import re
+
+          impl_file = '$IMPL_FILE'
+          spec_id = '${SPEC_ID}'
+          title = '''${TITLE}'''
+          library = '${LIBRARY}'
+          lib_version = '${LIBRARY_VERSION}'
+          py_version = '${PYTHON_VERSION}'
+          score = '${SCORE}'
+          created = '${CREATED_DATE}'
+
+          new_header = f'''\"\"\" pyplots.ai
+          {spec_id}: {title}
+          Library: {library} {lib_version} | Python {py_version}
+          Quality: {score}/100 | Created: {created}
+          \"\"\"'''
+
+          with open(impl_file, 'r') as f:
+              content = f.read()
+
+          pattern = r'^\"\"\".*?\"\"\"'
+          new_content = re.sub(pattern, new_header, content, count=1, flags=re.DOTALL)
+
+          with open(impl_file, 'w') as f:
+              f.write(new_content)
+          "
+
+            echo "::notice::Updated implementation header with quality score ${SCORE}"
+          fi
+
+          # Commit and push
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$METADATA_FILE" "$IMPL_FILE"
+
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(${LIBRARY}): update quality score ${SCORE} and review feedback for ${SPEC_ID}"
+            git push origin "$BRANCH"
+            echo "::notice::Changes committed to ${BRANCH}"
           fi
 
       - name: Handle review failure

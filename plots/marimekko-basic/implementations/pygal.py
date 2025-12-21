@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 marimekko-basic: Basic Marimekko Chart
-Library: pygal
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-16
 """
 
 import sys

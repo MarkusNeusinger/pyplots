@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 surface-basic: Basic 3D Surface Plot
-Library: highcharts
+Library: highcharts 1.10.3 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-17
 """
 
 import json

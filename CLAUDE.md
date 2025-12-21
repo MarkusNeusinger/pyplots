@@ -159,20 +159,16 @@ Plot metadata is split into two types of files to avoid merge conflicts:
 **1. Specification-level metadata:** `plots/{specification-id}/specification.yaml`
 
 ```yaml
-specification_id: scatter-basic
+spec_id: scatter-basic
 title: Basic Scatter Plot
 created: 2025-01-10T08:00:00Z
+updated: 2025-01-15T10:30:00Z
 issue: 42
 suggested: CoolContributor123
-updates:
-  - date: 2025-01-15T10:30:00Z
-    issue: 58
-    changes: "Added Notes section"
 tags:
   plot_type: [scatter, point]
   domain: [statistics, general]
   features: [basic, 2d, correlation]
-  audience: [beginner]
   data_type: [numeric, continuous]
 ```
 
@@ -181,24 +177,56 @@ tags:
 ```yaml
 library: matplotlib
 specification_id: scatter-basic
+
+# Timestamps
+created: 2025-01-10T08:00:00Z
+updated: 2025-01-15T10:30:00Z
+
+# Generation
+generated_by: claude-opus-4-5-20251101
+workflow_run: 12345678
+issue: 42
+
+# Versions
+python_version: "3.13"
+library_version: "3.10.0"
+
+# Previews
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/matplotlib/plot.png
-current:
-  version: 1
-  generated_at: 2025-01-15T10:30:00Z
-  generated_by: claude-opus-4-5-20251101
-  workflow_run: 12345678
-  issue: 42
-  quality_score: 92
-history: []
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/matplotlib/plot_thumb.png
+preview_html: null
+
+# Quality
+quality_score: 92
+
+# Review feedback (used for regeneration)
+review:
+  strengths:
+    - "Clean code structure"
+    - "Good use of alpha for overlapping points"
+  weaknesses:
+    - "Grid could be more subtle"
+  improvements:
+    - "Consider colorblind-friendly palette"
+```
+
+**3. Implementation headers:** `plots/{specification-id}/implementations/{library}.py`
+
+```python
+""" pyplots.ai
+scatter-basic: Basic Scatter Plot
+Library: matplotlib 3.10.0 | Python 3.13
+Quality: 92/100 | Created: 2025-01-10
+"""
 ```
 
 **Key points:**
-- Spec-level tracking in `specification.yaml`: `created`, `issue`, `suggested`, `updates`, `tags`
+- Spec-level tracking in `specification.yaml`: `created`, `updated`, `issue`, `suggested`, `tags`
 - Per-library metadata in separate files (no merge conflicts!)
+- **Review feedback** stored in metadata for regeneration (AI reads previous feedback to improve)
 - Contributors credited via `suggested` field
 - Tags are at spec level (same for all libraries)
-- Per-library metadata updated automatically by `impl-merge.yml` after each PR merge
-- Quality scores flow from `impl-review.yml` via PR labels (`quality:XX`)
+- Per-library metadata updated automatically by `impl-review.yml` (quality score, review feedback)
 - `sync-postgres.yml` workflow syncs to database on push to main
 - Database stores full spec content (markdown) and implementation code (Python source)
 

@@ -32,13 +32,11 @@ class Spec(Base):
     notes: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)  # Optional hints
 
     # From metadata.yaml
-    created: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)  # When spec was created
+    created: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)  # When spec was first created
+    updated: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)  # When spec was last modified
     issue: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # GitHub issue number
     suggested: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # GitHub username
-    tags: Mapped[Optional[dict]] = mapped_column(
-        JSONB, nullable=True
-    )  # {plot_type, data_type, domain, features}
-    history: Mapped[Optional[list]] = mapped_column(JSONB, nullable=True)  # Spec update history
+    tags: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)  # {plot_type, data_type, domain, features}
 
     # System
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
@@ -89,18 +87,16 @@ class Impl(Base):
 
     # Quality & Generation
     quality_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    generated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    generated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)  # First generation
+    updated: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)  # Last update
     generated_by: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # Model ID
     issue: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # GitHub Issue
     workflow_run: Mapped[Optional[int]] = mapped_column(BigInteger, nullable=True)  # GitHub Actions run ID
 
-    # Quality evaluation details
-    evaluator_scores: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)  # Per-LLM scores
-    quality_feedback: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Evaluation feedback
-    improvements_suggested: Mapped[Optional[list]] = mapped_column(JSONB, nullable=True)  # Suggested fixes
-
-    # Version history
-    history: Mapped[Optional[list]] = mapped_column(JSONB, nullable=True)  # Previous versions
+    # Review feedback (structured arrays from impl-review)
+    review_strengths: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)  # What's good
+    review_weaknesses: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)  # What needs work
+    review_improvements: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)  # Suggestions
 
     # System
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())

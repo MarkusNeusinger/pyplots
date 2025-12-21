@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 pyramid-basic: Basic Pyramid Chart
-Library: plotly
+Library: plotly 6.5.0 | Python 3.13.11
+Quality: 95/100 | Created: 2025-12-17
 """
 
 import plotly.graph_objects as go

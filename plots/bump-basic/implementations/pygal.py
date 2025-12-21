@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 bump-basic: Basic Bump Chart
-Library: pygal
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 94/100 | Created: 2025-12-17
 """
 
 import pygal

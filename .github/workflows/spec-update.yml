@@ -112,10 +112,7 @@ jobs:
             4. **Apply updates:**
                - Modify `plots/${{ steps.extract.outputs.specification_id }}/specification.md` as needed
                - Update `plots/${{ steps.extract.outputs.specification_id }}/specification.yaml`:
-                 - Add entry to `history` array with:
-                   - `date`: current timestamp (ISO 8601 format)
-                   - `issue`: ${{ github.event.issue.number }}
-                   - `changes`: brief description of what changed
+                 - Set `updated`: current timestamp (ISO 8601 format, e.g., 2025-12-21T10:30:00Z)
 
             5. **Commit and push:**
                ```bash
@@ -179,10 +176,7 @@ jobs:
             4. **Apply updates:**
                - Modify `plots/${{ steps.extract.outputs.specification_id }}/specification.md` as needed
                - Update `plots/${{ steps.extract.outputs.specification_id }}/specification.yaml`:
-                 - Add entry to `history` array with:
-                   - `date`: current timestamp (ISO 8601 format)
-                   - `issue`: ${{ github.event.issue.number }}
-                   - `changes`: brief description of what changed
+                 - Set `updated`: current timestamp (ISO 8601 format, e.g., 2025-12-21T10:30:00Z)
 
             5. **Commit and push:**
                ```bash

@@ -10,18 +10,38 @@ Create a Python script for the specified plot type and library. The code should 
 
 ## Input
 
-1. **Spec**: Markdown specification from `plots/{spec-id}/spec.md`
+1. **Spec**: Markdown specification from `plots/{spec-id}/specification.md`
 2. **Library**: matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts, or letsplot
 3. **Library Rules**: Specific rules from `prompts/library/{library}.md`
+4. **Previous Metadata** (if regenerating): `plots/{spec-id}/metadata/{library}.yaml`
+5. **Previous Code** (if regenerating): `plots/{spec-id}/implementations/{library}.py`
+
+## Regeneration: Learn from Previous Review
+
+When regenerating an existing implementation, read the metadata file for review feedback:
+
+```yaml
+# plots/{spec-id}/metadata/{library}.yaml
+review:
+  strengths:
+    - "Clean code structure"
+  weaknesses:
+    - "Font sizes too small for canvas"
+  improvements:
+    - "Increase fontsize to 20 for labels"
+```
+
+**Use this feedback to improve!** Address all weaknesses and apply suggested improvements.
 
 ## Output
 
 A simple Python script with this structure:
 
 ```python
-"""
+""" pyplots.ai
 {spec-id}: {Title}
-Library: {library}
+Library: {library} {lib_version} | Python {py_version}
+Quality: {score}/100 | Created: {YYYY-MM-DD}
 """
 
 import matplotlib.pyplot as plt
@@ -76,12 +96,33 @@ The middot (·) separator is required. No color or style requirements - the AI d
 
 ### Structure
 
-1. **Docstring** - Spec ID, title, library (3 lines max)
+1. **Docstring** - 4 lines: pyplots.ai, spec-id:title, library+versions, quality+created
 2. **Imports** - Only what's needed
 3. **Data** - Prepare/generate data (use spec example if provided, or create realistic sample)
 4. **Plot** - Create figure and plot data
 5. **Style** - Labels, title, grid, etc.
 6. **Save** - Always save as `plot.png`
+
+### Docstring Format (filled by workflow after review)
+
+```python
+""" pyplots.ai
+{spec-id}: {Title}
+Library: {library} {lib_version} | Python {py_version}
+Quality: {score}/100 | Created: {YYYY-MM-DD}
+"""
+```
+
+**During generation** (before review): Use placeholder values
+```python
+""" pyplots.ai
+scatter-basic: Basic Scatter Plot
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-21
+"""
+```
+
+The workflow will update `Quality: {score}/100` and add version numbers after review.
 
 ### Rules (Code Quality Criteria)
 

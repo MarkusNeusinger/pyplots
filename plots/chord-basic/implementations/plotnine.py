@@ -1,9 +1,7 @@
-"""
+""" pyplots.ai
 chord-basic: Basic Chord Diagram
-Library: plotnine
-
-Note: plotnine doesn't have native chord diagram support.
-Using matplotlib directly with plotnine-style aesthetics.
+Library: plotnine 0.15.1 | Python 3.13.11
+Quality: 88/100 | Created: 2025-12-14
 """
 
 import matplotlib.patches as mpatches

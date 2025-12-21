@@ -1,9 +1,7 @@
-"""
+""" pyplots.ai
 bullet-basic: Basic Bullet Chart
-Library: pygal
-
-Pygal lacks a native bullet chart type. We use HorizontalStackedBar for qualitative
-ranges, then inject custom SVG elements for actual value bars and target markers.
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-16
 """
 
 import cairosvg

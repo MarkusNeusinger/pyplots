@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 density-basic: Basic Density Plot
-Library: altair
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 94/100 | Created: 2025-12-15
 """
 
 import altair as alt

@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 slope-basic: Basic Slope Chart (Slopegraph)
-Library: letsplot
+Library: letsplot 4.8.1 | Python 3.13.11
+Quality: 94/100 | Created: 2025-12-17
 """
 
 import pandas as pd

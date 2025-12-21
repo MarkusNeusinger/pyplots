@@ -60,6 +60,19 @@ def convert_datetimes_to_strings(obj):
     return obj
 
 
+def parse_timestamp(value) -> datetime | None:
+    """Parse a timestamp from YAML (datetime or string) to naive datetime for DB."""
+    if isinstance(value, datetime):
+        return value.replace(tzinfo=None) if value.tzinfo else value
+    elif isinstance(value, str):
+        try:
+            dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+            return dt.replace(tzinfo=None)
+        except ValueError:
+            return None
+    return None
+
+
 def parse_bullet_points(text: str) -> list[str]:
     """Extract bullet points from a markdown section."""
     bullets = []
@@ -210,25 +223,14 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
     if metadata.get("title"):
         spec_data["title"] = metadata["title"]
 
-    # Add spec-level metadata from YAML (convert datetimes in JSONB fields)
+    # Add spec-level metadata from YAML
     spec_data["tags"] = convert_datetimes_to_strings(metadata.get("tags"))
-    spec_data["history"] = convert_datetimes_to_strings(metadata.get("history"))
     spec_data["issue"] = metadata.get("issue")
     spec_data["suggested"] = metadata.get("suggested")
 
-    # Parse created timestamp (convert to naive datetime for DB)
-    # YAML auto-parses dates, so datetime comes first
-    created = metadata.get("created")
-    if isinstance(created, datetime):
-        spec_data["created"] = created.replace(tzinfo=None) if created.tzinfo else created
-    elif isinstance(created, str):
-        try:
-            dt = datetime.fromisoformat(created.replace("Z", "+00:00"))
-            spec_data["created"] = dt.replace(tzinfo=None)
-        except ValueError:
-            spec_data["created"] = None
-    else:
-        spec_data["created"] = None
+    # Parse created/updated timestamps (convert to naive datetime for DB)
+    spec_data["created"] = parse_timestamp(metadata.get("created"))
+    spec_data["updated"] = parse_timestamp(metadata.get("updated"))
 
     # Scan implementations
     implementations = []
@@ -250,18 +252,15 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
                 # Legacy structure: metadata.yaml -> implementations -> {library}
                 impl_meta = metadata.get("implementations", {}).get(library_id, {})
 
-            current = impl_meta.get("current") or {}
+            # Support both new flat structure and legacy current: nesting
+            current = impl_meta.get("current") or impl_meta
 
-            # Parse generated_at (strip timezone for DB compatibility)
-            generated_at = current.get("generated_at")
-            if isinstance(generated_at, str):
-                try:
-                    dt = datetime.fromisoformat(generated_at.replace("Z", "+00:00"))
-                    generated_at = dt.replace(tzinfo=None)  # Remove timezone info
-                except ValueError:
-                    generated_at = None
-            elif isinstance(generated_at, datetime):
-                generated_at = generated_at.replace(tzinfo=None)
+            # Parse timestamps
+            generated_at = parse_timestamp(current.get("generated_at") or impl_meta.get("created"))
+            updated = parse_timestamp(impl_meta.get("updated"))
+
+            # Parse review feedback (new structure)
+            review = impl_meta.get("review") or {}
 
             implementations.append(
                 {
@@ -273,20 +272,19 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
                     "preview_thumb": impl_meta.get("preview_thumb"),
                     "preview_html": impl_meta.get("preview_html"),
                     # Versions (from metadata YAML, filled by workflow)
-                    "python_version": current.get("python_version"),
-                    "library_version": current.get("library_version"),
+                    "python_version": current.get("python_version") or impl_meta.get("python_version"),
+                    "library_version": current.get("library_version") or impl_meta.get("library_version"),
                     # Generation metadata
                     "generated_at": generated_at,
-                    "generated_by": current.get("generated_by"),
-                    "workflow_run": current.get("workflow_run"),
-                    "issue": current.get("issue"),
-                    "quality_score": current.get("quality_score"),
-                    # Quality evaluation details (convert datetimes in JSONB)
-                    "evaluator_scores": convert_datetimes_to_strings(current.get("evaluator_scores")),
-                    "quality_feedback": current.get("quality_feedback"),
-                    "improvements_suggested": convert_datetimes_to_strings(current.get("improvements_suggested")),
-                    # Version history (convert datetimes in JSONB)
-                    "history": convert_datetimes_to_strings(impl_meta.get("history")),
+                    "updated": updated,
+                    "generated_by": current.get("generated_by") or impl_meta.get("generated_by"),
+                    "workflow_run": current.get("workflow_run") or impl_meta.get("workflow_run"),
+                    "issue": current.get("issue") or impl_meta.get("issue"),
+                    "quality_score": current.get("quality_score") or impl_meta.get("quality_score"),
+                    # Review feedback (new structure)
+                    "review_strengths": review.get("strengths") or [],
+                    "review_weaknesses": review.get("weaknesses") or [],
+                    "review_improvements": review.get("improvements") or [],
                 }
             )
 
@@ -333,10 +331,10 @@ def sync_to_database(session: Session, plots: list[dict]) -> dict:
                     "data": spec["data"],
                     "notes": spec["notes"],
                     "created": spec.get("created"),
+                    "updated": spec.get("updated"),
                     "issue": spec.get("issue"),
                     "suggested": spec.get("suggested"),
                     "tags": spec.get("tags"),
-                    "history": spec.get("history"),
                 },
             )
         )
@@ -358,18 +356,20 @@ def sync_to_database(session: Session, plots: list[dict]) -> dict:
                 "python_version",
                 "library_version",
                 "generated_at",
+                "updated",
                 "generated_by",
                 "workflow_run",
                 "issue",
                 "quality_score",
-                "evaluator_scores",
-                "quality_feedback",
-                "improvements_suggested",
-                "history",
             ]
             for field in optional_fields:
                 if impl.get(field) is not None:
                     update_set[field] = impl[field]
+
+            # Review feedback arrays (always set, even if empty)
+            update_set["review_strengths"] = impl.get("review_strengths") or []
+            update_set["review_weaknesses"] = impl.get("review_weaknesses") or []
+            update_set["review_improvements"] = impl.get("review_improvements") or []
 
             stmt = insert(Impl).values(**impl).on_conflict_do_update(constraint="uq_impl", set_=update_set)
             session.execute(stmt)

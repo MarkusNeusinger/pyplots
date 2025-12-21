@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 waffle-basic: Basic Waffle Chart
-Library: seaborn
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 93/100 | Created: 2025-12-16
 """
 
 import matplotlib.patches as mpatches

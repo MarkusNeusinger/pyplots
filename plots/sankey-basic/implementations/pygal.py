@@ -1,6 +1,7 @@
-"""
+""" pyplots.ai
 sankey-basic: Basic Sankey Diagram
-Library: pygal
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 87/100 | Created: 2025-12-14
 """
 
 import cairosvg

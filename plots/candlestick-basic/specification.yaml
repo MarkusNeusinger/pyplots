@@ -14,16 +14,11 @@ history: []
 tags:
   plot_type:
     - candlestick
-    - financial
+  data_type:
+    - numeric
+    - timeseries
   domain:
     - finance
-    - trading
   features:
     - basic
     - ohlc
-    - time-series
-  audience:
-    - intermediate
-  data_type:
-    - numeric
-    - datetime

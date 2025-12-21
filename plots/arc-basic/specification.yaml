@@ -15,16 +15,11 @@ tags:
   plot_type:
     - arc
     - network
+  data_type:
+    - network
+    - relational
   domain:
     - general
-    - text-analysis
-    - genomics
   features:
     - basic
-    - connections
-    - sequential
-  audience:
-    - intermediate
-  data_type:
-    - categorical
-    - relational
+    - connection-visualization

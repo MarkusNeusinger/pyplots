@@ -14,15 +14,12 @@ history: []
 tags:
   plot_type:
     - wordcloud
-    - text
-  domain:
-    - general
-    - text-analysis
-  features:
-    - basic
-    - frequency
-  audience:
-    - beginner
   data_type:
     - text
-    - categorical
+    - frequency
+  domain:
+    - general
+    - marketing
+  features:
+    - basic
+    - text

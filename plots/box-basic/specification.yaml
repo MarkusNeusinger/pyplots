@@ -14,16 +14,13 @@ history: []
 tags:
   plot_type:
     - box
-    - distribution
+  data_type:
+    - numeric
+    - categorical
   domain:
     - statistics
     - general
   features:
     - basic
+    - distribution
     - quartiles
-    - outliers
-  audience:
-    - beginner
-  data_type:
-    - numeric
-    - categorical

@@ -15,15 +15,11 @@ tags:
   plot_type:
     - bullet
     - bar
+  data_type:
+    - numeric
   domain:
     - business
-    - finance
-    - general
   features:
     - basic
     - comparison
     - target
-  audience:
-    - beginner
-  data_type:
-    - numeric

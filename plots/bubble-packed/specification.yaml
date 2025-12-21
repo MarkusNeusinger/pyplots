@@ -15,17 +15,13 @@ tags:
   plot_type:
     - bubble
     - packed
+  data_type:
+    - categorical
+    - numeric
   domain:
-    - business
-    - finance
     - general
+    - business
   features:
     - basic
     - comparison
     - hierarchical
-  audience:
-    - beginner
-    - intermediate
-  data_type:
-    - categorical
-    - numeric

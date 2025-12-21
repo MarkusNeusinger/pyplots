@@ -14,19 +14,13 @@ history: []
 tags:
   plot_type:
     - contour
-    - surface
+  data_type:
+    - numeric
+    - continuous
   domain:
     - science
-    - geography
     - statistics
   features:
     - basic
     - 2d
     - isolines
-  audience:
-    - beginner
-    - intermediate
-  data_type:
-    - numeric
-    - continuous
-    - grid

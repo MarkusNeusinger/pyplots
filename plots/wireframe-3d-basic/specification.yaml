@@ -14,20 +14,14 @@ history: []
 tags:
   plot_type:
     - wireframe
-    - 3d
     - surface
+  data_type:
+    - numeric
+    - continuous
   domain:
-    - mathematics
     - science
-    - education
+    - engineering
   features:
     - basic
     - 3d
     - mesh
-    - grid
-  audience:
-    - intermediate
-  data_type:
-    - numeric
-    - continuous
-    - grid

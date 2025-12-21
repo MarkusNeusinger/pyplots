@@ -15,16 +15,13 @@ tags:
   plot_type:
     - waterfall
     - bar
+  data_type:
+    - numeric
+    - categorical
   domain:
     - finance
     - business
-    - general
   features:
     - basic
     - cumulative
     - sequential
-  audience:
-    - intermediate
-  data_type:
-    - numeric
-    - categorical

@@ -15,16 +15,13 @@ tags:
   plot_type:
     - sankey
     - flow
-  domain:
-    - general
-    - business
-    - energy
-  features:
-    - basic
-    - flow-visualization
-    - proportional
-  audience:
-    - intermediate
   data_type:
     - categorical
     - numeric
+  domain:
+    - general
+    - business
+  features:
+    - basic
+    - flow
+    - proportional

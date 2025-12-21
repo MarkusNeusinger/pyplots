@@ -15,17 +15,12 @@ tags:
   plot_type:
     - step
     - line
+  data_type:
+    - numeric
+    - discrete
   domain:
     - general
     - finance
-    - business
   features:
     - basic
     - discrete
-    - sequential
-  audience:
-    - beginner
-  data_type:
-    - numeric
-    - datetime
-    - continuous

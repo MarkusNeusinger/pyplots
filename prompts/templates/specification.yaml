@@ -11,14 +11,13 @@ suggested: null        # GitHub username or 'pyplots' for seed plots
 history: []            # List of spec updates [{date, issue, changes}]
 
 # Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
 tags:
   plot_type:
-    - {type}           # scatter, bar, line, pie, histogram, box, area, etc.
-  domain:
-    - general          # statistics, science, business, finance, etc.
-  features:
-    - basic            # basic, grouped, stacked, animated, interactive, etc.
-  audience:
-    - beginner         # beginner, intermediate, advanced
+    - {type}           # Primary plot type (scatter, bar, line, heatmap, etc.)
   data_type:
-    - numeric          # numeric, categorical, datetime, continuous
+    - numeric          # What kind of data (numeric, categorical, timeseries, etc.)
+  domain:
+    - general          # Where used (general, statistics, finance, science, etc.)
+  features:
+    - basic            # Special characteristics (basic, grouped, stacked, 3d, etc.)

@@ -15,16 +15,12 @@ tags:
   plot_type:
     - qq
     - diagnostic
-  domain:
-    - statistics
-    - science
-    - quality-control
-  features:
-    - basic
-    - distribution
-    - normality
-  audience:
-    - intermediate
   data_type:
     - numeric
     - continuous
+  domain:
+    - statistics
+    - science
+  features:
+    - basic
+    - distribution

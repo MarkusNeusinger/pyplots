@@ -14,17 +14,12 @@ history: []
 tags:
   plot_type:
     - ecdf
-    - distribution
-    - cumulative
-  domain:
-    - statistics
-    - general
-  features:
-    - basic
-    - step-function
-    - non-parametric
-  audience:
-    - intermediate
   data_type:
     - numeric
     - continuous
+  domain:
+    - statistics
+  features:
+    - basic
+    - distribution
+    - cumulative

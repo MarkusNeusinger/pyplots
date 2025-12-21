@@ -14,7 +14,9 @@ history: []
 tags:
   plot_type:
     - scatter
-    - point
+  data_type:
+    - numeric
+    - continuous
   domain:
     - statistics
     - general
@@ -22,8 +24,3 @@ tags:
     - basic
     - 2d
     - correlation
-  audience:
-    - beginner
-  data_type:
-    - numeric
-    - continuous

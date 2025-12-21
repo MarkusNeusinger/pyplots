@@ -14,17 +14,12 @@ history: []
 tags:
   plot_type:
     - surface
-    - 3d
-  domain:
-    - mathematics
-    - science
-    - general
-  features:
-    - basic
-    - 3d
-    - continuous
-  audience:
-    - intermediate
   data_type:
     - numeric
     - continuous
+  domain:
+    - science
+    - engineering
+  features:
+    - basic
+    - 3d

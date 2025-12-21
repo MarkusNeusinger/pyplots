@@ -14,18 +14,12 @@ history: []
 tags:
   plot_type:
     - errorbar
-    - statistical
-  domain:
-    - statistics
-    - science
-    - research
-  features:
-    - basic
-    - uncertainty
-    - confidence-intervals
-  audience:
-    - beginner
-    - intermediate
   data_type:
     - numeric
     - categorical
+  domain:
+    - statistics
+    - science
+  features:
+    - basic
+    - uncertainty

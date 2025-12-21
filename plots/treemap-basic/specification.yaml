@@ -14,18 +14,14 @@ history: []
 tags:
   plot_type:
     - treemap
+  data_type:
     - hierarchical
+    - categorical
+    - numeric
   domain:
     - general
     - business
-    - finance
   features:
     - basic
     - hierarchical
-    - part-to-whole
-  audience:
-    - beginner
-    - intermediate
-  data_type:
-    - categorical
-    - numeric
+    - proportional

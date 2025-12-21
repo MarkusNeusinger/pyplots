@@ -15,17 +15,12 @@ tags:
   plot_type:
     - chord
     - flow
-    - circular
+  data_type:
+    - network
+    - relational
   domain:
     - general
-    - science
-    - business
   features:
     - basic
-    - relationships
-    - connections
-  audience:
-    - intermediate
-  data_type:
-    - categorical
-    - numeric
+    - circular
+    - connection-visualization

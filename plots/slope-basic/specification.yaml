@@ -15,16 +15,13 @@ tags:
   plot_type:
     - slope
     - line
+  data_type:
+    - numeric
+    - categorical
   domain:
     - general
     - business
-    - statistics
   features:
     - basic
     - comparison
     - change
-  audience:
-    - beginner
-  data_type:
-    - numeric
-    - categorical

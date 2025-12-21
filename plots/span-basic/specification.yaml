@@ -15,16 +15,13 @@ tags:
   plot_type:
     - span
     - annotation
+  data_type:
+    - numeric
+    - datetime
   domain:
     - general
     - finance
-    - statistics
   features:
     - basic
     - highlight
     - overlay
-  audience:
-    - beginner
-  data_type:
-    - numeric
-    - datetime

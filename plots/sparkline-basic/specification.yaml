@@ -15,17 +15,13 @@ tags:
   plot_type:
     - sparkline
     - line
+  data_type:
+    - numeric
+    - timeseries
   domain:
     - business
     - finance
-    - general
   features:
     - basic
-    - inline
-    - minimal
     - compact
-  audience:
-    - beginner
-  data_type:
-    - numeric
-    - sequential
+    - inline

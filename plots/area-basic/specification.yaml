@@ -15,17 +15,13 @@ tags:
   plot_type:
     - area
     - line
+  data_type:
+    - numeric
+    - timeseries
   domain:
     - general
     - business
-    - finance
   features:
     - basic
     - filled
     - trend
-  audience:
-    - beginner
-  data_type:
-    - numeric
-    - datetime
-    - continuous

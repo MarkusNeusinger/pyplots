@@ -15,16 +15,13 @@ tags:
   plot_type:
     - parallel
     - multivariate
+  data_type:
+    - numeric
+    - continuous
   domain:
     - statistics
     - general
-    - data-analysis
   features:
     - basic
     - high-dimensional
     - comparison
-  audience:
-    - intermediate
-  data_type:
-    - numeric
-    - continuous

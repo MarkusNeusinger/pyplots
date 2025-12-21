@@ -14,16 +14,12 @@ history: []
 tags:
   plot_type:
     - bar
-  domain:
-    - general
-    - business
-    - statistics
-  features:
-    - basic
-    - comparison
-    - categorical
-  audience:
-    - beginner
   data_type:
     - categorical
     - numeric
+  domain:
+    - general
+    - business
+  features:
+    - basic
+    - comparison

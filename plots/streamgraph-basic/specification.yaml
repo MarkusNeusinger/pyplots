@@ -15,18 +15,14 @@ tags:
   plot_type:
     - streamgraph
     - area
-    - stacked
+  data_type:
+    - timeseries
+    - categorical
+    - numeric
   domain:
     - general
-    - media
     - business
   features:
     - basic
-    - time-series
-    - composition
-  audience:
-    - intermediate
-  data_type:
-    - datetime
-    - categorical
-    - numeric
+    - stacked
+    - flow

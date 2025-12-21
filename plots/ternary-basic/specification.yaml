@@ -15,19 +15,12 @@ tags:
   plot_type:
     - ternary
     - triangle
+  data_type:
+    - numeric
     - compositional
   domain:
     - science
     - chemistry
-    - geology
-    - general
   features:
     - basic
-    - 2d
     - proportional
-  audience:
-    - intermediate
-  data_type:
-    - numeric
-    - continuous
-    - compositional

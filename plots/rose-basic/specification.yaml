@@ -15,18 +15,13 @@ tags:
   plot_type:
     - rose
     - polar
-    - radial
-  domain:
-    - general
-    - meteorology
-    - statistics
-  features:
-    - basic
-    - circular
-    - categorical
-  audience:
-    - beginner
-    - intermediate
   data_type:
     - categorical
     - numeric
+  domain:
+    - general
+    - science
+  features:
+    - basic
+    - circular
+    - directional

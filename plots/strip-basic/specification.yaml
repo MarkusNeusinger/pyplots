@@ -14,17 +14,13 @@ history: []
 tags:
   plot_type:
     - strip
-    - point
-    - distribution
+  data_type:
+    - numeric
+    - categorical
   domain:
     - statistics
     - general
   features:
     - basic
+    - distribution
     - jitter
-    - categorical
-  audience:
-    - beginner
-  data_type:
-    - numeric
-    - categorical

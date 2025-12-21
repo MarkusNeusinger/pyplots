@@ -14,19 +14,15 @@ history: []
 tags:
   plot_type:
     - sunburst
-    - hierarchical
     - radial
+  data_type:
+    - hierarchical
+    - categorical
+    - numeric
   domain:
     - general
     - business
-    - data-science
   features:
     - basic
     - hierarchical
-    - part-to-whole
-  audience:
-    - intermediate
-  data_type:
-    - categorical
-    - numeric
-    - hierarchical
+    - proportional

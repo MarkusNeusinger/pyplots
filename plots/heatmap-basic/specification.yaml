@@ -15,17 +15,13 @@ tags:
   plot_type:
     - heatmap
     - matrix
+  data_type:
+    - numeric
+    - categorical
   domain:
     - statistics
     - general
-    - science
   features:
     - basic
     - 2d
     - color-mapped
-  audience:
-    - beginner
-    - intermediate
-  data_type:
-    - numeric
-    - categorical

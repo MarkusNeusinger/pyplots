@@ -14,16 +14,13 @@ history: []
 tags:
   plot_type:
     - rug
-    - distribution
+  data_type:
+    - numeric
+    - continuous
   domain:
     - statistics
     - general
   features:
     - basic
+    - distribution
     - 1d
-    - marginal
-  audience:
-    - beginner
-  data_type:
-    - numeric
-    - continuous

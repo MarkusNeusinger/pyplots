@@ -15,17 +15,12 @@ tags:
   plot_type:
     - network
     - graph
-    - node-link
+  data_type:
+    - network
+    - relational
   domain:
     - general
-    - social-science
-    - computer-science
+    - technology
   features:
     - basic
-    - relational
     - connectivity
-  audience:
-    - intermediate
-  data_type:
-    - categorical
-    - relational

@@ -15,17 +15,13 @@ tags:
   plot_type:
     - radar
     - spider
-    - web
+  data_type:
+    - numeric
+    - categorical
   domain:
     - general
     - business
-    - sports
   features:
     - basic
     - multivariate
     - comparison
-  audience:
-    - beginner
-  data_type:
-    - numeric
-    - categorical

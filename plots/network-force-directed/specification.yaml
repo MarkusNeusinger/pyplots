@@ -15,17 +15,12 @@ tags:
   plot_type:
     - network
     - graph
+  data_type:
+    - network
+    - relational
   domain:
     - general
     - technology
-    - social
   features:
     - force-directed
     - interactive
-    - nodes
-    - edges
-  audience:
-    - intermediate
-  data_type:
-    - graph
-    - relational

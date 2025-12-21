@@ -15,18 +15,13 @@ tags:
   plot_type:
     - band
     - area
-    - range
+  data_type:
+    - numeric
+    - continuous
   domain:
     - statistics
     - science
-    - forecasting
   features:
     - basic
     - confidence-interval
     - uncertainty
-  audience:
-    - intermediate
-  data_type:
-    - numeric
-    - continuous
-    - datetime

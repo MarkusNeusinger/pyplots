@@ -14,16 +14,12 @@ history: []
 tags:
   plot_type:
     - pie
-    - proportion
+  data_type:
+    - categorical
+    - numeric
   domain:
     - general
     - business
   features:
     - basic
-    - percentage
-    - legend
-  audience:
-    - beginner
-  data_type:
-    - categorical
-    - numeric
+    - proportional

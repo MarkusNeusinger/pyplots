@@ -15,6 +15,8 @@ tags:
   plot_type:
     - swarm
     - beeswarm
+  data_type:
+    - numeric
     - categorical
   domain:
     - statistics
@@ -22,10 +24,3 @@ tags:
   features:
     - basic
     - distribution
-    - individual-points
-  audience:
-    - beginner
-    - intermediate
-  data_type:
-    - numeric
-    - categorical

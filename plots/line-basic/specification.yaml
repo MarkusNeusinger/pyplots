@@ -14,16 +14,12 @@ history: []
 tags:
   plot_type:
     - line
+  data_type:
+    - numeric
+    - continuous
   domain:
     - general
     - statistics
   features:
     - basic
     - trend
-    - timeseries
-  audience:
-    - beginner
-  data_type:
-    - numeric
-    - datetime
-    - continuous

@@ -15,16 +15,13 @@ tags:
   plot_type:
     - heatmap
     - calendar
-  domain:
-    - general
-    - business
-    - productivity
-  features:
-    - basic
-    - temporal
-    - grid
-  audience:
-    - beginner
   data_type:
     - datetime
     - numeric
+  domain:
+    - general
+    - business
+  features:
+    - basic
+    - temporal
+    - color-mapped

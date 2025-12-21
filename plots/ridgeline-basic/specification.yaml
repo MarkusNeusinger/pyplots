@@ -15,16 +15,13 @@ tags:
   plot_type:
     - ridgeline
     - density
-    - distribution
+  data_type:
+    - numeric
+    - categorical
   domain:
     - statistics
     - general
   features:
     - basic
-    - stacked
+    - distribution
     - comparison
-  audience:
-    - intermediate
-  data_type:
-    - numeric
-    - categorical

@@ -14,16 +14,12 @@ history: []
 tags:
   plot_type:
     - gauge
-    - meter
+  data_type:
+    - numeric
   domain:
     - business
     - monitoring
-    - dashboard
   features:
     - basic
     - single-value
     - kpi
-  audience:
-    - beginner
-  data_type:
-    - numeric

@@ -15,17 +15,12 @@ tags:
   plot_type:
     - bubble
     - scatter
-  domain:
-    - general
-    - business
-    - statistics
-  features:
-    - basic
-    - 3-variable
-    - size-encoded
-  audience:
-    - beginner
-    - intermediate
   data_type:
     - numeric
     - continuous
+  domain:
+    - general
+    - business
+  features:
+    - basic
+    - size-encoded

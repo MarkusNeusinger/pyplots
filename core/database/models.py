@@ -37,7 +37,7 @@ class Spec(Base):
     suggested: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # GitHub username
     tags: Mapped[Optional[dict]] = mapped_column(
         JSONB, nullable=True
-    )  # {plot_type, domain, features, audience, data_type}
+    )  # {plot_type, data_type, domain, features}
     history: Mapped[Optional[list]] = mapped_column(JSONB, nullable=True)  # Spec update history
 
     # System

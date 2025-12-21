@@ -14,17 +14,13 @@ history: []
 tags:
   plot_type:
     - lollipop
+  data_type:
     - categorical
+    - numeric
   domain:
     - general
     - business
-    - statistics
   features:
     - basic
     - comparison
     - ranking
-  audience:
-    - beginner
-  data_type:
-    - categorical
-    - numeric

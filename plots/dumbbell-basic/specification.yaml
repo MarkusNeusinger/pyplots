@@ -15,18 +15,12 @@ tags:
   plot_type:
     - dumbbell
     - dot
-    - comparison
-  domain:
-    - general
-    - business
-    - statistics
-  features:
-    - basic
-    - comparison
-    - range
-  audience:
-    - beginner
-    - intermediate
   data_type:
     - numeric
     - categorical
+  domain:
+    - general
+    - business
+  features:
+    - basic
+    - comparison

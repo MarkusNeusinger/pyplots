@@ -14,17 +14,13 @@ history: []
 tags:
   plot_type:
     - violin
-    - distribution
+  data_type:
+    - numeric
+    - categorical
   domain:
     - statistics
     - general
   features:
     - basic
+    - distribution
     - density
-    - quartiles
-  audience:
-    - beginner
-    - intermediate
-  data_type:
-    - numeric
-    - categorical

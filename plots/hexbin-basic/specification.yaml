@@ -15,17 +15,13 @@ tags:
   plot_type:
     - hexbin
     - density
+  data_type:
+    - numeric
+    - continuous
   domain:
     - statistics
-    - geospatial
-    - finance
+    - general
   features:
     - basic
     - 2d
     - aggregation
-    - colormap
-  audience:
-    - intermediate
-  data_type:
-    - numeric
-    - continuous

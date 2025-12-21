@@ -14,15 +14,13 @@ history: []
 tags:
   plot_type:
     - histogram
-    - distribution
+  data_type:
+    - numeric
+    - continuous
   domain:
     - statistics
     - general
   features:
     - basic
+    - distribution
     - frequency
-  audience:
-    - beginner
-  data_type:
-    - numeric
-    - continuous

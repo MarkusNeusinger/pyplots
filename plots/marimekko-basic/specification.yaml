@@ -15,16 +15,13 @@ tags:
   plot_type:
     - marimekko
     - mosaic
-    - stacked-bar
+  data_type:
+    - categorical
+    - numeric
   domain:
     - business
     - statistics
   features:
     - basic
     - proportional
-    - 2d
-  audience:
-    - intermediate
-  data_type:
-    - categorical
-    - numeric
+    - stacked

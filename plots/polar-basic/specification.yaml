@@ -15,16 +15,12 @@ tags:
   plot_type:
     - polar
     - radial
+  data_type:
+    - numeric
+    - angular
   domain:
     - general
-    - meteorology
     - science
   features:
     - basic
     - circular
-    - directional
-  audience:
-    - beginner
-  data_type:
-    - numeric
-    - angular

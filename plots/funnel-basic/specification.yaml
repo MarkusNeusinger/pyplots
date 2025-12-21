@@ -14,17 +14,13 @@ history: []
 tags:
   plot_type:
     - funnel
-    - proportional
+  data_type:
+    - categorical
+    - numeric
   domain:
     - business
     - marketing
-    - sales
   features:
     - basic
     - sequential
     - conversion
-  audience:
-    - beginner
-  data_type:
-    - categorical
-    - numeric

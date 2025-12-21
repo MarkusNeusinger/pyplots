@@ -14,17 +14,13 @@ history: []
 tags:
   plot_type:
     - density
-    - distribution
     - kde
+  data_type:
+    - numeric
+    - continuous
   domain:
     - statistics
     - general
   features:
     - basic
-    - continuous
-    - probability
-  audience:
-    - beginner
-  data_type:
-    - numeric
-    - continuous
+    - distribution

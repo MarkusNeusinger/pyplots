@@ -117,6 +117,7 @@ jobs:
             6. **Create specification files:**
                - Read template: `prompts/templates/specification.md`
                - Read metadata template: `prompts/templates/specification.yaml`
+               - Read tagging guide: `docs/concepts/tagging-system.md`
                - Create directory: `plots/{specification-id}/`
                - Create: `plots/{specification-id}/specification.md` (follow template structure)
                - Create: `plots/{specification-id}/specification.yaml` with:
@@ -125,7 +126,7 @@ jobs:
                  - `created`: Use `$(date -u +"%Y-%m-%dT%H:%M:%SZ")` for current timestamp
                  - `issue`: ${{ github.event.issue.number }}
                  - `suggested`: ${{ github.event.issue.user.login }}
-                 - `tags`: appropriate tags for this plot type
+                 - `tags`: Follow tagging-system.md guide (4 dimensions: plot_type, data_type, domain, features)
                - Create empty folder: `plots/{specification-id}/implementations/`
                - Create empty folder: `plots/{specification-id}/metadata/`
 
@@ -212,6 +213,7 @@ jobs:
             6. **Create specification files:**
                - Read template: `prompts/templates/specification.md`
                - Read metadata template: `prompts/templates/specification.yaml`
+               - Read tagging guide: `docs/concepts/tagging-system.md`
                - Create directory: `plots/{specification-id}/`
                - Create: `plots/{specification-id}/specification.md` (follow template structure)
                - Create: `plots/{specification-id}/specification.yaml` with:
@@ -220,7 +222,7 @@ jobs:
                  - `created`: Use `$(date -u +"%Y-%m-%dT%H:%M:%SZ")` for current timestamp
                  - `issue`: ${{ github.event.issue.number }}
                  - `suggested`: ${{ github.event.issue.user.login }}
-                 - `tags`: appropriate tags for this plot type
+                 - `tags`: Follow tagging-system.md guide (4 dimensions: plot_type, data_type, domain, features)
                - Create empty folder: `plots/{specification-id}/implementations/`
                - Create empty folder: `plots/{specification-id}/metadata/`
 

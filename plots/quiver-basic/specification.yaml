@@ -15,16 +15,12 @@ tags:
   plot_type:
     - quiver
     - vector
+  data_type:
+    - numeric
+    - continuous
   domain:
     - science
-    - physics
     - engineering
   features:
     - basic
     - 2d
-    - arrows
-  audience:
-    - intermediate
-  data_type:
-    - numeric
-    - continuous

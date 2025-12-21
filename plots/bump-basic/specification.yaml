@@ -15,16 +15,12 @@ tags:
   plot_type:
     - bump
     - ranking
-  domain:
-    - general
-    - business
-    - sports
-  features:
-    - basic
-    - temporal
-    - ranking
-  audience:
-    - beginner
   data_type:
     - categorical
     - ordinal
+  domain:
+    - general
+  features:
+    - basic
+    - ranking
+    - temporal

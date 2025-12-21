@@ -1,1145 +1,812 @@
 # Plot Types Catalog
 
-A comprehensive catalog of plot types for the pyplots platform. Each entry includes the recommended library, a brief description of a basic implementation, and a suggested spec ID.
+A comprehensive catalog of plot types for the pyplots platform. Each plot is implemented across all 9 supported libraries (matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts, lets-plot).
 
-## Supported Libraries
-
-| Library | Strength | Best For |
-|---------|----------|----------|
-| **Matplotlib** | Flexibility, customization | Static plots, publication-quality figures, custom layouts |
-| **Seaborn** | Statistical visualization | Distributions, relationships, categorical data |
-| **Plotly** | Interactivity, web | Dashboards, 3D plots, animations |
-| **Bokeh** | Large datasets, streaming | Real-time data, big data visualization |
-| **Altair** | Declarative, exploratory | Quick exploration, academic use |
-| **Plotnine** | ggplot2 syntax | R users, grammar of graphics |
-| **Pygal** | SVG output, minimalistic | Embeddable SVG charts, simple dashboards |
-| **Highcharts** | Professional web charts | Stock charts, drilldown, enterprise dashboards |
+**Legend:** ✅ = implemented | 📋 = planned
 
 ---
 
 ## 1. Scatter Plots
 
-### scatter-basic
-**Best Library:** Matplotlib
-**Description:** Simple 2D scatter plot showing relationship between two numeric variables. X-axis and Y-axis with circular markers.
-**Basic Chart:** 50-100 random points, default blue color, no legend needed.
+### scatter-basic ✅
+**Description:** A fundamental 2D scatter plot that displays the relationship between two numeric variables by plotting points on a Cartesian coordinate system.
 
-### scatter-color-mapped
-**Best Library:** Matplotlib
-**Description:** Scatter plot with a third variable encoded as color using a colormap. Includes colorbar.
-**Basic Chart:** Points colored by a continuous variable (e.g., temperature), viridis colormap.
+### scatter-color-mapped 📋
+**Description:** Scatter plot with a third variable encoded as color using a colormap. Includes colorbar for reference.
 
-### scatter-size-mapped
-**Best Library:** Matplotlib
-**Description:** Bubble chart where marker size represents a third variable.
-**Basic Chart:** Points with varying sizes based on a value column, semi-transparent markers.
+### scatter-size-mapped 📋
+**Description:** Bubble chart where marker size represents a third variable. Semi-transparent markers reveal overlapping points.
 
-### scatter-categorical
-**Best Library:** Seaborn
-**Description:** Scatter plot with points colored by category.
-**Basic Chart:** Two categories (A, B) with distinct colors, legend included.
+### scatter-categorical 📋
+**Description:** Scatter plot with points colored by category. Distinct colors for each group with legend.
 
-### scatter-regression
-**Best Library:** Seaborn
-**Description:** Scatter plot with linear regression line and confidence interval.
-**Basic Chart:** Points with fitted line, shaded 95% CI region.
+### scatter-regression 📋
+**Description:** Scatter plot with linear regression line and confidence interval band.
 
-### scatter-marginal
-**Best Library:** Seaborn (jointplot)
-**Description:** Scatter plot with marginal histograms or KDE on axes.
-**Basic Chart:** Central scatter with histogram distributions on top and right margins.
+### scatter-marginal 📋
+**Description:** Scatter plot with marginal histograms or KDE on axes showing distributions.
 
-### scatter-3d
-**Best Library:** Plotly
-**Description:** Three-dimensional scatter plot with rotation capability.
-**Basic Chart:** Points in 3D space, interactive rotation, basic axis labels.
+### scatter-3d 📋
+**Description:** Three-dimensional scatter plot with rotation capability for exploring 3D relationships.
 
-### scatter-matrix
-**Best Library:** Seaborn (pairplot)
-**Description:** Grid of scatter plots for all variable pairs in a dataset.
-**Basic Chart:** 3-4 variables, diagonal shows histograms, off-diagonal shows scatter.
+### scatter-matrix 📋
+**Description:** Grid of scatter plots for all variable pairs in a dataset with histograms on diagonal.
 
 ---
 
 ## 2. Line Plots
 
-### line-basic
-**Best Library:** Matplotlib
-**Description:** Simple line connecting data points in order.
-**Basic Chart:** Single line, 20-30 points, solid line style.
+### line-basic ✅
+**Description:** A basic line plot connects data points with straight lines to show how a continuous variable changes over a sequence or time.
 
-### line-multi
-**Best Library:** Matplotlib
-**Description:** Multiple lines on the same axes for comparison.
-**Basic Chart:** 3 lines with different colors, legend included.
+### line-multi 📋
+**Description:** Multiple lines on the same axes for comparison with legend.
 
-### line-styled
-**Best Library:** Matplotlib
-**Description:** Line plot with different line styles (solid, dashed, dotted).
-**Basic Chart:** 3 lines with distinct styles, useful for black-and-white printing.
+### line-styled 📋
+**Description:** Line plot with different line styles (solid, dashed, dotted) for black-and-white printing.
 
-### line-markers
-**Best Library:** Matplotlib
-**Description:** Line plot with visible markers at data points.
-**Basic Chart:** Line with circular markers, helpful for sparse data.
+### line-markers 📋
+**Description:** Line plot with visible markers at data points, helpful for sparse data.
 
-### line-timeseries
-**Best Library:** Matplotlib
+### line-timeseries 📋
 **Description:** Line plot with datetime x-axis and proper date formatting.
-**Basic Chart:** 12 months of data, month labels on x-axis.
 
-### line-stepwise
-**Best Library:** Matplotlib
-**Description:** Step function plot (horizontal then vertical transitions).
-**Basic Chart:** Step plot showing discrete changes, common for cumulative data.
+### line-stepwise 📋
+**Description:** Step function plot with horizontal then vertical transitions.
 
-### line-filled
-**Best Library:** Matplotlib
-**Description:** Line plot with area filled to baseline.
-**Basic Chart:** Single line with shaded area below, semi-transparent fill.
+### step-basic ✅
+**Description:** A step plot displays data using horizontal lines connected by vertical lines, creating a stair-step pattern that shows values as constant until the next change occurs.
 
-### line-confidence
-**Best Library:** Seaborn (lineplot)
-**Description:** Line plot with confidence interval band.
-**Basic Chart:** Mean line with shaded 95% CI, common for aggregated data.
+### line-filled 📋
+**Description:** Line plot with area filled to baseline, semi-transparent.
 
-### line-interactive
-**Best Library:** Plotly
-**Description:** Line plot with hover tooltips and zoom.
-**Basic Chart:** Interactive line with data point details on hover.
+### line-confidence 📋
+**Description:** Line plot with confidence interval band around the mean.
+
+### line-interactive 📋
+**Description:** Line plot with hover tooltips and zoom capability.
 
 ---
 
 ## 3. Bar Charts
 
-### bar-basic
-**Best Library:** Matplotlib
-**Description:** Vertical bars representing categorical values.
-**Basic Chart:** 5-7 categories, single color, value labels optional.
+### bar-basic ✅
+**Description:** A vertical bar chart that displays categorical data with rectangular bars whose heights are proportional to the values they represent.
 
-### bar-horizontal
-**Best Library:** Matplotlib
+### bar-horizontal 📋
 **Description:** Horizontal bars, useful for long category names.
-**Basic Chart:** 5-7 categories with readable labels on y-axis.
 
-### bar-grouped
-**Best Library:** Matplotlib
+### bar-grouped 📋
 **Description:** Side-by-side bars for comparing groups within categories.
-**Basic Chart:** 4 categories, 2 groups each, legend for group names.
 
-### bar-stacked
-**Best Library:** Matplotlib
+### bar-stacked 📋
 **Description:** Bars stacked on top of each other showing composition.
-**Basic Chart:** 4 categories, 3 components stacked, legend included.
 
-### bar-stacked-percent
-**Best Library:** Matplotlib
+### bar-stacked-percent 📋
 **Description:** Stacked bars normalized to 100% showing proportions.
-**Basic Chart:** Each bar totals 100%, shows relative composition.
 
-### bar-error
-**Best Library:** Matplotlib
+### bar-error 📋
 **Description:** Bar chart with error bars showing uncertainty.
-**Basic Chart:** Bars with symmetric error bars, cap lines.
 
-### bar-sorted
-**Best Library:** Seaborn
+### bar-sorted 📋
 **Description:** Bar chart with categories sorted by value.
-**Basic Chart:** Descending order, highlights ranking.
 
-### bar-categorical
-**Best Library:** Seaborn (countplot)
+### bar-categorical 📋
 **Description:** Bar chart showing count of observations per category.
-**Basic Chart:** Counts of categorical variable, no aggregation needed.
 
-### bar-diverging
-**Best Library:** Matplotlib
-**Description:** Bars extending from center, positive/negative values.
-**Basic Chart:** Centered at zero, different colors for positive/negative.
+### bar-diverging 📋
+**Description:** Bars extending from center, positive/negative values with different colors.
 
-### bar-lollipop
-**Best Library:** Matplotlib
-**Description:** Minimalist bar chart with line and dot instead of full bar.
-**Basic Chart:** Vertical lines with circular markers at top.
+### lollipop-basic ✅
+**Description:** A lollipop chart displays categorical data with thin lines (stems) extending from a baseline to circular markers (dots) at each data point.
 
-### bar-interactive
-**Best Library:** Plotly
+### bar-interactive 📋
 **Description:** Bar chart with hover details and click interactions.
-**Basic Chart:** Hoverable bars showing exact values.
 
 ---
 
 ## 4. Histograms
 
-### histogram-basic
-**Best Library:** Matplotlib
-**Description:** Frequency distribution of a single numeric variable.
-**Basic Chart:** 20-30 bins, single color, y-axis shows count.
+### histogram-basic ✅
+**Description:** A histogram displays the distribution of a single continuous variable by dividing the data range into bins and showing the frequency of observations in each bin.
 
-### histogram-normalized
-**Best Library:** Matplotlib
+### histogram-normalized 📋
 **Description:** Histogram normalized to show density instead of count.
-**Basic Chart:** Area sums to 1, suitable for probability comparison.
 
-### histogram-overlapping
-**Best Library:** Matplotlib
+### histogram-overlapping 📋
 **Description:** Multiple overlapping histograms for comparison.
-**Basic Chart:** 2 distributions, semi-transparent, different colors.
 
-### histogram-stacked
-**Best Library:** Matplotlib
+### histogram-stacked 📋
 **Description:** Stacked histograms showing combined distribution.
-**Basic Chart:** 2-3 groups stacked, shows total and composition.
 
-### histogram-stepwise
-**Best Library:** Matplotlib
+### histogram-stepwise 📋
 **Description:** Histogram with step outline only (no filled bars).
-**Basic Chart:** Unfilled steps, good for overlapping distributions.
 
-### histogram-kde
-**Best Library:** Seaborn
+### histogram-kde 📋
 **Description:** Histogram with kernel density estimate overlay.
-**Basic Chart:** Bars with smooth KDE curve on top.
 
-### histogram-2d
-**Best Library:** Matplotlib
+### density-basic ✅
+**Description:** A density plot (Kernel Density Estimation) visualizes the distribution of a continuous variable by smoothing the data into a continuous probability density curve.
+
+### histogram-2d 📋
 **Description:** Two-dimensional histogram as heatmap.
-**Basic Chart:** Grid of bins colored by count, colorbar included.
 
-### histogram-cumulative
-**Best Library:** Matplotlib
+### histogram-cumulative 📋
 **Description:** Cumulative distribution function as histogram.
-**Basic Chart:** Step histogram showing cumulative proportion.
 
 ---
 
 ## 5. Pie & Donut Charts
 
-### pie-basic
-**Best Library:** Matplotlib
-**Description:** Circular chart divided into proportional slices.
-**Basic Chart:** 4-6 slices, percentage labels, legend.
+### pie-basic ✅
+**Description:** A pie chart showing proportions of categorical data as slices of a circle. Each slice represents a category's contribution to the whole.
 
-### pie-exploded
-**Best Library:** Matplotlib
-**Description:** Pie chart with one or more slices pulled out.
-**Basic Chart:** One slice offset to highlight, shadow optional.
+### pie-exploded 📋
+**Description:** Pie chart with one or more slices pulled out to highlight.
 
-### donut-basic
-**Best Library:** Matplotlib
-**Description:** Pie chart with hollow center.
-**Basic Chart:** Ring chart, can display total in center.
+### donut-basic ✅
+**Description:** A donut chart (ring chart) showing proportions of categorical data as segments of a ring, with a hollow center.
 
-### donut-nested
-**Best Library:** Matplotlib
-**Description:** Multiple concentric donut rings.
-**Basic Chart:** 2 rings showing hierarchical data.
+### donut-nested 📋
+**Description:** Multiple concentric donut rings showing hierarchical data.
 
-### sunburst
-**Best Library:** Plotly
-**Description:** Multi-level hierarchical pie chart.
-**Basic Chart:** 2-3 levels of hierarchy, interactive drill-down.
+### sunburst-basic ✅
+**Description:** A sunburst chart displays hierarchical data as concentric rings, where each ring represents a level in the hierarchy.
 
 ---
 
 ## 6. Box Plots & Distributions
 
-### box-basic
-**Best Library:** Matplotlib
-**Description:** Box and whisker plot showing distribution summary.
-**Basic Chart:** Single box showing median, quartiles, whiskers, outliers.
+### box-basic ✅
+**Description:** A box plot (box-and-whisker plot) showing the distribution of numerical data through quartiles. Displays the median, first and third quartiles as a box, with whiskers extending to show the data range.
 
-### box-grouped
-**Best Library:** Seaborn
+### box-grouped 📋
 **Description:** Multiple box plots grouped by category.
-**Basic Chart:** 3-4 categories, boxes side by side.
 
-### box-horizontal
-**Best Library:** Matplotlib
+### box-horizontal 📋
 **Description:** Horizontal box plot orientation.
-**Basic Chart:** Boxes extending left to right.
 
-### box-notched
-**Best Library:** Matplotlib
+### box-notched 📋
 **Description:** Box plot with notches indicating median confidence.
-**Basic Chart:** Notched boxes, overlapping notches suggest similar medians.
 
-### violin-basic
-**Best Library:** Seaborn
-**Description:** Distribution plot showing density shape.
-**Basic Chart:** Symmetric violin shape, wider where more data.
+### violin-basic ✅
+**Description:** A violin plot combining a box plot with a kernel density estimation on each side, showing the distribution shape of numerical data.
 
-### violin-split
-**Best Library:** Seaborn
+### violin-split 📋
 **Description:** Half-violins comparing two groups.
-**Basic Chart:** Two halves showing different categories.
 
-### violin-box
-**Best Library:** Seaborn
+### violin-box 📋
 **Description:** Violin plot with embedded box plot.
-**Basic Chart:** Violin with mini box inside showing quartiles.
 
-### strip-basic
-**Best Library:** Seaborn
-**Description:** Individual points plotted along category axis.
-**Basic Chart:** Jittered points showing actual data distribution.
+### strip-basic ✅
+**Description:** A strip plot displays individual data points for each category along a single axis, with random horizontal jitter applied to reduce overplotting.
 
-### swarm-basic
-**Best Library:** Seaborn
-**Description:** Non-overlapping point distribution plot.
-**Basic Chart:** Points arranged to avoid overlap, shows density.
+### swarm-basic ✅
+**Description:** A swarm plot (beeswarm plot) displays individual data points for categorical comparisons, with points spread horizontally to avoid overlap.
 
-### ridge-basic
-**Best Library:** Seaborn (ridgeplot via kdeplot)
-**Description:** Overlapping density plots for multiple categories.
-**Basic Chart:** Staggered KDE curves, mountain range appearance.
+### ridgeline-basic ✅
+**Description:** A ridgeline plot displays the distribution of multiple groups by stacking partially overlapping density curves vertically, creating a mountain ridge appearance.
 
-### ecdf-basic
-**Best Library:** Seaborn
-**Description:** Empirical cumulative distribution function.
-**Basic Chart:** Step function from 0 to 1, shows data percentiles.
+### ecdf-basic ✅
+**Description:** An ECDF (Empirical Cumulative Distribution Function) plot displays a step function that shows the proportion of observations less than or equal to each value.
+
+### rug-basic ✅
+**Description:** A rug plot displays individual data points as small tick marks along an axis, typically at the bottom or side of another plot.
 
 ---
 
 ## 7. Heatmaps
 
-### heatmap-basic
-**Best Library:** Seaborn
-**Description:** 2D matrix visualization with color encoding.
-**Basic Chart:** Grid of colored cells, colorbar, axis labels.
+### heatmap-basic ✅
+**Description:** A heatmap displaying values in a matrix format using color intensity. Each cell's color represents the magnitude of the value.
 
-### heatmap-annotated
-**Best Library:** Seaborn
+### heatmap-annotated 📋
 **Description:** Heatmap with values displayed in cells.
-**Basic Chart:** Numbers overlaid on colored cells.
 
-### heatmap-correlation
-**Best Library:** Seaborn
-**Description:** Correlation matrix visualization.
-**Basic Chart:** Symmetric matrix, diverging colormap, -1 to 1 range.
+### heatmap-correlation 📋
+**Description:** Correlation matrix visualization with diverging colormap.
 
-### heatmap-clustered
-**Best Library:** Seaborn (clustermap)
+### heatmap-clustered 📋
 **Description:** Heatmap with hierarchical clustering dendrograms.
-**Basic Chart:** Reordered rows/columns, dendrograms on sides.
 
-### heatmap-calendar
-**Best Library:** Matplotlib
-**Description:** Calendar-style heatmap for daily data.
-**Basic Chart:** Weeks as rows, days as columns, GitHub-style.
+### heatmap-calendar ✅
+**Description:** A calendar heatmap visualizes time-series data on a calendar grid, where each day is represented as a cell and color intensity indicates the value magnitude.
 
-### heatmap-interactive
-**Best Library:** Plotly
+### heatmap-interactive 📋
 **Description:** Heatmap with hover values and zoom.
-**Basic Chart:** Interactive cells showing exact values.
 
 ---
 
 ## 8. Area Charts
 
-### area-basic
-**Best Library:** Matplotlib
-**Description:** Filled area under a line.
-**Basic Chart:** Single series, solid fill to baseline.
+### area-basic ✅
+**Description:** An area chart showing quantitative data over a continuous axis with the area below the line filled.
 
-### area-stacked
-**Best Library:** Matplotlib
+### area-stacked 📋
 **Description:** Multiple areas stacked showing cumulative total.
-**Basic Chart:** 3-4 series, areas on top of each other.
 
-### area-stacked-percent
-**Best Library:** Matplotlib
+### area-stacked-percent 📋
 **Description:** Stacked areas normalized to 100%.
-**Basic Chart:** Shows proportion changes over time.
 
-### area-stream
-**Best Library:** Matplotlib
-**Description:** Streamgraph with symmetric baseline.
-**Basic Chart:** Flowing organic shapes, centered around middle.
+### streamgraph-basic ✅
+**Description:** A streamgraph (stacked area chart with centered baseline) displaying the composition of multiple categories over time with smooth, flowing curves.
 
-### area-between
-**Best Library:** Matplotlib
-**Description:** Filled area between two lines.
-**Basic Chart:** Upper and lower bounds with fill between.
+### band-basic ✅
+**Description:** A band plot displays a filled region between two boundary lines, commonly used to show confidence intervals or prediction intervals.
 
 ---
 
 ## 9. Polar & Radar Charts
 
-### polar-scatter
-**Best Library:** Matplotlib
+### polar-basic ✅
+**Description:** A polar chart displays data points on a circular coordinate system where position is determined by angle (theta) and distance from center (radius).
+
+### polar-scatter 📋
 **Description:** Scatter plot in polar coordinates.
-**Basic Chart:** Points plotted by angle and radius.
 
-### polar-line
-**Best Library:** Matplotlib
+### polar-line 📋
 **Description:** Line plot in polar coordinates.
-**Basic Chart:** Closed or open curve around center.
 
-### polar-bar
-**Best Library:** Matplotlib
-**Description:** Bar chart arranged in a circle.
-**Basic Chart:** Bars radiating from center, also called wind rose.
+### polar-bar 📋
+**Description:** Bar chart arranged in a circle (wind rose).
 
-### radar-basic
-**Best Library:** Matplotlib
-**Description:** Multi-axis chart for comparing across dimensions.
-**Basic Chart:** 5-6 axes, single polygon, filled area.
+### rose-basic ✅
+**Description:** A rose chart (Nightingale diagram) displays categorical data in a circular format where segments have equal angles but radius proportional to value.
 
-### radar-multi
-**Best Library:** Matplotlib
-**Description:** Multiple overlapping radar polygons.
-**Basic Chart:** 2-3 subjects compared, semi-transparent fills.
+### radar-basic ✅
+**Description:** A radar chart (spider/web chart) displays multivariate data on axes starting from a common center point, with values connected to form a polygon.
+
+### radar-multi 📋
+**Description:** Multiple overlapping radar polygons for comparison.
 
 ---
 
 ## 10. Statistical Plots
 
-### regression-linear
-**Best Library:** Seaborn
-**Description:** Scatter with linear regression fit.
-**Basic Chart:** Points, fitted line, confidence band.
+### regression-linear 📋
+**Description:** Scatter with linear regression fit and confidence band.
 
-### regression-polynomial
-**Best Library:** Seaborn
+### regression-polynomial 📋
 **Description:** Non-linear regression curve fit.
-**Basic Chart:** Points with curved fit line.
 
-### regression-lowess
-**Best Library:** Seaborn
+### regression-lowess 📋
 **Description:** Locally weighted regression smoothing.
-**Basic Chart:** Smooth non-parametric curve through points.
 
-### residual-basic
-**Best Library:** Seaborn (residplot)
+### residual-basic 📋
 **Description:** Residual plot for regression diagnostics.
-**Basic Chart:** Residuals vs fitted values, centered at zero.
 
-### qq-plot
-**Best Library:** Matplotlib (scipy.stats)
-**Description:** Quantile-quantile plot for distribution comparison.
-**Basic Chart:** Points along diagonal if normal distribution.
+### qq-basic ✅
+**Description:** A Q-Q (Quantile-Quantile) plot compares the distribution of a dataset against a theoretical distribution. Points along a diagonal reference line indicate perfect distribution match.
 
-### bland-altman
-**Best Library:** Matplotlib
-**Description:** Agreement plot between two measurements.
-**Basic Chart:** Difference vs mean, with limits of agreement.
+### bland-altman 📋
+**Description:** Agreement plot between two measurements with limits of agreement.
 
-### error-bar
-**Best Library:** Matplotlib
-**Description:** Points with error bars showing uncertainty.
-**Basic Chart:** Central values with symmetric error bars.
+### errorbar-basic ✅
+**Description:** An error bar plot displays data points with associated uncertainty or variability represented by bars extending above and below each point.
 
-### error-asymmetric
-**Best Library:** Matplotlib
+### error-asymmetric 📋
 **Description:** Error bars with different upper/lower bounds.
-**Basic Chart:** Asymmetric error bars, common for log-scale data.
 
 ---
 
 ## 11. Categorical Plots
 
-### count-basic
-**Best Library:** Seaborn
+### count-basic 📋
 **Description:** Bar chart of category counts.
-**Basic Chart:** Automatic counting of categorical variable.
 
-### point-basic
-**Best Library:** Seaborn (pointplot)
+### point-basic 📋
 **Description:** Point estimates with confidence intervals.
-**Basic Chart:** Points with error bars, connected by lines.
 
-### cat-strip
-**Best Library:** Seaborn
+### cat-strip 📋
 **Description:** Categorical scatter plot.
-**Basic Chart:** Points distributed along category axis.
 
-### cat-box-strip
-**Best Library:** Seaborn
+### cat-box-strip 📋
 **Description:** Combined box plot with overlaid strip plot.
-**Basic Chart:** Box shows summary, points show individual data.
 
 ---
 
 ## 12. Matrix & Grid Plots
 
-### facet-grid
-**Best Library:** Seaborn (FacetGrid)
+### facet-grid 📋
 **Description:** Grid of plots split by categorical variables.
-**Basic Chart:** 2x2 grid of scatter plots by category.
 
-### pair-plot
-**Best Library:** Seaborn
+### pair-plot 📋
 **Description:** All pairwise relationships in dataset.
-**Basic Chart:** Scatter matrix with histograms on diagonal.
 
-### subplot-grid
-**Best Library:** Matplotlib
+### subplot-grid 📋
 **Description:** Custom grid of different plot types.
-**Basic Chart:** 2x2 grid with varied content.
 
-### mosaic-layout
-**Best Library:** Matplotlib
+### mosaic-layout 📋
 **Description:** Complex subplot layout with varying sizes.
-**Basic Chart:** Mix of large and small panels.
 
 ---
 
 ## 13. Time Series Plots
 
-### timeseries-single
-**Best Library:** Matplotlib
+### timeseries-single 📋
 **Description:** Single time series with proper date axis.
-**Basic Chart:** Line plot with datetime x-axis.
 
-### timeseries-multi
-**Best Library:** Matplotlib
+### timeseries-multi 📋
 **Description:** Multiple time series for comparison.
-**Basic Chart:** Several lines with shared time axis.
 
-### timeseries-decomposition
-**Best Library:** Matplotlib
+### timeseries-decomposition 📋
 **Description:** Trend, seasonal, residual components.
-**Basic Chart:** Stacked subplots showing decomposition.
 
-### timeseries-rolling
-**Best Library:** Matplotlib
+### timeseries-rolling 📋
 **Description:** Time series with rolling average overlay.
-**Basic Chart:** Raw data with smoothed line.
 
-### timeseries-candlestick
-**Best Library:** Plotly
-**Description:** OHLC candlestick chart for financial data.
-**Basic Chart:** Candlesticks showing open, high, low, close.
+### candlestick-basic ✅
+**Description:** A candlestick chart displays open, high, low, and close (OHLC) price data for financial instruments over time.
 
-### timeseries-ohlc
-**Best Library:** Plotly
+### timeseries-ohlc 📋
 **Description:** Open-high-low-close bar chart.
-**Basic Chart:** Vertical bars with tick marks for OHLC.
 
-### timeseries-forecast
-**Best Library:** Matplotlib
+### timeseries-forecast 📋
 **Description:** Historical data with forecast and uncertainty.
-**Basic Chart:** Solid history, dashed forecast, shaded prediction interval.
+
+### sparkline-basic ✅
+**Description:** A sparkline is a small, condensed line chart designed to be embedded inline with text or in dashboard cells. Pure data visualization in minimal space.
 
 ---
 
 ## 14. Geographic & Spatial
 
-### map-choropleth
-**Best Library:** Plotly
+### map-choropleth 📋
 **Description:** Map with regions colored by value.
-**Basic Chart:** Country or state map with color scale.
 
-### map-scatter
-**Best Library:** Plotly
+### map-scatter 📋
 **Description:** Points plotted on geographic map.
-**Basic Chart:** Markers at lat/lon coordinates.
 
-### map-bubble
-**Best Library:** Plotly
+### map-bubble 📋
 **Description:** Map with sized circles at locations.
-**Basic Chart:** Bubble size represents value.
 
-### map-heatmap
-**Best Library:** Plotly
+### map-heatmap 📋
 **Description:** Density heatmap on geographic background.
-**Basic Chart:** Color intensity shows point density.
 
-### map-lines
-**Best Library:** Plotly
+### map-lines 📋
 **Description:** Connection lines between locations.
-**Basic Chart:** Great circle arcs connecting points.
 
 ---
 
 ## 15. 3D Plots
 
-### surface-3d
-**Best Library:** Plotly
-**Description:** 3D surface plot from grid data.
-**Basic Chart:** Wireframe or solid surface, colormap.
+### surface-basic ✅
+**Description:** A 3D surface plot visualizes a function of two variables as a continuous surface in three-dimensional space.
 
-### wireframe-3d
-**Best Library:** Matplotlib
-**Description:** 3D wireframe mesh plot.
-**Basic Chart:** Grid lines forming surface shape.
+### wireframe-3d-basic ✅
+**Description:** A 3D wireframe plot displays a mathematical surface as a mesh of lines connecting grid points, creating a see-through visualization.
 
-### contour-3d
-**Best Library:** Matplotlib
+### contour-3d 📋
 **Description:** 3D contour plot.
-**Basic Chart:** Stacked contour lines in 3D space.
 
-### bar-3d
-**Best Library:** Matplotlib
+### bar-3d 📋
 **Description:** 3D bar chart.
-**Basic Chart:** Bars in 3D space, depth perspective.
 
-### line-3d
-**Best Library:** Matplotlib
+### line-3d 📋
 **Description:** 3D line plot or trajectory.
-**Basic Chart:** Line winding through 3D space.
 
 ---
 
 ## 16. Contour Plots
 
-### contour-basic
-**Best Library:** Matplotlib
-**Description:** 2D contour lines showing elevation.
-**Basic Chart:** Smooth curves of equal value, labeled.
+### contour-basic ✅
+**Description:** A contour plot displays isolines (level curves) of a 2D scalar field, connecting points of equal value across a surface.
 
-### contour-filled
-**Best Library:** Matplotlib
+### contour-filled 📋
 **Description:** Filled contour regions.
-**Basic Chart:** Color-filled regions between contour levels.
 
-### contour-density
-**Best Library:** Seaborn (kdeplot)
+### contour-density 📋
 **Description:** Contour plot from point density.
-**Basic Chart:** KDE contours showing concentration.
+
+### hexbin-basic ✅
+**Description:** A hexagonal binning plot that visualizes the density of 2D point data by aggregating points into hexagonal bins.
 
 ---
 
 ## 17. Network & Graph Plots
 
-### network-basic
-**Best Library:** Matplotlib (networkx)
-**Description:** Node-link diagram for graph data.
-**Basic Chart:** Nodes as circles, edges as lines.
+### network-basic ✅
+**Description:** A network graph (node-link diagram) visualizes relationships between entities as nodes connected by edges.
 
-### network-directed
-**Best Library:** Matplotlib (networkx)
+### network-directed 📋
 **Description:** Directed graph with arrows.
-**Basic Chart:** Arrows showing edge direction.
 
-### network-weighted
-**Best Library:** Matplotlib (networkx)
+### network-weighted 📋
 **Description:** Graph with edge thickness by weight.
-**Basic Chart:** Varying line widths represent edge weights.
 
-### network-hierarchical
-**Best Library:** Matplotlib (networkx)
+### network-hierarchical 📋
 **Description:** Tree or hierarchy layout.
-**Basic Chart:** Top-down or radial tree structure.
 
-### chord-diagram
-**Best Library:** Plotly
-**Description:** Circular flow diagram between categories.
-**Basic Chart:** Arcs connecting related categories.
+### network-force-directed ✅
+**Description:** A force-directed graph uses physics simulation to position nodes, where connected nodes attract each other and all nodes repel.
 
-### sankey-basic
-**Best Library:** Plotly
-**Description:** Flow diagram showing quantities between stages.
-**Basic Chart:** Nodes with flowing connections.
+### chord-basic ✅
+**Description:** A chord diagram displays relationships or flows between entities arranged around a circle's perimeter.
+
+### arc-basic ✅
+**Description:** An arc diagram arranges nodes along a single horizontal line and draws connections between them as curved arcs above the line.
+
+### sankey-basic ✅
+**Description:** A Sankey diagram visualizes flow or transfer between nodes using links with widths proportional to flow values.
 
 ---
 
 ## 18. Tree & Hierarchical
 
-### treemap-basic
-**Best Library:** Plotly
-**Description:** Nested rectangles showing hierarchy.
-**Basic Chart:** Rectangles sized by value, nested by category.
+### treemap-basic ✅
+**Description:** A treemap displaying hierarchical data as nested rectangles, where each rectangle's area is proportional to its value.
 
-### dendrogram-basic
-**Best Library:** Matplotlib (scipy)
-**Description:** Tree diagram from hierarchical clustering.
-**Basic Chart:** Branching tree structure.
+### dendrogram-basic ✅
+**Description:** A dendrogram visualizes hierarchical clustering by showing how data points or clusters merge at different distance levels.
 
-### icicle-basic
-**Best Library:** Plotly
-**Description:** Rectangular hierarchy visualization.
-**Basic Chart:** Stacked rectangles showing levels.
+### icicle-basic 📋
+**Description:** Rectangular hierarchy visualization with stacked rectangles.
 
-### circle-packing
-**Best Library:** Matplotlib
+### circle-packing 📋
 **Description:** Nested circles showing hierarchy.
-**Basic Chart:** Circles within circles by group.
 
 ---
 
 ## 19. Part-to-Whole
 
-### waffle-basic
-**Best Library:** Matplotlib
-**Description:** Grid of squares showing proportions.
-**Basic Chart:** 10x10 grid with colored squares.
+### waffle-basic ✅
+**Description:** A waffle chart displays proportions using a grid of equal-sized squares where colored squares represent parts of a whole.
 
-### parliament-basic
-**Best Library:** Matplotlib
+### parliament-basic 📋
 **Description:** Semicircular parliament seat chart.
-**Basic Chart:** Half-circle of seats colored by party.
 
-### gauge-basic
-**Best Library:** Plotly
-**Description:** Speedometer-style gauge chart.
-**Basic Chart:** Semicircle with needle indicator.
+### gauge-basic ✅
+**Description:** A gauge chart (speedometer chart) displays a single value within a defined range using a semi-circular or circular dial.
 
-### bullet-basic
-**Best Library:** Matplotlib
-**Description:** Bullet graph for performance metrics.
-**Basic Chart:** Bar with background ranges and target marker.
+### bullet-basic ✅
+**Description:** A bullet chart displays a single measure against qualitative ranges and a target marker, designed as a space-efficient alternative to gauge charts.
+
+### marimekko-basic ✅
+**Description:** A Marimekko chart is a stacked bar chart where both the width and height of segments represent data values.
 
 ---
 
 ## 20. Animation & Interactive
 
-### animation-line
-**Best Library:** Matplotlib (FuncAnimation)
+### animation-line 📋
 **Description:** Animated line plot building over time.
-**Basic Chart:** Line drawing progressively.
 
-### animation-scatter
-**Best Library:** Plotly
+### animation-scatter 📋
 **Description:** Animated scatter with play button.
-**Basic Chart:** Points moving over time frames.
 
-### animation-bar
-**Best Library:** Plotly
+### animation-bar 📋
 **Description:** Bar chart race animation.
-**Basic Chart:** Bars growing and reordering.
 
-### slider-basic
-**Best Library:** Plotly
+### slider-basic 📋
 **Description:** Plot with slider control.
-**Basic Chart:** Slider adjusts displayed data range.
 
-### brush-zoom
-**Best Library:** Bokeh
+### brush-zoom 📋
 **Description:** Plot with brush selection and zoom.
-**Basic Chart:** Selectable and zoomable scatter plot.
 
-### linked-views
-**Best Library:** Bokeh
+### linked-views 📋
 **Description:** Multiple plots with linked selection.
-**Basic Chart:** Selecting points in one plot highlights in others.
 
 ---
 
 ## 21. Specialized Plots
 
-### waterfall-basic
-**Best Library:** Matplotlib
-**Description:** Running total with positive/negative contributions.
-**Basic Chart:** Floating bars showing incremental changes.
+### waterfall-basic ✅
+**Description:** A waterfall chart visualizes how an initial value is affected by a series of intermediate positive or negative values, leading to a final value.
 
-### funnel-basic
-**Best Library:** Plotly
-**Description:** Funnel chart for conversion stages.
-**Basic Chart:** Progressively narrowing sections.
+### funnel-basic ✅
+**Description:** A funnel chart visualizes sequential stages of a process where values progressively decrease from one stage to the next.
 
-### pyramid-basic
-**Best Library:** Matplotlib
-**Description:** Population pyramid (back-to-back horizontal bars).
-**Basic Chart:** Two groups extending from center.
+### pyramid-basic ✅
+**Description:** A pyramid chart displays two opposing horizontal bar charts that share a central axis, creating a pyramid or butterfly shape.
 
-### slope-basic
-**Best Library:** Matplotlib
-**Description:** Slope chart comparing two time points.
-**Basic Chart:** Lines connecting start and end values.
+### slope-basic ✅
+**Description:** A slope chart (slopegraph) visualizes changes between two or more time points by connecting values with lines across vertical axes.
 
-### bump-basic
-**Best Library:** Matplotlib
-**Description:** Ranking changes over time.
-**Basic Chart:** Lines showing rank position changes.
+### bump-basic ✅
+**Description:** A bump chart visualizes how rankings change over time by plotting rank positions and connecting them with lines.
 
-### dumbbell-basic
-**Best Library:** Matplotlib
-**Description:** Two points connected by line for before/after.
-**Basic Chart:** Dot-line-dot showing change.
+### dumbbell-basic ✅
+**Description:** A dumbbell chart (connected dot plot) compares two values for each category by displaying two dots connected by a line.
 
-### span-basic
-**Best Library:** Matplotlib
-**Description:** Horizontal spans showing ranges or durations.
-**Basic Chart:** Horizontal bars with start/end, like Gantt.
+### span-basic ✅
+**Description:** A span plot highlights a specific region of interest on a chart using a shaded rectangular area that spans the full height or width.
 
-### gantt-basic
-**Best Library:** Matplotlib
-**Description:** Project timeline Gantt chart.
-**Basic Chart:** Horizontal task bars on timeline.
+### gantt-basic 📋
+**Description:** Project timeline Gantt chart with horizontal task bars.
+
+### timeline-basic 📋
+**Description:** Zeitleiste mit Events und Zeitpunkten.
+
+### venn-basic 📋
+**Description:** Venn-Diagramm zeigt überlappende Mengen (2-3 Kreise).
 
 ---
 
 ## 22. Text & Annotation
 
-### wordcloud-basic
-**Best Library:** Matplotlib (wordcloud)
-**Description:** Word frequency visualization.
-**Basic Chart:** Words sized by frequency.
+### wordcloud-basic ✅
+**Description:** A word cloud displays text data where word size represents frequency or importance.
 
-### annotated-scatter
-**Best Library:** Matplotlib
+### annotated-scatter 📋
 **Description:** Scatter plot with text labels on points.
-**Basic Chart:** Points with nearby text annotations.
 
-### annotated-line
-**Best Library:** Matplotlib
+### annotated-line 📋
 **Description:** Line plot with annotations at key points.
-**Basic Chart:** Arrows and text highlighting events.
 
 ---
 
 ## 23. Comparison Plots
 
-### parallel-coordinates
-**Best Library:** Plotly
-**Description:** Multi-dimensional data as parallel axes.
-**Basic Chart:** Vertical axes with lines connecting values.
+### parallel-basic ✅
+**Description:** A parallel coordinates plot visualizes multivariate data by representing each variable as a vertical axis and each observation as a line connecting values across all axes.
 
-### parallel-categories
-**Best Library:** Plotly
+### parallel-categories 📋
 **Description:** Parallel coordinates for categorical data.
-**Basic Chart:** Ribbons flowing between category columns.
 
-### andrews-curves
-**Best Library:** Matplotlib (pandas)
+### andrews-curves 📋
 **Description:** Multivariate data as Fourier curves.
-**Basic Chart:** Smooth curves representing data points.
 
 ---
 
 ## 24. Financial Charts
 
-### stock-candlestick
-**Best Library:** Highcharts
+### stock-candlestick 📋
 **Description:** Professional candlestick chart for stock prices with volume.
-**Basic Chart:** OHLC candles, volume bars below, date axis with trading days.
 
-### stock-area
-**Best Library:** Highcharts
+### stock-area 📋
 **Description:** Area chart for stock price history with range selector.
-**Basic Chart:** Filled area showing price, navigator at bottom, range buttons.
 
-### stock-comparison
-**Best Library:** Highcharts
+### stock-comparison 📋
 **Description:** Multiple stock series normalized for comparison.
-**Basic Chart:** 2-3 stocks rebased to 100%, percentage y-axis.
 
-### stock-flags
-**Best Library:** Highcharts
+### stock-flags 📋
 **Description:** Stock chart with event markers/annotations.
-**Basic Chart:** Price line with flag icons marking dividends, splits, earnings.
 
-### stock-volume
-**Best Library:** Highcharts
+### stock-volume 📋
 **Description:** Stock price with volume bars in synchronized panes.
-**Basic Chart:** Price in top pane, volume histogram below.
 
-### indicator-macd
-**Best Library:** Highcharts
+### indicator-macd 📋
 **Description:** MACD technical indicator chart.
-**Basic Chart:** Price chart with MACD line, signal line, histogram below.
 
-### indicator-rsi
-**Best Library:** Highcharts
+### indicator-rsi 📋
 **Description:** Relative Strength Index indicator.
-**Basic Chart:** RSI oscillator with overbought/oversold zones (70/30).
 
-### indicator-bollinger
-**Best Library:** Highcharts
+### indicator-bollinger 📋
 **Description:** Bollinger Bands overlay on price chart.
-**Basic Chart:** Price with upper, middle, lower bands.
 
-### indicator-sma
-**Best Library:** Matplotlib
+### indicator-sma 📋
 **Description:** Simple Moving Average overlay.
-**Basic Chart:** Price line with 20-day and 50-day SMA lines.
 
-### indicator-ema
-**Best Library:** Matplotlib
+### indicator-ema 📋
 **Description:** Exponential Moving Average overlay.
-**Basic Chart:** Price line with EMA lines of different periods.
 
-### returns-histogram
-**Best Library:** Seaborn
+### returns-histogram 📋
 **Description:** Distribution of daily/monthly returns.
-**Basic Chart:** Histogram of percentage returns with normal curve overlay.
 
-### drawdown-chart
-**Best Library:** Matplotlib
+### drawdown-chart 📋
 **Description:** Drawdown from peak visualization.
-**Basic Chart:** Area chart showing negative drawdown percentages over time.
 
-### correlation-returns
-**Best Library:** Seaborn
+### correlation-returns 📋
 **Description:** Correlation matrix of asset returns.
-**Basic Chart:** Heatmap of return correlations between assets.
 
-### portfolio-allocation
-**Best Library:** Plotly
+### portfolio-allocation 📋
 **Description:** Interactive portfolio weight visualization.
-**Basic Chart:** Pie or treemap showing asset allocation.
 
-### efficient-frontier
-**Best Library:** Matplotlib
+### efficient-frontier 📋
 **Description:** Portfolio risk-return optimization curve.
-**Basic Chart:** Scatter of portfolios, efficient frontier line, risk vs return axes.
 
 ---
 
 ## 25. Extended Geographic & Maps
 
-### map-tile
-**Best Library:** Plotly
+### map-tile 📋
 **Description:** Map with OpenStreetMap or satellite tile background.
-**Basic Chart:** Zoomable tile map with markers.
 
-### map-density
-**Best Library:** Plotly
+### map-density 📋
 **Description:** Point density visualization on map.
-**Basic Chart:** Heatmap-style density showing concentration.
 
-### map-flow
-**Best Library:** Plotly
+### map-flow 📋
 **Description:** Origin-destination flow map with curved lines.
-**Basic Chart:** Arcs showing movement between locations, width by volume.
 
-### map-cluster
-**Best Library:** Plotly
+### map-cluster 📋
 **Description:** Clustered markers that expand on zoom.
-**Basic Chart:** Grouped markers with count badges.
 
-### map-hexbin
-**Best Library:** Plotly
+### map-hexbin 📋
 **Description:** Hexagonal binning on geographic data.
-**Basic Chart:** Hexagon grid colored by point count.
 
-### map-route
-**Best Library:** Plotly
+### map-route 📋
 **Description:** Path/route visualization on map.
-**Basic Chart:** Connected waypoints showing journey.
 
-### map-animated
-**Best Library:** Plotly
+### map-animated 📋
 **Description:** Animated map showing changes over time.
-**Basic Chart:** Choropleth or scatter with time slider.
 
-### map-drill
-**Best Library:** Highcharts
+### map-drill 📋
 **Description:** Drillable map (country → state → city).
-**Basic Chart:** Click to zoom into sub-regions.
 
-### map-projection
-**Best Library:** Matplotlib (cartopy)
+### map-projection 📋
 **Description:** Map with different geographic projections.
-**Basic Chart:** Robinson, Mercator, or orthographic projection.
 
-### map-contour
-**Best Library:** Matplotlib (cartopy)
+### map-contour 📋
 **Description:** Contour lines on geographic background.
-**Basic Chart:** Elevation or weather contours on map.
 
 ---
 
-## 26. SVG & Minimal Charts (Pygal)
+## 26. SVG & Minimal Charts
 
-### svg-line
-**Best Library:** Pygal
+### svg-line 📋
 **Description:** Clean SVG line chart for web embedding.
-**Basic Chart:** Minimal line chart, hover tooltips, embeddable.
 
-### svg-bar
-**Best Library:** Pygal
+### svg-bar 📋
 **Description:** SVG bar chart with smooth animations.
-**Basic Chart:** Animated bars on hover, clean design.
 
-### svg-pie
-**Best Library:** Pygal
+### svg-pie 📋
 **Description:** Interactive SVG pie chart.
-**Basic Chart:** Slices with hover effects, legend.
 
-### svg-radar
-**Best Library:** Pygal
+### svg-radar 📋
 **Description:** SVG radar/spider chart.
-**Basic Chart:** Clean polygonal radar with fill.
 
-### svg-dot
-**Best Library:** Pygal
+### svg-dot 📋
 **Description:** Dot matrix chart in SVG.
-**Basic Chart:** Dots arranged in grid, sized by value.
 
-### svg-gauge
-**Best Library:** Pygal
+### svg-gauge 📋
 **Description:** Gauge chart in SVG format.
-**Basic Chart:** Semicircular gauge with needle.
 
-### svg-funnel
-**Best Library:** Pygal
+### svg-funnel 📋
 **Description:** SVG funnel chart.
-**Basic Chart:** Clean funnel with stage labels.
 
-### svg-box
-**Best Library:** Pygal
+### svg-box 📋
 **Description:** SVG box plot.
-**Basic Chart:** Clean box and whisker with tooltips.
 
-### svg-treemap
-**Best Library:** Pygal
+### svg-treemap 📋
 **Description:** SVG treemap visualization.
-**Basic Chart:** Nested rectangles with hover info.
 
-### svg-worldmap
-**Best Library:** Pygal
+### svg-worldmap 📋
 **Description:** Simple SVG world map.
-**Basic Chart:** Countries colored by value, hover to show data.
 
 ---
 
-## 27. Drilldown & Interactive (Highcharts)
+## 27. Drilldown & Interactive
 
-### drilldown-pie
-**Best Library:** Highcharts
+### drilldown-pie 📋
 **Description:** Pie chart with click-to-drill functionality.
-**Basic Chart:** Click slice to see subcategory breakdown.
 
-### drilldown-bar
-**Best Library:** Highcharts
+### drilldown-bar 📋
 **Description:** Bar chart with drilldown to details.
-**Basic Chart:** Click bar to see component breakdown.
 
-### drilldown-column
-**Best Library:** Highcharts
+### drilldown-column 📋
 **Description:** Column chart with hierarchical drilling.
-**Basic Chart:** Year → Quarter → Month drilldown.
 
-### synchronized-charts
-**Best Library:** Highcharts
+### synchronized-charts 📋
 **Description:** Multiple charts with synchronized crosshairs.
-**Basic Chart:** Several charts, hover shows value across all.
 
-### navigator-chart
-**Best Library:** Highcharts
+### navigator-chart 📋
 **Description:** Chart with mini navigator for range selection.
-**Basic Chart:** Main chart with small overview below.
 
-### range-selector
-**Best Library:** Highcharts
+### range-selector 📋
 **Description:** Chart with preset range buttons (1M, 3M, YTD, 1Y).
-**Basic Chart:** Quick range selection buttons.
 
-### export-chart
-**Best Library:** Highcharts
+### export-chart 📋
 **Description:** Chart with built-in export menu.
-**Basic Chart:** Export to PNG, PDF, SVG, or print.
 
 ---
 
 ## 28. Real-Time & Streaming
 
-### realtime-line
-**Best Library:** Bokeh
+### realtime-line 📋
 **Description:** Line chart updating with live data.
-**Basic Chart:** Auto-scrolling line with new points.
 
-### realtime-gauge
-**Best Library:** Plotly
+### realtime-gauge 📋
 **Description:** Gauge updating in real-time.
-**Basic Chart:** Needle moving with live value.
 
-### realtime-bar
-**Best Library:** Bokeh
+### realtime-bar 📋
 **Description:** Bar chart with live updates.
-**Basic Chart:** Bars growing/shrinking with data.
 
-### streaming-scatter
-**Best Library:** Bokeh
+### streaming-scatter 📋
 **Description:** Scatter plot with streaming points.
-**Basic Chart:** New points appearing, old fading.
 
-### dashboard-tiles
-**Best Library:** Bokeh
+### dashboard-tiles 📋
 **Description:** Multiple real-time metrics in tiles.
-**Basic Chart:** KPI tiles with sparklines.
 
 ---
 
 ## 29. Scientific & Domain-Specific
 
-### spectrum-plot
-**Best Library:** Matplotlib
+### spectrum-plot 📋
 **Description:** Frequency spectrum visualization.
-**Basic Chart:** Amplitude vs frequency, peaks labeled.
 
-### spectrogram
-**Best Library:** Matplotlib
+### spectrogram 📋
 **Description:** Time-frequency heatmap for audio/signals.
-**Basic Chart:** Time on x, frequency on y, color for intensity.
 
-### phase-diagram
-**Best Library:** Matplotlib
+### phase-diagram 📋
 **Description:** Phase space plot (x vs dx/dt).
-**Basic Chart:** Trajectory in phase space, attractor patterns.
 
-### vector-field
-**Best Library:** Matplotlib
-**Description:** 2D vector field with arrows.
-**Basic Chart:** Grid of arrows showing direction and magnitude.
+### quiver-basic ✅
+**Description:** A quiver plot displays vector fields using arrows positioned at grid points. Each arrow represents a vector at that location, with direction indicating the vector's angle and length proportional to its magnitude.
 
-### streamline-plot
-**Best Library:** Matplotlib
-**Description:** Streamlines of a vector field.
-**Basic Chart:** Smooth curves following flow direction.
+### streamline-basic 📋
+**Description:** Strömungslinien eines Vektorfelds als glatte Kurven.
 
-### quiver-plot
-**Best Library:** Matplotlib
-**Description:** Arrow plot for velocity or gradient fields.
-**Basic Chart:** Arrows at grid points showing vectors.
+### stem-basic ✅
+**Description:** A stem plot displays data points as markers connected to a baseline by vertical lines (stems).
 
-### ternary-plot
-**Best Library:** Plotly
-**Description:** Three-component composition diagram.
-**Basic Chart:** Triangle with points showing 3-part ratios.
+### ternary-basic ✅
+**Description:** A ternary plot displays three-component compositional data on an equilateral triangle where each vertex represents 100% of one component.
 
-### smith-chart
-**Best Library:** Matplotlib
+### smith-chart 📋
 **Description:** RF/microwave impedance chart.
-**Basic Chart:** Circular chart for complex impedance.
 
-### survival-curve
-**Best Library:** Matplotlib
+### survival-curve 📋
 **Description:** Kaplan-Meier survival analysis plot.
-**Basic Chart:** Step function showing survival probability over time.
 
-### forest-plot
-**Best Library:** Matplotlib
+### forest-plot 📋
 **Description:** Meta-analysis effect sizes with confidence intervals.
-**Basic Chart:** Horizontal lines with diamonds showing effects.
 
-### volcano-plot
-**Best Library:** Matplotlib
+### volcano-plot 📋
 **Description:** Statistical significance vs fold change.
-**Basic Chart:** -log10(p) vs log2(fold change), highlighted significant points.
 
-### manhattan-plot
-**Best Library:** Matplotlib
+### manhattan-plot 📋
 **Description:** Genome-wide association study visualization.
-**Basic Chart:** Chromosomes on x-axis, -log10(p) on y, significance line.
 
-### circos-plot
-**Best Library:** Matplotlib
+### circos-plot 📋
 **Description:** Circular genome or relationship visualization.
-**Basic Chart:** Circular tracks with connections between regions.
 
-### phylogenetic-tree
-**Best Library:** Matplotlib
+### phylogenetic-tree 📋
 **Description:** Evolutionary tree diagram.
-**Basic Chart:** Branching tree with species at leaves.
+
+### bubble-basic ✅
+**Description:** A bubble chart extending scatter plots by adding a third dimension through bubble size.
+
+### bubble-packed ✅
+**Description:** A packed bubble chart displays data as circles where size represents value, packed together without overlap using physics simulation.
 
 ---
 
-## Summary by Library Recommendation
+## 30. Printable & Fun
 
-| Library | Primary Strengths | Recommended Plot Types |
-|---------|-------------------|------------------------|
-| **Matplotlib** | Flexibility, static plots | Line, bar, scatter, histogram, polar, 3D wireframe, annotations, scientific |
-| **Seaborn** | Statistical, beautiful defaults | Distributions, regression, heatmaps, categorical, pair plots |
-| **Plotly** | Interactivity, web, 3D | Interactive plots, maps, 3D surfaces, animations, sankey, treemap, ternary |
-| **Bokeh** | Streaming, large data | Linked views, brush/zoom, real-time dashboards, streaming data |
-| **Altair** | Declarative, quick exploration | Exploratory analysis, faceted plots, academic visualizations |
-| **Plotnine** | ggplot2 syntax | Users from R, grammar of graphics approach |
-| **Pygal** | SVG, minimalistic, embeddable | Simple web charts, SVG export, lightweight dashboards |
-| **Highcharts** | Professional, financial, drilldown | Stock charts, technical indicators, enterprise dashboards, drilldown |
+Druckbare Vorlagen und spielerische Visualisierungen.
+
+### Puzzles & Games
+
+### sudoku-basic 📋
+**Description:** Standard 9x9 Sudoku-Raster mit 3x3 Boxen. Dicke Linien für Regionen, dünne für Zellen. Leer oder mit Startzahlen zum Ausdrucken und Lösen.
+
+### sudoku-filled 📋
+**Description:** Sudoku-Rätsel mit vorgegebenen Zahlen und eindeutiger Lösung. Vorgegebene Zahlen optisch hervorgehoben.
+
+### maze-basic 📋
+**Description:** Rechteckiges Labyrinth mit Start und Ziel. Algorithmisch generiert mit genau einem Lösungsweg. Schwarz-weiß zum Ausdrucken.
+
+### maze-circular 📋
+**Description:** Rundes Labyrinth aus konzentrischen Ringen. Eingang außen, Ziel im Zentrum.
+
+### chess-board 📋
+**Description:** Klassisches 8x8 Schachbrett mit abwechselnd hellen und dunklen Feldern. Beschriftet mit a-h und 1-8.
+
+### crossword-basic 📋
+**Description:** Kreuzworträtsel-Gitter mit weißen Eingabe- und schwarzen Blockfeldern. Nummerierte Startfelder für Wörter.
+
+### Codes & Identification
+
+### qr-code 📋
+**Description:** QR-Code generiert aus Text oder URL. Quadratisches Muster mit Positionsmarkierungen, scanbar mit Smartphone.
+
+### barcode-ean 📋
+**Description:** EAN-13 Barcode (europäischer Produktcode). Vertikale Striche mit 13 Ziffern darunter, scanbar im Einzelhandel.
+
+### barcode-code128 📋
+**Description:** Code 128 Barcode für alphanumerische Daten. Kompaktes Format für Logistik und Versand.
+
+### datamatrix-basic 📋
+**Description:** Data Matrix 2D-Barcode. Platzsparender als QR, L-förmiges Findermuster, für Industrie-Kennzeichnung.
+
+---
+
+## Statistics
+
+- **Total Plot Types:** 210+
+- **Implemented:** 58 ✅
+- **Planned:** 150+ 📋
+- **Categories:** 30
 
 ---
 
@@ -1147,19 +814,10 @@ A comprehensive catalog of plot types for the pyplots platform. Each entry inclu
 
 Each plot type in this catalog can become a spec file. Priority order suggestion:
 
-1. **Essential basics** (scatter-basic, line-basic, bar-basic, histogram-basic, pie-basic, box-basic)
-2. **Statistical** (heatmap-correlation, violin-basic, regression-linear)
-3. **Interactive** (scatter-3d, map-choropleth, drilldown-pie)
-4. **Financial** (stock-candlestick, indicator-macd, efficient-frontier)
-5. **SVG/Minimal** (svg-line, svg-radar, svg-worldmap)
-6. **Scientific** (spectrum-plot, survival-curve, forest-plot)
+1. **Essential basics** - Complete the basic variants (scatter-regression, bar-grouped, histogram-kde)
+2. **Statistical** - heatmap-correlation, violin-split, regression-linear
+3. **Interactive** - scatter-3d, map-choropleth, drilldown-pie
+4. **Financial** - stock-candlestick, indicator-macd, efficient-frontier
+5. **Fun** - sudoku-basic, maze-basic, qr-code
 
-To create a spec, use the format: `plots/{spec-id}/spec.md`
-
----
-
-## Statistics
-
-- **Total Plot Types:** 170+
-- **Categories:** 29
-- **Libraries Covered:** 8 (Matplotlib, Seaborn, Plotly, Bokeh, Altair, Plotnine, Pygal, Highcharts)
+To create a spec, use the format: `plots/{spec-id}/specification.md`

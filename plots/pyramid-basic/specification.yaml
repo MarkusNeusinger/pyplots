@@ -15,16 +15,13 @@ tags:
   plot_type:
     - pyramid
     - bar
-  domain:
-    - demographics
-    - statistics
-    - general
-  features:
-    - basic
-    - comparison
-    - bidirectional
-  audience:
-    - beginner
   data_type:
     - categorical
     - numeric
+  domain:
+    - statistics
+    - demographics
+  features:
+    - basic
+    - comparison
+    - horizontal

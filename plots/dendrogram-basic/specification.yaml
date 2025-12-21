@@ -15,17 +15,11 @@ tags:
   plot_type:
     - dendrogram
     - tree
+  data_type:
     - hierarchical
   domain:
     - statistics
     - science
-    - clustering
   features:
     - basic
-    - hierarchical
     - clustering
-  audience:
-    - intermediate
-  data_type:
-    - numeric
-    - categorical

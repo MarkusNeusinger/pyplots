@@ -404,12 +404,9 @@ jobs:
           # Get Python version (e.g., "3.13.1" from "Python 3.13.1")
           PYTHON_VERSION=$(python3 --version 2>&1 | awk '{print $2}')
 
-          # Get library version from pip
-          # Map library names to pip package names
-          source .venv/bin/activate
-
+          # Get library version from pip (use explicit venv path)
           get_pip_version() {
-            pip show "$1" 2>/dev/null | grep -i "^Version:" | awk '{print $2}'
+            .venv/bin/pip show "$1" 2>/dev/null | grep -i "^Version:" | awk '{print $2}'
           }
 
           case "$LIBRARY" in
@@ -426,8 +423,11 @@ jobs:
 
           # Fallback if version is empty
           if [ -z "$LIBRARY_VERSION" ]; then
-            LIBRARY_VERSION="unknown"
+            echo "::warning::Could not get version for $LIBRARY, trying alternative method"
+            # Try with uv pip show as alternative
+            LIBRARY_VERSION=$(.venv/bin/python -c "import $LIBRARY; print(getattr($LIBRARY, '__version__', 'unknown'))" 2>/dev/null || echo "unknown")
           fi
+          echo "::notice::Library version: $LIBRARY = $LIBRARY_VERSION"
 
           # Determine preview_html for interactive libraries
           PREVIEW_HTML="null"

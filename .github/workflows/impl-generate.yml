@@ -476,7 +476,7 @@ jobs:
               yaml.dump(data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
           PYSCRIPT
 
-          RUN_ID=${{ github.run_id }} python3 /tmp/write_metadata.py
+          RUN_ID=${{ github.run_id }} .venv/bin/python3 /tmp/write_metadata.py
 
           # Commit and push
           git config user.name "github-actions[bot]"

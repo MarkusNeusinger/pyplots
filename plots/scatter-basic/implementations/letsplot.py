@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-basic: Basic Scatter Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-13
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-22
 """
 
 import numpy as np
@@ -25,7 +25,7 @@ plot = (
     ggplot(df, aes(x="x", y="y"))  # noqa: F405
     + geom_point(color="#306998", size=5, alpha=0.7)  # noqa: F405
     + labs(  # noqa: F405
-        x="X Value", y="Y Value", title="scatter-basic · lets-plot · pyplots.ai"
+        x="X Value", y="Y Value", title="scatter-basic \u00b7 lets-plot \u00b7 pyplots.ai"
     )
     + ggsize(1600, 900)  # noqa: F405
     + theme_minimal()  # noqa: F405
@@ -37,7 +37,7 @@ plot = (
     )
 )
 
-# Save PNG (scale 3x to get 4800 × 2700 px)
+# Save PNG (scale 3x to get 4800 x 2700 px)
 export_ggsave(plot, filename="plot.png", path=".", scale=3)
 
 # Save HTML for interactive version

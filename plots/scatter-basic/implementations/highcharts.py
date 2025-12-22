@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-basic: Basic Scatter Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-13
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-22
 """
 
 import tempfile

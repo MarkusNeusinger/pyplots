@@ -4,7 +4,7 @@ Two-stage evaluation: Auto-Reject + Quality Scoring.
 
 ## Overview
 
-```
+```text
 Implementation
      │
      ▼
@@ -306,7 +306,7 @@ Certain errors limit the maximum score:
 
 A "good" plot (formerly 95%, now 80%):
 
-```
+```text
 VISUAL QUALITY (30/40)
   VQ-01: 7/10  (readable, but not perfect)
   VQ-02: 8/8   (no overlap)

@@ -40,18 +40,17 @@ for i in range(9):
         rect = plt.Rectangle((j, 8 - i), 1, 1, facecolor="white", edgecolor="none")
         ax.add_patch(rect)
 
-# Draw thin lines for individual cells
+# Draw thin lines for individual cells (monochrome design)
 for i in range(10):
     # Horizontal lines
-    ax.axhline(y=i, xmin=0, xmax=1, color="#306998", linewidth=1.5, clip_on=False, zorder=1)
-    ax.plot([0, 9], [i, i], color="#306998", linewidth=1.5, zorder=1)
+    ax.plot([0, 9], [i, i], color="black", linewidth=1.5, zorder=1)
     # Vertical lines
-    ax.plot([i, i], [0, 9], color="#306998", linewidth=1.5, zorder=1)
+    ax.plot([i, i], [0, 9], color="black", linewidth=1.5, zorder=1)
 
 # Draw thick lines for 3x3 box boundaries
 for i in range(0, 10, 3):
-    ax.plot([0, 9], [i, i], color="#306998", linewidth=5, zorder=2)
-    ax.plot([i, i], [0, 9], color="#306998", linewidth=5, zorder=2)
+    ax.plot([0, 9], [i, i], color="black", linewidth=5, zorder=2)
+    ax.plot([i, i], [0, 9], color="black", linewidth=5, zorder=2)
 
 # Add numbers to cells
 for i in range(9):
@@ -65,7 +64,7 @@ for i in range(9):
                 str(value),
                 fontsize=36,
                 fontweight="bold",
-                color="#306998",
+                color="black",
                 ha="center",
                 va="center",
                 zorder=3,
@@ -80,7 +79,7 @@ ax.spines["bottom"].set_visible(False)
 ax.spines["left"].set_visible(False)
 
 # Add title
-ax.set_title("sudoku-basic · matplotlib · pyplots.ai", fontsize=28, fontweight="bold", color="#306998", pad=20)
+ax.set_title("sudoku-basic · matplotlib · pyplots.ai", fontsize=28, fontweight="bold", color="black", pad=20)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-basic: Basic Scatter Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-13
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-22
 """
 
 import numpy as np
@@ -12,20 +12,22 @@ from lets_plot.export import ggsave as export_ggsave
 
 LetsPlot.setup_html()  # noqa: F405
 
-# Data
+# Data - Study Hours vs Exam Scores (realistic educational context)
 np.random.seed(42)
-n = 150
-x = np.random.randn(n) * 2 + 10
-y = x * 0.8 + np.random.randn(n) * 2
+n = 120
+study_hours = np.random.uniform(1, 12, n)
+base_score = 40 + study_hours * 4.5  # Linear relationship
+noise = np.random.randn(n) * 8  # Natural variation
+exam_scores = np.clip(base_score + noise, 0, 100)  # Bound between 0-100
 
-df = pd.DataFrame({"x": x, "y": y})
+df = pd.DataFrame({"study_hours": study_hours, "exam_scores": exam_scores})
 
 # Plot
 plot = (
-    ggplot(df, aes(x="x", y="y"))  # noqa: F405
+    ggplot(df, aes(x="study_hours", y="exam_scores"))  # noqa: F405
     + geom_point(color="#306998", size=5, alpha=0.7)  # noqa: F405
     + labs(  # noqa: F405
-        x="X Value", y="Y Value", title="scatter-basic · lets-plot · pyplots.ai"
+        x="Study Hours per Day", y="Exam Score (%)", title="scatter-basic · letsplot · pyplots.ai"
     )
     + ggsize(1600, 900)  # noqa: F405
     + theme_minimal()  # noqa: F405

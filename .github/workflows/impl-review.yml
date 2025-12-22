@@ -163,35 +163,37 @@ jobs:
             ### Quality Score: XX/100
 
             ### Criteria Checklist
-            **Spec Compliance (35 pts)**
-            - [ ] SC-01: Correct plot type
-            - [ ] SC-02: Data mapped correctly
-            - [ ] SC-03: Required features present
+            **Visual Quality (40 pts)**
+            - [ ] VQ-01: Text Legibility (10) - all text readable at full size
+            - [ ] VQ-02: No Overlap (8) - no overlapping text
+            - [ ] VQ-03: Element Visibility (8) - markers/lines sized for data density
+            - [ ] VQ-04: Color Accessibility (5) - colorblind-safe
+            - [ ] VQ-05: Layout Balance (5) - good proportions
 
-            **Visual Quality (35 pts)**
-            - [ ] VQ-01: Meaningful axis labels
-            - [ ] VQ-02: No overlapping text
-            - [ ] VQ-04: Clear data elements
+            **Spec Compliance (25 pts)**
+            - [ ] SC-01: Plot Type (8) - correct chart type
+            - [ ] SC-02: Data Mapping (5) - X/Y correctly assigned
+            - [ ] SC-03: Required Features (5) - all spec features present
+            - [ ] SC-06: Title Format (2) - uses {spec-id} · {library} · pyplots.ai
 
-            **Data Quality (15 pts)**
-            - [ ] DQ-01: Feature coverage (shows ALL aspects of plot type)
-            - [ ] DQ-02: Realistic context (plausible scenario)
-            - [ ] DQ-03: Appropriate scale (sensible values)
+            **Data Quality (20 pts)**
+            - [ ] DQ-01: Feature Coverage (8) - shows ALL aspects of plot type
+            - [ ] DQ-02: Realistic Context (7) - plausible scenario
+            - [ ] DQ-03: Appropriate Scale (5) - sensible values
 
-            **Code Quality (15 pts)**
-            - [ ] CQ-01: KISS structure
-            - [ ] CQ-02: Reproducible
+            **Code Quality (10 pts)**
+            - [ ] CQ-01: KISS Structure (3) - no functions/classes
+            - [ ] CQ-02: Reproducibility (3) - fixed seed
+
+            **Library Features (5 pts)**
+            - [ ] LF-01: Uses distinctive library features
 
             ### Strengths
-            - Strength 1
+            - Strength 1 (keep these aspects)
             - Strength 2
 
             ### Weaknesses
-            - Weakness 1
-
-            ### Improvements
-            - Improvement 1
-            - Improvement 2
+            - Weakness 1 (AI will fix these - let it decide HOW)
 
             ### Verdict: APPROVED / REJECTED
             ```
@@ -203,13 +205,12 @@ jobs:
                # Save structured feedback as JSON (one array per file)
                echo '["Strength 1", "Strength 2"]' > review_strengths.json
                echo '["Weakness 1"]' > review_weaknesses.json
-               echo '["Improvement 1", "Improvement 2"]' > review_improvements.json
                ```
 
             8. **DO NOT add ai-approved or ai-rejected labels** - the workflow will add them after updating metadata.
 
             **IMPORTANT**: Your review MUST include the "Image Description" section. A review without an image description will be considered invalid.
-            **IMPORTANT**: The Strengths/Weaknesses/Improvements sections are saved to the metadata for future regeneration. Be specific!
+            **IMPORTANT**: The Strengths/Weaknesses sections are saved to the metadata for future regeneration. Be specific!
 
       - name: Extract quality score
         id: score
@@ -267,16 +268,12 @@ jobs:
           # Read review feedback from JSON files (created by Claude)
           STRENGTHS="[]"
           WEAKNESSES="[]"
-          IMPROVEMENTS="[]"
 
           if [ -f "review_strengths.json" ]; then
             STRENGTHS=$(cat review_strengths.json)
           fi
           if [ -f "review_weaknesses.json" ]; then
             WEAKNESSES=$(cat review_weaknesses.json)
-          fi
-          if [ -f "review_improvements.json" ]; then
-            IMPROVEMENTS=$(cat review_improvements.json)
           fi
 
           # Update metadata file with quality score and review feedback
@@ -298,7 +295,6 @@ jobs:
           metadata_file = '$METADATA_FILE'
           strengths = '$STRENGTHS'
           weaknesses = '$WEAKNESSES'
-          improvements = '$IMPROVEMENTS'
 
           with open(metadata_file, 'r') as f:
               data = yaml.safe_load(f)
@@ -315,11 +311,6 @@ jobs:
               data['review']['weaknesses'] = json.loads(weaknesses)
           except:
               data['review']['weaknesses'] = []
-
-          try:
-              data['review']['improvements'] = json.loads(improvements)
-          except:
-              data['review']['improvements'] = []
 
           with open(metadata_file, 'w') as f:
               yaml.dump(data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)

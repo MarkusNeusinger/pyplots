@@ -235,8 +235,8 @@ jobs:
             ### Step 1b: If Regeneration, read previous feedback
             If this is a regeneration (${{ steps.existing.outputs.is_regeneration }} == true):
             1. Read `plots/${{ steps.inputs.outputs.specification_id }}/metadata/${{ steps.inputs.outputs.library }}.yaml`
-               - Look at `review.strengths`, `review.weaknesses`, `review.improvements`
-               - Use this feedback to improve your implementation!
+               - Look at `review.strengths` (keep these aspects!)
+               - Look at `review.weaknesses` (fix these problems - decide HOW yourself)
             2. Read `plots/${{ steps.inputs.outputs.specification_id }}/implementations/${{ steps.inputs.outputs.library }}.py`
                - Understand what was done before
                - Keep what worked, fix what didn't
@@ -310,8 +310,8 @@ jobs:
             ### Step 1b: If Regeneration, read previous feedback
             If this is a regeneration (${{ steps.existing.outputs.is_regeneration }} == true):
             1. Read `plots/${{ steps.inputs.outputs.specification_id }}/metadata/${{ steps.inputs.outputs.library }}.yaml`
-               - Look at `review.strengths`, `review.weaknesses`, `review.improvements`
-               - Use this feedback to improve your implementation!
+               - Look at `review.strengths` (keep these aspects!)
+               - Look at `review.weaknesses` (fix these problems - decide HOW yourself)
             2. Read `plots/${{ steps.inputs.outputs.specification_id }}/implementations/${{ steps.inputs.outputs.library }}.py`
                - Understand what was done before
                - Keep what worked, fix what didn't
@@ -464,7 +464,7 @@ jobs:
               'preview_thumb': f'https://storage.googleapis.com/pyplots-images/plots/{spec}/{lib}/plot_thumb.png',
               'preview_html': preview_html if preview_html != 'null' else None,
               'quality_score': None,
-              'review': {'strengths': [], 'weaknesses': [], 'improvements': []}
+              'review': {'strengths': [], 'weaknesses': []}
           }
           with open(metadata_file, 'w') as f:
               f.write(f'# Per-library metadata for {lib} implementation of {spec}\n')

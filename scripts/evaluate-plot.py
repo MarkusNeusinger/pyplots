@@ -1,51 +1,131 @@
 #!/usr/bin/env python3
 """
-Local Plot Quality Evaluator
+Local Plot Quality Evaluator (v2)
 
-Evaluates a plot implementation using AI quality review criteria.
-This simulates the AI review process used in the impl-review.yml workflow.
+Two-stage evaluation:
+1. Auto-Reject: Quick checks (Syntax, Runtime, Output, Library usage)
+2. Quality: AI-based scoring (0-100)
 
 Usage:
-    # Evaluate a specific implementation
+    # Quick auto-reject check (no API)
+    python scripts/evaluate-plot.py scatter-basic matplotlib --quick
+
+    # Full evaluation with AI
     python scripts/evaluate-plot.py scatter-basic matplotlib
 
-    # Evaluate with verbose output
-    python scripts/evaluate-plot.py scatter-basic seaborn --verbose
-
-    # Evaluate all libraries for a spec
-    python scripts/evaluate-plot.py scatter-basic --all
-
-    # Generate the plot image before evaluating
+    # Generate plot before evaluating
     python scripts/evaluate-plot.py scatter-basic matplotlib --generate
 
-Requirements:
-    - Claude API key set in ANTHROPIC_API_KEY environment variable
-    - OR Claude Code OAuth token for local testing
+    # Evaluate all libraries
+    python scripts/evaluate-plot.py scatter-basic --all --quick
 """
 
 import argparse
+import ast
 import json
 import os
 import subprocess
 import sys
 from pathlib import Path
 
-# Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-
 SUPPORTED_LIBRARIES = [
-    "matplotlib",
-    "seaborn",
-    "plotly",
-    "bokeh",
-    "altair",
-    "plotnine",
-    "pygal",
-    "highcharts",
-    "letsplot",
+    "matplotlib", "seaborn", "plotly", "bokeh", "altair",
+    "plotnine", "pygal", "highcharts", "letsplot",
 ]
+
+# Library-specific plot function patterns
+LIBRARY_PATTERNS = {
+    "seaborn": {
+        "import": ["import seaborn", "from seaborn"],
+        "plot_functions": [
+            "sns.scatterplot", "sns.lineplot", "sns.barplot", "sns.histplot",
+            "sns.boxplot", "sns.violinplot", "sns.heatmap", "sns.pairplot",
+            "sns.relplot", "sns.catplot", "sns.displot", "sns.jointplot",
+            "sns.regplot", "sns.lmplot", "sns.countplot", "sns.kdeplot",
+            "sns.stripplot", "sns.swarmplot", "sns.pointplot", "sns.rugplot",
+            "sns.clustermap", "sns.FacetGrid",
+        ],
+        "style_only": ["sns.set_style", "sns.set_theme", "sns.set_context", "sns.set_palette", "sns.despine"],
+    },
+    "plotly": {
+        "import": ["import plotly", "from plotly"],
+        "plot_functions": [
+            "px.scatter", "px.line", "px.bar", "px.histogram", "px.box",
+            "px.violin", "px.pie", "px.sunburst", "px.treemap", "px.funnel",
+            "px.choropleth", "px.density_heatmap", "px.imshow",
+            "go.Figure", "go.Scatter", "go.Bar", "go.Heatmap", "go.Pie",
+            "go.Candlestick", "go.Ohlc", "go.Sankey", "go.Choropleth",
+        ],
+        "style_only": [],
+    },
+    "bokeh": {
+        "import": ["from bokeh", "import bokeh"],
+        "plot_functions": [
+            "figure(", ".scatter(", ".line(", ".circle(", ".square(",
+            ".triangle(", ".vbar(", ".hbar(", ".rect(", ".segment(",
+            ".multi_line(", ".patch(", ".patches(", ".quad(",
+        ],
+        "style_only": [],
+    },
+    "altair": {
+        "import": ["import altair", "from altair"],
+        "plot_functions": [
+            "alt.Chart", ".mark_point", ".mark_line", ".mark_bar", ".mark_circle",
+            ".mark_square", ".mark_rect", ".mark_area", ".mark_boxplot",
+            ".mark_rule", ".mark_text", ".mark_geoshape",
+        ],
+        "style_only": [".configure_"],
+    },
+    "plotnine": {
+        "import": ["from plotnine", "import plotnine"],
+        "plot_functions": [
+            "ggplot(", "geom_point", "geom_line", "geom_bar", "geom_histogram",
+            "geom_boxplot", "geom_violin", "geom_area", "geom_tile",
+            "geom_col", "geom_density", "geom_smooth", "geom_text",
+        ],
+        "style_only": ["theme(", "theme_"],
+    },
+    "pygal": {
+        "import": ["import pygal", "from pygal"],
+        "plot_functions": [
+            "pygal.Bar", "pygal.Line", "pygal.Pie", "pygal.Histogram",
+            "pygal.XY", "pygal.Dot", "pygal.Radar", "pygal.Box",
+            "pygal.Treemap", "pygal.Gauge", "pygal.StackedBar",
+        ],
+        "style_only": [],
+    },
+    "highcharts": {
+        "import": ["from highcharts", "import highcharts"],
+        "plot_functions": [
+            "Chart(", "Highcharts", "highcharts.Chart",
+            "HighchartsStockChart", "HighchartsMapsChart",
+        ],
+        "style_only": [],
+    },
+    "letsplot": {
+        "import": ["from lets_plot", "import lets_plot"],
+        "plot_functions": [
+            "ggplot(", "geom_point", "geom_line", "geom_bar", "geom_histogram",
+            "geom_boxplot", "geom_violin", "geom_area", "geom_tile",
+            "geom_density", "geom_smooth", "geom_text", "geom_polygon",
+        ],
+        "style_only": ["theme(", "ggsize(", "flavor_"],
+    },
+    "matplotlib": {
+        "import": ["import matplotlib", "from matplotlib"],
+        "plot_functions": [
+            "ax.scatter", "ax.plot", "ax.bar", "ax.hist", "ax.boxplot",
+            "plt.scatter", "plt.plot", "plt.bar", "plt.hist", "plt.boxplot",
+            "ax.imshow", "ax.contour", "ax.pie", "ax.fill_between",
+            "ax.errorbar", "ax.violinplot", "ax.hexbin", "ax.pcolormesh",
+            "ax.quiver", "ax.streamplot", "ax.stem", "ax.step",
+        ],
+        "style_only": [],
+    },
+}
 
 
 def get_plot_paths(spec_id: str, library: str) -> dict:
@@ -57,326 +137,324 @@ def get_plot_paths(spec_id: str, library: str) -> dict:
         "metadata": plots_dir / "metadata" / f"{library}.yaml",
         "image": plots_dir / "implementations" / "plot.png",
         "library_rules": PROJECT_ROOT / "prompts" / "library" / f"{library}.md",
-        "quality_criteria": PROJECT_ROOT / "prompts" / "quality-criteria-v2.md",
-        "quality_criteria_old": PROJECT_ROOT / "prompts" / "quality-criteria.md",
+        "quality_criteria": PROJECT_ROOT / "prompts" / "quality-criteria.md",
     }
 
 
-def check_files_exist(paths: dict) -> list[str]:
-    """Check which required files exist."""
-    missing = []
-    for name, path in paths.items():
-        if name in ["spec", "impl", "library_rules"]:  # Required files
-            if not path.exists():
-                missing.append(f"{name}: {path}")
-    return missing
+# =============================================================================
+# STAGE 1: AUTO-REJECT CHECKS
+# =============================================================================
+
+class AutoRejectResult:
+    """Result of an auto-reject check."""
+    def __init__(self, passed: bool, code: str, message: str):
+        self.passed = passed
+        self.code = code
+        self.message = message
+
+    def __repr__(self):
+        status = "PASS" if self.passed else "FAIL"
+        return f"{self.code}: {status} - {self.message}"
 
 
-def generate_plot(spec_id: str, library: str) -> bool:
-    """Generate the plot image by running the implementation."""
+def check_ar01_syntax(impl_path: Path) -> AutoRejectResult:
+    """AR-01: Check if code has syntax errors."""
+    try:
+        with open(impl_path) as f:
+            code = f.read()
+        ast.parse(code)
+        return AutoRejectResult(True, "AR-01", "Syntax OK")
+    except SyntaxError as e:
+        return AutoRejectResult(False, "AR-01", f"Syntax error: {e}")
+
+
+def check_ar02_runtime(impl_path: Path, timeout: int = 60) -> AutoRejectResult:
+    """AR-02: Check if code runs without exceptions."""
+    env = os.environ.copy()
+    env["MPLBACKEND"] = "Agg"
+
+    # Create a temp copy to run from a clean directory (avoids matplotlib.py shadowing)
+    import tempfile
+    import shutil
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp_script = Path(tmpdir) / "plot_script.py"
+        shutil.copy(impl_path, tmp_script)
+
+        try:
+            result = subprocess.run(
+                [sys.executable, str(tmp_script)],
+                cwd=tmpdir,
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+            )
+            if result.returncode == 0:
+                # Copy plot.png back if created
+                tmp_plot = Path(tmpdir) / "plot.png"
+                if tmp_plot.exists():
+                    shutil.copy(tmp_plot, impl_path.parent / "plot.png")
+                return AutoRejectResult(True, "AR-02", "Runtime OK")
+            else:
+                # Get last line of error
+                error_lines = result.stderr.strip().split('\n')
+                error_msg = error_lines[-1] if error_lines else "Unknown error"
+                return AutoRejectResult(False, "AR-02", f"Runtime error: {error_msg[:100]}")
+        except subprocess.TimeoutExpired:
+            return AutoRejectResult(False, "AR-02", f"Timeout after {timeout}s")
+        except Exception as e:
+            return AutoRejectResult(False, "AR-02", f"Execution failed: {e}")
+
+
+def check_ar03_output(impl_path: Path) -> AutoRejectResult:
+    """AR-03: Check if plot.png was created."""
+    plot_path = impl_path.parent / "plot.png"
+    if plot_path.exists():
+        return AutoRejectResult(True, "AR-03", f"Output exists: {plot_path.name}")
+    else:
+        return AutoRejectResult(False, "AR-03", "No plot.png created")
+
+
+def check_ar04_empty(impl_path: Path) -> AutoRejectResult:
+    """AR-04: Check if plot.png is not empty (< 10KB or mostly white)."""
+    plot_path = impl_path.parent / "plot.png"
+    if not plot_path.exists():
+        return AutoRejectResult(False, "AR-04", "No plot.png to check")
+
+    # Check file size
+    size_kb = plot_path.stat().st_size / 1024
+    if size_kb < 10:
+        return AutoRejectResult(False, "AR-04", f"Plot too small: {size_kb:.1f}KB")
+
+    # Try to check if mostly white (optional, requires PIL)
+    try:
+        from PIL import Image
+        import numpy as np
+        img = Image.open(plot_path).convert('RGB')
+        arr = np.array(img)
+        # Check if > 95% of pixels are white (> 250 in all channels)
+        white_pixels = np.all(arr > 250, axis=2).sum()
+        total_pixels = arr.shape[0] * arr.shape[1]
+        white_ratio = white_pixels / total_pixels
+        if white_ratio > 0.95:
+            return AutoRejectResult(False, "AR-04", f"Plot is {white_ratio*100:.0f}% white")
+    except ImportError:
+        pass  # PIL not available, skip this check
+
+    return AutoRejectResult(True, "AR-04", f"Plot OK ({size_kb:.0f}KB)")
+
+
+def check_ar05_library(impl_path: Path, library: str) -> AutoRejectResult:
+    """AR-05: Check if library plot functions are actually used."""
+    if library not in LIBRARY_PATTERNS:
+        return AutoRejectResult(True, "AR-05", f"Unknown library: {library}")
+
+    with open(impl_path) as f:
+        code = f.read()
+
+    patterns = LIBRARY_PATTERNS[library]
+
+    # Check if library is imported
+    has_import = any(p in code for p in patterns["import"])
+    if not has_import:
+        return AutoRejectResult(False, "AR-05", f"No {library} import found")
+
+    # Check for plot functions
+    plot_functions_used = [p for p in patterns["plot_functions"] if p in code]
+    style_only_used = [p for p in patterns["style_only"] if p in code]
+
+    if plot_functions_used:
+        funcs = ", ".join(plot_functions_used[:3])
+        return AutoRejectResult(True, "AR-05", f"Uses: {funcs}")
+    elif style_only_used:
+        funcs = ", ".join(style_only_used[:2])
+        return AutoRejectResult(False, "AR-05", f"Only styling: {funcs}")
+    else:
+        return AutoRejectResult(False, "AR-05", f"{library} imported but no plot functions used")
+
+
+def check_ar07_format(impl_path: Path, library: str) -> AutoRejectResult:
+    """AR-07: Check if output format is correct."""
+    # Static libraries should produce .png
+    static_libraries = ["matplotlib", "seaborn", "plotnine"]
+    # Interactive libraries can produce .png or .html
+    interactive_libraries = ["plotly", "bokeh", "altair", "pygal", "highcharts", "letsplot"]
+
+    plot_png = impl_path.parent / "plot.png"
+    plot_html = impl_path.parent / "plot.html"
+
+    if library in static_libraries:
+        if plot_png.exists():
+            return AutoRejectResult(True, "AR-07", "Correct format: PNG")
+        else:
+            return AutoRejectResult(False, "AR-07", "Static library must produce PNG")
+    else:
+        if plot_png.exists() or plot_html.exists():
+            fmt = "PNG" if plot_png.exists() else "HTML"
+            return AutoRejectResult(True, "AR-07", f"Correct format: {fmt}")
+        else:
+            return AutoRejectResult(False, "AR-07", "No valid output format")
+
+
+def run_auto_reject_checks(spec_id: str, library: str, run_code: bool = True) -> dict:
+    """Run all auto-reject checks and return results."""
     paths = get_plot_paths(spec_id, library)
     impl_path = paths["impl"]
 
     if not impl_path.exists():
-        print(f"Error: Implementation not found: {impl_path}")
-        return False
+        return {
+            "passed": False,
+            "failed_check": "FILE",
+            "message": f"Implementation not found: {impl_path}",
+            "checks": [],
+        }
 
-    # Run the implementation
-    impl_dir = impl_path.parent
-    env = os.environ.copy()
-    env["MPLBACKEND"] = "Agg"  # Non-interactive backend
+    checks = []
 
-    try:
-        result = subprocess.run(
-            [sys.executable, str(impl_path)],
-            cwd=str(impl_dir),
-            env=env,
-            capture_output=True,
-            text=True,
-            timeout=60,
-        )
+    # AR-01: Syntax
+    ar01 = check_ar01_syntax(impl_path)
+    checks.append(ar01)
+    if not ar01.passed:
+        return {"passed": False, "failed_check": "AR-01", "message": ar01.message, "checks": checks}
 
-        if result.returncode != 0:
-            print(f"Error running implementation:")
-            print(result.stderr)
-            return False
+    # AR-02: Runtime (optional - can be slow)
+    if run_code:
+        ar02 = check_ar02_runtime(impl_path)
+        checks.append(ar02)
+        if not ar02.passed:
+            return {"passed": False, "failed_check": "AR-02", "message": ar02.message, "checks": checks}
 
-        # Check if plot.png was created
-        plot_path = impl_dir / "plot.png"
-        if plot_path.exists():
-            print(f"Generated: {plot_path}")
-            return True
-        else:
-            print("Warning: plot.png was not created")
-            return False
+        # AR-03: Output exists
+        ar03 = check_ar03_output(impl_path)
+        checks.append(ar03)
+        if not ar03.passed:
+            return {"passed": False, "failed_check": "AR-03", "message": ar03.message, "checks": checks}
 
-    except subprocess.TimeoutExpired:
-        print("Error: Implementation timed out after 60 seconds")
-        return False
-    except Exception as e:
-        print(f"Error: {e}")
-        return False
+        # AR-04: Not empty
+        ar04 = check_ar04_empty(impl_path)
+        checks.append(ar04)
+        if not ar04.passed:
+            return {"passed": False, "failed_check": "AR-04", "message": ar04.message, "checks": checks}
 
+        # AR-07: Correct format
+        ar07 = check_ar07_format(impl_path, library)
+        checks.append(ar07)
+        if not ar07.passed:
+            return {"passed": False, "failed_check": "AR-07", "message": ar07.message, "checks": checks}
 
-def analyze_library_usage(impl_path: Path, library: str) -> dict:
-    """Analyze how much the implementation actually uses the designated library."""
-    with open(impl_path) as f:
-        code = f.read()
+    # AR-05: Library usage
+    ar05 = check_ar05_library(impl_path, library)
+    checks.append(ar05)
+    if not ar05.passed:
+        return {"passed": False, "failed_check": "AR-05", "message": ar05.message, "checks": checks}
 
-    # Library-specific patterns
-    library_patterns = {
-        "seaborn": {
-            "import": ["import seaborn", "from seaborn"],
-            "plot_functions": [
-                "sns.scatterplot", "sns.lineplot", "sns.barplot", "sns.histplot",
-                "sns.boxplot", "sns.violinplot", "sns.heatmap", "sns.pairplot",
-                "sns.relplot", "sns.catplot", "sns.displot", "sns.jointplot",
-                "sns.regplot", "sns.lmplot", "sns.countplot", "sns.kdeplot",
-                "sns.stripplot", "sns.swarmplot", "sns.pointplot", "sns.rugplot",
-            ],
-            "style_only": ["sns.set_style", "sns.set_theme", "sns.set_context", "sns.set_palette"],
-        },
-        "plotly": {
-            "import": ["import plotly", "from plotly"],
-            "plot_functions": [
-                "px.scatter", "px.line", "px.bar", "px.histogram", "px.box",
-                "px.violin", "px.pie", "px.sunburst", "px.treemap", "px.funnel",
-                "go.Figure", "go.Scatter", "go.Bar", "go.Heatmap", "go.Pie",
-            ],
-            "style_only": ["update_layout", "update_traces"],
-        },
-        "bokeh": {
-            "import": ["from bokeh", "import bokeh"],
-            "plot_functions": [
-                "figure(", ".scatter(", ".line(", ".circle(", ".square(",
-                ".triangle(", ".vbar(", ".hbar(", ".rect(", ".segment(",
-            ],
-            "style_only": [],
-        },
-        "altair": {
-            "import": ["import altair", "from altair"],
-            "plot_functions": [
-                "alt.Chart", ".mark_point", ".mark_line", ".mark_bar", ".mark_circle",
-                ".mark_square", ".mark_rect", ".mark_area", ".mark_boxplot",
-            ],
-            "style_only": [".configure_"],
-        },
-        "plotnine": {
-            "import": ["from plotnine", "import plotnine"],
-            "plot_functions": [
-                "ggplot(", "geom_point", "geom_line", "geom_bar", "geom_histogram",
-                "geom_boxplot", "geom_violin", "geom_area", "geom_tile",
-            ],
-            "style_only": ["theme(", "theme_"],
-        },
-        "pygal": {
-            "import": ["import pygal", "from pygal"],
-            "plot_functions": [
-                "pygal.Bar", "pygal.Line", "pygal.Pie", "pygal.Histogram",
-                "pygal.XY", "pygal.Dot", "pygal.Radar", "pygal.Box",
-            ],
-            "style_only": [],
-        },
-        "highcharts": {
-            "import": ["from highcharts", "import highcharts"],
-            "plot_functions": [
-                "Chart(", "Highcharts", "series", "highcharts.Chart",
-            ],
-            "style_only": [],
-        },
-        "letsplot": {
-            "import": ["from lets_plot", "import lets_plot"],
-            "plot_functions": [
-                "ggplot(", "geom_point", "geom_line", "geom_bar", "geom_histogram",
-                "geom_boxplot", "geom_violin", "geom_area", "geom_tile",
-            ],
-            "style_only": ["theme(", "ggsize("],
-        },
-        "matplotlib": {
-            "import": ["import matplotlib", "from matplotlib"],
-            "plot_functions": [
-                "ax.scatter", "ax.plot", "ax.bar", "ax.hist", "ax.boxplot",
-                "plt.scatter", "plt.plot", "plt.bar", "plt.hist", "plt.boxplot",
-                "ax.imshow", "ax.contour", "ax.pie", "ax.fill_between",
-            ],
-            "style_only": [],
-        },
-    }
-
-    if library not in library_patterns:
-        return {"error": f"Unknown library: {library}"}
-
-    patterns = library_patterns[library]
-
-    # Check imports
-    has_import = any(p in code for p in patterns["import"])
-
-    # Check plot function usage
-    plot_functions_used = [p for p in patterns["plot_functions"] if p in code]
-
-    # Check style-only usage
-    style_only_used = [p for p in patterns["style_only"] if p in code]
-
-    # Determine authenticity score
-    if not has_import:
-        la01_score = 0
-        la01_reason = f"No {library} import found"
-    elif plot_functions_used:
-        la01_score = 12
-        la01_reason = f"Uses library plotting: {', '.join(plot_functions_used[:3])}"
-    elif style_only_used and not plot_functions_used:
-        la01_score = 0
-        la01_reason = f"Only uses styling functions: {', '.join(style_only_used)}"
-    else:
-        la01_score = 0
-        la01_reason = "Library imported but no plotting functions used"
-
-    return {
-        "has_import": has_import,
-        "plot_functions": plot_functions_used,
-        "style_only": style_only_used,
-        "la01_score": la01_score,
-        "la01_reason": la01_reason,
-    }
+    return {"passed": True, "failed_check": None, "message": "All checks passed", "checks": checks}
 
 
-def analyze_visual_issues(impl_path: Path) -> dict:
-    """Analyze potential visual issues in the code."""
-    with open(impl_path) as f:
-        code = f.read()
-
-    issues = []
-
-    # Check for font sizes
-    import re
-
-    # Look for fontsize settings
-    fontsize_matches = re.findall(r'fontsize\s*=\s*(\d+)', code)
-    fontsizes = [int(fs) for fs in fontsize_matches]
-
-    if fontsizes:
-        min_fontsize = min(fontsizes)
-        if min_fontsize < 12:
-            issues.append(f"Font sizes may be too small (min: {min_fontsize}pt)")
-
-    # Check for marker size in scatter plots
-    if 'scatter' in code.lower():
-        s_matches = re.findall(r'\bs\s*=\s*(\d+)', code)
-        if s_matches:
-            sizes = [int(s) for s in s_matches]
-            if max(sizes) < 50:
-                issues.append(f"Marker sizes may be too small (s={max(sizes)})")
-
-    # Check for missing tight_layout
-    if 'tight_layout' not in code and 'bbox_inches' not in code:
-        issues.append("Missing tight_layout() or bbox_inches='tight'")
-
-    # Check for overlapping label prevention
-    if 'rotation' not in code and 'set_xticklabels' in code:
-        issues.append("X-axis labels might overlap (no rotation set)")
-
-    return {
-        "issues": issues,
-        "fontsizes": fontsizes,
-    }
-
+# =============================================================================
+# STAGE 2: QUALITY EVALUATION
+# =============================================================================
 
 def create_evaluation_prompt(spec_id: str, library: str, paths: dict) -> str:
-    """Create the evaluation prompt for Claude."""
-
-    # Read files
+    """Create the evaluation prompt for Claude (v2 criteria)."""
     spec_content = paths["spec"].read_text() if paths["spec"].exists() else "NOT FOUND"
     impl_content = paths["impl"].read_text() if paths["impl"].exists() else "NOT FOUND"
-
-    # Use v2 criteria if available, fall back to v1
-    criteria_path = paths["quality_criteria"]
-    if not criteria_path.exists():
-        criteria_path = paths["quality_criteria_old"]
-    criteria_content = criteria_path.read_text() if criteria_path.exists() else "NOT FOUND"
-
+    criteria_content = paths["quality_criteria"].read_text() if paths["quality_criteria"].exists() else "NOT FOUND"
     library_rules = paths["library_rules"].read_text() if paths["library_rules"].exists() else ""
 
-    prompt = f"""## Task: Evaluate Plot Quality
+    return f"""## Task: Evaluate Plot Quality (v2 Criteria)
 
-You are evaluating a **{library}** implementation of the **{spec_id}** plot specification.
+You are evaluating a **{library}** implementation of **{spec_id}**.
 
-### 1. Specification
+**Important:** This implementation has already passed Auto-Reject checks (syntax, runtime, output, library usage).
+Focus purely on QUALITY evaluation.
+
+### Specification
 ```markdown
 {spec_content}
 ```
 
-### 2. Implementation Code ({library}.py)
+### Implementation ({library}.py)
 ```python
 {impl_content}
 ```
 
-### 3. Library-Specific Rules
+### Library Rules
 ```markdown
 {library_rules}
 ```
 
-### 4. Quality Criteria
+### Quality Criteria
 ```markdown
 {criteria_content}
 ```
 
-### 5. Your Task
+### Your Task
 
-Evaluate this implementation against the quality criteria. Pay special attention to:
+Evaluate STRICTLY. Remember:
+- 90-100 = Publication quality (Nature/Science)
+- 70-89 = Professional
+- 50-69 = Acceptable
+- <50 = Rejected
 
-1. **Library Authenticity (LA-01)**: Does the code actually use {library}'s plotting functions, or just import it for styling?
-2. **Visual Quality**: Check font sizes, marker sizes, potential overlapping labels
-3. **Spec Compliance**: Does it match what the specification requires?
-
-Provide a detailed evaluation in this format:
+Provide evaluation as JSON:
 
 ```json
 {{
   "score": <0-100>,
   "tier": "<Excellent|Good|Acceptable|Poor>",
 
-  "library_authenticity": {{
-    "la01_score": <0-12>,
-    "la01_reason": "...",
-    "la02_score": <0-5>,
-    "la02_reason": "...",
-    "la03_score": <0-3>,
-    "la03_reason": "..."
+  "visual_quality": {{
+    "vq01_text_legibility": {{"score": <0-10>, "note": "..."}},
+    "vq02_no_overlap": {{"score": <0-8>, "note": "..."}},
+    "vq03_element_visibility": {{"score": <0-8>, "note": "..."}},
+    "vq04_color_accessibility": {{"score": <0-5>, "note": "..."}},
+    "vq05_layout_balance": {{"score": <0-5>, "note": "..."}},
+    "vq06_axis_labels": {{"score": <0-2>, "note": "..."}},
+    "vq07_grid_legend": {{"score": <0-2>, "note": "..."}},
+    "total": <0-40>
   }},
 
   "spec_compliance": {{
-    "total": <0-25>,
-    "issues": ["..."]
-  }},
-
-  "visual_quality": {{
-    "total": <0-30>,
-    "issues": ["..."]
+    "sc01_plot_type": {{"score": <0-8>, "note": "..."}},
+    "sc02_data_mapping": {{"score": <0-5>, "note": "..."}},
+    "sc03_required_features": {{"score": <0-5>, "note": "..."}},
+    "sc04_data_range": {{"score": <0-3>, "note": "..."}},
+    "sc05_legend_accuracy": {{"score": <0-2>, "note": "..."}},
+    "sc06_title_format": {{"score": <0-2>, "note": "..."}},
+    "total": <0-25>
   }},
 
   "data_quality": {{
-    "total": <0-15>,
-    "issues": ["..."]
+    "dq01_feature_coverage": {{"score": <0-8>, "note": "..."}},
+    "dq02_realistic_context": {{"score": <0-7>, "note": "..."}},
+    "dq03_appropriate_scale": {{"score": <0-5>, "note": "..."}},
+    "total": <0-20>
   }},
 
   "code_quality": {{
-    "total": <0-10>,
-    "issues": ["..."]
+    "cq01_kiss_structure": {{"score": <0-3>, "note": "..."}},
+    "cq02_reproducibility": {{"score": <0-3>, "note": "..."}},
+    "cq03_clean_imports": {{"score": <0-2>, "note": "..."}},
+    "cq04_no_deprecated_api": {{"score": <0-1>, "note": "..."}},
+    "cq05_output_correct": {{"score": <0-1>, "note": "..."}},
+    "total": <0-10>
+  }},
+
+  "library_features": {{
+    "lf01_distinctive_features": {{"score": <0-5>, "note": "..."}},
+    "total": <0-5>
   }},
 
   "strengths": ["..."],
   "weaknesses": ["..."],
   "improvements": ["..."],
-
-  "verdict": "<APPROVED|NEEDS_IMPROVEMENT|REJECTED>",
-  "summary": "One paragraph summary"
+  "summary": "One sentence summary"
 }}
 ```
 
-Be strict about Library Authenticity - if the code doesn't actually use {library} for plotting, LA-01 should be 0.
+Be STRICT - a "good" plot should score around 70-80, not 95.
 """
-
-    return prompt
 
 
 def evaluate_with_claude(prompt: str, image_path: Path | None = None) -> dict:
@@ -384,49 +462,33 @@ def evaluate_with_claude(prompt: str, image_path: Path | None = None) -> dict:
     try:
         import anthropic
     except ImportError:
-        print("Error: anthropic package not installed")
-        print("Run: pip install anthropic")
-        return {"error": "anthropic package not installed"}
+        return {"error": "anthropic package not installed. Run: pip install anthropic"}
 
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
-        print("Error: ANTHROPIC_API_KEY not set")
-        print("Set your API key: export ANTHROPIC_API_KEY='your-key'")
         return {"error": "ANTHROPIC_API_KEY not set"}
 
     client = anthropic.Anthropic(api_key=api_key)
-
-    messages = []
     content = [{"type": "text", "text": prompt}]
 
-    # Add image if available
     if image_path and image_path.exists():
         import base64
         with open(image_path, "rb") as f:
             image_data = base64.standard_b64encode(f.read()).decode("utf-8")
-
         content.insert(0, {
             "type": "image",
-            "source": {
-                "type": "base64",
-                "media_type": "image/png",
-                "data": image_data,
-            }
+            "source": {"type": "base64", "media_type": "image/png", "data": image_data}
         })
-        content.insert(1, {"type": "text", "text": "Here is the generated plot image to evaluate:"})
-
-    messages.append({"role": "user", "content": content})
+        content.insert(1, {"type": "text", "text": "Plot image to evaluate:"})
 
     try:
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=4096,
-            messages=messages,
+            messages=[{"role": "user", "content": content}],
         )
-
         response_text = response.content[0].text
 
-        # Try to extract JSON from response
         import re
         json_match = re.search(r'```json\s*(.*?)\s*```', response_text, re.DOTALL)
         if json_match:
@@ -434,120 +496,106 @@ def evaluate_with_claude(prompt: str, image_path: Path | None = None) -> dict:
                 return json.loads(json_match.group(1))
             except json.JSONDecodeError:
                 pass
-
         return {"raw_response": response_text}
-
     except Exception as e:
         return {"error": str(e)}
 
 
-def print_evaluation(result: dict, verbose: bool = False):
-    """Pretty print the evaluation result."""
+# =============================================================================
+# OUTPUT FORMATTING
+# =============================================================================
+
+def print_auto_reject_result(result: dict):
+    """Print auto-reject check results."""
+    if result["passed"]:
+        print("\n✅ AUTO-REJECT: PASSED")
+    else:
+        print(f"\n❌ AUTO-REJECT: FAILED ({result['failed_check']})")
+        print(f"   {result['message']}")
+
+    print("\nChecks:")
+    for check in result["checks"]:
+        status = "✓" if check.passed else "✗"
+        print(f"  {status} {check}")
+
+
+def print_quality_result(result: dict, verbose: bool = False):
+    """Print quality evaluation results."""
     if "error" in result:
-        print(f"\nError: {result['error']}")
+        print(f"\n❌ Error: {result['error']}")
         return
 
     if "raw_response" in result:
-        print("\nRaw Response (could not parse JSON):")
+        print("\nRaw Response:")
         print(result["raw_response"])
         return
 
+    score = result.get("score", 0)
+    tier = result.get("tier", "Unknown")
+
     print("\n" + "="*60)
-    print(f"QUALITY SCORE: {result.get('score', 'N/A')}/100")
-    print(f"TIER: {result.get('tier', 'N/A')}")
-    print(f"VERDICT: {result.get('verdict', 'N/A')}")
+    print(f"QUALITY SCORE: {score}/100 ({tier})")
     print("="*60)
 
-    # Library Authenticity
-    la = result.get("library_authenticity", {})
-    la_total = la.get("la01_score", 0) + la.get("la02_score", 0) + la.get("la03_score", 0)
-    print(f"\nLibrary Authenticity: {la_total}/20")
-    print(f"  LA-01 ({la.get('la01_score', 0)}/12): {la.get('la01_reason', 'N/A')}")
+    # Category scores
+    vq = result.get("visual_quality", {}).get("total", "?")
+    sc = result.get("spec_compliance", {}).get("total", "?")
+    dq = result.get("data_quality", {}).get("total", "?")
+    cq = result.get("code_quality", {}).get("total", "?")
+    lf = result.get("library_features", {}).get("total", "?")
+
+    print(f"\n  Visual Quality:    {vq}/40")
+    print(f"  Spec Compliance:   {sc}/25")
+    print(f"  Data Quality:      {dq}/20")
+    print(f"  Code Quality:      {cq}/10")
+    print(f"  Library Features:  {lf}/5")
+
     if verbose:
-        print(f"  LA-02 ({la.get('la02_score', 0)}/5): {la.get('la02_reason', 'N/A')}")
-        print(f"  LA-03 ({la.get('la03_score', 0)}/3): {la.get('la03_reason', 'N/A')}")
+        for category in ["visual_quality", "spec_compliance", "data_quality", "code_quality", "library_features"]:
+            cat_data = result.get(category, {})
+            print(f"\n{category.upper()}:")
+            for key, val in cat_data.items():
+                if key != "total" and isinstance(val, dict):
+                    print(f"    {key}: {val.get('score', '?')} - {val.get('note', '')[:50]}")
 
-    # Other sections
-    print(f"\nSpec Compliance: {result.get('spec_compliance', {}).get('total', 'N/A')}/25")
-    print(f"Visual Quality: {result.get('visual_quality', {}).get('total', 'N/A')}/30")
-    print(f"Data Quality: {result.get('data_quality', {}).get('total', 'N/A')}/15")
-    print(f"Code Quality: {result.get('code_quality', {}).get('total', 'N/A')}/10")
-
-    # Strengths and Weaknesses
     if result.get("strengths"):
-        print("\nStrengths:")
-        for s in result["strengths"]:
-            print(f"  + {s}")
+        print("\n+ Strengths:")
+        for s in result["strengths"][:3]:
+            print(f"    {s}")
 
     if result.get("weaknesses"):
-        print("\nWeaknesses:")
-        for w in result["weaknesses"]:
-            print(f"  - {w}")
-
-    if result.get("improvements"):
-        print("\nSuggested Improvements:")
-        for i in result["improvements"]:
-            print(f"  > {i}")
+        print("\n- Weaknesses:")
+        for w in result["weaknesses"][:3]:
+            print(f"    {w}")
 
     print(f"\nSummary: {result.get('summary', 'N/A')}")
 
 
-def quick_check(spec_id: str, library: str) -> dict:
-    """Quick local check without calling Claude API."""
-    paths = get_plot_paths(spec_id, library)
-
-    # Check files exist
-    missing = check_files_exist(paths)
-    if missing:
-        return {"error": f"Missing files: {missing}"}
-
-    # Analyze library usage
-    lib_analysis = analyze_library_usage(paths["impl"], library)
-
-    # Analyze visual issues
-    visual_analysis = analyze_visual_issues(paths["impl"])
-
-    return {
-        "spec_id": spec_id,
-        "library": library,
-        "library_analysis": lib_analysis,
-        "visual_analysis": visual_analysis,
-        "files_exist": {k: v.exists() for k, v in paths.items()},
-    }
-
+# =============================================================================
+# MAIN
+# =============================================================================
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Evaluate plot implementation quality",
+        description="Evaluate plot implementation (v2: Auto-Reject + Quality)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  python scripts/evaluate-plot.py scatter-basic matplotlib
-  python scripts/evaluate-plot.py scatter-basic seaborn --verbose
-  python scripts/evaluate-plot.py sudoku-basic seaborn --quick
-  python scripts/evaluate-plot.py scatter-basic --all --quick
-        """
     )
     parser.add_argument("spec_id", help="Specification ID (e.g., scatter-basic)")
     parser.add_argument("library", nargs="?", help="Library name (e.g., matplotlib)")
     parser.add_argument("--all", action="store_true", help="Evaluate all libraries")
+    parser.add_argument("--quick", "-q", action="store_true", help="Only run auto-reject (no AI)")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
-    parser.add_argument("--quick", "-q", action="store_true",
-                       help="Quick local check without AI (no API call)")
-    parser.add_argument("--generate", "-g", action="store_true",
-                       help="Generate plot image before evaluation")
+    parser.add_argument("--generate", "-g", action="store_true", help="Generate plot before evaluation")
+    parser.add_argument("--no-run", action="store_true", help="Skip runtime check (faster)")
     parser.add_argument("--json", action="store_true", help="Output as JSON")
 
     args = parser.parse_args()
 
-    if args.all:
-        libraries = SUPPORTED_LIBRARIES
-    elif args.library:
-        libraries = [args.library]
-    else:
+    libraries = SUPPORTED_LIBRARIES if args.all else ([args.library] if args.library else None)
+    if not libraries:
         parser.error("Must specify a library or use --all")
 
-    results = {}
+    all_results = {}
 
     for library in libraries:
         print(f"\n{'='*60}")
@@ -556,61 +604,62 @@ Examples:
 
         paths = get_plot_paths(args.spec_id, library)
 
-        # Check if implementation exists
         if not paths["impl"].exists():
-            print(f"Skipping: {library} implementation not found")
+            print(f"⚠ Skipping: implementation not found")
             continue
 
         # Generate plot if requested
         if args.generate:
             print("\nGenerating plot...")
-            if not generate_plot(args.spec_id, library):
-                print("Failed to generate plot, continuing with evaluation...")
+            import tempfile
+            import shutil
+            env = os.environ.copy()
+            env["MPLBACKEND"] = "Agg"
+            with tempfile.TemporaryDirectory() as tmpdir:
+                tmp_script = Path(tmpdir) / "plot_script.py"
+                shutil.copy(paths["impl"], tmp_script)
+                subprocess.run(
+                    [sys.executable, str(tmp_script)],
+                    cwd=tmpdir,
+                    env=env,
+                    capture_output=True,
+                    timeout=60,
+                )
+                tmp_plot = Path(tmpdir) / "plot.png"
+                if tmp_plot.exists():
+                    shutil.copy(tmp_plot, paths["impl"].parent / "plot.png")
 
-        if args.quick:
-            # Quick local check
-            result = quick_check(args.spec_id, library)
-            results[library] = result
+        # Stage 1: Auto-Reject
+        print("\n--- STAGE 1: AUTO-REJECT ---")
+        ar_result = run_auto_reject_checks(args.spec_id, library, run_code=not args.no_run)
+        print_auto_reject_result(ar_result)
 
-            if args.json:
-                continue
+        result = {"auto_reject": ar_result}
 
-            print(f"\nLibrary Analysis:")
-            lib_a = result.get("library_analysis", {})
-            print(f"  LA-01 Score: {lib_a.get('la01_score', 'N/A')}/12")
-            print(f"  Reason: {lib_a.get('la01_reason', 'N/A')}")
-            print(f"  Plot functions used: {lib_a.get('plot_functions', [])}")
-            print(f"  Style-only functions: {lib_a.get('style_only', [])}")
-
-            print(f"\nVisual Analysis:")
-            vis_a = result.get("visual_analysis", {})
-            for issue in vis_a.get("issues", []):
-                print(f"  ! {issue}")
-            if vis_a.get("fontsizes"):
-                print(f"  Font sizes found: {vis_a.get('fontsizes')}")
-        else:
-            # Full AI evaluation
+        if not ar_result["passed"]:
+            result["score"] = 0
+            result["tier"] = "Rejected"
+            result["verdict"] = f"AUTO-REJECT: {ar_result['failed_check']}"
+        elif not args.quick:
+            # Stage 2: Quality (only if auto-reject passed)
+            print("\n--- STAGE 2: QUALITY EVALUATION ---")
             prompt = create_evaluation_prompt(args.spec_id, library, paths)
 
-            # Check for image
-            image_path = paths["image"]
-            if not image_path.exists():
-                # Try generating
-                if args.generate or input("No plot.png found. Generate it? [y/N] ").lower() == 'y':
-                    generate_plot(args.spec_id, library)
-
-            print("\nSending to Claude for evaluation...")
-            result = evaluate_with_claude(
-                prompt,
-                image_path if image_path.exists() else None
-            )
-            results[library] = result
+            image_path = paths["image"] if paths["image"].exists() else None
+            quality_result = evaluate_with_claude(prompt, image_path)
+            result["quality"] = quality_result
 
             if not args.json:
-                print_evaluation(result, verbose=args.verbose)
+                print_quality_result(quality_result, verbose=args.verbose)
+
+        all_results[library] = result
 
     if args.json:
-        print(json.dumps(results, indent=2))
+        # Clean up for JSON output
+        for lib, res in all_results.items():
+            if "auto_reject" in res:
+                res["auto_reject"]["checks"] = [str(c) for c in res["auto_reject"]["checks"]]
+        print(json.dumps(all_results, indent=2))
 
 
 if __name__ == "__main__":

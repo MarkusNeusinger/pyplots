@@ -206,8 +206,6 @@ review:
     - "Good use of alpha for overlapping points"
   weaknesses:
     - "Grid could be more subtle"
-  improvements:
-    - "Consider colorblind-friendly palette"
 ```
 
 **3. Implementation headers:** `plots/{specification-id}/implementations/{library}.py`

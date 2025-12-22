@@ -25,13 +25,15 @@ When regenerating an existing implementation, read the metadata file for review 
 review:
   strengths:
     - "Clean code structure"
+    - "Good color accessibility"
   weaknesses:
     - "Font sizes too small for canvas"
-  improvements:
-    - "Increase fontsize to 20 for labels"
+    - "Grid too prominent"
 ```
 
-**Use this feedback to improve!** Address all weaknesses and apply suggested improvements.
+**Use this feedback to improve!**
+- **Strengths**: Keep these aspects unchanged
+- **Weaknesses**: Fix these problems (decide HOW yourself)
 
 ## Output
 
@@ -52,8 +54,8 @@ np.random.seed(42)
 x = np.random.randn(100) * 2 + 10
 y = x * 0.8 + np.random.randn(100) * 2
 
-# Create plot (4800x2700 px)
-fig, ax = plt.subplots(figsize=(16, 9))
+# Create plot (4800x2700 or 3600x3600 px - AI decides)
+fig, ax = plt.subplots(figsize=(16, 9))  # or (12, 12) for square
 ax.scatter(x, y, alpha=0.7, s=200, color='#306998')  # s=200 for visibility!
 
 # Labels and styling (scaled font sizes!)
@@ -149,17 +151,18 @@ Must pass criteria from `prompts/quality-criteria.md`.
 
 **IMPORTANT: Large Canvas Size!**
 
-pyplots renders at **4800 × 2700 px** - standard/default element sizes are too small!
+pyplots renders at **4800 × 2700 px** (16:9) or **3600 × 3600 px** (1:1) - standard element sizes are too small!
 
 - Elements should be **~3-4x larger** than library defaults
 - See `prompts/default-style-guide.md` for principles
 - See `prompts/library/{library}.md` for library-specific sizes
 
 **Criteria:**
-- **Image Size** (VQ-08): 4800 × 2700 px (16:9)
-- **Element Clarity** (VQ-04): Points, lines, bars clearly visible - not tiny!
-- **Colors** (VQ-03): Use Python Blue (#306998) and Yellow (#FFD43B) first, colorblind-safe
-- **Axis Labels** (VQ-01): Present and meaningful, large enough to read
+- **Image Size**: 4800 × 2700 px (16:9) OR 3600 × 3600 px (1:1) - AI decides
+- **Element Clarity** (VQ-03): Points, lines, bars clearly visible - not tiny!
+- **Colors** (VQ-04): Use Python Blue (#306998) and Yellow (#FFD43B) first, colorblind-safe
+- **Text Legibility** (VQ-01): Title, labels, ticks large enough to read
+- **Axis Labels** (VQ-06): Descriptive with units when appropriate
 - **Title** (SC-06): Format `{spec-id} · {library} · pyplots.ai`
 - **No Overlap** (VQ-02): Labels and text must not overlap
 - **Legend** (VQ-07): When multiple series, don't cover data

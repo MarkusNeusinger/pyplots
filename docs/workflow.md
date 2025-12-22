@@ -245,11 +245,16 @@ graph LR
 **PR Labels:**
 | Label | Meaning |
 |-------|---------|
-| `ai-approved` | Passed review (score ≥90) |
-| `ai-rejected` | Failed review, will retry |
+| `ai-approved` | Passed review (score ≥90, or ≥50 after 3 attempts) |
+| `ai-rejected` | Failed review (score <90), triggers repair loop |
 | `ai-attempt-1/2/3` | Retry counter |
-| `not-feasible` | 3x failed, library cannot implement |
+| `quality-poor` | Score <50, needs fundamental fixes |
 | `quality:XX` | Quality score (e.g., `quality:92`) |
+
+**Quality Workflow:**
+- **≥ 90**: ai-approved, merged immediately
+- **< 90**: ai-rejected, repair loop (up to 3 attempts)
+- **After 3 attempts**: ≥ 50 → merge, < 50 → close PR and regenerate
 
 ### Bulk Operations
 

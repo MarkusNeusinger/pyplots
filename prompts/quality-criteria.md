@@ -9,14 +9,20 @@ Implementation
      │
      ▼
 ┌─────────────────────┐
-│  Stage 1: Auto-Reject  │  ──► FAIL → Score = 0, not in repo
+│  Stage 1: Auto-Reject  │  ──► FAIL → Score = 0, regenerate
 │  (7 quick checks)      │
 └─────────────────────┘
      │ PASS
      ▼
 ┌─────────────────────┐
-│  Stage 2: Quality      │  ──► < 50 → not in repo
-│  (0-100 points)        │  ──► ≥ 50 → in repo (with score)
+│  Stage 2: Quality      │  ──► ≥ 90 → ai-approved, merge
+│  (0-100 points)        │  ──► < 90 → ai-rejected, repair (max 3x)
+└─────────────────────┘
+     │ After 3 attempts
+     ▼
+┌─────────────────────┐
+│  Final Decision        │  ──► ≥ 50 → merge to repo
+│                        │  ──► < 50 → not in repo, regenerate
 └─────────────────────┘
 ```
 
@@ -78,12 +84,17 @@ When a library cannot technically implement a spec (e.g., pygal cannot do 3D), t
 
 ### Scoring Philosophy: STRICT
 
-| Score | Tier | Meaning |
+| Score | Tier | Outcome |
 |-------|------|---------|
-| 90-100 | Excellent | **Publication quality** - Paper, magazine, marketing-ready |
-| 70-89 | Good | **Professional** - Good, but not perfect |
-| 50-69 | Acceptable | **Acceptable** - Functional with flaws |
-| < 50 | Poor | **Rejected** - Not in repo |
+| 90-100 | Excellent | **Approved immediately** - Publication quality |
+| 70-89 | Good | Repair loop → merge after 3 attempts |
+| 50-69 | Acceptable | Repair loop → merge after 3 attempts |
+| < 50 | Poor | Repair loop → **NOT in repo** after 3 attempts |
+
+**Workflow:**
+- **≥ 90**: ai-approved, merged immediately
+- **< 90**: ai-rejected, repair loop (up to 3 attempts)
+- **After 3 attempts**: ≥ 50 → merge, < 50 → close PR and regenerate
 
 **Principles:**
 - Full points only for **perfect** implementation

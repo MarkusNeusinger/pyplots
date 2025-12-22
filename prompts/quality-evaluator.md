@@ -31,12 +31,17 @@ You evaluate implementations that passed Stage 1. Focus purely on **quality**.
 
 ## Scoring Philosophy: STRICT
 
-| Score | Tier | Meaning |
+| Score | Tier | Outcome |
 |-------|------|---------|
-| 90-100 | Excellent | Publication quality - Nature/Science ready |
-| 70-89 | Good | Professional but not perfect |
-| 50-69 | Acceptable | Functional with flaws |
-| < 50 | Poor | Rejected |
+| 90-100 | Excellent | **Approved immediately** - Publication quality |
+| 70-89 | Good | Repair loop → merge after 3 attempts |
+| 50-69 | Acceptable | Repair loop → merge after 3 attempts |
+| < 50 | Poor | Repair loop → **NOT in repo** after 3 attempts |
+
+**Workflow:**
+- **≥ 90**: ai-approved, merged immediately
+- **< 90**: ai-rejected, repair loop (up to 3 attempts)
+- **After 3 attempts**: ≥ 50 → merge, < 50 → close PR and regenerate
 
 **Principles:**
 - Full points only for **perfect** execution

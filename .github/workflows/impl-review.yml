@@ -113,7 +113,6 @@ jobs:
           echo "::notice::Found plot.png for review"
 
       - name: React with eyes emoji
-        if: steps.attempts.outputs.count != '3'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
@@ -122,7 +121,6 @@ jobs:
 
       - name: Run AI Quality Review
         id: review
-        if: steps.attempts.outputs.count != '3'
         continue-on-error: true
         timeout-minutes: 30
         uses: anthropics/claude-code-action@v1
@@ -214,7 +212,7 @@ jobs:
 
       - name: Extract quality score
         id: score
-        if: steps.attempts.outputs.count != '3' && steps.review.conclusion == 'success'
+        if: steps.review.conclusion == 'success'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUM: ${{ steps.pr.outputs.pr_number }}
@@ -234,7 +232,7 @@ jobs:
           echo "score=$SCORE" >> $GITHUB_OUTPUT
 
       - name: Add quality score label
-        if: steps.attempts.outputs.count != '3' && steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
+        if: steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUM: ${{ steps.pr.outputs.pr_number }}
@@ -245,11 +243,11 @@ jobs:
           gh pr edit "$PR_NUM" --add-label "$LABEL"
 
       - name: Install Python dependencies for metadata update
-        if: steps.attempts.outputs.count != '3' && steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
+        if: steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
         run: pip install pyyaml
 
       - name: Update metadata and implementation header
-        if: steps.attempts.outputs.count != '3' && steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
+        if: steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SPEC_ID: ${{ steps.pr.outputs.specification_id }}
@@ -391,7 +389,7 @@ jobs:
           :robot: *[impl-review](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
 
       - name: Add verdict label and take action
-        if: steps.attempts.outputs.count != '3' && steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
+        if: steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUM: ${{ steps.pr.outputs.pr_number }}
@@ -399,60 +397,82 @@ jobs:
           LIBRARY: ${{ steps.pr.outputs.library }}
           SCORE: ${{ steps.score.outputs.score }}
           ATTEMPT: ${{ steps.attempts.outputs.display }}
+          ATTEMPT_COUNT: ${{ steps.attempts.outputs.count }}
+          ISSUE_NUMBER: ${{ steps.pr.outputs.issue_number }}
         run: |
-          # Add ai-approved or ai-rejected label based on score
+          # Score thresholds:
+          # >= 90: Excellent (approved, merge immediately)
+          # < 90: Rejected (repair loop, up to 3 attempts)
+          # After 3 attempts: >= 50 = merge, < 50 = close PR
+
           if [ "$SCORE" -ge 90 ]; then
+            # Approved - merge immediately
             gh pr edit "$PR_NUM" --add-label "ai-approved"
             echo "::notice::Added ai-approved label (score $SCORE >= 90)"
-          else
-            gh pr edit "$PR_NUM" --add-label "ai-rejected"
-            echo "::notice::Added ai-rejected label (score $SCORE < 90)"
-          fi
-
-          # Now check labels and take action
-          HAS_APPROVED=$(gh pr view "$PR_NUM" --json labels -q '[.labels[].name] | any(. == "ai-approved")' || echo "false")
-          HAS_REJECTED=$(gh pr view "$PR_NUM" --json labels -q '[.labels[].name] | any(. == "ai-rejected")' || echo "false")
-
-          if [[ "$HAS_APPROVED" == "true" ]]; then
             echo "Triggering impl-merge.yml for approved PR"
             gh workflow run impl-merge.yml -f pr_number="$PR_NUM"
-            echo "::notice::PR approved. Triggered impl-merge.yml"
 
-          elif [[ "$HAS_REJECTED" == "true" ]]; then
-            echo "Triggering impl-repair.yml for rejected PR"
+          elif [ "$ATTEMPT_COUNT" -eq 3 ]; then
+            # This is the 4th review (after 3 repair attempts)
+            if [ "$SCORE" -ge 50 ]; then
+              # Score 50-89 after 3 attempts: acceptable, merge to repo
+              gh pr edit "$PR_NUM" --add-label "ai-approved"
+
+              gh pr comment "$PR_NUM" --body "## AI Review - Final Status
+
+          ### Score: ${SCORE}/100 (Acceptable)
+
+          After **3 repair attempts**, ${LIBRARY} reached ${SCORE}/100.
+
+          Score ≥ 50 is acceptable for the repository. Merging.
+
+          ---
+          :robot: *[impl-review](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+              echo "Triggering impl-merge.yml for acceptable PR"
+              gh workflow run impl-merge.yml -f pr_number="$PR_NUM"
+
+            else
+              # Score < 50 after 3 attempts: not acceptable, close PR
+              gh pr edit "$PR_NUM" --add-label "quality-poor"
+
+              gh pr comment "$PR_NUM" --body "## AI Review - Final Status
+
+          ### Score: ${SCORE}/100 (Poor Quality)
+
+          After **3 repair attempts**, the score is still below 50. This is not acceptable for the repository.
+
+          **This is treated like an auto-reject.** The PR will be closed.
+
+          **Options:**
+          1. Regenerate from scratch with \`generate:${LIBRARY}\` label
+          2. Manual complete rewrite
+
+          ---
+          :robot: *[impl-review](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+              gh pr close "$PR_NUM"
+
+              if [ -n "$ISSUE_NUMBER" ]; then
+                gh issue edit "$ISSUE_NUMBER" --add-label "impl:${LIBRARY}:failed" 2>/dev/null || true
+                gh issue comment "$ISSUE_NUMBER" --body "**${LIBRARY}** implementation: score ${SCORE}/100 after 3 attempts (< 50 = rejected). PR #${PR_NUM} closed."
+              fi
+            fi
+
+          else
+            # Score < 90, still have repair attempts left
+            gh pr edit "$PR_NUM" --add-label "ai-rejected"
+            if [ "$SCORE" -lt 50 ]; then
+              gh pr edit "$PR_NUM" --add-label "quality-poor"
+              echo "::notice::Added ai-rejected + quality-poor labels (score $SCORE < 50)"
+            else
+              echo "::notice::Added ai-rejected label (score $SCORE: 50-89)"
+            fi
+            echo "Triggering impl-repair.yml for rejected PR (attempt $ATTEMPT)"
             gh pr edit "$PR_NUM" --add-label "ai-attempt-${ATTEMPT}" 2>/dev/null || true
             gh workflow run impl-repair.yml \
               -f pr_number="$PR_NUM" \
               -f specification_id="$SPEC_ID" \
               -f library="$LIBRARY" \
               -f attempt="$ATTEMPT"
-          fi
-
-      - name: Mark as not-feasible after 3 attempts
-        if: steps.attempts.outputs.count == '3'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUM: ${{ steps.pr.outputs.pr_number }}
-          LIBRARY: ${{ steps.pr.outputs.library }}
-          SPEC_ID: ${{ steps.pr.outputs.specification_id }}
-          ISSUE_NUMBER: ${{ steps.pr.outputs.issue_number }}
-        run: |
-          gh pr edit "$PR_NUM" --add-label "not-feasible"
-
-          gh pr comment "$PR_NUM" --body "## AI Review - Final Status
-
-          ### Status: Not Feasible
-
-          AI Review failed after **3 attempts**. This ${LIBRARY} implementation could not meet quality standards.
-
-          **Options:**
-          1. Manual review and fix
-          2. Mark this library as unsupported for this plot type
-
-          ---
-          :robot: *[impl-review](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
-
-          if [ -n "$ISSUE_NUMBER" ]; then
-            gh issue edit "$ISSUE_NUMBER" --add-label "impl:${LIBRARY}:failed" 2>/dev/null || true
-            gh issue comment "$ISSUE_NUMBER" --body "**${LIBRARY}** implementation failed after 3 AI review attempts. See PR #${PR_NUM}."
           fi

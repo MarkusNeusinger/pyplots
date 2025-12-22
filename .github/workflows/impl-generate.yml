@@ -167,7 +167,7 @@ jobs:
         run: |
           uv venv .venv
           source .venv/bin/activate
-          uv pip install $DEPS pandas>=2.2.0 ruff Pillow>=10.0.0
+          uv pip install $DEPS pandas>=2.2.0 ruff Pillow>=10.0.0 pyyaml>=6.0
 
       - name: Setup Chrome for Highcharts
         if: steps.inputs.outputs.library == 'highcharts'

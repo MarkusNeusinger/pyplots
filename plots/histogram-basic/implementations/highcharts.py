@@ -1,7 +1,7 @@
 """ pyplots.ai
 histogram-basic: Basic Histogram
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-13
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import tempfile
@@ -44,7 +44,7 @@ chart.options.chart = {
 
 # Title
 chart.options.title = {
-    "text": "histogram-basic \u00b7 highcharts \u00b7 pyplots.ai",
+    "text": "histogram-basic · highcharts · pyplots.ai",
     "style": {"fontSize": "72px", "fontWeight": "bold"},
 }
 

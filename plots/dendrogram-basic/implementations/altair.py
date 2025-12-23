@@ -1,13 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 dendrogram-basic: Basic Dendrogram
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-17
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import altair as alt
 import numpy as np
 import pandas as pd
-from scipy.cluster.hierarchy import linkage
+from scipy.cluster.hierarchy import dendrogram, linkage
 
 
 # Data - Iris flower measurements (4 features for 15 samples)
@@ -16,7 +16,6 @@ np.random.seed(42)
 # Simulate iris-like measurements: sepal length, sepal width, petal length, petal width
 # Three species with distinct characteristics
 samples_per_species = 5
-
 labels = []
 data = []
 
@@ -37,10 +36,10 @@ for i in range(samples_per_species):
     labels.append(f"Versicolor-{i + 1}")
     data.append(
         [
-            5.9 + np.random.randn() * 0.4,  # sepal length
-            2.8 + np.random.randn() * 0.3,  # sepal width
-            4.3 + np.random.randn() * 0.4,  # petal length
-            1.3 + np.random.randn() * 0.2,  # petal width
+            5.9 + np.random.randn() * 0.4,
+            2.8 + np.random.randn() * 0.3,
+            4.3 + np.random.randn() * 0.4,
+            1.3 + np.random.randn() * 0.2,
         ]
     )
 
@@ -49,10 +48,10 @@ for i in range(samples_per_species):
     labels.append(f"Virginica-{i + 1}")
     data.append(
         [
-            6.6 + np.random.randn() * 0.5,  # sepal length
-            3.0 + np.random.randn() * 0.3,  # sepal width
-            5.5 + np.random.randn() * 0.5,  # petal length
-            2.0 + np.random.randn() * 0.3,  # petal width
+            6.6 + np.random.randn() * 0.5,
+            3.0 + np.random.randn() * 0.3,
+            5.5 + np.random.randn() * 0.5,
+            2.0 + np.random.randn() * 0.3,
         ]
     )
 
@@ -62,105 +61,57 @@ n_samples = len(labels)
 # Compute hierarchical clustering using Ward's method
 Z = linkage(data, method="ward")
 
+# Use scipy's dendrogram function to get proper leaf ordering and coordinates
+dendro = dendrogram(Z, labels=labels, no_plot=True)
 
-# Build dendrogram structure from linkage matrix
-# Track x-positions and heights for each node
-node_positions = {}  # node_id -> (x_pos, height)
-next_cluster_id = n_samples
-
-# Initialize leaf positions (will be reordered based on linkage)
-leaf_order = []
-
-
-# Recursive function to get leaf order from linkage
-def get_leaf_order(node_id, Z, n):
-    """Get the order of leaves under a given node."""
-    if node_id < n:
-        return [node_id]
-    else:
-        row = Z[node_id - n]
-        left = int(row[0])
-        right = int(row[1])
-        return get_leaf_order(left, Z, n) + get_leaf_order(right, Z, n)
-
-
-# Get proper leaf ordering from hierarchical structure
-leaf_order = get_leaf_order(2 * n_samples - 2, Z, n_samples)
-
-# Assign x-positions to leaves based on their order
-leaf_x_positions = {leaf_id: i for i, leaf_id in enumerate(leaf_order)}
-
-# Initialize leaf nodes with height 0
-for leaf_id, x_pos in leaf_x_positions.items():
-    node_positions[leaf_id] = (x_pos, 0)
-
-# Build line segments for dendrogram
+# Extract coordinates from scipy's dendrogram output (icoord, dcoord)
+# Each cluster merge has 4 x-coords and 4 y-coords forming a U-shape
 lines_data = []
-
-# Color threshold for distinguishing clusters (70% of max height)
 color_threshold = 0.7 * Z[:, 2].max()
 
-for i, row in enumerate(Z):
-    left_id = int(row[0])
-    right_id = int(row[1])
-    merge_height = row[2]
-    new_cluster_id = n_samples + i
+for xpts, ypts in zip(dendro["icoord"], dendro["dcoord"], strict=True):
+    # Each U-shape has 3 segments: left vertical, horizontal, right vertical
+    # Points: (x0,y0) - (x1,y1) - (x2,y2) - (x3,y3)
+    max_height = max(ypts)
+    color = "#306998" if max_height > color_threshold else "#FFD43B"
 
-    left_x, left_h = node_positions[left_id]
-    right_x, right_h = node_positions[right_id]
-
-    # New cluster x-position is the mean of children
-    new_x = (left_x + right_x) / 2
-    node_positions[new_cluster_id] = (new_x, merge_height)
-
-    # Determine color based on merge height
-    color = "#306998" if merge_height > color_threshold else "#FFD43B"
-
-    # Left vertical line (from left child to merge height)
-    lines_data.append(
-        {"x": left_x, "y": left_h, "x2": left_x, "y2": merge_height, "color": color, "segment": f"v_left_{i}"}
-    )
-
-    # Right vertical line (from right child to merge height)
-    lines_data.append(
-        {"x": right_x, "y": right_h, "x2": right_x, "y2": merge_height, "color": color, "segment": f"v_right_{i}"}
-    )
-
-    # Horizontal line connecting left and right at merge height
-    lines_data.append(
-        {"x": left_x, "y": merge_height, "x2": right_x, "y2": merge_height, "color": color, "segment": f"h_{i}"}
-    )
+    # Left vertical segment
+    lines_data.append({"x": xpts[0], "y": ypts[0], "x2": xpts[1], "y2": ypts[1], "color": color})
+    # Horizontal segment
+    lines_data.append({"x": xpts[1], "y": ypts[1], "x2": xpts[2], "y2": ypts[2], "color": color})
+    # Right vertical segment
+    lines_data.append({"x": xpts[2], "y": ypts[2], "x2": xpts[3], "y2": ypts[3], "color": color})
 
 lines_df = pd.DataFrame(lines_data)
 
-# Create label data for x-axis
-label_data = pd.DataFrame(
-    {"x": [leaf_x_positions[leaf_id] for leaf_id in leaf_order], "label": [labels[leaf_id] for leaf_id in leaf_order]}
-)
+# Create label data for x-axis using scipy's leaf positions
+ivl = dendro["ivl"]  # Ordered labels from dendrogram
+# Labels are positioned at 5, 15, 25, ... (5 + 10*i)
+label_positions = [5 + 10 * i for i in range(len(ivl))]
+label_data = pd.DataFrame({"x": label_positions, "label": ivl})
 
-# Create the dendrogram lines chart with padding on x-axis
-x_padding = 0.5  # Add space on left and right edges
+# Get x-axis domain from the dendrogram coordinates
+x_min = min(min(xpts) for xpts in dendro["icoord"]) - 5
+x_max = max(max(xpts) for xpts in dendro["icoord"]) + 5
+
+# Create the dendrogram lines chart
 dendrogram_lines = (
     alt.Chart(lines_df)
     .mark_rule(strokeWidth=3)
     .encode(
-        x=alt.X("x:Q", axis=None, scale=alt.Scale(domain=[-x_padding, n_samples - 1 + x_padding])),
+        x=alt.X("x:Q", axis=None, scale=alt.Scale(domain=[x_min, x_max])),
         x2="x2:Q",
-        y=alt.Y("y:Q", title="Distance (Ward)", scale=alt.Scale(domain=[0, Z[:, 2].max() * 1.05])),
+        y=alt.Y("y:Q", title="Distance (Ward)", scale=alt.Scale(domain=[0, Z[:, 2].max() * 1.1])),
         y2="y2:Q",
         color=alt.Color("color:N", scale=None),
     )
 )
 
-# Create x-axis labels at bottom (positioned inside chart area)
+# Create x-axis labels at bottom
 x_labels = (
     alt.Chart(label_data)
     .mark_text(angle=315, align="right", baseline="top", fontSize=14)
-    .encode(
-        x=alt.X("x:Q", axis=None, scale=alt.Scale(domain=[-x_padding, n_samples - 1 + x_padding])),
-        y=alt.value(830),
-        text="label:N",
-    )
+    .encode(x=alt.X("x:Q", axis=None, scale=alt.Scale(domain=[x_min, x_max])), y=alt.value(850), text="label:N")
 )
 
 # Combine charts

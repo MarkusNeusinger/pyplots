@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 span-basic: Basic Span Plot (Highlighted Region)
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import tempfile
@@ -96,8 +96,8 @@ chart.options.y_axis = {
             "label": {
                 "text": "Below Target Price",
                 "style": {"fontSize": "36px", "color": "#B8860B"},
-                "align": "right",
-                "x": -20,
+                "align": "left",
+                "x": 50,
             },
         }
     ],

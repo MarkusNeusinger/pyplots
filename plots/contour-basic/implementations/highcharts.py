@@ -1,30 +1,20 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-basic: Basic Contour Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-23
 """
 
 import base64
-import sys
 import tempfile
 import time
 import urllib.request
 from pathlib import Path
 
-
-# Avoid shadowing by matplotlib.py in the same directory
-_original_path = sys.path.copy()
-sys.path = [p for p in sys.path if "implementations" not in p]
-import matplotlib.pyplot as mpl_plt  # noqa: E402
-
-
-sys.path = _original_path
-
-import numpy as np  # noqa: E402
-from highcharts_core.chart import Chart  # noqa: E402
-from highcharts_core.options import HighchartsOptions  # noqa: E402
-from selenium import webdriver  # noqa: E402
-from selenium.webdriver.chrome.options import Options  # noqa: E402
+import numpy as np
+from highcharts_core.chart import Chart
+from highcharts_core.options import HighchartsOptions
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 
 # Data - create a 2D scalar field using a mathematical function
@@ -53,74 +43,205 @@ for y_idx in range(grid_size):
     for x_idx in range(grid_size):
         heatmap_data.append([x_idx, y_idx, round(Z_normalized[y_idx, x_idx], 1)])
 
-# Extract contour lines using matplotlib's contour function
+
+def marching_squares_contour(Z, level):
+    """Extract contour paths using marching squares algorithm with linear interpolation.
+
+    Returns smooth contour lines by interpolating exact crossing points on cell edges.
+    """
+    rows, cols = Z.shape
+    segments = []
+
+    # Marching squares lookup table - maps cell configuration to edge crossings
+    # Each cell corner is labeled: top-left=0, top-right=1, bottom-right=2, bottom-left=3
+    # Edge indices: top=0, right=1, bottom=2, left=3
+    ms_table = {
+        0: [],
+        1: [[3, 2]],
+        2: [[1, 2]],
+        3: [[3, 1]],
+        4: [[0, 1]],
+        5: [[0, 3], [1, 2]],
+        6: [[0, 2]],
+        7: [[0, 3]],
+        8: [[0, 3]],
+        9: [[0, 2]],
+        10: [[0, 1], [2, 3]],
+        11: [[0, 1]],
+        12: [[1, 3]],
+        13: [[1, 2]],
+        14: [[2, 3]],
+        15: [],
+    }
+
+    # Process each cell
+    for i in range(rows - 1):
+        for j in range(cols - 1):
+            # Get cell corners (clockwise from top-left)
+            tl = Z[i, j]
+            tr = Z[i, j + 1]
+            br = Z[i + 1, j + 1]
+            bl = Z[i + 1, j]
+
+            # Compute cell configuration
+            config = 0
+            if tl >= level:
+                config |= 8
+            if tr >= level:
+                config |= 4
+            if br >= level:
+                config |= 2
+            if bl >= level:
+                config |= 1
+
+            edges = ms_table[config]
+            if not edges:
+                continue
+
+            # Interpolate crossing points on edges
+            edge_points = {}
+
+            # Top edge (between tl and tr)
+            if tl != tr:
+                t = (level - tl) / (tr - tl)
+                if 0 <= t <= 1:
+                    edge_points[0] = (j + t, i)
+
+            # Right edge (between tr and br)
+            if tr != br:
+                t = (level - tr) / (br - tr)
+                if 0 <= t <= 1:
+                    edge_points[1] = (j + 1, i + t)
+
+            # Bottom edge (between bl and br)
+            if bl != br:
+                t = (level - bl) / (br - bl)
+                if 0 <= t <= 1:
+                    edge_points[2] = (j + t, i + 1)
+
+            # Left edge (between tl and bl)
+            if tl != bl:
+                t = (level - tl) / (bl - tl)
+                if 0 <= t <= 1:
+                    edge_points[3] = (j, i + t)
+
+            # Create segments
+            for e1, e2 in edges:
+                if e1 in edge_points and e2 in edge_points:
+                    segments.append((edge_points[e1], edge_points[e2]))
+
+    return segments
+
+
+def connect_segments(segments):
+    """Connect line segments into continuous paths."""
+    if not segments:
+        return []
+
+    paths = []
+    remaining = list(segments)
+
+    while remaining:
+        # Start new path
+        seg = remaining.pop(0)
+        path = [seg[0], seg[1]]
+
+        # Try to extend path
+        changed = True
+        while changed:
+            changed = False
+            for i, seg in enumerate(remaining):
+                # Check if segment connects to end of path
+                if np.allclose(seg[0], path[-1], atol=0.01):
+                    path.append(seg[1])
+                    remaining.pop(i)
+                    changed = True
+                    break
+                elif np.allclose(seg[1], path[-1], atol=0.01):
+                    path.append(seg[0])
+                    remaining.pop(i)
+                    changed = True
+                    break
+                # Check if segment connects to start of path
+                elif np.allclose(seg[1], path[0], atol=0.01):
+                    path.insert(0, seg[0])
+                    remaining.pop(i)
+                    changed = True
+                    break
+                elif np.allclose(seg[0], path[0], atol=0.01):
+                    path.insert(0, seg[1])
+                    remaining.pop(i)
+                    changed = True
+                    break
+
+        if len(path) >= 5:
+            paths.append(path)
+
+    return paths
+
+
+# Extract contour lines using marching squares algorithm (pure numpy)
 contour_levels = [10, 20, 30, 40, 50, 60, 70, 80, 90]
 
-# Create a hidden figure to extract contour paths
-fig_temp, ax_temp = mpl_plt.subplots()
-cs = ax_temp.contour(X, Y, Z_normalized, levels=contour_levels)
-mpl_plt.close(fig_temp)
+# Consistent white contour lines with black shadow for visibility on viridis colormap
+CONTOUR_COLOR = "#ffffff"
+CONTOUR_SHADOW = "#000000"
 
-# High-contrast colors for contour lines - black on light areas, white on dark areas
-# Using dashed style for better visibility over filled heatmap
-level_colors = {
-    10: "#000000",  # Black on dark viridis background
-    20: "#000000",
-    30: "#ffffff",  # White for mid-tones
-    40: "#ffffff",
-    50: "#ffffff",
-    60: "#000000",  # Black on lighter greens
-    70: "#000000",
-    80: "#000000",
-    90: "#000000",
-}
-
-# Extract contour paths from matplotlib and convert to index coordinates
 contour_series = []
 label_positions = []
 
-for i, _level in enumerate(contour_levels):
-    level_val = int(cs.levels[i])
-    paths = cs.allsegs[i]
+for level in contour_levels:
+    segments = marching_squares_contour(Z_normalized, level)
+    paths = connect_segments(segments)
 
     for path in paths:
-        if len(path) > 5:
-            # Convert real coordinates back to index coordinates for Highcharts
-            # x ranges from -3 to 3, mapped to 0 to grid_size-1
-            line_data = []
-            step = max(1, len(path) // 100)
-            decimated = path[::step]
-            if len(path) > step:
-                decimated = np.vstack([decimated, path[-1]])
+        if len(path) < 5:
+            continue
 
-            for p in decimated:
-                # Map coordinates to indices
-                x_idx = (p[0] - x[0]) / (x[-1] - x[0]) * (grid_size - 1)
-                y_idx = (p[1] - y[0]) / (y[-1] - y[0]) * (grid_size - 1)
-                line_data.append([round(x_idx, 2), round(y_idx, 2)])
+        # Subsample for performance if path is very long
+        step = max(1, len(path) // 150)
+        subsampled = path[::step]
+        if len(path) > step:
+            subsampled.append(path[-1])
 
-            contour_series.append(
-                {
-                    "type": "line",
-                    "name": f"Level {level_val}%",
-                    "data": line_data,
-                    "color": level_colors[level_val],
-                    "lineWidth": 4,
-                    "dashStyle": "Solid",
-                    "marker": {"enabled": False},
-                    "enableMouseTracking": False,
-                    "showInLegend": False,
-                    "zIndex": 10,
-                }
-            )
+        line_data = [[round(pt[0], 2), round(pt[1], 2)] for pt in subsampled]
 
-            # Store position for label on each contour level (first valid path per level)
-            if len(path) > 20:
-                mid_idx = len(path) // 2
-                if not any(lp["level"] == level_val for lp in label_positions):
-                    x_idx = (path[mid_idx][0] - x[0]) / (x[-1] - x[0]) * (grid_size - 1)
-                    y_idx = (path[mid_idx][1] - y[0]) / (y[-1] - y[0]) * (grid_size - 1)
-                    label_positions.append({"x": x_idx, "y": y_idx, "level": level_val})
+        # Add shadow line for better visibility
+        contour_series.append(
+            {
+                "type": "line",
+                "name": f"Level {level}% shadow",
+                "data": line_data,
+                "color": CONTOUR_SHADOW,
+                "lineWidth": 7,
+                "dashStyle": "Solid",
+                "marker": {"enabled": False},
+                "enableMouseTracking": False,
+                "showInLegend": False,
+                "zIndex": 9,
+            }
+        )
+
+        # Main contour line
+        contour_series.append(
+            {
+                "type": "line",
+                "name": f"Level {level}%",
+                "data": line_data,
+                "color": CONTOUR_COLOR,
+                "lineWidth": 4,
+                "dashStyle": "Solid",
+                "marker": {"enabled": False},
+                "enableMouseTracking": False,
+                "showInLegend": False,
+                "zIndex": 10,
+            }
+        )
+
+        # Store position for label (one per level, using first valid path)
+        if len(path) > 10 and not any(lp["level"] == level for lp in label_positions):
+            mid_idx = len(path) // 2
+            label_positions.append({"x": path[mid_idx][0], "y": path[mid_idx][1], "level": level})
 
 # Create chart
 chart = Chart(container="container")
@@ -154,28 +275,28 @@ for i in range(0, grid_size, label_interval):
 x_labels_sparse[-1] = f"{x[-1]:.1f}"
 y_labels_sparse[-1] = f"{y[-1]:.1f}"
 
-# X-axis with visible grid lines
+# X-axis with more visible grid lines
 chart.options.x_axis = {
     "categories": x_labels_sparse,
     "title": {"text": "X Position (units)", "style": {"fontSize": "48px"}, "y": 30},
     "labels": {"style": {"fontSize": "36px"}, "rotation": 0, "y": 45},
-    "lineWidth": 2,
-    "tickLength": 10,
-    "gridLineWidth": 2,
-    "gridLineColor": "rgba(128, 128, 128, 0.5)",
+    "lineWidth": 3,
+    "tickLength": 12,
+    "gridLineWidth": 3,
+    "gridLineColor": "rgba(200, 200, 200, 0.7)",
     "gridLineDashStyle": "Dot",
 }
 
-# Y-axis with visible grid lines
+# Y-axis with more visible grid lines
 chart.options.y_axis = {
     "categories": y_labels_sparse,
     "title": {"text": "Y Position (units)", "style": {"fontSize": "48px"}},
     "labels": {"style": {"fontSize": "36px"}},
     "reversed": False,
-    "lineWidth": 2,
-    "tickLength": 10,
-    "gridLineWidth": 2,
-    "gridLineColor": "rgba(128, 128, 128, 0.5)",
+    "lineWidth": 3,
+    "tickLength": 12,
+    "gridLineWidth": 3,
+    "gridLineColor": "rgba(200, 200, 200, 0.7)",
     "gridLineDashStyle": "Dot",
 }
 

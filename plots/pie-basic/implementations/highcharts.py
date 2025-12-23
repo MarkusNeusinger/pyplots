@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-basic: Basic Pie Chart
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-14
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import tempfile
@@ -17,37 +17,40 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data - Market share distribution
+# Data - Market share distribution (5 categories, realistic business context)
 categories = ["Product A", "Product B", "Product C", "Product D", "Product E"]
 values = [35, 25, 20, 12, 8]
 
 # Colorblind-safe colors (Python Blue first, then complementary)
 colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF", "#8C564B"]
 
-# Create chart
+# Create chart with container specified
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration
+# Chart configuration for 3600x3600 square (ideal for pie charts)
 chart.options.chart = {
     "type": "pie",
-    "width": 4800,
-    "height": 2700,
+    "width": 3600,
+    "height": 3600,
     "backgroundColor": "#ffffff",
-    "spacingBottom": 100,
-    "spacingTop": 50,
+    "spacingTop": 80,
+    "spacingBottom": 80,
+    "spacingLeft": 80,
+    "spacingRight": 80,
 }
 
 # Title
 chart.options.title = {
     "text": "pie-basic · highcharts · pyplots.ai",
     "style": {"fontSize": "48px", "fontWeight": "bold"},
+    "margin": 40,
 }
 
 # Colors
 chart.options.colors = colors
 
-# Plot options for pie
+# Plot options for pie with percentage labels and legend
 chart.options.plot_options = {
     "pie": {
         "allowPointSelect": True,
@@ -55,24 +58,33 @@ chart.options.plot_options = {
         "dataLabels": {
             "enabled": True,
             "format": "<b>{point.name}</b>: {point.percentage:.1f}%",
-            "style": {"fontSize": "28px"},
-            "distance": 30,
+            "style": {"fontSize": "32px", "textOutline": "none"},
+            "distance": 40,
+            "connectorWidth": 2,
         },
         "showInLegend": True,
-        "slicedOffset": 30,
+        "slicedOffset": 25,
+        "size": "70%",
+        "center": ["40%", "50%"],
     }
 }
 
-# Legend
+# Legend on the right side
 chart.options.legend = {
     "enabled": True,
     "align": "right",
     "verticalAlign": "middle",
     "layout": "vertical",
-    "itemStyle": {"fontSize": "28px"},
+    "itemStyle": {"fontSize": "36px", "fontWeight": "normal"},
+    "itemMarginTop": 20,
+    "itemMarginBottom": 20,
+    "symbolRadius": 10,
+    "symbolHeight": 20,
+    "symbolWidth": 20,
+    "x": -80,
 }
 
-# Create pie series with data
+# Create pie series with data - first slice (largest) is exploded for emphasis
 series = PieSeries()
 series.name = "Market Share"
 series.data = [
@@ -82,7 +94,7 @@ series.data = [
 
 chart.add_series(series)
 
-# Download Highcharts JS for inline embedding
+# Download Highcharts JS for inline embedding (required for headless Chrome)
 highcharts_url = "https://code.highcharts.com/highcharts.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
@@ -96,7 +108,7 @@ html_content = f"""<!DOCTYPE html>
     <script>{highcharts_js}</script>
 </head>
 <body style="margin:0;">
-    <div id="container" style="width: 4800px; height: 2700px;"></div>
+    <div id="container" style="width: 3600px; height: 3600px;"></div>
     <script>{html_str}</script>
 </body>
 </html>"""
@@ -110,12 +122,13 @@ with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encodin
 with open("plot.html", "w", encoding="utf-8") as f:
     f.write(html_content)
 
+# Setup Chrome for screenshot
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2900")
+chrome_options.add_argument("--window-size=3600,3800")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
@@ -123,9 +136,9 @@ time.sleep(5)  # Wait for chart to render
 driver.save_screenshot("plot_raw.png")
 driver.quit()
 
-# Crop to exact 4800x2700 dimensions
+# Crop to exact 3600x3600 dimensions
 img = Image.open("plot_raw.png")
-img_cropped = img.crop((0, 0, 4800, 2700))
+img_cropped = img.crop((0, 0, 3600, 3600))
 img_cropped.save("plot.png")
 Path("plot_raw.png").unlink()
 

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 qq-basic: Basic Q-Q Plot
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -17,12 +17,12 @@ sample = np.concatenate(
     ]
 )
 
-# Sort sample and calculate positions for quantiles
+# Sort sample and calculate quantile positions
 sample_sorted = np.sort(sample)
 n = len(sample_sorted)
 probabilities = (np.arange(1, n + 1) - 0.5) / n
 
-# Inverse normal CDF (Abramowitz & Stegun approximation) for theoretical quantiles
+# Inverse normal CDF using Abramowitz & Stegun approximation (accurate to ~1.5e-7)
 a = [
     -3.969683028665376e01,
     2.209460984245205e02,
@@ -69,7 +69,7 @@ theoretical_quantiles[mask_high] = -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]
     (((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1
 )
 
-# Standardize sample quantiles for comparison
+# Standardize sample to z-scores for comparison with standard normal quantiles
 sample_mean = np.mean(sample_sorted)
 sample_std = np.std(sample_sorted, ddof=1)
 sample_quantiles = (sample_sorted - sample_mean) / sample_std
@@ -78,7 +78,16 @@ sample_quantiles = (sample_sorted - sample_mean) / sample_std
 fig, ax = plt.subplots(figsize=(16, 9))
 
 # Q-Q points
-ax.scatter(theoretical_quantiles, sample_quantiles, s=200, alpha=0.7, color="#306998", edgecolors="white", linewidths=1)
+ax.scatter(
+    theoretical_quantiles,
+    sample_quantiles,
+    s=200,
+    alpha=0.7,
+    color="#306998",
+    edgecolors="white",
+    linewidths=1.5,
+    zorder=3,
+)
 
 # Reference line (y = x) showing perfect normal distribution match
 line_min = min(theoretical_quantiles.min(), sample_quantiles.min())
@@ -90,6 +99,7 @@ ax.plot(
     linewidth=3,
     linestyle="--",
     label="Reference line (y=x)",
+    zorder=2,
 )
 
 # Labels and styling
@@ -98,7 +108,7 @@ ax.set_ylabel("Sample Quantiles", fontsize=20)
 ax.set_title("qq-basic · matplotlib · pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
 ax.legend(fontsize=16, loc="upper left")
-ax.grid(True, alpha=0.3, linestyle="--")
+ax.grid(True, alpha=0.3, linestyle="--", zorder=1)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

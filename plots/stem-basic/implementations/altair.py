@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 stem-basic: Basic Stem Plot
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import altair as alt

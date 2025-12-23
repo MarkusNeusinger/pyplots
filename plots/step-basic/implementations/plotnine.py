@@ -1,14 +1,14 @@
-""" pyplots.ai
+"""pyplots.ai
 step-basic: Basic Step Plot
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-15
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import pandas as pd
 from plotnine import aes, element_line, element_text, geom_point, geom_step, ggplot, labs, theme, theme_minimal
 
 
-# Data - Monthly cumulative sales figures
+# Data - Monthly cumulative sales figures showing discrete jumps
 months = list(range(1, 13))
 cumulative_sales = [12, 12, 27, 27, 45, 58, 58, 73, 89, 89, 105, 120]
 

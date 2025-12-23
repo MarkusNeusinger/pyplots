@@ -1,7 +1,7 @@
 """ pyplots.ai
 radar-basic: Basic Radar Chart
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-14
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import pygal
@@ -11,7 +11,7 @@ from pygal.style import Style
 # Data - Employee performance comparison across competencies
 categories = ["Communication", "Technical Skills", "Teamwork", "Problem Solving", "Leadership", "Creativity"]
 
-# Two employees for comparison
+# Two employees for comparison (0-100 scale)
 employee_a = [85, 92, 78, 88, 72, 80]
 employee_b = [75, 68, 90, 82, 85, 78]
 

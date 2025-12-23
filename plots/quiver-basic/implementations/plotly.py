@@ -1,7 +1,7 @@
 """ pyplots.ai
 quiver-basic: Basic Quiver Plot
 Library: plotly 6.5.0 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-16
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -23,18 +23,17 @@ y = Y.flatten()
 u = -Y.flatten()
 v = X.flatten()
 
-# Normalize for consistent arrow length display
+# Calculate magnitude for coloring
 magnitude = np.sqrt(u**2 + v**2)
 magnitude[magnitude == 0] = 1  # Avoid division by zero at origin
+
+# Normalize vectors for consistent arrow length display
 scale_factor = 0.2
 u_norm = u / magnitude * scale_factor
 v_norm = v / magnitude * scale_factor
 
-# Color by magnitude
-colors = magnitude
-
 # Create quiver plot using figure_factory
-fig = ff.create_quiver(x, y, u_norm, v_norm, scale=1, arrow_scale=0.3, line={"width": 2, "color": "#306998"})
+fig = ff.create_quiver(x, y, u_norm, v_norm, scale=1, arrow_scale=0.3, line={"width": 2.5, "color": "#306998"})
 
 # Add scatter points at arrow bases for magnitude coloring
 fig.add_trace(
@@ -43,10 +42,14 @@ fig.add_trace(
         y=y,
         mode="markers",
         marker={
-            "size": 8,
-            "color": colors,
+            "size": 10,
+            "color": magnitude,
             "colorscale": "Viridis",
-            "colorbar": {"title": {"text": "Magnitude", "font": {"size": 20}}, "tickfont": {"size": 16}},
+            "colorbar": {
+                "title": {"text": "Magnitude", "font": {"size": 22}},
+                "tickfont": {"size": 18},
+                "thickness": 25,
+            },
             "showscale": True,
         },
         hovertemplate="x: %{x:.2f}<br>y: %{y:.2f}<br>magnitude: %{marker.color:.2f}<extra></extra>",
@@ -76,7 +79,7 @@ fig.update_layout(
     },
     template="plotly_white",
     showlegend=False,
-    margin={"l": 80, "r": 120, "t": 100, "b": 80},
+    margin={"l": 80, "r": 130, "t": 100, "b": 80},
 )
 
 # Save as PNG (4800x2700 px)

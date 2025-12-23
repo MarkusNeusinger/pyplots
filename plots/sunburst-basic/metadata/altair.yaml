@@ -1,17 +1,26 @@
 library: altair
 specification_id: sunburst-basic
-created: 2025-12-14 18:31:53+00:00
-updated: 2025-12-14 18:31:53+00:00
+created: '2025-12-23T21:57:14Z'
+updated: '2025-12-23T22:02:34Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20212269203
-issue: 821
+workflow_run: 20472386947
+issue: 0
 python_version: 3.13.11
 library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/altair/plot.html
-quality_score: 90
+quality_score: 91
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent hierarchical color scheme with consistent lighter shades for child levels
+  - Clean visual separation between levels using white strokes
+  - Proper tooltips showing Department, Team, Project, and Budget values
+  - Well-structured data representing realistic company budget scenario
+  - Inner segment labels are bold and readable
+  - Proper use of Altair layering to combine multiple arc charts
+  weaknesses:
+  - Labels only appear on innermost ring; middle and outer rings lack visible text
+    labels (rely on hover tooltips)
+  - Legend positioned far from chart, creating visual imbalance
+  - Could benefit from more interactive features like click-to-zoom that Altair supports

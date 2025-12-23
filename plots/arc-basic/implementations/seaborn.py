@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 arc-basic: Basic Arc Diagram
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-23
@@ -36,9 +36,12 @@ edges = [
 # Node positions along x-axis
 x_positions = np.arange(n_nodes)
 
-# Create figure with seaborn styling
+# Create figure with seaborn styling - use whitegrid then disable grid
 sns.set_theme(style="white", context="talk", font_scale=1.1)
 fig, ax = plt.subplots(figsize=(16, 9))
+
+# Explicitly disable grid for arc diagram (abstract visualization)
+ax.grid(False)
 
 # Plot nodes as points using seaborn
 node_data = pd.DataFrame({"x": x_positions, "y": np.zeros(n_nodes), "node": nodes})
@@ -83,13 +86,13 @@ ax.set_title("arc-basic · seaborn · pyplots.ai", fontsize=24)
 ax.set_xlabel("")
 ax.set_ylabel("")
 
-# Remove axes - arc diagrams are abstract visualizations
+# Remove axes completely - arc diagrams are abstract visualizations
 ax.set_xticks([])
 ax.set_yticks([])
-ax.spines["left"].set_visible(False)
-ax.spines["top"].set_visible(False)
-ax.spines["right"].set_visible(False)
-ax.spines["bottom"].set_visible(False)
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+ax.axis("off")  # Complete axis removal
+sns.despine(left=True, bottom=True, right=True, top=True)
 
 # Add a subtle horizontal baseline
 ax.axhline(y=0, color="#306998", linewidth=2, alpha=0.3, zorder=1)

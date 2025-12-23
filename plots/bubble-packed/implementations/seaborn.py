@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2025-12-23
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 72/100 | Created: 2025-12-23
 """
 
 import matplotlib.patches as patches

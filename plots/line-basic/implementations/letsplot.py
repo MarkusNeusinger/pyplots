@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 line-basic: Basic Line Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-13
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -27,7 +27,7 @@ plot = (
     + geom_line(color="#306998", size=2)  # noqa: F405
     + geom_point(color="#306998", size=5, alpha=0.8)  # noqa: F405
     + labs(  # noqa: F405
-        x="Month", y="Temperature (\u00b0C)", title="line-basic \u00b7 lets-plot \u00b7 pyplots.ai"
+        x="Month", y="Temperature (°C)", title="line-basic · letsplot · pyplots.ai"
     )
     + scale_x_continuous(breaks=list(range(1, 13)))  # noqa: F405
     + ggsize(1600, 900)  # noqa: F405
@@ -41,7 +41,7 @@ plot = (
 )
 
 # Save PNG (scale 3x to get 4800 x 2700 px)
-export_ggsave(plot, filename="plot.png", path=".", scale=3)
+export_ggsave(plot, "plot.png", path=".", scale=3)
 
 # Save HTML for interactive version
-export_ggsave(plot, filename="plot.html", path=".")
+export_ggsave(plot, "plot.html", path=".")

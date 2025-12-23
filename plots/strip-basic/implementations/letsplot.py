@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 strip-basic: Basic Strip Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -51,7 +51,7 @@ df = pd.DataFrame(data)
 plot = (
     ggplot(df, aes(x="Department", y="Score"))
     + geom_jitter(color="#306998", size=4, alpha=0.6, width=0.25, height=0, seed=42)
-    + labs(x="Department", y="Survey Score", title="strip-basic \u00b7 letsplot \u00b7 pyplots.ai")
+    + labs(x="Department", y="Survey Score (points)", title="strip-basic · letsplot · pyplots.ai")
     + ggsize(1600, 900)
     + theme_minimal()
     + theme(

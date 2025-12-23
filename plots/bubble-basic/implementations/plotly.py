@@ -1,64 +1,108 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-basic: Basic Bubble Chart
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
 import plotly.graph_objects as go
 
 
-# Data
+# Data - Company performance metrics
 np.random.seed(42)
-n_points = 50
+n_companies = 40
 
-x = np.random.randn(n_points) * 10 + 50
-y = x * 0.8 + np.random.randn(n_points) * 8 + 10
-size_values = np.abs(np.random.randn(n_points) * 20 + 30)
+# Revenue (millions) - x axis
+revenue = np.random.randn(n_companies) * 15 + 50
+revenue = np.clip(revenue, 10, 100)
 
-# Normalize size for bubble scaling (area-based)
-size_min, size_max = 15, 80
-size_normalized = (size_values - size_values.min()) / (size_values.max() - size_values.min())
+# Growth rate (%) - y axis
+growth = revenue * 0.3 + np.random.randn(n_companies) * 8 + 5
+growth = np.clip(growth, -5, 45)
+
+# Market share (%) - bubble size
+market_share = np.abs(np.random.randn(n_companies) * 8 + 12)
+market_share = np.clip(market_share, 2, 35)
+
+# Normalize size for bubble scaling (area-based perception)
+size_min, size_max = 20, 90
+size_normalized = (market_share - market_share.min()) / (market_share.max() - market_share.min())
 bubble_sizes = size_min + size_normalized * (size_max - size_min)
 
 # Plot
 fig = go.Figure()
 
+# Main bubble scatter
 fig.add_trace(
     go.Scatter(
-        x=x,
-        y=y,
+        x=revenue,
+        y=growth,
         mode="markers",
         marker={
             "size": bubble_sizes,
             "color": "#306998",
             "opacity": 0.6,
-            "line": {"width": 1, "color": "#1a3d5c"},
+            "line": {"width": 1.5, "color": "#1a3d5c"},
             "sizemode": "diameter",
         },
-        text=[f"Size: {s:.1f}" for s in size_values],
-        hovertemplate="<b>X:</b> %{x:.1f}<br><b>Y:</b> %{y:.1f}<br>%{text}<extra></extra>",
+        text=[f"Market Share: {s:.1f}%" for s in market_share],
+        hovertemplate="<b>Revenue:</b> $%{x:.1f}M<br><b>Growth:</b> %{y:.1f}%<br>%{text}<extra></extra>",
+        showlegend=False,
     )
 )
+
+# Size legend - representative bubbles
+legend_sizes = [5, 15, 30]
+legend_bubble_sizes = [
+    size_min + ((s - market_share.min()) / (market_share.max() - market_share.min())) * (size_max - size_min)
+    for s in legend_sizes
+]
+
+for label_size, bubble_size in zip(legend_sizes, legend_bubble_sizes, strict=True):
+    fig.add_trace(
+        go.Scatter(
+            x=[None],
+            y=[None],
+            mode="markers",
+            marker={
+                "size": bubble_size,
+                "color": "#306998",
+                "opacity": 0.6,
+                "line": {"width": 1.5, "color": "#1a3d5c"},
+            },
+            name=f"{label_size}%",
+            showlegend=True,
+        )
+    )
 
 # Layout
 fig.update_layout(
     title={"text": "bubble-basic · plotly · pyplots.ai", "font": {"size": 32}, "x": 0.5, "xanchor": "center"},
     xaxis={
-        "title": {"text": "X Variable", "font": {"size": 24}},
+        "title": {"text": "Revenue ($ millions)", "font": {"size": 24}},
         "tickfont": {"size": 18},
         "gridcolor": "rgba(0,0,0,0.1)",
         "gridwidth": 1,
     },
     yaxis={
-        "title": {"text": "Y Variable", "font": {"size": 24}},
+        "title": {"text": "Growth Rate (%)", "font": {"size": 24}},
         "tickfont": {"size": 18},
         "gridcolor": "rgba(0,0,0,0.1)",
         "gridwidth": 1,
     },
     template="plotly_white",
-    showlegend=False,
-    margin={"l": 100, "r": 100, "t": 120, "b": 100},
+    legend={
+        "title": {"text": "Market Share", "font": {"size": 18}},
+        "font": {"size": 16},
+        "x": 1.02,
+        "y": 0.98,
+        "xanchor": "left",
+        "yanchor": "top",
+        "bgcolor": "rgba(255,255,255,0.8)",
+        "bordercolor": "rgba(0,0,0,0.2)",
+        "borderwidth": 1,
+    },
+    margin={"l": 100, "r": 180, "t": 120, "b": 100},
 )
 
 # Save

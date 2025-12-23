@@ -1,7 +1,7 @@
 """ pyplots.ai
 funnel-basic: Basic Funnel Chart
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import matplotlib.patches as patches
@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 stages = ["Awareness", "Interest", "Consideration", "Intent", "Purchase"]
 values = [1000, 600, 400, 200, 100]
 
-# Colors for each stage
+# Colors for each stage - distinct colors for visual differentiation
 colors = ["#306998", "#4A8BBF", "#FFD43B", "#FFB347", "#FF6B6B"]
 
 # Calculate widths proportional to first stage value

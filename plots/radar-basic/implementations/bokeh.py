@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-basic: Basic Radar Chart
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -32,13 +32,13 @@ y_a = [v * np.sin(a) for v, a in zip(values_a_closed, angles_closed, strict=True
 x_b = [v * np.cos(a) for v, a in zip(values_b_closed, angles_closed, strict=True)]
 y_b = [v * np.sin(a) for v, a in zip(values_b_closed, angles_closed, strict=True)]
 
-# Create figure
+# Create figure (square for radar chart)
 p = figure(
-    width=4800,
-    height=2700,
+    width=3600,
+    height=3600,
     title="radar-basic · bokeh · pyplots.ai",
-    x_range=(-130, 130),
-    y_range=(-115, 115),
+    x_range=(-150, 150),
+    y_range=(-140, 140),
     tools="",
     toolbar_location=None,
 )
@@ -59,7 +59,7 @@ for angle in angles:
 # Add axis labels at outer edge
 for angle, cat in zip(angles, categories, strict=True):
     # Position labels slightly outside the outer circle
-    label_radius = 112
+    label_radius = 115
     x_label = label_radius * np.cos(angle)
     y_label = label_radius * np.sin(angle)
 
@@ -75,7 +75,7 @@ for angle, cat in zip(angles, categories, strict=True):
         x=[x_label],
         y=[y_label],
         text=[cat],
-        text_font_size="20pt",
+        text_font_size="22pt",
         text_align=text_align,
         text_baseline="middle",
         text_color="#333333",
@@ -87,11 +87,11 @@ source_b = ColumnDataSource(data={"x": x_b, "y": y_b})
 
 # Employee A - Python Blue
 patch_a = p.patch("x", "y", source=source_a, fill_color="#306998", fill_alpha=0.25, line_color="#306998", line_width=4)
-scatter_a = p.scatter("x", "y", source=source_a, size=18, color="#306998")
+scatter_a = p.scatter("x", "y", source=source_a, size=20, color="#306998")
 
-# Employee B - Python Yellow (darker for visibility)
+# Employee B - Python Yellow (darker outline for visibility)
 patch_b = p.patch("x", "y", source=source_b, fill_color="#FFD43B", fill_alpha=0.25, line_color="#B8960A", line_width=4)
-scatter_b = p.scatter("x", "y", source=source_b, size=18, color="#B8960A")
+scatter_b = p.scatter("x", "y", source=source_b, size=20, color="#B8960A")
 
 # Add legend
 legend = Legend(
@@ -101,15 +101,15 @@ legend = Legend(
     ],
     location="top_right",
 )
-legend.label_text_font_size = "20pt"
-legend.glyph_height = 30
-legend.glyph_width = 30
-legend.spacing = 10
-legend.background_fill_alpha = 0.7
+legend.label_text_font_size = "22pt"
+legend.glyph_height = 35
+legend.glyph_width = 35
+legend.spacing = 12
+legend.background_fill_alpha = 0.8
 p.add_layout(legend)
 
 # Style the plot
-p.title.text_font_size = "28pt"
+p.title.text_font_size = "32pt"
 p.title.align = "center"
 p.xaxis.visible = False
 p.yaxis.visible = False

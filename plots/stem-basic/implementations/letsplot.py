@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 stem-basic: Basic Stem Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 # ruff: noqa: F405
 
@@ -12,7 +12,7 @@ from lets_plot import *  # noqa: F403, F405
 
 LetsPlot.setup_html()
 
-# Data - Discrete signal samples (simulating a damped oscillation)
+# Data - Discrete signal samples (damped oscillation with noise)
 np.random.seed(42)
 x = np.arange(0, 30)
 y = np.exp(-x / 10) * np.cos(x * 0.8) + np.random.randn(30) * 0.05
@@ -26,7 +26,7 @@ plot = (
     + geom_segment(aes(x="x", y="y_base", xend="x", yend="y"), color="#306998", size=1.5, alpha=0.8)
     + geom_point(aes(x="x", y="y"), color="#306998", size=5, fill="#306998", stroke=1.5, shape=21)
     + geom_hline(yintercept=0, color="#333333", size=1.5)
-    + labs(x="Sample Index", y="Amplitude", title="stem-basic \u00b7 letsplot \u00b7 pyplots.ai")
+    + labs(x="Sample Index", y="Amplitude", title="stem-basic · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(
         axis_title=element_text(size=20),

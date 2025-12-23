@@ -663,8 +663,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
         run: |
-          gh workflow run impl-review.yml -f pr_number="$PR_NUMBER"
-          echo "::notice::Triggered impl-review.yml for PR #$PR_NUMBER"
+          # Use repository_dispatch as workaround for workflow_dispatch caching issue
+          gh api repos/${{ github.repository }}/dispatches \
+            -f event_type=review-pr \
+            -f 'client_payload[pr_number]='"$PR_NUMBER"
+          echo "::notice::Triggered impl-review.yml via repository_dispatch for PR #$PR_NUMBER"
 
       - name: Determine result
         id: result

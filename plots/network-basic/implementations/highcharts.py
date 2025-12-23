@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-basic: Basic Network Graph
 Library: highcharts unknown | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-23
@@ -13,6 +13,7 @@ from pathlib import Path
 from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
 from highcharts_core.options.series.networkgraph import NetworkGraphSeries
+from highcharts_core.options.series.scatter import ScatterSeries
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -96,36 +97,43 @@ for node in nodes:
     node_id = node["id"]
     group = node["group"]
     color = group_colors[group]
-    # Scale marker radius based on degree (base 25, plus 3 per connection)
-    radius = 25 + degrees[node_id] * 3
+    # Scale marker radius based on degree (base 55, plus 10 per connection)
+    radius = 55 + degrees[node_id] * 10
     nodes_config.append(
         {
             "id": node_id,
             "color": color,
-            "marker": {"radius": radius, "fillColor": color, "lineWidth": 2, "lineColor": "#333333"},
+            "marker": {"radius": radius, "fillColor": color, "lineWidth": 3, "lineColor": "#333333"},
         }
     )
 
+# Group names for legend
+group_names = ["Community A", "Community B", "Community C", "Community D"]
+
 # Create network graph series
 series = NetworkGraphSeries()
-series.name = "Social Network"
+series.name = "Network"
 series.data = [{"from": src, "to": tgt} for src, tgt in edges]
 series.data_labels = {
     "enabled": True,
     "format": "{point.id}",
     "linkFormat": "",
-    "style": {"fontSize": "24px", "fontWeight": "bold", "textOutline": "3px white"},
+    "style": {"fontSize": "32px", "fontWeight": "bold", "textOutline": "4px white"},
+    "y": -5,
 }
-series.marker = {"radius": 28}
+series.marker = {"radius": 55}
 series.layout_algorithm = {
     "enableSimulation": True,
-    "linkLength": 55,
-    "gravitationalConstant": 0.5,
-    "friction": -0.9,
+    "linkLength": 450,
+    "gravitationalConstant": 0.01,
+    "friction": -0.99,
     "initialPositions": "circle",
-    "maxIterations": 400,
+    "maxIterations": 1000,
+    "integration": "verlet",
 }
 series.animation = False
+series.link = {"width": 3, "color": "#aaaaaa"}
+series.show_in_legend = False
 
 # Create chart
 chart = Chart(container="container")
@@ -135,14 +143,38 @@ chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "margin": [120, 500, 150, 500],
+    "margin": [120, 100, 150, 100],
+    "spacingTop": 80,
+    "spacingBottom": 80,
 }
 chart.options.title = {
-    "text": "Social Network · network-basic · highcharts · pyplots.ai",
+    "text": "network-basic · highcharts · pyplots.ai",
     "style": {"fontSize": "48px", "fontWeight": "bold"},
 }
-chart.options.legend = {"enabled": False}
+# Add legend explaining the 4 community groups
+chart.options.legend = {
+    "enabled": True,
+    "align": "right",
+    "verticalAlign": "middle",
+    "layout": "vertical",
+    "x": -50,
+    "y": 0,
+    "itemStyle": {"fontSize": "28px", "fontWeight": "normal"},
+    "symbolRadius": 12,
+    "symbolWidth": 24,
+    "symbolHeight": 24,
+}
 chart.add_series(series)
+
+# Add dummy scatter series for legend (to show community colors)
+for color, name in zip(group_colors, group_names, strict=True):
+    legend_series = ScatterSeries()
+    legend_series.name = name
+    legend_series.color = color
+    legend_series.data = []  # Empty data - just for legend display
+    legend_series.marker = {"symbol": "circle", "radius": 12}
+    legend_series.show_in_legend = True
+    chart.add_series(legend_series)
 
 # Generate JS and inject nodes (highcharts-core doesn't support nodes property directly)
 js_literal = chart.to_js_literal()

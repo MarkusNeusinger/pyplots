@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 dumbbell-basic: Basic Dumbbell Chart
-Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-15
+Library: seaborn | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -56,7 +56,7 @@ sns.scatterplot(
 # Style
 ax.set_yticks(range(len(df)))
 ax.set_yticklabels(df["Department"])
-ax.set_xlabel("Satisfaction Score", fontsize=20)
+ax.set_xlabel("Satisfaction Score (%)", fontsize=20)
 ax.set_ylabel("Department", fontsize=20)
 ax.set_title("dumbbell-basic · seaborn · pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)

@@ -1,7 +1,7 @@
 """ pyplots.ai
 candlestick-basic: Basic Candlestick Chart
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 90/100 | Created: 2025-12-14
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import altair as alt
@@ -44,19 +44,19 @@ for i, date in enumerate(dates):
 df = pd.DataFrame(data)
 
 # Add direction column for color encoding
-df["direction"] = df.apply(lambda row: "up" if row["close"] >= row["open"] else "down", axis=1)
+df["direction"] = df.apply(lambda row: "Bullish" if row["close"] >= row["open"] else "Bearish", axis=1)
 
-# Color scale: green for up, red for down
-color_scale = alt.Scale(domain=["up", "down"], range=["#26A69A", "#EF5350"])
+# Color scale: green for bullish, red for bearish (most common convention)
+color_scale = alt.Scale(domain=["Bullish", "Bearish"], range=["#26A69A", "#EF5350"])
 
 # Candlestick wicks (high-low lines)
 wicks = (
     alt.Chart(df)
-    .mark_rule(strokeWidth=2)
+    .mark_rule(strokeWidth=3)
     .encode(
-        x=alt.X("date:T", title="Date", axis=alt.Axis(labelFontSize=16, titleFontSize=20, format="%b %d")),
+        x=alt.X("date:T", title="Date", axis=alt.Axis(labelFontSize=18, titleFontSize=22, format="%b %d")),
         y=alt.Y(
-            "low:Q", title="Price ($)", scale=alt.Scale(zero=False), axis=alt.Axis(labelFontSize=16, titleFontSize=20)
+            "low:Q", title="Price ($)", scale=alt.Scale(zero=False), axis=alt.Axis(labelFontSize=18, titleFontSize=22)
         ),
         y2="high:Q",
         color=alt.Color("direction:N", scale=color_scale, legend=None),
@@ -66,14 +66,21 @@ wicks = (
 # Candlestick bodies (open-close bars)
 bodies = (
     alt.Chart(df)
-    .mark_bar(size=20)
+    .mark_bar(size=24)
     .encode(
         x="date:T",
         y="open:Q",
         y2="close:Q",
         color=alt.Color(
-            "direction:N", scale=color_scale, legend=alt.Legend(title="Direction", labelFontSize=14, titleFontSize=16)
+            "direction:N", scale=color_scale, legend=alt.Legend(title="Direction", labelFontSize=16, titleFontSize=18)
         ),
+        tooltip=[
+            alt.Tooltip("date:T", title="Date", format="%b %d, %Y"),
+            alt.Tooltip("open:Q", title="Open", format="$.2f"),
+            alt.Tooltip("high:Q", title="High", format="$.2f"),
+            alt.Tooltip("low:Q", title="Low", format="$.2f"),
+            alt.Tooltip("close:Q", title="Close", format="$.2f"),
+        ],
     )
 )
 
@@ -83,7 +90,7 @@ chart = (
     .properties(
         width=1600, height=900, title=alt.Title("candlestick-basic · altair · pyplots.ai", fontSize=28, anchor="middle")
     )
-    .configure_axis(labelFontSize=16, titleFontSize=20, gridOpacity=0.3)
+    .configure_axis(labelFontSize=18, titleFontSize=22, gridOpacity=0.3)
     .configure_view(strokeWidth=0)
 )
 

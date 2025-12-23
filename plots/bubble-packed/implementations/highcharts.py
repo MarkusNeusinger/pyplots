@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-23
@@ -83,7 +83,7 @@ chart.options.chart = {"type": "packedbubble", "width": 4800, "height": 2700, "b
 
 # Title
 chart.options.title = {
-    "text": "Market Sectors · bubble-packed · highcharts · pyplots.ai",
+    "text": "bubble-packed · Market Sectors · highcharts · pyplots.ai",
     "style": {"fontSize": "64px", "fontWeight": "bold"},
 }
 
@@ -103,23 +103,22 @@ chart.options.legend = {"enabled": True, "itemStyle": {"fontSize": "36px"}, "sym
 # Plot options for packed bubble
 chart.options.plot_options = {
     "packedbubble": {
-        "minSize": "20%",
-        "maxSize": "100%",
+        "minSize": "60%",
+        "maxSize": "180%",
         "zMin": 0,
         "zMax": 1000,
         "layoutAlgorithm": {
             "gravitationalConstant": 0.02,
-            "splitSeries": True,
-            "seriesInteraction": False,
+            "splitSeries": False,
+            "seriesInteraction": True,
             "dragBetweenSeries": False,
-            "parentNodeLimit": True,
-            "parentNodeOptions": {"bubblePadding": 20},
+            "parentNodeLimit": False,
         },
         "dataLabels": {
             "enabled": True,
             "format": "{point.name}",
-            "filter": {"property": "y", "operator": ">", "value": 300},
-            "style": {"fontSize": "24px", "fontWeight": "bold", "color": "white", "textOutline": "2px contrast"},
+            "filter": {"property": "y", "operator": ">", "value": 230},
+            "style": {"fontSize": "28px", "fontWeight": "bold", "color": "white", "textOutline": "2px contrast"},
         },
     }
 }

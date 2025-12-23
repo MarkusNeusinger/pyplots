@@ -1,20 +1,21 @@
-""" pyplots.ai
+"""pyplots.ai
 bullet-basic: Basic Bullet Chart
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-16
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import pandas as pd
 from plotnine import (
     aes,
-    coord_flip,
     element_blank,
     element_text,
     geom_rect,
     geom_segment,
+    geom_text,
     ggplot,
     labs,
     scale_fill_manual,
+    scale_x_continuous,
     scale_y_continuous,
     theme,
     theme_minimal,
@@ -23,9 +24,9 @@ from plotnine import (
 
 # Data - Multiple KPIs with different performance levels
 metrics = [
-    {"label": "Revenue", "actual": 275, "target": 250, "ranges": [150, 225, 300]},
-    {"label": "Profit", "actual": 22, "target": 26, "ranges": [15, 22.5, 30]},
-    {"label": "Orders", "actual": 1050, "target": 1100, "ranges": [600, 900, 1200]},
+    {"label": "Revenue ($K)", "actual": 275, "target": 250, "ranges": [150, 225, 300]},
+    {"label": "Profit (%)", "actual": 22, "target": 26, "ranges": [15, 22.5, 30]},
+    {"label": "New Orders", "actual": 1050, "target": 1100, "ranges": [600, 900, 1200]},
     {"label": "Satisfaction", "actual": 4.5, "target": 4.2, "ranges": [2.5, 3.5, 5.0]},
 ]
 
@@ -33,13 +34,12 @@ metrics = [
 range_data = []
 actual_data = []
 target_data = []
-label_data = []
 
 for i, m in enumerate(metrics):
-    y_pos = i
+    y_pos = len(metrics) - 1 - i  # Reverse order so first metric is at top
     max_val = m["ranges"][-1]
 
-    # Qualitative ranges (poor, satisfactory, good)
+    # Qualitative ranges (poor, satisfactory, good) - grayscale bands
     range_data.append({"y": y_pos, "xmin": 0, "xmax": (m["ranges"][0] / max_val) * 100, "band": "Poor"})
     range_data.append(
         {
@@ -53,31 +53,27 @@ for i, m in enumerate(metrics):
 
     # Actual value bar
     actual_pct = (m["actual"] / max_val) * 100
-    actual_data.append({"y": y_pos, "xmin": 0, "xmax": actual_pct})
+    actual_data.append({"y": y_pos, "xmin": 0, "xmax": actual_pct, "label": m["label"], "actual": m["actual"]})
 
     # Target marker
     target_pct = (m["target"] / max_val) * 100
     target_data.append({"y": y_pos, "target": target_pct})
 
-    # Labels with actual values
-    label_data.append({"y": y_pos, "label": m["label"], "actual": m["actual"]})
-
 df_ranges = pd.DataFrame(range_data)
 df_actual = pd.DataFrame(actual_data)
 df_target = pd.DataFrame(target_data)
-df_labels = pd.DataFrame(label_data)
 
-# Grayscale colors for qualitative bands (poor=dark, satisfactory=medium, good=light)
-band_colors = {"Poor": "#D0D0D0", "Satisfactory": "#A0A0A0", "Good": "#707070"}
+# Grayscale colors for qualitative bands (good=light, satisfactory=medium, poor=dark)
+band_colors = {"Poor": "#707070", "Satisfactory": "#A0A0A0", "Good": "#D0D0D0"}
 
 # Bar height parameters
-range_height = 0.7
-actual_height = 0.3
+range_height = 0.65
+actual_height = 0.28
 
-# Plot
+# Plot - horizontal bullet charts (x is performance, y is metric category)
 plot = (
     ggplot()
-    # Background qualitative ranges
+    # Background qualitative ranges (grayscale bands)
     + geom_rect(
         df_ranges, aes(xmin="xmin", xmax="xmax", ymin="y - range_height/2", ymax="y + range_height/2", fill="band")
     )
@@ -86,29 +82,35 @@ plot = (
     + geom_rect(
         df_actual, aes(xmin="xmin", xmax="xmax", ymin="y - actual_height/2", ymax="y + actual_height/2"), fill="#306998"
     )
-    # Target marker (thin black line)
+    # Target marker (thin black line perpendicular to the bar)
     + geom_segment(
         df_target,
-        aes(x="target", xend="target", y="y - range_height/2.5", yend="y + range_height/2.5"),
-        color="black",
+        aes(x="target", xend="target", y="y - range_height/2.2", yend="y + range_height/2.2"),
+        color="#1a1a1a",
         size=2.5,
     )
-    # Flip coordinates for horizontal bullet charts
-    + coord_flip()
+    # Actual value labels at end of bars
+    + geom_text(
+        df_actual, aes(x="xmax + 3", y="y", label="actual"), ha="left", size=12, color="#306998", fontweight="bold"
+    )
     # Scale and labels
-    + scale_y_continuous(breaks=list(range(len(metrics))), labels=[m["label"] for m in metrics], expand=(0.1, 0.1))
-    + labs(title="bullet-basic · plotnine · pyplots.ai", x="", y="Performance (%)")
+    + scale_x_continuous(limits=(0, 115), breaks=[0, 25, 50, 75, 100], expand=(0, 0))
+    + scale_y_continuous(
+        breaks=list(range(len(metrics))), labels=[m["label"] for m in reversed(metrics)], expand=(0.15, 0.15)
+    )
+    + labs(title="bullet-basic · plotnine · pyplots.ai", x="Performance (%)", y="")
     # Theme
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        plot_title=element_text(size=24, ha="center"),
+        plot_title=element_text(size=24, ha="center", weight="bold"),
         axis_title_x=element_text(size=20),
         axis_title_y=element_blank(),
         axis_text_x=element_text(size=16),
-        axis_text_y=element_text(size=18),
+        axis_text_y=element_text(size=18, ha="right"),
         panel_grid_major_y=element_blank(),
         panel_grid_minor=element_blank(),
+        panel_grid_major_x=element_blank(),
         legend_position="none",
     )
 )

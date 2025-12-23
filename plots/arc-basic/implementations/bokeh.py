@@ -1,13 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 arc-basic: Basic Arc Diagram
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-17
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
-from bokeh.io import export_png
+from bokeh.io import export_png, save
 from bokeh.models import ColumnDataSource, Label
-from bokeh.plotting import figure, save
+from bokeh.plotting import figure
 
 
 # Data - Character interactions in a story chapter
@@ -37,7 +37,7 @@ y_baseline = 0
 p = figure(
     width=4800,
     height=2700,
-    title="arc-basic \u00b7 bokeh \u00b7 pyplots.ai",
+    title="arc-basic · bokeh · pyplots.ai",
     x_axis_label="Characters",
     y_axis_label="",
     x_range=(-0.5, 10.5),

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 ridgeline-basic: Basic Ridgeline Plot
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 96/100 | Created: 2025-12-15
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt

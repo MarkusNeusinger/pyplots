@@ -1,7 +1,7 @@
 """ pyplots.ai
 pie-basic: Basic Pie Chart
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -17,8 +17,8 @@ colors = ["#306998", "#FFD43B", "#4ECDC4", "#FF6B6B", "#95A5A6"]
 # Explode the largest slice slightly for emphasis
 explode = [0.05, 0, 0, 0, 0]
 
-# Create plot (4800x2700 px)
-fig, ax = plt.subplots(figsize=(16, 9))
+# Create plot (3600x3600 px - square format ideal for pie charts)
+fig, ax = plt.subplots(figsize=(12, 12))
 
 wedges, texts, autotexts = ax.pie(
     values,
@@ -27,22 +27,22 @@ wedges, texts, autotexts = ax.pie(
     explode=explode,
     colors=colors,
     startangle=90,
-    textprops={"fontsize": 18},
+    textprops={"fontsize": 20},
     wedgeprops={"linewidth": 2, "edgecolor": "white"},
 )
 
 # Style percentage labels
 for autotext in autotexts:
-    autotext.set_fontsize(16)
+    autotext.set_fontsize(18)
     autotext.set_fontweight("bold")
     autotext.set_color("white")
 
 # Add title
-ax.set_title("pie-basic · matplotlib · pyplots.ai", fontsize=24, pad=20)
+ax.set_title("pie-basic · matplotlib · pyplots.ai", fontsize=28, pad=20)
 
 # Add legend
 ax.legend(
-    wedges, categories, title="Categories", loc="center left", bbox_to_anchor=(1, 0.5), fontsize=16, title_fontsize=18
+    wedges, categories, title="Categories", loc="center left", bbox_to_anchor=(1, 0.5), fontsize=18, title_fontsize=20
 )
 
 plt.tight_layout()

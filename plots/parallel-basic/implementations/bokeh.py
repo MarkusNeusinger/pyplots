@@ -1,19 +1,58 @@
-""" pyplots.ai
+"""pyplots.ai
 parallel-basic: Basic Parallel Coordinates Plot
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
+import numpy as np
 import pandas as pd
 from bokeh.io import export_png, save
 from bokeh.models import Legend, LegendItem
 from bokeh.plotting import figure
 
 
-# Data - Iris dataset for multivariate demonstration
-df = pd.read_csv("https://raw.githubusercontent.com/mwaskom/seaborn-data/master/iris.csv")
+# Data - Iris-like dataset for multivariate demonstration
+np.random.seed(42)
 
-# Define numeric columns and normalize to [0, 1] for fair comparison
+# Generate realistic iris-like measurements for three species
+n_per_species = 50
+
+# Setosa: small petals, moderate sepals
+setosa = pd.DataFrame(
+    {
+        "sepal_length": np.random.normal(5.0, 0.35, n_per_species),
+        "sepal_width": np.random.normal(3.4, 0.38, n_per_species),
+        "petal_length": np.random.normal(1.5, 0.17, n_per_species),
+        "petal_width": np.random.normal(0.25, 0.10, n_per_species),
+        "species": "setosa",
+    }
+)
+
+# Versicolor: medium everything
+versicolor = pd.DataFrame(
+    {
+        "sepal_length": np.random.normal(5.9, 0.52, n_per_species),
+        "sepal_width": np.random.normal(2.8, 0.31, n_per_species),
+        "petal_length": np.random.normal(4.3, 0.47, n_per_species),
+        "petal_width": np.random.normal(1.3, 0.20, n_per_species),
+        "species": "versicolor",
+    }
+)
+
+# Virginica: large petals and sepals
+virginica = pd.DataFrame(
+    {
+        "sepal_length": np.random.normal(6.6, 0.64, n_per_species),
+        "sepal_width": np.random.normal(3.0, 0.32, n_per_species),
+        "petal_length": np.random.normal(5.5, 0.55, n_per_species),
+        "petal_width": np.random.normal(2.0, 0.27, n_per_species),
+        "species": "virginica",
+    }
+)
+
+df = pd.concat([setosa, versicolor, virginica], ignore_index=True)
+
+# Normalize numeric columns to [0, 1] for fair comparison across axes
 numeric_cols = ["sepal_length", "sepal_width", "petal_length", "petal_width"]
 df_norm = df.copy()
 for col in numeric_cols:
@@ -39,14 +78,13 @@ p.yaxis.axis_label_text_font_size = "22pt"
 p.xaxis.major_label_text_font_size = "18pt"
 p.yaxis.major_label_text_font_size = "18pt"
 
-# Define colors for species
+# Define colors for species (Python Blue, Yellow, and a complementary green)
 colors = {"setosa": "#306998", "versicolor": "#FFD43B", "virginica": "#4CAF50"}
 
 # X positions for each dimension
 x_coords = list(range(len(numeric_cols)))
 
 # Track renderers for legend
-legend_items = []
 renderers_by_species = {}
 
 # Plot parallel coordinates - each line connects values across axes
@@ -59,6 +97,7 @@ for _, row in df_norm.iterrows():
         renderers_by_species[species] = renderer
 
 # Create legend
+legend_items = []
 for species_name in ["setosa", "versicolor", "virginica"]:
     legend_items.append(LegendItem(label=species_name.capitalize(), renderers=[renderers_by_species[species_name]]))
 

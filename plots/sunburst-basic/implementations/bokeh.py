@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 sunburst-basic: Basic Sunburst Chart
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-14
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 from math import cos, pi, sin
@@ -211,14 +211,13 @@ for item in hierarchy:
         label_r = (r3_inner + r3_outer) / 2
         lx = label_r * cos(mid_angle)
         ly = label_r * sin(mid_angle)
-        text_color = "#333333" if l1 == "Marketing" else "#333333"
 
         label = Label(
             x=lx,
             y=ly,
             text=l3[:5],
             text_font_size="14pt",
-            text_color=text_color,
+            text_color="#333333",
             text_align="center",
             text_baseline="middle",
         )

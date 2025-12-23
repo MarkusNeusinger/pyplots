@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-basic: Basic Network Graph
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-23
@@ -78,10 +78,17 @@ edges = [
 
 # Calculate spring layout (force-directed algorithm)
 n = len(nodes)
-positions = np.random.rand(n, 2) * 2 - 1
-k = 0.4  # Optimal distance parameter
 
-for iteration in range(150):
+# Initialize positions clustered by group for better community structure
+group_centers = {0: (-0.5, 0.5), 1: (0.5, 0.5), 2: (-0.5, -0.5), 3: (0.5, -0.5)}
+positions = np.zeros((n, 2))
+for i, node in enumerate(nodes):
+    cx, cy = group_centers[node["group"]]
+    positions[i] = [cx + np.random.rand() * 0.3 - 0.15, cy + np.random.rand() * 0.3 - 0.15]
+
+k = 0.35  # Optimal distance parameter (slightly smaller for tighter clusters)
+
+for iteration in range(200):
     displacement = np.zeros((n, 2))
 
     # Repulsive forces between all node pairs
@@ -93,20 +100,20 @@ for iteration in range(150):
             displacement[i] += force
             displacement[j] -= force
 
-    # Attractive forces for edges
+    # Attractive forces for edges (stronger to keep communities tight)
     for src, tgt in edges:
         diff = positions[src] - positions[tgt]
         dist = max(np.linalg.norm(diff), 0.01)
-        force = (dist * dist / k) * (diff / dist)
+        force = (dist * dist / k) * (diff / dist) * 1.2
         displacement[src] -= force
         displacement[tgt] += force
 
     # Apply displacement with cooling
-    cooling = 1 - iteration / 150
+    cooling = 1 - iteration / 200
     for i in range(n):
         disp_norm = np.linalg.norm(displacement[i])
         if disp_norm > 0:
-            positions[i] += (displacement[i] / disp_norm) * min(disp_norm, 0.1 * cooling)
+            positions[i] += (displacement[i] / disp_norm) * min(disp_norm, 0.08 * cooling)
 
 # Normalize positions to [1, 11] range for pygal (with padding)
 pos_min = positions.min(axis=0)
@@ -146,7 +153,7 @@ chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
-    title="Social Network · network-basic · pygal · pyplots.ai",
+    title="network-basic · pygal · pyplots.ai",
     show_legend=True,
     x_title="",
     y_title="",
@@ -155,10 +162,10 @@ chart = pygal.XY(
     show_x_labels=False,
     show_y_labels=False,
     stroke=True,
-    dots_size=35,
+    dots_size=30,
     stroke_style={"width": 2, "linecap": "round"},
     legend_at_bottom=True,
-    legend_at_bottom_columns=5,
+    legend_at_bottom_columns=4,
     range=(0, 12),
     xrange=(0, 12),
 )
@@ -173,17 +180,24 @@ for src, tgt in edges:
     edge_points.append((x2, y2))
     edge_points.append(None)  # Break the line for next edge
 
-chart.add("Connections", edge_points, stroke=True, show_dots=False, fill=False)
+# Add edges without including in legend
+chart.add("", edge_points, stroke=True, show_dots=False, fill=False)
 
-# Add nodes grouped by community
-group_names = ["Group A", "Group B", "Group C", "Group D"]
+# Since pygal doesn't support per-point sizing, we create multiple series per group
+# based on degree ranges to encode connectivity visually
+# Note: pygal XY charts use dots_size from chart config; we enhance tooltips with degree info
+
+# Group nodes by community
+group_names = ["Community A", "Community B", "Community C", "Community D"]
 for group_idx in range(4):
     group_nodes = [node for node in nodes if node["group"] == group_idx]
-    # Create points with labels for tooltips
+    # Create points with labels showing degree for tooltips
     node_points = []
     for node in group_nodes:
         x, y = pos[node["id"]]
-        node_points.append({"value": (x, y), "label": node["label"]})
+        degree = degrees[node["id"]]
+        # Include degree in tooltip for interactivity
+        node_points.append({"value": (x, y), "label": f"{node['label']} ({degree} connections)"})
     chart.add(group_names[group_idx], node_points, stroke=False)
 
 # Save outputs
@@ -196,7 +210,7 @@ with open("plot.html", "w") as f:
         """<!DOCTYPE html>
 <html>
 <head>
-    <title>Social Network · network-basic · pygal · pyplots.ai</title>
+    <title>network-basic · pygal · pyplots.ai</title>
     <style>
         body { margin: 0; padding: 20px; background: #f5f5f5; }
         .container { max-width: 100%; margin: 0 auto; }

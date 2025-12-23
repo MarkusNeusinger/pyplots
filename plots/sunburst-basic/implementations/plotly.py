@@ -1,43 +1,42 @@
-""" pyplots.ai
+"""pyplots.ai
 sunburst-basic: Basic Sunburst Chart
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import plotly.graph_objects as go
 
 
-# Data - Company budget breakdown by department, team, and project
-# Using leaf node values with branchvalues="remainder" for auto-summing parents
+# Data - Company budget breakdown by department, team, and project (in $ millions)
+# Structure: Company -> Departments -> Teams
 labels = [
     # Level 1 - Root (innermost)
-    "Company",
+    "Company Budget",
     # Level 2 - Departments
     "Engineering",
     "Sales",
     "Marketing",
     "Operations",
-    # Level 3 - Teams/Areas (leaf nodes)
+    # Level 3 - Teams (outer ring)
     "Backend",
     "Frontend",
-    "DevOps",  # Engineering
+    "DevOps",
     "Enterprise",
-    "SMB",  # Sales
+    "SMB",
     "Digital",
-    "Brand",  # Marketing
+    "Brand",
     "HR",
-    "Finance",  # Operations
+    "Finance",
 ]
 
 parents = [
-    # Company has no parent
-    "",
+    "",  # Company has no parent
     # Departments report to Company
-    "Company",
-    "Company",
-    "Company",
-    "Company",
-    # Teams report to departments
+    "Company Budget",
+    "Company Budget",
+    "Company Budget",
+    "Company Budget",
+    # Teams report to their departments
     "Engineering",
     "Engineering",
     "Engineering",
@@ -49,26 +48,25 @@ parents = [
     "Operations",
 ]
 
-# Values - only leaf nodes have values, parents auto-sum
+# Values in millions - using branchvalues="total" so parent values equal sum of children
 values = [
-    48,  # Company total
-    18,
-    15,
-    7,
-    8,  # Department totals
-    # Individual team budgets (in millions)
-    8,
-    6,
-    4,  # Engineering teams
-    10,
-    5,  # Sales teams
-    4,
-    3,  # Marketing teams
-    3,
-    5,  # Operations teams
+    48,  # Company total (sum of all departments)
+    18,  # Engineering total
+    15,  # Sales total
+    7,  # Marketing total
+    8,  # Operations total
+    8,  # Backend
+    6,  # Frontend
+    4,  # DevOps
+    10,  # Enterprise
+    5,  # SMB
+    4,  # Digital
+    3,  # Brand
+    3,  # HR
+    5,  # Finance
 ]
 
-# Colors - Python Blue and Yellow as primary, variations for children
+# Colors - Python Blue and Yellow as primary, variations for hierarchy
 colors = [
     "#306998",  # Company - Python Blue
     # Departments
@@ -99,16 +97,17 @@ fig = go.Figure(
         values=values,
         branchvalues="total",
         marker=dict(colors=colors, line=dict(color="white", width=2)),
-        textfont=dict(size=20),
+        textfont=dict(size=22),
         insidetextorientation="radial",
+        hovertemplate="<b>%{label}</b><br>Budget: $%{value}M<extra></extra>",
     )
 )
 
-# Update layout for 4800x2700 px
+# Update layout for 4800x2700 px canvas
 fig.update_layout(
-    title=dict(text="sunburst-basic · plotly · pyplots.ai", font=dict(size=32), x=0.5, xanchor="center"),
+    title=dict(text="sunburst-basic · plotly · pyplots.ai", font=dict(size=36), x=0.5, xanchor="center"),
     template="plotly_white",
-    margin=dict(t=100, l=50, r=50, b=50),
+    margin=dict(t=120, l=40, r=40, b=40),
 )
 
 # Save as PNG (4800x2700 px)

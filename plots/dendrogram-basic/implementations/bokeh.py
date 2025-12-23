@@ -1,7 +1,7 @@
 """ pyplots.ai
 dendrogram-basic: Basic Dendrogram
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -132,33 +132,34 @@ p = figure(
     x_axis_label="Sample",
     y_axis_label="Distance (Ward)",
     x_range=(-0.5, n_samples - 0.5),
-    y_range=(-max_dist * 0.15, max_dist * 1.1),
+    y_range=(-max_dist * 0.18, max_dist * 1.1),
+    toolbar_location=None,
 )
 
-# Draw dendrogram lines
+# Draw dendrogram lines with thicker lines for visibility
 for xs, ys, color in zip(line_xs, line_ys, line_colors, strict=True):
-    p.line(xs, ys, line_width=3, line_color=color)
+    p.line(xs, ys, line_width=4, line_color=color)
 
-# Add leaf labels
+# Add leaf labels with larger font
 for idx, label in enumerate(ordered_labels):
     label_obj = Label(
         x=idx,
-        y=-max_dist * 0.01,
+        y=-max_dist * 0.02,
         text=label,
-        text_font_size="16pt",
+        text_font_size="20pt",
         text_align="right",
         angle=0.785,  # 45 degrees in radians
         angle_units="rad",
-        y_offset=-10,
+        y_offset=-15,
     )
     p.add_layout(label_obj)
 
-# Style
-p.title.text_font_size = "28pt"
-p.xaxis.axis_label_text_font_size = "22pt"
-p.yaxis.axis_label_text_font_size = "22pt"
+# Style - larger fonts for 4800x2700 canvas
+p.title.text_font_size = "32pt"
+p.xaxis.axis_label_text_font_size = "24pt"
+p.yaxis.axis_label_text_font_size = "24pt"
 p.xaxis.major_label_text_font_size = "0pt"  # Hide default x-axis labels
-p.yaxis.major_label_text_font_size = "18pt"
+p.yaxis.major_label_text_font_size = "20pt"
 
 # Grid styling
 p.xgrid.visible = False

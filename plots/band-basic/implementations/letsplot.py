@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 band-basic: Basic Band Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 96/100 | Created: 2025-12-17
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -27,7 +27,7 @@ LetsPlot.setup_html()
 # Data - time series with 95% confidence interval
 np.random.seed(42)
 x = np.linspace(0, 10, 100)
-y_center = 2 * np.sin(x) + 0.5 * x  # Central trend
+y_center = 2 * np.sin(x) + 0.5 * x  # Central trend (sinusoidal + linear growth)
 noise_scale = 0.3 + 0.15 * x  # Increasing uncertainty over time
 y_lower = y_center - 1.96 * noise_scale  # 95% CI lower bound
 y_upper = y_center + 1.96 * noise_scale  # 95% CI upper bound
@@ -39,7 +39,7 @@ plot = (
     ggplot(df, aes(x="x"))
     + geom_ribbon(aes(ymin="y_lower", ymax="y_upper"), fill="#306998", alpha=0.3)
     + geom_line(aes(y="y_center"), color="#306998", size=1.5)
-    + labs(x="Time", y="Value", title="band-basic \u00b7 letsplot \u00b7 pyplots.ai")
+    + labs(x="Time (s)", y="Value (units)", title="band-basic · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(
         axis_title=element_text(size=20),

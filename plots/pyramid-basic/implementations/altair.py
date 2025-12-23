@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 pyramid-basic: Basic Pyramid Chart
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import altair as alt
@@ -23,12 +23,15 @@ df = pd.DataFrame(
     }
 )
 
+# Sort order: youngest at bottom, oldest at top (traditional pyramid)
+age_order = list(reversed(age_groups))
+
 # Create pyramid chart with color encoding for legend
 chart = (
     alt.Chart(df)
     .mark_bar()
     .encode(
-        y=alt.Y("Age Group:N", sort=age_groups, axis=alt.Axis(title="Age Group", titleFontSize=22, labelFontSize=18)),
+        y=alt.Y("Age Group:N", sort=age_order, axis=alt.Axis(title="Age Group", titleFontSize=22, labelFontSize=18)),
         x=alt.X(
             "Population:Q",
             axis=alt.Axis(

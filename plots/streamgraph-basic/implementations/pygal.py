@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 streamgraph-basic: Basic Stream Graph
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 78/100 | Created: 2025-12-23
+Quality: 68/100 | Created: 2025-12-23
 """
 
 import numpy as np

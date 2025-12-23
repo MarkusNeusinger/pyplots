@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-calendar: Basic Calendar Heatmap
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -55,7 +55,7 @@ month_labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 # Create figure
 fig = go.Figure()
 
-# Add heatmap
+# Add heatmap with GitHub-style green colorscale
 fig.add_trace(
     go.Heatmap(
         z=heatmap_data,

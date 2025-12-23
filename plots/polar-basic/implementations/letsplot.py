@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 polar-basic: Basic Polar Chart
 Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 85/100 | Created: 2025-12-23
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import math

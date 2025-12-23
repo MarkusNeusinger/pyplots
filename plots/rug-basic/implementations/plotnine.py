@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 rug-basic: Basic Rug Plot
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -23,7 +23,7 @@ df = pd.DataFrame({"response_time": values})
 plot = (
     ggplot(df, aes(x="response_time"))
     + geom_rug(alpha=0.7, sides="b", size=1.5, color="#306998")
-    + labs(x="Response Time (ms)", y="", title="rug-basic \u00b7 plotnine \u00b7 pyplots.ai")
+    + labs(x="Response Time (ms)", y="", title="rug-basic · plotnine · pyplots.ai")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),

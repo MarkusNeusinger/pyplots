@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 gauge-basic: Basic Gauge Chart
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 75/100 | Created: 2025-12-23
@@ -7,120 +7,149 @@ Quality: 75/100 | Created: 2025-12-23
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 
-
-# Set seaborn style for consistent aesthetics
-sns.set_theme(style="white", font_scale=1.2)
 
 # Data - Sales performance gauge
 value = 72  # Current sales performance
 min_value = 0
 max_value = 100
-thresholds = [30, 70]  # Red < 30, Yellow 30-70, Green > 70
+thresholds = [30, 70]  # Zone boundaries
 
-# Create figure
+# Create figure with larger gauge
 fig, ax = plt.subplots(figsize=(16, 9))
+sns.set_theme(style="white")
 
-# Gauge parameters
-center = (0.5, 0.35)
-radius = 0.35
-width = 0.15
-start_angle = 180  # Left side
-end_angle = 0  # Right side
-
-# Color zones using seaborn palette colors
-colors = ["#E74C3C", "#F39C12", "#27AE60"]  # Red, Yellow, Green
-
-# Calculate angle ranges for each zone
-angle_range = start_angle - end_angle  # 180 degrees
+# Gauge parameters - larger for better canvas utilization
+center = (0.5, 0.30)
+radius = 0.42
+width = 0.18
+start_angle = 180
+end_angle = 0
+angle_range = start_angle - end_angle
 value_range = max_value - min_value
 
-# Draw gauge segments (background arcs)
+# Colorblind-safe palette using seaborn's colorblind palette
+cb_palette = sns.color_palette("colorblind", 3)
+zone_colors = [cb_palette[2], cb_palette[1], cb_palette[0]]  # Blue-ish, Orange, Green-ish order for low-med-high
+
+# Draw gauge arc segments using seaborn scatterplot for the zone markers
+# Create data for zone indicator points along the arc
+n_points_per_zone = 50
 zone_boundaries = [min_value] + thresholds + [max_value]
+zone_data = []
+
 for i in range(len(zone_boundaries) - 1):
     zone_start = zone_boundaries[i]
     zone_end = zone_boundaries[i + 1]
+    zone_name = ["Low", "Medium", "High"][i]
 
-    # Convert value range to angle range
+    for v in np.linspace(zone_start, zone_end, n_points_per_zone, endpoint=(i == len(zone_boundaries) - 2)):
+        angle = start_angle - (v - min_value) / value_range * angle_range
+        rad = np.radians(angle)
+        # Points along the middle of the arc width
+        for r_offset in np.linspace(-width / 2 + 0.01, width / 2 - 0.01, 8):
+            r = radius - width / 2 + r_offset + width / 2
+            x = center[0] + r * np.cos(rad)
+            y = center[1] + r * np.sin(rad)
+            zone_data.append({"x": x, "y": y, "zone": zone_name, "value": v})
+
+df_zones = pd.DataFrame(zone_data)
+
+# Use seaborn scatterplot to draw the gauge arc zones
+sns.scatterplot(
+    data=df_zones,
+    x="x",
+    y="y",
+    hue="zone",
+    hue_order=["Low", "Medium", "High"],
+    palette=[zone_colors[0], zone_colors[1], zone_colors[2]],
+    s=120,
+    marker="o",
+    edgecolor="none",
+    alpha=1.0,
+    legend=False,
+    ax=ax,
+)
+
+# Draw wedge overlays for smooth appearance (using matplotlib for clean edges)
+for i in range(len(zone_boundaries) - 1):
+    zone_start = zone_boundaries[i]
+    zone_end = zone_boundaries[i + 1]
     theta1 = start_angle - (zone_end - min_value) / value_range * angle_range
     theta2 = start_angle - (zone_start - min_value) / value_range * angle_range
-
     wedge = mpatches.Wedge(
-        center, radius, theta1, theta2, width=width, facecolor=colors[i], edgecolor="white", linewidth=2
+        center, radius, theta1, theta2, width=width, facecolor=zone_colors[i], edgecolor="white", linewidth=2
     )
     ax.add_patch(wedge)
 
-# Draw needle
+# Create needle indicator data point using seaborn
 needle_angle = start_angle - (value - min_value) / value_range * angle_range
 needle_rad = np.radians(needle_angle)
-
-# Needle base and tip
 needle_length = radius - width / 2
+
+# Draw needle line
 needle_tip_x = center[0] + needle_length * np.cos(needle_rad)
 needle_tip_y = center[1] + needle_length * np.sin(needle_rad)
 
-# Draw needle as a thick line with arrow
-ax.annotate(
-    "",
-    xy=(needle_tip_x, needle_tip_y),
-    xytext=center,
-    arrowprops={"arrowstyle": "-|>", "color": "#306998", "lw": 4, "mutation_scale": 20},
-)
+# Use seaborn lineplot for the needle
+needle_df = pd.DataFrame({"x": [center[0], needle_tip_x], "y": [center[1], needle_tip_y]})
+sns.lineplot(data=needle_df, x="x", y="y", color="#2C3E50", linewidth=6, ax=ax)
 
-# Draw center circle
-center_circle = plt.Circle(center, 0.04, color="#306998", zorder=5)
-ax.add_patch(center_circle)
+# Draw needle tip marker using seaborn scatterplot
+tip_df = pd.DataFrame({"x": [needle_tip_x], "y": [needle_tip_y]})
+sns.scatterplot(data=tip_df, x="x", y="y", s=400, color="#2C3E50", marker="^", ax=ax, zorder=10)
 
-# Add value display
+# Draw center hub using seaborn scatterplot
+hub_df = pd.DataFrame({"x": [center[0]], "y": [center[1]]})
+sns.scatterplot(data=hub_df, x="x", y="y", s=800, color="#2C3E50", marker="o", ax=ax, zorder=11)
+
+# Value display
 ax.text(
-    center[0], center[1] - 0.18, f"{value}%", ha="center", va="center", fontsize=48, fontweight="bold", color="#306998"
+    center[0], center[1] - 0.22, f"{value}%", ha="center", va="center", fontsize=52, fontweight="bold", color="#2C3E50"
 )
 
-# Add min and max labels
+# Min and max labels
 ax.text(
     center[0] - radius + width / 2,
-    center[1] - 0.08,
+    center[1] - 0.10,
     f"{min_value}",
     ha="center",
     va="top",
-    fontsize=20,
+    fontsize=22,
     color="#555555",
 )
 ax.text(
     center[0] + radius - width / 2,
-    center[1] - 0.08,
+    center[1] - 0.10,
     f"{max_value}",
     ha="center",
     va="top",
-    fontsize=20,
+    fontsize=22,
     color="#555555",
 )
 
-# Add zone labels inside the arcs
-# Calculate positions on the gauge at the center of each zone
-zone_angles = [
-    start_angle - (15 / value_range) * angle_range,  # Center of Low (0-30), at 15
-    start_angle - (50 / value_range) * angle_range,  # Center of Medium (30-70), at 50
-    start_angle - (85 / value_range) * angle_range,  # Center of High (70-100), at 85
+# Zone labels on the arc
+zone_label_angles = [
+    start_angle - (15 / value_range) * angle_range,
+    start_angle - (50 / value_range) * angle_range,
+    start_angle - (85 / value_range) * angle_range,
 ]
-label_radius = radius - width / 2  # Place labels on the arc
-zone_labels = ["Low", "Medium", "High"]
-zone_colors = ["white", "white", "white"]
+zone_label_names = ["Low", "Medium", "High"]
+label_radius = radius - width / 2
 
-for angle, label, color in zip(zone_angles, zone_labels, zone_colors, strict=True):
+for angle, label in zip(zone_label_angles, zone_label_names, strict=True):
     rad = np.radians(angle)
     x = center[0] + label_radius * np.cos(rad)
     y = center[1] + label_radius * np.sin(rad)
-    ax.text(x, y, label, ha="center", va="center", fontsize=14, color=color, fontweight="bold")
+    ax.text(x, y, label, ha="center", va="center", fontsize=16, color="white", fontweight="bold")
 
-# Add title
+# Title and subtitle
 ax.set_title("gauge-basic · seaborn · pyplots.ai", fontsize=28, fontweight="bold", pad=20, color="#333333")
+ax.text(center[0], 0.95, "Sales Performance", ha="center", va="top", fontsize=24, color="#555555")
 
-# Add subtitle
-ax.text(center[0], 0.92, "Sales Performance", ha="center", va="top", fontsize=22, color="#555555")
-
-# Set axis properties
+# Axis settings
 ax.set_xlim(0, 1)
 ax.set_ylim(0, 1)
 ax.set_aspect("equal")

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-basic: Basic Bubble Chart
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np

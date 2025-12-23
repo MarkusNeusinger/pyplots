@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 marimekko-basic: Basic Marimekko Chart
 Library: highcharts unknown | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-23
@@ -75,10 +75,7 @@ chart_options = {
         "marginRight": 350,
         "style": {"fontFamily": "Arial, sans-serif"},
     },
-    "title": {
-        "text": "Market Share by Region · marimekko-basic · highcharts · pyplots.ai",
-        "style": {"fontSize": "56px", "fontWeight": "bold"},
-    },
+    "title": {"text": "marimekko-basic · highcharts · pyplots.ai", "style": {"fontSize": "56px", "fontWeight": "bold"}},
     "subtitle": {
         "text": "Bar width = market size (USD millions), segment height = market share (%)",
         "style": {"fontSize": "32px"},
@@ -95,12 +92,6 @@ chart_options = {
                 "from": cumulative_x[i],
                 "to": cumulative_x[i] + region_sizes[i],
                 "color": "#f8f8f8" if i % 2 == 0 else "#ffffff",
-                "label": {
-                    "text": regions[i],
-                    "style": {"fontSize": "28px", "fontWeight": "bold"},
-                    "y": 2680,
-                    "verticalAlign": "bottom",
-                },
             }
             for i in range(len(regions))
         ],
@@ -115,12 +106,16 @@ chart_options = {
     },
     "legend": {
         "enabled": True,
-        "itemStyle": {"fontSize": "28px", "fontWeight": "normal"},
+        "itemStyle": {"fontSize": "32px", "fontWeight": "normal"},
         "align": "right",
         "verticalAlign": "middle",
         "layout": "vertical",
         "x": -50,
         "y": 0,
+        "symbolWidth": 40,
+        "symbolHeight": 40,
+        "symbolRadius": 0,
+        "itemMarginBottom": 15,
     },
     "tooltip": {
         "style": {"fontSize": "24px"},
@@ -139,7 +134,7 @@ chart_options = {
     "series": series_data,
 }
 
-# Download Highcharts JS and variwide module
+# Download Highcharts JS modules
 highcharts_url = "https://code.highcharts.com/highcharts.js"
 variwide_url = "https://code.highcharts.com/modules/variwide.js"
 
@@ -149,7 +144,15 @@ with urllib.request.urlopen(highcharts_url, timeout=30) as response:
 with urllib.request.urlopen(variwide_url, timeout=30) as response:
     variwide_js = response.read().decode("utf-8")
 
-# Generate HTML with inline scripts
+# Build region label data for JavaScript
+region_label_data = json.dumps(
+    [
+        {"name": regions[i], "x": cumulative_x[i] + region_sizes[i] / 2, "width": region_sizes[i]}
+        for i in range(len(regions))
+    ]
+)
+
+# Generate HTML with inline scripts - add region labels via chart.events.load
 chart_options_json = json.dumps(chart_options)
 html_content = f"""<!DOCTYPE html>
 <html>
@@ -162,7 +165,31 @@ html_content = f"""<!DOCTYPE html>
     <div id="container" style="width: 4800px; height: 2700px;"></div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {{
-            Highcharts.chart('container', {chart_options_json});
+            var regionLabels = {region_label_data};
+            var chartOptions = {chart_options_json};
+
+            chartOptions.chart.events = {{
+                load: function() {{
+                    var chart = this;
+                    var xAxis = chart.xAxis[0];
+                    var yPos = chart.plotTop + chart.plotHeight + 80;
+
+                    regionLabels.forEach(function(region) {{
+                        var xPos = xAxis.toPixels(region.x);
+                        chart.renderer.text(region.name, xPos, yPos)
+                            .attr({{ zIndex: 10 }})
+                            .css({{
+                                fontSize: '32px',
+                                fontWeight: 'bold',
+                                color: '#333333',
+                                textAnchor: 'middle'
+                            }})
+                            .add();
+                    }});
+                }}
+            }};
+
+            Highcharts.chart('container', chartOptions);
         }});
     </script>
 </body>
@@ -180,7 +207,31 @@ standalone_html = f"""<!DOCTYPE html>
     <div id="container" style="width: 100%; height: 100vh;"></div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {{
-            Highcharts.chart('container', {chart_options_json});
+            var regionLabels = {region_label_data};
+            var chartOptions = {chart_options_json};
+
+            chartOptions.chart.events = {{
+                load: function() {{
+                    var chart = this;
+                    var xAxis = chart.xAxis[0];
+                    var yPos = chart.plotTop + chart.plotHeight + 80;
+
+                    regionLabels.forEach(function(region) {{
+                        var xPos = xAxis.toPixels(region.x);
+                        chart.renderer.text(region.name, xPos, yPos)
+                            .attr({{ zIndex: 10 }})
+                            .css({{
+                                fontSize: '24px',
+                                fontWeight: 'bold',
+                                color: '#333333',
+                                textAnchor: 'middle'
+                            }})
+                            .add();
+                    }});
+                }}
+            }};
+
+            Highcharts.chart('container', chartOptions);
         }});
     </script>
 </body>

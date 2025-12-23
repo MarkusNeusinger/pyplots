@@ -1,7 +1,7 @@
 """ pyplots.ai
 ridgeline-basic: Basic Ridgeline Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-15
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -70,9 +70,7 @@ plot = (
     )
     + scale_fill_brewer(palette="Spectral")  # noqa: F405
     + labs(  # noqa: F405
-        x="Temperature (\u00b0C)",
-        y="",
-        title="Monthly Temperature Distribution \u00b7 ridgeline-basic \u00b7 letsplot \u00b7 pyplots.ai",
+        x="Temperature (°C)", y="", title="Monthly Temperature Distribution · ridgeline-basic · letsplot · pyplots.ai"
     )
     + theme_minimal()  # noqa: F405
     + theme(  # noqa: F405

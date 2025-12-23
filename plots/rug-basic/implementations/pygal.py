@@ -1,7 +1,7 @@
 """ pyplots.ai
 rug-basic: Basic Rug Plot
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-17
+Quality: 85/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -20,8 +20,9 @@ values = np.concatenate(
     ]
 )
 values = np.clip(values, 30, 500)  # Realistic bounds
+values = np.sort(values)  # Sort for better visual ordering
 
-# Custom style for 4800x2700 px canvas
+# Custom style - keep text readable, minimize distracting elements
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -34,44 +35,47 @@ custom_style = Style(
     major_label_font_size=42,
     legend_font_size=42,
     value_font_size=36,
-    opacity=0.6,
-    opacity_hover=0.9,
+    opacity=0.85,
+    opacity_hover=1.0,
+    tooltip_font_size=36,
 )
 
-# Create XY chart for rug plot
+# Create XY chart for rug plot visualization
 chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
     title="rug-basic · pygal · pyplots.ai",
     x_title="Response Time (ms)",
-    y_title="",
+    y_title=None,
     show_legend=False,
     show_dots=False,
     stroke=True,
-    stroke_style={"width": 3},
-    show_x_guides=False,  # Disable x guides to avoid visual clutter with tick marks
+    stroke_style={"width": 10},
+    show_x_guides=False,
     show_y_guides=False,
-    show_y_labels=False,  # Hide y-axis labels since they're not meaningful for rug
+    show_y_labels=False,
+    print_values=False,
+    explicit_size=True,
+    margin=80,
+    margin_top=180,
+    margin_bottom=280,
+    margin_left=80,
+    margin_right=80,
+    tooltip_border_radius=10,
+    xrange=(30, 450),
+    range=(0, 1),
 )
 
-# Create rug plot by adding each tick as a separate vertical line
-# This creates the distinctive tick mark appearance of a rug plot
-# Traditional rug plots have short ticks at the bottom of the plot area
-tick_height = 0.12  # Short tick marks (12% of plot height)
+# Rug ticks - uniform height filling 90% of vertical canvas
+tick_bottom = 0.05
+tick_top = 0.95
 
-# Add invisible anchor points to set y-axis range (pygal auto-scales to data)
-# Use two vertical invisible lines at the edges to set the range without diagonal line
-x_min, x_max = float(values.min()), float(values.max())
-chart.add("", [(x_min, 0), (x_min, 1.0)], stroke_style={"width": 0}, show_dots=False)
-chart.add("", [(x_max, 0), (x_max, 1.0)], stroke_style={"width": 0}, show_dots=False)
-
-# Add rug ticks
+# Add rug ticks with interactive tooltips showing exact values
 for val in values:
     x = float(val)
-    # Each tick is a short vertical line segment from bottom
-    chart.add("", [(x, 0), (x, tick_height)], stroke_style={"width": 4})
+    chart.add(f"{val:.1f} ms", [(x, tick_bottom), (x, tick_top)], stroke_style={"width": 10}, show_dots=False)
 
-# Save outputs
+# Save outputs - HTML preserves pygal's SVG interactivity with hover tooltips
 chart.render_to_png("plot.png")
 chart.render_to_file("plot.html")

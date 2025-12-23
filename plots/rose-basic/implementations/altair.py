@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 rose-basic: Basic Rose Chart
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-17
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import altair as alt
@@ -13,25 +13,24 @@ months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", 
 rainfall = [78, 52, 68, 45, 35, 28, 22, 30, 55, 85, 92, 88]
 
 n = len(months)
-max_val = max(rainfall)
 
 # Create DataFrame with month order for proper sorting
 df = pd.DataFrame({"month": months, "value": rainfall, "order": range(n)})
 
-# Color palette - Python Blue first, then colorblind-safe colors
+# Color palette - Python Blue first, then Python Yellow, then colorblind-safe colors
 colors = [
-    "#306998",
-    "#FFD43B",
-    "#4ECDC4",
-    "#FF6B6B",
-    "#95E1D3",
-    "#F38181",
-    "#A8D5BA",
-    "#FFC93C",
-    "#5D9CEC",
-    "#AC92EB",
-    "#EC87C0",
-    "#48CFAD",
+    "#306998",  # Python Blue
+    "#FFD43B",  # Python Yellow
+    "#4ECDC4",  # Teal
+    "#FF6B6B",  # Coral
+    "#95E1D3",  # Mint
+    "#F38181",  # Salmon
+    "#A8D5BA",  # Sage
+    "#FFC93C",  # Gold
+    "#5D9CEC",  # Sky Blue
+    "#AC92EB",  # Lavender
+    "#EC87C0",  # Pink
+    "#48CFAD",  # Seafoam
 ]
 
 # Rose chart using mark_arc with theta for equal angles and radius for values
@@ -47,7 +46,9 @@ rose = (
         color=alt.Color(
             "month:N",
             scale=alt.Scale(domain=months, range=colors),
-            legend=alt.Legend(title="Month", titleFontSize=20, labelFontSize=18, symbolSize=300, orient="right"),
+            legend=alt.Legend(
+                title="Month", titleFontSize=22, labelFontSize=20, symbolSize=400, orient="right", titlePadding=10
+            ),
         ),
         tooltip=[alt.Tooltip("month:N", title="Month"), alt.Tooltip("value:Q", title="Rainfall (mm)")],
     )
@@ -56,7 +57,7 @@ rose = (
 # Text labels showing values on each segment
 text = (
     alt.Chart(df)
-    .mark_text(radiusOffset=25, fontSize=20, fontWeight="bold")
+    .mark_text(radiusOffset=30, fontSize=22, fontWeight="bold")
     .encode(
         theta=alt.Theta("order:O", stack=True),
         radius=alt.Radius("value:Q", scale=alt.Scale(type="sqrt", zero=True, rangeMin=20)),
@@ -65,17 +66,17 @@ text = (
     )
 )
 
-# Combine layers
+# Combine layers - 16:9 landscape format (1600x900 * 3 = 4800x2700)
 chart = (
     alt.layer(rose, text)
     .properties(
-        width=1400,
-        height=1200,
-        title=alt.Title(text="Monthly Rainfall · rose-basic · altair · pyplots.ai", fontSize=28),
+        width=1600,
+        height=900,
+        title=alt.Title(text="Monthly Rainfall · rose-basic · altair · pyplots.ai", fontSize=32, anchor="middle"),
     )
     .configure_view(strokeWidth=0)
 )
 
-# Save (scale_factor=3 gives ~4200x3600, close to target)
+# Save at scale_factor=3 for 4800x2700 landscape format
 chart.save("plot.png", scale_factor=3.0)
 chart.save("plot.html")

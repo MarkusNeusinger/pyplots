@@ -1,17 +1,24 @@
 library: altair
 specification_id: funnel-basic
-created: 2025-12-14 12:19:07+00:00
-updated: 2025-12-14 12:19:07+00:00
+created: '2025-12-23T13:03:09Z'
+updated: '2025-12-23T13:06:51Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20207781917
-issue: 789
+workflow_run: 20461376408
+issue: 0
 python_version: 3.13.11
 library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/altair/plot.html
-quality_score: 100
+quality_score: 91
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent funnel visualization using centered horizontal bars with x/x2 encoding
+  - Clear value labels with both absolute values and percentages
+  - Attractive Python-themed color gradient from blue to yellow
+  - Clean, declarative Altair code following the grammar of graphics
+  - Proper title format and good text sizing throughout
+  weaknesses:
+  - Could benefit from tooltips for enhanced interactivity in the HTML version
+  - Middle blue stages (Interest, Consideration, Intent) have subtle color differences
+    that could be more distinct

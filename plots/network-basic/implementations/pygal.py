@@ -1,6 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 network-basic: Basic Network Graph
-Library: pygal 3.1.0 | Python 3.13.11
+Library: pygal 3.1.0 | Python 3.13
 Quality: 88/100 | Created: 2025-12-23
 """
 
@@ -79,12 +79,12 @@ edges = [
 # Calculate spring layout (force-directed algorithm)
 n = len(nodes)
 
-# Initialize positions clustered by group for better community structure
-group_centers = {0: (-0.5, 0.5), 1: (0.5, 0.5), 2: (-0.5, -0.5), 3: (0.5, -0.5)}
+# Initialize positions clustered by group for better community structure (centered)
+group_centers = {0: (-0.4, 0.4), 1: (0.4, 0.4), 2: (-0.4, -0.4), 3: (0.4, -0.4)}
 positions = np.zeros((n, 2))
 for i, node in enumerate(nodes):
     cx, cy = group_centers[node["group"]]
-    positions[i] = [cx + np.random.rand() * 0.3 - 0.15, cy + np.random.rand() * 0.3 - 0.15]
+    positions[i] = [cx + np.random.rand() * 0.25 - 0.125, cy + np.random.rand() * 0.25 - 0.125]
 
 k = 0.35  # Optimal distance parameter (slightly smaller for tighter clusters)
 
@@ -115,10 +115,14 @@ for iteration in range(200):
         if disp_norm > 0:
             positions[i] += (displacement[i] / disp_norm) * min(disp_norm, 0.08 * cooling)
 
-# Normalize positions to [1, 11] range for pygal (with padding)
+# Normalize positions to centered range for pygal (better canvas utilization)
 pos_min = positions.min(axis=0)
 pos_max = positions.max(axis=0)
-positions = (positions - pos_min) / (pos_max - pos_min + 1e-6) * 10 + 1
+# Scale to fit in range and center on canvas
+positions = (positions - pos_min) / (pos_max - pos_min + 1e-6)  # Normalize to [0, 1]
+# For 16:9 aspect ratio canvas with range 0-12, center the network
+positions[:, 0] = positions[:, 0] * 6 + 3  # X: [3, 9] - centered horizontally
+positions[:, 1] = positions[:, 1] * 6 + 3  # Y: [3, 9] - centered vertically
 pos = {node["id"]: positions[i] for i, node in enumerate(nodes)}
 
 # Calculate node degrees for sizing
@@ -137,7 +141,7 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#888888",) + tuple(group_colors),
+    colors=("#888888", "#306998", "#FFD43B", "#4CAF50", "#FF7043"),
     title_font_size=72,
     label_font_size=40,
     major_label_font_size=36,
@@ -148,7 +152,7 @@ custom_style = Style(
     opacity_hover=1.0,
 )
 
-# Create XY chart
+# Create XY chart with centered layout
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -168,6 +172,8 @@ chart = pygal.XY(
     legend_at_bottom_columns=4,
     range=(0, 12),
     xrange=(0, 12),
+    print_labels=False,
+    print_values=False,
 )
 
 # Add edges as a single series with lines connecting pairs
@@ -180,8 +186,8 @@ for src, tgt in edges:
     edge_points.append((x2, y2))
     edge_points.append(None)  # Break the line for next edge
 
-# Add edges without including in legend
-chart.add("", edge_points, stroke=True, show_dots=False, fill=False)
+# Add edges (using None title to exclude from legend)
+chart.add(None, edge_points, stroke=True, show_dots=False, fill=False)
 
 # Since pygal doesn't support per-point sizing, we create multiple series per group
 # based on degree ranges to encode connectivity visually

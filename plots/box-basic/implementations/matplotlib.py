@@ -1,7 +1,7 @@
 """ pyplots.ai
 box-basic: Basic Box Plot
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-14
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -13,11 +13,11 @@ np.random.seed(42)
 categories = ["Engineering", "Marketing", "Sales", "Support"]
 colors = ["#306998", "#FFD43B", "#4B8BBE", "#E8A838"]
 
-# Generate realistic distribution data for each category
+# Generate realistic distribution data with varied characteristics
 data = [
     np.random.normal(75, 12, 100),  # Engineering: mean 75, std 12
-    np.random.normal(82, 8, 100),  # Marketing: mean 82, std 8
-    np.random.normal(70, 15, 100),  # Sales: mean 70, std 15
+    np.random.normal(82, 8, 100),  # Marketing: mean 82, std 8, tighter spread
+    np.random.normal(70, 15, 100),  # Sales: mean 70, std 15, wider spread
     np.random.normal(78, 10, 100),  # Support: mean 78, std 10
 ]
 

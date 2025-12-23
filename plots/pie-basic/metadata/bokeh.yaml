@@ -1,10 +1,10 @@
 library: bokeh
 specification_id: pie-basic
-created: 2025-12-14 08:48:04+00:00
-updated: 2025-12-14 08:48:04+00:00
+created: '2025-12-23T00:36:23Z'
+updated: '2025-12-23T00:40:42Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20205390413
-issue: 678
+workflow_run: 20447773542
+issue: 0
 python_version: 3.13.11
 library_version: 3.8.1
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-basic/bokeh/plot.png
@@ -12,6 +12,16 @@ preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-basic/bok
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-basic/bokeh/plot.html
 quality_score: 91
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Correct title format following pyplots.ai convention
+  - 'All spec requirements implemented: percentage labels on slices, distinct colors,
+    legend, and explosion effect on the largest slice'
+  - Smart color contrast handling (dark text on yellow slice, white text on darker
+    slices)
+  - Clean pie chart appearance with hidden axes/grid and white slice borders
+  - Generates both static PNG and interactive HTML output
+  - Realistic budget allocation scenario with appropriate category names
+  weaknesses:
+  - Legend appears relatively small compared to the large canvas size; legend text
+    could be scaled up for better readability at full resolution
+  - Code uses manual loops instead of ColumnDataSource which is more idiomatic Bokeh

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 arc-basic: Basic Arc Diagram
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-17
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.patches as mpatches
@@ -15,7 +15,7 @@ np.random.seed(42)
 nodes = ["Alice", "Bob", "Carol", "David", "Eve", "Frank", "Grace", "Henry", "Iris", "Jack"]
 n_nodes = len(nodes)
 
-# Edges: pairs of connected nodes with weights
+# Edges: pairs of connected nodes with weights (start, end, weight)
 edges = [
     (0, 1, 3),  # Alice-Bob (strong connection)
     (0, 3, 2),  # Alice-David
@@ -38,8 +38,8 @@ edges = [
 fig, ax = plt.subplots(figsize=(16, 9))
 
 # Node positions along x-axis
-x_positions = np.linspace(0, 1, n_nodes)
-y_baseline = 0.1
+x_positions = np.linspace(0.05, 0.95, n_nodes)
+y_baseline = 0.15
 
 # Draw arcs
 for start, end, weight in edges:
@@ -48,17 +48,17 @@ for start, end, weight in edges:
 
     # Arc height proportional to distance between nodes
     distance = abs(end - start)
-    height = 0.08 * distance
+    height = 0.07 * distance
 
     # Center and width of the arc
     x_center = (x_start + x_end) / 2
     arc_width = abs(x_end - x_start)
 
     # Arc thickness based on weight
-    linewidth = 1.5 + weight * 1.0
+    linewidth = 2.0 + weight * 1.2
 
     # Semi-transparent arcs
-    alpha = 0.6
+    alpha = 0.55
 
     # Create arc using Arc patch
     arc = mpatches.Arc(
@@ -75,15 +75,15 @@ for start, end, weight in edges:
     ax.add_patch(arc)
 
 # Draw nodes
-ax.scatter(x_positions, [y_baseline] * n_nodes, s=400, c="#FFD43B", edgecolors="#306998", linewidths=2, zorder=5)
+ax.scatter(x_positions, [y_baseline] * n_nodes, s=500, c="#FFD43B", edgecolors="#306998", linewidths=2.5, zorder=5)
 
 # Add node labels
 for x, name in zip(x_positions, nodes, strict=True):
-    ax.text(x, y_baseline - 0.05, name, ha="center", va="top", fontsize=14, fontweight="bold", color="#306998")
+    ax.text(x, y_baseline - 0.06, name, ha="center", va="top", fontsize=16, fontweight="bold", color="#306998")
 
 # Styling
-ax.set_xlim(-0.05, 1.05)
-ax.set_ylim(-0.1, 0.9)
+ax.set_xlim(-0.02, 1.02)
+ax.set_ylim(-0.05, 0.85)
 ax.set_aspect("equal")
 
 # Remove axes

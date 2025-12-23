@@ -1,12 +1,23 @@
 """ pyplots.ai
 sparkline-basic: Basic Sparkline
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-16
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import numpy as np
 import pandas as pd
-from plotnine import aes, element_blank, element_text, geom_line, geom_point, ggplot, labs, scale_color_manual, theme
+from plotnine import (
+    aes,
+    element_blank,
+    element_rect,
+    element_text,
+    geom_line,
+    geom_point,
+    ggplot,
+    labs,
+    scale_color_manual,
+    theme,
+)
 
 
 # Data - simulated daily sales trend with realistic patterns
@@ -39,8 +50,8 @@ highlight_df = pd.DataFrame(
 # Plot - sparkline with minimal chrome, wide aspect ratio
 plot = (
     ggplot(df, aes(x="x", y="y"))
-    + geom_line(color="#306998", size=2)
-    + geom_point(data=highlight_df, mapping=aes(x="x", y="y", color="type"), size=6)
+    + geom_line(color="#306998", size=2.5)
+    + geom_point(data=highlight_df, mapping=aes(x="x", y="y", color="type"), size=7)
     + scale_color_manual(values={"min": "#E74C3C", "max": "#27AE60", "first": "#306998", "last": "#306998"})
     + labs(title="sparkline-basic · plotnine · pyplots.ai")
     + theme(
@@ -52,8 +63,8 @@ plot = (
         axis_line=element_blank(),
         panel_grid_major=element_blank(),
         panel_grid_minor=element_blank(),
-        panel_background=element_blank(),
-        plot_background=element_blank(),
+        panel_background=element_rect(fill="white"),
+        plot_background=element_rect(fill="white"),
         # Title styling
         plot_title=element_text(size=24, ha="center"),
         # Remove legend

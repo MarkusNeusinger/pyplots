@@ -1,7 +1,7 @@
 """ pyplots.ai
 step-basic: Basic Step Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-15
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -25,9 +25,9 @@ df = pd.DataFrame({"month": months, "cumulative_sales": cumulative_sales})
 plot = (
     ggplot(df, aes(x="month", y="cumulative_sales"))  # noqa: F405
     + geom_step(color="#306998", size=2, direction="hv")  # noqa: F405
-    + geom_point(color="#FFD43B", size=5)  # noqa: F405  Markers at data points
+    + geom_point(color="#FFD43B", size=5, stroke=1)  # noqa: F405
     + labs(  # noqa: F405
-        x="Month", y="Cumulative Sales ($K)", title="step-basic \u00b7 lets-plot \u00b7 pyplots.ai"
+        x="Month", y="Cumulative Sales ($K)", title="step-basic · letsplot · pyplots.ai"
     )
     + scale_x_continuous(breaks=list(range(1, 13)))  # noqa: F405
     + ggsize(1600, 900)  # noqa: F405

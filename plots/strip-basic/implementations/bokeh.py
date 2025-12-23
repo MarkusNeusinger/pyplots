@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 strip-basic: Basic Strip Plot
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-17
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -44,7 +44,7 @@ for i, cat in enumerate(categories):
 
 source = ColumnDataSource(data={"x": x_values, "y": y_values, "color": colors})
 
-# Create figure with categorical x-axis
+# Create figure
 p = figure(
     width=4800,
     height=2700,
@@ -57,6 +57,11 @@ p = figure(
 
 # Plot strip points
 p.scatter(x="x", y="y", source=source, size=28, color="color", alpha=0.6, line_color="white", line_width=2)
+
+# Add horizontal lines for group means as reference
+for i, cat in enumerate(categories):
+    mean_val = float(np.mean(data[cat]))
+    p.line(x=[i - 0.35, i + 0.35], y=[mean_val, mean_val], line_color="#333333", line_width=5, line_dash="solid")
 
 # Styling for 4800x2700 px
 p.title.text_font_size = "42pt"

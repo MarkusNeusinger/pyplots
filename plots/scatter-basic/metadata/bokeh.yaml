@@ -1,17 +1,26 @@
 library: bokeh
 specification_id: scatter-basic
-created: 2025-12-13 23:13:59+00:00
-updated: 2025-12-13 23:13:59+00:00
+created: '2025-12-22T23:35:35Z'
+updated: '2025-12-23T00:15:21Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20199223493
-issue: 611
+workflow_run: 20446832275
+issue: 0
 python_version: 3.13.11
 library_version: 3.8.1
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/bokeh/plot.html
-quality_score: 100
+quality_score: 85
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent text legibility with well-scaled font sizes for 4800x2700 canvas
+  - Clean KISS code structure with proper reproducibility (seed=42)
+  - Realistic educational data scenario (study hours vs exam scores)
+  - Correct title format and descriptive axis labels with units
+  - Proper use of ColumnDataSource pattern
+  weaknesses:
+  - HoverTool adds no value to static PNG output - Bokeh distinctive features not
+    visible in rendered image
+  - Marker size=50 is slightly too large for 100 points, causing visual density issues
+    in clustered regions
+  - No legend to identify the data series (minor for single-series plot)

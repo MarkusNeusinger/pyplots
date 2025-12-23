@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 gauge-basic: Basic Gauge Chart
 Library: highcharts unknown | Python 3.13.11
-Quality: 85/100 | Created: 2025-12-23
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import json

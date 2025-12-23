@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: network-basic
 created: '2025-12-23T15:14:18Z'
-updated: '2025-12-23T15:28:05Z'
+updated: '2025-12-23T15:34:32Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20464355674
 issue: 0
@@ -10,20 +10,18 @@ library_version: 3.8.1
 preview_url: https://storage.googleapis.com/pyplots-images/plots/network-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/network-basic/bokeh/plot.html
-quality_score: 78
+quality_score: 85
 review:
   strengths:
-  - Excellent use of Bokeh interactive features (HoverTool with name and connection
-    count)
-  - Well-implemented force-directed layout algorithm that clearly separates communities
-  - Node degree-based sizing effectively highlights more connected individuals
-  - Clean, readable code structure with good comments
-  - Colorblind-safe palette with four distinct colors
-  - Both PNG and HTML outputs for static and interactive viewing
+  - Excellent force-directed spring layout algorithm implementation from scratch
+  - Good use of Bokeh ColumnDataSource and HoverTool for interactivity
+  - Clean colorblind-safe palette with good group differentiation
+  - Node size scaled by degree as specified
+  - Both PNG and HTML outputs generated
   weaknesses:
-  - Legend is far too small and poorly positioned - needs much larger text (currently
-    nearly illegible at 4800x2700)
-  - 'Title format incorrect: shows "Social Network · network-basic · bokeh · pyplots.ai"
-    but spec requires "network-basic · bokeh · pyplots.ai"'
-  - Layout is diagonally biased, leaving significant empty space in top-right and
-    bottom-left corners
+  - 'Title format incorrect: includes extra prefix instead of just {spec-id} · {library}
+    · pyplots.ai'
+  - Legend text is too small for the 4800x2700 canvas
+  - Network positioned toward upper-left leaving significant empty space in lower-right
+    corner
+  - Label positioning could be improved for nodes near canvas edges

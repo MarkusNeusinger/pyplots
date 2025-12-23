@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 network-basic: Basic Network Graph
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 78/100 | Created: 2025-12-23
+Quality: 85/100 | Created: 2025-12-23
 """
 
 import numpy as np

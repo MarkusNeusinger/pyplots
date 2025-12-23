@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 candlestick-basic: Basic Candlestick Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-23
@@ -44,15 +44,16 @@ y_max = max(all_highs) + 2
 bullish_color = "#22A06B"
 bearish_color = "#EF4444"
 
-# Build colors list - each candlestick has wick + body (2 series each)
+# Build color list - bodies first, then wicks (same order as series)
 colors_list = []
 for candle in ohlc_data:
     is_bullish = candle["close"] >= candle["open"]
-    color = bullish_color if is_bullish else bearish_color
-    colors_list.append(color)  # Wick
-    colors_list.append(color)  # Body
+    colors_list.append(bullish_color if is_bullish else bearish_color)
+for candle in ohlc_data:
+    is_bullish = candle["close"] >= candle["open"]
+    colors_list.append(bullish_color if is_bullish else bearish_color)
 
-# Custom style for 4800x2700 output
+# Custom style for 4800x2700 output with larger fonts
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -60,11 +61,11 @@ custom_style = Style(
     foreground_strong="#333333",
     foreground_subtle="#666666",
     colors=tuple(colors_list),
-    title_font_size=60,
-    label_font_size=40,
-    major_label_font_size=36,
-    legend_font_size=36,
-    value_font_size=32,
+    title_font_size=72,
+    label_font_size=48,
+    major_label_font_size=44,
+    legend_font_size=44,
+    value_font_size=36,
 )
 
 # Create XY chart for candlesticks
@@ -72,7 +73,7 @@ chart = pygal.XY(
     style=custom_style,
     width=4800,
     height=2700,
-    title="candlestick-basic \u00b7 pygal \u00b7 pyplots.ai",
+    title="candlestick-basic · pygal · pyplots.ai",
     x_title="Trading Day",
     y_title="Price ($)",
     show_dots=False,
@@ -82,43 +83,53 @@ chart = pygal.XY(
     xrange=(0, n_days + 1),
     show_legend=True,
     legend_at_bottom=True,
-    legend_box_size=24,
-    margin=50,
+    legend_box_size=32,
+    margin=60,
+    spacing=40,
 )
 
-# Draw each candlestick using thick lines
-# Wick: thin vertical line from low to high
-# Body: thick vertical line from open to close
-wick_width = 6
-body_width = 50
+# Stroke widths - increased for better visibility on large canvas
+wick_width = 16
+body_width = 70
 
-# Track if we've added legend entries
-bullish_legend_added = False
-bearish_legend_added = False
+# Track legend state
+bullish_legend_done = False
+bearish_legend_done = False
 
+# Add each candlestick body as a separate series
 for candle in ohlc_data:
     day = candle["day"]
-    open_p = candle["open"]
-    high = candle["high"]
-    low = candle["low"]
-    close = candle["close"]
-    is_bullish = close >= open_p
+    is_bullish = candle["close"] >= candle["open"]
 
-    # Wick (thin line from low to high)
-    chart.add(None, [(day, low), (day, high)], stroke=True, show_dots=False, stroke_style={"width": wick_width})
-
-    # Body (thick line from open to close)
-    # Add legend label only for first bullish and first bearish
-    if is_bullish and not bullish_legend_added:
+    # Determine legend label
+    if is_bullish and not bullish_legend_done:
         label = "Bullish (Up)"
-        bullish_legend_added = True
-    elif not is_bullish and not bearish_legend_added:
+        bullish_legend_done = True
+    elif not is_bullish and not bearish_legend_done:
         label = "Bearish (Down)"
-        bearish_legend_added = True
+        bearish_legend_done = True
     else:
         label = None
 
-    chart.add(label, [(day, open_p), (day, close)], stroke=True, show_dots=False, stroke_style={"width": body_width})
+    # Body (open to close)
+    chart.add(
+        label,
+        [(day, candle["open"]), (day, candle["close"])],
+        stroke=True,
+        show_dots=False,
+        stroke_style={"width": body_width, "linecap": "butt"},
+    )
+
+# Add each wick as a separate series (no legends)
+for candle in ohlc_data:
+    day = candle["day"]
+    chart.add(
+        None,
+        [(day, candle["low"]), (day, candle["high"])],
+        stroke=True,
+        show_dots=False,
+        stroke_style={"width": wick_width, "linecap": "butt"},
+    )
 
 # Save outputs
 chart.render_to_png("plot.png")

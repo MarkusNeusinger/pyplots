@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 swarm-basic: Basic Swarm Plot
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-23
@@ -48,10 +48,10 @@ df["treatment"] = pd.Categorical(df["treatment"], categories=treatment_groups, o
 # Create swarm plot using jittered points
 plot = (
     ggplot(df, aes(x="treatment", y="biomarker", color="treatment"))
-    + geom_point(position=position_jitter(width=0.25, height=0, random_state=42), size=4, alpha=0.7)
+    + geom_point(position=position_jitter(width=0.3, height=0, random_state=42), size=3.5, alpha=0.75)
     # Add median markers for each category
     + stat_summary(fun_y=np.median, geom="point", size=8, shape="D", color="#2C3E50")
-    + scale_color_manual(values=["#306998", "#FFD43B", "#4B8BBE", "#E07B39"])
+    + scale_color_manual(values=["#1B9E77", "#D95F02", "#7570B3", "#E7298A"])
     + labs(x="Treatment Group", y="Biomarker Level (ng/mL)", title="swarm-basic · plotnine · pyplots.ai")
     + theme_minimal()
     + theme(
@@ -65,4 +65,4 @@ plot = (
 )
 
 # Save
-plot.save("plot.png", dpi=300, verbose=False)
+plot.save("plot.png", dpi=300)

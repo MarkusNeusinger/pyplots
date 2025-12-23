@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 span-basic: Basic Span Plot (Highlighted Region)
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2025-12-23
+Library: highcharts unknown | Python 3.13.11
+Quality: 93/100 | Created: 2025-12-23
 """
 
 import tempfile

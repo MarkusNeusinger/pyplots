@@ -19,8 +19,6 @@ review:
   - Correct title format and descriptive axis labels with units
   - Proper use of ColumnDataSource pattern
   weaknesses:
-  - HoverTool adds no value to static PNG output - Bokeh distinctive features not
-    visible in rendered image
   - Marker size=50 is slightly too large for 100 points, causing visual density issues
     in clustered regions
   - No legend to identify the data series (minor for single-series plot)

@@ -79,7 +79,7 @@ jobs:
         run: |
           uv venv .venv
           source .venv/bin/activate
-          uv pip install ${{ steps.deps.outputs.deps }} pandas>=2.2.0 ruff
+          uv pip install ${{ steps.deps.outputs.deps }} pandas>=2.2.0 ruff Pillow>=10.0.0
 
       - name: Setup Chrome for Highcharts
         if: inputs.library == 'highcharts'
@@ -238,6 +238,30 @@ jobs:
             ### Report result
             Print: `REPAIR_SUCCESS` or `REPAIR_FAILED: <reason>`
 
+      - name: Process repaired image
+        if: success()
+        env:
+          SPEC_ID: ${{ inputs.specification_id }}
+          LIBRARY: ${{ inputs.library }}
+        run: |
+          IMPL_DIR="plots/${SPEC_ID}/implementations"
+
+          if [ ! -f "$IMPL_DIR/plot.png" ]; then
+            echo "::warning::No plot.png found after repair"
+            exit 0
+          fi
+
+          source .venv/bin/activate
+
+          # Process PNG: optimize and create thumbnail
+          python -m core.images process \
+            "$IMPL_DIR/plot.png" \
+            "$IMPL_DIR/plot.png" \
+            "$IMPL_DIR/plot_thumb.png"
+
+          echo "::notice::Processed images: optimized + thumbnail created"
+          ls -la "$IMPL_DIR/"
+
       - name: Upload repaired plot to GCS staging
         if: success()
         env:
@@ -259,6 +283,11 @@ jobs:
           if [ -f "$IMPL_DIR/plot.png" ]; then
             gsutil cp "$IMPL_DIR/plot.png" "${STAGING_PATH}/plot.png"
             gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot.png" 2>/dev/null || true
+          fi
+
+          if [ -f "$IMPL_DIR/plot_thumb.png" ]; then
+            gsutil cp "$IMPL_DIR/plot_thumb.png" "${STAGING_PATH}/plot_thumb.png"
+            gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot_thumb.png" 2>/dev/null || true
           fi
 
           if [ -f "$IMPL_DIR/plot.html" ]; then

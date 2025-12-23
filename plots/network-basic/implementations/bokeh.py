@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 network-basic: Basic Network Graph
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -121,7 +121,7 @@ for src, tgt in edges:
     degrees[src] += 1
     degrees[tgt] += 1
 
-# Colors for groups
+# Colors for groups (Python Blue primary, then colorblind-safe)
 group_colors = ["#306998", "#FFD43B", "#4CAF50", "#FF7043"]
 group_names = ["Group A", "Group B", "Group C", "Group D"]
 
@@ -150,6 +150,7 @@ for src, tgt in edges:
 
 # Draw nodes by group (for legend)
 legend_items = []
+renderers_for_hover = []
 for group_id, (color, name) in enumerate(zip(group_colors, group_names, strict=True)):
     group_nodes = [node for node in nodes if node["group"] == group_id]
     node_x = [pos[node["id"]][0] for node in group_nodes]
@@ -166,6 +167,7 @@ for group_id, (color, name) in enumerate(zip(group_colors, group_names, strict=T
         x="x", y="y", size="size", source=source, fill_color=color, line_color="#333333", line_width=2, fill_alpha=0.9
     )
     legend_items.append(LegendItem(label=name, renderers=[renderer]))
+    renderers_for_hover.append(renderer)
 
 # Add node labels
 for node in nodes:
@@ -182,10 +184,7 @@ for node in nodes:
     )
 
 # Add hover tool
-hover = HoverTool(
-    tooltips=[("Name", "@label"), ("Connections", "@connections")],
-    renderers=[r for item in legend_items for r in item.renderers],
-)
+hover = HoverTool(tooltips=[("Name", "@label"), ("Connections", "@connections")], renderers=renderers_for_hover)
 p.add_tools(hover)
 
 # Add legend

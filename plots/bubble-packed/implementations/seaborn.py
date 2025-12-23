@@ -1,12 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-23
 """
 
-import matplotlib.patches as patches
+import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 
 
@@ -19,7 +20,7 @@ data = {
     "Retail": [("Amazon", 140), ("Walmart", 60), ("Costco", 45), ("Target", 30)],
 }
 
-# Prepare circles with group info, sorted by size (largest first for better packing)
+# Prepare circles sorted by size (largest first for better packing)
 all_circles = []
 for group, items in data.items():
     for name, value in items:
@@ -28,58 +29,52 @@ for group, items in data.items():
 
 all_circles.sort(key=lambda x: -x["radius"])
 
-# Set seaborn style and color palette
-sns.set_style("white")
-palette = sns.color_palette("Set2", n_colors=len(data))
-group_colors = {group: palette[i] for i, group in enumerate(data.keys())}
-
-# Create figure
-fig, ax = plt.subplots(figsize=(16, 9))
-
-# Circle packing using front-chain algorithm (place circles one by one)
+# Circle packing - place circles one by one without overlap (inline, no functions)
 placed_circles = []
-cx, cy = 0, 0  # Start at origin, recenter later
+cx, cy = 0, 0
 
-
-def find_position(new_radius, placed, center):
-    """Find position for new circle without overlap."""
-    if not placed:
-        return center[0], center[1]
-
-    # Try positions around existing circles
-    best_pos = None
-    best_dist = float("inf")
-
-    for p in placed:
-        # Try multiple angles around each placed circle
-        for angle in np.linspace(0, 2 * np.pi, 72, endpoint=False):
-            dist = p["radius"] + new_radius + 2  # Small gap
-            test_x = p["x"] + dist * np.cos(angle)
-            test_y = p["y"] + dist * np.sin(angle)
-
-            # Check overlap with all placed circles
-            valid = True
-            for other in placed:
-                d = np.sqrt((test_x - other["x"]) ** 2 + (test_y - other["y"]) ** 2)
-                if d < other["radius"] + new_radius + 1:
-                    valid = False
-                    break
-
-            if valid:
-                # Calculate distance from center (prefer closer to center)
-                center_dist = np.sqrt((test_x - center[0]) ** 2 + (test_y - center[1]) ** 2)
-                if center_dist < best_dist:
-                    best_dist = center_dist
-                    best_pos = (test_x, test_y)
-
-    return best_pos if best_pos else (center[0] + np.random.randn() * 10, center[1] + np.random.randn() * 10)
-
-
-# Place circles one by one
 for circle in all_circles:
-    x, y = find_position(circle["radius"], placed_circles, (cx, cy))
+    new_radius = circle["radius"]
+
+    if not placed_circles:
+        # First circle at origin
+        best_x, best_y = cx, cy
+    else:
+        # Try positions around existing circles, find closest to center
+        best_pos = None
+        best_dist = float("inf")
+
+        for p in placed_circles:
+            for angle in np.linspace(0, 2 * np.pi, 72, endpoint=False):
+                dist = p["radius"] + new_radius + 2
+                test_x = p["x"] + dist * np.cos(angle)
+                test_y = p["y"] + dist * np.sin(angle)
+
+                # Check overlap with all placed circles
+                valid = True
+                for other in placed_circles:
+                    d = np.sqrt((test_x - other["x"]) ** 2 + (test_y - other["y"]) ** 2)
+                    if d < other["radius"] + new_radius + 1:
+                        valid = False
+                        break
+
+                if valid:
+                    center_dist = np.sqrt((test_x - cx) ** 2 + (test_y - cy) ** 2)
+                    if center_dist < best_dist:
+                        best_dist = center_dist
+                        best_pos = (test_x, test_y)
+
+        best_x, best_y = best_pos if best_pos else (cx, cy)
+
     placed_circles.append(
-        {"x": x, "y": y, "radius": circle["radius"], "name": circle["name"], "group": circle["group"]}
+        {
+            "x": best_x,
+            "y": best_y,
+            "radius": new_radius,
+            "name": circle["name"],
+            "group": circle["group"],
+            "value": circle["value"],
+        }
     )
 
 # Calculate bounds and recenter
@@ -92,12 +87,8 @@ max_x = max(x + r for x, r in zip(all_x, all_r, strict=True))
 min_y = min(y - r for y, r in zip(all_y, all_r, strict=True))
 max_y = max(y + r for y, r in zip(all_y, all_r, strict=True))
 
-# Add padding
-padding = 20
-plot_width = max_x - min_x + 2 * padding
-plot_height = max_y - min_y + 2 * padding
-
 # Offset to center in plot area
+padding = 20
 offset_x = -min_x + padding
 offset_y = -min_y + padding
 
@@ -105,20 +96,65 @@ for c in placed_circles:
     c["x"] += offset_x
     c["y"] += offset_y
 
-# Draw circles
-for c in placed_circles:
-    circle_patch = patches.Circle(
-        (c["x"], c["y"]), c["radius"], facecolor=group_colors[c["group"]], edgecolor="white", linewidth=3, alpha=0.9
-    )
-    ax.add_patch(circle_patch)
+plot_width = max_x - min_x + 2 * padding
+plot_height = max_y - min_y + 2 * padding
 
-    # Add labels for larger circles
-    if c["radius"] > 35:
-        ax.text(c["x"], c["y"], c["name"], ha="center", va="center", fontsize=18, fontweight="bold", color="white")
-    elif c["radius"] > 28:
-        ax.text(c["x"], c["y"], c["name"], ha="center", va="center", fontsize=14, fontweight="bold", color="white")
-    elif c["radius"] > 22:
-        ax.text(c["x"], c["y"], c["name"], ha="center", va="center", fontsize=11, fontweight="bold", color="white")
+# Create DataFrame for seaborn
+df = pd.DataFrame(placed_circles)
+# Scale marker size for scatterplot (s parameter uses area in points^2)
+df["marker_size"] = (df["radius"] * 2) ** 2 * 3.14  # Convert radius to area for proper sizing
+
+# Set seaborn style
+sns.set_style("white")
+palette = sns.color_palette("Set2", n_colors=len(data))
+group_colors = {group: palette[i] for i, group in enumerate(data.keys())}
+
+# Create figure
+fig, ax = plt.subplots(figsize=(16, 9))
+
+# Use seaborn scatterplot for the bubbles
+sns.scatterplot(
+    data=df,
+    x="x",
+    y="y",
+    hue="group",
+    size="marker_size",
+    sizes=(df["marker_size"].min(), df["marker_size"].max()),
+    palette="Set2",
+    alpha=0.9,
+    edgecolor="white",
+    linewidth=3,
+    legend=False,
+    ax=ax,
+)
+
+# Add labels for all circles using annotations
+for _, row in df.iterrows():
+    if row["radius"] > 35:
+        ax.text(
+            row["x"], row["y"], row["name"], ha="center", va="center", fontsize=18, fontweight="bold", color="white"
+        )
+    elif row["radius"] > 28:
+        ax.text(
+            row["x"], row["y"], row["name"], ha="center", va="center", fontsize=14, fontweight="bold", color="white"
+        )
+    elif row["radius"] > 22:
+        ax.text(
+            row["x"], row["y"], row["name"], ha="center", va="center", fontsize=11, fontweight="bold", color="white"
+        )
+    else:
+        # External annotation for smaller circles
+        ax.annotate(
+            row["name"],
+            xy=(row["x"], row["y"]),
+            xytext=(row["x"] + row["radius"] + 15, row["y"]),
+            fontsize=10,
+            fontweight="bold",
+            color="gray",
+            arrowprops={"arrowstyle": "-", "color": "gray", "lw": 1},
+            ha="left",
+            va="center",
+        )
 
 # Configure axes
 ax.set_xlim(0, plot_width)
@@ -129,13 +165,13 @@ ax.axis("off")
 # Title
 ax.set_title("bubble-packed · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
 
-# Create legend (position at lower right to avoid overlap)
+# Create legend - position upper left to avoid overlap with data
 legend_elements = [
-    patches.Patch(facecolor=group_colors[group], edgecolor="white", linewidth=2, label=group) for group in data.keys()
+    mpatches.Patch(facecolor=group_colors[group], edgecolor="white", linewidth=2, label=group) for group in data.keys()
 ]
 ax.legend(
     handles=legend_elements,
-    loc="lower right",
+    loc="upper left",
     fontsize=14,
     framealpha=0.95,
     title="Sector",

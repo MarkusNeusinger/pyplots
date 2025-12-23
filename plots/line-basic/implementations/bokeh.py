@@ -1,7 +1,7 @@
 """ pyplots.ai
 line-basic: Basic Line Plot
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-13
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -10,44 +10,54 @@ from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
 
 
-# Data - Monthly sales figures for a year
+# Data - Daily temperature readings for a month
 np.random.seed(42)
-months = np.arange(1, 13)
-base_sales = 50 + np.linspace(0, 30, 12)  # Upward trend
-noise = np.random.randn(12) * 5
-sales = base_sales + noise
+days = np.arange(1, 32)
+
+# Temperature with seasonal pattern and random variation
+base_temp = 20 + 8 * np.sin(np.linspace(0, np.pi, 31))  # Warm mid-month
+noise = np.random.randn(31) * 2
+temperature = base_temp + noise
 
 # Create ColumnDataSource
-source = ColumnDataSource(data={"x": months, "y": sales})
+source = ColumnDataSource(data={"day": days, "temperature": temperature})
 
 # Create figure (4800 × 2700 px)
 p = figure(
     width=4800,
     height=2700,
     title="line-basic · bokeh · pyplots.ai",
-    x_axis_label="Month",
-    y_axis_label="Sales (thousands)",
+    x_axis_label="Day of Month",
+    y_axis_label="Temperature (°C)",
 )
 
-# Plot line with markers
-p.line(x="x", y="y", source=source, line_width=4, line_color="#306998", legend_label="Sales")
-p.scatter(x="x", y="y", source=source, size=18, fill_color="#306998", line_color="white", line_width=2)
+# Plot line with markers for visibility
+p.line(x="day", y="temperature", source=source, line_width=5, line_color="#306998")
+p.scatter(x="day", y="temperature", source=source, size=16, fill_color="#306998", line_color="white", line_width=3)
 
 # Style text sizes for 4800x2700 px
-p.title.text_font_size = "48pt"
-p.xaxis.axis_label_text_font_size = "36pt"
-p.yaxis.axis_label_text_font_size = "36pt"
-p.xaxis.major_label_text_font_size = "28pt"
-p.yaxis.major_label_text_font_size = "28pt"
+p.title.text_font_size = "42pt"
+p.xaxis.axis_label_text_font_size = "32pt"
+p.yaxis.axis_label_text_font_size = "32pt"
+p.xaxis.major_label_text_font_size = "24pt"
+p.yaxis.major_label_text_font_size = "24pt"
 
-# Grid styling
+# Grid styling - subtle dashed lines
 p.grid.grid_line_alpha = 0.3
 p.grid.grid_line_dash = "dashed"
 
-# Legend styling
-p.legend.label_text_font_size = "28pt"
-p.legend.location = "top_left"
-p.legend.background_fill_alpha = 0.7
+# Background styling
+p.background_fill_color = "#fafafa"
+p.border_fill_color = "white"
+
+# Axis styling
+p.axis.axis_line_width = 2
+p.axis.axis_line_color = "#333333"
+p.axis.major_tick_line_width = 2
+p.axis.minor_tick_line_width = 1
+
+# Remove toolbar for cleaner static image
+p.toolbar_location = None
 
 # Save as PNG and HTML
 export_png(p, filename="plot.png")

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bullet-basic: Basic Bullet Chart
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-16
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 from bokeh.io import export_png, output_file, save
@@ -76,7 +76,7 @@ for i, metric in enumerate(metrics):
         x=-2,
         y=y_pos,
         text=metric["label"],
-        text_font_size="22pt",
+        text_font_size="28pt",
         text_color="#333333",
         text_align="right",
         text_baseline="middle",
@@ -89,7 +89,7 @@ for i, metric in enumerate(metrics):
         x=norm_actual + 3,
         y=y_pos,
         text=str(metric["actual"]),
-        text_font_size="18pt",
+        text_font_size="24pt",
         text_color="#306998",
         text_align="left",
         text_baseline="middle",
@@ -101,12 +101,12 @@ for i, metric in enumerate(metrics):
 p.x_range.start = -35
 p.x_range.end = 115
 
-# Styling
-p.title.text_font_size = "36pt"
+# Styling - scaled for 4800x2700 canvas
+p.title.text_font_size = "42pt"
 p.title.text_color = "#333333"
 p.title.align = "center"
-p.xaxis.axis_label_text_font_size = "24pt"
-p.xaxis.major_label_text_font_size = "18pt"
+p.xaxis.axis_label_text_font_size = "28pt"
+p.xaxis.major_label_text_font_size = "22pt"
 
 # Only show positive tick marks on x-axis
 p.xaxis.ticker = [0, 20, 40, 60, 80, 100]

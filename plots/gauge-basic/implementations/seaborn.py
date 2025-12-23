@@ -1,10 +1,9 @@
-""" pyplots.ai
+"""pyplots.ai
 gauge-basic: Basic Gauge Chart
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-23
 """
 
-import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -57,7 +56,7 @@ for i in range(len(zone_boundaries) - 1):
 
 df_zones = pd.DataFrame(zone_data)
 
-# Use seaborn scatterplot to draw the gauge arc zones
+# Use seaborn scatterplot to draw the gauge arc zones with denser points for smooth appearance
 sns.scatterplot(
     data=df_zones,
     x="x",
@@ -65,7 +64,7 @@ sns.scatterplot(
     hue="zone",
     hue_order=["Low", "Medium", "High"],
     palette=[zone_colors[0], zone_colors[1], zone_colors[2]],
-    s=120,
+    s=180,
     marker="o",
     edgecolor="none",
     alpha=1.0,
@@ -73,16 +72,15 @@ sns.scatterplot(
     ax=ax,
 )
 
-# Draw wedge overlays for smooth appearance (using matplotlib for clean edges)
-for i in range(len(zone_boundaries) - 1):
-    zone_start = zone_boundaries[i]
-    zone_end = zone_boundaries[i + 1]
-    theta1 = start_angle - (zone_end - min_value) / value_range * angle_range
-    theta2 = start_angle - (zone_start - min_value) / value_range * angle_range
-    wedge = mpatches.Wedge(
-        center, radius, theta1, theta2, width=width, facecolor=zone_colors[i], edgecolor="white", linewidth=2
-    )
-    ax.add_patch(wedge)
+# Add thin white arc lines at zone boundaries using seaborn for visual separation
+for threshold in thresholds:
+    boundary_angle = start_angle - (threshold - min_value) / value_range * angle_range
+    rad = np.radians(boundary_angle)
+    boundary_line_data = []
+    for r in np.linspace(radius - width, radius, 10):
+        boundary_line_data.append({"x": center[0] + r * np.cos(rad), "y": center[1] + r * np.sin(rad)})
+    boundary_df = pd.DataFrame(boundary_line_data)
+    sns.lineplot(data=boundary_df, x="x", y="y", color="white", linewidth=3, ax=ax, legend=False)
 
 # Create needle indicator data point using seaborn
 needle_angle = start_angle - (value - min_value) / value_range * angle_range
@@ -97,9 +95,12 @@ needle_tip_y = center[1] + needle_length * np.sin(needle_rad)
 needle_df = pd.DataFrame({"x": [center[0], needle_tip_x], "y": [center[1], needle_tip_y]})
 sns.lineplot(data=needle_df, x="x", y="y", color="#2C3E50", linewidth=6, ax=ax)
 
-# Draw needle tip marker using seaborn scatterplot
+# Draw needle tip marker using seaborn scatterplot - larger and more prominent
 tip_df = pd.DataFrame({"x": [needle_tip_x], "y": [needle_tip_y]})
-sns.scatterplot(data=tip_df, x="x", y="y", s=400, color="#2C3E50", marker="^", ax=ax, zorder=10)
+# White outline for contrast
+sns.scatterplot(data=tip_df, x="x", y="y", s=900, color="white", marker="v", ax=ax, zorder=9)
+# Main tip marker
+sns.scatterplot(data=tip_df, x="x", y="y", s=700, color="#E74C3C", marker="v", ax=ax, zorder=10)
 
 # Draw center hub using seaborn scatterplot
 hub_df = pd.DataFrame({"x": [center[0]], "y": [center[1]]})
@@ -143,7 +144,19 @@ for angle, label in zip(zone_label_angles, zone_label_names, strict=True):
     rad = np.radians(angle)
     x = center[0] + label_radius * np.cos(rad)
     y = center[1] + label_radius * np.sin(rad)
-    ax.text(x, y, label, ha="center", va="center", fontsize=16, color="white", fontweight="bold")
+    # Text shadow/outline for better contrast on colored backgrounds
+    for dx, dy in [(-1, -1), (-1, 1), (1, -1), (1, 1), (-1, 0), (1, 0), (0, -1), (0, 1)]:
+        ax.text(
+            x + dx * 0.003,
+            y + dy * 0.003,
+            label,
+            ha="center",
+            va="center",
+            fontsize=18,
+            color="#1a1a1a",
+            fontweight="bold",
+        )
+    ax.text(x, y, label, ha="center", va="center", fontsize=18, color="white", fontweight="bold")
 
 # Title and subtitle
 ax.set_title("gauge-basic · seaborn · pyplots.ai", fontsize=28, fontweight="bold", pad=20, color="#333333")

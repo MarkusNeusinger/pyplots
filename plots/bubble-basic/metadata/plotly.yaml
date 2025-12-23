@@ -1,10 +1,10 @@
 library: plotly
 specification_id: bubble-basic
-created: 2025-12-14 11:08:06+00:00
-updated: 2025-12-14 11:08:06+00:00
+created: '2025-12-23T01:30:54Z'
+updated: '2025-12-23T06:53:50Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20207008518
-issue: 755
+workflow_run: 20448650104
+issue: 0
 python_version: 3.13.11
 library_version: 6.5.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/plotly/plot.png
@@ -12,6 +12,18 @@ preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/plotly/plot.html
 quality_score: 92
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent title and axis labeling with proper units following spec format exactly
+  - Well-implemented size legend with representative market share values (5%, 15%,
+    30%)
+  - Professional business context (company metrics) matching spec applications
+  - Area-based bubble scaling as spec recommends (normalized size calculation)
+  - Clean, readable code structure with good transparency (0.6) for overlapping bubbles
+  - Rich hover templates showing all three variables
+  weaknesses:
+  - Size legend bubbles in Plotly appear slightly misaligned visually (all same visual
+    size in legend due to scaling)
+  - Could use color gradient based on a fourth variable to showcase Plotly color mapping
+    capabilities
+  - Grid lines at 0.1 alpha are barely visible - could be slightly more prominent
+    (0.2-0.3)

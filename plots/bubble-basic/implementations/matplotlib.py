@@ -1,14 +1,14 @@
 """ pyplots.ai
 bubble-basic: Basic Bubble Chart
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-# Data - three correlated variables
+# Data - three correlated variables representing company metrics
 np.random.seed(42)
 n_points = 50
 
@@ -23,7 +23,7 @@ size_scaled = (size_values / size_values.max()) * 2000 + 200
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-scatter = ax.scatter(x, y, s=size_scaled, alpha=0.6, c="#306998", edgecolors="#1a3d5c", linewidths=1.5)
+ax.scatter(x, y, s=size_scaled, alpha=0.6, c="#306998", edgecolors="#1a3d5c", linewidths=1.5)
 
 # Create size legend
 size_legend_values = [100, 250, 500]

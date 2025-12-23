@@ -205,3 +205,29 @@ Both are valid:
 - **Square**: 3600 × 3600 px (1:1)
 
 Both have ~13M pixels, so font size recommendations apply equally.
+
+## Interactive Libraries
+
+**Important**: Interactive libraries also produce HTML output alongside PNG.
+
+**Interactive libraries**: plotly, bokeh, altair, highcharts, pygal, letsplot
+
+**DO NOT penalize** interactive features that aren't visible in PNG:
+- HoverTool, tooltips, hover info
+- Zoom, pan, selection tools
+- Interactive legends
+- Crossfiltering
+- Animations
+
+These features **add significant value** in the HTML output. The PNG is just a static preview.
+
+**Only criticize** if:
+- Interactive features break the static rendering
+- Hover-only labels make static plot unreadable
+- Features are misconfigured or cause errors
+
+**Good example** (strength, not weakness):
+> "Uses HoverTool for detailed data inspection in HTML output"
+
+**Bad evaluation** (don't do this):
+> ~~"HoverTool adds no value to static PNG output"~~

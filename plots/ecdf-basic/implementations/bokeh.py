@@ -1,7 +1,7 @@
 """ pyplots.ai
 ecdf-basic: Basic ECDF Plot
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -19,8 +19,8 @@ values = np.random.randn(200) * 15 + 50  # Normal distribution: mean=50, std=15
 sorted_values = np.sort(values)
 ecdf_y = np.arange(1, len(sorted_values) + 1) / len(sorted_values)
 
-# Create ColumnDataSource for step function
-# For step function, we need to duplicate points
+# Create step function data
+# For proper ECDF step visualization, duplicate points for horizontal/vertical steps
 x_step = np.repeat(sorted_values, 2)[1:]
 y_step = np.repeat(ecdf_y, 2)[:-1]
 

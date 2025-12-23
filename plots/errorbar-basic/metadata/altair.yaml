@@ -1,17 +1,26 @@
 library: altair
 specification_id: errorbar-basic
-created: 2025-12-17 01:15:06+00:00
-updated: 2025-12-17 01:15:06+00:00
+created: '2025-12-23T13:02:24Z'
+updated: '2025-12-23T13:08:49Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20288168651
-issue: 973
+workflow_run: 20461376227
+issue: 0
 python_version: 3.13.11
 library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/errorbar-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/errorbar-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/errorbar-basic/altair/plot.html
-quality_score: 94
+quality_score: 92
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent use of Altair layering to compose error bars from rule + tick marks
+    for caps
+  - Clean demonstration of asymmetric error bars (Treatment C and D show different
+    upper/lower bounds)
+  - Proper title format and descriptive axis labels with units
+  - Good font sizing throughout (18pt labels, 22pt titles, 28pt main title)
+  - Subtle dashed grid that does not distract from data
+  weaknesses:
+  - Y-axis starting at 0 creates unnecessary whitespace at bottom since all values
+    are above 20
+  - No tooltip added for interactivity (Altair strength not fully utilized)

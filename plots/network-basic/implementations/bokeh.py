@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-basic: Basic Network Graph
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-23
@@ -81,12 +81,12 @@ edges = [
 n = len(nodes)
 
 # Initialize positions in a circular layout based on groups for better separation
-# Position groups in a balanced arrangement to fill canvas evenly
+# Position groups in a balanced 2x2 grid centered on the canvas
 group_centers = {
-    0: (0.25, 0.65),  # Upper-left
-    1: (0.75, 0.65),  # Upper-right
-    2: (0.25, 0.35),  # Lower-left
-    3: (0.75, 0.35),  # Lower-right
+    0: (0.35, 0.60),  # Upper-left
+    1: (0.65, 0.60),  # Upper-right
+    2: (0.35, 0.40),  # Lower-left
+    3: (0.65, 0.40),  # Lower-right
 }
 positions = np.zeros((n, 2))
 for i, node in enumerate(nodes):
@@ -124,10 +124,12 @@ for iteration in range(200):
         if disp_norm > 0:
             positions[i] += (displacement[i] / disp_norm) * min(disp_norm, 0.08 * cooling)
 
-# Normalize positions to fill canvas better [0.12, 0.88] range
+# Normalize positions to center the network on the canvas [0.15, 0.85] range
 pos_min = positions.min(axis=0)
 pos_max = positions.max(axis=0)
-positions = (positions - pos_min) / (pos_max - pos_min + 1e-6) * 0.76 + 0.12
+pos_range = pos_max - pos_min + 1e-6
+# Scale to fit 70% of canvas and center
+positions = (positions - pos_min) / pos_range * 0.70 + 0.15
 pos = {node["id"]: positions[i] for i, node in enumerate(nodes)}
 
 # Calculate node degrees for sizing
@@ -184,39 +186,47 @@ for group_id, (color, name) in enumerate(zip(group_colors, group_names, strict=T
     legend_items.append(LegendItem(label=name, renderers=[renderer]))
     renderers_for_hover.append(renderer)
 
-# Add node labels with offset to reduce overlap
-# Calculate label offsets based on neighboring node positions
-label_offset = 0.035  # Offset distance for labels
+# Add node labels with smart positioning to avoid canvas edge issues
+label_offset = 0.04  # Offset distance for labels
 for node in nodes:
     x, y = pos[node["id"]]
-    # Offset label upward (above the node) for cleaner appearance
     node_size = 45 + degrees[node["id"]] * 10
-    y_offset = label_offset + node_size / 2000  # Scale with node size
+
+    # Smart label positioning: place labels below nodes near top, above for others
+    if y > 0.75:
+        # Node near top edge - place label below
+        y_label = y - label_offset - node_size / 2000
+        baseline = "top"
+    else:
+        # Default: place label above node
+        y_label = y + label_offset + node_size / 2000
+        baseline = "bottom"
+
     p.text(
         x=[x],
-        y=[y + y_offset],
+        y=[y_label],
         text=[node["label"]],
-        text_font_size="18pt",
+        text_font_size="20pt",
         text_font_style="bold",
         text_color="#222222",
         text_align="center",
-        text_baseline="bottom",
+        text_baseline=baseline,
     )
 
 # Add hover tool
 hover = HoverTool(tooltips=[("Name", "@label"), ("Connections", "@connections")], renderers=renderers_for_hover)
 p.add_tools(hover)
 
-# Add legend (positioned at top-right with much larger text for 4800x2700 canvas)
-legend = Legend(items=legend_items, location="top_right", title="Communities", title_text_font_size="48pt")
-legend.label_text_font_size = "40pt"
+# Add legend (positioned at right with large text for 4800x2700 canvas)
+legend = Legend(items=legend_items, location="center", title="Communities", title_text_font_size="56pt")
+legend.label_text_font_size = "48pt"
 legend.background_fill_alpha = 0.95
 legend.border_line_width = 4
-legend.padding = 40
-legend.spacing = 25
-legend.glyph_height = 60
-legend.glyph_width = 60
-legend.margin = 30
+legend.padding = 50
+legend.spacing = 30
+legend.glyph_height = 70
+legend.glyph_width = 70
+legend.margin = 40
 p.add_layout(legend, "right")
 
 # Save outputs

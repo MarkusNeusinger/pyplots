@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 chord-basic: Basic Chord Diagram
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-23
@@ -88,24 +88,14 @@ flows_by_source = {i: [] for i in range(n_entities)}
 for src, tgt, val in flows:
     flows_by_source[src].append((tgt, val))
 
-# Build color list: one color per chord series (grouped by source) + entity nodes
-# Each source gets multiple chords with its color, then 6 entity colors
-all_colors = []
-for i in range(n_entities):
-    # Add color for each chord from this source
-    for _ in flows_by_source[i]:
-        all_colors.append(entity_colors[i])
-# Add colors for entity nodes
-all_colors.extend(entity_colors)
-
-# Custom style for the chart
+# Custom style for the chart - only 6 colors for 6 continents
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=tuple(all_colors),
+    colors=tuple(entity_colors),
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=44,
@@ -121,7 +111,7 @@ chart = pygal.XY(
     width=3600,
     height=3600,
     style=custom_style,
-    title="Continental Migration · chord-basic · pygal · pyplots.ai",
+    title="chord-basic · pygal · pyplots.ai",
     show_legend=True,
     x_title="",
     y_title="",
@@ -137,53 +127,50 @@ chart = pygal.XY(
     xrange=(0, 10),
 )
 
-
-# Function to generate quadratic Bezier curve points
-def bezier_curve(p0, p1, p2, num_points=50):
-    """Generate points along a quadratic Bezier curve."""
-    points = []
-    for t in np.linspace(0, 1, num_points):
-        x = (1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * p1[0] + t**2 * p2[0]
-        y = (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * p1[1] + t**2 * p2[1]
-        points.append((x, y))
-    return points
-
-
-# Draw chords grouped by source (so each gets its source color)
+# Draw chords grouped by source (each source gets its color based on index)
 max_flow = max(val for _, _, val in flows)
+num_bezier_points = 50
 
 for src in range(n_entities):
-    for tgt, val in flows_by_source[src]:
-        src_x, src_y, src_angle = entity_positions[src]
+    src_x, src_y, src_angle = entity_positions[src]
+
+    # Collect all chord points for this source into one series
+    # This way we get one legend entry per continent
+    all_chord_points = []
+
+    for tgt, _val in flows_by_source[src]:
         tgt_x, tgt_y, tgt_angle = entity_positions[tgt]
 
         # Control point toward center for the Bezier curve
-        # Pull factor determines how curved the chord is
         pull_factor = 0.25
         ctrl_x = center_x + pull_factor * (src_x + tgt_x - 2 * center_x) / 2
         ctrl_y = center_y + pull_factor * (src_y + tgt_y - 2 * center_y) / 2
 
-        # Generate curve points
-        curve_points = bezier_curve((src_x, src_y), (ctrl_x, ctrl_y), (tgt_x, tgt_y))
+        # Generate quadratic Bezier curve points inline (KISS - no functions)
+        curve_points = []
+        for t in np.linspace(0, 1, num_bezier_points):
+            bx = (1 - t) ** 2 * src_x + 2 * (1 - t) * t * ctrl_x + t**2 * tgt_x
+            by = (1 - t) ** 2 * src_y + 2 * (1 - t) * t * ctrl_y + t**2 * tgt_y
+            curve_points.append((bx, by))
 
-        # Chord width proportional to flow value (scaled for visibility)
-        stroke_width = 3 + (val / max_flow) * 15
+        # Add a break point (None) between chords, then append this chord
+        if all_chord_points:
+            all_chord_points.append(None)
+        all_chord_points.extend(curve_points)
 
-        # Add chord without legend entry
-        chart.add(
-            "",
-            curve_points,
-            stroke=True,
-            show_dots=False,
-            fill=False,
-            stroke_style={"width": stroke_width, "linecap": "round"},
-        )
+    # Calculate average stroke width for this source's chords
+    avg_flow = sum(val for _, val in flows_by_source[src]) / len(flows_by_source[src])
+    stroke_width = 3 + (avg_flow / max_flow) * 12
 
-# Draw entity nodes on top (as circles at the perimeter)
-for i, name in enumerate(continents):
-    x, y, angle = entity_positions[i]
-    node_data = [{"value": (x, y), "label": f"{name}\nOutflow: {total_outflow[i]}"}]
-    chart.add(name, node_data, stroke=False, dots_size=55)
+    # Add all chords from this source as one series with the continent name
+    chart.add(
+        continents[src],
+        all_chord_points,
+        stroke=True,
+        show_dots=False,
+        fill=False,
+        stroke_style={"width": stroke_width, "linecap": "round"},
+    )
 
 # Save outputs
 chart.render_to_file("plot.svg")
@@ -195,7 +182,7 @@ with open("plot.html", "w") as f:
         """<!DOCTYPE html>
 <html>
 <head>
-    <title>Continental Migration · chord-basic · pygal · pyplots.ai</title>
+    <title>chord-basic · pygal · pyplots.ai</title>
     <style>
         body { margin: 0; padding: 20px; background: #f5f5f5; }
         .container { max-width: 100%; margin: 0 auto; }

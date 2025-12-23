@@ -49,6 +49,20 @@ export function Footer({ onTrackEvent, selectedSpec, selectedLibrary }: FooterPr
         >
           github
         </Link>
+        <span>·</span>
+        <Link
+          href="https://plausible.io/pyplots.ai"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => onTrackEvent?.('external_link', { destination: 'stats', spec: selectedSpec, library: selectedLibrary })}
+          sx={{
+            color: '#9ca3af',
+            textDecoration: 'none',
+            '&:hover': { color: '#6b7280' },
+          }}
+        >
+          stats
+        </Link>
       </Box>
     </Box>
   );

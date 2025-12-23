@@ -3,10 +3,8 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Link from '@mui/material/Link';
-import SubjectIcon from '@mui/icons-material/Subject';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
@@ -39,9 +37,11 @@ export function ImageCard({
 }: ImageCardProps) {
   const [copied, setCopied] = useState(false);
 
-  const label = viewMode === 'library' ? image.spec_id : image.library;
-  const tooltipId = viewMode === 'spec' ? image.library : (image.spec_id || '');
-  const isTooltipOpen = openTooltip === tooltipId;
+  const cardId = `${image.spec_id}-${image.library}`;
+  const specTooltipId = `spec-${cardId}`;
+  const libTooltipId = `lib-${cardId}`;
+  const isSpecTooltipOpen = openTooltip === specTooltipId;
+  const isLibTooltipOpen = openTooltip === libTooltipId;
 
   const libraryInfo = librariesData.find(l => l.id === image.library);
   const specInfo = specsData.find(s => s.id === image.spec_id);
@@ -148,126 +148,115 @@ export function ImageCard({
           }}
         />
       </Card>
-      {/* Label below card: library name in spec mode, spec_id in library mode + info button */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 1.5 }}>
-        <Typography
-          sx={{
-            textAlign: 'center',
-            fontSize: '0.8rem',
-            fontWeight: 600,
-            fontFamily: '"JetBrains Mono", monospace',
-            color: '#9ca3af',
-            textTransform: 'lowercase',
+      {/* Label below card: clickable spec-id · library */}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 1.5, gap: 0.5 }}>
+        {/* Clickable Spec ID */}
+        <Tooltip
+          title={specInfo?.description || 'No description available'}
+          arrow
+          placement="bottom"
+          open={isSpecTooltipOpen}
+          disableFocusListener
+          disableHoverListener
+          disableTouchListener
+          slotProps={{
+            tooltip: {
+              sx: {
+                maxWidth: { xs: '80vw', sm: 400 },
+                fontFamily: '"JetBrains Mono", monospace',
+                fontSize: '0.8rem',
+              },
+            },
           }}
         >
-          {label}
-        </Typography>
-        {/* Info button: shows library desc in spec mode, spec desc in library mode */}
-        {viewMode === 'spec' ? (
-          <Tooltip
-            title={
-              <Box>
-                <Typography sx={{ fontSize: '0.8rem', mb: 1 }}>
-                  {libraryInfo?.description || ''}
-                </Typography>
-                {libraryInfo?.documentation_url && (
-                  <Link
-                    href={libraryInfo.documentation_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    sx={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 0.5,
-                      fontSize: '0.75rem',
-                      color: '#90caf9',
-                      textDecoration: 'underline',
-                      '&:hover': { color: '#fff' },
-                    }}
-                  >
-                    {libraryInfo.documentation_url.replace(/^https?:\/\//, '')} <OpenInNewIcon sx={{ fontSize: 12 }} />
-                  </Link>
-                )}
-              </Box>
-            }
-            arrow
-            placement="bottom"
-            open={isTooltipOpen}
-            disableFocusListener
-            disableHoverListener
-            disableTouchListener
-            slotProps={{
-              tooltip: {
-                sx: {
-                  maxWidth: { xs: '80vw', sm: 400 },
-                  fontFamily: '"JetBrains Mono", monospace',
-                  fontSize: '0.8rem',
-                },
+          <Typography
+            data-description-btn
+            onClick={(e) => {
+              e.stopPropagation();
+              onTooltipToggle(isSpecTooltipOpen ? null : specTooltipId);
+            }}
+            sx={{
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              fontFamily: '"JetBrains Mono", monospace',
+              color: isSpecTooltipOpen ? '#3776AB' : '#9ca3af',
+              textTransform: 'lowercase',
+              cursor: 'pointer',
+              '&:hover': {
+                color: '#3776AB',
               },
             }}
           >
-            <IconButton
-              data-description-btn
-              size="small"
-              aria-label="Show library description"
-              onClick={(e) => {
-                e.stopPropagation();
-                onTooltipToggle(isTooltipOpen ? null : tooltipId);
-              }}
-              sx={{
-                ml: 0.25,
-                p: 0.25,
-                color: isTooltipOpen ? '#3776AB' : '#d1d5db',
-                '&:hover': {
-                  color: '#3776AB',
-                  bgcolor: 'transparent',
-                },
-              }}
-            >
-              <SubjectIcon sx={{ fontSize: 14 }} />
-            </IconButton>
-          </Tooltip>
-        ) : (
-          <Tooltip
-            title={specInfo?.description || ''}
-            arrow
-            placement="bottom"
-            open={isTooltipOpen}
-            disableFocusListener
-            disableHoverListener
-            disableTouchListener
-            slotProps={{
-              tooltip: {
-                sx: {
-                  maxWidth: { xs: '80vw', sm: 400 },
-                  fontFamily: '"JetBrains Mono", monospace',
-                  fontSize: '0.8rem',
-                },
+            {image.spec_id}
+          </Typography>
+        </Tooltip>
+
+        <Typography sx={{ color: '#d1d5db', fontSize: '0.8rem' }}>·</Typography>
+
+        {/* Clickable Library */}
+        <Tooltip
+          title={
+            <Box>
+              <Typography sx={{ fontSize: '0.8rem', mb: 1 }}>
+                {libraryInfo?.description || 'No description available'}
+              </Typography>
+              {libraryInfo?.documentation_url && (
+                <Link
+                  href={libraryInfo.documentation_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                    fontSize: '0.75rem',
+                    color: '#90caf9',
+                    textDecoration: 'underline',
+                    '&:hover': { color: '#fff' },
+                  }}
+                >
+                  {libraryInfo.documentation_url.replace(/^https?:\/\//, '')} <OpenInNewIcon sx={{ fontSize: 12 }} />
+                </Link>
+              )}
+            </Box>
+          }
+          arrow
+          placement="bottom"
+          open={isLibTooltipOpen}
+          disableFocusListener
+          disableHoverListener
+          disableTouchListener
+          slotProps={{
+            tooltip: {
+              sx: {
+                maxWidth: { xs: '80vw', sm: 400 },
+                fontFamily: '"JetBrains Mono", monospace',
+                fontSize: '0.8rem',
+              },
+            },
+          }}
+        >
+          <Typography
+            data-description-btn
+            onClick={(e) => {
+              e.stopPropagation();
+              onTooltipToggle(isLibTooltipOpen ? null : libTooltipId);
+            }}
+            sx={{
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              fontFamily: '"JetBrains Mono", monospace',
+              color: isLibTooltipOpen ? '#3776AB' : '#9ca3af',
+              textTransform: 'lowercase',
+              cursor: 'pointer',
+              '&:hover': {
+                color: '#3776AB',
               },
             }}
           >
-            <IconButton
-              data-description-btn
-              size="small"
-              aria-label="Show specification description"
-              onClick={(e) => {
-                e.stopPropagation();
-                onTooltipToggle(isTooltipOpen ? null : tooltipId);
-              }}
-              sx={{
-                ml: 0.25,
-                p: 0.25,
-                color: isTooltipOpen ? '#3776AB' : '#d1d5db',
-                '&:hover': {
-                  color: '#3776AB',
-                  bgcolor: 'transparent',
-                },
-              }}
-            >
-              <SubjectIcon sx={{ fontSize: 14 }} />
-            </IconButton>
-          </Tooltip>
-        )}
+            {image.library}
+          </Typography>
+        </Tooltip>
       </Box>
     </Box>
   );

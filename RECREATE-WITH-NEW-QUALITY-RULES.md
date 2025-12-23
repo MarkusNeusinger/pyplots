@@ -22,15 +22,15 @@ Track progress of regenerating all implementations using the stricter evaluation
 - [x] bump-basic ✓ (94-96)
 - [x] candlestick-basic ✓ (90-93)
 - [x] chord-basic ✓ (7/9: 78-98, seaborn+plotnine not-feasible)
-- [ ] contour-basic (8/9: 72-98, highcharts in repair, pygal not-feasible)
+- [x] contour-basic ✓ (8/9: 72-98, pygal not-feasible)
 - [x] dendrogram-basic ✓ (90-93)
 - [x] density-basic ✓ (91-93)
 - [x] donut-basic ✓ (91-92)
-- [ ] dumbbell-basic
-- [ ] ecdf-basic
-- [ ] errorbar-basic
-- [ ] funnel-basic
-- [ ] gauge-basic
+- [x] dumbbell-basic ✓ (91-93)
+- [x] ecdf-basic ✓ (91-96)
+- [x] errorbar-basic ✓ (91-92)
+- [x] funnel-basic ✓ (90-96)
+- [x] gauge-basic ✓ (91-95)
 - [x] heatmap-basic ✓ (91-94)
 - [ ] heatmap-calendar
 - [x] hexbin-basic ✓ (52-93, altair 52 after 3 attempts)
@@ -59,7 +59,7 @@ Track progress of regenerating all implementations using the stricter evaluation
 - [ ] step-basic
 - [ ] streamgraph-basic
 - [ ] strip-basic
-- [ ] sudoku-basic
+- [x] sudoku-basic ✓ (91-94)
 - [ ] sunburst-basic
 - [ ] surface-basic
 - [ ] swarm-basic

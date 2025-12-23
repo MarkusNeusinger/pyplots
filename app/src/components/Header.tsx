@@ -1,16 +1,21 @@
+import { memo, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Tooltip from '@mui/material/Tooltip';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 
 interface HeaderProps {
   stats?: { specs: number; plots: number; libraries: number } | null;
 }
 
-export function Header({ stats }: HeaderProps) {
+export const Header = memo(function Header({ stats }: HeaderProps) {
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [pinned, setPinned] = useState(false);  // true = opened via click, stays open
   const tooltipText = stats
     ? `${stats.plots} plots across ${stats.libraries} libraries`
-    : 'loading...';
+    : '';
+
   return (
     <Box sx={{ textAlign: 'center', mb: 4 }}>
       <Link
@@ -61,22 +66,57 @@ export function Header({ stats }: HeaderProps) {
         }}
       >
         get inspired
-        <Tooltip title={tooltipText} arrow placement="top">
+        {stats ? (
+          <ClickAwayListener onClickAway={() => { setTooltipOpen(false); setPinned(false); }}>
+            <span>
+              <Tooltip
+                title={tooltipText}
+                arrow
+                placement="top"
+                open={tooltipOpen}
+                disableFocusListener
+                disableTouchListener
+              >
+                <Box
+                  component="sup"
+                  onClick={() => {
+                    if (pinned) {
+                      setPinned(false);
+                      setTooltipOpen(false);
+                    } else {
+                      setPinned(true);
+                      setTooltipOpen(true);
+                    }
+                  }}
+                  onMouseEnter={() => setTooltipOpen(true)}
+                  onMouseLeave={() => { if (!pinned) setTooltipOpen(false); }}
+                  sx={{
+                    color: tooltipOpen ? '#FFD43B' : '#3776AB',
+                    cursor: 'pointer',
+                    fontSize: '0.65rem',
+                    ml: 0.25,
+                    '&:hover': { color: '#FFD43B' },
+                  }}
+                >
+                  ✦
+                </Box>
+              </Tooltip>
+            </span>
+          </ClickAwayListener>
+        ) : (
           <Box
             component="sup"
             sx={{
               color: '#3776AB',
-              cursor: 'help',
               fontSize: '0.65rem',
               ml: 0.25,
-              '&:hover': { color: '#FFD43B' },
             }}
           >
             ✦
           </Box>
-        </Tooltip>
+        )}
         . grab the code. make it yours.
       </Typography>
     </Box>
   );
-}
+});

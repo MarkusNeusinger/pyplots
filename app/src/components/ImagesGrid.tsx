@@ -26,7 +26,7 @@ export function ImagesGrid({
   images,
   viewMode,
   selectedSpec,
-  selectedLibrary,
+  selectedLibrary: _selectedLibrary,
   loading,
   hasMore,
   isTransitioning,
@@ -38,9 +38,9 @@ export function ImagesGrid({
   onCardClick,
   onTrackEvent,
 }: ImagesGridProps) {
-  const showContent = (viewMode === 'spec' && selectedSpec) || (viewMode === 'library' && selectedLibrary);
-
-  if (!showContent) return null;
+  void _selectedLibrary; // Preserved for API compatibility
+  // Always show content - the old condition was breaking the "show all" default view
+  // viewMode is now just for display purposes (spec name vs library name on cards)
 
   // Show loading spinner on initial load
   if (loading && !isTransitioning && images.length === 0) {
@@ -89,7 +89,6 @@ export function ImagesGrid({
             sx={{
               maxWidth: 1800,
               mx: 'auto',
-              minHeight: '60vh',
               opacity: isTransitioning ? 0 : 1,
               transition: 'opacity 0.15s ease-in-out',
             }}

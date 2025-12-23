@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 rose-basic: Basic Rose Chart
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import pandas as pd
@@ -13,13 +13,13 @@ from lets_plot import (
     element_text,
     geom_bar,
     ggplot,
-    ggsave,
     ggsize,
     labs,
     scale_fill_manual,
     theme,
     theme_minimal,
 )
+from lets_plot.export import ggsave
 
 
 LetsPlot.setup_html()
@@ -54,7 +54,7 @@ plot = (
     + geom_bar(stat="identity", width=0.9, alpha=0.85)
     + coord_polar()
     + scale_fill_manual(values=colors)
-    + labs(title="Monthly Rainfall Distribution\nrose-basic \u00b7 letsplot \u00b7 pyplots.ai", x="", y="Rainfall (mm)")
+    + labs(title="Monthly Rainfall Distribution · rose-basic · letsplot · pyplots.ai", x="", y="Rainfall (mm)")
     + theme_minimal()
     + theme(
         plot_title=element_text(size=24, face="bold"),
@@ -67,6 +67,6 @@ plot = (
     + ggsize(1600, 900)
 )
 
-# Save (path='.' ensures files are saved in current directory, not lets-plot-images/)
+# Save
 ggsave(plot, "plot.png", path=".", scale=3)
 ggsave(plot, "plot.html", path=".")

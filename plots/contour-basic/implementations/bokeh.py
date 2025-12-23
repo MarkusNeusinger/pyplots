@@ -1,7 +1,7 @@
 """ pyplots.ai
 contour-basic: Basic Contour Plot
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-14
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -19,13 +19,14 @@ x = np.linspace(-3, 3, 50)
 y = np.linspace(-3, 3, 50)
 X, Y = np.meshgrid(x, y)
 
-# Create a Gaussian peak function: z = exp(-(x^2 + y^2)) + secondary peak
+# Create a Gaussian peak function with primary and secondary peaks
+# This shows contour features: nested rings, gradient directions, multiple maxima
 Z = np.exp(-(X**2 + Y**2)) + 0.5 * np.exp(-((X - 1.5) ** 2 + (Y + 1) ** 2) / 0.5)
 
-# Define contour levels
+# Define contour levels for smooth gradient visualization
 levels = np.linspace(Z.min(), Z.max(), 12)
 
-# Map levels to colors from Viridis palette
+# Map levels to colors from Viridis palette (colorblind-safe)
 n_levels = len(levels) - 1
 color_indices = [int(i * 255 / (n_levels - 1)) if n_levels > 1 else 0 for i in range(n_levels)]
 level_colors = [Viridis256[idx] for idx in color_indices]
@@ -39,7 +40,7 @@ for i in range(len(levels) - 1):
     low_level = levels[i]
     high_level = levels[i + 1]
 
-    # Create filled contour generator using ChunkCombinedOffset for simpler polygon handling
+    # Create filled contour generator
     cont_gen = contour_generator(x=x, y=y, z=Z, fill_type="ChunkCombinedOffset")
     filled = cont_gen.filled(low_level, high_level)
 
@@ -81,8 +82,8 @@ p = figure(
     width=4800,
     height=2700,
     title="contour-basic · bokeh · pyplots.ai",
-    x_axis_label="X",
-    y_axis_label="Y",
+    x_axis_label="X Coordinate",
+    y_axis_label="Y Coordinate",
     toolbar_location=None,
     tools="",
     x_range=(-3.2, 3.2),

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 rug-basic: Basic Rug Plot
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 62/100 | Created: 2025-12-23
@@ -16,17 +16,20 @@ cluster1 = np.random.normal(25, 4, 60)
 cluster2 = np.random.normal(55, 6, 40)
 values = np.concatenate([cluster1, cluster2])
 
-# Rug tick height - small marks at bottom margin (~5% of plot height)
-# Using a range of 0-1 for y, ticks extend from 0 to 0.05 (5%)
+# Rug tick configuration
+# Ticks positioned at the bottom, small relative to plot area (~5% of visible height)
+tick_base = 0.0
 tick_height = 0.05
 
 # Create ColumnDataSource for rug ticks
-source = ColumnDataSource(data={"x": values, "y0": np.zeros(len(values)), "y1": np.full(len(values), tick_height)})
+source = ColumnDataSource(
+    data={"x": values, "y0": np.full(len(values), tick_base), "y1": np.full(len(values), tick_height)}
+)
 
-# Create figure (4800 x 2700 px) - hide toolbar for cleaner PNG export
+# Create figure (4800 x 2700 px) - reduced height to emphasize horizontal distribution
 p = figure(
     width=4800,
-    height=2700,
+    height=1200,
     title="rug-basic · bokeh · pyplots.ai",
     x_axis_label="Value",
     y_axis_label="",
@@ -34,23 +37,23 @@ p = figure(
 )
 
 # Draw rug ticks as vertical segments at the bottom margin
-p.segment(x0="x", y0="y0", x1="x", y1="y1", source=source, line_color="#306998", line_width=4, line_alpha=0.6)
+# Line width increased for visibility at 4800px width
+p.segment(x0="x", y0="y0", x1="x", y1="y1", source=source, line_color="#306998", line_width=6, line_alpha=0.6)
 
-# Configure axis ranges - y range from 0 to 1 makes ticks appear as small marks at bottom
+# Configure axis ranges - y range gives ticks ~5% of visible area
 p.x_range = Range1d(values.min() - 5, values.max() + 5)
-p.y_range = Range1d(0, 1)
+p.y_range = Range1d(-0.02, 1.0)
 
 # Hide y-axis (not meaningful for rug plot)
 p.yaxis.visible = False
 
-# Styling for 4800x2700 px
+# Styling for 4800px width
 p.title.text_font_size = "28pt"
 p.xaxis.axis_label_text_font_size = "22pt"
 p.xaxis.major_label_text_font_size = "18pt"
 
-# Grid styling
-p.xgrid.grid_line_alpha = 0.3
-p.xgrid.grid_line_dash = "dashed"
+# Remove all grid lines for clean rug appearance
+p.xgrid.visible = False
 p.ygrid.visible = False
 
 # Background

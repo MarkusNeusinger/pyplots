@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 candlestick-basic: Basic Candlestick Chart
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-14
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -47,7 +47,6 @@ df = pd.DataFrame({"date": dates, "open": open_prices, "high": high_prices, "low
 
 # Determine if bullish (close > open) or bearish
 df["bullish"] = df["close"] >= df["open"]
-df["color"] = df["bullish"].map({True: "#22c55e", False: "#ef4444"})  # Green / Red
 
 # Create ColumnDataSource
 source = ColumnDataSource(df)
@@ -74,7 +73,7 @@ p = figure(
 candle_width = 0.8 * 24 * 60 * 60 * 1000
 
 # Draw wicks (high-low lines) using segment glyph
-p.segment(x0="date", y0="high", x1="date", y1="low", source=source, color="black", line_width=3)
+p.segment(x0="date", y0="high", x1="date", y1="low", source=source, color="#333333", line_width=3)
 
 # Draw bullish candle bodies (green)
 p.vbar(
@@ -84,7 +83,7 @@ p.vbar(
     width=candle_width,
     source=source_bullish,
     fill_color="#22c55e",
-    line_color="#22c55e",
+    line_color="#16a34a",
     line_width=2,
 )
 
@@ -96,7 +95,7 @@ p.vbar(
     width=candle_width,
     source=source_bearish,
     fill_color="#ef4444",
-    line_color="#ef4444",
+    line_color="#dc2626",
     line_width=2,
 )
 

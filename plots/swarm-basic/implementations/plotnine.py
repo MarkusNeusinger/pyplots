@@ -1,7 +1,7 @@
 """ pyplots.ai
 swarm-basic: Basic Swarm Plot
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-17
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -20,36 +20,39 @@ from plotnine import (
 )
 
 
-# Data - Performance scores across departments
+# Data - Patient biomarker levels across treatment groups
 np.random.seed(42)
 
-departments = ["Engineering", "Marketing", "Sales", "Support"]
+treatment_groups = ["Placebo", "Low Dose", "Medium Dose", "High Dose"]
 data = []
 
-# Generate varied distributions for each department
+# Generate varied distributions for each treatment group
 distributions = {
-    "Engineering": {"mean": 82, "std": 8, "n": 45},
-    "Marketing": {"mean": 75, "std": 12, "n": 50},
-    "Sales": {"mean": 78, "std": 15, "n": 55},
-    "Support": {"mean": 85, "std": 6, "n": 40},
+    "Placebo": {"mean": 45, "std": 12, "n": 50},
+    "Low Dose": {"mean": 55, "std": 10, "n": 45},
+    "Medium Dose": {"mean": 68, "std": 8, "n": 55},
+    "High Dose": {"mean": 75, "std": 6, "n": 40},
 }
 
-for dept, params in distributions.items():
-    scores = np.random.normal(params["mean"], params["std"], params["n"])
-    # Clip scores to realistic range [0, 100]
-    scores = np.clip(scores, 40, 100)
-    data.extend([(dept, score) for score in scores])
+for group, params in distributions.items():
+    values = np.random.normal(params["mean"], params["std"], params["n"])
+    # Clip to realistic biomarker range
+    values = np.clip(values, 20, 100)
+    data.extend([(group, value) for value in values])
 
-df = pd.DataFrame(data, columns=["department", "score"])
+df = pd.DataFrame(data, columns=["treatment", "biomarker"])
+
+# Preserve order of treatment groups
+df["treatment"] = pd.Categorical(df["treatment"], categories=treatment_groups, ordered=True)
 
 # Create swarm plot using jittered points
 plot = (
-    ggplot(df, aes(x="department", y="score", color="department"))
-    + geom_point(position=position_jitter(width=0.25, height=0, random_state=42), size=4, alpha=0.7)
+    ggplot(df, aes(x="treatment", y="biomarker", color="treatment"))
+    + geom_point(position=position_jitter(width=0.3, height=0, random_state=42), size=3.5, alpha=0.75)
     # Add median markers for each category
     + stat_summary(fun_y=np.median, geom="point", size=8, shape="D", color="#2C3E50")
-    + scale_color_manual(values=["#306998", "#FFD43B", "#4B8BBE", "#FFE873"])
-    + labs(x="Department", y="Performance Score", title="swarm-basic · plotnine · pyplots.ai")
+    + scale_color_manual(values=["#1B9E77", "#D95F02", "#7570B3", "#E7298A"])
+    + labs(x="Treatment Group", y="Biomarker Level (ng/mL)", title="swarm-basic · plotnine · pyplots.ai")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
@@ -62,4 +65,4 @@ plot = (
 )
 
 # Save
-plot.save("plot.png", dpi=300, verbose=False)
+plot.save("plot.png", dpi=300)

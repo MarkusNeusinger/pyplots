@@ -1,0 +1,26 @@
+library: seaborn
+specification_id: funnel-basic
+created: '2025-12-23T13:04:46Z'
+updated: '2025-12-23T13:38:26Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20461374089
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent visual design with well-proportioned trapezoidal segments
+  - Clear blue-to-gold color progression that aids visual hierarchy
+  - 'Perfect text contrast: white text on blue, dark text on gold backgrounds'
+  - Uses exact data from specification (sales funnel example)
+  - Clean code structure following KISS principles
+  - Proper title format matching specification requirements
+  weaknesses:
+  - Conversion rate annotations (coded in lines 88-99) are not visible in the rendered
+    output - may be positioned outside canvas bounds
+  - Could use seaborn color palette more distinctively (e.g., using a named sequential
+    palette)

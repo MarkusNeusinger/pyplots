@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 dumbbell-basic: Basic Dumbbell Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-23
@@ -35,7 +35,7 @@ custom_style = Style(
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
-    legend_font_size=48,
+    legend_font_size=56,  # Increased legend font size for better visibility
     value_font_size=36,
     value_label_font_size=36,
 )
@@ -46,15 +46,17 @@ chart = pygal.XY(
     width=4800,
     height=2700,
     title="dumbbell-basic · pygal · pyplots.ai",
-    x_title="Satisfaction Score",
+    x_title="Satisfaction Score (%)",  # Added units to x-axis label
     style=custom_style,
     show_legend=True,
     legend_at_bottom=True,
+    legend_box_size=28,  # Larger legend markers for better color distinction
     dots_size=25,
     stroke_style={"width": 6},
     show_y_guides=True,
     show_x_guides=True,
-    margin=100,
+    margin=80,  # Reduced margin to minimize unused whitespace
+    margin_bottom=120,  # Specific bottom margin for legend area
     xrange=(30, 100),
     range=(0, n + 1),
     y_labels=[{"label": cat, "value": n - i} for i, cat in enumerate(categories)],

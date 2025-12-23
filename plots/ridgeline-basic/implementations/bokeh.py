@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 ridgeline-basic: Basic Ridgeline Plot
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-15
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -34,18 +34,18 @@ p = figure(
 
 # Color gradient from blue (cold) to yellow/orange (warm) to blue again
 colors = [
-    "#306998",
-    "#3A7CA5",
-    "#50A3C1",
-    "#6BBFCC",
-    "#8FD4B4",
-    "#C5E99B",
-    "#FFD43B",
-    "#FFAA33",
-    "#E7A467",
-    "#DB8C7D",
-    "#5BB6CF",
-    "#306998",
+    "#306998",  # Jan - cold blue
+    "#3A7CA5",  # Feb
+    "#50A3C1",  # Mar
+    "#6BBFCC",  # Apr
+    "#8FD4B4",  # May
+    "#C5E99B",  # Jun
+    "#FFD43B",  # Jul - warm yellow
+    "#FFAA33",  # Aug - warm orange
+    "#E7A467",  # Sep
+    "#DB8C7D",  # Oct
+    "#5BB6CF",  # Nov
+    "#306998",  # Dec - cold blue
 ]
 
 # Spacing and overlap parameters
@@ -78,8 +78,7 @@ for i, month in enumerate(reversed(months)):
     x_patch = np.concatenate([[x_grid[0]], x_grid, [x_grid[-1]]])
     y_patch_numeric = np.concatenate([[0], density_normalized, [0]])
 
-    # For categorical y-axis, we need to use factor offsets
-    # The base is the month label, offset by the density values
+    # For categorical y-axis, use factor offsets
     y_patches = [(month, float(y)) for y in y_patch_numeric]
 
     # Fill with color and add outline

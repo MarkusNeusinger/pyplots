@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 hexbin-basic: Basic Hexbin Plot
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 82/100 | Created: 2025-12-23
+Quality: 86/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt

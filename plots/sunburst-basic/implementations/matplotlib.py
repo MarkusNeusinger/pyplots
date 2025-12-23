@@ -1,14 +1,14 @@
-""" pyplots.ai
+"""pyplots.ai
 sunburst-basic: Basic Sunburst Chart
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 99/100 | Created: 2025-12-14
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-# Hierarchical data: Company budget breakdown
+# Hierarchical data: Company budget breakdown (in $thousands)
 # Level 1: Departments, Level 2: Teams, Level 3: Projects
 data = {
     "Engineering": {
@@ -64,12 +64,12 @@ for i, (dept, teams) in enumerate(data.items()):
             l3_color = tuple(min(1, c * factor2 + (1 - factor2) * 0.7) for c in base_rgb)
             level3_colors.append(l3_color)
 
-# Create figure
-fig, ax = plt.subplots(figsize=(16, 9))
+# Create square figure for radial plot - better canvas utilization
+fig, ax = plt.subplots(figsize=(12, 12))
 
-# Ring parameters
-ring_width = 0.3
-inner_radius = 0.2
+# Ring parameters - larger rings to fill canvas better
+ring_width = 0.35
+inner_radius = 0.25
 
 # Level 3 (outermost ring)
 wedges3, texts3 = ax.pie(
@@ -78,7 +78,7 @@ wedges3, texts3 = ax.pie(
     colors=level3_colors,
     startangle=90,
     counterclock=False,
-    wedgeprops={"width": ring_width, "edgecolor": "white", "linewidth": 2},
+    wedgeprops={"width": ring_width, "edgecolor": "white", "linewidth": 2.5},
 )
 
 # Level 2 (middle ring)
@@ -88,7 +88,7 @@ wedges2, texts2 = ax.pie(
     colors=level2_colors,
     startangle=90,
     counterclock=False,
-    wedgeprops={"width": ring_width, "edgecolor": "white", "linewidth": 2},
+    wedgeprops={"width": ring_width, "edgecolor": "white", "linewidth": 2.5},
 )
 
 # Level 1 (innermost ring)
@@ -97,11 +97,11 @@ wedges1, texts1 = ax.pie(
     radius=inner_radius + ring_width,
     colors=level1_colors,
     labels=level1_names,
-    labeldistance=0.5,
+    labeldistance=0.55,
     startangle=90,
     counterclock=False,
-    wedgeprops={"width": ring_width, "edgecolor": "white", "linewidth": 2},
-    textprops={"fontsize": 16, "fontweight": "bold", "color": "white"},
+    wedgeprops={"width": ring_width, "edgecolor": "white", "linewidth": 2.5},
+    textprops={"fontsize": 18, "fontweight": "bold", "color": "white"},
 )
 
 # Add labels for level 2 segments (positioned within wedges)
@@ -112,7 +112,7 @@ for i, wedge in enumerate(wedges2):
     y = r * np.sin(np.radians(ang))
     # Only label if segment is large enough
     if (wedge.theta2 - wedge.theta1) > 15:
-        ax.text(x, y, level2_names[i], ha="center", va="center", fontsize=12, fontweight="medium")
+        ax.text(x, y, level2_names[i], ha="center", va="center", fontsize=14, fontweight="medium")
 
 # Add labels for level 3 segments (outermost)
 for i, wedge in enumerate(wedges3):
@@ -122,10 +122,10 @@ for i, wedge in enumerate(wedges3):
     y = r * np.sin(np.radians(ang))
     # Only label if segment is large enough
     if (wedge.theta2 - wedge.theta1) > 12:
-        ax.text(x, y, level3_names[i], ha="center", va="center", fontsize=10)
+        ax.text(x, y, level3_names[i], ha="center", va="center", fontsize=12)
 
 ax.set_aspect("equal")
-ax.set_title("Company Budget · sunburst-basic · matplotlib · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
+ax.set_title("Company Budget · sunburst-basic · matplotlib · pyplots.ai", fontsize=24, fontweight="bold", pad=25)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

@@ -1,7 +1,7 @@
 """ pyplots.ai
-heatmap-calendar: Calendar Heatmap
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-17
+heatmap-calendar: Basic Calendar Heatmap
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -79,24 +79,24 @@ month_labels["month_name"] = month_labels["month"].map(lambda x: month_names[x -
 # Plot
 plot = (
     ggplot(df, aes(x="week_adjusted", y="weekday", fill="value"))
-    + geom_tile(color="white", size=0.3)
+    + geom_tile(color="white", size=0.5)
     + scale_fill_gradient(
         low="#ebedf0",  # Light gray for no activity
         high="#306998",  # Python Blue for high activity
-        name="Activity",
+        name="Contributions",
     )
     + scale_x_continuous(breaks=month_labels["week_adjusted"].tolist(), labels=month_labels["month_name"].tolist())
-    + labs(x="", y="", title="Daily Activity 2024 \u00b7 heatmap-calendar \u00b7 plotnine \u00b7 pyplots.ai")
+    + labs(x="", y="", title="Daily Activity 2024 · heatmap-calendar · plotnine · pyplots.ai")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
         text=element_text(size=14),
         axis_title=element_text(size=20),
-        axis_text_x=element_text(size=16),
-        axis_text_y=element_text(size=16),
-        plot_title=element_text(size=24),
-        legend_title=element_text(size=16),
-        legend_text=element_text(size=14),
+        axis_text_x=element_text(size=18),
+        axis_text_y=element_text(size=18),
+        plot_title=element_text(size=26, weight="bold"),
+        legend_title=element_text(size=18),
+        legend_text=element_text(size=16),
         panel_grid_major=element_blank(),
         panel_grid_minor=element_blank(),
     )

@@ -1,18 +1,18 @@
 """ pyplots.ai
 marimekko-basic: Basic Marimekko Chart
 Library: plotly 6.5.0 | Python 3.13.11
-Quality: 96/100 | Created: 2025-12-16
+Quality: 93/100 | Created: 2025-12-23
 """
 
 import plotly.graph_objects as go
 
 
-# Data: Market share by region and product line
+# Data: Market share by region and product line (in millions USD)
 regions = ["North America", "Europe", "Asia Pacific", "Latin America"]
 products = ["Enterprise", "SMB", "Consumer"]
 colors = ["#306998", "#FFD43B", "#4ECDC4"]
 
-# Values: rows = products, columns = regions (in millions)
+# Values: rows = products, columns = regions
 values = [
     [120, 80, 150, 30],  # Enterprise
     [90, 100, 120, 40],  # SMB
@@ -34,10 +34,9 @@ for w in widths:
 # Create figure
 fig = go.Figure()
 
-# Calculate normalized heights for each segment and build bars
+# Build stacked bars with proportional heights
 for i, product in enumerate(products):
     color = colors[i]
-    # Calculate bottom positions and heights for each region
     bottoms = []
     heights = []
     for j in range(len(regions)):
@@ -56,13 +55,13 @@ for i, product in enumerate(products):
             name=product,
             marker={"color": color, "line": {"color": "white", "width": 2}},
             base=bottoms,
-            text=[f"{values[i][j]:.0f}M" for j in range(len(regions))],
+            text=[f"${values[i][j]}M" for j in range(len(regions))],
             textposition="inside",
             textfont={"size": 18, "color": "white"},
             hovertemplate=(
                 "<b>%{customdata[0]}</b><br>"
                 "Product: " + product + "<br>"
-                "Value: %{customdata[1]:.0f}M<br>"
+                "Value: $%{customdata[1]:.0f}M<br>"
                 "Share: %{y:.1%}<extra></extra>"
             ),
             customdata=[[regions[j], values[i][j]] for j in range(len(regions))],

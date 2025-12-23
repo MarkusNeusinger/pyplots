@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 density-basic: Basic Density Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-15
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -36,6 +36,6 @@ plot = (
     + ggsize(1600, 900)  # noqa: F405
 )
 
-# Save PNG (scale 3x for 4800x2700) and HTML to current directory
+# Save PNG (scale 3x for 4800x2700) and HTML
 export_ggsave(plot, "plot.png", path=".", scale=3)
 export_ggsave(plot, "plot.html", path=".")

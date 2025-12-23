@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-basic: Basic Heatmap
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import altair as alt

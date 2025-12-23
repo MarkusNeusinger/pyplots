@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -12,6 +12,7 @@ import plotly.graph_objects as go
 # Data - daily website visitors over a month
 np.random.seed(42)
 dates = pd.date_range("2024-01-01", periods=30, freq="D")
+
 # Simulate realistic website traffic with weekly patterns and trend
 base = 5000
 trend = np.linspace(0, 1500, 30)
@@ -51,7 +52,7 @@ fig.update_layout(
         "gridcolor": "rgba(0, 0, 0, 0.1)",
     },
     yaxis={
-        "title": {"text": "Visitors", "font": {"size": 22}},
+        "title": {"text": "Visitors (daily count)", "font": {"size": 22}},
         "tickfont": {"size": 18},
         "showgrid": True,
         "gridwidth": 1,

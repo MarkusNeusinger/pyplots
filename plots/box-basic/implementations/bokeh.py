@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 box-basic: Basic Box Plot
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-14
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -10,14 +10,16 @@ from bokeh.models import ColumnDataSource, Whisker
 from bokeh.plotting import figure
 
 
-# Data - Test scores across 4 classes
+# Data - Test scores across 4 classes with varying distributions
 np.random.seed(42)
 categories = ["Class A", "Class B", "Class C", "Class D"]
+
+# Create distributions with different characteristics to showcase box plot features
 data = {
-    "Class A": np.random.normal(75, 10, 100),
-    "Class B": np.random.normal(82, 8, 100),
-    "Class C": np.random.normal(68, 15, 100),
-    "Class D": np.random.normal(78, 12, 100),
+    "Class A": np.random.normal(75, 10, 100),  # Medium spread
+    "Class B": np.concatenate([np.random.normal(85, 5, 90), np.array([45, 50, 52])]),  # Tight with low outliers
+    "Class C": np.random.normal(68, 18, 100),  # Wide spread, likely outliers
+    "Class D": np.concatenate([np.random.normal(78, 8, 95), np.array([105, 108, 42, 40])]),  # Outliers on both ends
 }
 colors = ["#306998", "#FFD43B", "#4B8BBE", "#646464"]
 
@@ -26,7 +28,7 @@ box_data = {"cat": [], "q1": [], "q2": [], "q3": [], "upper": [], "lower": [], "
 outlier_data = {"x": [], "y": []}
 
 for i, cat in enumerate(categories):
-    values = data[cat]
+    values = np.array(data[cat])
     q1 = np.percentile(values, 25)
     q2 = np.percentile(values, 50)
     q3 = np.percentile(values, 75)
@@ -74,11 +76,25 @@ p.vbar(
     fill_alpha=0.8,
 )
 
-# Median lines (horizontal segment across the box)
-median_source = ColumnDataSource(
-    data={"x0": [(cat, -0.25) for cat in categories], "x1": [(cat, 0.25) for cat in categories], "y": box_data["q2"]}
+# Median lines - draw segment for each category
+# Use ColumnDataSource with segment glyphs for categorical axis
+median_segments = {
+    "x": categories,  # categorical positions
+    "y": box_data["q2"],
+}
+median_source = ColumnDataSource(data=median_segments)
+
+# For categorical x-axis, use hbar with height=0 alternative: draw using rect
+# Actually use rect with very small height to create a line effect
+p.rect(
+    x="x",
+    y="y",
+    width=0.5,
+    height=1,  # Small height for line effect
+    source=median_source,
+    fill_color="black",
+    line_color="black",
 )
-p.segment(x0="x0", y0="y", x1="x1", y1="y", source=median_source, line_color="black", line_width=4)
 
 # Whiskers
 whisker = Whisker(
@@ -91,7 +107,16 @@ p.add_layout(whisker)
 # Outliers
 if len(outlier_data["x"]) > 0:
     outlier_source = ColumnDataSource(data=outlier_data)
-    p.scatter(x="x", y="y", source=outlier_source, size=20, fill_color="white", line_color="black", line_width=3)
+    p.scatter(
+        x="x",
+        y="y",
+        source=outlier_source,
+        size=20,
+        fill_color="white",
+        line_color="black",
+        line_width=3,
+        marker="circle",
+    )
 
 # Styling for 4800x2700 px
 p.title.text_font_size = "36pt"
@@ -104,6 +129,10 @@ p.yaxis.major_label_text_font_size = "22pt"
 p.xgrid.grid_line_color = None
 p.ygrid.grid_line_alpha = 0.3
 p.ygrid.grid_line_dash = "dashed"
+
+# Background styling
+p.background_fill_color = None
+p.border_fill_color = None
 
 # Save outputs
 export_png(p, filename="plot.png")

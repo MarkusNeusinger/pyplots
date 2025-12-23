@@ -1,7 +1,7 @@
 """ pyplots.ai
 parallel-basic: Basic Parallel Coordinates Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-14
+Library: highcharts unknown | Python 3.13.11
+Quality: 97/100 | Created: 2025-12-23
 """
 
 import json
@@ -15,7 +15,6 @@ from selenium.webdriver.chrome.options import Options
 
 
 # Data - Iris dataset with 4 dimensions (sample for 3 species)
-# Format: each series item is one line through all axes
 # Setosa: smaller petals, medium sepals
 setosa_data = [
     [5.0, 3.4, 1.4, 0.2],
@@ -67,42 +66,24 @@ parallel_url = "https://code.highcharts.com/modules/parallel-coordinates.js"
 with urllib.request.urlopen(parallel_url, timeout=30) as response:
     parallel_js = response.read().decode("utf-8")
 
-# Build series - in Highcharts parallel coordinates, each data point is one line
-# But we want to group by species, so we create one series per species
-# with multiple data points
+# Build series - each data point becomes a line in parallel coordinates
+# Group by species with showInLegend flag to avoid duplicate legend entries
 series_config = []
 
-# Add Setosa series
-for row in setosa_data:
+# Add Setosa series (Python Blue)
+for i, row in enumerate(setosa_data):
+    series_config.append({"name": "Setosa", "data": row, "color": "rgba(48, 105, 152, 0.7)", "showInLegend": i == 0})
+
+# Add Versicolor series (Python Yellow)
+for i, row in enumerate(versicolor_data):
     series_config.append(
-        {
-            "name": "Setosa",
-            "data": row,
-            "color": "#306998",
-            "showInLegend": len([s for s in series_config if s.get("name") == "Setosa"]) == 0,
-        }
+        {"name": "Versicolor", "data": row, "color": "rgba(255, 212, 59, 0.7)", "showInLegend": i == 0}
     )
 
-# Add Versicolor series
-for row in versicolor_data:
+# Add Virginica series (Purple - colorblind safe)
+for i, row in enumerate(virginica_data):
     series_config.append(
-        {
-            "name": "Versicolor",
-            "data": row,
-            "color": "#FFD43B",
-            "showInLegend": len([s for s in series_config if s.get("name") == "Versicolor"]) == 0,
-        }
-    )
-
-# Add Virginica series
-for row in virginica_data:
-    series_config.append(
-        {
-            "name": "Virginica",
-            "data": row,
-            "color": "#9467BD",
-            "showInLegend": len([s for s in series_config if s.get("name") == "Virginica"]) == 0,
-        }
+        {"name": "Virginica", "data": row, "color": "rgba(148, 103, 189, 0.7)", "showInLegend": i == 0}
     )
 
 # Build chart config as JavaScript

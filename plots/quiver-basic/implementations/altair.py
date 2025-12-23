@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 quiver-basic: Basic Quiver Plot
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-16
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import altair as alt
@@ -22,12 +22,11 @@ y_flat = Y.flatten()
 U = -y_flat
 V = x_flat
 
-# Calculate magnitude for scaling and color
+# Calculate magnitude for color encoding
 magnitude = np.sqrt(U**2 + V**2)
 
 # Normalize vectors for consistent arrow length, then scale
-scale = 0.12  # Arrow length scale factor
-# Avoid division by zero at origin
+scale = 0.12
 mag_safe = np.where(magnitude > 0, magnitude, 1)
 U_norm = np.where(magnitude > 0, U / mag_safe * scale, 0)
 V_norm = np.where(magnitude > 0, V / mag_safe * scale, 0)
@@ -35,7 +34,7 @@ V_norm = np.where(magnitude > 0, V / mag_safe * scale, 0)
 # Create dataframe with arrow start and end points
 df = pd.DataFrame({"x": x_flat, "y": y_flat, "x2": x_flat + U_norm, "y2": y_flat + V_norm, "magnitude": magnitude})
 
-# Create arrowhead points (small triangle at the end of each arrow)
+# Create arrowhead geometry (small triangle at the end of each arrow)
 arrow_head_size = 0.04
 angle = np.arctan2(V_norm, U_norm)
 
@@ -55,6 +54,7 @@ df_heads = pd.DataFrame(
 # Build arrow data for line marks (shaft + two head lines per arrow)
 arrow_data = []
 for i in range(len(df)):
+    mag = df.iloc[i]["magnitude"]
     # Arrow shaft
     arrow_data.append(
         {
@@ -62,9 +62,8 @@ for i in range(len(df)):
             "y": df.iloc[i]["y"],
             "x2": df.iloc[i]["x2"],
             "y2": df.iloc[i]["y2"],
-            "magnitude": df.iloc[i]["magnitude"],
+            "magnitude": mag,
             "arrow_id": i,
-            "part": "shaft",
         }
     )
     # Left head line
@@ -74,9 +73,8 @@ for i in range(len(df)):
             "y": df_heads.iloc[i]["y"],
             "x2": df_heads.iloc[i]["x_left"],
             "y2": df_heads.iloc[i]["y_left"],
-            "magnitude": df_heads.iloc[i]["magnitude"],
+            "magnitude": mag,
             "arrow_id": i,
-            "part": "head_left",
         }
     )
     # Right head line
@@ -86,15 +84,14 @@ for i in range(len(df)):
             "y": df_heads.iloc[i]["y"],
             "x2": df_heads.iloc[i]["x_right"],
             "y2": df_heads.iloc[i]["y_right"],
-            "magnitude": df_heads.iloc[i]["magnitude"],
+            "magnitude": mag,
             "arrow_id": i,
-            "part": "head_right",
         }
     )
 
 arrow_df = pd.DataFrame(arrow_data)
 
-# Create the chart using rule marks for arrows
+# Create the chart using rule marks for arrows with magnitude-based coloring
 chart = (
     alt.Chart(arrow_df)
     .mark_rule(strokeWidth=2.5)

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 sankey-basic: Basic Sankey Diagram
 Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-23
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import sys

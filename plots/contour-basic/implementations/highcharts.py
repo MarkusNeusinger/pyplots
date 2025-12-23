@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-basic: Basic Contour Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-14
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import tempfile
@@ -25,6 +25,7 @@ y = np.linspace(-3, 3, grid_size)
 X, Y = np.meshgrid(x, y)
 
 # Create an interesting surface: combination of Gaussian peaks
+# Simulates temperature distribution across a 2D surface
 Z = (
     np.exp(-((X - 1) ** 2 + (Y - 1) ** 2))
     + 0.8 * np.exp(-((X + 1) ** 2 + (Y + 1) ** 2))
@@ -42,10 +43,6 @@ for y_idx in range(grid_size):
     for x_idx in range(grid_size):
         heatmap_data.append([x_idx, y_idx, int(Z_normalized[y_idx, x_idx])])
 
-# Create category labels for axes (showing actual coordinate values)
-x_labels = [f"{v:.1f}" for v in x]
-y_labels = [f"{v:.1f}" for v in y]
-
 # Create chart
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
@@ -56,9 +53,10 @@ chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "marginBottom": 300,
-    "marginRight": 250,
-    "marginLeft": 200,
+    "marginBottom": 250,
+    "marginRight": 280,
+    "marginLeft": 220,
+    "marginTop": 150,
 }
 
 # Title
@@ -79,7 +77,7 @@ y_labels_sparse[-1] = f"{y[-1]:.1f}"
 # X-axis
 chart.options.x_axis = {
     "categories": x_labels_sparse,
-    "title": {"text": "X", "style": {"fontSize": "48px"}},
+    "title": {"text": "X Position (units)", "style": {"fontSize": "48px"}},
     "labels": {"style": {"fontSize": "36px"}, "rotation": 0},
     "lineWidth": 2,
     "tickLength": 10,
@@ -88,7 +86,7 @@ chart.options.x_axis = {
 # Y-axis
 chart.options.y_axis = {
     "categories": y_labels_sparse,
-    "title": {"text": "Y", "style": {"fontSize": "48px"}},
+    "title": {"text": "Y Position (units)", "style": {"fontSize": "48px"}},
     "labels": {"style": {"fontSize": "36px"}},
     "reversed": False,
     "lineWidth": 2,
@@ -113,11 +111,11 @@ chart.options.color_axis = {
 chart.options.legend = {
     "align": "right",
     "layout": "vertical",
-    "margin": 30,
+    "margin": 50,
     "verticalAlign": "middle",
-    "symbolHeight": 800,
+    "symbolHeight": 700,
     "itemStyle": {"fontSize": "32px"},
-    "title": {"text": "Value", "style": {"fontSize": "36px"}},
+    "title": {"text": "Intensity (%)", "style": {"fontSize": "40px"}},
 }
 
 # Tooltip
@@ -126,12 +124,12 @@ chart.options.tooltip = {
     "headerFormat": "",
     "pointFormat": "X: <b>{series.xAxis.categories.(point.x)}</b><br>"
     "Y: <b>{series.yAxis.categories.(point.y)}</b><br>"
-    "Value: <b>{point.value}</b>",
+    "Intensity: <b>{point.value}%</b>",
 }
 
 # Add heatmap series (creates filled contour effect)
 series_config = {
-    "name": "Surface",
+    "name": "Surface Intensity",
     "type": "heatmap",
     "data": heatmap_data,
     "borderWidth": 0,  # No borders for smooth contour appearance

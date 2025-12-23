@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 box-basic: Basic Box Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-23
@@ -49,9 +49,11 @@ chart = pygal.Box(
     y_title="Salary ($)",
     show_legend=True,
     legend_at_bottom=True,
+    legend_box_size=24,
     show_y_guides=True,
     show_x_guides=False,
     margin=50,
+    box_mode="tukey",
 )
 
 # Add data for each category

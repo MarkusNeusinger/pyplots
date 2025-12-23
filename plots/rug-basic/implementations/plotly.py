@@ -1,24 +1,24 @@
 """ pyplots.ai
 rug-basic: Basic Rug Plot
 Library: plotly 6.5.0 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
 import plotly.graph_objects as go
 
 
-# Data - bimodal distribution to show clustering patterns
+# Data - bimodal distribution to show clustering patterns and gaps
 np.random.seed(42)
 group1 = np.random.normal(loc=25, scale=5, size=80)
 group2 = np.random.normal(loc=55, scale=8, size=60)
-gap_region = np.array([38, 42])  # Few points in gap
+gap_region = np.array([38, 42])  # Few points in gap to show data sparsity
 values = np.concatenate([group1, group2, gap_region])
 
 # Create figure
 fig = go.Figure()
 
-# Rug plot as a scatter trace with vertical line markers at y=0
+# Rug plot as scatter trace with vertical line markers at y=0
 fig.add_trace(
     go.Scatter(
         x=values,

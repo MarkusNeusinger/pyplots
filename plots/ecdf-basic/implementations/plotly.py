@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 ecdf-basic: Basic ECDF Plot
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -20,30 +20,32 @@ ecdf_y = np.arange(1, len(sorted_values) + 1) / len(sorted_values)
 fig = go.Figure()
 
 fig.add_trace(
-    go.Scatter(x=sorted_values, y=ecdf_y, mode="lines", line=dict(color="#306998", width=4, shape="hv"), name="ECDF")
+    go.Scatter(
+        x=sorted_values, y=ecdf_y, mode="lines", line={"color": "#306998", "width": 4, "shape": "hv"}, name="ECDF"
+    )
 )
 
 # Layout
 fig.update_layout(
-    title=dict(text="ecdf-basic · plotly · pyplots.ai", font=dict(size=48)),
-    xaxis=dict(
-        title=dict(text="Value", font=dict(size=36)),
-        tickfont=dict(size=28),
-        showgrid=True,
-        gridwidth=1,
-        gridcolor="rgba(0,0,0,0.1)",
-    ),
-    yaxis=dict(
-        title=dict(text="Cumulative Proportion", font=dict(size=36)),
-        tickfont=dict(size=28),
-        range=[0, 1],
-        showgrid=True,
-        gridwidth=1,
-        gridcolor="rgba(0,0,0,0.1)",
-    ),
+    title={"text": "ecdf-basic · plotly · pyplots.ai", "font": {"size": 48}},
+    xaxis={
+        "title": {"text": "Value", "font": {"size": 36}},
+        "tickfont": {"size": 28},
+        "showgrid": True,
+        "gridwidth": 1,
+        "gridcolor": "rgba(0,0,0,0.1)",
+    },
+    yaxis={
+        "title": {"text": "Cumulative Proportion", "font": {"size": 36}},
+        "tickfont": {"size": 28},
+        "range": [0, 1],
+        "showgrid": True,
+        "gridwidth": 1,
+        "gridcolor": "rgba(0,0,0,0.1)",
+    },
     template="plotly_white",
     showlegend=False,
-    margin=dict(l=100, r=50, t=120, b=100),
+    margin={"l": 100, "r": 50, "t": 120, "b": 100},
 )
 
 # Save

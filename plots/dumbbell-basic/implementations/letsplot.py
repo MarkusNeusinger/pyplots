@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 dumbbell-basic: Basic Dumbbell Chart
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-15
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import pandas as pd
@@ -63,29 +63,27 @@ df_points = pd.concat(
 plot = (
     ggplot()
     # Connecting lines - thin and subtle
-    + geom_segment(data=df, mapping=aes(x="before", xend="after", y="y_pos", yend="y_pos"), size=1.2, color="#888888")
-    # Start dots (Before)
+    + geom_segment(data=df, mapping=aes(x="before", xend="after", y="y_pos", yend="y_pos"), size=1.5, color="#888888")
+    # Points with color mapping for legend
     + geom_point(data=df_points, mapping=aes(x="value", y="y_pos", color="period"), size=8)
     + scale_color_manual(values=["#FFD43B", "#306998"], name="Period")
     + labs(
         x="Satisfaction Score", y="Department", title="Employee Satisfaction · dumbbell-basic · letsplot · pyplots.ai"
     )
     + scale_x_continuous(limits=[50, 95])
+    + scale_y_continuous(breaks=list(range(len(df))), labels=df["category"].tolist())
     + ggsize(1600, 900)
     + theme_minimal()
     + theme(
         axis_text_x=element_text(size=16),
         axis_text_y=element_text(size=16),
         axis_title=element_text(size=20),
-        plot_title=element_text(size=20, hjust=0.5),
+        plot_title=element_text(size=24, hjust=0.5),
         legend_title=element_text(size=18),
         legend_text=element_text(size=16),
         panel_grid_major_y=element_blank(),
     )
 )
-
-# Add custom y-axis labels using scale
-plot = plot + scale_y_continuous(breaks=df["y_pos"].tolist(), labels=df["category"].tolist())
 
 # Save
 ggsave(plot, filename="plot.png", path=".", scale=3)

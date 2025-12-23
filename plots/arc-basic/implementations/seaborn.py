@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 arc-basic: Basic Arc Diagram
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-23
@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.lines import Line2D
 
 
 # Data: Character interactions in a story
@@ -35,9 +36,9 @@ edges = [
 # Node positions along x-axis
 x_positions = np.arange(n_nodes)
 
-# Create figure
+# Create figure with seaborn styling
+sns.set_theme(style="white", context="talk", font_scale=1.1)
 fig, ax = plt.subplots(figsize=(16, 9))
-sns.set_style("whitegrid")
 
 # Plot nodes as points using seaborn
 node_data = pd.DataFrame({"x": x_positions, "y": np.zeros(n_nodes), "node": nodes})
@@ -78,20 +79,28 @@ for i, name in enumerate(nodes):
 # Styling
 ax.set_xlim(-0.8, n_nodes - 0.2)
 ax.set_ylim(-0.8, 3.5)
-ax.set_xlabel("Character Sequence", fontsize=20)
-ax.set_ylabel("Connection Arc Height", fontsize=20)
 ax.set_title("arc-basic · seaborn · pyplots.ai", fontsize=24)
-ax.tick_params(axis="both", labelsize=16)
+ax.set_xlabel("")
+ax.set_ylabel("")
 
-# Remove x-axis ticks (nodes are labeled)
+# Remove axes - arc diagrams are abstract visualizations
 ax.set_xticks([])
+ax.set_yticks([])
+ax.spines["left"].set_visible(False)
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.spines["bottom"].set_visible(False)
 
 # Add a subtle horizontal baseline
 ax.axhline(y=0, color="#306998", linewidth=2, alpha=0.3, zorder=1)
 
-# Adjust grid
-ax.grid(True, alpha=0.3, linestyle="--")
-ax.set_axisbelow(True)
+# Add legend for arc thickness (interaction strength)
+legend_elements = [
+    Line2D([0], [0], color="#FFD43B", linewidth=1.3, alpha=0.6, label="Weak (1)"),
+    Line2D([0], [0], color="#FFD43B", linewidth=2.9, alpha=0.6, label="Medium (3)"),
+    Line2D([0], [0], color="#FFD43B", linewidth=4.5, alpha=0.6, label="Strong (5)"),
+]
+ax.legend(handles=legend_elements, title="Interaction Strength", loc="upper right", fontsize=14, title_fontsize=16)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

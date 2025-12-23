@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: sunburst-basic
 created: '2025-12-23T21:55:00Z'
-updated: '2025-12-23T22:09:22Z'
+updated: '2025-12-23T22:15:29Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20472389172
 issue: 0
@@ -10,20 +10,17 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/highcharts/plot.html
-quality_score: 89
+quality_score: 90
 review:
   strengths:
-  - Excellent colorblind-safe color palette (blue, yellow, purple) with brightness
-    variations for hierarchy levels
-  - Well-structured hierarchical data representing a realistic corporate budget breakdown
-    scenario
-  - Correct title format following pyplots.ai conventions
-  - 'Effective use of Highcharts sunburst-specific features: level configurations,
-    color variations, label rotation modes'
-  - Good canvas utilization with the chart filling most of the available space
-  - Clear visual separation between hierarchy levels through color brightness
+  - Excellent use of Highcharts sunburst module with proper parent-child ID references
+  - Well-configured level-specific styling with brightness variations for visual hierarchy
+  - Colorblind-safe palette (blue/yellow/purple) with good contrast
+  - Smart label filtering on small segments prevents overlap
+  - Realistic budget allocation scenario that effectively demonstrates hierarchical
+    data
+  - Clean code structure following library best practices
   weaknesses:
-  - Some outer ring labels on smaller segments are difficult to read due to rotation
-    and font size
-  - Library version shows as unknown in the file header instead of actual version
-    number
+  - Some outer ring labels are difficult to read due to segment size and rotation
+    angle
+  - Could improve tooltip visibility documentation in code comments

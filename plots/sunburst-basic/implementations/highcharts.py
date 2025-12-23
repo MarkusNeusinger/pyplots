@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 sunburst-basic: Basic Sunburst Chart
-Library: highcharts 1.10.3 | Python 3.13
-Quality: 89/100 | Created: 2025-12-23
+Library: highcharts unknown | Python 3.13.11
+Quality: 90/100 | Created: 2025-12-23
 """
 
 import tempfile

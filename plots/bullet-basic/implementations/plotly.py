@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bullet-basic: Basic Bullet Chart
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-16
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import plotly.graph_objects as go
@@ -44,7 +44,7 @@ for i, m in enumerate(metrics):
             col=1,
         )
 
-    # Add actual value bar (primary measure)
+    # Add actual value bar (primary measure) using Python Blue
     fig.add_trace(
         go.Bar(
             x=[m["actual"]],
@@ -60,7 +60,7 @@ for i, m in enumerate(metrics):
         col=1,
     )
 
-    # Add target marker line
+    # Add target marker line (thin black vertical line)
     fig.add_shape(
         type="line",
         x0=m["target"],
@@ -72,7 +72,7 @@ for i, m in enumerate(metrics):
         col=1,
     )
 
-    # Add actual value annotation
+    # Add actual value annotation for precise reading
     max_range = m["ranges"][-1]
     fig.add_annotation(
         x=max_range * 1.02,

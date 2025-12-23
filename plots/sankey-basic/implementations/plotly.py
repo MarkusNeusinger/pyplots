@@ -1,13 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 sankey-basic: Basic Sankey Diagram
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import plotly.graph_objects as go
 
 
-# Data - Energy flow from sources to end-use sectors
+# Data - Energy flow from sources to end-use sectors (in TWh)
 sources = ["Coal", "Natural Gas", "Nuclear", "Renewables"]
 targets = ["Residential", "Commercial", "Industrial", "Transportation"]
 
@@ -56,13 +56,13 @@ node_colors = [
 
 # Link colors with transparency (based on source)
 link_colors = [
-    "rgba(48, 105, 152, 0.4)"
+    "rgba(48, 105, 152, 0.5)"
     if s == 0
-    else "rgba(74, 144, 194, 0.4)"
+    else "rgba(74, 144, 194, 0.5)"
     if s == 1
-    else "rgba(255, 212, 59, 0.4)"
+    else "rgba(255, 212, 59, 0.5)"
     if s == 2
-    else "rgba(122, 182, 72, 0.4)"
+    else "rgba(122, 182, 72, 0.5)"
     for s in source_indices
 ]
 
@@ -70,7 +70,7 @@ link_colors = [
 fig = go.Figure(
     data=[
         go.Sankey(
-            node=dict(pad=20, thickness=30, line=dict(color="white", width=1), label=labels, color=node_colors),
+            node=dict(pad=25, thickness=35, line=dict(color="white", width=2), label=labels, color=node_colors),
             link=dict(source=source_indices, target=target_indices, value=values, color=link_colors),
         )
     ]
@@ -79,11 +79,11 @@ fig = go.Figure(
 # Update layout for 4800x2700 px output
 fig.update_layout(
     title=dict(
-        text="Energy Distribution · sankey-basic · plotly · pyplots.ai", font=dict(size=32), x=0.5, xanchor="center"
+        text="Energy Distribution · sankey-basic · plotly · pyplots.ai", font=dict(size=36), x=0.5, xanchor="center"
     ),
-    font=dict(size=20),
+    font=dict(size=22),
     template="plotly_white",
-    margin=dict(l=50, r=50, t=100, b=50),
+    margin=dict(l=80, r=80, t=120, b=60),
 )
 
 # Save outputs

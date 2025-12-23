@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-basic: Basic Contour Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 96/100 | Created: 2025-12-14
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -44,7 +44,7 @@ plot = (
     + geom_contourf(aes(fill="..level.."), bins=12)
     + geom_contour(color="white", size=0.5, alpha=0.6, bins=12)
     + scale_fill_viridis(name="Value")
-    + labs(x="X Coordinate", y="Y Coordinate", title="contour-basic \u00b7 letsplot \u00b7 pyplots.ai")
+    + labs(x="X Coordinate", y="Y Coordinate", title="contour-basic · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(
         axis_title=element_text(size=20),

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-basic: Basic Scatter Plot
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-22
@@ -34,16 +34,15 @@ hover = HoverTool(tooltips=[("Study Hours", "@study_hours{0.1} hrs"), ("Exam Sco
 p.add_tools(hover)
 
 # Styling (scaled for 4800x2700 px canvas - larger sizes for readability)
-p.title.text_font_size = "64pt"
+p.title.text_font_size = "72pt"
 p.xaxis.axis_label_text_font_size = "48pt"
 p.yaxis.axis_label_text_font_size = "48pt"
 p.xaxis.major_label_text_font_size = "36pt"
 p.yaxis.major_label_text_font_size = "36pt"
 
-# Grid styling (more visible)
-p.grid.grid_line_alpha = 0.5
+# Grid styling (subtle, per quality criteria VQ-07: alpha 0.2-0.4)
+p.grid.grid_line_alpha = 0.35
 p.grid.grid_line_width = 2
-p.grid.grid_line_dash = "dashed"
 
 # Save as PNG
 export_png(p, filename="plot.png")

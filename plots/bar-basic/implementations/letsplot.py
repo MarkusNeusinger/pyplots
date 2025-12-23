@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-basic: Basic Bar Chart
-Library: letsplot | Python 3.13
-Quality: pending | Created: 2025-12-23
+Library: letsplot unknown | Python 3.13.11
+Quality: 99/100 | Created: 2025-12-23
 """
 
 import pandas as pd

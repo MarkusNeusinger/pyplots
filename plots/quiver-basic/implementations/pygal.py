@@ -1,10 +1,8 @@
-""" pyplots.ai
+"""pyplots.ai
 quiver-basic: Basic Quiver Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-23
 """
-
-import math
 
 import numpy as np
 import pygal
@@ -60,15 +58,15 @@ for i in range(len(x_flat)):
     x2, y2 = x1 + U_scaled[i], y1 + V_scaled[i]
 
     # Calculate arrowhead size based on arrow length
-    arrow_len = math.sqrt(U_scaled[i] ** 2 + V_scaled[i] ** 2)
+    arrow_len = np.sqrt(U_scaled[i] ** 2 + V_scaled[i] ** 2)
     head_size = arrow_len * head_ratio
 
     # Calculate arrowhead points
-    angle = math.atan2(V_scaled[i], U_scaled[i])
-    x_left = x2 - head_size * math.cos(angle - head_angle)
-    y_left = y2 - head_size * math.sin(angle - head_angle)
-    x_right = x2 - head_size * math.cos(angle + head_angle)
-    y_right = y2 - head_size * math.sin(angle + head_angle)
+    angle = np.arctan2(V_scaled[i], U_scaled[i])
+    x_left = x2 - head_size * np.cos(angle - head_angle)
+    y_left = y2 - head_size * np.sin(angle - head_angle)
+    x_right = x2 - head_size * np.cos(angle + head_angle)
+    y_right = y2 - head_size * np.sin(angle + head_angle)
 
     # Determine which bin this arrow belongs to
     bin_idx = min(int(norm_mag[i] * num_bins), num_bins - 1)
@@ -89,7 +87,7 @@ custom_style = Style(
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=40,
-    legend_font_size=52,
+    legend_font_size=56,
     value_font_size=32,
     guide_stroke_color="#dddddd",
 )
@@ -100,7 +98,7 @@ chart = pygal.XY(
     width=4800,
     height=2700,
     stroke=True,
-    stroke_style={"width": 12},
+    stroke_style={"width": 20},
     show_dots=False,
     show_legend=True,
     legend_at_bottom=True,

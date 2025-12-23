@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: marimekko-basic
 created: '2025-12-23T15:14:03Z'
-updated: '2025-12-23T15:19:54Z'
+updated: '2025-12-23T15:31:57Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20464359351
 issue: 0
@@ -10,18 +10,15 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic/highcharts/plot.html
-quality_score: 72
+quality_score: 91
 review:
   strengths:
-  - Excellent use of Highcharts variwide module for true Marimekko visualization
-  - Good colorblind-safe palette with clear segment boundaries
-  - Interactive HTML version with tooltips provides rich user experience
-  - Realistic market share data with meaningful regional variations
-  - Clean data label formatting with percentage symbols
+  - Excellent use of Highcharts variwide chart type for the Marimekko visualization
+  - Clean implementation with proper variable-width bars representing market sizes
+  - Good colorblind-safe color palette
+  - Data labels on segments improve readability
+  - Region names properly centered under each bar using custom renderer
+  - Realistic market share data with meaningful variation between regions
   weaknesses:
-  - Region names (North America, Europe, Asia Pacific, Latin America, Middle East)
-    are NOT visible on the chart - plotBands labels are positioned at y:2680 which
-    is outside the visible area
-  - Legend symbols (small colored circles) could be larger for better visibility at
-    this resolution
-  - Title format includes chart description; spec-id should be more prominent
+  - Grid lines not visible on the plot area (gridLineWidth set but not appearing prominently)
+  - Y-axis tick labels could be slightly larger for optimal readability at 4800x2700

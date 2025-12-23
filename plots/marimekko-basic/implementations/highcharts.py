@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 marimekko-basic: Basic Marimekko Chart
 Library: highcharts unknown | Python 3.13.11
-Quality: 72/100 | Created: 2025-12-23
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import json

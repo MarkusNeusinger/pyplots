@@ -1,24 +1,23 @@
 library: letsplot
 specification_id: donut-basic
-created: '2025-12-23T00:52:14Z'
-updated: '2025-12-23T01:22:06Z'
+created: '2025-12-23T12:12:06Z'
+updated: '2025-12-23T12:14:17Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20448016894
+workflow_run: 20460328209
 issue: 0
 python_version: 3.13.11
-library_version: 4.8.1
+library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/donut-basic/letsplot/plot.html
-quality_score: 91
+quality_score: 92
 review:
   strengths:
-  - Excellent use of geom_pie with hole parameter for donut effect
-  - Center annotation with total budget provides useful summary statistic as spec
-    requested
-  - Clean percentage labels with proper formatting using layer_labels
-  - Good colorblind-safe color palette with Python Blue as primary color
-  - Proper category ordering preserved using pd.Categorical
+  - Excellent use of geom_pie with hole parameter for native donut chart creation
+  - Clean center annotation using geom_label showing total budget
+  - Well-formatted percentage labels using layer_labels().format()
+  - Colorblind-safe palette with Python blue as primary color
+  - Proper categorical ordering to maintain consistent segment order
   weaknesses:
-  - Donut chart appears small relative to the large canvas; could use more of the
-    available space
+  - Legend could be positioned closer to the chart for better visual cohesion
+  - No explicit random seed (though data is deterministic, best practice to include)

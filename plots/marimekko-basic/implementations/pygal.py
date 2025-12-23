@@ -199,6 +199,23 @@ class Marimekko(Graph):
                     **{"stroke-width": "1", "stroke-dasharray": "5,5"},
                 )
 
+        # Draw Y-axis title (rotated label)
+        y_title_x = x_start - 120
+        y_title_y = y_bottom - plot_height / 2
+        self.svg.node(
+            y_axis_group,
+            "text",
+            x=y_title_x,
+            y=y_title_y,
+            fill="#333",
+            **{
+                "text-anchor": "middle",
+                "font-size": "42",
+                "font-weight": "normal",
+                "transform": f"rotate(-90, {y_title_x}, {y_title_y})",
+            },
+        ).text = "Share within Region (%)"
+
     def _compute(self):
         """Compute the bounding box for rendering."""
         self._box.xmin = 0

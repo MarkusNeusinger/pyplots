@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 qq-basic: Basic Q-Q Plot
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -10,26 +10,21 @@ from bokeh.models import ColumnDataSource, Slope
 from bokeh.plotting import figure
 
 
-# Data - sample with slight right skew to show Q-Q plot characteristics
+# Data - sample with slight right skew to demonstrate Q-Q plot characteristics
 np.random.seed(42)
-n = 100
 sample = np.concatenate(
     [
-        np.random.normal(0, 1, 85),  # Main normal component
-        np.random.normal(2, 0.5, 15),  # Right tail values to show deviation
+        np.random.normal(loc=50, scale=10, size=80),  # Main bulk of data
+        np.random.normal(loc=75, scale=5, size=20),  # Slight right tail for asymmetry
     ]
 )
-np.random.shuffle(sample)
 
-# Calculate Q-Q values
-sorted_sample = np.sort(sample)
-n_points = len(sorted_sample)
+# Sort sample and calculate quantile positions
+sample_sorted = np.sort(sample)
+n = len(sample_sorted)
+probabilities = (np.arange(1, n + 1) - 0.5) / n
 
-# Compute theoretical quantiles using inverse normal CDF approximation
-# Abramowitz and Stegun rational approximation coefficients
-prob = (np.arange(1, n_points + 1) - 0.5) / n_points
-prob = np.clip(prob, 1e-10, 1 - 1e-10)
-
+# Inverse normal CDF using Abramowitz & Stegun approximation (accurate to ~1.5e-7)
 a = [
     -3.969683028665376e01,
     2.209460984245205e02,
@@ -49,39 +44,40 @@ c = [
 ]
 d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e00, 3.754408661907416e00]
 
-p_low = 0.02425
-p_high = 1 - p_low
-theoretical_quantiles = np.zeros_like(prob, dtype=float)
+p_low, p_high = 0.02425, 1 - 0.02425
+theoretical_quantiles = np.zeros(n)
 
-# Lower region
-mask_low = prob < p_low
-if np.any(mask_low):
-    q = np.sqrt(-2 * np.log(prob[mask_low]))
-    theoretical_quantiles[mask_low] = (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / (
-        (((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1
-    )
+# Low region
+mask_low = probabilities < p_low
+q = np.sqrt(-2 * np.log(probabilities[mask_low]))
+theoretical_quantiles[mask_low] = (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / (
+    (((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1
+)
 
 # Central region
-mask_central = (prob >= p_low) & (prob <= p_high)
-if np.any(mask_central):
-    q = prob[mask_central] - 0.5
-    r = q * q
-    theoretical_quantiles[mask_central] = (
-        (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5])
-        * q
-        / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1)
-    )
+mask_mid = (probabilities >= p_low) & (probabilities <= p_high)
+q = probabilities[mask_mid] - 0.5
+r = q * q
+theoretical_quantiles[mask_mid] = (
+    (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5])
+    * q
+    / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1)
+)
 
-# Upper region
-mask_high = prob > p_high
-if np.any(mask_high):
-    q = np.sqrt(-2 * np.log(1 - prob[mask_high]))
-    theoretical_quantiles[mask_high] = -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / (
-        (((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1
-    )
+# High region
+mask_high = probabilities > p_high
+q = np.sqrt(-2 * np.log(1 - probabilities[mask_high]))
+theoretical_quantiles[mask_high] = -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / (
+    (((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1
+)
+
+# Standardize sample to z-scores for comparison with standard normal quantiles
+sample_mean = np.mean(sample_sorted)
+sample_std = np.std(sample_sorted, ddof=1)
+sample_quantiles = (sample_sorted - sample_mean) / sample_std
 
 # Create ColumnDataSource
-source = ColumnDataSource(data={"theoretical": theoretical_quantiles, "sample": sorted_sample})
+source = ColumnDataSource(data={"theoretical": theoretical_quantiles, "sample": sample_quantiles})
 
 # Create figure (4800 × 2700 px)
 p = figure(
@@ -93,7 +89,7 @@ p = figure(
     toolbar_location=None,
 )
 
-# Add reference line (y=x)
+# Add reference line (y=x) showing perfect normal distribution match
 slope = Slope(gradient=1, y_intercept=0, line_color="#FFD43B", line_width=4, line_dash="dashed")
 p.add_layout(slope)
 

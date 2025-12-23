@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 dumbbell-basic: Basic Dumbbell Chart
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-15
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import plotly.graph_objects as go
@@ -21,8 +21,8 @@ categories = [
 before = [62, 71, 58, 45, 68, 52, 64, 73]  # Before policy changes
 after = [78, 82, 75, 69, 74, 71, 79, 85]  # After policy changes
 
-# Sort by difference (largest improvement first)
-data = sorted(zip(categories, before, after, strict=True), key=lambda x: x[2] - x[1], reverse=True)
+# Sort by difference (largest improvement at top of chart)
+data = sorted(zip(categories, before, after, strict=True), key=lambda x: x[2] - x[1])
 categories = [d[0] for d in data]
 before = [d[1] for d in data]
 after = [d[2] for d in data]

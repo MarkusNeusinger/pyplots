@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 quiver-basic: Basic Quiver Plot
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-16
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -31,12 +31,12 @@ quiver = ax.quiver(
 
 # Colorbar for magnitude
 cbar = plt.colorbar(quiver, ax=ax, shrink=0.8, pad=0.02)
-cbar.set_label("Magnitude", fontsize=20)
+cbar.set_label("Vector Magnitude", fontsize=20)
 cbar.ax.tick_params(labelsize=16)
 
 # Styling
-ax.set_xlabel("X", fontsize=20)
-ax.set_ylabel("Y", fontsize=20)
+ax.set_xlabel("X Position", fontsize=20)
+ax.set_ylabel("Y Position", fontsize=20)
 ax.set_title("quiver-basic · matplotlib · pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
 ax.set_aspect("equal")

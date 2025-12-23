@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 surface-basic: Basic 3D Surface Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-17
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import json
@@ -47,7 +47,6 @@ with urllib.request.urlopen(highcharts_3d_url, timeout=30) as response:
 # Color interpolation function for viridis-like colormap
 def get_color(value):
     """Get viridis-like color for value in [0, 1]"""
-    # Viridis-inspired colors: dark blue -> teal -> green -> yellow
     colors = [
         (68, 1, 84),  # Dark purple
         (59, 82, 139),  # Blue-purple
@@ -55,7 +54,6 @@ def get_color(value):
         (94, 201, 98),  # Green
         (253, 231, 37),  # Yellow
     ]
-    # Interpolate between colors
     n_colors = len(colors) - 1
     idx = min(int(value * n_colors), n_colors - 1)
     t = (value * n_colors) - idx

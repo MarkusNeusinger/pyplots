@@ -1,15 +1,27 @@
-""" pyplots.ai
+"""pyplots.ai
 density-basic: Basic Density Plot
-Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
 import pandas as pd
-from plotnine import aes, element_line, element_text, geom_density, geom_rug, ggplot, labs, theme, theme_minimal
+from plotnine import (
+    aes,
+    coord_cartesian,
+    element_line,
+    element_text,
+    geom_density,
+    geom_rug,
+    ggplot,
+    labs,
+    scale_x_continuous,
+    theme,
+    theme_minimal,
+)
 
 
-# Data - simulating test scores with slight positive skew
+# Data - simulating test scores with bimodal distribution
 np.random.seed(42)
 test_scores = np.concatenate(
     [
@@ -21,12 +33,14 @@ test_scores = np.clip(test_scores, 0, 100)  # Scores between 0-100
 
 df = pd.DataFrame({"score": test_scores})
 
-# Plot
+# Plot with bandwidth adjustment for smoother curve
 plot = (
     ggplot(df, aes(x="score"))
-    + geom_density(fill="#306998", color="#306998", alpha=0.6, size=1.5)
+    + geom_density(fill="#306998", color="#306998", alpha=0.6, size=1.5, bw="scott")
     + geom_rug(color="#FFD43B", alpha=0.7, size=1)
-    + labs(x="Test Score", y="Density", title="density-basic · plotnine · pyplots.ai")
+    + labs(x="Test Score (points)", y="Probability Density", title="density-basic · plotnine · pyplots.ai")
+    + scale_x_continuous(limits=(30, 100), breaks=range(30, 101, 10))
+    + coord_cartesian(xlim=(30, 100))
     + theme_minimal()
     + theme(
         figure_size=(16, 9),

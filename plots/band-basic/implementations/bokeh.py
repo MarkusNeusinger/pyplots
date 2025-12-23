@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 band-basic: Basic Band Plot
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -13,12 +13,12 @@ from bokeh.plotting import figure
 # Data - Time series with 95% confidence interval
 np.random.seed(42)
 x = np.linspace(0, 10, 100)
-y_center = 2 + 0.5 * x + 0.3 * np.sin(2 * x)  # Central trend
+y_center = 2 + 0.5 * x + 0.3 * np.sin(2 * x)  # Central trend with slight oscillation
 uncertainty = 0.5 + 0.1 * x  # Growing uncertainty over time
 y_upper = y_center + 1.96 * uncertainty  # 95% CI upper bound
 y_lower = y_center - 1.96 * uncertainty  # 95% CI lower bound
 
-# Create ColumnDataSource for band (need x_band for patch)
+# Create ColumnDataSource for band (patch requires closed polygon)
 x_band = np.concatenate([x, x[::-1]])
 y_band = np.concatenate([y_upper, y_lower[::-1]])
 band_source = ColumnDataSource(data={"x": x_band, "y": y_band})

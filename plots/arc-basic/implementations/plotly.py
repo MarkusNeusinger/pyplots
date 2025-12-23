@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 arc-basic: Basic Arc Diagram
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-17
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -13,6 +13,7 @@ nodes = ["Alice", "Bob", "Carol", "David", "Eve", "Frank", "Grace", "Henry", "Ir
 n_nodes = len(nodes)
 
 # Edges: pairs of (source_idx, target_idx, weight)
+# Demonstrates short-range and long-range connections with varying weights
 edges = [
     (0, 1, 3),  # Alice-Bob (neighbors, strong connection)
     (0, 3, 2),  # Alice-David (medium distance)
@@ -34,7 +35,7 @@ x_positions = np.linspace(0, 10, n_nodes)
 # Create figure
 fig = go.Figure()
 
-# Draw arcs as Bezier curves (using scatter with spline smoothing)
+# Draw arcs as smooth parabolic curves
 for src, tgt, weight in edges:
     x_src = x_positions[src]
     x_tgt = x_positions[tgt]
@@ -63,7 +64,7 @@ for src, tgt, weight in edges:
         )
     )
 
-# Draw nodes
+# Draw nodes on horizontal axis
 fig.add_trace(
     go.Scatter(
         x=x_positions,

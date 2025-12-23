@@ -1,0 +1,29 @@
+library: seaborn
+specification_id: sankey-basic
+created: '2025-12-23T19:44:36Z'
+updated: '2025-12-23T20:24:06Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20469994035
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 78
+review:
+  strengths:
+  - Excellent manual implementation of Sankey diagram using bezier curves for smooth
+    flow bands
+  - Good use of seaborn color palettes (HUSL for sources, Set2 for targets) creating
+    visual distinction
+  - Clear node labels with energy values in TWh units provide context
+  - Clean code structure following KISS principles
+  - Proper handling of flow stacking at nodes prevents overlapping bands
+  weaknesses:
+  - Dual legends are redundant since node labels already display names - consider
+    removing legends or integrating flow percentages
+  - Limited seaborn-specific features used (only styling/palettes) since seaborn lacks
+    native Sankey support
+  - Source totals are too uniform (Coal=Gas=60 TWh) - more variety in magnitudes would
+    better demonstrate proportional scaling

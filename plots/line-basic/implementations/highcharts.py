@@ -1,7 +1,7 @@
 """ pyplots.ai
 line-basic: Basic Line Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-13
+Library: highcharts unknown | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import tempfile
@@ -12,24 +12,24 @@ from pathlib import Path
 import numpy as np
 from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
-from highcharts_core.options.series.area import LineSeries  # LineSeries is in area module
+from highcharts_core.options.series.area import LineSeries
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data - Monthly temperature readings
+# Data - Monthly temperature readings showing seasonal pattern
 np.random.seed(42)
 month_labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-# Simulate realistic temperature pattern (cold winter, warm summer)
+# Realistic temperature pattern: cold winter, warm summer
 temperatures = [5, 7, 12, 16, 21, 25, 28, 27, 22, 15, 9, 6]
-# Add slight variation
+# Add slight natural variation
 temperatures = [t + np.random.randn() * 0.5 for t in temperatures]
 
 # Create chart
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart settings for 4800x2700
+# Chart settings for 4800x2700 canvas
 chart.options.chart = {
     "type": "line",
     "width": 4800,

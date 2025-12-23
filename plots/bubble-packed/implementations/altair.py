@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-16
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import altair as alt
@@ -111,27 +111,9 @@ for _ in range(200):
         x_pos[i] += fx
         y_pos[i] += fy
 
-# Color palette - assign based on value quartiles
-# Larger values get Python Blue, mid get Yellow, smaller get accent colors
-colors_base = [
-    "#306998",  # Python Blue
-    "#FFD43B",  # Python Yellow
-    "#306998",
-    "#4A90A4",
-    "#4A90A4",
-    "#4A90A4",
-    "#FFD43B",
-    "#4A90A4",
-    "#7B9E89",
-    "#306998",
-    "#FFD43B",
-    "#306998",
-    "#FFD43B",
-    "#7B9E89",
-    "#7B9E89",
-]
-# Reorder colors to match sorted data
-colors = [colors_base[i] for i in order]
+# Color palette - colorblind-safe colors with Python Blue and Yellow as primary
+colors_list = ["#306998", "#FFD43B", "#4A90A4", "#7B9E89", "#E07A5F"]
+colors = [colors_list[i % len(colors_list)] for i in range(n)]
 
 # Create DataFrame with computed positions
 df = pd.DataFrame(
@@ -141,7 +123,7 @@ df = pd.DataFrame(
         "x": x_pos,
         "y": y_pos,
         "radius": radii,
-        "color": colors[:n],
+        "color": colors,
         "formatted_value": [f"${v}K" for v in values],
     }
 )
@@ -160,8 +142,7 @@ circles = (
 )
 
 # Create labels for larger bubbles
-# Filter to only show labels for circles large enough
-df_large = df[df["radius"] > 60].copy()
+df_large = df[df["radius"] > 55].copy()
 df_large["display_text"] = df_large["label"] + "\n" + df_large["formatted_value"]
 
 labels_layer = (

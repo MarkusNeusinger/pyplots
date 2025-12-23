@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 span-basic: Basic Span Plot (Highlighted Region)
-Library: altair | Python 3.13
-Quality: pending | Created: 2025-12-23
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import altair as alt

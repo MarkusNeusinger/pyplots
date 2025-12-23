@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 dendrogram-basic: Basic Dendrogram
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -87,9 +87,6 @@ color_threshold = 0.7 * max(linkage_matrix[:, 2])
 for xs, ys in zip(dend["icoord"], dend["dcoord"], strict=True):
     # Each merge has 4 points forming a U-shape: [x1, x2, x3, x4], [y1, y2, y3, y4]
     # We need 3 segments: left vertical, horizontal, right vertical
-    # Left vertical: (xs[0], ys[0]) to (xs[1], ys[1])
-    # Horizontal: (xs[1], ys[1]) to (xs[2], ys[2])
-    # Right vertical: (xs[2], ys[2]) to (xs[3], ys[3])
 
     # Determine color based on height (merge distance)
     merge_height = max(ys)
@@ -104,17 +101,17 @@ for xs, ys in zip(dend["icoord"], dend["dcoord"], strict=True):
 
 segments_df = pd.DataFrame(segments)
 
-# Create label data for x-axis
-label_positions = list(range(5, 5 + 10 * len(labels), 10))  # Standard dendrogram spacing
+# Create label data using the actual leaf positions from dendrogram
+# dend['leaves'] gives the order, and x positions are at 5, 15, 25, ... (spacing of 10)
+leaf_positions = [(i + 1) * 10 - 5 for i in range(len(dend["ivl"]))]
 ivl = dend["ivl"]  # Reordered labels from dendrogram
-max_y = max(linkage_matrix[:, 2])
-label_df = pd.DataFrame({"x": label_positions, "label": ivl, "y": [-0.8] * len(ivl)})
+label_df = pd.DataFrame({"x": leaf_positions, "label": ivl, "y": [-0.8] * len(ivl)})
 
 # Plot using plotnine's native geom_segment
 plot = (
     ggplot()
-    + geom_segment(aes(x="x", xend="xend", y="y", yend="yend", color="color"), data=segments_df, size=1.5)
-    + geom_text(aes(x="x", y="y", label="label"), data=label_df, angle=45, ha="right", va="top", size=8)
+    + geom_segment(aes(x="x", xend="xend", y="y", yend="yend", color="color"), data=segments_df, size=1.8)
+    + geom_text(aes(x="x", y="y", label="label"), data=label_df, angle=45, ha="right", va="top", size=9)
     + scale_color_manual(values={"#306998": "#306998", "#FFD43B": "#FFD43B"}, guide=None)
     + scale_x_continuous(breaks=[], expand=(0.12, 0.05))
     + scale_y_continuous(expand=(0.25, 0.02))

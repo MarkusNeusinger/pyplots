@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bullet-basic: Basic Bullet Chart
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-16
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -14,7 +14,7 @@ metrics = [
     {"label": "Revenue", "actual": 275, "target": 250, "ranges": [150, 200, 300], "unit": "$K"},
     {"label": "Profit", "actual": 45, "target": 50, "ranges": [20, 40, 60], "unit": "%"},
     {"label": "New Customers", "actual": 85, "target": 100, "ranges": [50, 75, 120], "unit": ""},
-    {"label": "Satisfaction", "actual": 4.2, "target": 4.5, "ranges": [3.0, 4.0, 5.0], "unit": ""},
+    {"label": "Satisfaction", "actual": 4.2, "target": 4.5, "ranges": [3.0, 4.0, 5.0], "unit": "/5"},
 ]
 
 # Qualitative band colors (grayscale: poor -> satisfactory -> good)
@@ -53,10 +53,10 @@ for i, metric in enumerate(metrics):
         zorder=3,
     )
 
-    # Add actual value as text label
-    label_offset = max_range * 0.02
+    # Add actual value as text label (positioned after the max range for consistency)
+    label_x = max_range + max_range * 0.03
     ax.text(
-        metric["actual"] + label_offset,
+        label_x,
         y,
         f"{metric['actual']}{metric['unit']}",
         va="center",
@@ -71,8 +71,7 @@ for i, metric in enumerate(metrics):
 ax.set_yticks(y_positions)
 ax.set_yticklabels([m["label"] for m in metrics], fontsize=18)
 
-# X-axis styling
-ax.set_xlabel("Value", fontsize=20)
+# X-axis styling - no label since metrics have different units
 ax.tick_params(axis="x", labelsize=16)
 ax.tick_params(axis="y", labelsize=18)
 

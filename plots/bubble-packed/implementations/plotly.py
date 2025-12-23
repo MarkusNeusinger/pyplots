@@ -1,14 +1,14 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-16
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
 import plotly.graph_objects as go
 
 
-# Data - department budget allocation (shorter labels for better display)
+# Data - department budget allocation
 np.random.seed(42)
 data = {
     "Marketing": 2800000,
@@ -33,22 +33,22 @@ values = list(data.values())
 
 # Circle packing simulation using force-directed approach
 n = len(labels)
-# Initial positions - spread in a circle
-angles = np.linspace(0, 2 * np.pi, n, endpoint=False)
+# Scale radii by area (sqrt) for accurate visual perception
 radii_scale = np.sqrt(np.array(values)) / np.sqrt(max(values)) * 100
 
-# Initial random spread
+# Initial positions - spread in a circle
+angles = np.linspace(0, 2 * np.pi, n, endpoint=False)
 x_pos = np.cos(angles) * 200 + np.random.randn(n) * 50
 y_pos = np.sin(angles) * 200 + np.random.randn(n) * 50
 
-# Simple force simulation for packing
+# Force simulation for circle packing
 for _ in range(500):
     for i in range(n):
         fx, fy = 0, 0
         # Centering force
         fx -= x_pos[i] * 0.01
         fy -= y_pos[i] * 0.01
-        # Repulsion from other circles
+        # Repulsion between circles
         for j in range(n):
             if i != j:
                 dx = x_pos[i] - x_pos[j]
@@ -81,20 +81,13 @@ colors = [
     "#85B6B2",
 ]
 
+# Format values for display (inline)
+formatted_values = [f"${v / 1000000:.1f}M" if v >= 1000000 else f"${v / 1000:.0f}K" for v in values]
 
-# Format values for display
-def format_value(v):
-    if v >= 1000000:
-        return f"${v / 1000000:.1f}M"
-    elif v >= 1000:
-        return f"${v / 1000:.0f}K"
-    return f"${v}"
-
-
-# Create bubble chart - add each bubble separately for individual text sizing
+# Create bubble chart
 fig = go.Figure()
 
-# Add markers first (all together for performance)
+# Add markers
 fig.add_trace(
     go.Scatter(
         x=x_pos,
@@ -102,19 +95,18 @@ fig.add_trace(
         mode="markers",
         marker=dict(size=radii_scale * 2, color=colors[:n], line=dict(color="white", width=2), opacity=0.85),
         hovertemplate=[
-            f"<b>{lbl}</b><br>{format_value(val)}<extra></extra>" for lbl, val in zip(labels, values, strict=True)
+            f"<b>{lbl}</b><br>{fval}<extra></extra>" for lbl, fval in zip(labels, formatted_values, strict=True)
         ],
     )
 )
 
 # Add text annotations with size based on bubble radius
-for i, (label, value) in enumerate(zip(labels, values, strict=True)):
-    # Scale font size based on bubble size
+for i in range(n):
     font_size = max(10, min(18, int(radii_scale[i] * 0.2)))
     fig.add_annotation(
         x=x_pos[i],
         y=y_pos[i],
-        text=f"<b>{label}</b><br>{format_value(value)}",
+        text=f"<b>{labels[i]}</b><br>{formatted_values[i]}",
         showarrow=False,
         font=dict(size=font_size, color="white", family="Arial"),
     )

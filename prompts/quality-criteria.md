@@ -182,13 +182,24 @@ Data elements must be visible and adapted to data density.
 
 **Recommended palettes:** `viridis`, `colorblind`, `tab10`
 
-### VQ-05: Layout Balance (5 Points)
+### VQ-05: Layout Balance & Canvas Utilization (5 Points)
 
 | Points | Criterion |
 |--------|-----------|
-| 5 | Perfect layout, good proportions |
-| 3 | Ok, but improvable |
-| 0 | Content cut-off or extreme whitespace |
+| 5 | Perfect layout: plot fills 50-80% of canvas, balanced margins |
+| 3 | Minor issues: plot fills 30-50% of canvas, some wasted space |
+| 0 | **Severe**: plot fills <30% of canvas, OR content cut-off, OR legend isolated |
+
+**Canvas Utilization Rules:**
+- Plot elements (chart, axes, labels) should use **at least 40%** of the canvas area
+- Whitespace should be **balanced** around the plot (not all on one side)
+- Legend should be **near** the plot, not floating isolated in empty space
+- Tiny plot in center of huge canvas = **automatic 0 points**
+
+**Common failures:**
+- Pie/donut charts that are tiny dots in the center
+- Legends placed far from the chart with massive gaps
+- Default library sizing that ignores the 4800×2700 canvas
 
 ### VQ-06: Axis Labels (2 Points)
 

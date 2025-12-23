@@ -1,0 +1,26 @@
+library: seaborn
+specification_id: errorbar-basic
+created: '2025-12-23T13:03:10Z'
+updated: '2025-12-23T13:12:45Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20461374251
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/errorbar-basic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/errorbar-basic/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent text legibility with proper font sizing for 4800x2700 canvas
+  - Clean visual design with prominent error bar caps (capsize=8, capthick=2.5)
+  - Correct title format following pyplots.ai convention
+  - Realistic experimental data scenario with treatment groups
+  - Uses modern seaborn API correctly (hue with palette, legend=False)
+  weaknesses:
+  - Alternating blue/yellow colors have no semantic meaning - consider single color
+    or meaningful grouping
+  - Error bars added via matplotlib errorbar() instead of seaborn native errorbar
+    parameter in barplot
+  - Axis label uses generic units placeholder instead of specific measurement units

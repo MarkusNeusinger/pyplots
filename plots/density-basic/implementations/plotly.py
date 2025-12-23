@@ -1,21 +1,23 @@
-""" pyplots.ai
+"""pyplots.ai
 density-basic: Basic Density Plot
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
 import plotly.graph_objects as go
 
 
-# Data - Test scores with realistic bimodal distribution
+# Data - SAT Math scores with realistic bimodal distribution
 np.random.seed(42)
 scores = np.concatenate(
     [
-        np.random.normal(72, 10, 300),  # Main group around 72
-        np.random.normal(88, 5, 100),  # High achievers around 88
+        np.random.normal(520, 80, 300),  # Average students around 520
+        np.random.normal(720, 40, 100),  # High achievers around 720
     ]
 )
+# Clip to valid SAT range (200-800)
+scores = np.clip(scores, 200, 800)
 
 # Compute KDE using Silverman's rule of thumb for bandwidth
 n = len(scores)
@@ -24,7 +26,7 @@ iqr = np.percentile(scores, 75) - np.percentile(scores, 25)
 bandwidth = 0.9 * min(std, iqr / 1.34) * n ** (-0.2)
 
 # Evaluate density at each point on a grid
-x_range = np.linspace(scores.min() - 10, scores.max() + 10, 500)
+x_range = np.linspace(200, 800, 500)
 density = np.zeros_like(x_range)
 for xi in scores:
     density += np.exp(-0.5 * ((x_range - xi) / bandwidth) ** 2)
@@ -43,7 +45,7 @@ fig.add_trace(
         fillcolor="rgba(48, 105, 152, 0.3)",
         line={"color": "#306998", "width": 4},
         name="Density",
-        hovertemplate="Score: %{x:.1f}<br>Density: %{y:.4f}<extra></extra>",
+        hovertemplate="Score: %{x:.0f} pts<br>Density: %{y:.4f}<extra></extra>",
     )
 )
 
@@ -51,27 +53,33 @@ fig.add_trace(
 fig.add_trace(
     go.Scatter(
         x=scores,
-        y=[-0.001] * len(scores),
+        y=[-0.0002] * len(scores),
         mode="markers",
         marker={"symbol": "line-ns", "size": 12, "color": "#306998", "line": {"width": 1.5}},
         name="Observations",
-        hovertemplate="Score: %{x:.1f}<extra></extra>",
+        hovertemplate="Score: %{x:.0f} pts<extra></extra>",
     )
 )
 
 # Layout
 fig.update_layout(
-    title={"text": "density-basic · plotly · pyplots.ai", "font": {"size": 36}, "x": 0.5, "xanchor": "center"},
+    title={
+        "text": "SAT Math Score Distribution · density-basic · plotly · pyplots.ai",
+        "font": {"size": 36},
+        "x": 0.5,
+        "xanchor": "center",
+    },
     xaxis={
-        "title": {"text": "Test Score", "font": {"size": 28}},
+        "title": {"text": "SAT Math Score (points)", "font": {"size": 28}},
         "tickfont": {"size": 22},
         "showgrid": True,
         "gridwidth": 1,
         "gridcolor": "rgba(128, 128, 128, 0.2)",
         "zeroline": False,
+        "range": [200, 800],
     },
     yaxis={
-        "title": {"text": "Density", "font": {"size": 28}},
+        "title": {"text": "Probability Density", "font": {"size": 28}},
         "tickfont": {"size": 22},
         "showgrid": True,
         "gridwidth": 1,

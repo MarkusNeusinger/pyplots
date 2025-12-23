@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 streamgraph-basic: Basic Stream Graph
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-23
@@ -57,15 +57,26 @@ for genre in genres:
     values = np.maximum(values, 5)  # Ensure positive values
     data[genre] = values.tolist()
 
-# Custom style for 4800x2700 canvas with harmonious colors
+# Convert data to array for streamgraph calculation
+data_array = np.array([data[genre] for genre in genres])
+
+# Calculate centered baseline for true streamgraph effect
+# Symmetric baseline: streams expand outward from center (x-axis at y=0)
+total_at_each_time = data_array.sum(axis=0)
+half_stack = total_at_each_time / 2
+
+# Custom style with colorblind-safe palette
+# Using colors with good contrast between adjacent layers
+# Avoiding problematic yellow-coral adjacency
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#2c3e50",
     foreground_strong="#2c3e50",
     foreground_subtle="#7f8c8d",
-    # Harmonious palette with good neighbor contrast
-    colors=("#306998", "#FFD43B", "#e74c3c", "#1abc9c", "#9b59b6"),
+    # First color is transparent (for baseline offset layer)
+    # Remaining colors are colorblind-friendly with good neighbor contrast
+    colors=("rgba(255,255,255,0)", "#306998", "#2ecc71", "#9b59b6", "#e67e22", "#3498db"),
     title_font_size=80,
     label_font_size=48,
     major_label_font_size=40,
@@ -77,12 +88,12 @@ custom_style = Style(
     major_guide_stroke_color="#cccccc",
 )
 
-# Create StackedLine chart for streamgraph effect
-# StackedLine with fill creates the stacked area appearance
+# Create StackedLine chart with centered baseline effect
+# Adding an invisible baseline offset layer creates the symmetric appearance
 chart = pygal.StackedLine(
     width=4800,
     height=2700,
-    title="Music Streaming Trends · streamgraph-basic · pygal · pyplots.ai",
+    title="streamgraph-basic · pygal · pyplots.ai",
     x_title="Month",
     y_title="Streaming Hours",
     style=custom_style,
@@ -95,15 +106,21 @@ chart = pygal.StackedLine(
     margin=100,
     spacing=40,
     truncate_legend=-1,
-    interpolate="cubic",  # Smooth curves for flowing appearance
+    interpolate="cubic",  # Smooth flowing curves
     show_minor_x_labels=False,
+    include_x_axis=True,
 )
 
 # Set x-axis labels showing months
 chart.x_labels = month_labels
 chart.x_labels_major = ["Jan'23", "Jul", "Jan'24", "Jul"]
 
-# Add each genre series
+# Add invisible baseline offset layer (creates centered/symmetric appearance)
+# This negative offset pushes the zero baseline down, centering the visible streams
+baseline_layer = (-half_stack).tolist()
+chart.add("", baseline_layer, show_dots=False)
+
+# Add each genre series stacked on top of the centered baseline
 for genre in genres:
     chart.add(genre, data[genre])
 

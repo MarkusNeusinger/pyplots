@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bullet-basic: Basic Bullet Chart
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-16
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import json
@@ -89,10 +89,7 @@ chart_options = {
         "marginLeft": 450,  # Space for category labels
         "spacing": [100, 100, 100, 100],
     },
-    "title": {
-        "text": "bullet-basic \u00b7 highcharts \u00b7 pyplots.ai",
-        "style": {"fontSize": "48px", "fontWeight": "bold"},
-    },
+    "title": {"text": "bullet-basic · highcharts · pyplots.ai", "style": {"fontSize": "48px", "fontWeight": "bold"}},
     "subtitle": {
         "text": "Q4 Performance Dashboard - Actual vs Target",
         "style": {"fontSize": "32px", "color": "#666666"},

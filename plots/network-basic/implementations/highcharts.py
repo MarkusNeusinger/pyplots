@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-basic: Basic Network Graph
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-23
@@ -93,12 +93,12 @@ for src, tgt in edges:
     degrees[tgt] += 1
 
 # Pre-calculated fixed initial positions for reproducibility (4 groups in quadrants)
-# Using deterministic circular positions within each group's quadrant
+# Using deterministic circular positions within each group's quadrant - centered for better balance
 group_centers = [
-    (1800, 900),  # Group 0: top-left quadrant
-    (3000, 900),  # Group 1: top-right quadrant
-    (1800, 1800),  # Group 2: bottom-left quadrant
-    (3000, 1800),  # Group 3: bottom-right quadrant
+    (1700, 900),  # Group 0: top-left quadrant
+    (2900, 900),  # Group 1: top-right quadrant
+    (1700, 1700),  # Group 2: bottom-left quadrant
+    (2900, 1700),  # Group 3: bottom-right quadrant
 ]
 
 # Build nodes config with colors, markers based on degree, and fixed initial positions
@@ -108,8 +108,8 @@ for node in nodes:
     node_id = node["id"]
     group = node["group"]
     color = group_colors[group]
-    # Scale marker radius based on degree (base 55, plus 10 per connection)
-    radius = 55 + degrees[node_id] * 10
+    # Scale marker radius based on degree (base 60, plus 8 per connection)
+    radius = 60 + degrees[node_id] * 8
     # Calculate fixed initial position in a circle around group center
     center_x, center_y = group_centers[group]
     idx = group_indices[group]
@@ -139,17 +139,17 @@ series.data_labels = {
     "enabled": True,
     "format": "{point.id}",
     "linkFormat": "",
-    "style": {"fontSize": "32px", "fontWeight": "bold", "textOutline": "4px white"},
-    "y": -5,
+    "style": {"fontSize": "20px", "fontWeight": "bold", "textOutline": "2px white", "color": "#000000"},
+    "allowOverlap": True,
 }
-series.marker = {"radius": 55}
+series.marker = {"radius": 60}
 series.layout_algorithm = {
     "enableSimulation": True,
-    "linkLength": 500,
-    "gravitationalConstant": 0.01,
-    "friction": -0.95,
+    "linkLength": 380,
+    "gravitationalConstant": 0.025,
+    "friction": -0.85,
     "initialPositions": "circle",
-    "maxIterations": 500,
+    "maxIterations": 200,
     "integration": "verlet",
 }
 series.animation = False
@@ -164,9 +164,9 @@ chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "margin": [120, 400, 150, 100],
-    "spacingTop": 80,
-    "spacingBottom": 80,
+    "margin": [120, 250, 100, 150],
+    "spacingTop": 60,
+    "spacingBottom": 60,
 }
 chart.options.title = {
     "text": "network-basic · highcharts · pyplots.ai",
@@ -177,20 +177,25 @@ chart.options.x_axis = {"visible": False}
 chart.options.y_axis = {"visible": False}
 # Set plot options for networkgraph
 chart.options.plot_options = {
-    "networkgraph": {"keys": ["from", "to"], "marker": {"radius": 55, "lineWidth": 3, "lineColor": "#333333"}}
+    "networkgraph": {"keys": ["from", "to"], "marker": {"radius": 60, "lineWidth": 3, "lineColor": "#333333"}}
 }
-# Add legend explaining the 4 community groups - positioned inside right margin
+# Add legend explaining the 4 community groups - positioned closer to the network
 chart.options.legend = {
     "enabled": True,
     "align": "right",
     "verticalAlign": "middle",
     "layout": "vertical",
-    "x": -100,
+    "x": -20,
     "y": 0,
-    "itemStyle": {"fontSize": "28px", "fontWeight": "normal"},
-    "symbolRadius": 12,
-    "symbolWidth": 24,
-    "symbolHeight": 24,
+    "itemStyle": {"fontSize": "32px", "fontWeight": "normal"},
+    "itemMarginBottom": 15,
+    "symbolRadius": 14,
+    "symbolWidth": 28,
+    "symbolHeight": 28,
+    "backgroundColor": "rgba(255, 255, 255, 0.9)",
+    "borderWidth": 1,
+    "borderColor": "#cccccc",
+    "padding": 15,
 }
 chart.add_series(series)
 
@@ -200,7 +205,7 @@ for color, name in zip(group_colors, group_names, strict=True):
     legend_series.name = name
     legend_series.color = color
     legend_series.data = []  # Empty data - just for legend display
-    legend_series.marker = {"symbol": "circle", "radius": 12}
+    legend_series.marker = {"symbol": "circle", "radius": 16}
     legend_series.show_in_legend = True
     chart.add_series(legend_series)
 
@@ -225,26 +230,53 @@ networkgraph_url = "https://code.highcharts.com/modules/networkgraph.js"
 with urllib.request.urlopen(networkgraph_url, timeout=30) as response:
     networkgraph_js = response.read().decode("utf-8")
 
-# Cleanup JS to remove unwanted link labels after chart renders
+# Cleanup JS to remove unwanted link labels and fix label positions after simulation
 cleanup_js = """
-setTimeout(function() {
-    var labels = document.querySelectorAll('.highcharts-data-label text');
-    labels.forEach(function(label) {
+function fixLabels() {
+    var chart = Highcharts.charts[0];
+    if (!chart || !chart.series[0]) return;
+
+    // Remove unwanted link labels
+    document.querySelectorAll('.highcharts-data-label text').forEach(function(label) {
         if (label.textContent && label.textContent.indexOf('highcharts-') === 0) {
             label.parentNode.style.display = 'none';
         }
     });
-    if (Highcharts.charts[0]) {
-        Highcharts.charts[0].redraw();
+
+    // Reposition node labels to be centered
+    var series = chart.series[0];
+    if (series.nodes) {
+        series.nodes.forEach(function(node) {
+            if (node.dataLabel && node.graphic) {
+                var cx = node.plotX;
+                var cy = node.plotY;
+                node.dataLabel.attr({
+                    x: cx,
+                    y: cy + 5,
+                    'text-anchor': 'middle'
+                });
+            }
+        });
     }
-}, 5000);
+}
+
+// Run fixLabels multiple times to catch simulation movements
+[3000, 6000, 9000, 12000, 14000].forEach(function(ms) {
+    setTimeout(fixLabels, ms);
+});
 """
 
-# Generate HTML with inline scripts
+# Generate HTML with inline scripts and CSS for label centering
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
+    <style>
+        .highcharts-data-label text {{
+            dominant-baseline: middle !important;
+            text-anchor: middle !important;
+        }}
+    </style>
     <script>{highcharts_js}</script>
     <script>{highcharts_more_js}</script>
     <script>{networkgraph_js}</script>
@@ -271,7 +303,7 @@ chrome_options.add_argument("--window-size=4800,2800")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
-time.sleep(15)  # Wait for chart to render, layout to stabilize, and cleanup JS to run
+time.sleep(15)  # Wait for chart to render, simulation to stabilize, and cleanup JS to run
 driver.save_screenshot("plot.png")
 driver.quit()
 

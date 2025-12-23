@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-basic: Basic Radar Chart
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-14
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import plotly.graph_objects as go
@@ -26,7 +26,7 @@ fig.add_trace(
         fillcolor="rgba(48, 105, 152, 0.25)",
         line={"color": "#306998", "width": 3},
         marker={"size": 12, "color": "#306998"},
-        name="Performance",
+        name="Performance Score",
     )
 )
 

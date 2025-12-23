@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-calendar: Basic Calendar Heatmap
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -35,25 +35,19 @@ for date in dates:
 df = pd.DataFrame({"date": dates, "value": values})
 
 # Prepare calendar layout data
-df["week"] = df["date"].dt.isocalendar().week
-df["year"] = df["date"].dt.year
+df["week_of_year"] = (df["date"] - start_date).dt.days // 7
 df["dayofweek"] = df["date"].dt.dayofweek  # 0=Monday, 6=Sunday
 df["month"] = df["date"].dt.month
-
-# Handle year transition - create continuous week numbers
-# Calculate weeks from start of the year
-df["week_of_year"] = (df["date"] - start_date).dt.days // 7
 
 # Create plot (4800x2700 px)
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Custom colormap: light gray for 0, then Python Blue gradient
+# Custom colormap: GitHub-style greens with light gray for 0
 colors = ["#ebedf0", "#c6e48b", "#7bc96f", "#239a3b", "#196127"]
 cmap = LinearSegmentedColormap.from_list("github", colors, N=256)
 
 # Get unique weeks and create the grid
-weeks = df["week_of_year"].unique()
-n_weeks = len(weeks)
+n_weeks = df["week_of_year"].max() + 1
 
 # Create a 2D array for the heatmap (7 days x n_weeks)
 heatmap_data = np.full((7, n_weeks), np.nan)
@@ -64,7 +58,6 @@ for _, row in df.iterrows():
     heatmap_data[day_idx, week_idx] = row["value"]
 
 # Plot the heatmap using pcolormesh
-# Add 0.5 offset to center the cells
 x = np.arange(n_weeks + 1)
 y = np.arange(8)
 mesh = ax.pcolormesh(x, y, heatmap_data, cmap=cmap, vmin=0, vmax=df["value"].max(), edgecolors="white", linewidth=2)
@@ -91,17 +84,17 @@ ax.set_xticklabels(month_labels, fontsize=16)
 ax.xaxis.tick_top()
 ax.xaxis.set_label_position("top")
 
-# Remove spines
+# Remove spines for cleaner look
 for spine in ax.spines.values():
     spine.set_visible(False)
 
 # Invert y-axis so Monday is at top
 ax.invert_yaxis()
 
-# Add colorbar
+# Add colorbar for value interpretation
 cbar = plt.colorbar(mesh, ax=ax, orientation="horizontal", pad=0.08, shrink=0.4, aspect=30)
 cbar.ax.tick_params(labelsize=14)
-cbar.set_label("Daily Activity", fontsize=16)
+cbar.set_label("Daily Activity (commits)", fontsize=16)
 
 # Title
 ax.set_title("heatmap-calendar · matplotlib · pyplots.ai", fontsize=24, pad=20)

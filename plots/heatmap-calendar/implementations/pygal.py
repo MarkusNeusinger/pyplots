@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-calendar: Basic Calendar Heatmap
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-23
@@ -76,16 +76,19 @@ class CalendarHeatmap(Graph):
         total_weeks = (total_days + 6) // 7 + 1
 
         # Layout optimized for calendar heatmap on 4800×2700 canvas
-        # Calendar has ~7.5:1 aspect ratio (53 weeks × 7 days), so width constrains cell size
-        # Strategy: maximize cell size by using more horizontal space, center vertically
-        weekday_label_space = 160  # Compact space for day labels
-        right_margin = 60  # Minimal right margin
+        # Calendar has inherent ~7.5:1 aspect ratio (53 weeks × 7 days)
+        # Width is the limiting factor - maximize cell size within width constraint
+        # Position content in upper portion, use lower space for legend and summary
+        title_space = 180  # Space for title at top
+        month_label_height = 120  # Space for month labels above grid
+        left_margin = 240  # Space for weekday labels
+        right_margin = 80  # Right margin
 
-        # Available width for the grid - maximize it
-        available_width = canvas_width - weekday_label_space - right_margin
+        # Available width for grid
+        available_width = canvas_width - left_margin - right_margin
 
-        # Cell sizing - width is the constraint for calendar layout
-        gap_ratio = 0.10  # Small gaps between cells
+        # Gap ratio between cells
+        gap_ratio = 0.08
 
         # Calculate cell size based on width (the limiting factor for calendars)
         cell_size = available_width / (total_weeks + (total_weeks - 1) * gap_ratio)
@@ -95,18 +98,16 @@ class CalendarHeatmap(Graph):
         grid_width = total_weeks * cell_size + (total_weeks - 1) * gap
         grid_height = 7 * cell_size + 6 * gap
 
-        # Calculate total content height: month labels + grid + legend
-        month_label_height = 120  # Space for month labels above grid
-        legend_height = 250  # Space for legend below grid
-        total_content_height = month_label_height + grid_height + legend_height
+        # Calculate total content height and center vertically
+        # Content: month labels + grid + spacing + legend + spacing + summary lines
+        legend_block_height = 400  # Legend boxes + value labels + summary text
+        total_content_height = month_label_height + grid_height + legend_block_height
 
-        # Center content vertically on canvas (accounting for title at top)
-        title_space = 180  # Title rendered by pygal
-        available_vertical = canvas_height - title_space
-        vertical_padding = (available_vertical - total_content_height) / 2
+        # Center content vertically on canvas
+        vertical_padding = (canvas_height - title_space - total_content_height) / 2
+        vertical_padding = max(100, vertical_padding)  # Minimum padding
 
-        # Position grid - center horizontally, center vertically
-        x_offset = weekday_label_space + (available_width - grid_width) / 2
+        x_offset = left_margin + (available_width - grid_width) / 2
         y_offset = title_space + vertical_padding + month_label_height
 
         # Create group for the calendar - use graph node for full canvas access
@@ -179,11 +180,12 @@ class CalendarHeatmap(Graph):
             text_node.text = month_names[month - 1]
 
         # Draw color scale legend at bottom with dynamic value ranges
-        legend_y = y_offset + grid_height + 100
-        legend_cell_size = cell_size * 1.0  # Same size as grid cells
-        legend_spacing = cell_size * 0.30
+        # Make legend prominent to better utilize vertical space
+        legend_y = y_offset + grid_height + 180
+        legend_cell_size = cell_size * 1.5  # Large legend cells for prominence
+        legend_spacing = cell_size * 0.40
         legend_x = x_offset + grid_width / 2 - (len(self.cell_colors) * (legend_cell_size + legend_spacing)) / 2
-        legend_label_size = max(54, int(cell_size * 0.65))
+        legend_label_size = max(56, int(cell_size * 0.70))
 
         # "Less" label
         text_node = self.svg.node(
@@ -242,6 +244,42 @@ class CalendarHeatmap(Graph):
         text_node.set("fill", "#333333")
         text_node.set("style", f"font-size:{legend_label_size}px;font-weight:bold;font-family:sans-serif")
         text_node.text = "More"
+
+        # Add summary annotations below legend to utilize vertical space
+        total_contributions = sum(v for v in self.values if v > 0)
+        active_days = sum(1 for v in self.values if v > 0)
+        max_streak = self._calculate_streak()
+        summary_y = legend_y + legend_cell_size + 160
+        summary_font_size = max(54, int(cell_size * 0.65))
+
+        # Main summary text
+        summary_text = f"{total_contributions} contributions in {len(self.dates)} days"
+        text_node = self.svg.node(cal_group, "text", x=x_offset + grid_width / 2, y=summary_y)
+        text_node.set("text-anchor", "middle")
+        text_node.set("fill", "#333333")
+        text_node.set("style", f"font-size:{summary_font_size}px;font-weight:bold;font-family:sans-serif")
+        text_node.text = summary_text
+
+        # Secondary stats line
+        stats_y = summary_y + 90
+        stats_text = f"{active_days} active days · Longest streak: {max_streak} days · Avg: {total_contributions / max(active_days, 1):.1f} per active day"
+        text_node = self.svg.node(cal_group, "text", x=x_offset + grid_width / 2, y=stats_y)
+        text_node.set("text-anchor", "middle")
+        text_node.set("fill", "#666666")
+        text_node.set("style", f"font-size:{int(summary_font_size * 0.85)}px;font-family:sans-serif")
+        text_node.text = stats_text
+
+    def _calculate_streak(self):
+        """Calculate longest consecutive active days streak."""
+        max_streak = 0
+        current_streak = 0
+        for v in self.values:
+            if v > 0:
+                current_streak += 1
+                max_streak = max(max_streak, current_streak)
+            else:
+                current_streak = 0
+        return max_streak
 
     def _compute(self):
         """Compute the box for rendering."""

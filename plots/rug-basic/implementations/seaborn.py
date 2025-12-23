@@ -1,7 +1,7 @@
 """ pyplots.ai
 rug-basic: Basic Rug Plot
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -16,7 +16,7 @@ fast_responses = np.random.normal(loc=150, scale=30, size=80)
 slow_responses = np.random.normal(loc=350, scale=50, size=40)
 response_times = np.concatenate([fast_responses, slow_responses])
 
-# Add a few outliers
+# Add a few outliers to show edge detection capability
 outliers = np.array([50, 520, 550])
 response_times = np.concatenate([response_times, outliers])
 

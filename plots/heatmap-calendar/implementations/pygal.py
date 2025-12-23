@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-calendar: Basic Calendar Heatmap
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-23
@@ -57,13 +57,12 @@ class CalendarHeatmap(Graph):
         min_date = min(self.dates)
         max_date = max(self.dates)
 
-        # Calculate value range (excluding zeros)
+        # Calculate value range (excluding zeros) for dynamic legend
         non_zero_values = [v for v in self.values if v and v > 0]
-        min_val = min(non_zero_values) if non_zero_values else 0
-        max_val = max(non_zero_values) if non_zero_values else 1
+        self._min_val = min(non_zero_values) if non_zero_values else 0
+        self._max_val = max(non_zero_values) if non_zero_values else 1
 
         # Use full canvas dimensions for maximum grid utilization
-        # The view dimensions are constrained by pygal's internal margins
         canvas_width = self.width
         canvas_height = self.height
 
@@ -76,50 +75,50 @@ class CalendarHeatmap(Graph):
         total_days = (max_date - start_date).days + 1
         total_weeks = (total_days + 6) // 7 + 1
 
-        # Minimal margins for maximum grid utilization
-        # Calendar heatmap for 1 year: 53 weeks × 7 days = aspect ratio ~7.5:1
-        # Canvas 4800×2700 = aspect ratio 1.78:1
-        # The grid will be width-constrained, but we minimize wasted space
-        title_space = 130
-        weekday_label_space = 120  # Compact - 3-letter day names
-        month_label_space = 55
-        legend_space = 130
-        right_margin = 20
+        # Layout optimized for calendar heatmap on 4800×2700 canvas
+        # Calendar has ~7.5:1 aspect ratio (53 weeks × 7 days), so width constrains cell size
+        # Strategy: maximize cell size by using more horizontal space, center vertically
+        weekday_label_space = 160  # Compact space for day labels
+        right_margin = 60  # Minimal right margin
 
-        # Available dimensions
+        # Available width for the grid - maximize it
         available_width = canvas_width - weekday_label_space - right_margin
-        available_height = canvas_height - title_space - month_label_space - legend_space
 
-        # Cell sizing - width is the constraint for a full-year calendar
-        # Minimize gaps to maximize cell size
-        gap_ratio = 0.04  # 4% gap for tighter packing
+        # Cell sizing - width is the constraint for calendar layout
+        gap_ratio = 0.10  # Small gaps between cells
 
-        # Calculate based on width (the limiting factor)
-        # grid_width = total_weeks * cell + (total_weeks - 1) * gap
-        # grid_width = cell * (total_weeks + (total_weeks - 1) * gap_ratio)
+        # Calculate cell size based on width (the limiting factor for calendars)
         cell_size = available_width / (total_weeks + (total_weeks - 1) * gap_ratio)
         gap = cell_size * gap_ratio
 
         # Calculate actual grid dimensions
-        grid_width = total_weeks * (cell_size + gap)
-        grid_height = 7 * (cell_size + gap)
+        grid_width = total_weeks * cell_size + (total_weeks - 1) * gap
+        grid_height = 7 * cell_size + 6 * gap
 
-        # Position grid - center horizontally, position vertically to balance whitespace
+        # Calculate total content height: month labels + grid + legend
+        month_label_height = 120  # Space for month labels above grid
+        legend_height = 250  # Space for legend below grid
+        total_content_height = month_label_height + grid_height + legend_height
+
+        # Center content vertically on canvas (accounting for title at top)
+        title_space = 180  # Title rendered by pygal
+        available_vertical = canvas_height - title_space
+        vertical_padding = (available_vertical - total_content_height) / 2
+
+        # Position grid - center horizontally, center vertically
         x_offset = weekday_label_space + (available_width - grid_width) / 2
-        # Place grid higher in the available space (40% from top, 60% below)
-        # This reduces the gap between title and grid
-        y_offset = title_space + month_label_space + (available_height - grid_height) * 0.35
+        y_offset = title_space + vertical_padding + month_label_height
 
         # Create group for the calendar - use graph node for full canvas access
         # The 'graph' node is at the root level, not constrained by plot margins
         graph_node = self.nodes["graph"]
         cal_group = self.svg.node(graph_node, class_="calendar-heatmap")
 
-        # Draw weekday labels on the left - scale with cell size
-        weekday_font_size = max(36, int(cell_size * 0.45))
+        # Draw weekday labels on the left - prominent sizing
+        weekday_font_size = max(54, int(cell_size * 0.70))
         for i, label in enumerate(self.weekday_labels):
             y = y_offset + i * (cell_size + gap) + cell_size / 2
-            text_node = self.svg.node(cal_group, "text", x=x_offset - 20, y=y + cell_size * 0.35)
+            text_node = self.svg.node(cal_group, "text", x=x_offset - 30, y=y + cell_size * 0.35)
             text_node.set("text-anchor", "end")
             text_node.set("fill", "#333333")
             text_node.set("style", f"font-size:{weekday_font_size}px;font-weight:bold;font-family:sans-serif")
@@ -142,7 +141,7 @@ class CalendarHeatmap(Graph):
 
             # Get value and color
             value = date_values.get(current_date, 0)
-            color = self._get_color(value, min_val, max_val)
+            color = self._get_color(value, self._min_val, self._max_val)
 
             # Calculate position
             x = x_offset + week * (cell_size + gap)
@@ -168,23 +167,23 @@ class CalendarHeatmap(Graph):
                 week += 1
             current_date += timedelta(days=1)
 
-        # Draw month labels at the top - scale with cell size
-        month_font_size = max(32, int(cell_size * 0.40))
+        # Draw month labels at the top - prominent sizing
+        month_font_size = max(54, int(cell_size * 0.70))
         month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
         for (_year, month), week_pos in month_positions.items():
             x = x_offset + week_pos * (cell_size + gap)
-            y = y_offset - 20
+            y = y_offset - 40
             text_node = self.svg.node(cal_group, "text", x=x, y=y)
             text_node.set("fill", "#333333")
             text_node.set("style", f"font-size:{month_font_size}px;font-weight:bold;font-family:sans-serif")
             text_node.text = month_names[month - 1]
 
-        # Draw color scale legend at bottom with numeric values
-        legend_y = y_offset + 7 * (cell_size + gap) + 40
-        legend_cell_size = cell_size * 0.7
-        legend_spacing = cell_size * 0.20
+        # Draw color scale legend at bottom with dynamic value ranges
+        legend_y = y_offset + grid_height + 100
+        legend_cell_size = cell_size * 1.0  # Same size as grid cells
+        legend_spacing = cell_size * 0.30
         legend_x = x_offset + grid_width / 2 - (len(self.cell_colors) * (legend_cell_size + legend_spacing)) / 2
-        legend_label_size = 36
+        legend_label_size = max(54, int(cell_size * 0.65))
 
         # "Less" label
         text_node = self.svg.node(
@@ -195,8 +194,22 @@ class CalendarHeatmap(Graph):
         text_node.set("style", f"font-size:{legend_label_size}px;font-weight:bold;font-family:sans-serif")
         text_node.text = "Less"
 
-        # Color boxes with numeric labels
-        value_ranges = ["0", "1-3", "4-7", "8-11", "12+"]
+        # Generate dynamic value ranges based on actual data
+        min_val = self._min_val
+        max_val = self._max_val
+        range_size = (max_val - min_val) / 4 if max_val > min_val else 1
+
+        # Create value labels: 0, then quartile ranges
+        value_ranges = ["0"]
+        for i in range(4):
+            low = int(min_val + i * range_size) if i > 0 else 1
+            high = int(min_val + (i + 1) * range_size)
+            if i == 3:
+                value_ranges.append(f"{low}+")
+            else:
+                value_ranges.append(f"{low}-{high}" if low != high else str(low))
+
+        # Color boxes with dynamic numeric labels
         for i, color in enumerate(self.cell_colors):
             box_x = legend_x + i * (legend_cell_size + legend_spacing)
             self.svg.node(
@@ -212,11 +225,11 @@ class CalendarHeatmap(Graph):
             )
             # Numeric label below each color box
             text_node = self.svg.node(
-                cal_group, "text", x=box_x + legend_cell_size / 2, y=legend_y + legend_cell_size + 35
+                cal_group, "text", x=box_x + legend_cell_size / 2, y=legend_y + legend_cell_size + 55
             )
             text_node.set("text-anchor", "middle")
             text_node.set("fill", "#666666")
-            text_node.set("style", f"font-size:{int(legend_label_size * 0.8)}px;font-family:sans-serif")
+            text_node.set("style", f"font-size:{int(legend_label_size * 0.80)}px;font-family:sans-serif")
             text_node.text = value_ranges[i]
 
         # "More" label
@@ -283,7 +296,8 @@ custom_style = Style(
 # GitHub-style green colors
 github_colors = ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"]
 
-# Create calendar heatmap with minimal margins for maximum grid space
+# Create calendar heatmap on 4800×2700 canvas
+# Calendar has inherent ~7.5:1 aspect ratio - layout optimized for visual balance
 chart = CalendarHeatmap(
     width=4800,
     height=2700,
@@ -294,7 +308,7 @@ chart = CalendarHeatmap(
     cell_colors=github_colors,
     show_legend=False,
     margin=20,
-    margin_top=140,
+    margin_top=280,
     margin_bottom=100,
     show_x_labels=False,
     show_y_labels=False,

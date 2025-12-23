@@ -1,13 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 stem-basic: Basic Stem Plot
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
-from bokeh.io import export_png
+from bokeh.io import export_png, output_file, save
 from bokeh.models import ColumnDataSource
-from bokeh.plotting import figure, output_file, save
+from bokeh.plotting import figure
 
 
 # Data - Discrete signal samples (damped oscillation)

@@ -1,7 +1,7 @@
-"""pyplots.ai
-slope-basic: Basic Slope Chart
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2025-12-23
+""" pyplots.ai
+slope-basic: Basic Slope Chart (Slopegraph)
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import pandas as pd

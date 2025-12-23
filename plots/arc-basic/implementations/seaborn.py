@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 arc-basic: Basic Arc Diagram
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 87/100 | Created: 2025-12-23
+Quality: 88/100 | Created: 2025-12-23
 """
 
 import matplotlib.patches as patches

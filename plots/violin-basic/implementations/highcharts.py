@@ -1,7 +1,7 @@
 """ pyplots.ai
 violin-basic: Basic Violin Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-14
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import tempfile
@@ -14,6 +14,7 @@ from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
 from highcharts_core.options.series.polygon import PolygonSeries
 from highcharts_core.options.series.scatter import ScatterSeries
+from scipy.stats import gaussian_kde
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -31,21 +32,6 @@ raw_data = {
     "Group D": np.random.exponential(15, 200) + 30,  # Skewed
 }
 
-
-# Kernel Density Estimation
-def kde(data, x_grid, bandwidth=None):
-    """Compute Gaussian KDE at given x values."""
-    n = len(data)
-    if bandwidth is None:
-        # Silverman's rule of thumb
-        bandwidth = 1.06 * np.std(data) * n ** (-1 / 5)
-    result = np.zeros_like(x_grid)
-    for xi in data:
-        result += np.exp(-0.5 * ((x_grid - xi) / bandwidth) ** 2)
-    result /= n * bandwidth * np.sqrt(2 * np.pi)
-    return result
-
-
 # Calculate KDE and statistics for each category
 violin_width = 0.35  # Half-width of violin in category units
 violin_data = []
@@ -53,10 +39,11 @@ violin_data = []
 for i, cat in enumerate(categories):
     data = raw_data[cat]
 
-    # Compute KDE
+    # Compute KDE using scipy
     y_min, y_max = data.min() - 5, data.max() + 5
     y_grid = np.linspace(y_min, y_max, 100)
-    density = kde(data, y_grid)
+    kde_func = gaussian_kde(data)
+    density = kde_func(y_grid)
 
     # Normalize density to fit within violin width
     density_norm = density / density.max() * violin_width
@@ -97,13 +84,13 @@ chart.options.chart = {
 # Title
 chart.options.title = {
     "text": "violin-basic · highcharts · pyplots.ai",
-    "style": {"fontSize": "72px", "fontWeight": "bold"},
+    "style": {"fontSize": "84px", "fontWeight": "bold"},
 }
 
 # X-axis (categories)
 chart.options.x_axis = {
-    "title": {"text": "Category", "style": {"fontSize": "48px"}},
-    "labels": {"style": {"fontSize": "36px"}, "format": "{value}"},
+    "title": {"text": "Study Group", "style": {"fontSize": "56px"}},
+    "labels": {"style": {"fontSize": "44px"}, "format": "{value}"},
     "min": -0.5,
     "max": 3.5,
     "tickPositions": [0, 1, 2, 3],
@@ -113,19 +100,19 @@ chart.options.x_axis = {
 
 # Y-axis (values)
 chart.options.y_axis = {
-    "title": {"text": "Value", "style": {"fontSize": "48px"}},
-    "labels": {"style": {"fontSize": "36px"}},
+    "title": {"text": "Test Score (points)", "style": {"fontSize": "56px"}},
+    "labels": {"style": {"fontSize": "44px"}},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.1)",
+    "gridLineColor": "rgba(0, 0, 0, 0.15)",
 }
 
 # Legend
-chart.options.legend = {"enabled": True, "itemStyle": {"fontSize": "36px"}}
+chart.options.legend = {"enabled": True, "itemStyle": {"fontSize": "44px"}}
 
 # Plot options
 chart.options.plot_options = {
     "polygon": {"lineWidth": 3, "fillOpacity": 0.6, "enableMouseTracking": True},
-    "scatter": {"marker": {"radius": 14, "symbol": "circle"}},
+    "scatter": {"marker": {"radius": 20, "symbol": "circle"}, "zIndex": 10},
 }
 
 # Add violin shapes as polygon series
@@ -153,14 +140,12 @@ for v in violin_data:
     chart.add_series(series)
 
 # Add median markers as scatter points
-med_data = []
-for v in violin_data:
-    med_data.append({"x": v["index"], "y": v["median"], "name": v["category"]})
-
 med_series = ScatterSeries()
 med_series.data = [[float(v["index"]), float(v["median"])] for v in violin_data]
 med_series.name = "Median"
-med_series.marker = {"fillColor": "#ffffff", "lineColor": "#000000", "lineWidth": 4, "radius": 14, "symbol": "circle"}
+med_series.color = "#FF0000"
+med_series.marker = {"fillColor": "#FF0000", "lineColor": "#000000", "lineWidth": 5, "radius": 22, "symbol": "diamond"}
+med_series.z_index = 20
 chart.add_series(med_series)
 
 # Add quartile box indicators (thin rectangles for IQR)

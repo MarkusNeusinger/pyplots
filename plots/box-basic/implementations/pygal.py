@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 box-basic: Basic Box Plot
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Library: pygal | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -9,7 +9,7 @@ import pygal
 from pygal.style import Style
 
 
-# Data - Generate distributions for different departments
+# Data - Generate salary distributions for different departments
 np.random.seed(42)
 categories = ["Engineering", "Marketing", "Sales", "Operations", "HR"]
 data = {
@@ -19,6 +19,10 @@ data = {
     "Operations": np.random.normal(62000, 10000, 100),
     "HR": np.random.normal(58000, 8000, 100),
 }
+
+# Add some outliers to demonstrate box plot features
+data["Engineering"] = np.append(data["Engineering"], [130000, 135000, 40000])
+data["Sales"] = np.append(data["Sales"], [120000, 25000])
 
 # Custom style using PyPlots colors
 custom_style = Style(

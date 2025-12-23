@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 chord-basic: Basic Chord Diagram
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -12,7 +12,7 @@ import plotly.graph_objects as go
 continents = ["Africa", "Asia", "Europe", "N. America", "S. America", "Oceania"]
 n = len(continents)
 
-# Flow matrix (row = source, col = target)
+# Flow matrix (row = source, col = target) - realistic migration patterns
 np.random.seed(42)
 flow_matrix = np.array(
     [
@@ -25,7 +25,7 @@ flow_matrix = np.array(
     ]
 )
 
-# Colors for each continent (colorblind-safe)
+# Colors for each continent (Python Blue first, then colorblind-safe palette)
 colors = ["#306998", "#FFD43B", "#2E8B57", "#DC143C", "#9370DB", "#FF8C00"]
 
 # Calculate totals for each continent
@@ -33,68 +33,34 @@ totals = flow_matrix.sum(axis=0) + flow_matrix.sum(axis=1)
 total_flow = flow_matrix.sum()
 
 # Calculate arc positions around the circle
-gap = 0.02  # Gap between arcs
+gap = 0.02
 arc_starts = []
 arc_ends = []
 current_pos = 0
-for i, total in enumerate(totals):
+for _, total in enumerate(totals):
     arc_starts.append(current_pos)
     arc_ends.append(current_pos + (total / total_flow) * (1 - n * gap))
     current_pos = arc_ends[-1] + gap
-
-
-def angle_from_pos(pos):
-    """Convert position (0-1) to angle in radians."""
-    return 2 * np.pi * pos - np.pi / 2
-
-
-def get_arc_points(start_pos, end_pos, radius, n_points=50):
-    """Generate points for an arc."""
-    angles = np.linspace(angle_from_pos(start_pos), angle_from_pos(end_pos), n_points)
-    x = radius * np.cos(angles)
-    y = radius * np.sin(angles)
-    return x, y
-
-
-def get_chord_path(src_start, src_end, tgt_start, tgt_end, radius=0.95):
-    """Generate SVG path for a chord."""
-    # Source arc points
-    src_angle1 = angle_from_pos(src_start)
-    src_angle2 = angle_from_pos(src_end)
-    x1, y1 = radius * np.cos(src_angle1), radius * np.sin(src_angle1)
-    x2, y2 = radius * np.cos(src_angle2), radius * np.sin(src_angle2)
-
-    # Target arc points
-    tgt_angle1 = angle_from_pos(tgt_start)
-    tgt_angle2 = angle_from_pos(tgt_end)
-    x3, y3 = radius * np.cos(tgt_angle1), radius * np.sin(tgt_angle1)
-    x4, y4 = radius * np.cos(tgt_angle2), radius * np.sin(tgt_angle2)
-
-    # Create path with quadratic bezier curves through center
-    path = f"M {x1},{y1} "
-    path += f"Q 0,0 {x3},{y3} "
-    path += f"A {radius},{radius} 0 0,1 {x4},{y4} "
-    path += f"Q 0,0 {x2},{y2} "
-    path += f"A {radius},{radius} 0 0,1 {x1},{y1} Z"
-
-    return path
-
 
 # Create figure
 fig = go.Figure()
 
 # Draw outer arcs for each continent
 for i in range(n):
-    x_arc, y_arc = get_arc_points(arc_starts[i], arc_ends[i], 1.0, 100)
-    x_arc_inner, y_arc_inner = get_arc_points(arc_ends[i], arc_starts[i], 0.95, 100)
+    # Generate arc points (outer)
+    angles_outer = np.linspace(2 * np.pi * arc_starts[i] - np.pi / 2, 2 * np.pi * arc_ends[i] - np.pi / 2, 100)
+    x_outer = 1.0 * np.cos(angles_outer)
+    y_outer = 1.0 * np.sin(angles_outer)
 
-    x_shape = np.concatenate([x_arc, x_arc_inner])
-    y_shape = np.concatenate([y_arc, y_arc_inner])
+    # Generate arc points (inner, reversed)
+    angles_inner = np.linspace(2 * np.pi * arc_ends[i] - np.pi / 2, 2 * np.pi * arc_starts[i] - np.pi / 2, 100)
+    x_inner = 0.95 * np.cos(angles_inner)
+    y_inner = 0.95 * np.sin(angles_inner)
 
     fig.add_trace(
         go.Scatter(
-            x=x_shape,
-            y=y_shape,
+            x=np.concatenate([x_outer, x_inner]),
+            y=np.concatenate([y_outer, y_inner]),
             fill="toself",
             fillcolor=colors[i],
             line=dict(color="white", width=1),
@@ -105,52 +71,61 @@ for i in range(n):
         )
     )
 
-# Draw chords
+# Draw chords between continents
 shapes = []
 for i in range(n):
     src_pos = arc_starts[i]
     for j in range(n):
         if i != j and flow_matrix[i, j] > 0:
-            # Calculate chord width based on flow
             flow = flow_matrix[i, j]
-            chord_width_src = (flow / total_flow) * (1 - n * gap)
-            chord_width_tgt = chord_width_src
+            chord_width = (flow / total_flow) * (1 - n * gap)
 
-            # Find position within target arc
+            # Calculate target position offset
             tgt_base = arc_starts[j]
-            # Offset within target arc based on cumulative flows
-            tgt_offset = 0
-            for k in range(i):
-                if flow_matrix[k, j] > 0:
-                    tgt_offset += (flow_matrix[k, j] / total_flow) * (1 - n * gap)
-
-            shapes.append(
-                dict(
-                    type="path",
-                    path=get_chord_path(
-                        src_pos,
-                        src_pos + chord_width_src,
-                        tgt_base + tgt_offset,
-                        tgt_base + tgt_offset + chord_width_tgt,
-                    ),
-                    fillcolor=colors[i],
-                    opacity=0.6,
-                    line=dict(color=colors[i], width=0.5),
-                )
+            tgt_offset = sum(
+                (flow_matrix[k, j] / total_flow) * (1 - n * gap) for k in range(i) if flow_matrix[k, j] > 0
             )
 
-            src_pos += chord_width_src
+            # Calculate chord endpoints (source)
+            src_angle1 = 2 * np.pi * src_pos - np.pi / 2
+            src_angle2 = 2 * np.pi * (src_pos + chord_width) - np.pi / 2
+            x1 = 0.95 * np.cos(src_angle1)
+            y1 = 0.95 * np.sin(src_angle1)
+            x2 = 0.95 * np.cos(src_angle2)
+            y2 = 0.95 * np.sin(src_angle2)
 
-# Add continent labels
+            # Calculate chord endpoints (target)
+            tgt_start = tgt_base + tgt_offset
+            tgt_end = tgt_start + chord_width
+            tgt_angle1 = 2 * np.pi * tgt_start - np.pi / 2
+            tgt_angle2 = 2 * np.pi * tgt_end - np.pi / 2
+            x3 = 0.95 * np.cos(tgt_angle1)
+            y3 = 0.95 * np.sin(tgt_angle1)
+            x4 = 0.95 * np.cos(tgt_angle2)
+            y4 = 0.95 * np.sin(tgt_angle2)
+
+            # SVG path with quadratic bezier curves through center
+            path = (
+                f"M {x1},{y1} Q 0,0 {x3},{y3} A 0.95,0.95 0 0,1 {x4},{y4} Q 0,0 {x2},{y2} A 0.95,0.95 0 0,1 {x1},{y1} Z"
+            )
+
+            shapes.append(
+                dict(type="path", path=path, fillcolor=colors[i], opacity=0.6, line=dict(color=colors[i], width=0.5))
+            )
+
+            src_pos += chord_width
+
+# Add continent labels around the perimeter
 for i in range(n):
     mid_pos = (arc_starts[i] + arc_ends[i]) / 2
-    angle = angle_from_pos(mid_pos)
+    angle = 2 * np.pi * mid_pos - np.pi / 2
     label_radius = 1.12
 
-    # Calculate text rotation
-    text_angle = np.degrees(angle)
-    if 90 < text_angle < 270 or -270 < text_angle < -90:
-        text_angle += 180
+    # Rotate text for readability
+    text_angle_deg = np.degrees(angle)
+    if 90 < text_angle_deg < 270 or -270 < text_angle_deg < -90:
+        text_angle_deg += 180
+    rotation = -text_angle_deg + 90 if -90 < np.degrees(angle) < 90 else -text_angle_deg - 90
 
     fig.add_annotation(
         x=label_radius * np.cos(angle),
@@ -158,10 +133,10 @@ for i in range(n):
         text=f"<b>{continents[i]}</b>",
         font=dict(size=18, color=colors[i]),
         showarrow=False,
-        textangle=-text_angle + 90 if -90 < np.degrees(angle) < 90 else -text_angle - 90,
+        textangle=rotation,
     )
 
-# Update layout
+# Layout
 fig.update_layout(
     title=dict(
         text="Migration Flows Between Continents · chord-basic · plotly · pyplots.ai",

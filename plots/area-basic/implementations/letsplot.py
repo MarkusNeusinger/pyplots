@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -16,14 +16,14 @@ LetsPlot.setup_html()  # noqa: F405
 np.random.seed(42)
 days = pd.date_range(start="2024-01-01", periods=30, freq="D")
 base_visitors = 5000
-trend = np.linspace(0, 1500, 30)
-weekly_pattern = 800 * np.sin(np.arange(30) * 2 * np.pi / 7)
-noise = np.random.randn(30) * 400
+trend = np.linspace(0, 2000, 30)
+weekly_pattern = 1000 * np.sin(np.arange(30) * 2 * np.pi / 7)
+noise = np.random.randn(30) * 300
 visitors = base_visitors + trend + weekly_pattern + noise
 visitors = np.clip(visitors, 2000, None).astype(int)
 
 df = pd.DataFrame({"date": days, "visitors": visitors})
-df["day_num"] = np.arange(len(df))
+df["day_num"] = np.arange(1, len(df) + 1)
 
 # Plot
 plot = (
@@ -31,7 +31,7 @@ plot = (
     + geom_area(fill="#306998", alpha=0.4)  # noqa: F405
     + geom_line(color="#306998", size=2)  # noqa: F405
     + labs(  # noqa: F405
-        x="Day of Month", y="Daily Visitors", title="area-basic \u00b7 lets-plot \u00b7 pyplots.ai"
+        x="Day of Month", y="Daily Visitors", title="area-basic · letsplot · pyplots.ai"
     )
     + ggsize(1600, 900)  # noqa: F405
     + theme_minimal()  # noqa: F405

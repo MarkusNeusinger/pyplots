@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 rug-basic: Basic Rug Plot
-Library: bokeh | Python 3.13
-Quality: pending | Created: 2025-12-23
+Library: bokeh 3.8.1 | Python 3.13.11
+Quality: 68/100 | Created: 2025-12-23
 """
 
 import numpy as np

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-force-directed: Force-Directed Graph
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-23
@@ -245,10 +245,12 @@ node_df = pd.DataFrame(
     }
 )
 
-# Create edge dataframe
+# Create edge dataframe with thickness based on weight
 edge_data = []
 for src, tgt, weight in edges:
     is_internal = nodes[src]["group"] == nodes[tgt]["group"]
+    # Map weight (1-3) to line thickness (0.5-1.5 for internal, 0.8-1.8 for bridge)
+    edge_thickness = 0.3 + weight * 0.4 if is_internal else 0.5 + weight * 0.4
     edge_data.append(
         {
             "x": pos[src][0],
@@ -256,6 +258,7 @@ for src, tgt, weight in edges:
             "xend": pos[tgt][0],
             "yend": pos[tgt][1],
             "weight": weight,
+            "thickness": edge_thickness,
             "edge_type": "internal" if is_internal else "bridge",
         }
     )
@@ -268,24 +271,26 @@ bridge_edges = edge_df[edge_df["edge_type"] == "bridge"]
 # Create the plot
 plot = (
     ggplot()
-    # Draw internal edges first (gray, semi-transparent)
+    # Draw internal edges first (gray, thickness varies by weight)
     + geom_segment(
-        data=internal_edges, mapping=aes(x="x", y="y", xend="xend", yend="yend"), color="#666666", size=0.8, alpha=0.4
+        data=internal_edges,
+        mapping=aes(x="x", y="y", xend="xend", yend="yend", size="thickness"),
+        color="#666666",
+        alpha=0.6,
     )
-    # Draw bridge edges (dashed, slightly more visible)
+    # Draw bridge edges (dashed, thickness varies by weight)
     + geom_segment(
         data=bridge_edges,
-        mapping=aes(x="x", y="y", xend="xend", yend="yend"),
+        mapping=aes(x="x", y="y", xend="xend", yend="yend", size="thickness"),
         color="#999999",
-        size=1.0,
-        alpha=0.6,
+        alpha=0.7,
         linetype="dashed",
     )
     # Draw nodes on top, colored by department
     + geom_point(data=node_df, mapping=aes(x="x", y="y", color="group", size="size"), alpha=0.9, stroke=0.5)
     + scale_color_manual(values=group_colors)
     + scale_size_identity()
-    + labs(title="Team Collaboration · network-force-directed · plotnine · pyplots.ai", color="Department")
+    + labs(title="network-force-directed · plotnine · pyplots.ai", color="Department")
     + xlim(-0.02, 1.02)
     + ylim(-0.02, 1.02)
     + theme(

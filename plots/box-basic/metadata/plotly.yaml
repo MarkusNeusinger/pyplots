@@ -1,17 +1,28 @@
 library: plotly
 specification_id: box-basic
-created: 2025-12-14 09:03:27+00:00
-updated: 2025-12-14 09:03:27+00:00
+created: '2025-12-23T00:35:23Z'
+updated: '2025-12-23T00:38:11Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20205607260
-issue: 689
+workflow_run: 20447776078
+issue: 0
 python_version: 3.13.11
 library_version: 6.5.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/box-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/box-basic/plotly/plot.html
-quality_score: 100
+quality_score: 91
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent text sizing with title at 32pt and axis labels at 24pt for high readability
+    at 4800x2700
+  - Clean, professional appearance with plotly_white template
+  - Well-chosen realistic scenario (salary distributions by department) that demonstrates
+    box plot features
+  - Good feature coverage showing outliers, varying medians, and different distribution
+    spreads
+  - Proper dollar formatting on Y-axis with tickformat
+  - Generates both PNG and HTML outputs for interactivity
+  weaknesses:
+  - The $5k outlier in Sales is unrealistically low for annual salary data
+  - Does not leverage Plotly-specific features like custom hover templates or quartile
+    annotations

@@ -1,7 +1,7 @@
 """ pyplots.ai
 violin-basic: Basic Violin Plot
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -10,7 +10,7 @@ import pandas as pd
 import seaborn as sns
 
 
-# Data
+# Data - Salary distributions across departments
 np.random.seed(42)
 categories = ["Engineering", "Marketing", "Sales", "Support"]
 data = []
@@ -22,7 +22,7 @@ for cat in categories:
     elif cat == "Marketing":
         values = np.random.normal(70000, 12000, 150)
     elif cat == "Sales":
-        # Bimodal distribution for sales
+        # Bimodal distribution for sales (junior vs senior)
         values = np.concatenate([np.random.normal(55000, 8000, 75), np.random.normal(90000, 10000, 75)])
     else:  # Support
         values = np.random.normal(55000, 10000, 150)

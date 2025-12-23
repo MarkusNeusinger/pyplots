@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-basic: Basic Network Graph
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-23
@@ -79,10 +79,25 @@ edges = [
 
 # Calculate spring layout (force-directed algorithm)
 n = len(nodes)
-positions = np.random.rand(n, 2) * 2 - 1
-k = 0.4  # Optimal distance parameter
 
-for iteration in range(150):
+# Initialize positions in a circular layout based on groups for better separation
+# Position groups in a 2x2 grid arrangement to fill the canvas
+group_centers = {
+    0: (0.22, 0.72),  # Top-left
+    1: (0.72, 0.78),  # Top-right
+    2: (0.28, 0.28),  # Bottom-left
+    3: (0.78, 0.22),  # Bottom-right
+}
+positions = np.zeros((n, 2))
+for i, node in enumerate(nodes):
+    cx, cy = group_centers[node["group"]]
+    angle = np.random.rand() * 2 * np.pi
+    radius = np.random.rand() * 0.15
+    positions[i] = [cx + radius * np.cos(angle), cy + radius * np.sin(angle)]
+
+k = 0.15  # Optimal distance parameter (smaller for tighter clusters)
+
+for iteration in range(200):
     displacement = np.zeros((n, 2))
 
     # Repulsive forces between all node pairs
@@ -94,7 +109,7 @@ for iteration in range(150):
             displacement[i] += force
             displacement[j] -= force
 
-    # Attractive forces for edges
+    # Attractive forces for edges (stronger for within-group)
     for src, tgt in edges:
         diff = positions[src] - positions[tgt]
         dist = max(np.linalg.norm(diff), 0.01)
@@ -103,16 +118,16 @@ for iteration in range(150):
         displacement[tgt] += force
 
     # Apply displacement with cooling
-    cooling = 1 - iteration / 150
+    cooling = 1 - iteration / 200
     for i in range(n):
         disp_norm = np.linalg.norm(displacement[i])
         if disp_norm > 0:
-            positions[i] += (displacement[i] / disp_norm) * min(disp_norm, 0.1 * cooling)
+            positions[i] += (displacement[i] / disp_norm) * min(disp_norm, 0.08 * cooling)
 
-# Normalize positions to [0.1, 0.9] range
+# Normalize positions to fill canvas better [0.12, 0.88] range
 pos_min = positions.min(axis=0)
 pos_max = positions.max(axis=0)
-positions = (positions - pos_min) / (pos_max - pos_min + 1e-6) * 0.8 + 0.1
+positions = (positions - pos_min) / (pos_max - pos_min + 1e-6) * 0.76 + 0.12
 pos = {node["id"]: positions[i] for i, node in enumerate(nodes)}
 
 # Calculate node degrees for sizing
@@ -129,9 +144,9 @@ group_names = ["Group A", "Group B", "Group C", "Group D"]
 p = figure(
     width=4800,
     height=2700,
-    title="Social Network · network-basic · bokeh · pyplots.ai",
-    x_range=(-0.05, 1.05),
-    y_range=(-0.05, 1.05),
+    title="network-basic · bokeh · pyplots.ai",
+    x_range=(-0.02, 1.02),
+    y_range=(-0.02, 1.02),
     tools="pan,wheel_zoom,box_zoom,reset,save",
 )
 
@@ -169,29 +184,39 @@ for group_id, (color, name) in enumerate(zip(group_colors, group_names, strict=T
     legend_items.append(LegendItem(label=name, renderers=[renderer]))
     renderers_for_hover.append(renderer)
 
-# Add node labels
+# Add node labels with offset to reduce overlap
+# Calculate label offsets based on neighboring node positions
+label_offset = 0.035  # Offset distance for labels
 for node in nodes:
     x, y = pos[node["id"]]
+    # Offset label upward (above the node) for cleaner appearance
+    node_size = 45 + degrees[node["id"]] * 10
+    y_offset = label_offset + node_size / 2000  # Scale with node size
     p.text(
         x=[x],
-        y=[y],
+        y=[y + y_offset],
         text=[node["label"]],
         text_font_size="18pt",
         text_font_style="bold",
         text_color="#222222",
         text_align="center",
-        text_baseline="middle",
+        text_baseline="bottom",
     )
 
 # Add hover tool
 hover = HoverTool(tooltips=[("Name", "@label"), ("Connections", "@connections")], renderers=renderers_for_hover)
 p.add_tools(hover)
 
-# Add legend
-legend = Legend(items=legend_items, location="top_left", title="Communities", title_text_font_size="20pt")
-legend.label_text_font_size = "16pt"
+# Add legend (positioned closer to plot, larger text for 4800x2700 canvas)
+legend = Legend(items=legend_items, location="center", title="Communities", title_text_font_size="32pt")
+legend.label_text_font_size = "26pt"
 legend.background_fill_alpha = 0.9
-p.add_layout(legend, "left")
+legend.border_line_width = 3
+legend.padding = 25
+legend.spacing = 15
+legend.glyph_height = 40
+legend.glyph_width = 40
+p.add_layout(legend, "right")
 
 # Save outputs
 export_png(p, filename="plot.png")

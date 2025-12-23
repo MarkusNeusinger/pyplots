@@ -460,7 +460,7 @@ jobs:
 
           After **3 repair attempts**, the score is still below 50. This is not acceptable for the repository.
 
-          **This is treated like an auto-reject.** The PR will be closed.
+          **This is treated like an auto-reject.** The PR will be closed and any old implementation will be removed from main.
 
           **Options:**
           1. Regenerate from scratch with \`generate:${LIBRARY}\` label
@@ -471,9 +471,36 @@ jobs:
 
               gh pr close "$PR_NUM"
 
+              # Remove old implementation from main if it exists
+              IMPL_FILE="plots/${SPEC_ID}/implementations/${LIBRARY}.py"
+              META_FILE="plots/${SPEC_ID}/metadata/${LIBRARY}.yaml"
+
+              git fetch origin main
+              if git show origin/main:"$IMPL_FILE" &>/dev/null; then
+                echo "::notice::Removing old implementation from main: $IMPL_FILE"
+                git checkout main
+                git pull origin main
+
+                # Delete implementation and metadata
+                rm -f "$IMPL_FILE" "$META_FILE"
+
+                # Commit and push
+                git add -A
+                git commit -m "chore(${LIBRARY}): remove ${SPEC_ID} implementation (score < 50 after 3 attempts)
+
+Quality score ${SCORE}/100 is below acceptable threshold.
+PR #${PR_NUM} was closed.
+
+🤖 Generated with [Claude Code](https://claude.ai/code)"
+                git push origin main
+                echo "::notice::Old implementation removed from main"
+              else
+                echo "::notice::No old implementation found on main to remove"
+              fi
+
               if [ -n "$ISSUE_NUMBER" ]; then
                 gh issue edit "$ISSUE_NUMBER" --add-label "impl:${LIBRARY}:failed" 2>/dev/null || true
-                gh issue comment "$ISSUE_NUMBER" --body "**${LIBRARY}** implementation: score ${SCORE}/100 after 3 attempts (< 50 = rejected). PR #${PR_NUM} closed."
+                gh issue comment "$ISSUE_NUMBER" --body "**${LIBRARY}** implementation: score ${SCORE}/100 after 3 attempts (< 50 = rejected). PR #${PR_NUM} closed. Old implementation removed from repository."
               fi
             fi
 

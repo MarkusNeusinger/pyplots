@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-16
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -32,51 +32,42 @@ categories = [
 values = [45, 32, 38, 25, 12, 18, 42, 8, 22, 15, 28, 14, 10, 20, 6]
 
 # Calculate radii from values (scale by area for accurate perception)
-# r = sqrt(value) * scaling factor
-max_radius = 400  # max radius in pixels for display
+max_radius = 400
 radii = np.sqrt(values) / np.sqrt(max(values)) * max_radius
 
-
 # Circle packing simulation - position circles without overlap
-def pack_circles(radii, center=(2400, 1350), iterations=500):
-    """Simple force-directed packing algorithm."""
-    n = len(radii)
-    # Start with random positions near center
-    np.random.seed(42)
-    x = center[0] + (np.random.rand(n) - 0.5) * 1000
-    y = center[1] + (np.random.rand(n) - 0.5) * 600
+n = len(radii)
+center_x, center_y = 2400, 1350
 
-    for _ in range(iterations):
-        # Pull toward center
-        for i in range(n):
-            dx = center[0] - x[i]
-            dy = center[1] - y[i]
+# Start with random positions near center
+x_pos = center_x + (np.random.rand(n) - 0.5) * 1000
+y_pos = center_y + (np.random.rand(n) - 0.5) * 600
+
+# Force-directed packing iterations
+for _ in range(500):
+    # Pull toward center
+    for i in range(n):
+        dx = center_x - x_pos[i]
+        dy = center_y - y_pos[i]
+        x_pos[i] += dx * 0.01
+        y_pos[i] += dy * 0.01
+
+    # Push apart overlapping circles
+    for i in range(n):
+        for j in range(i + 1, n):
+            dx = x_pos[j] - x_pos[i]
+            dy = y_pos[j] - y_pos[i]
             dist = np.sqrt(dx**2 + dy**2) + 0.01
-            x[i] += dx * 0.01
-            y[i] += dy * 0.01
+            min_dist = radii[i] + radii[j] + 10  # 10px padding
 
-        # Push apart overlapping circles
-        for i in range(n):
-            for j in range(i + 1, n):
-                dx = x[j] - x[i]
-                dy = y[j] - y[i]
-                dist = np.sqrt(dx**2 + dy**2) + 0.01
-                min_dist = radii[i] + radii[j] + 10  # 10px padding
+            if dist < min_dist:
+                overlap = (min_dist - dist) / 2
+                x_pos[i] -= dx / dist * overlap
+                y_pos[i] -= dy / dist * overlap
+                x_pos[j] += dx / dist * overlap
+                y_pos[j] += dy / dist * overlap
 
-                if dist < min_dist:
-                    overlap = (min_dist - dist) / 2
-                    x[i] -= dx / dist * overlap
-                    y[i] -= dy / dist * overlap
-                    x[j] += dx / dist * overlap
-                    y[j] += dy / dist * overlap
-
-    return x, y
-
-
-# Pack circles
-x_pos, y_pos = pack_circles(radii)
-
-# Create color palette - using Python Blue as base with variations
+# Create color palette - using Python Blue and Yellow with variations
 colors = [
     "#306998",
     "#FFD43B",
@@ -97,15 +88,7 @@ colors = [
 
 # Prepare data source
 source = ColumnDataSource(
-    data={
-        "x": x_pos,
-        "y": y_pos,
-        "radius": radii,
-        "category": categories,
-        "value": values,
-        "color": colors,
-        "label": [f"{c}\n${v}M" for c, v in zip(categories, values, strict=True)],
-    }
+    data={"x": x_pos, "y": y_pos, "radius": radii, "category": categories, "value": values, "color": colors}
 )
 
 # Create figure
@@ -125,13 +108,13 @@ p.circle(
 )
 
 # Add labels to circles (only for larger circles)
-# Filter labels for bubbles large enough to show text
+large_indices = [i for i in range(len(values)) if radii[i] > 120]
 label_source = ColumnDataSource(
     data={
-        "x": [x_pos[i] for i in range(len(values)) if radii[i] > 120],
-        "y": [y_pos[i] for i in range(len(values)) if radii[i] > 120],
-        "text": [categories[i] for i in range(len(values)) if radii[i] > 120],
-        "value_text": [f"${values[i]}M" for i in range(len(values)) if radii[i] > 120],
+        "x": [x_pos[i] for i in large_indices],
+        "y": [y_pos[i] for i in large_indices],
+        "text": [categories[i] for i in large_indices],
+        "value_text": [f"${values[i]}M" for i in large_indices],
     }
 )
 

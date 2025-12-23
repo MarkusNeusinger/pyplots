@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-basic: Basic Heatmap
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2025-12-23
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 93/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt

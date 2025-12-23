@@ -1,10 +1,11 @@
-""" pyplots.ai
+"""pyplots.ai
 network-basic: Basic Network Graph
 Library: highcharts unknown | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-23
 """
 
 import json
+import math
 import tempfile
 import time
 import urllib.request
@@ -91,19 +92,39 @@ for src, tgt in edges:
     degrees[src] += 1
     degrees[tgt] += 1
 
-# Build nodes config with colors and markers based on degree
+# Pre-calculated fixed initial positions for reproducibility (4 groups in quadrants)
+# Using deterministic circular positions within each group's quadrant
+group_centers = [
+    (1800, 900),  # Group 0: top-left quadrant
+    (3000, 900),  # Group 1: top-right quadrant
+    (1800, 1800),  # Group 2: bottom-left quadrant
+    (3000, 1800),  # Group 3: bottom-right quadrant
+]
+
+# Build nodes config with colors, markers based on degree, and fixed initial positions
 nodes_config = []
+group_indices = {0: 0, 1: 0, 2: 0, 3: 0}  # Track index within each group
 for node in nodes:
     node_id = node["id"]
     group = node["group"]
     color = group_colors[group]
     # Scale marker radius based on degree (base 55, plus 10 per connection)
     radius = 55 + degrees[node_id] * 10
+    # Calculate fixed initial position in a circle around group center
+    center_x, center_y = group_centers[group]
+    idx = group_indices[group]
+    group_indices[group] += 1
+    angle = (2 * math.pi * idx) / 5  # 5 nodes per group
+    offset = 300
+    init_x = center_x + offset * math.cos(angle)
+    init_y = center_y + offset * math.sin(angle)
     nodes_config.append(
         {
             "id": node_id,
             "color": color,
             "marker": {"radius": radius, "fillColor": color, "lineWidth": 3, "lineColor": "#333333"},
+            "plotX": init_x,
+            "plotY": init_y,
         }
     )
 
@@ -124,11 +145,11 @@ series.data_labels = {
 series.marker = {"radius": 55}
 series.layout_algorithm = {
     "enableSimulation": True,
-    "linkLength": 450,
+    "linkLength": 500,
     "gravitationalConstant": 0.01,
-    "friction": -0.99,
+    "friction": -0.95,
     "initialPositions": "circle",
-    "maxIterations": 1000,
+    "maxIterations": 500,
     "integration": "verlet",
 }
 series.animation = False
@@ -143,7 +164,7 @@ chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "margin": [120, 100, 150, 100],
+    "margin": [120, 400, 150, 100],
     "spacingTop": 80,
     "spacingBottom": 80,
 }
@@ -151,13 +172,20 @@ chart.options.title = {
     "text": "network-basic · highcharts · pyplots.ai",
     "style": {"fontSize": "48px", "fontWeight": "bold"},
 }
-# Add legend explaining the 4 community groups
+# Hide axes (not needed for network graph)
+chart.options.x_axis = {"visible": False}
+chart.options.y_axis = {"visible": False}
+# Set plot options for networkgraph
+chart.options.plot_options = {
+    "networkgraph": {"keys": ["from", "to"], "marker": {"radius": 55, "lineWidth": 3, "lineColor": "#333333"}}
+}
+# Add legend explaining the 4 community groups - positioned inside right margin
 chart.options.legend = {
     "enabled": True,
     "align": "right",
     "verticalAlign": "middle",
     "layout": "vertical",
-    "x": -50,
+    "x": -100,
     "y": 0,
     "itemStyle": {"fontSize": "28px", "fontWeight": "normal"},
     "symbolRadius": 12,
@@ -176,10 +204,11 @@ for color, name in zip(group_colors, group_names, strict=True):
     legend_series.show_in_legend = True
     chart.add_series(legend_series)
 
-# Generate JS and inject nodes (highcharts-core doesn't support nodes property directly)
+# Generate JS and inject nodes into the first series (highcharts-core doesn't support nodes property directly)
 js_literal = chart.to_js_literal()
 nodes_js = json.dumps(nodes_config)
-js_literal = js_literal.replace("type: 'networkgraph'", f"type: 'networkgraph',\n  nodes: {nodes_js}")
+# Inject nodes into the networkgraph series (series[0])
+js_literal = js_literal.replace("series: [{", f"series: [{{\n  nodes: {nodes_js},")
 
 # Download Highcharts JS (required for headless Chrome)
 highcharts_url = "https://code.highcharts.com/highcharts.js"
@@ -238,11 +267,11 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2700")
+chrome_options.add_argument("--window-size=4800,2800")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
-time.sleep(12)  # Wait for chart to render, layout to stabilize, and cleanup JS to run
+time.sleep(15)  # Wait for chart to render, layout to stabilize, and cleanup JS to run
 driver.save_screenshot("plot.png")
 driver.quit()
 

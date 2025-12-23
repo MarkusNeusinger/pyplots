@@ -11,7 +11,7 @@ Track progress of regenerating all implementations using the stricter evaluation
 ## Progress
 
 ### All Specs (59 total)
-- [ ] arc-basic
+- [x] arc-basic (in progress - 7 PRs reviewing)
 - [x] area-basic ✓ (91-92)
 - [ ] band-basic
 - [x] bar-basic ✓ (91-100)

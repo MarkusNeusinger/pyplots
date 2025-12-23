@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 polar-basic: Basic Polar Chart
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-23
@@ -82,6 +82,16 @@ for hour, label in hour_labels.items():
 
 label_df = pd.DataFrame(label_rows)
 
+# Create radial axis labels showing temperature scale (placed along 3 o'clock spoke)
+radial_label_rows = []
+temp_min = temperatures.min()
+for r in grid_radii:
+    # Convert radius back to temperature
+    temp_value = temp_min + (r - 5)
+    radial_label_rows.append({"label": f"{temp_value:.0f}°C", "x": r + 2, "y": -2})
+
+radial_label_df = pd.DataFrame(radial_label_rows)
+
 # Create data path (closing the loop)
 df_sorted = df.sort_values("hour")
 # Add first point to end to close the loop
@@ -102,12 +112,14 @@ plot = (
     + geom_point(aes(x="x", y="y"), data=df, color="#306998", size=6, alpha=0.8)
     # Hour labels
     + geom_text(aes(x="x", y="y", label="label"), data=label_df, size=14, color="#333333")
+    # Radial axis labels (temperature scale)
+    + geom_text(aes(x="x", y="y", label="label"), data=radial_label_df, size=11, color="#666666")
     # Styling
     + coord_fixed(ratio=1)
-    + scale_x_continuous(limits=(-max_radius - 12, max_radius + 12))
-    + scale_y_continuous(limits=(-max_radius - 12, max_radius + 12))
-    + labs(title="Hourly Temperature · polar-basic · letsplot · pyplots.ai", x="", y="")
-    + ggsize(1600, 900)
+    + scale_x_continuous(limits=(-max_radius - 10, max_radius + 10))
+    + scale_y_continuous(limits=(-max_radius - 10, max_radius + 10))
+    + labs(title="polar-basic · letsplot · pyplots.ai", x="", y="")
+    + ggsize(1200, 1200)
     + theme(
         plot_title=element_text(size=24),
         axis_title=element_blank(),

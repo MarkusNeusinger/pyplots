@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 line-basic: Basic Line Plot
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-13
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import altair as alt
@@ -32,7 +32,7 @@ chart = (
 # Add points to enhance visibility
 points = alt.Chart(df).mark_point(size=200, color="#306998", filled=True).encode(x="Month:T", y="Temperature:Q")
 
-# Combine line and points
+# Combine line and points with subtle grid
 final_chart = (chart + points).configure_axis(gridColor="#E0E0E0", gridOpacity=0.3).configure_view(strokeWidth=0)
 
 # Save

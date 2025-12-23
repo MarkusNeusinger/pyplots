@@ -1,7 +1,7 @@
 """ pyplots.ai
 swarm-basic: Basic Swarm Plot
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -43,7 +43,6 @@ values = np.array(values)
 categories = np.array(categories)
 
 # Calculate swarm positions (jitter to avoid overlap)
-# Group points by category and spread horizontally
 x_jitter = np.zeros(len(values))
 jitter_width = 0.35
 
@@ -96,7 +95,7 @@ p = figure(
     height=2700,
     title="swarm-basic · bokeh · pyplots.ai",
     x_axis_label="Department",
-    y_axis_label="Performance Score",
+    y_axis_label="Performance Score (points)",
     x_range=(-0.6, len(departments) - 0.4),
     y_range=(25, 105),
     tools="",

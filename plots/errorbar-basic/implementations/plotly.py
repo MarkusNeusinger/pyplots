@@ -1,48 +1,57 @@
-""" pyplots.ai
+"""pyplots.ai
 errorbar-basic: Basic Error Bar Plot
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-17
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
 import plotly.graph_objects as go
 
 
-# Data
+# Data - experimental measurements with uncertainty
 np.random.seed(42)
-categories = ["Control", "Treatment A", "Treatment B", "Treatment C", "Treatment D"]
-means = np.array([45.2, 52.8, 61.3, 48.9, 67.5])
-# Varying error magnitudes to demonstrate feature
-errors = np.array([4.5, 6.2, 3.8, 7.1, 5.3])
+groups = ["Control", "Treatment A", "Treatment B", "Treatment C", "Treatment D", "Treatment E"]
+x_positions = list(range(len(groups)))
+means = np.array([42.3, 51.7, 63.2, 47.8, 72.4, 58.9])
+# Varying error magnitudes to show different precision levels
+errors = np.array([5.2, 7.8, 4.1, 9.3, 3.6, 6.5])
 
-# Create figure
+# Create figure with scatter points and error bars
 fig = go.Figure()
 
-# Add bar trace with error bars
 fig.add_trace(
-    go.Bar(
-        x=categories,
+    go.Scatter(
+        x=x_positions,
         y=means,
-        error_y={"type": "data", "array": errors, "visible": True, "thickness": 3, "width": 12},
-        marker={"color": "#306998", "line": {"color": "#1e4a6e", "width": 2}},
-        width=0.6,
+        mode="markers",
+        marker=dict(size=28, color="#306998", line=dict(color="#1e4a6e", width=3)),
+        error_y=dict(type="data", array=errors, visible=True, thickness=4, width=16, color="#306998"),
+        name="Mean ± SE",
     )
 )
 
 # Layout configuration for 4800x2700
 fig.update_layout(
-    title={"text": "errorbar-basic · plotly · pyplots.ai", "font": {"size": 48}, "x": 0.5, "xanchor": "center"},
-    xaxis={"title": {"text": "Experimental Group", "font": {"size": 36}}, "tickfont": {"size": 28}},
-    yaxis={
-        "title": {"text": "Response Value (units)", "font": {"size": 36}},
-        "tickfont": {"size": 28},
-        "gridcolor": "rgba(128,128,128,0.3)",
-        "gridwidth": 1,
-        "range": [0, 85],
-    },
+    title=dict(text="errorbar-basic · plotly · pyplots.ai", font=dict(size=48), x=0.5, xanchor="center"),
+    xaxis=dict(
+        title=dict(text="Experimental Group", font=dict(size=36)),
+        tickfont=dict(size=28),
+        tickmode="array",
+        tickvals=x_positions,
+        ticktext=groups,
+        showgrid=False,
+    ),
+    yaxis=dict(
+        title=dict(text="Response Value (units)", font=dict(size=36)),
+        tickfont=dict(size=28),
+        gridcolor="rgba(128,128,128,0.3)",
+        gridwidth=1,
+        range=[0, 90],
+    ),
     template="plotly_white",
-    bargap=0.3,
-    margin={"l": 120, "r": 80, "t": 120, "b": 100},
+    margin=dict(l=140, r=80, t=120, b=120),
+    showlegend=True,
+    legend=dict(font=dict(size=24), x=0.02, y=0.98, bgcolor="rgba(255,255,255,0.8)"),
 )
 
 # Save

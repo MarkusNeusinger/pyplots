@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 surface-basic: Basic 3D Surface Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-23
@@ -13,6 +13,27 @@ from pathlib import Path
 import numpy as np
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+
+
+# Viridis-like colormap RGB values
+VIRIDIS_COLORS = [
+    (68, 1, 84),  # Dark purple
+    (59, 82, 139),  # Blue-purple
+    (33, 145, 140),  # Teal
+    (94, 201, 98),  # Green
+    (253, 231, 37),  # Yellow
+]
+
+
+def value_to_rgb(value):
+    """Convert normalized value (0-1) to RGB color string using viridis colormap."""
+    n_colors = len(VIRIDIS_COLORS) - 1
+    idx = min(int(value * n_colors), n_colors - 1)
+    t = (value * n_colors) - idx
+    r = int(VIRIDIS_COLORS[idx][0] + t * (VIRIDIS_COLORS[idx + 1][0] - VIRIDIS_COLORS[idx][0]))
+    g = int(VIRIDIS_COLORS[idx][1] + t * (VIRIDIS_COLORS[idx + 1][1] - VIRIDIS_COLORS[idx][1]))
+    b = int(VIRIDIS_COLORS[idx][2] + t * (VIRIDIS_COLORS[idx + 1][2] - VIRIDIS_COLORS[idx][2]))
+    return f"rgb({r},{g},{b})"
 
 
 # Data - Gaussian surface with peaks and valleys
@@ -33,15 +54,6 @@ Z = (
 z_min, z_max = Z.min(), Z.max()
 z_normalized = (Z - z_min) / (z_max - z_min)
 
-# Viridis-like colormap RGB values
-VIRIDIS_COLORS = [
-    (68, 1, 84),  # Dark purple
-    (59, 82, 139),  # Blue-purple
-    (33, 145, 140),  # Teal
-    (94, 201, 98),  # Green
-    (253, 231, 37),  # Yellow
-]
-
 # Download required Highcharts modules
 highcharts_url = "https://code.highcharts.com/highcharts.js"
 highcharts_3d_url = "https://code.highcharts.com/highcharts-3d.js"
@@ -56,16 +68,7 @@ with urllib.request.urlopen(highcharts_3d_url, timeout=30) as response:
 surface_data = []
 for i in range(n_points):
     for j in range(n_points):
-        # Inline color calculation for KISS compliance
-        value = z_normalized[i, j]
-        n_colors = len(VIRIDIS_COLORS) - 1
-        idx = min(int(value * n_colors), n_colors - 1)
-        t = (value * n_colors) - idx
-        r = int(VIRIDIS_COLORS[idx][0] + t * (VIRIDIS_COLORS[idx + 1][0] - VIRIDIS_COLORS[idx][0]))
-        g = int(VIRIDIS_COLORS[idx][1] + t * (VIRIDIS_COLORS[idx + 1][1] - VIRIDIS_COLORS[idx][1]))
-        b = int(VIRIDIS_COLORS[idx][2] + t * (VIRIDIS_COLORS[idx + 1][2] - VIRIDIS_COLORS[idx][2]))
-        color = f"rgb({r},{g},{b})"
-
+        color = value_to_rgb(z_normalized[i, j])
         surface_data.append(
             {
                 "x": float(X[i, j]),
@@ -80,25 +83,11 @@ x_line_series = []
 for i in range(n_points):
     line_data = []
     for j in range(n_points):
-        value = z_normalized[i, j]
-        n_colors = len(VIRIDIS_COLORS) - 1
-        idx = min(int(value * n_colors), n_colors - 1)
-        t = (value * n_colors) - idx
-        r = int(VIRIDIS_COLORS[idx][0] + t * (VIRIDIS_COLORS[idx + 1][0] - VIRIDIS_COLORS[idx][0]))
-        g = int(VIRIDIS_COLORS[idx][1] + t * (VIRIDIS_COLORS[idx + 1][1] - VIRIDIS_COLORS[idx][1]))
-        b = int(VIRIDIS_COLORS[idx][2] + t * (VIRIDIS_COLORS[idx + 1][2] - VIRIDIS_COLORS[idx][2]))
-        color = f"rgb({r},{g},{b})"
+        color = value_to_rgb(z_normalized[i, j])
         line_data.append({"x": float(X[i, j]), "y": float(Z[i, j]), "z": float(Y[i, j]), "color": color})
 
     # Color for the line based on middle value
-    mid_val = z_normalized[i, n_points // 2]
-    idx = min(int(mid_val * (len(VIRIDIS_COLORS) - 1)), len(VIRIDIS_COLORS) - 2)
-    t = (mid_val * (len(VIRIDIS_COLORS) - 1)) - idx
-    r = int(VIRIDIS_COLORS[idx][0] + t * (VIRIDIS_COLORS[idx + 1][0] - VIRIDIS_COLORS[idx][0]))
-    g = int(VIRIDIS_COLORS[idx][1] + t * (VIRIDIS_COLORS[idx + 1][1] - VIRIDIS_COLORS[idx][1]))
-    b = int(VIRIDIS_COLORS[idx][2] + t * (VIRIDIS_COLORS[idx + 1][2] - VIRIDIS_COLORS[idx][2]))
-    line_color = f"rgb({r},{g},{b})"
-
+    line_color = value_to_rgb(z_normalized[i, n_points // 2])
     x_line_series.append(
         {
             "type": "scatter3d",
@@ -115,25 +104,11 @@ y_line_series = []
 for j in range(n_points):
     line_data = []
     for i in range(n_points):
-        value = z_normalized[i, j]
-        n_colors = len(VIRIDIS_COLORS) - 1
-        idx = min(int(value * n_colors), n_colors - 1)
-        t = (value * n_colors) - idx
-        r = int(VIRIDIS_COLORS[idx][0] + t * (VIRIDIS_COLORS[idx + 1][0] - VIRIDIS_COLORS[idx][0]))
-        g = int(VIRIDIS_COLORS[idx][1] + t * (VIRIDIS_COLORS[idx + 1][1] - VIRIDIS_COLORS[idx][1]))
-        b = int(VIRIDIS_COLORS[idx][2] + t * (VIRIDIS_COLORS[idx + 1][2] - VIRIDIS_COLORS[idx][2]))
-        color = f"rgb({r},{g},{b})"
+        color = value_to_rgb(z_normalized[i, j])
         line_data.append({"x": float(X[i, j]), "y": float(Z[i, j]), "z": float(Y[i, j]), "color": color})
 
     # Color for the line based on middle value
-    mid_val = z_normalized[n_points // 2, j]
-    idx = min(int(mid_val * (len(VIRIDIS_COLORS) - 1)), len(VIRIDIS_COLORS) - 2)
-    t = (mid_val * (len(VIRIDIS_COLORS) - 1)) - idx
-    r = int(VIRIDIS_COLORS[idx][0] + t * (VIRIDIS_COLORS[idx + 1][0] - VIRIDIS_COLORS[idx][0]))
-    g = int(VIRIDIS_COLORS[idx][1] + t * (VIRIDIS_COLORS[idx + 1][1] - VIRIDIS_COLORS[idx][1]))
-    b = int(VIRIDIS_COLORS[idx][2] + t * (VIRIDIS_COLORS[idx + 1][2] - VIRIDIS_COLORS[idx][2]))
-    line_color = f"rgb({r},{g},{b})"
-
+    line_color = value_to_rgb(z_normalized[n_points // 2, j])
     y_line_series.append(
         {
             "type": "scatter3d",
@@ -157,13 +132,6 @@ surface_series = {
 all_series = [surface_series] + x_line_series + y_line_series
 series_json = json.dumps(all_series)
 
-# Create colorbar data - gradient stops for the legend
-colorbar_stops = []
-for i in range(5):
-    val = i / 4.0
-    r, g, b = VIRIDIS_COLORS[i]
-    colorbar_stops.append([val, f"rgb({r},{g},{b})"])
-
 # Highcharts chart configuration with improved layout and colorbar
 chart_config = f"""
 Highcharts.chart('container', {{
@@ -175,9 +143,9 @@ Highcharts.chart('container', {{
         backgroundColor: '#ffffff',
         options3d: {{
             enabled: true,
-            alpha: 12,
-            beta: 25,
-            depth: 600,
+            alpha: 15,
+            beta: 30,
+            depth: 550,
             viewDistance: 3,
             fitToPlot: false,
             frame: {{
@@ -186,10 +154,10 @@ Highcharts.chart('container', {{
                 side: {{ size: 1, color: 'rgba(0,0,0,0.05)' }}
             }}
         }},
-        marginTop: 200,
-        marginBottom: 150,
-        marginLeft: 100,
-        marginRight: 500
+        marginTop: 220,
+        marginBottom: 250,
+        marginLeft: 200,
+        marginRight: 550
     }},
     title: {{
         text: 'surface-basic · highcharts · pyplots.ai',
@@ -204,13 +172,14 @@ Highcharts.chart('container', {{
         max: 3.5,
         tickInterval: 1,
         title: {{
-            text: 'X',
+            text: 'X Axis',
             style: {{ fontSize: '56px', color: '#306998', fontWeight: 'bold' }},
-            margin: 50
+            margin: 80
         }},
         labels: {{
-            style: {{ fontSize: '40px' }},
-            format: '{{value}}'
+            style: {{ fontSize: '44px' }},
+            format: '{{value}}',
+            y: 30
         }},
         gridLineWidth: 1,
         gridLineColor: 'rgba(0, 0, 0, 0.1)'
@@ -222,11 +191,12 @@ Highcharts.chart('container', {{
         title: {{
             text: 'Z (Height)',
             style: {{ fontSize: '56px', color: '#306998', fontWeight: 'bold' }},
-            margin: 40
+            margin: 60
         }},
         labels: {{
-            style: {{ fontSize: '40px' }},
-            format: '{{value:.1f}}'
+            style: {{ fontSize: '44px' }},
+            format: '{{value:.1f}}',
+            x: -20
         }},
         gridLineWidth: 1,
         gridLineColor: 'rgba(0, 0, 0, 0.1)'
@@ -236,11 +206,12 @@ Highcharts.chart('container', {{
         max: 3.5,
         tickInterval: 1,
         title: {{
-            text: 'Y',
-            style: {{ fontSize: '56px', color: '#306998', fontWeight: 'bold' }}
+            text: 'Y Axis',
+            style: {{ fontSize: '56px', color: '#306998', fontWeight: 'bold' }},
+            margin: 80
         }},
         labels: {{
-            style: {{ fontSize: '40px' }}
+            style: {{ fontSize: '44px' }}
         }},
         gridLineWidth: 1,
         gridLineColor: 'rgba(0, 0, 0, 0.1)'
@@ -274,11 +245,11 @@ Highcharts.chart('container', {{
 var chart = Highcharts.charts[0];
 var renderer = chart.renderer;
 
-// Colorbar position and dimensions
-var colorbarX = 4350;
-var colorbarY = 600;
-var colorbarWidth = 60;
-var colorbarHeight = 1200;
+// Colorbar position and dimensions - moved left for better visibility
+var colorbarX = 4300;
+var colorbarY = 550;
+var colorbarWidth = 70;
+var colorbarHeight = 1300;
 
 // Draw gradient rectangles for colorbar
 var numSteps = 50;
@@ -317,16 +288,22 @@ renderer.rect(colorbarX, colorbarY, colorbarWidth, colorbarHeight)
     }})
     .add();
 
-// Colorbar labels
+// Colorbar labels with more values for clarity
 var zMin = {z_min:.2f};
 var zMax = {z_max:.2f};
-var labelValues = [zMin, (zMin + zMax) / 2, zMax];
-var labelPositions = [colorbarY + colorbarHeight, colorbarY + colorbarHeight / 2, colorbarY];
+var labelValues = [zMin, zMin + (zMax - zMin) * 0.25, (zMin + zMax) / 2, zMin + (zMax - zMin) * 0.75, zMax];
+var labelPositions = [
+    colorbarY + colorbarHeight,
+    colorbarY + colorbarHeight * 0.75,
+    colorbarY + colorbarHeight / 2,
+    colorbarY + colorbarHeight * 0.25,
+    colorbarY
+];
 
-for (var j = 0; j < 3; j++) {{
-    renderer.text(labelValues[j].toFixed(2), colorbarX + colorbarWidth + 20, labelPositions[j] + 15)
+for (var j = 0; j < 5; j++) {{
+    renderer.text(labelValues[j].toFixed(2), colorbarX + colorbarWidth + 25, labelPositions[j] + 15)
         .css({{
-            fontSize: '40px',
+            fontSize: '44px',
             fontWeight: 'bold',
             color: '#333333'
         }})
@@ -334,12 +311,12 @@ for (var j = 0; j < 3; j++) {{
 }}
 
 // Colorbar title
-renderer.text('Height', colorbarX + colorbarWidth / 2, colorbarY - 40)
+renderer.text('Height (Z)', colorbarX + colorbarWidth / 2, colorbarY - 50)
     .attr({{
         align: 'center'
     }})
     .css({{
-        fontSize: '48px',
+        fontSize: '52px',
         fontWeight: 'bold',
         color: '#306998'
     }})

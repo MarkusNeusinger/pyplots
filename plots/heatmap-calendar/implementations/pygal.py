@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-calendar: Basic Calendar Heatmap
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-17
+Library: pygal | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import sys
@@ -96,7 +96,6 @@ class CalendarHeatmap(Graph):
         cal_group = self.svg.node(plot_node, class_="calendar-heatmap")
 
         # Draw weekday labels on the left - very large for 4800x2700
-        # Use style attribute to ensure proper CSS rendering
         weekday_font_size = 48
         for i, label in enumerate(self.weekday_labels):
             y = y_offset + i * (cell_size + gap) + cell_size / 2
@@ -232,7 +231,6 @@ while current <= end_date:
     dates.append(current)
 
     # Simulate contribution pattern: weekdays more active, weekends less
-    # Also add some randomness and occasional spikes
     weekday = current.weekday()
     base = 0 if weekday >= 5 else np.random.choice([0, 0, 1, 2, 3], p=[0.3, 0.2, 0.25, 0.15, 0.1])
 
@@ -286,5 +284,5 @@ chart = CalendarHeatmap(
 chart.add("", [0])
 
 # Save output
-chart.render_to_file("plot.svg")
+chart.render_to_file("plot.html")
 chart.render_to_png("plot.png")

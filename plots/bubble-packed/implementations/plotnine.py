@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-23
@@ -152,17 +152,30 @@ for i, row in df.iterrows():
 
 circles_df = pd.concat(circle_dfs, ignore_index=True)
 
-# Color palette for groups
+# Color palette for groups - colorblind-safe (Okabe-Ito palette)
 group_colors = {
-    "Tech": "#306998",  # Python Blue
-    "Business": "#FFD43B",  # Python Yellow
-    "Operations": "#4CAF50",  # Green
-    "Support": "#9C27B0",  # Purple
+    "Tech": "#0072B2",  # Blue
+    "Business": "#E69F00",  # Orange
+    "Operations": "#009E73",  # Bluish Green
+    "Support": "#CC79A7",  # Reddish Purple
 }
 
-# Create label dataframe (centers) - only show labels for larger circles
+# Create label dataframe (centers) - show full labels for circles large enough
 labels_df = df[["x", "y", "label", "radius"]].copy()
-labels_df["display_label"] = labels_df.apply(lambda row: row["label"][:10] if row["radius"] > 0.5 else "", axis=1)
+
+# Show full label for large circles, abbreviated for medium, none for small
+labels_df["display_label"] = labels_df.apply(
+    lambda row: (
+        row["label"]
+        if row["radius"] >= 0.85
+        else (
+            (row["label"][:8] if len(row["label"]) > 8 else row["label"])
+            if row["radius"] >= 0.6
+            else ((row["label"][:5] if len(row["label"]) > 5 else row["label"]) if row["radius"] >= 0.45 else "")
+        )
+    ),
+    axis=1,
+)
 
 # Create plot
 plot = (

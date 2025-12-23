@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-basic: Basic Bubble Chart
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 87/100 | Created: 2025-12-14
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import tempfile
@@ -17,22 +17,97 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data
+# Data - Tech companies comparison
 np.random.seed(42)
-n = 50
-x = np.random.uniform(10, 90, n)
-y = x * 0.6 + np.random.uniform(-15, 15, n)
-# Size variable - represents a third dimension
-size = np.random.uniform(100, 2000, n)
+n = 30
 
-# Scale bubble sizes for visualization (area proportional to value)
-# z value controls bubble size in Highcharts
-min_size, max_size = size.min(), size.max()
-z_scaled = 10 + (size - min_size) / (max_size - min_size) * 90
+# Revenue (billions USD) - x axis
+revenue = np.array(
+    [
+        5,
+        12,
+        25,
+        38,
+        45,
+        52,
+        68,
+        75,
+        82,
+        95,
+        110,
+        125,
+        140,
+        155,
+        170,
+        185,
+        200,
+        220,
+        245,
+        270,
+        300,
+        330,
+        360,
+        390,
+        420,
+        460,
+        500,
+        550,
+        600,
+        650,
+    ]
+)
 
-# Format data for Highcharts bubble chart: [x, y, z] where z controls bubble size
+# Growth rate (%) - y axis
+growth = np.array(
+    [
+        45,
+        38,
+        52,
+        28,
+        35,
+        22,
+        42,
+        18,
+        30,
+        25,
+        33,
+        20,
+        28,
+        15,
+        38,
+        12,
+        25,
+        18,
+        22,
+        15,
+        20,
+        12,
+        18,
+        10,
+        15,
+        8,
+        12,
+        6,
+        10,
+        5,
+    ]
+)
+
+# Add realistic variation
+revenue = revenue + np.random.uniform(-3, 3, n)
+growth = growth + np.random.uniform(-3, 3, n)
+
+# Market cap (billions USD) - bubble size
+market_cap = revenue * (1 + growth / 100) * np.random.uniform(2, 8, n)
+
+# Scale bubble z values for Highcharts (controls visual size)
+min_cap, max_cap = market_cap.min(), market_cap.max()
+z_scaled = 20 + (market_cap - min_cap) / (max_cap - min_cap) * 80
+
+# Format data for Highcharts bubble chart
 bubble_data = [
-    {"x": float(x[i]), "y": float(y[i]), "z": float(z_scaled[i]), "name": f"Point {i + 1}"} for i in range(n)
+    {"x": float(revenue[i]), "y": float(growth[i]), "z": float(z_scaled[i]), "marketCap": float(market_cap[i])}
+    for i in range(n)
 ]
 
 # Create chart
@@ -46,7 +121,8 @@ chart.options.chart = {
     "backgroundColor": "#ffffff",
     "plotBorderWidth": 1,
     "plotBorderColor": "#cccccc",
-    "spacingBottom": 100,
+    "spacingBottom": 120,
+    "spacingRight": 100,
 }
 
 chart.options.title = {
@@ -54,41 +130,69 @@ chart.options.title = {
     "style": {"fontSize": "64px", "fontWeight": "bold"},
 }
 
+chart.options.subtitle = {
+    "text": "Bubble size represents Market Capitalization",
+    "style": {"fontSize": "40px", "color": "#666666"},
+}
+
 chart.options.x_axis = {
-    "title": {"text": "X Value", "style": {"fontSize": "48px"}, "margin": 30},
+    "title": {"text": "Revenue (Billion USD)", "style": {"fontSize": "48px"}, "margin": 30},
     "labels": {"style": {"fontSize": "36px"}},
     "gridLineWidth": 1,
-    "gridLineColor": "#e0e0e0",
+    "gridLineColor": "#e6e6e6",
+    "min": 0,
 }
 
 chart.options.y_axis = {
-    "title": {"text": "Y Value", "style": {"fontSize": "48px"}},
+    "title": {"text": "Growth Rate (%)", "style": {"fontSize": "48px"}},
     "labels": {"style": {"fontSize": "36px"}},
     "gridLineWidth": 1,
-    "gridLineColor": "#e0e0e0",
+    "gridLineColor": "#e6e6e6",
+    "min": 0,
 }
 
-chart.options.legend = {"enabled": True, "itemStyle": {"fontSize": "36px"}}
+chart.options.legend = {
+    "enabled": True,
+    "itemStyle": {"fontSize": "36px"},
+    "bubbleLegend": {
+        "enabled": True,
+        "borderColor": "#306998",
+        "borderWidth": 2,
+        "color": "rgba(48, 105, 152, 0.5)",
+        "connectorColor": "#306998",
+        "labels": {"style": {"fontSize": "28px"}},
+        "legendIndex": 0,
+        "ranges": [
+            {"value": 20, "borderColor": "#306998", "color": "rgba(48, 105, 152, 0.5)"},
+            {"value": 60, "borderColor": "#306998", "color": "rgba(48, 105, 152, 0.5)"},
+            {"value": 100, "borderColor": "#306998", "color": "rgba(48, 105, 152, 0.5)"},
+        ],
+    },
+}
 
 chart.options.tooltip = {
     "useHTML": True,
-    "headerFormat": '<span style="font-size: 28px">{point.key}</span><br/>',
-    "pointFormat": '<span style="font-size: 24px">X: {point.x:.1f}<br/>Y: {point.y:.1f}<br/>Size: {point.z:.0f}</span>',
+    "headerFormat": "",
+    "pointFormat": '<span style="font-size: 28px"><b>Company Data</b></span><br/>'
+    '<span style="font-size: 24px">Revenue: ${point.x:.1f}B<br/>'
+    "Growth: {point.y:.1f}%<br/>"
+    "Market Cap: ${point.marketCap:.0f}B</span>",
 }
 
 chart.options.plot_options = {
     "bubble": {
-        "minSize": 40,
-        "maxSize": 180,
+        "minSize": 50,
+        "maxSize": 200,
         "color": "#306998",
         "marker": {"fillOpacity": 0.6, "lineWidth": 3, "lineColor": "#1e4f7a"},
         "dataLabels": {"enabled": False},
+        "sizeBy": "area",
     }
 }
 
 # Create bubble series
 series = BubbleSeries()
-series.name = "Size Value"
+series.name = "Market Cap"
 series.data = bubble_data
 series.color = "#306998"
 

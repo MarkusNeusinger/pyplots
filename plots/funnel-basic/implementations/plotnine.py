@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 funnel-basic: Basic Funnel Chart
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 # Fix import conflict: script named plotnine.py shadows the plotnine package
@@ -25,7 +25,7 @@ from plotnine import (  # noqa: E402
 )
 
 
-# Data
+# Data - Sales funnel with 5 stages showing clear progression
 stages = ["Awareness", "Interest", "Consideration", "Intent", "Purchase"]
 values = [1000, 600, 400, 200, 100]
 
@@ -55,7 +55,7 @@ plot = (
     + geom_rect(color="white", size=0.5)
     + geom_text(aes(x=0, y="y", label="label"), color="white", size=14, fontweight="bold")
     + scale_fill_manual(values=colors)
-    + labs(title="funnel-basic \u00b7 plotnine \u00b7 pyplots.ai", x="", y="")
+    + labs(title="funnel-basic · plotnine · pyplots.ai", x="", y="")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),

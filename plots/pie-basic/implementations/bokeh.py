@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-basic: Basic Pie Chart
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-14
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import math
@@ -21,36 +21,35 @@ percentages = [v / total * 100 for v in values]
 angles = [v / total * 2 * math.pi for v in values]
 
 # Calculate start and end angles for each slice (counter-clockwise from top)
-# Bokeh wedges are drawn counter-clockwise, so start_angle < end_angle
 start_angles = []
 end_angles = []
 current_angle = math.pi / 2  # Start from top (90 degrees)
 for angle in angles:
     end_angle = current_angle
-    start_angle = current_angle - angle  # End before start for CCW order
+    start_angle = current_angle - angle
     start_angles.append(start_angle)
     end_angles.append(end_angle)
-    current_angle = start_angle  # Continue from where we left off
+    current_angle = start_angle
 
-# Colors - Python Blue and Yellow first, then distinct colorblind-safe palette
+# Colors - Python Blue and Yellow first, then colorblind-safe palette
 colors = ["#306998", "#FFD43B", "#E74C3C", "#9B59B6", "#27AE60"]
 
 # Calculate label positions (middle of each slice)
 mid_angles = [(start_angles[i] + end_angles[i]) / 2 for i in range(len(categories))]
-radius = 0.85  # Pie radius
-label_radius = radius * 0.65  # Labels at 65% of radius
+radius = 0.85
+label_radius = radius * 0.65
 
-# Explosion offset for the largest slice (Engineering at index 0)
+# Explosion offset for the largest slice (Engineering)
 explode_radius = 0.05
-explode_index = 0  # Engineering is the largest
+explode_index = 0
 
-# Create figure (4800 x 2700 px)
+# Create figure (3600 x 3600 px - square for pie chart)
 p = figure(
-    width=4800,
-    height=2700,
+    width=3600,
+    height=3600,
     title="pie-basic · bokeh · pyplots.ai",
-    x_range=(-1.3, 1.8),
-    y_range=(-1.15, 1.15),
+    x_range=(-1.4, 1.8),
+    y_range=(-1.3, 1.3),
     tools="",
     toolbar_location=None,
 )
@@ -80,7 +79,6 @@ for i in range(len(categories)):
 
 # Add percentage labels on slices
 for i in range(len(categories)):
-    # Account for explosion offset in label position
     if i == explode_index:
         offset_x = explode_radius * math.cos(mid_angles[i])
         offset_y = explode_radius * math.sin(mid_angles[i])
@@ -96,7 +94,7 @@ for i in range(len(categories)):
         x=x,
         y=y,
         text=f"{percentages[i]:.1f}%",
-        text_font_size="28pt",
+        text_font_size="32pt",
         text_color=text_color,
         text_font_style="bold",
         text_align="center",
@@ -123,7 +121,7 @@ legend = Legend(
 p.add_layout(legend, "right")
 
 # Styling
-p.title.text_font_size = "36pt"
+p.title.text_font_size = "40pt"
 p.title.align = "center"
 
 # Hide axes and grid for pie chart
@@ -134,6 +132,6 @@ p.outline_line_color = None
 # Save outputs
 export_png(p, filename="plot.png")
 
-# Also save interactive HTML
+# Save interactive HTML
 output_file("plot.html")
 save(p)

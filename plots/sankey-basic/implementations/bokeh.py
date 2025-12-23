@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 sankey-basic: Basic Sankey Diagram
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-14
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -10,7 +10,7 @@ from bokeh.models import Label
 from bokeh.plotting import figure
 
 
-# Data - Energy flow from sources to sectors (from spec example)
+# Data - Energy flow from sources to sectors (TWh)
 flows = [
     {"source": "Coal", "target": "Industrial", "value": 25},
     {"source": "Coal", "target": "Residential", "value": 10},
@@ -58,7 +58,7 @@ target_totals = {t: sum(f["value"] for f in flows if f["target"] == t) for t in 
 left_x = 0
 right_x = 100
 node_width = 8
-node_gap = 3  # Gap between nodes
+node_gap = 3
 total_height = 100
 padding_y = 5
 
@@ -99,37 +99,13 @@ p = figure(
     toolbar_location=None,
 )
 
-
-# Helper function to create bezier curve path for flow
-def create_flow_path(x0, y0_bottom, y0_top, x1, y1_bottom, y1_top, num_points=50):
-    """Create smooth bezier-like flow path between two nodes."""
-    t = np.linspace(0, 1, num_points)
-
-    # Control points for bezier curve (horizontal tension)
-    cx0 = x0 + (x1 - x0) * 0.4
-    cx1 = x0 + (x1 - x0) * 0.6
-
-    # Cubic bezier for x positions
-    x_path = (1 - t) ** 3 * x0 + 3 * (1 - t) ** 2 * t * cx0 + 3 * (1 - t) * t**2 * cx1 + t**3 * x1
-
-    # Linear interpolation for y positions (top and bottom edges)
-    y_bottom = (1 - t) * y0_bottom + t * y1_bottom
-    y_top = (1 - t) * y0_top + t * y1_top
-
-    # Create closed polygon (go forward along top, backward along bottom)
-    xs = list(x_path) + list(x_path[::-1])
-    ys = list(y_top) + list(y_bottom[::-1])
-
-    return xs, ys
-
-
-# Draw flows
+# Draw flows using bezier curves
 for f in flows:
     src = f["source"]
     tgt = f["target"]
     value = f["value"]
 
-    # Calculate flow thickness based on value
+    # Get node info
     src_node = source_nodes[src]
     tgt_node = target_nodes[tgt]
 
@@ -151,8 +127,21 @@ for f in flows:
     source_offsets[src] += src_flow_height
     target_offsets[tgt] += tgt_flow_height
 
-    # Create flow path
-    xs, ys = create_flow_path(x0, y0_bottom, y0_top, x1, y1_bottom, y1_top)
+    # Create smooth bezier flow path
+    t = np.linspace(0, 1, 50)
+    cx0 = x0 + (x1 - x0) * 0.4
+    cx1 = x0 + (x1 - x0) * 0.6
+
+    # Cubic bezier for x positions
+    x_path = (1 - t) ** 3 * x0 + 3 * (1 - t) ** 2 * t * cx0 + 3 * (1 - t) * t**2 * cx1 + t**3 * x1
+
+    # Linear interpolation for y positions
+    y_bottom = (1 - t) * y0_bottom + t * y1_bottom
+    y_top = (1 - t) * y0_top + t * y1_top
+
+    # Create closed polygon
+    xs = list(x_path) + list(x_path[::-1])
+    ys = list(y_top) + list(y_bottom[::-1])
 
     # Draw flow with source color and transparency
     p.patch(
@@ -182,7 +171,7 @@ for s in sources:
     label = Label(
         x=node["x"] - 1,
         y=node["y"] + node["height"] / 2,
-        text=f"{s}  ({node['value']} TWh)",
+        text=f"{s} ({node['value']} TWh)",
         text_font_size="22pt",
         text_align="right",
         text_baseline="middle",
@@ -207,7 +196,7 @@ for t in targets:
     label = Label(
         x=node["x"] + node_width + 1,
         y=node["y"] + node["height"] / 2,
-        text=f"{t}  ({node['value']} TWh)",
+        text=f"{t} ({node['value']} TWh)",
         text_font_size="22pt",
         text_align="left",
         text_baseline="middle",

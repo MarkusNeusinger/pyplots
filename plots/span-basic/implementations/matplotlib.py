@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 span-basic: Basic Span Plot (Highlighted Region)
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -11,8 +11,10 @@ import numpy as np
 # Data - Stock prices with highlighted recession period
 np.random.seed(42)
 dates = np.arange(2006, 2016, 0.1)  # 10 years of data
+
 # Simulate stock price with trend and volatility
 price = 100 + np.cumsum(np.random.randn(len(dates)) * 2)
+
 # Add a dip during recession period (2008-2009)
 recession_mask = (dates >= 2008) & (dates < 2010)
 price[recession_mask] -= np.linspace(0, 30, recession_mask.sum())

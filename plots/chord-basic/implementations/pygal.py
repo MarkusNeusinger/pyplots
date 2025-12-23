@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 chord-basic: Basic Chord Diagram
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 72/100 | Created: 2025-12-23
+Quality: 74/100 | Created: 2025-12-23
 """
 
 import math

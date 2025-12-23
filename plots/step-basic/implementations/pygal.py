@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 step-basic: Basic Step Plot
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-15
+Library: pygal | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import pygal
@@ -19,15 +19,15 @@ step_values = []
 
 for i, (month, value) in enumerate(zip(months, cumulative_sales, strict=True)):
     step_x_labels.append(month)
-    # Use dict with 'value' key to control dot visibility
-    step_values.append({"value": value, "node": {"r": 10}})
+    # Use dict with 'value' key to control dot visibility - show dots at actual data points
+    step_values.append({"value": value, "node": {"r": 12}})
     # Add intermediate point at same Y before next X (except for last point)
     if i < len(months) - 1:
         step_x_labels.append("")  # Empty label for intermediate point
-        # Hide dot for intermediate points
+        # Hide dot for intermediate points (step transition)
         step_values.append({"value": value, "node": {"r": 0}})
 
-# Custom style for 4800x2700 canvas
+# Custom style for 4800x2700 canvas with proper sizing
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -46,12 +46,12 @@ custom_style = Style(
 chart = pygal.Line(
     width=4800,
     height=2700,
-    title="step-basic \u00b7 pygal \u00b7 pyplots.ai",
+    title="step-basic · pygal · pyplots.ai",
     x_title="Month",
     y_title="Cumulative Sales ($K)",
     style=custom_style,
     show_dots=True,
-    dots_size=10,
+    dots_size=12,
     stroke_style={"width": 6},
     show_y_guides=True,
     show_x_guides=False,

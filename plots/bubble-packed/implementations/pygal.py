@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-16
+Library: pygal | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import math
@@ -31,80 +31,71 @@ data = [
     {"label": "Support", "value": 110, "group": "Sales"},
 ]
 
-
-# Circle packing algorithm
-def pack_circles(items, width, height, padding=15):
-    """Pack circles together without overlap using greedy placement."""
-    if not items:
-        return []
-
-    # Scale values to radii (by area for accurate visual perception)
-    max_val = max(item["value"] for item in items)
-    max_radius = min(width, height) * 0.11
-
-    circles = []
-    for item in items:
-        r = math.sqrt(item["value"] / max_val) * max_radius
-        circles.append({"r": r, "item": item, "x": 0, "y": 0})
-
-    # Sort by radius descending for better packing
-    circles.sort(key=lambda c: -c["r"])
-
-    # Place first circle at center
-    cx, cy = width / 2, height / 2
-    circles[0]["x"] = cx
-    circles[0]["y"] = cy
-    placed = [circles[0]]
-
-    # Place remaining circles
-    for circle in circles[1:]:
-        best_pos = None
-        min_dist_from_center = float("inf")
-
-        # Try placing adjacent to each existing circle
-        for existing in placed:
-            for angle_deg in range(0, 360, 8):
-                angle = math.radians(angle_deg)
-                dist = existing["r"] + circle["r"] + padding
-                nx = existing["x"] + math.cos(angle) * dist
-                ny = existing["y"] + math.sin(angle) * dist
-
-                # Check for overlaps
-                valid = True
-                for other in placed:
-                    dx = nx - other["x"]
-                    dy = ny - other["y"]
-                    min_gap = circle["r"] + other["r"] + padding * 0.5
-                    if math.sqrt(dx * dx + dy * dy) < min_gap:
-                        valid = False
-                        break
-
-                if valid:
-                    d = math.sqrt((nx - cx) ** 2 + (ny - cy) ** 2)
-                    if d < min_dist_from_center:
-                        min_dist_from_center = d
-                        best_pos = (nx, ny)
-
-        if best_pos:
-            circle["x"], circle["y"] = best_pos
-        else:
-            circle["x"] = cx
-            circle["y"] = max(c["y"] + c["r"] for c in placed) + circle["r"] + padding
-
-        placed.append(circle)
-
-    return [(c["x"], c["y"], c["r"], c["item"]) for c in placed]
-
-
 # Chart dimensions
 WIDTH = 4800
 HEIGHT = 2700
-
-# Pack circles
-packed = pack_circles(data, WIDTH, HEIGHT)
+PADDING = 15
 
 # Group colors matching pyplots style
 GROUP_COLORS = {"Technology": "#306998", "Marketing": "#FFD43B", "Operations": "#4ECDC4", "Sales": "#FF6B6B"}
+
+# Scale values to radii (by area for accurate visual perception)
+max_val = max(item["value"] for item in data)
+max_radius = min(WIDTH, HEIGHT) * 0.11
+
+circles = []
+for item in data:
+    r = math.sqrt(item["value"] / max_val) * max_radius
+    circles.append({"r": r, "item": item, "x": 0, "y": 0})
+
+# Sort by radius descending for better packing
+circles.sort(key=lambda c: -c["r"])
+
+# Place first circle at center
+cx, cy = WIDTH / 2, HEIGHT / 2
+circles[0]["x"] = cx
+circles[0]["y"] = cy
+placed = [circles[0]]
+
+# Place remaining circles using greedy packing
+for circle in circles[1:]:
+    best_pos = None
+    min_dist_from_center = float("inf")
+
+    # Try placing adjacent to each existing circle
+    for existing in placed:
+        for angle_deg in range(0, 360, 8):
+            angle = math.radians(angle_deg)
+            dist = existing["r"] + circle["r"] + PADDING
+            nx = existing["x"] + math.cos(angle) * dist
+            ny = existing["y"] + math.sin(angle) * dist
+
+            # Check for overlaps
+            valid = True
+            for other in placed:
+                dx = nx - other["x"]
+                dy = ny - other["y"]
+                min_gap = circle["r"] + other["r"] + PADDING * 0.5
+                if math.sqrt(dx * dx + dy * dy) < min_gap:
+                    valid = False
+                    break
+
+            if valid:
+                d = math.sqrt((nx - cx) ** 2 + (ny - cy) ** 2)
+                if d < min_dist_from_center:
+                    min_dist_from_center = d
+                    best_pos = (nx, ny)
+
+    if best_pos:
+        circle["x"], circle["y"] = best_pos
+    else:
+        circle["x"] = cx
+        circle["y"] = max(c["y"] + c["r"] for c in placed) + circle["r"] + PADDING
+
+    placed.append(circle)
+
+# Prepare packed data for rendering
+packed = [(c["x"], c["y"], c["r"], c["item"]) for c in placed]
 
 # Custom style
 custom_style = Style(
@@ -136,10 +127,8 @@ for group in ["Technology", "Marketing", "Operations", "Sales"]:
     chart.add(group, [])
 
 
-# XML filter to add packed bubbles
+# XML filter to add packed bubbles to SVG
 def add_packed_bubbles(root):
-    """Add packed bubble circles to SVG."""
-    # Create group for bubbles
     g = etree.SubElement(root, "g")
     g.set("class", "packed-bubbles")
 
@@ -147,17 +136,17 @@ def add_packed_bubbles(root):
         color = GROUP_COLORS[item["group"]]
 
         # Circle element
-        circle = etree.SubElement(g, "circle")
-        circle.set("cx", f"{x:.1f}")
-        circle.set("cy", f"{y:.1f}")
-        circle.set("r", f"{r:.1f}")
-        circle.set("fill", color)
-        circle.set("fill-opacity", "0.85")
-        circle.set("stroke", "#333")
-        circle.set("stroke-width", "3")
+        circle_elem = etree.SubElement(g, "circle")
+        circle_elem.set("cx", f"{x:.1f}")
+        circle_elem.set("cy", f"{y:.1f}")
+        circle_elem.set("r", f"{r:.1f}")
+        circle_elem.set("fill", color)
+        circle_elem.set("fill-opacity", "0.85")
+        circle_elem.set("stroke", "#333")
+        circle_elem.set("stroke-width", "3")
 
         # Tooltip
-        title = etree.SubElement(circle, "title")
+        title = etree.SubElement(circle_elem, "title")
         title.text = f"{item['label']}: ${item['value']}K"
 
         # Value label for large circles

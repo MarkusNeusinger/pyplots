@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 ridgeline-basic: Basic Ridgeline Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-23
@@ -39,13 +39,12 @@ for temps in month_data:
 max_density = max(d.max() for d in kde_data)
 kde_data = [d / max_density for d in kde_data]
 
-# Color gradient with improved distinction between winter months
-# Using more varied blue tones and adding purple/teal for better differentiation
+# Color gradient: cold (blue) to warm (orange) for seasonal pattern
 colors = [
     "#2563eb",  # Jan - bright blue
-    "#7c3aed",  # Feb - purple (distinct from blues)
+    "#7c3aed",  # Feb - purple
     "#0891b2",  # Mar - teal/cyan
-    "#10b981",  # Apr - emerald green (spring)
+    "#10b981",  # Apr - emerald green
     "#84cc16",  # May - lime green
     "#eab308",  # Jun - yellow
     "#f97316",  # Jul - orange (peak summer)
@@ -66,7 +65,7 @@ custom_style = Style(
     colors=tuple(colors),
     title_font_size=72,
     label_font_size=48,
-    major_label_font_size=42,
+    major_label_font_size=48,
     legend_font_size=36,
     value_font_size=36,
     opacity=0.85,
@@ -75,22 +74,23 @@ custom_style = Style(
 
 # Ridge parameters
 ridge_height = 2.5  # Height scale for density curves
-ridge_spacing = 1.8  # Vertical spacing between ridges (controls overlap)
+ridge_spacing = 1.8  # Vertical spacing between ridges (controls overlap ~60%)
 
-# Create Y-axis labels at ridge baseline positions (months as labels, not numbers)
-y_labels = []
+# Build y_labels as list of (value, label) tuples for pygal
+# Position labels at the baseline of each ridge
+y_label_values = []
 for i, month in enumerate(reversed(months)):
-    y_labels.append({"value": i * ridge_spacing + ridge_height * 0.3, "label": month})
+    y_label_values.append((i * ridge_spacing + ridge_height * 0.3, month))
 
-# Create XY chart with month labels on Y-axis, no legend (spec requires Y-axis labels)
+# Create XY chart - no legend since Y-axis has month labels per spec
 chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
     title="Monthly Temperature Distribution · ridgeline-basic · pygal · pyplots.ai",
     x_title="Temperature (°C)",
-    y_title="Month",
-    show_legend=False,  # Remove redundant legend; Y-axis shows month labels
+    y_title="",  # No y-title needed; month labels serve as y-axis
+    show_legend=False,
     stroke=True,
     fill=True,
     dots_size=0,
@@ -99,12 +99,13 @@ chart = pygal.XY(
     range=(-0.5, len(months) * ridge_spacing + ridge_height),
     xrange=(-10, 40),
     stroke_style={"width": 2},
-    y_labels=y_labels,
-    y_labels_major_every=1,
 )
 
+# Set custom y_labels using pygal's expected format
+chart.y_labels = [{"value": v, "label": lbl} for v, lbl in y_label_values]
+
 # Add ridges from back (Dec) to front (Jan) for proper layering
-for i, (month, density) in enumerate(reversed(list(zip(months, kde_data, strict=True)))):
+for i, (_month, density) in enumerate(reversed(list(zip(months, kde_data, strict=True)))):
     # Baseline y-position for this ridge
     baseline = i * ridge_spacing
 
@@ -116,7 +117,8 @@ for i, (month, density) in enumerate(reversed(list(zip(months, kde_data, strict=
     top_edge = [(float(x), float(baseline + d)) for x, d in zip(x_range[::-1], scaled_density[::-1], strict=True)]
     polygon = bottom_edge + top_edge + [bottom_edge[0]]
 
-    chart.add(month, polygon)
+    # Use empty string for series name to prevent legend entries
+    chart.add("", polygon, stroke_style={"width": 2})
 
 # Save outputs
 chart.render_to_file("plot.html")

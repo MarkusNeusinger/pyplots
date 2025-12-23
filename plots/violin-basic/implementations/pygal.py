@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-basic: Basic Violin Plot
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-14
+Library: pygal | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -11,7 +11,6 @@ from pygal.style import Style
 
 # Data - Generate distributions for different categories
 np.random.seed(42)
-categories = ["Engineering", "Marketing", "Sales", "Operations"]
 data = {
     "Engineering": np.random.normal(85, 12, 200),
     "Marketing": np.random.normal(72, 15, 200),
@@ -36,7 +35,7 @@ custom_style = Style(
     opacity_hover=0.9,
 )
 
-# Create XY chart for violin plot
+# Create XY chart for violin plot (pygal has no native violin)
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -62,7 +61,7 @@ n_points = 100
 
 # Add violins for each category
 for i, (category, values) in enumerate(data.items()):
-    center_x = i + 1.5  # Space categories more
+    center_x = i + 1.5
 
     # Compute KDE using Silverman's rule
     n = len(values)
@@ -83,17 +82,14 @@ for i, (category, values) in enumerate(data.items()):
     # Normalize density to desired width
     density = density / density.max() * violin_width
 
-    # Create violin shape points (mirrored density)
-    # Left side (going up)
+    # Create violin shape (mirrored density)
     left_points = [(center_x - d, y) for y, d in zip(y_range, density, strict=True)]
-    # Right side (going down)
     right_points = [(center_x + d, y) for y, d in zip(y_range[::-1], density[::-1], strict=True)]
-    # Close the shape
     violin_points = left_points + right_points + [left_points[0]]
 
     chart.add(category, violin_points)
 
-    # Add median marker as separate small line
+    # Calculate quartiles and median for inner box
     median = float(np.median(values))
     q1 = float(np.percentile(values, 25))
     q3 = float(np.percentile(values, 75))
@@ -113,7 +109,7 @@ for i, (category, values) in enumerate(data.items()):
     median_line = [(center_x - box_width * 1.5, median), (center_x + box_width * 1.5, median)]
     chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 4})
 
-# Configure x-axis to show category names at violin positions
+# X-axis labels at violin positions
 chart.x_labels = ["", "Engineering", "Marketing", "Sales", "Operations", ""]
 chart.x_labels_major_count = 4
 

@@ -1,7 +1,7 @@
 """ pyplots.ai
 box-basic: Basic Box Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Library: letsplot unknown | Python 3.13.11
+Quality: 98/100 | Created: 2025-12-23
 """
 
 import numpy as np

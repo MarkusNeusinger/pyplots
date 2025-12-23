@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 sankey-basic: Basic Sankey Diagram
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-23
@@ -91,7 +91,11 @@ for tgt in targets:
     }
     current_y = current_y - height - node_gap
 
-# Build node rectangles dataframe
+# Color map for nodes - sources get their own colors, targets get distinct colors
+source_colors = {"Coal": "#306998", "Gas": "#FFD43B", "Nuclear": "#4ECDC4", "Renewables": "#2ECC71"}
+target_colors = {"Industrial": "#E74C3C", "Commercial": "#9B59B6", "Residential": "#F39C12"}
+
+# Build node rectangles dataframe - each node gets its own color
 node_data = []
 for src in sources:
     pos = source_positions[src]
@@ -105,6 +109,7 @@ for src in sources:
             "label_x": pos["x"] - 0.02,
             "label_y": (pos["y_top"] + pos["y_bottom"]) / 2,
             "side": "source",
+            "node_color": src,
         }
     )
 
@@ -120,16 +125,16 @@ for tgt in targets:
             "label_x": pos["x"] + 0.02,
             "label_y": (pos["y_top"] + pos["y_bottom"]) / 2,
             "side": "target",
+            "node_color": tgt,
         }
     )
 
 nodes_df = pd.DataFrame(node_data)
 
-# Color map for sources (Python Blue primary, Python Yellow secondary, then colorblind-safe colors)
-color_map = {"Coal": "#306998", "Gas": "#FFD43B", "Nuclear": "#4ECDC4", "Renewables": "#2ECC71"}
 
 # Build flow polygons (curved paths between nodes)
 flow_polygons = []
+flow_labels = []  # Track center positions for flow value labels
 for _, row in flows.iterrows():
     src = row["source"]
     tgt = row["target"]
@@ -171,42 +176,66 @@ for _, row in flows.iterrows():
     for i in range(len(x_polygon)):
         flow_polygons.append({"x": x_polygon[i], "y": y_polygon[i], "flow_id": f"{src}_{tgt}", "source": src})
 
+    # Store center position for flow label (slightly offset from center based on source index)
+    # This helps avoid label overlap when flows cross
+    mid_idx = n_points // 2
+    flow_center_y = (y_top[mid_idx] + y_bottom[n_points - 1 - mid_idx]) / 2
+    src_idx = sources.index(src)
+    label_x_offset = 0.35 + src_idx * 0.1  # Stagger labels across flow width
+    flow_labels.append({"x": label_x_offset, "y": flow_center_y, "value": str(val), "flow_height": flow_height})
+
 flows_df = pd.DataFrame(flow_polygons)
+flow_labels_df = pd.DataFrame(flow_labels)
 
 # Create the plot
 plot = (
     ggplot()
     # Flow polygons with transparency
     + geom_polygon(flows_df, aes(x="x", y="y", group="flow_id", fill="source"), alpha=0.5)
-    # Node rectangles
-    + geom_rect(nodes_df, aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="side"), color="white", size=0.5)
-    # Source labels (right-aligned)
+    # Node rectangles with individual colors
+    + geom_rect(
+        nodes_df, aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="node_color"), color="white", size=0.5
+    )
+    # Flow value labels (only for larger flows to avoid clutter)
+    + geom_text(
+        flow_labels_df[flow_labels_df["flow_height"] >= 0.05],
+        aes(x="x", y="y", label="value"),
+        ha="center",
+        va="center",
+        size=11,
+        color="#333333",
+        fontweight="bold",
+    )
+    # Source labels (right-aligned) - increased font size
     + geom_text(
         nodes_df[nodes_df["side"] == "source"],
         aes(x="label_x", y="label_y", label="name"),
         ha="right",
-        size=14,
+        size=16,
         color="#333333",
         fontweight="bold",
     )
-    # Target labels (left-aligned)
+    # Target labels (left-aligned) - increased font size
     + geom_text(
         nodes_df[nodes_df["side"] == "target"],
         aes(x="label_x", y="label_y", label="name"),
         ha="left",
-        size=14,
+        size=16,
         color="#333333",
         fontweight="bold",
     )
-    # Color scales
+    # Color scales - sources for flows, all nodes for rectangles
     + scale_fill_manual(
         values={
+            # Source colors (for flows and source nodes)
             "Coal": "#306998",
             "Gas": "#FFD43B",
             "Nuclear": "#4ECDC4",
             "Renewables": "#2ECC71",
-            "source": "#555555",
-            "target": "#888888",
+            # Target colors (for target nodes)
+            "Industrial": "#E74C3C",
+            "Commercial": "#9B59B6",
+            "Residential": "#F39C12",
         }
     )
     + labs(title="Energy Flow · sankey-basic · plotnine · pyplots.ai", x="", y="")

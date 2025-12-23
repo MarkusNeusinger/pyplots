@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-calendar: Basic Calendar Heatmap
-Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: seaborn | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -46,14 +46,14 @@ weekday_labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 # Create plot (16:9 aspect ratio for 4800x2700)
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Create heatmap with seaborn (no square=True to allow proper aspect ratio)
+# Create heatmap with seaborn using Python-themed green colormap
 sns.heatmap(
     pivot_df,
     ax=ax,
     cmap="Greens",
     linewidths=1.5,
     linecolor="white",
-    cbar_kws={"label": "Daily Activity", "shrink": 0.6, "aspect": 25, "pad": 0.02},
+    cbar_kws={"label": "Daily Contributions", "shrink": 0.6, "aspect": 25, "pad": 0.02},
     vmin=0,
     vmax=15,
 )
@@ -78,10 +78,10 @@ ax.set_title("heatmap-calendar · seaborn · pyplots.ai", fontsize=24, pad=20)
 # Adjust colorbar label size
 cbar = ax.collections[0].colorbar
 cbar.ax.tick_params(labelsize=14)
-cbar.ax.set_ylabel("Daily Activity", fontsize=16)
+cbar.ax.set_ylabel("Daily Contributions", fontsize=16)
 
 # Remove top/right spines for cleaner look
 ax.tick_params(top=False, bottom=False, left=False, right=False)
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300)
+plt.savefig("plot.png", dpi=300, bbox_inches="tight")

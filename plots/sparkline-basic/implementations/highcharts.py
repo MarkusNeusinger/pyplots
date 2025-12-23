@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 sparkline-basic: Basic Sparkline
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-16
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import tempfile
@@ -30,17 +30,16 @@ chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
 # Chart settings - standard pyplots size with sparkline aesthetic
-# Sparklines are naturally compact, shown in center of larger canvas
 chart.options.chart = {
     "type": "line",
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "margin": [100, 100, 100, 100],  # Balanced margins for compact look
+    "margin": [150, 150, 150, 150],  # More margin for marker visibility
     "spacing": [0, 0, 0, 0],
 }
 
-# Title with pyplots format - large for 4800x2700 canvas
+# Title with pyplots format
 chart.options.title = {
     "text": "sparkline-basic · highcharts · pyplots.ai",
     "align": "center",
@@ -60,39 +59,36 @@ series = LineSeries()
 series.data = values.tolist()
 series.name = "Trend"
 series.color = "#306998"  # Python Blue
-series.line_width = 8  # Visible but clean line at 4800x2700
+series.line_width = 8
 
-# Marker settings - highlight min/max and endpoints
-series.marker = {
-    "enabled": False,  # Hide most markers
-    "radius": 0,
-}
+# Disable markers on main line
+series.marker = {"enabled": False, "radius": 0}
 
 chart.add_series(series)
 
-# Add min point marker - larger for 4800x2700
+# Add min point marker - colorblind-safe orange instead of red
 min_idx = int(np.argmin(values))
 min_series = LineSeries()
 min_series.data = [{"x": min_idx, "y": float(values[min_idx])}]
 min_series.name = "Min"
-min_series.color = "#E74C3C"  # Bright red for minimum
+min_series.color = "#D35400"  # Colorblind-safe orange for minimum
 min_series.marker = {"enabled": True, "radius": 24, "symbol": "circle"}
 min_series.line_width = 0
 min_series.states = {"hover": {"lineWidthPlus": 0}}
 chart.add_series(min_series)
 
-# Add max point marker - larger for 4800x2700
+# Add max point marker - colorblind-safe teal instead of green
 max_idx = int(np.argmax(values))
 max_series = LineSeries()
 max_series.data = [{"x": max_idx, "y": float(values[max_idx])}]
 max_series.name = "Max"
-max_series.color = "#27AE60"  # Bright green for maximum
+max_series.color = "#17BECF"  # Colorblind-safe teal for maximum
 max_series.marker = {"enabled": True, "radius": 24, "symbol": "circle"}
 max_series.line_width = 0
 max_series.states = {"hover": {"lineWidthPlus": 0}}
 chart.add_series(max_series)
 
-# Add first point marker (reference) - larger for 4800x2700
+# Add first point marker (reference)
 first_series = LineSeries()
 first_series.data = [{"x": 0, "y": float(values[0])}]
 first_series.name = "Start"
@@ -102,7 +98,7 @@ first_series.line_width = 0
 first_series.states = {"hover": {"lineWidthPlus": 0}}
 chart.add_series(first_series)
 
-# Add last point marker (reference) - larger for 4800x2700
+# Add last point marker (reference)
 last_series = LineSeries()
 last_series.data = [{"x": len(values) - 1, "y": float(values[-1])}]
 last_series.name = "End"
@@ -138,10 +134,7 @@ html_content = f"""<!DOCTYPE html>
 </html>"""
 
 # Save interactive HTML version
-with open("plot.html", "w", encoding="utf-8") as f:
-    # For HTML file, use CDN links for better compatibility
-    html_interactive = (
-        """<!DOCTYPE html>
+html_interactive = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -149,12 +142,10 @@ with open("plot.html", "w", encoding="utf-8") as f:
 </head>
 <body style="margin:0; background-color: #ffffff;">
     <div id="container" style="width: 100%; height: 100vh;"></div>
-    <script>"""
-        + html_str
-        + """</script>
+    <script>{html_str}</script>
 </body>
 </html>"""
-    )
+with open("plot.html", "w", encoding="utf-8") as f:
     f.write(html_interactive)
 
 # Write temp HTML and take screenshot
@@ -163,13 +154,15 @@ with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encodin
     temp_path = f.name
 
 chrome_options = Options()
-chrome_options.add_argument("--headless")
+chrome_options.add_argument("--headless=new")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--window-size=4800,2700")
+chrome_options.add_argument("--hide-scrollbars")
 
 driver = webdriver.Chrome(options=chrome_options)
+driver.set_window_size(4800, 2700)
 driver.get(f"file://{temp_path}")
 time.sleep(5)  # Wait for chart to render
 driver.save_screenshot("plot.png")

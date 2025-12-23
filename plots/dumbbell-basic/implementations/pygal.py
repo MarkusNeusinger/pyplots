@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 dumbbell-basic: Basic Dumbbell Chart
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-15
+Library: pygal | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import pygal
@@ -56,11 +56,9 @@ chart = pygal.XY(
     y_labels=[{"label": cat, "value": n - i} for i, cat in enumerate(categories)],
 )
 
-# Add connecting lines (gray, subtle)
-# Create separate series for each dumbbell line
+# Add connecting lines (gray, subtle) - create separate series for each dumbbell line
 for i, (_cat, b, a) in enumerate(zip(categories, before, after, strict=True)):
     y_pos = n - i
-    # Add thin gray connector line (no dots)
     chart.add(
         None,  # No legend entry for connector lines
         [{"value": (b, y_pos)}, {"value": (a, y_pos)}],
@@ -70,17 +68,11 @@ for i, (_cat, b, a) in enumerate(zip(categories, before, after, strict=True)):
     )
 
 # Add "Before" dots (Python Blue)
-before_points = []
-for i, (_cat, b) in enumerate(zip(categories, before, strict=True)):
-    y_pos = n - i
-    before_points.append((b, y_pos))
+before_points = [(b, n - i) for i, b in enumerate(before)]
 chart.add("Before Policy Change", before_points, dots_size=25, stroke=False)
 
 # Add "After" dots (Python Yellow)
-after_points = []
-for i, (_cat, a) in enumerate(zip(categories, after, strict=True)):
-    y_pos = n - i
-    after_points.append((a, y_pos))
+after_points = [(a, n - i) for i, a in enumerate(after)]
 chart.add("After Policy Change", after_points, dots_size=25, stroke=False)
 
 # Save outputs

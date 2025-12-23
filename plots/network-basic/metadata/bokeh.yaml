@@ -1,17 +1,27 @@
 library: bokeh
 specification_id: network-basic
-created: 2025-12-17 08:32:03+00:00
-updated: 2025-12-17 08:32:03+00:00
+created: '2025-12-23T15:14:18Z'
+updated: '2025-12-23T15:41:06Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20296410272
-issue: 989
+workflow_run: 20464355674
+issue: 0
 python_version: 3.13.11
 library_version: 3.8.1
 preview_url: https://storage.googleapis.com/pyplots-images/plots/network-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/network-basic/bokeh/plot.html
-quality_score: 94
+quality_score: 88
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent use of Bokeh interactive features (HoverTool showing name and connections,
+    pan/zoom/reset tools)
+  - Clean force-directed layout implementation that clearly shows community structure
+  - Node sizes properly scale with degree (connection count), making hub nodes visually
+    prominent
+  - Colorblind-safe palette with good contrast between groups
+  - Smart label positioning that avoids canvas edge issues
+  - Well-styled legend with appropriate sizing for the large canvas
+  weaknesses:
+  - 'Title format incorrect: includes Social Network prefix instead of strict {spec-id}
+    · {library} · pyplots.ai format'
+  - Network layout leaves some empty space in corners; could be better centered/distributed

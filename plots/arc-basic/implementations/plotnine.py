@@ -1,7 +1,7 @@
 """ pyplots.ai
 arc-basic: Basic Arc Diagram
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import sys

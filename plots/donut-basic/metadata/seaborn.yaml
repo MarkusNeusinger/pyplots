@@ -1,0 +1,27 @@
+library: seaborn
+specification_id: donut-basic
+created: '2025-12-23T00:47:40Z'
+updated: '2025-12-23T01:21:37Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20447958494
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-basic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-basic/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of center space for total budget display
+  - Clean, professional appearance with appropriate ring width
+  - Percentage labels are bold white and highly readable inside segments
+  - Category labels well-positioned outside the ring without overlap
+  - Correct title format following pyplots.ai standards
+  - Realistic budget allocation scenario with sensible departmental values
+  - Square figure size appropriate for circular chart
+  weaknesses:
+  - Limited use of seaborn-specific features (relies on matplotlib pie for the actual
+    chart)
+  - Could benefit from more extreme variation in segment sizes to better demonstrate
+    donut chart capabilities

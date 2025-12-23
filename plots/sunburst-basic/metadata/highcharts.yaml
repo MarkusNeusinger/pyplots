@@ -1,17 +1,26 @@
 library: highcharts
 specification_id: sunburst-basic
-created: 2025-12-14 18:30:41+00:00
-updated: 2025-12-14 18:30:41+00:00
+created: '2025-12-23T21:55:00Z'
+updated: '2025-12-23T22:15:29Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20212270703
-issue: 821
+workflow_run: 20472389172
+issue: 0
 python_version: 3.13.11
-library_version: 1.10.3
+library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/highcharts/plot.html
-quality_score: 95
+quality_score: 90
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent use of Highcharts sunburst module with proper parent-child ID references
+  - Well-configured level-specific styling with brightness variations for visual hierarchy
+  - Colorblind-safe palette (blue/yellow/purple) with good contrast
+  - Smart label filtering on small segments prevents overlap
+  - Realistic budget allocation scenario that effectively demonstrates hierarchical
+    data
+  - Clean code structure following library best practices
+  weaknesses:
+  - Some outer ring labels are difficult to read due to segment size and rotation
+    angle
+  - Could improve tooltip visibility documentation in code comments

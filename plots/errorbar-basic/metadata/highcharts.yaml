@@ -1,17 +1,27 @@
 library: highcharts
 specification_id: errorbar-basic
-created: 2025-12-17 01:41:54+00:00
-updated: 2025-12-17 01:41:54+00:00
+created: '2025-12-23T13:03:35Z'
+updated: '2025-12-23T13:13:52Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20288575757
-issue: 973
+workflow_run: 20461378189
+issue: 0
 python_version: 3.13.11
-library_version: 1.10.3
+library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/errorbar-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/errorbar-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/errorbar-basic/highcharts/plot.html
-quality_score: 92
+quality_score: 91
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent use of Highcharts native errorbar series type with proper whisker and
+    stem configuration
+  - Clear visible error bar caps with appropriate line widths
+  - Professional typography with well-scaled font sizes for the 4800x2700 canvas
+  - Clean colorblind-safe color scheme (blue bars, black error bars)
+  - Proper HTML export alongside PNG for interactivity
+  - Good canvas utilization with appropriate marginBottom for x-axis labels
+  weaknesses:
+  - Legend only shows Mean Value entry visible; the Error Range entry may be cut off
+    or not rendering properly
+  - Axis labels lack units (e.g. Measured Value units would be more informative)
+  - Only demonstrates symmetric error bars; spec mentions asymmetric errors as a feature

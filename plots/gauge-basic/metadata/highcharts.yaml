@@ -1,17 +1,26 @@
 library: highcharts
 specification_id: gauge-basic
-created: 2025-12-14 19:45:25+00:00
-updated: 2025-12-14 19:45:25+00:00
+created: '2025-12-23T13:06:37Z'
+updated: '2025-12-23T13:21:15Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20213173705
-issue: 857
+workflow_run: 20461382624
+issue: 0
 python_version: 3.13.11
-library_version: 1.10.3
+library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/gauge-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gauge-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/gauge-basic/highcharts/plot.html
-quality_score: 97
+quality_score: 91
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent colorblind-safe palette using purple/yellow/blue instead of red/yellow/green
+  - Clean implementation of Highcharts native gauge chart with proper pane configuration
+  - Value display (72) is prominent and clearly readable at 64px
+  - Three-zone color bands correctly implemented at specified thresholds
+  - Good use of Highcharts-specific dial and pivot styling options
+  - Proper 4800x2700 canvas sizing with appropriate font scaling
+  weaknesses:
+  - Tick labels on outer edge could be slightly larger (28px may be small for 4800px
+    canvas)
+  - Title format uses middle dot separators correctly but position could be higher
+    for better spacing

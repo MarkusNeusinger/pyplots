@@ -1,7 +1,7 @@
 """ pyplots.ai
 gauge-basic: Basic Gauge Chart
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 97/100 | Created: 2025-12-14
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import json
@@ -38,8 +38,10 @@ chart_options = {
         "y": 80,
     },
     "pane": {
-        "startAngle": -150,
-        "endAngle": 150,
+        "startAngle": -90,
+        "endAngle": 90,
+        "center": ["50%", "75%"],
+        "size": "140%",
         "background": [
             {
                 "backgroundColor": {
@@ -48,6 +50,7 @@ chart_options = {
                 },
                 "borderWidth": 0,
                 "outerRadius": "109%",
+                "innerRadius": "0%",
             },
             {
                 "backgroundColor": {
@@ -56,6 +59,7 @@ chart_options = {
                 },
                 "borderWidth": 1,
                 "outerRadius": "107%",
+                "innerRadius": "0%",
             },
             {"backgroundColor": "#DDD", "borderWidth": 0, "outerRadius": "105%", "innerRadius": "103%"},
         ],
@@ -74,11 +78,11 @@ chart_options = {
         "tickLength": 20,
         "tickColor": "#666",
         "labels": {"step": 2, "rotation": "auto", "style": {"fontSize": "28px"}, "distance": 25},
-        "title": {"text": "Performance", "style": {"fontSize": "36px"}, "y": 180},
+        "title": {"text": "Performance (%)", "style": {"fontSize": "36px"}, "y": 50},
         "plotBands": [
-            {"from": min_value, "to": thresholds[0], "color": "#DF5353", "thickness": 40},  # Red zone
-            {"from": thresholds[0], "to": thresholds[1], "color": "#DDDF0D", "thickness": 40},  # Yellow zone
-            {"from": thresholds[1], "to": max_value, "color": "#55BF3B", "thickness": 40},  # Green zone
+            {"from": min_value, "to": thresholds[0], "color": "#9467BD", "thickness": 40},  # Low zone (purple)
+            {"from": thresholds[0], "to": thresholds[1], "color": "#FFD43B", "thickness": 40},  # Mid zone (yellow)
+            {"from": thresholds[1], "to": max_value, "color": "#306998", "thickness": 40},  # High zone (blue)
         ],
     },
     "series": [
@@ -94,12 +98,12 @@ chart_options = {
             },
             "dial": {
                 "radius": "80%",
-                "backgroundColor": "#306998",
+                "backgroundColor": "#1a3d5c",
                 "baseWidth": 20,
                 "baseLength": "0%",
                 "rearLength": "0%",
             },
-            "pivot": {"backgroundColor": "#306998", "radius": 15},
+            "pivot": {"backgroundColor": "#1a3d5c", "radius": 15},
         }
     ],
     "tooltip": {"enabled": False},

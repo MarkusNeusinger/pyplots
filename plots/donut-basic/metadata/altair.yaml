@@ -1,17 +1,27 @@
 library: altair
 specification_id: donut-basic
-created: 2025-12-14 10:14:02+00:00
-updated: 2025-12-14 10:14:02+00:00
+created: '2025-12-23T00:48:06Z'
+updated: '2025-12-23T01:21:20Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20206400496
-issue: 733
+workflow_run: 20447976534
+issue: 0
 python_version: 3.13.11
 library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/donut-basic/altair/plot.html
-quality_score: 91
+quality_score: 92
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent use of Altair layered composition to combine donut segments, percentage
+    labels, and center text
+  - Clean declarative syntax with proper encoding types (theta, color, text)
+  - Interactive tooltips enhance user experience in HTML output
+  - White stroke between segments improves visual separation
+  - Center text effectively displays total budget metric as specified
+  - Well-proportioned ring width for readability
+  weaknesses:
+  - The two blue colors (Marketing and Operations) are somewhat similar and could
+    be more distinct
+  - Percentage labels on very small segments may be harder to read at smaller display
+    sizes

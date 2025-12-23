@@ -1,13 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 lollipop-basic: Basic Lollipop Chart
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-15
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import plotly.graph_objects as go
 
 
-# Data - Product sales by category, sorted by value
+# Data - Product sales by category, sorted by value (descending)
 categories = [
     "Electronics",
     "Clothing",
@@ -38,13 +38,13 @@ for cat, val in zip(categories, values, strict=True):
         )
     )
 
-# Add markers (dots at the top of each stem)
+# Add markers (circular dots at the top of each stem)
 fig.add_trace(
     go.Scatter(
         x=categories,
         y=values,
         mode="markers",
-        marker={"color": "#306998", "size": 18, "line": {"color": "white", "width": 2}},
+        marker={"color": "#306998", "size": 20, "line": {"color": "white", "width": 2}},
         showlegend=False,
         hovertemplate="%{x}<br>$%{y:,.0f}<extra></extra>",
     )
@@ -53,17 +53,17 @@ fig.add_trace(
 # Update layout for 4800x2700 px
 fig.update_layout(
     title={"text": "lollipop-basic · plotly · pyplots.ai", "font": {"size": 40}, "x": 0.5, "xanchor": "center"},
-    xaxis={"title": {"text": "Product Category", "font": {"size": 40}}, "tickfont": {"size": 32}, "tickangle": -45},
+    xaxis={"title": {"text": "Product Category", "font": {"size": 36}}, "tickfont": {"size": 28}, "tickangle": -45},
     yaxis={
-        "title": {"text": "Sales ($)", "font": {"size": 40}},
-        "tickfont": {"size": 32},
+        "title": {"text": "Sales ($)", "font": {"size": 36}},
+        "tickfont": {"size": 28},
         "tickformat": "$,.0f",
         "gridcolor": "rgba(0,0,0,0.1)",
         "gridwidth": 1,
         "range": [0, max(values) * 1.1],
     },
     template="plotly_white",
-    margin={"l": 100, "r": 50, "t": 120, "b": 150},
+    margin={"l": 120, "r": 60, "t": 120, "b": 180},
     showlegend=False,
 )
 

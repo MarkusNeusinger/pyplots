@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 ridgeline-basic: Basic Ridgeline Plot
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-15
+Library: pygal | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -21,26 +21,18 @@ for base in base_temps:
     temps = np.random.normal(base, 3, 100)
     month_data.append(temps)
 
-
-# Compute KDE for each month
-def compute_kde(values, x_range):
-    """Compute Gaussian KDE using Scott's rule."""
-    n = len(values)
-    bandwidth = n ** (-1 / 5) * np.std(values)
-    density = np.zeros_like(x_range)
-    for xi in values:
-        density += np.exp(-0.5 * ((x_range - xi) / bandwidth) ** 2)
-    density /= n * bandwidth * np.sqrt(2 * np.pi)
-    return density
-
-
 # Common x range for all distributions
 x_range = np.linspace(-10, 40, 150)
 
-# Compute KDE for each month
+# Compute KDE for each month (inline, no functions)
 kde_data = []
 for temps in month_data:
-    density = compute_kde(temps, x_range)
+    n = len(temps)
+    bandwidth = n ** (-1 / 5) * np.std(temps)
+    density = np.zeros_like(x_range)
+    for xi in temps:
+        density += np.exp(-0.5 * ((x_range - xi) / bandwidth) ** 2)
+    density /= n * bandwidth * np.sqrt(2 * np.pi)
     kde_data.append(density)
 
 # Normalize all densities
@@ -113,11 +105,8 @@ for i, (month, density) in enumerate(reversed(list(zip(months, kde_data, strict=
     scaled_density = density * ridge_height
 
     # Create closed polygon: bottom edge (baseline) + top edge (density curve) + close
-    # Go along baseline from left to right
     bottom_edge = [(float(x), float(baseline)) for x in x_range]
-    # Go along density curve from right to left (reversed)
     top_edge = [(float(x), float(baseline + d)) for x, d in zip(x_range[::-1], scaled_density[::-1], strict=True)]
-    # Combine to form closed polygon
     polygon = bottom_edge + top_edge + [bottom_edge[0]]
 
     chart.add(month, polygon)

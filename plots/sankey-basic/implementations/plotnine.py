@@ -1,12 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 sankey-basic: Basic Sankey Diagram
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-14
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import sys
 
 
+# Prevent current directory from shadowing the plotnine package
 sys.path = [p for p in sys.path if not p.endswith("implementations")]
 
 import numpy as np  # noqa: E402
@@ -48,35 +49,31 @@ flows = pd.DataFrame(
 )
 
 # Define node positions
-# Left column (sources) at x=0.15, right column (targets) at x=0.85 (with margins for labels)
 sources = ["Coal", "Gas", "Nuclear", "Renewables"]
 targets = ["Industrial", "Commercial", "Residential"]
 
 # X positions with margins for labels
 x_left = 0.2
 x_right = 0.8
+node_width = 0.08
+node_gap = 0.03
 
 # Calculate node sizes based on total flow
 source_totals = flows.groupby("source")["value"].sum().to_dict()
 target_totals = flows.groupby("target")["value"].sum().to_dict()
-
 total_flow = flows["value"].sum()
-
-# Node dimensions
-node_width = 0.08
-node_gap = 0.03  # Gap between nodes
 
 # Calculate source node positions (left side)
 source_positions = {}
 current_y = 1.0
 for src in sources:
-    height = source_totals[src] / total_flow * 0.8  # Scale to fit in 80% of canvas
+    height = source_totals[src] / total_flow * 0.8
     source_positions[src] = {
         "x": x_left,
         "y_top": current_y,
         "y_bottom": current_y - height,
         "height": height,
-        "flow_offset": 0,  # Track where next flow starts
+        "flow_offset": 0,
     }
     current_y = current_y - height - node_gap
 
@@ -128,11 +125,11 @@ for tgt in targets:
 
 nodes_df = pd.DataFrame(node_data)
 
-# Build flow polygons (curved paths between nodes)
-flow_polygons = []
-flow_colors = []
+# Color map for sources (Python Blue primary, Python Yellow secondary, then colorblind-safe colors)
 color_map = {"Coal": "#306998", "Gas": "#FFD43B", "Nuclear": "#4ECDC4", "Renewables": "#2ECC71"}
 
+# Build flow polygons (curved paths between nodes)
+flow_polygons = []
 for _, row in flows.iterrows():
     src = row["source"]
     tgt = row["target"]
@@ -153,7 +150,7 @@ for _, row in flows.iterrows():
     tgt_y_bottom = tgt_y_top - flow_height
     tgt_pos["flow_offset"] += flow_height
 
-    # Create curved flow polygon using bezier-like points
+    # Create curved flow polygon using smooth interpolation
     flow_x_left = x_left + node_width
     flow_x_right = x_right - node_width
     n_points = 50
@@ -161,7 +158,7 @@ for _, row in flows.iterrows():
     # Top edge (left to right)
     t = np.linspace(0, 1, n_points)
     x_top = flow_x_left + (flow_x_right - flow_x_left) * t
-    y_top = src_y_top + (tgt_y_top - src_y_top) * (3 * t**2 - 2 * t**3)  # Smooth interpolation
+    y_top = src_y_top + (tgt_y_top - src_y_top) * (3 * t**2 - 2 * t**3)
 
     # Bottom edge (right to left)
     x_bottom = flow_x_right + (flow_x_left - flow_x_right) * t
@@ -172,22 +169,9 @@ for _, row in flows.iterrows():
     y_polygon = np.concatenate([y_top, y_bottom])
 
     for i in range(len(x_polygon)):
-        flow_polygons.append(
-            {"x": x_polygon[i], "y": y_polygon[i], "flow_id": f"{src}_{tgt}", "source": src, "value": val}
-        )
-    flow_colors.append(color_map[src])
+        flow_polygons.append({"x": x_polygon[i], "y": y_polygon[i], "flow_id": f"{src}_{tgt}", "source": src})
 
 flows_df = pd.DataFrame(flow_polygons)
-
-# Create color list for each unique flow
-unique_flows = flows_df["flow_id"].unique()
-flow_color_map = {}
-for fid in unique_flows:
-    src = fid.split("_")[0]
-    flow_color_map[fid] = color_map[src]
-
-# Node colors
-node_colors = {"source": "#306998", "target": "#666666"}
 
 # Create the plot
 plot = (
@@ -226,7 +210,7 @@ plot = (
         }
     )
     + labs(title="Energy Flow · sankey-basic · plotnine · pyplots.ai", x="", y="")
-    + coord_cartesian(xlim=(-0.05, 1.1))  # Extend x-axis to show labels
+    + coord_cartesian(xlim=(-0.05, 1.1))
     + theme_minimal()
     + theme(
         figure_size=(16, 9),

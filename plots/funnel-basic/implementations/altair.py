@@ -1,7 +1,7 @@
 """ pyplots.ai
 funnel-basic: Basic Funnel Chart
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import altair as alt
@@ -16,7 +16,6 @@ values = [1000, 600, 400, 200, 100]
 df = pd.DataFrame({"stage": stages, "value": values, "order": range(len(stages))})
 
 # Calculate percentage of initial value for display
-max_value = df["value"].max()
 df["percentage"] = (df["value"] / df["value"].iloc[0] * 100).round(1)
 df["label"] = df["value"].astype(str) + " (" + df["percentage"].astype(str) + "%)"
 

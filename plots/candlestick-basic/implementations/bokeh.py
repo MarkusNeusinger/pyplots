@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 candlestick-basic: Basic Candlestick Chart
-Library: bokeh | Python 3.13
-Quality: pending | Created: 2025-12-23
+Library: bokeh 3.8.1 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import numpy as np

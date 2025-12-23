@@ -20,11 +20,11 @@ Track progress of regenerating all implementations using the stricter evaluation
 - [x] bubble-packed ✓ (90-93)
 - [x] bullet-basic ✓ (91-97)
 - [x] bump-basic ✓ (94-96)
-- [ ] candlestick-basic
-- [ ] chord-basic
-- [ ] contour-basic (7/9: missing seaborn, pygal)
-- [ ] dendrogram-basic
-- [ ] density-basic (8/9: missing bokeh)
+- [x] candlestick-basic ✓ (90-93)
+- [x] chord-basic ✓ (7/9: 78-98, seaborn+plotnine not-feasible)
+- [ ] contour-basic (8/9: 72-98, highcharts in repair, pygal not-feasible)
+- [x] dendrogram-basic ✓ (90-93)
+- [x] density-basic ✓ (91-93)
 - [x] donut-basic ✓ (91-92)
 - [ ] dumbbell-basic
 - [ ] ecdf-basic

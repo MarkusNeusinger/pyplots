@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 streamgraph-basic: Basic Stream Graph
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -18,7 +18,7 @@ genres = ["Pop", "Rock", "Hip-Hop", "Electronic", "Jazz", "Classical"]
 base_values = {"Pop": 45, "Rock": 35, "Hip-Hop": 40, "Electronic": 25, "Jazz": 15, "Classical": 12}
 data = {}
 for genre in genres:
-    # Create smooth trends with some variation
+    # Create smooth trends with seasonal variation
     trend = np.cumsum(np.random.randn(24) * 2)
     seasonal = 5 * np.sin(np.linspace(0, 4 * np.pi, 24))
     noise = np.random.randn(24) * 3
@@ -35,22 +35,22 @@ n_genres, n_time = values_array.shape
 # Calculate cumulative sums for stacking
 cumsum = np.vstack([np.zeros(n_time), np.cumsum(values_array, axis=0)])
 
-# Center the baseline
+# Center the baseline symmetrically around the x-axis
 total = cumsum[-1]
 offset = total / 2
 
-# Colors - colorblind-safe palette
+# Colors - Python Blue and Yellow first, then colorblind-safe palette
 colors = ["#306998", "#FFD43B", "#E24A33", "#8EBA42", "#988ED5", "#348ABD"]
 
 # Create figure
 fig = go.Figure()
 
-# Add each genre as a filled area
+# Add each genre as a filled area with smooth spline curves
 for i, genre in enumerate(genres):
     y_lower = cumsum[i] - offset
     y_upper = cumsum[i + 1] - offset
 
-    # Create x coordinates for fill (forward then backward)
+    # Create coordinates for fill (forward then backward)
     x_fill = list(months) + list(months)[::-1]
     y_fill = list(y_upper) + list(y_lower)[::-1]
 
@@ -60,7 +60,7 @@ for i, genre in enumerate(genres):
             y=y_fill,
             fill="toself",
             fillcolor=colors[i],
-            line={"color": colors[i], "width": 0.5},
+            line={"color": colors[i], "width": 0.5, "shape": "spline", "smoothing": 1.0},
             name=genre,
             mode="none",
             hoverinfo="name+x",

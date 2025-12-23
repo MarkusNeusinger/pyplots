@@ -1,6 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 sankey-basic: Basic Sankey Diagram
-Library: highcharts unknown | Python 3.13.11
+Library: highcharts | Python 3.13
 Quality: 87/100 | Created: 2025-12-23
 """
 
@@ -16,7 +16,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data - Energy flow from sources to sectors
+# Data - Energy flow from sources to sectors (values in TWh - Terawatt-hours)
 # Format: [source, target, value]
 flows = [
     # Coal flows
@@ -49,21 +49,21 @@ for source, target, _ in flows:
     nodes_set.add(target)
 nodes = list(nodes_set)
 
-# Colorblind-safe colors for nodes
+# Colorblind-safe colors for nodes (darker tones for better label contrast)
 node_colors = {
-    # Sources (energy sources)
-    "Coal": "#306998",  # Python Blue
-    "Natural Gas": "#FFD43B",  # Python Yellow
-    "Nuclear": "#9467BD",  # Purple
-    "Petroleum": "#17BECF",  # Cyan
-    "Renewable": "#2CA02C",  # Green
-    # Intermediate
-    "Electricity": "#8C564B",  # Brown
-    # End uses
-    "Residential": "#E377C2",  # Pink
-    "Commercial": "#7F7F7F",  # Gray
-    "Industrial": "#BCBD22",  # Olive
-    "Transportation": "#FF7F0E",  # Orange
+    # Sources (energy sources) - darker tones for better label visibility
+    "Coal": "#1A3A5C",  # Dark Blue
+    "Natural Gas": "#B8860B",  # Dark Goldenrod
+    "Nuclear": "#6B3FA0",  # Dark Purple
+    "Petroleum": "#0E8B9B",  # Dark Cyan
+    "Renewable": "#1E7A1E",  # Dark Green
+    # Intermediate - darker for contrast
+    "Electricity": "#5D3A32",  # Dark Brown
+    # End uses - moderate saturation for balance
+    "Residential": "#C75B9B",  # Rose
+    "Commercial": "#5A5A5A",  # Dark Gray
+    "Industrial": "#8B8C1A",  # Dark Olive
+    "Transportation": "#CC6600",  # Dark Orange
 }
 
 # Create nodes data with colors
@@ -81,15 +81,18 @@ chart.options.chart = {"type": "sankey", "width": 4800, "height": 2700, "backgro
 
 # Title
 chart.options.title = {
-    "text": "Energy Flow · sankey-basic · highcharts · pyplots.ai",
-    "style": {"fontSize": "64px", "fontWeight": "bold"},
+    "text": "sankey-basic · highcharts · pyplots.ai",
+    "style": {"fontSize": "64px", "fontWeight": "bold", "color": "#333333"},
 }
 
-# Tooltip
+# Subtitle with units info
+chart.options.subtitle = {"text": "U.S. Energy Flow (values in TWh)", "style": {"fontSize": "40px", "color": "#666666"}}
+
+# Tooltip with units
 chart.options.tooltip = {
     "style": {"fontSize": "36px"},
-    "nodeFormat": "{point.name}: {point.sum} units",
-    "pointFormat": "{point.fromNode.name} → {point.toNode.name}: {point.weight} units",
+    "nodeFormat": "{point.name}: {point.sum} TWh",
+    "pointFormat": "{point.fromNode.name} → {point.toNode.name}: {point.weight} TWh",
 }
 
 # Sankey series configuration
@@ -101,13 +104,14 @@ series_config = {
     "data": links_data,
     "dataLabels": {
         "enabled": True,
-        "style": {"fontSize": "32px", "fontWeight": "bold", "textOutline": "2px white"},
+        "style": {"fontSize": "36px", "fontWeight": "bold", "color": "#FFFFFF", "textOutline": "3px #333333"},
         "nodeFormat": "{point.name}",
     },
-    "nodeWidth": 40,
-    "nodePadding": 30,
+    "nodeWidth": 50,
+    "nodePadding": 35,
     "linkOpacity": 0.5,
     "curveFactor": 0.5,
+    "colorByPoint": False,
 }
 
 chart.options.series = [series_config]

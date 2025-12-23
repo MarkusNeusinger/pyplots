@@ -1,8 +1,9 @@
 name: "Impl: Review"
-run-name: "Review: PR #${{ inputs.pr_number }}"
+run-name: "Review: PR #${{ inputs.pr_number || github.event.client_payload.pr_number }}"
 
 # AI quality review for implementation PRs
 # Triggered by impl-generate.yml after PR creation
+# Last updated: 2025-12-23
 
 on:
   workflow_dispatch:
@@ -11,6 +12,8 @@ on:
         description: 'PR number to review'
         required: true
         type: string
+  repository_dispatch:
+    types: [review-pr]
 
 jobs:
   review:
@@ -32,7 +35,7 @@ jobs:
         id: pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ inputs.pr_number }}
+          PR_NUMBER: ${{ inputs.pr_number || github.event.client_payload.pr_number }}
         run: |
           PR_DATA=$(gh pr view "$PR_NUMBER" --json headRefName,headRefOid,body)
           HEAD_REF=$(echo "$PR_DATA" | jq -r '.headRefName')
@@ -486,12 +489,7 @@ jobs:
 
                 # Commit and push
                 git add -A
-                git commit -m "chore(${LIBRARY}): remove ${SPEC_ID} implementation (score < 50 after 3 attempts)
-
-Quality score ${SCORE}/100 is below acceptable threshold.
-PR #${PR_NUM} was closed.
-
-🤖 Generated with [Claude Code](https://claude.ai/code)"
+                git commit -m "chore(${LIBRARY}): remove ${SPEC_ID} impl (score ${SCORE} < 50 after 3 attempts)"
                 git push origin main
                 echo "::notice::Old implementation removed from main"
               else

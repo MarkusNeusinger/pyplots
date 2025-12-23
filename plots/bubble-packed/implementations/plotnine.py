@@ -1,7 +1,7 @@
 """ pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-16
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 90/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -68,128 +68,114 @@ max_radius = 1.0
 min_radius = 0.3
 df["radius"] = min_radius + (max_radius - min_radius) * np.sqrt(df["value"] / df["value"].max())
 
+# Circle packing using force simulation (inline, KISS style)
+n = len(df)
+radii = df["radius"].values
 
-# Circle packing algorithm using force simulation
-def pack_circles(radii, iterations=1000):
-    """Pack circles using force-directed placement with collision resolution."""
-    n = len(radii)
-    # Sort by size (largest first) for better packing
-    idx = np.argsort(-radii)
-    sorted_radii = radii[idx]
+# Sort by size (largest first) for better packing
+idx = np.argsort(-radii)
+sorted_radii = radii[idx]
 
-    # Initialize positions
-    x = np.zeros(n)
-    y = np.zeros(n)
+# Initialize positions
+x = np.zeros(n)
+y = np.zeros(n)
 
-    # Place first circle at center
-    x[0] = 0
-    y[0] = 0
+# Place circles using greedy algorithm
+for i in range(1, n):
+    best_dist = float("inf")
+    best_x, best_y = 0.0, 0.0
 
-    # Place remaining circles
-    for i in range(1, n):
-        # Try to place close to existing circles
-        best_dist = float("inf")
-        best_x, best_y = 0, 0
+    for angle in np.linspace(0, 2 * np.pi, 36):
+        for ref in range(i):
+            # Try placing next to reference circle
+            test_x = x[ref] + (sorted_radii[ref] + sorted_radii[i] + 0.05) * np.cos(angle)
+            test_y = y[ref] + (sorted_radii[ref] + sorted_radii[i] + 0.05) * np.sin(angle)
 
-        for angle in np.linspace(0, 2 * np.pi, 36):
-            for ref in range(i):
-                # Try placing next to reference circle
-                test_x = x[ref] + (sorted_radii[ref] + sorted_radii[i] + 0.05) * np.cos(angle)
-                test_y = y[ref] + (sorted_radii[ref] + sorted_radii[i] + 0.05) * np.sin(angle)
+            # Check for collisions
+            valid = True
+            for j in range(i):
+                dist = np.sqrt((test_x - x[j]) ** 2 + (test_y - y[j]) ** 2)
+                if dist < sorted_radii[i] + sorted_radii[j] + 0.03:
+                    valid = False
+                    break
 
-                # Check for collisions
-                valid = True
-                for j in range(i):
-                    dist = np.sqrt((test_x - x[j]) ** 2 + (test_y - y[j]) ** 2)
-                    if dist < sorted_radii[i] + sorted_radii[j] + 0.03:
-                        valid = False
-                        break
+            if valid:
+                center_dist = np.sqrt(test_x**2 + test_y**2)
+                if center_dist < best_dist:
+                    best_dist = center_dist
+                    best_x, best_y = test_x, test_y
 
-                if valid:
-                    # Prefer positions closer to center
-                    center_dist = np.sqrt(test_x**2 + test_y**2)
-                    if center_dist < best_dist:
-                        best_dist = center_dist
-                        best_x, best_y = test_x, test_y
+    x[i] = best_x
+    y[i] = best_y
 
-        x[i] = best_x
-        y[i] = best_y
+# Force simulation to tighten packing
+for _ in range(1000):
+    # Move toward center
+    x -= x * 0.001
+    y -= y * 0.001
 
-    # Run force simulation to tighten packing
-    for _ in range(iterations):
-        # Move toward center
-        for i in range(n):
-            cx, cy = x[i] * 0.001, y[i] * 0.001
-            x[i] -= cx
-            y[i] -= cy
+    # Separate overlapping circles
+    for i in range(n):
+        for j in range(i + 1, n):
+            dx = x[j] - x[i]
+            dy = y[j] - y[i]
+            dist = np.sqrt(dx * dx + dy * dy)
+            min_dist = sorted_radii[i] + sorted_radii[j] + 0.03
 
-        # Separate overlapping circles
-        for i in range(n):
-            for j in range(i + 1, n):
-                dx = x[j] - x[i]
-                dy = y[j] - y[i]
-                dist = np.sqrt(dx * dx + dy * dy)
-                min_dist = sorted_radii[i] + sorted_radii[j] + 0.03
+            if dist < min_dist and dist > 0.001:
+                overlap = (min_dist - dist) / 2
+                dx_norm = dx / dist
+                dy_norm = dy / dist
+                x[i] -= overlap * dx_norm * 0.5
+                y[i] -= overlap * dy_norm * 0.5
+                x[j] += overlap * dx_norm * 0.5
+                y[j] += overlap * dy_norm * 0.5
 
-                if dist < min_dist and dist > 0.001:
-                    overlap = (min_dist - dist) / 2
-                    dx_norm = dx / dist
-                    dy_norm = dy / dist
-                    x[i] -= overlap * dx_norm * 0.5
-                    y[i] -= overlap * dy_norm * 0.5
-                    x[j] += overlap * dx_norm * 0.5
-                    y[j] += overlap * dy_norm * 0.5
+# Restore original order
+x_out = np.zeros(n)
+y_out = np.zeros(n)
+for i, orig_idx in enumerate(idx):
+    x_out[orig_idx] = x[i]
+    y_out[orig_idx] = y[i]
 
-    # Restore original order
-    x_out = np.zeros(n)
-    y_out = np.zeros(n)
-    r_out = np.zeros(n)
-    for i, orig_idx in enumerate(idx):
-        x_out[orig_idx] = x[i]
-        y_out[orig_idx] = y[i]
-        r_out[orig_idx] = sorted_radii[i]
-
-    return x_out, y_out
-
-
-# Pack circles
-x_pos, y_pos = pack_circles(df["radius"].values)
-df["x"] = x_pos
-df["y"] = y_pos
-
+df["x"] = x_out
+df["y"] = y_out
 
 # Create circle polygons for geom_polygon
-def make_circle(cx, cy, r, n_points=64):
-    """Generate polygon approximation of circle."""
-    angles = np.linspace(0, 2 * np.pi, n_points)
-    return cx + r * np.cos(angles), cy + r * np.sin(angles)
-
-
-# Build polygon dataframe
 circle_dfs = []
 for i, row in df.iterrows():
-    cx, cy = make_circle(row["x"], row["y"], row["radius"])
+    angles = np.linspace(0, 2 * np.pi, 64)
+    cx = row["x"] + row["radius"] * np.cos(angles)
+    cy = row["y"] + row["radius"] * np.sin(angles)
     circle_df = pd.DataFrame({"x": cx, "y": cy, "label": row["label"], "group": row["group"], "circle_id": i})
     circle_dfs.append(circle_df)
 
 circles_df = pd.concat(circle_dfs, ignore_index=True)
 
-# Color palette for groups
+# Color palette for groups - colorblind-safe (Okabe-Ito palette)
 group_colors = {
-    "Tech": "#306998",  # Python Blue
-    "Business": "#FFD43B",  # Python Yellow
-    "Operations": "#4CAF50",  # Green
-    "Support": "#9C27B0",  # Purple
+    "Tech": "#0072B2",  # Blue
+    "Business": "#E69F00",  # Orange
+    "Operations": "#009E73",  # Bluish Green
+    "Support": "#CC79A7",  # Reddish Purple
 }
 
-# Create label dataframe (centers)
+# Create label dataframe (centers) - show full labels for circles large enough
 labels_df = df[["x", "y", "label", "radius"]].copy()
-# Only show labels for larger circles
-labels_df["show_label"] = labels_df["radius"] > 0.5
-labels_df.loc[labels_df["show_label"], "display_label"] = labels_df.loc[labels_df["show_label"], "label"].apply(
-    lambda s: s[:10] if len(s) > 10 else s
+
+# Show full label for large circles, abbreviated for medium, none for small
+labels_df["display_label"] = labels_df.apply(
+    lambda row: (
+        row["label"]
+        if row["radius"] >= 0.85
+        else (
+            (row["label"][:8] if len(row["label"]) > 8 else row["label"])
+            if row["radius"] >= 0.6
+            else ((row["label"][:5] if len(row["label"]) > 5 else row["label"]) if row["radius"] >= 0.45 else "")
+        )
+    ),
+    axis=1,
 )
-labels_df.loc[~labels_df["show_label"], "display_label"] = ""
 
 # Create plot
 plot = (
@@ -202,7 +188,7 @@ plot = (
     )
     + scale_fill_manual(values=group_colors)
     + coord_fixed()
-    + labs(title="bubble-packed \u00b7 plotnine \u00b7 pyplots.ai", fill="Department Group")
+    + labs(title="bubble-packed · plotnine · pyplots.ai", fill="Department Group")
     + theme_void()
     + theme(
         figure_size=(16, 9),

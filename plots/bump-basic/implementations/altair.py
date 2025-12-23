@@ -1,7 +1,7 @@
 """ pyplots.ai
 bump-basic: Basic Bump Chart
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import altair as alt
@@ -55,7 +55,7 @@ data = {
         5,
         5,
         5,
-        # Tottenham: Bottom position, occasional rise
+        # Tottenham: Bottom position throughout
         6,
         6,
         6,
@@ -70,7 +70,7 @@ df = pd.DataFrame(data)
 # Define color palette (Python Blue first, then colorblind-safe colors)
 colors = ["#306998", "#FFD43B", "#E15759", "#59A14F", "#9C755F", "#BAB0AC"]
 
-# Create bump chart
+# Create bump chart - lines connecting rankings
 lines = (
     alt.Chart(df)
     .mark_line(strokeWidth=4, opacity=0.8)
@@ -80,7 +80,7 @@ lines = (
             "Rank:Q",
             title="League Position",
             scale=alt.Scale(domain=[1, 6], reverse=True),
-            axis=alt.Axis(labelFontSize=18, titleFontSize=22, tickMinStep=1),
+            axis=alt.Axis(labelFontSize=18, titleFontSize=22, tickMinStep=1, values=[1, 2, 3, 4, 5, 6]),
         ),
         color=alt.Color(
             "Team:N",
@@ -91,6 +91,7 @@ lines = (
     )
 )
 
+# Add points at each period for clarity
 points = (
     alt.Chart(df)
     .mark_point(size=250, filled=True, opacity=1)
@@ -102,6 +103,7 @@ points = (
     )
 )
 
+# Combine layers and configure
 chart = (
     (lines + points)
     .properties(width=1600, height=900, title=alt.Title("bump-basic · altair · pyplots.ai", fontSize=28))

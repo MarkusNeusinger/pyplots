@@ -1,13 +1,13 @@
 """ pyplots.ai
 arc-basic: Basic Arc Diagram
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-17
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
-from bokeh.io import export_png
-from bokeh.models import ColumnDataSource, Label
-from bokeh.plotting import figure, save
+from bokeh.io import export_png, save
+from bokeh.models import ColumnDataSource, Label, Legend, LegendItem
+from bokeh.plotting import figure
 
 
 # Data - Character interactions in a story chapter
@@ -37,11 +37,11 @@ y_baseline = 0
 p = figure(
     width=4800,
     height=2700,
-    title="arc-basic \u00b7 bokeh \u00b7 pyplots.ai",
+    title="arc-basic · bokeh · pyplots.ai",
     x_axis_label="Characters",
     y_axis_label="",
     x_range=(-0.5, 10.5),
-    y_range=(-1.5, 6),
+    y_range=(-1.5, 4.5),
 )
 
 # Style the figure
@@ -55,7 +55,10 @@ p.yaxis.major_label_text_font_size = "18pt"
 p.yaxis.visible = False
 p.ygrid.visible = False
 
-# Draw arcs as bezier curves
+# Draw arcs as bezier curves, collect renderers for legend
+long_range_renderers = []
+short_range_renderers = []
+
 for src_idx, tgt_idx, weight in edges:
     x_src = x_positions[src_idx]
     x_tgt = x_positions[tgt_idx]
@@ -86,7 +89,13 @@ for src_idx, tgt_idx, weight in edges:
         alpha = 0.5
 
     arc_source = ColumnDataSource(data={"x": arc_x, "y": arc_y})
-    p.line(x="x", y="y", source=arc_source, line_width=line_width, line_color=color, line_alpha=alpha)
+    renderer = p.line(x="x", y="y", source=arc_source, line_width=line_width, line_color=color, line_alpha=alpha)
+
+    # Collect renderers for legend
+    if distance > 5:
+        long_range_renderers.append(renderer)
+    else:
+        short_range_renderers.append(renderer)
 
 # Draw nodes along baseline
 node_source = ColumnDataSource(data={"x": x_positions, "y": [y_baseline] * n_nodes, "name": nodes})
@@ -94,12 +103,22 @@ p.scatter(x="x", y="y", source=node_source, size=25, fill_color="#306998", line_
 
 # Add node labels below the baseline
 for i, name in enumerate(nodes):
-    label = Label(x=x_positions[i], y=-0.5, text=name, text_font_size="16pt", text_align="center", text_baseline="top")
+    label = Label(x=x_positions[i], y=-0.5, text=name, text_font_size="20pt", text_align="center", text_baseline="top")
     p.add_layout(label)
 
 # Add subtle grid only for x
 p.xgrid.grid_line_alpha = 0.3
 p.xgrid.grid_line_dash = [6, 4]
+
+# Add legend for connection types
+legend_items = []
+if long_range_renderers:
+    legend_items.append(LegendItem(label="Long-range (distance > 5)", renderers=[long_range_renderers[0]]))
+if short_range_renderers:
+    legend_items.append(LegendItem(label="Short-range (distance ≤ 5)", renderers=[short_range_renderers[0]]))
+
+legend = Legend(items=legend_items, location="top_right", label_text_font_size="18pt")
+p.add_layout(legend, "right")
 
 # Save outputs
 export_png(p, filename="plot.png")

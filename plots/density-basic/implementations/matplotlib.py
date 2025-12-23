@@ -1,7 +1,7 @@
 """ pyplots.ai
 density-basic: Basic Density Plot
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-15
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -33,7 +33,8 @@ ax.fill_between(x_range, density, alpha=0.4, color="#306998")
 ax.plot(x_range, density, linewidth=3, color="#306998")
 
 # Add rug plot showing individual observations
-ax.plot(values, np.zeros_like(values) - 0.001, "|", color="#306998", alpha=0.3, markersize=10)
+rug_height = -0.0015
+ax.plot(values, np.full_like(values, rug_height), "|", color="#306998", alpha=0.4, markersize=12)
 
 # Labels and styling (scaled font sizes for 4800x2700)
 ax.set_xlabel("Test Score", fontsize=20)
@@ -46,8 +47,8 @@ ax.grid(True, alpha=0.3, linestyle="--")
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 
-# Set y-axis to start at 0
-ax.set_ylim(bottom=0)
+# Set y-axis to show rug plot
+ax.set_ylim(bottom=-0.003)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

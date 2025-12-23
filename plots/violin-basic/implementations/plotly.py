@@ -1,7 +1,7 @@
 """ pyplots.ai
 violin-basic: Basic Violin Plot
 Library: plotly 6.5.0 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import numpy as np

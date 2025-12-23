@@ -1,7 +1,7 @@
 """ pyplots.ai
 pie-basic: Basic Pie Chart
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import pygal
@@ -12,7 +12,7 @@ from pygal.style import Style
 categories = ["Product A", "Product B", "Product C", "Product D", "Product E"]
 values = [35, 25, 20, 12, 8]
 
-# Custom style for 4800x2700 px
+# Custom style for 3600x3600 px (square format for pie chart)
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -30,8 +30,8 @@ custom_style = Style(
 
 # Create pie chart
 chart = pygal.Pie(
-    width=4800,
-    height=2700,
+    width=3600,
+    height=3600,
     style=custom_style,
     title="pie-basic · pygal · pyplots.ai",
     inner_radius=0,

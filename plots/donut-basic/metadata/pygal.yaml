@@ -1,17 +1,27 @@
 library: pygal
 specification_id: donut-basic
-created: 2025-12-14 10:13:31+00:00
-updated: 2025-12-14 10:13:31+00:00
+created: '2025-12-23T00:49:16Z'
+updated: '2025-12-23T01:21:43Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20206400955
-issue: 733
+workflow_run: 20448001404
+issue: 0
 python_version: 3.13.11
 library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-basic/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/donut-basic/pygal/plot.html
-quality_score: 98
+quality_score: 91
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Clean donut chart implementation with proper inner_radius creating the hollow
+    center
+  - Correct title format following pyplots.ai conventions
+  - Good use of pygal custom Style for font sizing at high resolution
+  - Realistic budget allocation scenario with meaningful category names
+  - Percentage labels displayed directly on segments for easy reading
+  - Well-organized legend at bottom avoiding chart overlap
+  weaknesses:
+  - Spec suggests using center space for key metric or label, but center is empty
+  - Two pairs of similar colors (blues and yellows) reduce distinguishability between
+    segments
+  - Does not showcase pygal interactive/tooltip capabilities

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 rose-basic: Basic Rose Chart
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-23
@@ -55,13 +55,16 @@ colors = [
 grid_values = [25, 50, 75, 100]
 grid_data = pd.DataFrame({"value": grid_values, "label": [f"{v}" for v in grid_values]})
 
+# Chart radius for the radial visualization
+chart_radius = 450
+
 # Radial gridlines - concentric circles using mark_arc
 gridlines = (
     alt.Chart(grid_data)
     .mark_arc(filled=False, stroke="#cccccc", strokeWidth=1.5, strokeDash=[6, 4])
     .encode(
         theta=alt.value(2 * np.pi),  # Full circle
-        radius=alt.Radius("value:Q", scale=alt.Scale(type="linear", domain=[0, max_val], range=[0, 400])),
+        radius=alt.Radius("value:Q", scale=alt.Scale(type="linear", domain=[0, max_val], range=[0, chart_radius])),
     )
 )
 
@@ -77,10 +80,10 @@ grid_label_data = pd.DataFrame(
 
 grid_labels = (
     alt.Chart(grid_label_data)
-    .mark_text(fontSize=18, fontWeight="bold", dx=10, color="#666666", align="left", baseline="middle")
+    .mark_text(fontSize=18, fontWeight="bold", dx=12, color="#666666", align="left", baseline="middle")
     .encode(
         theta=alt.Theta("theta:Q"),
-        radius=alt.Radius("value:Q", scale=alt.Scale(type="linear", domain=[0, max_val], range=[0, 400])),
+        radius=alt.Radius("value:Q", scale=alt.Scale(type="linear", domain=[0, max_val], range=[0, chart_radius])),
         text="label:N",
     )
 )
@@ -92,19 +95,11 @@ rose = (
     .encode(
         theta=alt.Theta("startAngle:Q", stack=None),
         theta2=alt.Theta2("endAngle:Q"),
-        radius=alt.Radius("value:Q", scale=alt.Scale(type="linear", domain=[0, max_val], range=[0, 400])),
+        radius=alt.Radius("value:Q", scale=alt.Scale(type="linear", domain=[0, max_val], range=[0, chart_radius])),
         color=alt.Color(
             "month:N",
             scale=alt.Scale(domain=months, range=colors),
-            legend=alt.Legend(
-                title="Month",
-                titleFontSize=24,
-                labelFontSize=20,
-                symbolSize=500,
-                orient="right",
-                titlePadding=15,
-                offset=30,
-            ),
+            legend=None,  # Legend disabled to control canvas size; colors are self-explanatory with labels
         ),
         tooltip=[alt.Tooltip("month:N", title="Month"), alt.Tooltip("value:Q", title="Rainfall (mm)")],
     )
@@ -112,43 +107,115 @@ rose = (
 
 # Calculate label positions - midpoint angle for each segment
 mid_angles = [(-90 + (i + 0.5) * angle_step) for i in range(n)]
+mid_angles_rad = np.radians(mid_angles)
+
+# For small values that cluster together (Jun-Aug: 28, 22, 30), push labels further out
+# to prevent crowding; larger values can have labels closer to segment edge
+label_radii = []
+for v in rainfall:
+    if v < 35:
+        # Small segments - push label further outside segment
+        label_radii.append(max(v * 1.35, 45))
+    else:
+        # Normal segments - position just outside
+        label_radii.append(v * 1.15)
 
 # Create label data with theta and radius for polar positioning
-label_data = pd.DataFrame(
+label_data = pd.DataFrame({"month": months, "value": rainfall, "theta": mid_angles_rad, "labelRadius": label_radii})
+
+# Create month labels positioned at outer edge of chart
+month_label_data = pd.DataFrame(
     {
         "month": months,
-        "value": rainfall,
-        "theta": np.radians(mid_angles),
-        # Position labels just outside the segment edge
-        "labelRadius": [v * 1.18 for v in rainfall],
+        "theta": mid_angles_rad,
+        "labelRadius": [115] * n,  # Just outside the 100mm gridline
     }
 )
 
 # Text labels showing values on each segment using polar coordinates
 text = (
     alt.Chart(label_data)
-    .mark_text(fontSize=22, fontWeight="bold")
+    .mark_text(fontSize=20, fontWeight="bold")
     .encode(
         theta=alt.Theta("theta:Q"),
-        radius=alt.Radius("labelRadius:Q", scale=alt.Scale(type="linear", domain=[0, max_val], range=[0, 400])),
+        radius=alt.Radius(
+            "labelRadius:Q", scale=alt.Scale(type="linear", domain=[0, max_val], range=[0, chart_radius])
+        ),
         text=alt.Text("value:Q"),
         color=alt.value("#333333"),
     )
 )
 
-# Combine layers - landscape format to better utilize canvas space
-# Altair radial charts position content in upper portion, so use reduced height
-chart = (
-    alt.layer(gridlines, grid_labels, rose, text)
-    .properties(
-        width=1600,
-        height=900,
-        title=alt.Title(text="rose-basic · altair · pyplots.ai", fontSize=32, anchor="middle", dy=-10),
+# Month labels at outer edge
+month_labels = (
+    alt.Chart(month_label_data)
+    .mark_text(fontSize=22, fontWeight="bold")
+    .encode(
+        theta=alt.Theta("theta:Q"),
+        radius=alt.Radius(
+            "labelRadius:Q", scale=alt.Scale(type="linear", domain=[0, max_val], range=[0, chart_radius])
+        ),
+        text=alt.Text("month:N"),
+        color=alt.value("#333333"),
     )
+)
+
+# Combine all layers
+chart = (
+    alt.layer(gridlines, grid_labels, rose, text, month_labels)
+    .properties(title=alt.Title(text="rose-basic · altair · pyplots.ai", fontSize=32, anchor="middle", offset=15))
     .configure_view(strokeWidth=0)
     .configure_axis(grid=False, domain=False, ticks=False, labels=False, title=None)
 )
 
-# Save at scale_factor=3 for 4800x2700 resolution
-chart.save("plot.png", scale_factor=3.0)
+# Save chart - Altair radial charts position content in upper portion
+# Use high scale factor to ensure quality, then crop to center the content
+chart.save("plot_raw.png", scale_factor=3.0)
 chart.save("plot.html")
+
+# Post-process: crop to center the radial chart and resize to 3600x3600 (square format)
+from PIL import Image
+
+
+img = Image.open("plot_raw.png")
+width, height = img.size
+
+# Altair radial charts center content horizontally but place it in the upper portion vertically
+# The radial center is approximately at 36% from the top of the rendered image
+content_center_y = int(height * 0.36)
+content_center_x = width // 2
+
+# Use a crop size that captures all content including outer month labels with some padding
+crop_size = min(width, int(height * 0.80))
+
+# Center the crop on the content
+left = content_center_x - crop_size // 2
+top = content_center_y - crop_size // 2
+right = left + crop_size
+bottom = top + crop_size
+
+# Adjust if crop extends beyond image boundaries
+if left < 0:
+    left = 0
+    right = crop_size
+if top < 0:
+    top = 0
+    bottom = crop_size
+if right > width:
+    right = width
+    left = width - crop_size
+if bottom > height:
+    bottom = height
+    top = height - crop_size
+
+cropped = img.crop((left, top, right, bottom))
+
+# Resize to target 3600x3600
+final = cropped.resize((3600, 3600), Image.Resampling.LANCZOS)
+final.save("plot.png")
+
+# Clean up temp file
+import os
+
+
+os.remove("plot_raw.png")

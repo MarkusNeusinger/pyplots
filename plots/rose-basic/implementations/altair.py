@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 rose-basic: Basic Rose Chart
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 82/100 | Created: 2025-12-23
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import altair as alt

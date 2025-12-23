@@ -1,7 +1,7 @@
 """ pyplots.ai
 candlestick-basic: Basic Candlestick Chart
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 89/100 | Created: 2025-12-14
+Library: highcharts unknown | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import json
@@ -64,43 +64,57 @@ for i in range(n_days):
     ohlc_data.append([timestamp, opens[i], highs[i], lows[i], closes[i]])
 
 # Chart options for Highcharts Stock candlestick
+# Using colorblind-safe palette: Python Blue for bullish, warm amber for bearish
 chart_options = {
     "chart": {
         "type": "candlestick",
         "width": 4800,
         "height": 2700,
         "backgroundColor": "#ffffff",
-        "marginBottom": 250,
-        "marginLeft": 200,
-        "marginRight": 100,
-        "spacingTop": 80,
+        "marginBottom": 220,
+        "marginLeft": 250,
+        "marginRight": 80,
+        "marginTop": 150,
         "style": {"fontFamily": "Arial, sans-serif"},
     },
     "title": {
         "text": "Stock Price Movement · candlestick-basic · highcharts · pyplots.ai",
-        "style": {"fontSize": "64px", "fontWeight": "bold"},
+        "style": {"fontSize": "72px", "fontWeight": "bold", "color": "#333333"},
+        "y": 60,
     },
     "xAxis": {
         "type": "datetime",
-        "title": {"text": "Date", "style": {"fontSize": "48px"}, "margin": 40},
-        "labels": {"style": {"fontSize": "32px"}, "format": "{value:%b %d}", "y": 40},
+        "title": {"text": "Date", "style": {"fontSize": "52px", "color": "#333333"}, "margin": 30},
+        "labels": {
+            "style": {"fontSize": "36px", "color": "#333333"},
+            "format": "{value:%b %d}",
+            "y": 45,
+            "step": 2,  # Show every 2nd label to prevent overlap
+        },
         "gridLineWidth": 1,
-        "gridLineColor": "#e0e0e0",
+        "gridLineColor": "rgba(0, 0, 0, 0.15)",
         "gridLineDashStyle": "Dash",
-        "lineWidth": 2,
-        "tickWidth": 2,
+        "lineWidth": 3,
+        "lineColor": "#333333",
+        "tickWidth": 3,
+        "tickColor": "#333333",
+        "tickLength": 15,
     },
     "yAxis": {
-        "title": {"text": "Price ($)", "style": {"fontSize": "48px"}, "margin": 40},
-        "labels": {"style": {"fontSize": "32px"}, "format": "${value:.0f}", "x": -15},
+        "title": {"text": "Price (USD)", "style": {"fontSize": "52px", "color": "#333333"}, "margin": 30},
+        "labels": {"style": {"fontSize": "36px", "color": "#333333"}, "format": "${value:.0f}", "x": -15},
         "gridLineWidth": 1,
-        "gridLineColor": "#e0e0e0",
+        "gridLineColor": "rgba(0, 0, 0, 0.15)",
         "gridLineDashStyle": "Dash",
+        "lineWidth": 3,
+        "lineColor": "#333333",
+        "opposite": False,  # Keep Y-axis on left side only
+        "tickInterval": 1,  # Show labels at $1 intervals
     },
     "legend": {"enabled": False},
     "tooltip": {
         "split": False,
-        "style": {"fontSize": "24px"},
+        "style": {"fontSize": "28px"},
         "headerFormat": "<b>{point.x:%b %d, %Y}</b><br/>",
         "pointFormat": "Open: ${point.open:.2f}<br/>"
         + "High: ${point.high:.2f}<br/>"
@@ -109,17 +123,19 @@ chart_options = {
     },
     "plotOptions": {
         "candlestick": {
-            "color": "#DC2626",  # Red for bearish (close < open)
-            "upColor": "#22C55E",  # Green for bullish (close > open)
-            "lineColor": "#DC2626",  # Wick color for bearish
-            "upLineColor": "#22C55E",  # Wick color for bullish
-            "lineWidth": 3,  # Wick line width
-            "pointWidth": 60,  # Candle body width
+            # Colorblind-safe: Python Blue for bullish, warm amber for bearish
+            "color": "#E67E22",  # Warm amber for bearish (close < open)
+            "upColor": "#306998",  # Python Blue for bullish (close > open)
+            "lineColor": "#C0392B",  # Darker line for bearish wicks
+            "upLineColor": "#1A3A5C",  # Darker blue for bullish wicks
+            "lineWidth": 4,  # Wick line width - visible at large size
+            "pointWidth": 70,  # Candle body width
         }
     },
     "rangeSelector": {"enabled": False},
     "navigator": {"enabled": False},
     "scrollbar": {"enabled": False},
+    "credits": {"enabled": False},
     "series": [{"type": "candlestick", "name": "Stock Price", "data": ohlc_data}],
 }
 
@@ -138,7 +154,7 @@ html_content = f"""<!DOCTYPE html>
     <meta charset="utf-8">
     <script>{highstock_js}</script>
 </head>
-<body style="margin:0;">
+<body style="margin:0; background-color: #ffffff;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {{

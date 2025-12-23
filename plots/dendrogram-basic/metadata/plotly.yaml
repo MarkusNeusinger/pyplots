@@ -1,0 +1,25 @@
+library: plotly
+specification_id: dendrogram-basic
+created: '2025-12-23T10:01:00Z'
+updated: '2025-12-23T10:06:29Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20457532080
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basic/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basic/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basic/plotly/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Clean, professional visualization with clear hierarchical structure
+  - Excellent color-coded clusters that are colorblind-accessible
+  - Good use of Plotly figure_factory for dendrogram creation
+  - Realistic Iris flower dataset example that matches spec suggestion
+  - Well-formatted title following pyplots.ai convention
+  - Appropriate line width (3) for visibility at high resolution
+  weaknesses:
+  - Missing legend to explain what the cluster colors represent
+  - Unconventional inline lambda import for scipy linkage function
+  - Could add hover information to display sample details interactively

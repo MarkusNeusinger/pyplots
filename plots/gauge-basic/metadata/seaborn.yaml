@@ -1,0 +1,25 @@
+library: seaborn
+specification_id: gauge-basic
+created: '2025-12-23T13:04:31Z'
+updated: '2025-12-23T13:26:43Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20461376389
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/gauge-basic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gauge-basic/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 90
+review:
+  strengths:
+  - Creative use of seaborn scatterplot to build gauge arc with dense point markers
+  - Excellent colorblind accessibility using seaborn built-in colorblind palette
+  - Clean white zone boundary lines for visual separation
+  - Prominent value display with appropriate text sizing
+  - Good canvas utilization and balanced layout
+  - Realistic sales performance context
+  weaknesses:
+  - Zone labels could be slightly larger for better readability at full resolution
+  - Needle tip marker (red triangle) adds visual interest but is unconventional for
+    gauge charts

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 streamgraph-basic: Basic Stream Graph
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-23
@@ -14,30 +14,30 @@ np.random.seed(42)
 
 months = 24
 month_labels = [
-    "Jan'23",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-    "Jan'24",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
+    "Jan 23",
+    "Feb 23",
+    "Mar 23",
+    "Apr 23",
+    "May 23",
+    "Jun 23",
+    "Jul 23",
+    "Aug 23",
+    "Sep 23",
+    "Oct 23",
+    "Nov 23",
+    "Dec 23",
+    "Jan 24",
+    "Feb 24",
+    "Mar 24",
+    "Apr 24",
+    "May 24",
+    "Jun 24",
+    "Jul 24",
+    "Aug 24",
+    "Sep 24",
+    "Oct 24",
+    "Nov 24",
+    "Dec 24",
 ]
 genres = ["Pop", "Rock", "Hip-Hop", "Electronic", "Jazz"]
 
@@ -66,15 +66,15 @@ total_at_each_time = data_array.sum(axis=0)
 baseline_offset = total_at_each_time / 2
 
 # Custom style with colorblind-safe palette
-# Using colors with good contrast between adjacent layers
+# Colors ordered for maximum contrast between adjacent layers
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#2c3e50",
     foreground_strong="#2c3e50",
     foreground_subtle="#7f8c8d",
-    # Colorblind-friendly palette with good neighbor contrast
-    colors=("#306998", "#2ecc71", "#9b59b6", "#e67e22", "#3498db"),
+    # High contrast palette: dark blue, orange, teal, crimson, gold
+    colors=("#1a5276", "#e67e22", "#138d75", "#c0392b", "#d4ac0d"),
     title_font_size=80,
     label_font_size=48,
     major_label_font_size=40,
@@ -85,6 +85,11 @@ custom_style = Style(
     guide_stroke_color="#e0e0e0",
     major_guide_stroke_color="#cccccc",
 )
+
+# Calculate y-axis range based on actual data
+# After centering, min is -baseline_offset, max is baseline_offset (total stack height)
+y_min = -baseline_offset.max() * 1.1  # Add 10% padding
+y_max = baseline_offset.max() * 1.1
 
 # Create StackedLine chart - pygal's native stacked area chart
 # We'll shift all data to center around zero by subtracting half the total from each layer
@@ -104,14 +109,16 @@ chart = pygal.StackedLine(
     margin=100,
     spacing=40,
     truncate_legend=-1,
+    truncate_label=-1,  # Prevent x-axis label truncation
     interpolate="cubic",  # Smooth flowing curves
     show_minor_x_labels=False,
-    range=(-100, 100),  # Set y-axis range to show centering around 0
+    x_label_rotation=45,  # Rotate labels to prevent overlap
+    range=(y_min, y_max),  # Dynamic y-axis range based on data
 )
 
 # Set x-axis labels showing months
 chart.x_labels = month_labels
-chart.x_labels_major = ["Jan'23", "Jul", "Jan'24", "Jul"]
+chart.x_labels_major = ["Jan 23", "Jul 23", "Jan 24", "Jul 24"]
 
 # To create a centered streamgraph with StackedLine:
 # We need to shift each layer's values so the visual center is at y=0

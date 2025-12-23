@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 qq-basic: Basic Q-Q Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import math
@@ -24,7 +24,6 @@ def norm_ppf(p):
     """Approximate inverse of standard normal CDF."""
     if p <= 0 or p >= 1:
         return float("inf") if p >= 1 else float("-inf")
-    # Rational approximation for central region
     if p < 0.5:
         return -norm_ppf(1 - p)
     t = math.sqrt(-2 * math.log(1 - p))
@@ -47,7 +46,6 @@ np.random.shuffle(sample)
 
 # Calculate Q-Q values
 sample_sorted = np.sort(sample)
-# Theoretical quantiles from standard normal, scaled to match sample
 n_points = len(sample_sorted)
 theoretical_quantiles = np.array([norm_ppf((i + 0.5) / n_points) for i in range(n_points)])
 # Scale theoretical quantiles to sample scale

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 parallel-basic: Basic Parallel Coordinates Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-23
@@ -74,20 +74,18 @@ species_colors = {"Setosa": "#306998", "Versicolor": "#FFD43B", "Virginica": "#4
 species_list = list(iris_data.keys())
 
 # Build color list - one color per series added to the chart
-# First 3 colors for legend entries (mean lines), then 45 for observation lines
-color_list = []
-for species_name in species_list:
-    color_list.append(species_colors[species_name])  # Legend/mean line
-for species_name in species_list:
+# Order: 3 legend entries (mean lines) first, then 45 observation lines grouped by species
+color_list = [species_colors[s] for s in species_list]  # 3 mean line colors
+for species_name in species_list:  # 45 observation colors (15 per species)
     color_list.extend([species_colors[species_name]] * len(iris_data[species_name]))
 
-# Create custom style for 4800x2700 px output with larger fonts for readability
+# Create custom style for 4800x2700 px output with larger fonts and visible grids
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
+    foreground_subtle="#888888",  # Darker for better grid visibility
     colors=tuple(color_list),
     title_font_size=84,
     label_font_size=56,
@@ -96,6 +94,8 @@ custom_style = Style(
     value_font_size=36,
     opacity=0.55,
     opacity_hover=1.0,
+    guide_stroke_color="#AAAAAA",  # Explicit grid line color for visibility
+    major_guide_stroke_color="#888888",  # Major grid lines more visible
 )
 
 # Create line chart to simulate parallel coordinates
@@ -103,7 +103,7 @@ chart = pygal.Line(
     width=4800,
     height=2700,
     style=custom_style,
-    title="Iris Flower Measurements · parallel-basic · pygal · pyplots.ai",
+    title="parallel-basic · pygal · pyplots.ai\nIris Flower Measurements Across Species",
     x_title="Dimensions",
     y_title="Normalized Value (0-1)",
     show_dots=True,

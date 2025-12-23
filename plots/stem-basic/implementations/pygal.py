@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 stem-basic: Basic Stem Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-23
@@ -16,19 +16,19 @@ x = np.arange(n_points)
 # Create a decaying oscillation pattern (typical impulse response)
 y = np.exp(-x / 8) * np.sin(x * 0.8) * 2 + np.random.randn(n_points) * 0.1
 
-# Custom style for 4800×2700 px canvas
+# Custom style for 4800×2700 px canvas with larger fonts
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998", "#306998"),  # Python Blue for stems and markers
-    title_font_size=72,
-    label_font_size=48,
-    major_label_font_size=42,
-    legend_font_size=42,
-    value_font_size=36,
+    colors=("#306998",),  # Single color for consistency
+    title_font_size=84,
+    label_font_size=56,
+    major_label_font_size=48,
+    legend_font_size=48,
+    value_font_size=40,
 )
 
 # Create XY chart for stem plot
@@ -37,29 +37,29 @@ chart = pygal.XY(
     height=2700,
     style=custom_style,
     title="stem-basic · pygal · pyplots.ai",
-    x_title="Sample Index",
-    y_title="Amplitude",
+    x_title="Sample Index (n)",
+    y_title="Amplitude (a.u.)",
     show_legend=False,
     show_dots=True,
     stroke=True,
-    dots_size=12,
+    dots_size=14,
     stroke_style={"width": 4},
     show_x_guides=False,
     show_y_guides=True,
 )
 
-# Add each stem as a separate line from baseline to data point
-# This creates the stem effect: vertical lines from y=0 to each data point
+# Build all stems as coordinate pairs for a single series
+# Each stem goes from (x, 0) to (x, y), with None separator between stems
+stem_data = []
 for i in range(n_points):
     xi = float(x[i])
     yi = float(y[i])
-    # Each stem is a line from (x, 0) to (x, y)
-    chart.add("", [(xi, 0), (xi, yi)], show_dots=True, dots_size=12, stroke_style={"width": 3})
+    stem_data.append((xi, 0))
+    stem_data.append((xi, yi))
+    stem_data.append(None)  # Separator between stems
 
-# Add baseline at y=0
-chart.add(
-    "Baseline", [(float(x[0]), 0), (float(x[-1]), 0)], show_dots=False, stroke_style={"width": 2, "dasharray": "10, 5"}
-)
+# Add all stems as a single series for consistent coloring
+chart.add("", stem_data, show_dots=True, dots_size=14, stroke_style={"width": 4})
 
 # Save as PNG and HTML
 chart.render_to_png("plot.png")

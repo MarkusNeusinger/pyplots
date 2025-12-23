@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 sankey-basic: Basic Sankey Diagram
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 35/100 | Created: 2025-12-23
@@ -35,39 +35,40 @@ flows_data = {
 }
 df = pd.DataFrame(flows_data)
 
-# Create figure
+# Create figure with seaborn styling
 fig, ax = plt.subplots(figsize=(16, 9))
 
 # Use seaborn color palette - distinct colors for each source
 source_names = df["source"].unique()
-palette = sns.color_palette("Set2", n_colors=len(source_names))
+palette = sns.color_palette("husl", n_colors=len(source_names))
 source_colors = dict(zip(source_names, palette, strict=True))
 
-# Calculate node positions
+# Calculate node totals
 sources = df.groupby("source")["value"].sum().sort_values(ascending=False)
 targets = df.groupby("target")["value"].sum().sort_values(ascending=False)
 
-# Node dimensions
-node_width = 0.08
-x_source = 0.15
-x_target = 0.85
-gap = 0.03
+# Node dimensions and positions
+node_width = 0.06
+x_source = 0.12
+x_target = 0.88
+gap = 0.025
+total_height = 0.75
 
 # Calculate source node positions (left side)
 total_source = sources.sum()
 source_positions = {}
-y_pos = 0.95
+y_pos = 0.90
 for source, value in sources.items():
-    height = (value / total_source) * 0.8
+    height = (value / total_source) * total_height
     source_positions[source] = {"y": y_pos - height, "height": height}
     y_pos -= height + gap
 
 # Calculate target node positions (right side)
 total_target = targets.sum()
 target_positions = {}
-y_pos = 0.95
+y_pos = 0.90
 for target, value in targets.items():
-    height = (value / total_target) * 0.8
+    height = (value / total_target) * total_height
     target_positions[target] = {"y": y_pos - height, "height": height}
     y_pos -= height + gap
 
@@ -76,19 +77,20 @@ source_current_y = {s: source_positions[s]["y"] + source_positions[s]["height"] 
 target_current_y = {t: target_positions[t]["y"] + target_positions[t]["height"] for t in targets.index}
 
 # Bezier curve parameters
-n_points = 50
+n_points = 100
 t = np.linspace(0, 1, n_points)
 
-# Draw flows - sort by value for better visual stacking
-df_sorted = df.sort_values("value", ascending=False)
+# Sort flows by source then by value for consistent stacking
+df_sorted = df.sort_values(["source", "value"], ascending=[True, False])
 
+# Draw flows with widths proportional to values
 for _, row in df_sorted.iterrows():
     source = row["source"]
     target = row["target"]
     value = row["value"]
     color = source_colors[source]
 
-    # Calculate band height based on value
+    # Calculate band height proportional to flow value
     source_band_height = (value / sources[source]) * source_positions[source]["height"]
     target_band_height = (value / targets[target]) * target_positions[target]["height"]
 
@@ -102,99 +104,103 @@ for _, row in df_sorted.iterrows():
     y1_bot = y1_top - target_band_height
     target_current_y[target] = y1_bot
 
-    # Draw the flow band using bezier curves
+    # Draw the flow band using cubic bezier curves
     x0 = x_source + node_width
     x1 = x_target
-    cx0 = x0 + (x1 - x0) * 0.4
-    cx1 = x0 + (x1 - x0) * 0.6
+    cx0 = x0 + (x1 - x0) * 0.35
+    cx1 = x0 + (x1 - x0) * 0.65
 
-    # Top and bottom curves
+    # Generate bezier curve points for top and bottom edges
     top_x = (1 - t) ** 3 * x0 + 3 * (1 - t) ** 2 * t * cx0 + 3 * (1 - t) * t**2 * cx1 + t**3 * x1
     top_y = (1 - t) ** 3 * y0_top + 3 * (1 - t) ** 2 * t * y0_top + 3 * (1 - t) * t**2 * y1_top + t**3 * y1_top
     bot_y = (1 - t) ** 3 * y0_bot + 3 * (1 - t) ** 2 * t * y0_bot + 3 * (1 - t) * t**2 * y1_bot + t**3 * y1_bot
 
-    # Use seaborn's fill_between via lineplot data
-    flow_df = pd.DataFrame({"x": top_x, "y_top": top_y, "y_bot": bot_y})
-    ax.fill_between(
-        flow_df["x"], flow_df["y_bot"], flow_df["y_top"], color=color, alpha=0.6, linewidth=0.5, edgecolor=color
-    )
+    # Draw flow band
+    ax.fill_between(top_x, bot_y, top_y, color=color, alpha=0.65, linewidth=0, edgecolor="none")
 
-# Draw source nodes (left)
+# Draw source nodes (left) with seaborn colors
 for source in sources.index:
     pos = source_positions[source]
     rect = patches.FancyBboxPatch(
         (x_source, pos["y"]),
         node_width,
         pos["height"],
-        boxstyle="round,pad=0.01,rounding_size=0.02",
+        boxstyle="round,pad=0.005,rounding_size=0.015",
         facecolor=source_colors[source],
         edgecolor="white",
-        linewidth=2,
+        linewidth=2.5,
     )
     ax.add_patch(rect)
     ax.text(
-        x_source - 0.02,
+        x_source - 0.015,
         pos["y"] + pos["height"] / 2,
-        f"{source}\n({sources[source]:.0f} TWh)",
+        f"{source}\n{sources[source]:.0f} TWh",
         ha="right",
         va="center",
         fontsize=18,
         fontweight="bold",
-        color="#333333",
+        color="#2d2d2d",
     )
 
-# Draw target nodes (right)
-target_color = sns.color_palette("Greys", n_colors=3)[1]
+# Draw target nodes (right) with neutral color
+target_palette = sns.color_palette("Greys", n_colors=4)
+target_color = target_palette[2]
 for target in targets.index:
     pos = target_positions[target]
     rect = patches.FancyBboxPatch(
         (x_target, pos["y"]),
         node_width,
         pos["height"],
-        boxstyle="round,pad=0.01,rounding_size=0.02",
+        boxstyle="round,pad=0.005,rounding_size=0.015",
         facecolor=target_color,
         edgecolor="white",
-        linewidth=2,
+        linewidth=2.5,
     )
     ax.add_patch(rect)
     ax.text(
-        x_target + node_width + 0.02,
+        x_target + node_width + 0.015,
         pos["y"] + pos["height"] / 2,
-        f"{target}\n({targets[target]:.0f} TWh)",
+        f"{target}\n{targets[target]:.0f} TWh",
         ha="left",
         va="center",
         fontsize=18,
         fontweight="bold",
-        color="#333333",
+        color="#2d2d2d",
     )
 
-# Create legend using seaborn scatterplot
-legend_df = pd.DataFrame({"Source": source_names, "x": [-0.5] * len(source_names), "y": [-0.5] * len(source_names)})
-sns.scatterplot(
-    data=legend_df, x="x", y="y", hue="Source", palette=source_colors, s=400, marker="s", legend="full", ax=ax
+# Create legend for energy sources using seaborn barplot with hue
+legend_data = pd.DataFrame(
+    {"Energy Source": list(source_names), "Value": [sources[s] for s in source_names], "Category": ["Source"] * 3}
 )
 
-# Style legend
-legend = ax.legend(
-    title="Energy Source",
-    loc="upper center",
-    bbox_to_anchor=(0.5, 0.02),
-    ncol=3,
-    frameon=True,
-    fontsize=16,
-    title_fontsize=18,
-    markerscale=2,
+# Use seaborn barplot to create legend handles
+legend_ax = fig.add_axes([0.35, 0.02, 0.30, 0.08])
+sns.barplot(
+    data=legend_data,
+    x="Energy Source",
+    y="Value",
+    hue="Energy Source",
+    palette=source_colors,
+    ax=legend_ax,
+    legend=False,
+    width=0.7,
 )
-legend.get_frame().set_facecolor("white")
-legend.get_frame().set_edgecolor("#cccccc")
+legend_ax.set_ylabel("")
+legend_ax.set_xlabel("")
+legend_ax.set_yticks([])
+legend_ax.spines["top"].set_visible(False)
+legend_ax.spines["right"].set_visible(False)
+legend_ax.spines["left"].set_visible(False)
+legend_ax.spines["bottom"].set_visible(False)
+legend_ax.tick_params(axis="x", labelsize=16, length=0)
+legend_ax.set_title("Energy Sources", fontsize=18, fontweight="bold", pad=8)
 
 # Set title using the required format
-ax.set_title("sankey-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
+ax.set_title("sankey-basic · seaborn · pyplots.ai", fontsize=26, fontweight="bold", pad=25)
 
 # Set axis limits and remove decorations
 ax.set_xlim(0, 1)
 ax.set_ylim(0, 1)
 ax.axis("off")
 
-plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")

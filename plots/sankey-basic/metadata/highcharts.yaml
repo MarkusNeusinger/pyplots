@@ -1,17 +1,25 @@
 library: highcharts
 specification_id: sankey-basic
-created: 2025-12-14 18:21:21+00:00
-updated: 2025-12-14 18:21:21+00:00
+created: '2025-12-23T19:45:06Z'
+updated: '2025-12-23T20:13:36Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20212162272
-issue: 810
+workflow_run: 20469997330
+issue: 0
 python_version: 3.13.11
-library_version: 1.10.3
+library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/highcharts/plot.html
-quality_score: 95
+quality_score: 91
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent real-world energy flow scenario with realistic TWh values
+  - Proper use of colorblind-safe dark palette ensuring white text contrast on all
+    nodes
+  - Good link opacity (0.5) allowing visualization of crossing flows
+  - Correct title format and informative subtitle with units
+  - Well-configured Highcharts Sankey with custom node colors and link styling
+  - Clean code structure with proper margin handling to prevent label cutoff
+  weaknesses:
+  - numpy imported but only used for random seed (could use deterministic data instead)
+  - Library version shown as unknown in header comment

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 band-basic: Basic Band Plot
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import altair as alt
@@ -12,7 +12,7 @@ import pandas as pd
 # Data - Time series with 95% confidence interval
 np.random.seed(42)
 x = np.linspace(0, 10, 100)
-y_center = 2 * np.sin(x) + 0.5 * x  # Central trend
+y_center = 2 * np.sin(x) + 0.5 * x  # Central trend (sinusoidal + linear growth)
 
 # Confidence band widens over time (realistic uncertainty growth)
 uncertainty = 0.5 + 0.15 * x
@@ -25,7 +25,7 @@ df = pd.DataFrame({"x": x, "y_center": y_center, "y_lower": y_lower, "y_upper": 
 band = (
     alt.Chart(df)
     .mark_area(opacity=0.3, color="#306998")
-    .encode(x=alt.X("x:Q", title="Time"), y=alt.Y("y_lower:Q", title="Value"), y2=alt.Y2("y_upper:Q"))
+    .encode(x=alt.X("x:Q", title="Time (s)"), y=alt.Y("y_lower:Q", title="Signal Amplitude"), y2=alt.Y2("y_upper:Q"))
 )
 
 # Central trend line

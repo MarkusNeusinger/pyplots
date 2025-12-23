@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 marimekko-basic: Basic Marimekko Chart
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-16
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import json
@@ -63,12 +63,6 @@ for i, product in enumerate(products):
             },
         }
     )
-
-# Create x-axis labels at center of each bar
-x_axis_labels = []
-for j, region in enumerate(regions):
-    center_x = cumulative_x[j] + region_sizes[j] / 2
-    x_axis_labels.append({"value": center_x, "label": region})
 
 # Build Highcharts configuration
 chart_options = {

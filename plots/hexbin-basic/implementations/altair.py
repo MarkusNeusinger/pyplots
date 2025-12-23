@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 hexbin-basic: Basic Hexbin Plot
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 78/100 | Created: 2025-12-23
+Quality: 52/100 | Created: 2025-12-23
 """
 
 import altair as alt

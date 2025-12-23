@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 rug-basic: Basic Rug Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-23
@@ -22,7 +22,7 @@ values = np.concatenate(
 values = np.clip(values, 30, 500)  # Realistic bounds
 values = np.sort(values)  # Sort for better visual ordering
 
-# Custom style for 4800x2700 px canvas - no y-axis line
+# Custom style - keep text readable, minimize distracting elements
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -36,46 +36,46 @@ custom_style = Style(
     legend_font_size=42,
     value_font_size=36,
     opacity=0.85,
-    opacity_hover=0.95,
+    opacity_hover=1.0,
+    tooltip_font_size=36,
 )
 
-# Create XY chart for rug plot - use horizontal layout to maximize vertical utilization
-# Using a shorter y-range centered on the visual area fills the canvas better
+# Create XY chart for rug plot visualization
 chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
     title="rug-basic · pygal · pyplots.ai",
     x_title="Response Time (ms)",
-    y_title=None,  # No y-axis title for rug plot
+    y_title=None,
     show_legend=False,
     show_dots=False,
     stroke=True,
-    stroke_style={"width": 12},  # Thicker strokes for better visibility in dense areas
+    stroke_style={"width": 10},
     show_x_guides=False,
     show_y_guides=False,
-    show_y_labels=False,  # Hide y-axis labels
+    show_y_labels=False,
     print_values=False,
-    range=(-0.05, 0.55),  # Tighter y-range so ticks fill more vertical space
-    margin=100,
-    margin_top=150,
-    margin_bottom=250,  # Room for x-axis labels
-    margin_left=100,  # Minimal left margin since no y-axis needed
+    explicit_size=True,
+    margin=80,
+    margin_top=180,
+    margin_bottom=280,
+    margin_left=80,
+    margin_right=80,
+    tooltip_border_radius=10,
+    xrange=(30, 450),
+    range=(0, 1),
 )
 
-# Add invisible anchor points to set x-axis range with padding
-x_min, x_max = float(values.min()), float(values.max())
-x_padding = (x_max - x_min) * 0.05
-chart.add("", [(x_min - x_padding, 0), (x_max + x_padding, 0)], stroke_style={"width": 0}, show_dots=False)
+# Rug ticks - uniform height filling 90% of vertical canvas
+tick_bottom = 0.05
+tick_top = 0.95
 
-# Rug tick parameters - ticks go from y=0 up to y=0.5 (filling ~90% of visible y-range)
-tick_top = 0.5
-
-# Add rug ticks - each tick is a vertical line from the baseline
+# Add rug ticks with interactive tooltips showing exact values
 for val in values:
     x = float(val)
-    chart.add("", [(x, 0), (x, tick_top)], stroke_style={"width": 12})
+    chart.add(f"{val:.1f} ms", [(x, tick_bottom), (x, tick_top)], stroke_style={"width": 10}, show_dots=False)
 
-# Save outputs
+# Save outputs - HTML preserves pygal's SVG interactivity with hover tooltips
 chart.render_to_png("plot.png")
 chart.render_to_file("plot.html")

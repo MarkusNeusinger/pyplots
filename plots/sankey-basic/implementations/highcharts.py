@@ -1,6 +1,6 @@
-"""pyplots.ai
+""" pyplots.ai
 sankey-basic: Basic Sankey Diagram
-Library: highcharts | Python 3.13
+Library: highcharts unknown | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-23
 """
 

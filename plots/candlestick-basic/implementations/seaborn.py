@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 candlestick-basic: Basic Candlestick Chart
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-23
@@ -45,33 +45,40 @@ for _ in range(n_days):
 
 df = pd.DataFrame({"date": dates, "open": opens, "high": highs, "low": lows, "close": closes})
 
-# Determine bullish (up) vs bearish (down) days
-df["change"] = df["close"] - df["open"]
-df["color"] = df["change"].apply(lambda x: "#22c55e" if x >= 0 else "#ef4444")  # green/red
+# Determine bullish (up) vs bearish (down) days - use colorblind-safe colors
+df["day_type"] = df.apply(lambda row: "Bullish (Up)" if row["close"] >= row["open"] else "Bearish (Down)", axis=1)
+# Colorblind-safe: blue for up, orange for down
+color_map = {"Bullish (Up)": "#1f77b4", "Bearish (Down)": "#ff7f0e"}
+df["x"] = range(len(df))
 
 # Create plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Draw candlesticks using seaborn-styled matplotlib
-candle_width = 0.6
-wick_width = 2
+# Use seaborn lineplot for wicks by plotting high-low connections
+for _, row in df.iterrows():
+    color = color_map[row["day_type"]]
+    # Use seaborn lineplot for each wick
+    wick_segment = pd.DataFrame({"x": [row["x"], row["x"]], "y": [row["low"], row["high"]]})
+    sns.lineplot(data=wick_segment, x="x", y="y", ax=ax, color=color, linewidth=2, legend=False)
 
-for i, row in df.iterrows():
-    x = i  # Use integer index for x position
-    color = row["color"]
-
-    # Draw wick (high-low line)
-    ax.plot([x, x], [row["low"], row["high"]], color=color, linewidth=wick_width, solid_capstyle="round")
-
-    # Draw candle body (open-close rectangle)
+# Prepare body data for seaborn barplot
+body_data = []
+for _, row in df.iterrows():
     body_bottom = min(row["open"], row["close"])
     body_height = abs(row["close"] - row["open"])
     # Ensure minimum body height for doji candles
     if body_height < 0.2:
         body_height = 0.2
         body_bottom = (row["open"] + row["close"]) / 2 - 0.1
+    body_data.append({"x": row["x"], "bottom": body_bottom, "height": body_height, "day_type": row["day_type"]})
+body_df = pd.DataFrame(body_data)
 
-    ax.bar(x, body_height, bottom=body_bottom, width=candle_width, color=color, edgecolor=color, linewidth=1)
+# Use seaborn barplot for candle bodies
+sns.barplot(data=body_df, x="x", y="height", hue="day_type", palette=color_map, ax=ax, width=0.6, legend=False)
+
+# Adjust bar positions to correct bottom values
+for bar, (_, row) in zip(ax.patches, body_df.iterrows(), strict=False):
+    bar.set_y(row["bottom"])
 
 # Set x-axis to show dates
 tick_positions = range(0, n_days, 5)  # Show every 5th date
@@ -82,12 +89,12 @@ ax.set_xticklabels(tick_labels, rotation=0)
 # Style the plot
 ax.set_xlabel("Date", fontsize=20)
 ax.set_ylabel("Price ($)", fontsize=20)
-ax.set_title("candlestick-basic \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24)
+ax.set_title("candlestick-basic · seaborn · pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
 
-# Add legend
-legend_elements = [Patch(facecolor="#22c55e", label="Bullish (Up)"), Patch(facecolor="#ef4444", label="Bearish (Down)")]
-ax.legend(handles=legend_elements, fontsize=14, loc="upper left")
+# Add legend - positioned outside data area to avoid overlap
+legend_elements = [Patch(facecolor="#1f77b4", label="Bullish (Up)"), Patch(facecolor="#ff7f0e", label="Bearish (Down)")]
+ax.legend(handles=legend_elements, fontsize=14, loc="upper right", bbox_to_anchor=(0.99, 0.99))
 
 # Subtle grid
 ax.grid(True, alpha=0.3, linestyle="--", axis="y")

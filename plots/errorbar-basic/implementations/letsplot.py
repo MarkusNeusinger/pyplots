@@ -1,7 +1,7 @@
 """ pyplots.ai
 errorbar-basic: Basic Error Bar Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import pandas as pd
@@ -40,7 +40,7 @@ plot = (
     ggplot(data, aes(x="experiment", y="mean_value"))
     + geom_errorbar(aes(ymin="ymin", ymax="ymax"), width=0.3, size=1.5, color="#306998")
     + geom_point(size=6, color="#306998")
-    + labs(x="Experimental Group", y="Measured Value", title="errorbar-basic \u00b7 letsplot \u00b7 pyplots.ai")
+    + labs(x="Experimental Group", y="Measured Value", title="errorbar-basic · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(axis_title=element_text(size=20), axis_text=element_text(size=16), plot_title=element_text(size=24))
     + ggsize(1600, 900)

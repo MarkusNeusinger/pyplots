@@ -1,17 +1,25 @@
 library: plotly
 specification_id: funnel-basic
-created: 2025-12-14 12:17:22+00:00
-updated: 2025-12-14 12:17:22+00:00
+created: '2025-12-23T13:02:30Z'
+updated: '2025-12-23T13:09:14Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20207780532
-issue: 789
+workflow_run: 20461373999
+issue: 0
 python_version: 3.13.11
 library_version: 6.5.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/plotly/plot.html
-quality_score: 94
+quality_score: 91
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent use of Plotly native go.Funnel trace type for optimal funnel visualization
+  - Clear value and percentage labels inside each segment using textinfo=value+percent
+    initial
+  - Well-chosen color palette with Python Blue as primary creating visual distinction
+    between stages
+  - Proper canvas utilization at 4800x2700 with good margins and font sizing
+  - Generates both PNG and HTML outputs leveraging Plotly interactivity
+  weaknesses:
+  - The blue color gradient (4 shades of blue + yellow) could be improved for better
+    accessibility - consider using a more varied colorblind-safe palette

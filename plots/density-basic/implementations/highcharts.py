@@ -65,16 +65,16 @@ chart.options.x_axis = {
     "title": {"text": "Height (cm)", "style": {"fontSize": "48px"}},
     "labels": {"style": {"fontSize": "36px"}},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.1)",
+    "gridLineColor": "rgba(0, 0, 0, 0.25)",
 }
 
-# Y-axis
+# Y-axis - start at 0 for proper density representation
 chart.options.y_axis = {
     "title": {"text": "Density", "style": {"fontSize": "48px"}},
     "labels": {"style": {"fontSize": "36px"}},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.1)",
-    "min": -0.002,  # Slightly negative to show rug plot
+    "gridLineColor": "rgba(0, 0, 0, 0.25)",
+    "min": 0,
 }
 
 # Plot options with semi-transparent fill
@@ -88,28 +88,41 @@ chart.options.plot_options = {
         "marker": {"enabled": False},
         "color": "#306998",
     },
-    "scatter": {"marker": {"radius": 6, "fillColor": "#FFD43B", "symbol": "diamond"}},
+    "scatter": {
+        "marker": {"radius": 8, "fillColor": "#FFD43B", "symbol": "diamond", "lineWidth": 2, "lineColor": "#D4AA00"}
+    },
 }
 
-# Legend
-chart.options.legend = {"enabled": False}
+# Legend - enabled with clear styling
+chart.options.legend = {
+    "enabled": True,
+    "layout": "horizontal",
+    "align": "right",
+    "verticalAlign": "top",
+    "floating": True,
+    "x": -50,
+    "y": 80,
+    "itemStyle": {"fontSize": "36px"},
+    "symbolHeight": 24,
+    "symbolWidth": 40,
+}
 
 # Add density curve as area series
 area_series = AreaSeries()
 area_series.data = [[float(x), float(y)] for x, y in zip(x_grid, density, strict=True)]
-area_series.name = "Density"
+area_series.name = "Density Curve"
 chart.add_series(area_series)
 
-# Add rug plot (individual observations along x-axis)
-# Sample every 5th point to show distribution
+# Add rug plot as small vertical tick marks at y=0
+# Sample every 5th point to show distribution without overcrowding
 rug_sample = values[::5]
-rug_y = -0.0005  # Slightly below 0 for visibility
+rug_y = 0.0005  # Small positive value just above x-axis
 rug_data = [[float(v), rug_y] for v in sorted(rug_sample)]
 
 rug_series = ScatterSeries()
 rug_series.data = rug_data
-rug_series.name = "Observations"
-rug_series.marker = {"symbol": "diamond", "fillColor": "#FFD43B", "radius": 5}
+rug_series.name = "Observations (Rug)"
+rug_series.marker = {"symbol": "diamond", "fillColor": "#FFD43B", "lineColor": "#D4AA00", "lineWidth": 2, "radius": 10}
 chart.add_series(rug_series)
 
 # Download Highcharts JS for inline embedding

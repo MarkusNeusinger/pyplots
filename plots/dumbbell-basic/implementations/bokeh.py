@@ -1,7 +1,7 @@
 """ pyplots.ai
 dumbbell-basic: Basic Dumbbell Chart
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-15
+Quality: 91/100 | Created: 2025-12-23
 """
 
 from bokeh.io import export_png, output_file, save
@@ -40,7 +40,7 @@ p = figure(
     y_axis_label="Department",
 )
 
-# Create data source for connecting lines
+# Create connecting lines (thin and subtle)
 for i, cat in enumerate(categories):
     p.line(x=[start_values[i], end_values[i]], y=[cat, cat], line_width=4, line_color="#888888", line_alpha=0.6)
 
@@ -61,7 +61,7 @@ p.yaxis.axis_label_text_font_size = "24pt"
 p.xaxis.major_label_text_font_size = "18pt"
 p.yaxis.major_label_text_font_size = "18pt"
 
-# Grid styling
+# Grid styling (subtle)
 p.xgrid.grid_line_alpha = 0.3
 p.xgrid.grid_line_dash = "dashed"
 p.ygrid.grid_line_alpha = 0.3

@@ -1,7 +1,7 @@
 """ pyplots.ai
 dendrogram-basic: Basic Dendrogram
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-17
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -80,59 +80,42 @@ n_samples = len(labels)
 # Compute hierarchical clustering using Ward's method
 linkage_matrix = linkage(data, method="ward")
 
-
 # Build dendrogram coordinates from linkage matrix
-def build_dendrogram_coords(linkage_matrix, labels):
-    """
-    Convert linkage matrix to coordinates for plotting dendrogram segments.
-    Returns list of segments (x0, y0, x1, y1, color) for drawing.
-    """
-    n = len(labels)
-    # Position of each leaf (original samples)
-    leaf_positions = {i: i for i in range(n)}
+n = len(labels)
+leaf_positions = {i: i for i in range(n)}
+node_heights = dict.fromkeys(range(n), 0)
+segments = []
 
-    # Track y-position (height) of each node
-    node_heights = dict.fromkeys(range(n), 0)
+# Color threshold for clustering (similar to matplotlib's default)
+max_dist = linkage_matrix[:, 2].max()
+color_threshold = 0.7 * max_dist
 
-    # Store segments for plotting
-    segments = []
+# Process each merge in the linkage matrix
+for i, (left, right, dist, _) in enumerate(linkage_matrix):
+    left, right = int(left), int(right)
+    new_node = n + i
 
-    # Color threshold for clustering (similar to matplotlib's default)
-    max_dist = linkage_matrix[:, 2].max()
-    color_threshold = 0.7 * max_dist
+    # Get positions of children
+    left_pos = leaf_positions[left]
+    right_pos = leaf_positions[right]
 
-    # Process each merge in the linkage matrix
-    for i, (left, right, dist, _) in enumerate(linkage_matrix):
-        left, right = int(left), int(right)
-        new_node = n + i
+    # New node position is midpoint of children
+    new_pos = (left_pos + right_pos) / 2
+    leaf_positions[new_node] = new_pos
+    node_heights[new_node] = dist
 
-        # Get positions of children
-        left_pos = leaf_positions[left]
-        right_pos = leaf_positions[right]
+    # Determine color based on height threshold
+    color = "#306998" if dist >= color_threshold else "#FFD43B"
 
-        # New node position is midpoint of children
-        new_pos = (left_pos + right_pos) / 2
-        leaf_positions[new_node] = new_pos
-        node_heights[new_node] = dist
+    left_height = node_heights[left]
+    right_height = node_heights[right]
 
-        # Determine color based on height threshold
-        color = "#306998" if dist >= color_threshold else "#FFD43B"
-
-        left_height = node_heights[left]
-        right_height = node_heights[right]
-
-        # Vertical segment from left child to merge height
-        segments.append((left_pos, left_height, left_pos, dist, color))
-        # Vertical segment from right child to merge height
-        segments.append((right_pos, right_height, right_pos, dist, color))
-        # Horizontal segment connecting the two
-        segments.append((left_pos, dist, right_pos, dist, color))
-
-    return segments, leaf_positions
-
-
-# Build dendrogram
-segments, leaf_positions = build_dendrogram_coords(linkage_matrix, labels)
+    # Vertical segment from left child to merge height
+    segments.append((left_pos, left_height, left_pos, dist, color))
+    # Vertical segment from right child to merge height
+    segments.append((right_pos, right_height, right_pos, dist, color))
+    # Horizontal segment connecting the two
+    segments.append((left_pos, dist, right_pos, dist, color))
 
 # Create segment dataframe
 segment_df = pd.DataFrame(segments, columns=["x", "y", "xend", "yend", "color"])
@@ -149,14 +132,14 @@ plot = (
     + geom_segment(aes(x="x", y="y", xend="xend", yend="yend", color="color"), data=segment_df, size=1.5)
     + geom_text(aes(x="x", y="y", label="label"), data=label_df, angle=35, hjust=1, vjust=1, size=10, color="#333333")
     + scale_color_manual(values={"#306998": "#306998", "#FFD43B": "#FFD43B"}, guide="none")
-    + scale_x_continuous(expand=[0.06, 0.02])  # Add space on left side for labels
-    + scale_y_continuous(expand=[0.18, 0.02])  # Add space at bottom for labels, top margin
-    + labs(x="Sample", y="Distance (Ward)", title="dendrogram-basic \u00b7 letsplot \u00b7 pyplots.ai")
+    + scale_x_continuous(expand=[0.06, 0.02])
+    + scale_y_continuous(expand=[0.18, 0.02])
+    + labs(x="Sample", y="Distance (Ward)", title="dendrogram-basic · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(
         axis_title=element_text(size=20),
         axis_text=element_text(size=16),
-        axis_text_x=element_blank(),  # Hide default x-axis text (we use custom labels)
+        axis_text_x=element_blank(),
         axis_ticks_x=element_blank(),
         plot_title=element_text(size=24),
         panel_grid_major_x=element_blank(),

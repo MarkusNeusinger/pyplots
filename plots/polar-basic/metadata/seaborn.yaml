@@ -1,0 +1,31 @@
+library: seaborn
+specification_id: polar-basic
+created: '2025-12-23T19:43:22Z'
+updated: '2025-12-23T19:51:48Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20469990518
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-basic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-basic/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent data scenario using website traffic by hour which perfectly demonstrates
+    cyclical nature of polar charts
+  - Beautiful visual design with viridis colormap providing both aesthetic appeal
+    and colorblind accessibility
+  - Proper polar configuration with theta offset at top (12 o'clock) and clockwise
+    direction for time-based data
+  - Smart combination of scatter points, connecting line, and filled area to create
+    rich visualization
+  - Appropriate marker sizing (s=300) and alpha (0.8) for 24 data points
+  weaknesses:
+  - Seaborn is primarily used for styling (set_theme, set_context, color_palette)
+    rather than its distinctive plotting functions - this is acceptable since seaborn
+    lacks native polar plot support
+  - The Visitors y-axis label position on the right side is unconventional for polar
+    plots
+  - Grid style uses dashed lines which could be simplified to solid with lower alpha

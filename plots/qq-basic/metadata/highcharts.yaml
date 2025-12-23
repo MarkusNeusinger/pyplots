@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: qq-basic
 created: '2025-12-23T18:15:01Z'
-updated: '2025-12-23T18:22:04Z'
+updated: '2025-12-23T18:28:38Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20468199929
 issue: 0
@@ -10,20 +10,18 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/qq-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/qq-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/qq-basic/highcharts/plot.html
-quality_score: 88
+quality_score: 90
 review:
   strengths:
-  - Excellent visual clarity with appropriate font sizes scaled for 4800x2700 canvas
-  - Colorblind-safe color scheme using Python blue (#306998) and yellow (#FFD43B)
-  - Data intentionally shows slight skewness to demonstrate Q-Q plot interpretation
-    capabilities
-  - Generates both static PNG and interactive HTML output leveraging Highcharts interactivity
-  - Reference line properly implemented as dashed yellow line behind scatter points
-  - Proper use of Highcharts-core Python library with correct container specification
+  - Good Q-Q plot implementation with clear visualization of quantile comparison
+  - Correctly uses dashed yellow reference line (y=x) that is clearly visible
+  - Appropriate marker size (radius=18) and alpha (0.7) for 100 data points
+  - Uses colorblind-safe Python blue and yellow color scheme
+  - Correctly implements theoretical quantile scaling to sample scale
+  - Data demonstrates slight right skew as intended, showing Q-Q interpretation capability
+  - 'Title follows required format: qq-basic · highcharts · pyplots.ai'
+  - Legend is informative with sample size (N=100) and reference line explanation
   weaknesses:
-  - Contains a helper function norm_ppf() which violates the KISS principle - should
-    be inline or use scipy.stats.norm.ppf
-  - X-axis label Theoretical Quantiles appears partially cut off at the bottom of
-    the chart
-  - Legend could be more descriptive (e.g. N=100 observations instead of generic Sample
-    Data)
+  - Grid lines could be slightly more subtle (currently alpha 0.15, could use 0.1)
+  - Axis labels could include units or more context (e.g., Theoretical Quantiles (Standard
+    Deviations))

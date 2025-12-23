@@ -1,7 +1,7 @@
 """ pyplots.ai
 line-basic: Basic Line Plot
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-13
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -9,7 +9,7 @@ import pandas as pd
 from plotnine import aes, element_line, element_text, geom_line, geom_point, ggplot, labs, theme, theme_minimal
 
 
-# Data - Monthly temperature readings
+# Data - Monthly average temperature readings for a typical year
 np.random.seed(42)
 months = np.arange(1, 13)
 base_temp = np.array([5, 7, 11, 15, 19, 23, 26, 25, 21, 15, 10, 6])
@@ -20,9 +20,9 @@ df = pd.DataFrame({"Month": months, "Temperature": temperature})
 # Plot
 plot = (
     ggplot(df, aes(x="Month", y="Temperature"))
-    + geom_line(size=2, color="#306998")
-    + geom_point(size=5, color="#306998")
-    + labs(x="Month", y="Temperature (\u00b0C)", title="line-basic \u00b7 plotnine \u00b7 pyplots.ai")
+    + geom_line(size=2.5, color="#306998")
+    + geom_point(size=6, color="#306998")
+    + labs(x="Month", y="Temperature (°C)", title="line-basic · plotnine · pyplots.ai")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),

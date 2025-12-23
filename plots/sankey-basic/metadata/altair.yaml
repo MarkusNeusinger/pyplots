@@ -1,17 +1,28 @@
 library: altair
 specification_id: sankey-basic
-created: 2025-12-14 18:23:18+00:00
-updated: 2025-12-14 18:23:18+00:00
+created: '2025-12-23T19:50:52Z'
+updated: '2025-12-23T19:57:56Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20212160832
-issue: 810
+workflow_run: 20470109773
+issue: 0
 python_version: 3.13.11
 library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/altair/plot.html
-quality_score: 92
+quality_score: 91
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent manual implementation of Sankey diagram using Altair primitive marks
+    (rectangles + filled polygons)
+  - Smooth S-curve interpolation for flow bands using smoothstep function creates
+    natural-looking flows
+  - Well-organized color scheme with Python Blue (#306998) as primary source color
+  - Clean layer composition (links → nodes → source labels → target labels)
+  - Good use of tooltips for interactivity on node hover
+  - Proper title format with informative subtitle
+  weaknesses:
+  - The three blue shades for Coal, Gas, and Nuclear sources are visually similar;
+    wider color variation would improve distinguishability
+  - Code complexity is high due to manual polygon generation; this is necessary since
+    Altair lacks native Sankey support, but adds maintenance burden

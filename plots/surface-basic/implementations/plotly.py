@@ -1,7 +1,7 @@
 """ pyplots.ai
 surface-basic: Basic 3D Surface Plot
 Library: plotly 6.5.0 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -35,13 +35,19 @@ fig.update_layout(
     title={"text": "surface-basic · plotly · pyplots.ai", "font": {"size": 28}, "x": 0.5, "xanchor": "center"},
     scene={
         "xaxis": {
-            "title": {"text": "X Axis", "font": {"size": 20}}, "tickfont": {"size": 14}, "gridcolor": "rgba(0, 0, 0, 0.1)"
+            "title": {"text": "X Axis", "font": {"size": 20}},
+            "tickfont": {"size": 14},
+            "gridcolor": "rgba(0, 0, 0, 0.1)",
         },
         "yaxis": {
-            "title": {"text": "Y Axis", "font": {"size": 20}}, "tickfont": {"size": 14}, "gridcolor": "rgba(0, 0, 0, 0.1)"
+            "title": {"text": "Y Axis", "font": {"size": 20}},
+            "tickfont": {"size": 14},
+            "gridcolor": "rgba(0, 0, 0, 0.1)",
         },
         "zaxis": {
-            "title": {"text": "Z Value", "font": {"size": 20}}, "tickfont": {"size": 14}, "gridcolor": "rgba(0, 0, 0, 0.1)"
+            "title": {"text": "Z Value", "font": {"size": 20}},
+            "tickfont": {"size": 14},
+            "gridcolor": "rgba(0, 0, 0, 0.1)",
         },
         "camera": {"eye": {"x": 1.5, "y": 1.5, "z": 1.2}},
     },

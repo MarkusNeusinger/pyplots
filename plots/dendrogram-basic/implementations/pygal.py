@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 dendrogram-basic: Basic Dendrogram
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-23
@@ -121,15 +121,16 @@ custom_style = Style(
     plot_background="white",
     foreground="#333",
     foreground_strong="#333",
-    foreground_subtle="#666",
+    foreground_subtle="#999",  # Lighter grid lines for subtlety
     colors=("#306998",),  # Python Blue for dendrogram lines
     title_font_size=56,
-    label_font_size=36,
-    major_label_font_size=32,
+    label_font_size=44,  # Larger x-axis tick labels for readability
+    major_label_font_size=40,
     legend_font_size=32,
     value_font_size=28,
     stroke_width=5,
     opacity=1.0,
+    guide_stroke_color="#ddd",  # Subtle grid color
 )
 
 # Create XY chart for dendrogram
@@ -148,10 +149,13 @@ chart = pygal.XY(
     show_y_guides=True,
     x_label_rotation=45,
     truncate_label=20,
+    xrange=(min(node_x.values()) - 0.5, max(leaf_order) + 0.5),  # Proper x-axis range
 )
 
-# Set x-axis labels to show sample names in dendrogram order
-chart.x_labels = ordered_labels
+# Set x-axis labels at exact leaf positions using x_labels_major
+chart.x_labels = list(range(n))
+chart.x_labels_major = list(range(n))
+chart.x_value_formatter = lambda x: ordered_labels[int(round(x))] if 0 <= x < n else ""
 
 # Add each segment as a separate series to draw the dendrogram
 for seg in segments:

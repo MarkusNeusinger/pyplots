@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 rug-basic: Basic Rug Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-23
@@ -22,7 +22,7 @@ values = np.concatenate(
 values = np.clip(values, 30, 500)  # Realistic bounds
 values = np.sort(values)  # Sort for better visual ordering
 
-# Custom style for 4800x2700 px canvas
+# Custom style for 4800x2700 px canvas - no y-axis line
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -35,45 +35,46 @@ custom_style = Style(
     major_label_font_size=42,
     legend_font_size=42,
     value_font_size=36,
-    opacity=0.7,
-    opacity_hover=0.9,
+    opacity=0.85,
+    opacity_hover=0.95,
 )
 
-# Create XY chart for rug plot
+# Create XY chart for rug plot - use horizontal layout to maximize vertical utilization
+# Using a shorter y-range centered on the visual area fills the canvas better
 chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
     title="rug-basic · pygal · pyplots.ai",
     x_title="Response Time (ms)",
-    y_title="",
+    y_title=None,  # No y-axis title for rug plot
     show_legend=False,
     show_dots=False,
     stroke=True,
-    stroke_style={"width": 8},  # Thicker strokes for visibility
+    stroke_style={"width": 12},  # Thicker strokes for better visibility in dense areas
     show_x_guides=False,
     show_y_guides=False,
-    show_y_labels=False,  # Hide y-axis labels (not meaningful for rug plot)
-    y_labels=[],  # Hide y-axis line by providing empty labels
-    range=(0, 1),  # Fixed y-axis range
-    margin=60,
-    margin_top=80,  # Compact top margin
-    margin_bottom=180,  # Room for x-axis labels
+    show_y_labels=False,  # Hide y-axis labels
+    print_values=False,
+    range=(-0.05, 0.55),  # Tighter y-range so ticks fill more vertical space
+    margin=100,
+    margin_top=150,
+    margin_bottom=250,  # Room for x-axis labels
+    margin_left=100,  # Minimal left margin since no y-axis needed
 )
-
-# Rug plot parameters
-tick_height = 0.85  # Height of tick marks (85% of plot height for better canvas utilization)
 
 # Add invisible anchor points to set x-axis range with padding
 x_min, x_max = float(values.min()), float(values.max())
 x_padding = (x_max - x_min) * 0.05
-chart.add("", [(x_min - x_padding, 0), (x_min - x_padding, 0)], stroke_style={"width": 0}, show_dots=False)
-chart.add("", [(x_max + x_padding, 0), (x_max + x_padding, 0)], stroke_style={"width": 0}, show_dots=False)
+chart.add("", [(x_min - x_padding, 0), (x_max + x_padding, 0)], stroke_style={"width": 0}, show_dots=False)
 
-# Add rug ticks - each tick is a vertical line from the bottom
+# Rug tick parameters - ticks go from y=0 up to y=0.5 (filling ~90% of visible y-range)
+tick_top = 0.5
+
+# Add rug ticks - each tick is a vertical line from the baseline
 for val in values:
     x = float(val)
-    chart.add("", [(x, 0), (x, tick_height)], stroke_style={"width": 8})
+    chart.add("", [(x, 0), (x, tick_top)], stroke_style={"width": 12})
 
 # Save outputs
 chart.render_to_png("plot.png")

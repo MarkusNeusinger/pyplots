@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bump-basic: Basic Bump Chart
-Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: seaborn | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -48,7 +48,7 @@ data = {
 }
 df = pd.DataFrame(data)
 
-# Colors for each team
+# Colors for each team - Python Blue first, then distinct colorblind-safe colors
 palette = ["#306998", "#FFD43B", "#E74C3C", "#2ECC71", "#9B59B6"]
 
 # Create plot
@@ -69,7 +69,7 @@ ax.set_title("bump-basic · seaborn · pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
 ax.grid(True, alpha=0.3, linestyle="--")
 
-# Legend styling
+# Legend styling - placed outside plot area
 ax.legend(title="Team", fontsize=14, title_fontsize=16, loc="center left", bbox_to_anchor=(1, 0.5))
 
 plt.tight_layout()

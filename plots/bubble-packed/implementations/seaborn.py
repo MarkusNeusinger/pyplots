@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-23
@@ -15,7 +15,7 @@ import seaborn as sns
 np.random.seed(42)
 data = {
     "Technology": [("Apple", 180), ("Microsoft", 160), ("Google", 120), ("NVIDIA", 95), ("Meta", 75)],
-    "Finance": [("JPMorgan", 85), ("Visa", 70), ("Mastercard", 55), ("Goldman", 45)],
+    "Finance": [("JPMorgan", 85), ("Visa", 70), ("Mastercard", 55), ("Goldman Sachs", 45)],
     "Healthcare": [("UnitedHealth", 90), ("J&J", 65), ("Merck", 50), ("Pfizer", 40)],
     "Retail": [("Amazon", 140), ("Walmart", 60), ("Costco", 45), ("Target", 30)],
 }
@@ -129,30 +129,52 @@ sns.scatterplot(
 )
 
 # Add labels for all circles using annotations
-for _, row in df.iterrows():
-    if row["radius"] > 35:
-        ax.text(
-            row["x"], row["y"], row["name"], ha="center", va="center", fontsize=18, fontweight="bold", color="white"
-        )
-    elif row["radius"] > 28:
-        ax.text(
-            row["x"], row["y"], row["name"], ha="center", va="center", fontsize=14, fontweight="bold", color="white"
-        )
-    elif row["radius"] > 22:
-        ax.text(
-            row["x"], row["y"], row["name"], ha="center", va="center", fontsize=11, fontweight="bold", color="white"
-        )
+# Sort by x position to manage external annotation placement
+df_sorted = df.sort_values("x")
+used_y_positions = []  # Track y positions for external labels to avoid overlap
+
+for _, row in df_sorted.iterrows():
+    name = row["name"]
+    # Abbreviate long names for internal labels
+    short_name = name if len(name) <= 10 else name[:9] + "."
+
+    if row["radius"] > 38:
+        # Large circles - full name with large font
+        ax.text(row["x"], row["y"], short_name, ha="center", va="center", fontsize=18, fontweight="bold", color="white")
+    elif row["radius"] > 32:
+        # Medium-large circles
+        ax.text(row["x"], row["y"], short_name, ha="center", va="center", fontsize=14, fontweight="bold", color="white")
+    elif row["radius"] > 26:
+        # Medium circles - smaller font
+        ax.text(row["x"], row["y"], short_name, ha="center", va="center", fontsize=11, fontweight="bold", color="white")
     else:
-        # External annotation for smaller circles
+        # Small circles - external annotation with arrow
+        # Determine label position (alternate left/right based on position)
+        if row["x"] < plot_width / 2:
+            # Left side - annotate to the left
+            offset_x = -row["radius"] - 20
+            ha = "right"
+        else:
+            # Right side - annotate to the right
+            offset_x = row["radius"] + 20
+            ha = "left"
+
+        # Adjust y to avoid overlapping labels
+        target_y = row["y"]
+        for used_y in used_y_positions:
+            if abs(target_y - used_y) < 25:
+                target_y = used_y + 25 if target_y >= used_y else used_y - 25
+        used_y_positions.append(target_y)
+
         ax.annotate(
-            row["name"],
+            name,
             xy=(row["x"], row["y"]),
-            xytext=(row["x"] + row["radius"] + 15, row["y"]),
-            fontsize=10,
+            xytext=(row["x"] + offset_x, target_y),
+            fontsize=11,
             fontweight="bold",
-            color="gray",
-            arrowprops={"arrowstyle": "-", "color": "gray", "lw": 1},
-            ha="left",
+            color="#444444",
+            arrowprops={"arrowstyle": "->", "color": "#888888", "lw": 1.5, "connectionstyle": "arc3,rad=0.1"},
+            ha=ha,
             va="center",
         )
 
@@ -165,13 +187,15 @@ ax.axis("off")
 # Title
 ax.set_title("bubble-packed · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
 
-# Create legend - position upper left to avoid overlap with data
+# Create legend - position below the plot to avoid any overlap with data
 legend_elements = [
     mpatches.Patch(facecolor=group_colors[group], edgecolor="white", linewidth=2, label=group) for group in data.keys()
 ]
 ax.legend(
     handles=legend_elements,
-    loc="upper left",
+    loc="upper center",
+    bbox_to_anchor=(0.5, -0.02),
+    ncol=4,
     fontsize=14,
     framealpha=0.95,
     title="Sector",

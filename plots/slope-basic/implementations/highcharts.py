@@ -1,7 +1,7 @@
 """ pyplots.ai
 slope-basic: Basic Slope Chart (Slopegraph)
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 96/100 | Created: 2025-12-17
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import tempfile
@@ -21,7 +21,7 @@ products = ["Product A", "Product B", "Product C", "Product D", "Product E", "Pr
 q1_sales = [85, 120, 45, 95, 150, 72, 110, 63]
 q4_sales = [110, 95, 88, 140, 125, 105, 145, 58]
 
-# Colors: blue for increase, orange for decrease
+# Colors: blue for increase, yellow for decrease
 color_increase = "#306998"  # Python Blue
 color_decrease = "#FFD43B"  # Python Yellow
 

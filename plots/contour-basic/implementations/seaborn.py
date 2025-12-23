@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 contour-basic: Basic Contour Plot
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 72/100 | Created: 2025-12-23
+Quality: 45/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt

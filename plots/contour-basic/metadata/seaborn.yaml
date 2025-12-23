@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: contour-basic
 created: '2025-12-23T10:01:23Z'
-updated: '2025-12-23T10:07:15Z'
+updated: '2025-12-23T10:16:17Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20457530836
 issue: 0
@@ -10,20 +10,16 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-basic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 72
+quality_score: 45
 review:
   strengths:
-  - Excellent use of seaborn kdeplot with both filled contours and line contours overlaid
-  - Viridis colormap is colorblind-accessible
-  - Clean code structure following KISS principles
-  - Good text sizing for readability at 4800x2700 resolution
-  - Bimodal distribution shows interesting contour patterns
+  - Visually appealing image with good viridis color scheme
+  - Contour levels well-distributed showing surface structure
+  - Title format is correct
   weaknesses:
-  - Uses KDE density estimation instead of scalar field z=f(x,y) on meshgrid as the
-    spec requires
-  - Axis labels are generic without context - should reflect a realistic application
-    like topography or temperature
-  - Missing labeled contour levels as suggested in the spec notes
-  - Data does not demonstrate spec stated applications such as topography or meteorology
-    or mathematical functions
-  - Whitegrid style is distracting for contour plots - plain or no grid would be better
+  - 'Critical: Implementation code does not match the generated image - axis labels,
+    ranges, and data context are completely different'
+  - 'Library violation: Seaborn only used for styling (sns.set_style), not for actual
+    plotting - code uses matplotlib contour functions directly'
+  - Generic axis labels (X Coordinate, Y Coordinate) with no units or realistic context
+  - Missing contour level labels as recommended in spec

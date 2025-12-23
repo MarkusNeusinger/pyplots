@@ -1,13 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 candlestick-basic: Basic Candlestick Chart
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-14
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import cairosvg
 import numpy as np
 import pandas as pd
-from lets_plot import (  # noqa: F401
+from lets_plot import (
     LetsPlot,
     aes,
     element_blank,

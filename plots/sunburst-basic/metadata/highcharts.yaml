@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: sunburst-basic
 created: '2025-12-23T21:55:00Z'
-updated: '2025-12-23T22:01:28Z'
+updated: '2025-12-23T22:09:22Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20472389172
 issue: 0
@@ -10,19 +10,20 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/highcharts/plot.html
-quality_score: 88
+quality_score: 89
 review:
   strengths:
-  - Excellent use of colorblind-safe palette (blue, yellow, purple) with brightness
-    variation for hierarchy levels
-  - Well-structured hierarchical data representing realistic corporate budget breakdown
-  - Proper title format with spec-id, library, and pyplots.ai branding
-  - Good use of Highcharts sunburst module with level-specific styling
-  - Clean code structure following KISS principles
+  - Excellent colorblind-safe color palette (blue, yellow, purple) with brightness
+    variations for hierarchy levels
+  - Well-structured hierarchical data representing a realistic corporate budget breakdown
+    scenario
+  - Correct title format following pyplots.ai conventions
+  - 'Effective use of Highcharts sunburst-specific features: level configurations,
+    color variations, label rotation modes'
+  - Good canvas utilization with the chart filling most of the available space
+  - Clear visual separation between hierarchy levels through color brightness
   weaknesses:
-  - Some outer ring labels are difficult to read due to rotation and small segment
-    sizes
-  - Could benefit from larger font sizes on outer ring labels for better legibility
-    at full resolution
-  - Data could show more variation in segment sizes to better demonstrate proportional
-    representation
+  - Some outer ring labels on smaller segments are difficult to read due to rotation
+    and font size
+  - Library version shows as unknown in the file header instead of actual version
+    number

@@ -1,63 +1,12 @@
 """ pyplots.ai
 qq-basic: Basic Q-Q Plot
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-17
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import altair as alt
 import numpy as np
 import pandas as pd
-
-
-# Approximate inverse normal CDF using rational approximation (Abramowitz & Stegun)
-def norm_ppf(p):
-    """Approximate inverse normal CDF for 0 < p < 1."""
-    # Constants for rational approximation
-    a = [
-        -3.969683028665376e1,
-        2.209460984245205e2,
-        -2.759285104469687e2,
-        1.383577518672690e2,
-        -3.066479806614716e1,
-        2.506628277459239e0,
-    ]
-    b = [-5.447609879822406e1, 1.615858368580409e2, -1.556989798598866e2, 6.680131188771972e1, -1.328068155288572e1]
-    c = [
-        -7.784894002430293e-3,
-        -3.223964580411365e-1,
-        -2.400758277161838e0,
-        -2.549732539343734e0,
-        4.374664141464968e0,
-        2.938163982698783e0,
-    ]
-    d = [7.784695709041462e-3, 3.224671290700398e-1, 2.445134137142996e0, 3.754408661907416e0]
-    p_low = 0.02425
-    p_high = 1 - p_low
-
-    result = np.zeros_like(p, dtype=float)
-    # Lower region
-    mask_low = p < p_low
-    if np.any(mask_low):
-        q = np.sqrt(-2 * np.log(p[mask_low]))
-        result[mask_low] = (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / (
-            (((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1
-        )
-    # Central region
-    mask_mid = (p >= p_low) & (p <= p_high)
-    if np.any(mask_mid):
-        q = p[mask_mid] - 0.5
-        r = q * q
-        result[mask_mid] = ((((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q) / (
-            ((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1
-        )
-    # Upper region
-    mask_high = p > p_high
-    if np.any(mask_high):
-        q = np.sqrt(-2 * np.log(1 - p[mask_high]))
-        result[mask_high] = -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / (
-            (((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1
-        )
-    return result
 
 
 # Data - sample with slight right skew to demonstrate Q-Q interpretation
@@ -69,15 +18,57 @@ sample = np.concatenate(
     ]
 )
 
-# Calculate theoretical quantiles (normal distribution)
+# Calculate Q-Q theoretical quantiles using Abramowitz & Stegun rational approximation
 n = len(sample)
 sorted_sample = np.sort(sample)
-probabilities = (np.arange(1, n + 1) - 0.5) / n
-theoretical_quantiles = norm_ppf(probabilities)
+p = (np.arange(1, n + 1) - 0.5) / n
+
+# Inverse normal CDF approximation (vectorized inline)
+# Constants for rational approximation
+a = [
+    -3.969683028665376e1,
+    2.209460984245205e2,
+    -2.759285104469687e2,
+    1.383577518672690e2,
+    -3.066479806614716e1,
+    2.506628277459239e0,
+]
+b = [-5.447609879822406e1, 1.615858368580409e2, -1.556989798598866e2, 6.680131188771972e1, -1.328068155288572e1]
+c = [
+    -7.784894002430293e-3,
+    -3.223964580411365e-1,
+    -2.400758277161838e0,
+    -2.549732539343734e0,
+    4.374664141464968e0,
+    2.938163982698783e0,
+]
+d = [7.784695709041462e-3, 3.224671290700398e-1, 2.445134137142996e0, 3.754408661907416e0]
+p_low = 0.02425
+
+theoretical_quantiles = np.zeros(n)
+# Lower tail
+mask_low = p < p_low
+q_low = np.sqrt(-2 * np.log(p[mask_low]))
+theoretical_quantiles[mask_low] = (
+    ((((c[0] * q_low + c[1]) * q_low + c[2]) * q_low + c[3]) * q_low + c[4]) * q_low + c[5]
+) / ((((d[0] * q_low + d[1]) * q_low + d[2]) * q_low + d[3]) * q_low + 1)
+# Central region
+mask_mid = (p >= p_low) & (p <= 1 - p_low)
+q_mid = p[mask_mid] - 0.5
+r_mid = q_mid * q_mid
+theoretical_quantiles[mask_mid] = (
+    (((((a[0] * r_mid + a[1]) * r_mid + a[2]) * r_mid + a[3]) * r_mid + a[4]) * r_mid + a[5]) * q_mid
+) / (((((b[0] * r_mid + b[1]) * r_mid + b[2]) * r_mid + b[3]) * r_mid + b[4]) * r_mid + 1)
+# Upper tail
+mask_high = p > 1 - p_low
+q_high = np.sqrt(-2 * np.log(1 - p[mask_high]))
+theoretical_quantiles[mask_high] = -(
+    ((((c[0] * q_high + c[1]) * q_high + c[2]) * q_high + c[3]) * q_high + c[4]) * q_high + c[5]
+) / ((((d[0] * q_high + d[1]) * q_high + d[2]) * q_high + d[3]) * q_high + 1)
 
 # Scale theoretical quantiles to match sample mean and std
 sample_mean = np.mean(sample)
-sample_std = np.std(sample)
+sample_std = np.std(sample, ddof=1)
 theoretical_scaled = theoretical_quantiles * sample_std + sample_mean
 
 # Create DataFrame for Altair

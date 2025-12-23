@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 span-basic: Basic Span Plot (Highlighted Region)
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np

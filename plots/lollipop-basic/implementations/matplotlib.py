@@ -1,15 +1,14 @@
-""" pyplots.ai
+"""pyplots.ai
 lollipop-basic: Basic Lollipop Chart
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-15
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-# Data: Product sales by category, sorted by value
-np.random.seed(42)
+# Data: Product sales by category (thousands of units)
 categories = [
     "Electronics",
     "Clothing",
@@ -32,7 +31,7 @@ values = [values[i] for i in sorted_indices]
 # Create plot (4800x2700 px)
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Plot lollipop chart: stems + markers
+# Plot lollipop chart: stems (thin lines) + circular markers (dots)
 x_positions = np.arange(len(categories))
 ax.vlines(x_positions, ymin=0, ymax=values, color="#306998", linewidth=2.5)
 ax.scatter(x_positions, values, color="#FFD43B", s=300, zorder=3, edgecolors="#306998", linewidths=2)
@@ -40,7 +39,7 @@ ax.scatter(x_positions, values, color="#FFD43B", s=300, zorder=3, edgecolors="#3
 # Labels and styling (scaled for 4800x2700)
 ax.set_xlabel("Product Category", fontsize=20)
 ax.set_ylabel("Sales (thousands)", fontsize=20)
-ax.set_title("lollipop-basic \u00b7 matplotlib \u00b7 pyplots.ai", fontsize=24)
+ax.set_title("lollipop-basic · matplotlib · pyplots.ai", fontsize=24)
 
 ax.set_xticks(x_positions)
 ax.set_xticklabels(categories, rotation=45, ha="right", fontsize=16)

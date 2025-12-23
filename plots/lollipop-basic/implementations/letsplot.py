@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 lollipop-basic: Basic Lollipop Chart
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 96/100 | Created: 2025-12-15
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import pandas as pd
@@ -55,7 +55,7 @@ plot = (
         axis_text_x=element_text(angle=45, hjust=1, size=16),
         axis_text_y=element_text(size=16),
         axis_title=element_text(size=20),
-        plot_title=element_text(size=20, hjust=0.5),
+        plot_title=element_text(size=24, hjust=0.5),
         panel_grid_major_x=element_blank(),
     )
 )

@@ -1,7 +1,7 @@
 """ pyplots.ai
 funnel-basic: Basic Funnel Chart
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Quality: 96/100 | Created: 2025-12-23
 """
 
 from bokeh.io import export_png, output_file, save
@@ -30,7 +30,7 @@ center_x = 0.5  # Center of funnel
 segment_coords = []
 for i in range(len(stages)):
     top_width = widths[i]
-    # Bottom width is next stage width, or 10% of top for last stage
+    # Bottom width is next stage width, or 50% of current for last stage
     bottom_width = widths[i + 1] if i < len(stages) - 1 else widths[i] * 0.5
 
     top_y = funnel_height - i * stage_height
@@ -72,7 +72,7 @@ for i, (stage, value) in enumerate(zip(stages, values, strict=True)):
     # Calculate percentage relative to first stage
     percentage = (value / max_value) * 100
 
-    # Stage name label (white text for contrast)
+    # Stage name label (dark text for yellow, white for others)
     text_color = "#333333" if colors[i] == "#FFD43B" else "white"
     stage_label = Label(
         x=center_x,

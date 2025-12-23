@@ -1,6 +1,6 @@
 """ pyplots.ai
 donut-basic: Basic Donut Chart
-Library: letsplot unknown | Python 3.13.11
+Library: letsplot 4.8.1 | Python 3.13.11
 Quality: 91/100 | Created: 2025-12-23
 """
 

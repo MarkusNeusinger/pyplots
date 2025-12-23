@@ -1,6 +1,6 @@
 """ pyplots.ai
 line-basic: Basic Line Plot
-Library: letsplot unknown | Python 3.13.11
+Library: letsplot 4.8.1 | Python 3.13.11
 Quality: 92/100 | Created: 2025-12-23
 """
 

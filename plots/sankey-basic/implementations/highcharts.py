@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 sankey-basic: Basic Sankey Diagram
 Library: highcharts unknown | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-23
@@ -53,21 +53,21 @@ for source, target, _ in flows:
     nodes_set.add(target)
 nodes = list(nodes_set)
 
-# Colorblind-safe colors for nodes (darker tones for better label contrast)
+# Colorblind-safe colors for nodes - all dark enough for white text contrast
 node_colors = {
-    # Sources (energy sources) - darker tones for better label visibility
+    # Sources (energy sources) - dark tones for white text readability
     "Coal": "#1A3A5C",  # Dark Blue
-    "Natural Gas": "#B8860B",  # Dark Goldenrod
-    "Nuclear": "#6B3FA0",  # Dark Purple
-    "Petroleum": "#0E8B9B",  # Dark Cyan
-    "Renewable": "#1E7A1E",  # Dark Green
-    # Intermediate - darker for contrast
-    "Electricity": "#5D3A32",  # Dark Brown
-    # End uses - moderate saturation for balance
-    "Residential": "#C75B9B",  # Rose
-    "Commercial": "#5A5A5A",  # Dark Gray
-    "Industrial": "#8B8C1A",  # Dark Olive
-    "Transportation": "#CC6600",  # Dark Orange
+    "Natural Gas": "#6B4E12",  # Darker Goldenrod (darkened for contrast)
+    "Nuclear": "#5B2E8F",  # Dark Purple
+    "Petroleum": "#0A6B78",  # Dark Cyan
+    "Renewable": "#155415",  # Dark Green
+    # Intermediate - dark for contrast
+    "Electricity": "#4D2A22",  # Dark Brown
+    # End uses - darker shades for white text visibility
+    "Residential": "#8B3A6B",  # Dark Rose
+    "Commercial": "#3A3A3A",  # Darker Gray
+    "Industrial": "#5B5C0A",  # Dark Olive
+    "Transportation": "#994D00",  # Darker Orange
 }
 
 # Create nodes data with colors
@@ -80,8 +80,17 @@ links_data = [{"from": source, "to": target, "weight": value} for source, target
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration
-chart.options.chart = {"type": "sankey", "width": 4800, "height": 2700, "backgroundColor": "#ffffff"}
+# Chart configuration with margins to prevent label cutoff at edges
+chart.options.chart = {
+    "type": "sankey",
+    "width": 4800,
+    "height": 2700,
+    "backgroundColor": "#ffffff",
+    "marginLeft": 180,
+    "marginRight": 180,
+    "marginTop": 160,
+    "marginBottom": 80,
+}
 
 # Title
 chart.options.title = {
@@ -152,7 +161,7 @@ html_content = f"""<!DOCTYPE html>
 </body>
 </html>"""
 
-# Save HTML for interactive version (use CDN for standalone)
+# Save HTML for interactive version (use CDN for standalone) - fixed dimensions like PNG
 standalone_html = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -160,8 +169,8 @@ standalone_html = f"""<!DOCTYPE html>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/sankey.js"></script>
 </head>
-<body style="margin:0;">
-    <div id="container" style="width: 100%; height: 100vh;"></div>
+<body style="margin:0; overflow:auto;">
+    <div id="container" style="width: 4800px; height: 2700px;"></div>
     <script>{html_str}</script>
 </body>
 </html>"""

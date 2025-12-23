@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 sparkline-basic: Basic Sparkline
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-16
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import altair as alt
@@ -16,9 +16,9 @@ base_trend = np.linspace(100, 150, n_points)
 noise = np.random.randn(n_points) * 10
 values = base_trend + noise
 
-# Add realistic business patterns (weekly dips)
+# Add realistic business patterns (weekly dips on weekends)
 for i in range(n_points):
-    if i % 7 in [5, 6]:  # Weekend dips
+    if i % 7 in [5, 6]:
         values[i] *= 0.85
 
 df = pd.DataFrame({"x": range(n_points), "value": values})
@@ -29,10 +29,20 @@ max_idx = df["value"].idxmax()
 highlights = df.iloc[[min_idx, max_idx]].copy()
 highlights["type"] = ["min", "max"]
 
+# First and last point markers
+endpoints = df.iloc[[0, -1]].copy()
+
 # Sparkline - minimal line chart without axes or labels
 line = (
     alt.Chart(df)
     .mark_line(strokeWidth=3, color="#306998")
+    .encode(x=alt.X("x:Q", axis=None), y=alt.Y("value:Q", axis=None, scale=alt.Scale(zero=False)))
+)
+
+# Endpoint markers (subtle gray)
+endpoint_markers = (
+    alt.Chart(endpoints)
+    .mark_circle(size=200, color="#888888")
     .encode(x=alt.X("x:Q", axis=None), y=alt.Y("value:Q", axis=None, scale=alt.Scale(zero=False)))
 )
 
@@ -45,14 +55,6 @@ points = (
         y=alt.Y("value:Q", axis=None, scale=alt.Scale(zero=False)),
         color=alt.Color("type:N", scale=alt.Scale(domain=["min", "max"], range=["#FFD43B", "#306998"]), legend=None),
     )
-)
-
-# First and last point markers (subtle gray)
-endpoints = df.iloc[[0, -1]].copy()
-endpoint_markers = (
-    alt.Chart(endpoints)
-    .mark_circle(size=200, color="#888888")
-    .encode(x=alt.X("x:Q", axis=None), y=alt.Y("value:Q", axis=None, scale=alt.Scale(zero=False)))
 )
 
 # Combine layers

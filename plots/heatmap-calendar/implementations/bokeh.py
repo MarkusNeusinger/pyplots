@@ -1,7 +1,7 @@
 """ pyplots.ai
 heatmap-calendar: Basic Calendar Heatmap
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -19,7 +19,6 @@ end_date = pd.Timestamp("2024-12-31")
 dates = pd.date_range(start=start_date, end=end_date, freq="D")
 
 # Simulate GitHub-style contributions with realistic patterns
-# Base activity with weekly pattern (less on weekends)
 values = []
 for date in dates:
     weekday = date.weekday()
@@ -38,10 +37,7 @@ for date in dates:
 df = pd.DataFrame({"date": dates, "value": values})
 
 # Extract calendar components
-df["week"] = df["date"].dt.isocalendar().week
 df["weekday"] = df["date"].dt.weekday
-df["month"] = df["date"].dt.month
-df["year"] = df["date"].dt.year
 
 # Compute continuous week index from start of year
 df["week_of_year"] = (df["date"] - start_date).dt.days // 7
@@ -64,6 +60,7 @@ colors = list(reversed(Greens9))
 mapper = LinearColorMapper(palette=colors, low=0, high=df["value"].max())
 
 # Get month start positions for x-axis labels
+df["month"] = df["date"].dt.month
 months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 month_starts = df.groupby("month")["week_of_year"].min().to_dict()
 month_ticks = list(month_starts.values())
@@ -117,7 +114,7 @@ p.yaxis.axis_label_text_font_size = "22pt"
 p.xaxis.major_label_text_font_size = "20pt"
 p.yaxis.major_label_text_font_size = "20pt"
 
-# Grid styling
+# Grid styling - disable grid for heatmap
 p.xgrid.grid_line_color = None
 p.ygrid.grid_line_color = None
 
@@ -132,6 +129,5 @@ p.yaxis.axis_line_color = "#cccccc"
 # Save as PNG and HTML
 export_png(p, filename="plot.png")
 
-# Also save as HTML for interactivity
 output_file("plot.html")
 save(p)

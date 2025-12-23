@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 rug-basic: Basic Rug Plot
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 68/100 | Created: 2025-12-23
@@ -16,21 +16,29 @@ cluster1 = np.random.normal(25, 4, 60)
 cluster2 = np.random.normal(55, 6, 40)
 values = np.concatenate([cluster1, cluster2])
 
-# Rug tick height (small relative to plot)
-tick_height = 0.3
+# Rug tick height - small marks at bottom margin (~5% of plot height)
+# Using a range of 0-1 for y, ticks extend from 0 to 0.05 (5%)
+tick_height = 0.05
 
 # Create ColumnDataSource for rug ticks
 source = ColumnDataSource(data={"x": values, "y0": np.zeros(len(values)), "y1": np.full(len(values), tick_height)})
 
-# Create figure (4800 x 2700 px)
-p = figure(width=4800, height=2700, title="rug-basic · bokeh · pyplots.ai", x_axis_label="Value", y_axis_label="")
+# Create figure (4800 x 2700 px) - hide toolbar for cleaner PNG export
+p = figure(
+    width=4800,
+    height=2700,
+    title="rug-basic · bokeh · pyplots.ai",
+    x_axis_label="Value",
+    y_axis_label="",
+    toolbar_location=None,
+)
 
-# Draw rug ticks as vertical segments
-p.segment(x0="x", y0="y0", x1="x", y1="y1", source=source, line_color="#306998", line_width=3, line_alpha=0.6)
+# Draw rug ticks as vertical segments at the bottom margin
+p.segment(x0="x", y0="y0", x1="x", y1="y1", source=source, line_color="#306998", line_width=4, line_alpha=0.6)
 
-# Configure axis ranges
+# Configure axis ranges - y range from 0 to 1 makes ticks appear as small marks at bottom
 p.x_range = Range1d(values.min() - 5, values.max() + 5)
-p.y_range = Range1d(-0.05, tick_height + 0.15)
+p.y_range = Range1d(0, 1)
 
 # Hide y-axis (not meaningful for rug plot)
 p.yaxis.visible = False

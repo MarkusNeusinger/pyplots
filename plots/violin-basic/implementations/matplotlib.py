@@ -1,7 +1,7 @@
 """ pyplots.ai
 violin-basic: Basic Violin Plot
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -53,7 +53,7 @@ for i, (q1, q3) in enumerate(zip(quartile1, quartile3, strict=True)):
 ax.set_xticks(range(len(categories)))
 ax.set_xticklabels(categories)
 ax.set_xlabel("School", fontsize=20)
-ax.set_ylabel("Test Score", fontsize=20)
+ax.set_ylabel("Test Score (points)", fontsize=20)
 ax.set_title("violin-basic · matplotlib · pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
 ax.grid(True, alpha=0.3, linestyle="--", axis="y")

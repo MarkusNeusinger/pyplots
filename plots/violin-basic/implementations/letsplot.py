@@ -1,7 +1,7 @@
 """ pyplots.ai
 violin-basic: Basic Violin Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Library: letsplot unknown | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -48,7 +48,7 @@ plot = (
     )
     + scale_fill_manual(values=colors)  # noqa: F405
     + labs(  # noqa: F405
-        x="Department", y="Salary ($)", title="violin-basic \u00b7 lets-plot \u00b7 pyplots.ai"
+        x="Department", y="Salary ($)", title="violin-basic · lets-plot · pyplots.ai"
     )
     + theme_minimal()  # noqa: F405
     + theme(  # noqa: F405

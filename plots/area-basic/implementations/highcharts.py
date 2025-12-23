@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 area-basic: Basic Area Chart
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import tempfile
@@ -63,7 +63,7 @@ chart.options.y_axis = {
     "gridLineColor": "rgba(0, 0, 0, 0.1)",
 }
 
-# Plot options with semi-transparent fill
+# Plot options with semi-transparent fill and gradient
 chart.options.plot_options = {
     "area": {
         "fillColor": {

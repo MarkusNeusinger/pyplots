@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 swarm-basic: Basic Swarm Plot
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import altair as alt
@@ -42,7 +42,6 @@ for dept, n in zip(departments, n_per_dept, strict=True):
 df = pd.DataFrame(data)
 
 # Calculate jitter for swarm effect (spread points horizontally within categories)
-# Group by department and add x-offset based on density
 df["jitter"] = 0.0
 for dept in departments:
     mask = df["Department"] == dept

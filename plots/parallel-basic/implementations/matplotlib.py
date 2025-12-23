@@ -1,15 +1,56 @@
-""" pyplots.ai
+"""pyplots.ai
 parallel-basic: Basic Parallel Coordinates Plot
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 
 
-# Data - Iris dataset for multivariate demonstration
-df = pd.read_csv("https://raw.githubusercontent.com/mwaskom/seaborn-data/master/iris.csv")
+# Data - Iris dataset for multivariate demonstration (embedded for reproducibility)
+np.random.seed(42)
+
+# Create Iris-like dataset with realistic measurements
+data = {
+    "sepal_length": np.concatenate(
+        [
+            np.random.normal(5.0, 0.35, 50),  # Setosa
+            np.random.normal(5.9, 0.52, 50),  # Versicolor
+            np.random.normal(6.6, 0.64, 50),  # Virginica
+        ]
+    ),
+    "sepal_width": np.concatenate(
+        [
+            np.random.normal(3.4, 0.38, 50),  # Setosa
+            np.random.normal(2.8, 0.31, 50),  # Versicolor
+            np.random.normal(3.0, 0.32, 50),  # Virginica
+        ]
+    ),
+    "petal_length": np.concatenate(
+        [
+            np.random.normal(1.5, 0.17, 50),  # Setosa
+            np.random.normal(4.3, 0.47, 50),  # Versicolor
+            np.random.normal(5.5, 0.55, 50),  # Virginica
+        ]
+    ),
+    "petal_width": np.concatenate(
+        [
+            np.random.normal(0.2, 0.11, 50),  # Setosa
+            np.random.normal(1.3, 0.20, 50),  # Versicolor
+            np.random.normal(2.0, 0.27, 50),  # Virginica
+        ]
+    ),
+    "species": ["setosa"] * 50 + ["versicolor"] * 50 + ["virginica"] * 50,
+}
+df = pd.DataFrame(data)
+
+# Ensure realistic bounds
+df["sepal_length"] = df["sepal_length"].clip(4.3, 7.9)
+df["sepal_width"] = df["sepal_width"].clip(2.0, 4.4)
+df["petal_length"] = df["petal_length"].clip(1.0, 6.9)
+df["petal_width"] = df["petal_width"].clip(0.1, 2.5)
 
 # Define numeric columns and normalize to [0, 1] for fair comparison
 numeric_cols = ["sepal_length", "sepal_width", "petal_length", "petal_width"]
@@ -22,7 +63,7 @@ for col in numeric_cols:
 # Create figure (4800x2700 px at 300 dpi)
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Define colors for species
+# Define colors for species - Python Blue and Yellow first, then accessible green
 colors = {"setosa": "#306998", "versicolor": "#FFD43B", "virginica": "#4CAF50"}
 
 # Plot parallel coordinates - each line connects values across axes

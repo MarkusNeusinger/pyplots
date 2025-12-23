@@ -1,7 +1,7 @@
 """ pyplots.ai
 swarm-basic: Basic Swarm Plot
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-17
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -18,48 +18,6 @@ data = {
     "Sales": np.random.normal(78, 15, 40),
     "Operations": np.random.normal(70, 10, 55),
 }
-
-
-# Beeswarm algorithm - spreads points horizontally to avoid overlap
-def beeswarm(values, center_x, point_radius=0.03, spacing=0.02):
-    """Generate swarm positions for a set of values."""
-    sorted_indices = np.argsort(values)
-    positions = []
-    placed = []
-
-    for idx in sorted_indices:
-        y = values[idx]
-        x = center_x
-
-        # Find non-overlapping x position
-        offset = 0
-        direction = 1
-        while True:
-            test_x = center_x + offset * direction
-            overlap = False
-            for px, py in placed:
-                # Check if points would overlap
-                dist_y = abs(y - py)
-                dist_x = abs(test_x - px)
-                min_dist = 2 * point_radius + spacing
-                if dist_y < min_dist and dist_x < min_dist:
-                    overlap = True
-                    break
-            if not overlap:
-                x = test_x
-                break
-            # Alternate sides and increase offset
-            if direction == 1:
-                direction = -1
-            else:
-                direction = 1
-                offset += point_radius + spacing / 2
-
-        placed.append((x, y))
-        positions.append((x, y))
-
-    return positions
-
 
 # Custom style for 4800x2700 px canvas
 custom_style = Style(
@@ -97,19 +55,55 @@ chart = pygal.XY(
     margin=50,
 )
 
-# Add swarm for each category
-for i, (category, values) in enumerate(data.items()):
-    center_x = i + 1  # Position categories at 1, 2, 3, 4
-    swarm_points = beeswarm(values, center_x, point_radius=0.1, spacing=0.05)
+# Beeswarm algorithm - spreads points horizontally to avoid overlap
+# Process each category
+for cat_idx, (category, values) in enumerate(data.items()):
+    center_x = cat_idx + 1
+    point_radius = 0.1
+    spacing = 0.05
+
+    # Sort by value to place similar values near each other
+    sorted_indices = np.argsort(values)
+    placed = []
+    swarm_points = []
+
+    for idx in sorted_indices:
+        y = values[idx]
+        x = center_x
+        offset = 0
+        direction = 1
+
+        # Find non-overlapping x position
+        while True:
+            test_x = center_x + offset * direction
+            overlap = False
+            for px, py in placed:
+                dist_y = abs(y - py)
+                dist_x = abs(test_x - px)
+                min_dist = 2 * point_radius + spacing
+                if dist_y < min_dist and dist_x < min_dist:
+                    overlap = True
+                    break
+            if not overlap:
+                x = test_x
+                break
+            if direction == 1:
+                direction = -1
+            else:
+                direction = 1
+                offset += point_radius + spacing / 2
+
+        placed.append((x, y))
+        swarm_points.append((x, y))
+
     chart.add(category, swarm_points)
 
-# Add mean markers for each category (separate disconnected lines)
+# Add mean markers for each category
 for i, (_category, values) in enumerate(data.items()):
     center_x = i + 1
     mean_val = float(np.mean(values))
-    # Use None to break the line between segments
     mean_segment = [(center_x - 0.15, mean_val), (center_x + 0.15, mean_val)]
-    label = "Mean" if i == 0 else None  # Only label first one for legend
+    label = "Mean" if i == 0 else None
     chart.add(label, mean_segment, stroke=True, fill=False, show_dots=False, stroke_style={"width": 8})
 
 # Configure x-axis to show category names

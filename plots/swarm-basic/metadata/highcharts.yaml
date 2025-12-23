@@ -1,17 +1,29 @@
 library: highcharts
 specification_id: swarm-basic
-created: 2025-12-17 02:09:45+00:00
-updated: 2025-12-17 02:09:45+00:00
+created: '2025-12-23T21:56:34Z'
+updated: '2025-12-23T22:02:17Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20289112807
-issue: 974
+workflow_run: 20472390631
+issue: 0
 python_version: 3.13.11
-library_version: 1.10.3
+library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/swarm-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/swarm-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/swarm-basic/highcharts/plot.html
-quality_score: 93
+quality_score: 91
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent swarm algorithm implementation that spreads points horizontally to avoid
+    overlap
+  - Colorblind-safe palette with good visual distinction between categories
+  - Realistic, domain-appropriate data showing different distribution shapes (bimodal,
+    normal, tight cluster)
+  - Mean markers clearly distinguish summary statistics from individual data points
+  - Proper title format and clear axis labels
+  - Good canvas utilization and layout balance
+  weaknesses:
+  - Legend appears truncated or not visible in the rendered output - should verify
+    legend displays properly
+  - Helper function for swarm positions deviates from KISS principle (though functionally
+    necessary)
+  - Axis labels lack units (e.g., Performance Score 0-100 would be more informative)

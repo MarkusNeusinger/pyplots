@@ -174,6 +174,9 @@ export function ImageCard({
             onClick={(e) => {
               e.stopPropagation();
               onTooltipToggle(isSpecTooltipOpen ? null : specTooltipId);
+              if (!isSpecTooltipOpen) {
+                onTrackEvent?.('description_spec', { spec: image.spec_id });
+              }
             }}
             sx={{
               fontSize: '0.8rem',
@@ -241,6 +244,9 @@ export function ImageCard({
             onClick={(e) => {
               e.stopPropagation();
               onTooltipToggle(isLibTooltipOpen ? null : libTooltipId);
+              if (!isLibTooltipOpen) {
+                onTrackEvent?.('description_lib', { library: image.library });
+              }
             }}
             sx={{
               fontSize: '0.8rem',

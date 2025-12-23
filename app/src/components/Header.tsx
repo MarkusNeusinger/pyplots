@@ -8,7 +8,7 @@ import ShuffleIcon from '@mui/icons-material/Shuffle';
 
 interface HeaderProps {
   stats?: { specs: number; plots: number; libraries: number } | null;
-  onRandom?: () => void;
+  onRandom?: (method: 'click' | 'space' | 'doubletap') => void;
 }
 
 export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
@@ -19,7 +19,7 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
     : '';
 
   return (
-    <Box sx={{ textAlign: 'center', mb: 4 }}>
+    <Box sx={{ textAlign: 'center', mb: 6 }}>
       <Typography
         variant="h2"
         component="h1"
@@ -51,7 +51,7 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
               el.style.animation = 'none';
               void el.getBoundingClientRect();
               el.style.animation = 'shuffle-wiggle 0.8s ease';
-              onRandom();
+              onRandom('click');
             }}
             onKeyDown={(e) => {
               if (e.key === ' ') {
@@ -60,7 +60,7 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
                 el.style.animation = 'none';
                 void el.getBoundingClientRect();
                 el.style.animation = 'shuffle-wiggle 0.8s ease';
-                onRandom();
+                onRandom('space');
               }
             }}
             onTouchEnd={(e) => {
@@ -72,7 +72,7 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
                 el.style.animation = 'none';
                 void el.getBoundingClientRect();
                 el.style.animation = 'shuffle-wiggle 0.8s ease';
-                onRandom();
+                onRandom('doubletap');
               }
               (e.currentTarget as unknown as HTMLElement & { lastTap?: number }).lastTap = now;
             }}

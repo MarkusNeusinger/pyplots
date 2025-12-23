@@ -61,15 +61,21 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
       navigator.clipboard.writeText(image.code);
       setCopied(true);
       const specId = selectedSpec || image.spec_id;
-      onTrackEvent?.('copy_code', { spec: specId, library: image.library, method: 'button' });
+      onTrackEvent?.('copy_code', { spec: specId, library: image.library, method: 'modal' });
       setTimeout(() => setCopied(false), 2000);
     }
   }, [image?.code, image?.library, image?.spec_id, onTrackEvent, selectedSpec]);
 
-  // Track native copy events (Ctrl+C, Cmd+C, right-click copy)
+  // Track native copy events (Ctrl+C, Cmd+C)
   const handleNativeCopy = useCallback(() => {
     const specId = selectedSpec || image?.spec_id;
     onTrackEvent?.('copy_code', { spec: specId, library: image?.library, method: 'native' });
+  }, [onTrackEvent, selectedSpec, image?.library, image?.spec_id]);
+
+  // Track contextmenu (right-click) - user may copy from context menu
+  const handleContextMenu = useCallback(() => {
+    const specId = selectedSpec || image?.spec_id;
+    onTrackEvent?.('copy_code', { spec: specId, library: image?.library, method: 'contextmenu' });
   }, [onTrackEvent, selectedSpec, image?.library, image?.spec_id]);
 
   // Download image via backend proxy
@@ -209,6 +215,7 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
                 </Box>
                 <Box
                   onCopy={handleNativeCopy}
+                  onContextMenu={handleContextMenu}
                   sx={{
                     height: '100%',
                     overflow: 'auto',

@@ -45,9 +45,13 @@ export function FilterBar({
   const [searchQuery, setSearchQuery] = useState('');
   const [dropdownAnchor, setDropdownAnchor] = useState<HTMLElement | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<FilterCategory | null>(null);
+  const [isSearchManuallyExpanded, setIsSearchManuallyExpanded] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const localInputRef = useRef<HTMLInputElement>(null);
   const inputRef = searchInputRef || localInputRef;
+
+  // Search is expanded when: no filters OR manually expanded
+  const isSearchExpanded = activeFilters.length === 0 || isSearchManuallyExpanded;
 
   // Chip menu state
   const [chipMenuAnchor, setChipMenuAnchor] = useState<HTMLElement | null>(null);
@@ -56,21 +60,29 @@ export function FilterBar({
   // Dropdown keyboard navigation
   const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
 
-  // Open dropdown
-  const handleSearchFocus = useCallback(() => {
-    setDropdownAnchor(searchContainerRef.current);
-  }, []);
-
-  const handleSearchClick = useCallback(() => {
+  // Expand and open dropdown
+  const handleSearchExpand = useCallback(() => {
+    setIsSearchManuallyExpanded(true);
     setDropdownAnchor(searchContainerRef.current);
     setTimeout(() => inputRef.current?.focus(), 0);
   }, []);
 
-  // Close dropdown
+  // Collapse when empty and loses focus (only if there are filters)
+  const handleSearchBlur = useCallback(() => {
+    // Delay to allow click events on dropdown to fire first
+    setTimeout(() => {
+      if (!searchQuery && !selectedCategory && !dropdownAnchor && activeFilters.length > 0) {
+        setIsSearchManuallyExpanded(false);
+      }
+    }, 200);
+  }, [searchQuery, selectedCategory, dropdownAnchor, activeFilters.length]);
+
+  // Close dropdown and collapse if empty
   const handleDropdownClose = useCallback(() => {
     setDropdownAnchor(null);
     setSelectedCategory(null);
     setSearchQuery('');
+    setIsSearchManuallyExpanded(false);
   }, []);
 
   // Select category from dropdown
@@ -85,13 +97,20 @@ export function FilterBar({
     (category: FilterCategory, value: string) => {
       onAddFilter(category, value);
       onTrackEvent('filter_add', { category, value });
-      setDropdownAnchor(null);
+      // Track search if query was used
+      if (searchQuery.trim()) {
+        onTrackEvent('search', { query: searchQuery.trim(), category });
+      }
       setSelectedCategory(null);
       setSearchQuery('');
-      // Focus search input for next filter
-      setTimeout(() => inputRef.current?.focus(), 100);
+      // Keep expanded and focused for next filter
+      setIsSearchManuallyExpanded(true);
+      setTimeout(() => {
+        setDropdownAnchor(searchContainerRef.current);
+        inputRef.current?.focus();
+      }, 50);
     },
-    [onAddFilter, onTrackEvent]
+    [onAddFilter, onTrackEvent, searchQuery]
   );
 
   // Chip click - open chip menu
@@ -199,7 +218,7 @@ export function FilterBar({
       }
     }
 
-    return results.sort((a, b) => b.count - a.count).slice(0, 15);
+    return results.sort((a, b) => b.count - a.count);
   };
 
   const searchResults = getSearchResults();
@@ -263,7 +282,19 @@ export function FilterBar({
   const availableValuesForActiveGroup = activeGroupIndex !== null ? getAvailableValuesForGroup(activeGroupIndex) : [];
 
   return (
-    <Box sx={{ mb: 4, px: 2 }}>
+    <Box
+      sx={{
+        mb: 4,
+        px: 2,
+        py: 1.5,
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+        bgcolor: '#fafafa',
+        backdropFilter: 'blur(8px)',
+        backgroundColor: 'rgba(250, 250, 250, 0.9)',
+      }}
+    >
       {/* Filter chips row */}
       <Box
         sx={{
@@ -288,6 +319,11 @@ export function FilterBar({
             key={`${group.category}-${index}`}
             label={displayLabel}
             onClick={(e) => handleChipClick(e, index)}
+            onDelete={() => {
+              onRemoveGroup(index);
+              onTrackEvent('filter_remove_group', { category: group.category });
+            }}
+            deleteIcon={<CloseIcon sx={{ fontSize: '1rem !important' }} />}
             sx={{
               fontFamily: '"JetBrains Mono", monospace',
               fontSize: '0.85rem',
@@ -297,6 +333,10 @@ export function FilterBar({
               color: '#374151',
               cursor: 'pointer',
               '&:hover': { bgcolor: '#e5e7eb' },
+              '& .MuiChip-deleteIcon': {
+                color: '#9ca3af',
+                '&:hover': { color: '#3776AB' },
+              },
               ...(animationClass === 'chip-blur-out' && {
                 animation: 'chip-roll-out 0.5s ease-in forwards',
               }),
@@ -316,29 +356,43 @@ export function FilterBar({
         );
       })}
 
-      {/* Search input - hidden when max 5 filters reached */}
+      {/* Search input - collapsed icon or expanded input */}
       {!maxFiltersReached && (
         <Box
           ref={searchContainerRef}
-          onClick={handleSearchClick}
+          onClick={handleSearchExpand}
           sx={{
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'center',
             gap: 0.5,
-            px: 1.5,
+            px: isSearchExpanded ? 1.5 : 0,
             height: 32,
-            border: '1px dashed #9ca3af',
+            width: isSearchExpanded ? 'auto' : 32,
+            minWidth: isSearchExpanded ? 120 : 32,
+            border: isSearchExpanded ? '1px dashed #9ca3af' : 'none',
             borderRadius: '16px',
             bgcolor: isDropdownOpen ? '#f9fafb' : 'transparent',
-            cursor: 'text',
-            minWidth: 100,
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
             '&:hover': {
-              borderColor: '#3776AB',
-              bgcolor: '#f9fafb',
+              borderColor: isSearchExpanded ? '#3776AB' : undefined,
+              bgcolor: isSearchExpanded ? '#f9fafb' : undefined,
+            },
+            '&:hover .search-icon': {
+              color: '#3776AB',
             },
           }}
         >
-          <SearchIcon sx={{ color: '#9ca3af', fontSize: '1rem' }} />
+          <SearchIcon
+            className="search-icon"
+            sx={{
+              color: '#9ca3af',
+              fontSize: isSearchExpanded ? '1rem' : '1.25rem',
+              transition: 'all 0.2s ease',
+              flexShrink: 0,
+            }}
+          />
           <InputBase
             inputRef={inputRef}
             placeholder={selectedCategory ? FILTER_LABELS[selectedCategory] : ''}
@@ -349,10 +403,19 @@ export function FilterBar({
                 setDropdownAnchor(searchContainerRef.current);
               }
             }}
-            onFocus={handleSearchFocus}
+            onFocus={() => {
+              if (!isSearchManuallyExpanded && activeFilters.length > 0) {
+                setIsSearchManuallyExpanded(true);
+              }
+              setDropdownAnchor(searchContainerRef.current);
+            }}
+            onBlur={handleSearchBlur}
             onKeyDown={handleKeyDown}
             sx={{
-              flex: 1,
+              flex: isSearchExpanded ? 1 : 0,
+              width: isSearchExpanded ? 'auto' : 0,
+              opacity: isSearchExpanded ? 1 : 0,
+              transition: 'all 0.2s ease',
               fontFamily: '"JetBrains Mono", monospace',
               fontSize: '0.85rem',
               '& input': {
@@ -364,7 +427,7 @@ export function FilterBar({
               },
             }}
           />
-          {(searchQuery || selectedCategory) && (
+          {isSearchExpanded && (searchQuery || selectedCategory) && (
             <CloseIcon
               onClick={(e) => {
                 e.stopPropagation();
@@ -537,7 +600,7 @@ export function FilterBar({
                 >
                   add (or)
                 </Typography>,
-                ...availableValuesForActiveGroup.slice(0, 5).map(([value, count]) => (
+                ...availableValuesForActiveGroup.map(([value, count]) => (
                   <MenuItem
                     key={`add-${value}`}
                     onClick={() => handleAddValueToExistingGroup(value)}

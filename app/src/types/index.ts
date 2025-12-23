@@ -15,11 +15,11 @@ export type FilterCategory = 'lib' | 'spec' | 'plot' | 'data' | 'dom' | 'feat';
 // Display labels for filter categories
 export const FILTER_LABELS: Record<FilterCategory, string> = {
   lib: 'library',
-  spec: 'spec',
-  plot: 'plot type',
-  data: 'data type',
-  dom: 'domain',
-  feat: 'features',
+  spec: 'example',
+  plot: 'type',
+  data: 'data',
+  dom: 'field',
+  feat: 'extras',
 };
 
 // All filter categories in display order

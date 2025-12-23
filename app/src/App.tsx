@@ -154,7 +154,7 @@ function App() {
   }, []);
 
   // Random filter - replaces last filter slot (or adds first one)
-  const handleRandom = useCallback(() => {
+  const handleRandom = useCallback((method: 'click' | 'space' | 'doubletap' = 'click') => {
     // Use contextual counts if filters exist, otherwise global
     const countsToUse = activeFilters.length > 0 ? filterCounts : globalCounts;
     if (!countsToUse) return;
@@ -196,7 +196,7 @@ function App() {
     // Clear animation state
     setTimeout(() => setRandomAnimation(null), 1000);
 
-    trackEvent('filter_random', { category: randomCategory, value: randomValue });
+    trackEvent('random', { category: randomCategory, value: randomValue, method });
   }, [activeFilters.length, filterCounts, globalCounts, trackEvent]);
 
   // Global keyboard shortcuts
@@ -208,7 +208,7 @@ function App() {
 
       if (e.key === ' ') {
         e.preventDefault();
-        handleRandom();
+        handleRandom('space');
       } else if (e.key === 'Enter' && searchInputRef.current) {
         e.preventDefault();
         searchInputRef.current.focus();

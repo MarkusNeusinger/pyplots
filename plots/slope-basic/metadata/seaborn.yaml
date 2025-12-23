@@ -1,0 +1,26 @@
+library: seaborn
+specification_id: slope-basic
+created: '2025-12-23T20:47:31Z'
+updated: '2025-12-23T20:55:34Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20471149560
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/slope-basic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/slope-basic/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent color coding distinguishing increases (blue) from decreases (yellow)
+    with colorblind-safe palette
+  - Clear entity labels at both endpoints with values in parentheses for easy reading
+  - Good use of seaborn styling (whitegrid) and lineplot function
+  - Well-proportioned layout with appropriate margins for labels
+  - Realistic tech company revenue scenario that demonstrates the visualization purpose
+  weaknesses:
+  - Minor label overlap around the 125-175 revenue range where multiple entities cluster
+  - Seaborn lineplot used in a loop rather than leveraging native grouping capabilities
+  - Could benefit from more dramatic rank changes in the data to better showcase slope
+    chart strength

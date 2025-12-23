@@ -1,7 +1,7 @@
 """ pyplots.ai
 rug-basic: Basic Rug Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: highcharts unknown | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import tempfile
@@ -33,13 +33,15 @@ values = np.clip(values, 10, 600)
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration
+# Chart configuration - optimize margins for tight layout
 chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
     "marginBottom": 200,
-    "marginTop": 150,
+    "marginTop": 250,  # More top margin to balance with title/subtitle
+    "marginLeft": 150,
+    "marginRight": 150,
 }
 
 # Title
@@ -52,12 +54,11 @@ chart.options.title = {
 chart.options.subtitle = {"text": "API Response Times (ms)", "style": {"fontSize": "48px"}}
 
 # X-axis - continuous scale for response times
+# Removed grid lines per feedback - reduces visual clutter for rug plot
 chart.options.x_axis = {
     "title": {"text": "Response Time (ms)", "style": {"fontSize": "48px"}},
     "labels": {"style": {"fontSize": "36px"}},
-    "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.1)",
-    "gridLineDashStyle": "Dash",
+    "gridLineWidth": 0,  # No grid lines - cleaner look for rug plot
     "min": 0,
     "max": 600,
     "tickInterval": 50,
@@ -65,13 +66,14 @@ chart.options.x_axis = {
     "lineColor": "#333333",
 }
 
-# Y-axis - narrow range for rug plot (ticks extend from bottom)
+# Y-axis - tight range to minimize whitespace (key fix!)
+# Max set to 1.2 to leave minimal space above tick marks
 chart.options.y_axis = {
     "title": {"text": None},
     "labels": {"enabled": False},
     "gridLineWidth": 0,
     "min": 0,
-    "max": 100,
+    "max": 1.2,  # Tight! Rug marks go to y=1, minimal whitespace above
     "visible": False,
     "plotLines": [{"value": 0, "width": 3, "color": "#333333", "zIndex": 2}],  # Baseline
 }
@@ -80,21 +82,26 @@ chart.options.y_axis = {
 chart.options.legend = {"enabled": False}
 chart.options.credits = {"enabled": False}
 
-# Tooltip disabled (too many series)
+# Tooltip disabled for cleaner look
 chart.options.tooltip = {"enabled": False}
 
-# Add each rug tick as an individual vertical line series
-# Use transparency (alpha) for overlapping points
-# Tick height of 25 gives a subtle rug effect at the bottom
+# Add rug ticks as a single LineSeries with multiple line segments
+# Use LineSeries with data containing multiple segments encoded as breaks
+# Highcharts approach: Each rug tick is a very short vertical line
+# We use one LineSeries per tick, but this is unavoidable in Highcharts
+# without columnrange/dumbbell extensions
+
+# Create all rug ticks - vertical lines from y=0 to y=1
 for v in sorted(values):
     tick_series = LineSeries()
-    # Vertical line from bottom to tick height (25% of y-range for subtle rug)
-    tick_series.data = [[float(v), 0], [float(v), 25]]
+    # Vertical line from baseline to tick height (fills most of vertical space now)
+    tick_series.data = [[float(v), 0], [float(v), 1]]
     tick_series.color = "rgba(48, 105, 152, 0.6)"  # Python Blue with transparency
     tick_series.line_width = 5  # Visible but thin ticks
     tick_series.marker = {"enabled": False}
     tick_series.enable_mouse_tracking = False
     tick_series.states = {"hover": {"enabled": False}}
+    tick_series.show_in_legend = False
     chart.add_series(tick_series)
 
 # Download Highcharts JS (required for headless Chrome)

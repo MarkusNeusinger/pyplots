@@ -1,7 +1,7 @@
 """ pyplots.ai
 bullet-basic: Basic Bullet Chart
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-16
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import cairosvg
@@ -100,7 +100,7 @@ BAR_START_X = 78.77  # Within plot coordinates
 X_SCALE = 39.3846  # pixels per percentage point (3938.46 / 100)
 
 # Row Y positions (from SVG: y values in <desc> tags) - relative to plot origin
-ROW_Y_CENTERS = [1861.23, 1456.62, 1052.0, 647.38, 242.77]  # Revenue, Profit, Orders, Customers, Satisfaction
+ROW_Y_CENTERS = [1861.23, 1456.62, 1052.0, 647.38, 242.77]
 
 # Build custom SVG elements for actual bars and target markers
 custom_elements = []

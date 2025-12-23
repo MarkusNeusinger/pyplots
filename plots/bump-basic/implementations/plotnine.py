@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bump-basic: Basic Bump Chart
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import pandas as pd
@@ -61,12 +61,15 @@ data = {
 }
 df = pd.DataFrame(data)
 
+# Subset for end labels
+df_end = df[df["period_num"] == 6].copy()
+
 # Plot
 plot = (
     ggplot(df, aes(x="period_num", y="rank", color="entity", group="entity"))
     + geom_line(size=2.5, alpha=0.8)
     + geom_point(size=6)
-    + geom_text(aes(label="entity"), data=df[df["period_num"] == 6], nudge_x=0.3, ha="left", size=12)
+    + geom_text(aes(label="entity"), data=df_end, nudge_x=0.3, ha="left", size=12)
     + scale_y_reverse(breaks=[1, 2, 3, 4, 5])
     + scale_x_continuous(breaks=[1, 2, 3, 4, 5, 6], labels=["Q1", "Q2", "Q3", "Q4", "Q5", "Q6"], limits=(0.5, 7.5))
     + scale_color_brewer(type="qual", palette="Set2")
@@ -80,7 +83,7 @@ plot = (
         plot_title=element_text(size=24),
         legend_text=element_text(size=16),
         legend_title=element_text(size=18),
-        legend_position="none",  # Labels on right side instead
+        legend_position="none",
     )
 )
 

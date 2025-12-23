@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 ecdf-basic: Basic ECDF Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import tempfile
@@ -26,17 +26,9 @@ sorted_values = np.sort(values)
 n = len(sorted_values)
 ecdf_y = np.arange(1, n + 1) / n
 
-# Build step function data for ECDF
-# For each point, we need a horizontal line then a vertical step
-step_data = []
-for i in range(n):
-    if i == 0:
-        # Start from (min_value, 0)
-        step_data.append([float(sorted_values[i]), 0.0])
-    step_data.append([float(sorted_values[i]), float(ecdf_y[i])])
-    if i < n - 1:
-        # Horizontal line to next point
-        step_data.append([float(sorted_values[i + 1]), float(ecdf_y[i])])
+# Build step function data for ECDF using proper step format
+# Highcharts step='left' means vertical rise happens at each x-value
+step_data = [[float(sorted_values[i]), float(ecdf_y[i])] for i in range(n)]
 
 # Create chart
 chart = Chart(container="container")
@@ -48,13 +40,13 @@ chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "marginBottom": 200,
-    "spacingBottom": 50,
+    "marginBottom": 180,
+    "spacingBottom": 40,
 }
 
 # Title
 chart.options.title = {
-    "text": "ecdf-basic \u00b7 highcharts \u00b7 pyplots.ai",
+    "text": "ecdf-basic · highcharts · pyplots.ai",
     "style": {"fontSize": "72px", "fontWeight": "bold"},
 }
 
@@ -63,7 +55,7 @@ chart.options.x_axis = {
     "title": {"text": "Value", "style": {"fontSize": "48px"}},
     "labels": {"style": {"fontSize": "36px"}},
     "gridLineWidth": 1,
-    "gridLineColor": "#e0e0e0",
+    "gridLineColor": "rgba(0, 0, 0, 0.15)",
     "gridLineDashStyle": "Dash",
 }
 
@@ -74,19 +66,19 @@ chart.options.y_axis = {
     "min": 0,
     "max": 1,
     "gridLineWidth": 1,
-    "gridLineColor": "#e0e0e0",
+    "gridLineColor": "rgba(0, 0, 0, 0.15)",
     "gridLineDashStyle": "Dash",
 }
 
 # Legend
 chart.options.legend = {"enabled": True, "itemStyle": {"fontSize": "36px"}}
 
-# Plot options for line
+# Plot options for line with step
 chart.options.plot_options = {
     "line": {
         "lineWidth": 6,
         "marker": {"enabled": False},
-        "step": False,  # We manually created step data
+        "step": "left",  # Step function: vertical rise at each x-value
     }
 }
 

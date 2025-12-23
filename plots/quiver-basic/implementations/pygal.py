@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 quiver-basic: Basic Quiver Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-23
@@ -89,7 +89,7 @@ custom_style = Style(
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=40,
-    legend_font_size=36,
+    legend_font_size=52,
     value_font_size=32,
     guide_stroke_color="#dddddd",
 )
@@ -100,10 +100,11 @@ chart = pygal.XY(
     width=4800,
     height=2700,
     stroke=True,
-    stroke_style={"width": 8},
+    stroke_style={"width": 12},
     show_dots=False,
     show_legend=True,
-    legend_at_bottom=False,
+    legend_at_bottom=True,
+    legend_at_bottom_columns=5,
     title="quiver-basic · pygal · pyplots.ai",
     x_title="Longitude (degrees)",
     y_title="Latitude (degrees)",

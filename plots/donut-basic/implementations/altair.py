@@ -1,14 +1,14 @@
 """ pyplots.ai
 donut-basic: Basic Donut Chart
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-14
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import altair as alt
 import pandas as pd
 
 
-# Data
+# Data - Budget allocation by department
 data = pd.DataFrame(
     {"category": ["Marketing", "Development", "Operations", "Sales", "Support"], "value": [28, 35, 18, 12, 7]}
 )
@@ -16,14 +16,14 @@ data = pd.DataFrame(
 # Calculate percentages for labels
 total = data["value"].sum()
 data["percentage"] = (data["value"] / total * 100).round(1)
-data["label"] = data["category"] + " (" + data["percentage"].astype(str) + "%)"
+data["label"] = data["percentage"].astype(str) + "%"
 
 # Create donut chart using arc mark
 chart = (
     alt.Chart(data)
     .mark_arc(innerRadius=120, outerRadius=280, stroke="white", strokeWidth=3)
     .encode(
-        theta=alt.Theta(field="value", type="quantitative"),
+        theta=alt.Theta(field="value", type="quantitative", stack=True),
         color=alt.Color(
             field="category",
             type="nominal",
@@ -35,7 +35,7 @@ chart = (
         ),
         tooltip=[
             alt.Tooltip("category:N", title="Category"),
-            alt.Tooltip("value:Q", title="Value"),
+            alt.Tooltip("value:Q", title="Budget ($M)"),
             alt.Tooltip("percentage:Q", title="Percentage", format=".1f"),
         ],
     )
@@ -44,21 +44,21 @@ chart = (
     )
 )
 
-# Add text labels on segments
+# Add percentage labels on segments
 text = (
     alt.Chart(data)
-    .mark_text(radius=200, fontSize=18, fontWeight="bold")
+    .mark_text(radius=200, fontSize=20, fontWeight="bold")
     .encode(
         theta=alt.Theta(field="value", type="quantitative", stack=True),
-        text=alt.Text("percentage:Q", format=".1f"),
+        text=alt.Text("label:N"),
         color=alt.value("white"),
     )
 )
 
 # Add center text showing total
 center_text = (
-    alt.Chart(pd.DataFrame({"text": [f"Total: {total}"]}))
-    .mark_text(fontSize=32, fontWeight="bold", color="#306998")
+    alt.Chart(pd.DataFrame({"text": [f"Total: ${total}M"]}))
+    .mark_text(fontSize=36, fontWeight="bold", color="#306998")
     .encode(text="text:N")
 )
 

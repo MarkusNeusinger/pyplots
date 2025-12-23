@@ -1,7 +1,7 @@
 """ pyplots.ai
 donut-basic: Basic Donut Chart
 Library: plotly 6.5.0 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-14
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import plotly.graph_objects as go
@@ -22,9 +22,9 @@ fig = go.Figure(
             labels=categories,
             values=values,
             hole=0.5,
-            marker=dict(colors=colors, line=dict(color="white", width=3)),
+            marker={"colors": colors, "line": {"color": "white", "width": 3}},
             textinfo="label+percent",
-            textfont=dict(size=20),
+            textfont={"size": 20},
             textposition="outside",
             pull=[0.02] * len(categories),
         )
@@ -33,16 +33,16 @@ fig = go.Figure(
 
 # Add center annotation showing total
 fig.add_annotation(
-    text=f"<b>Total</b><br>${total}M", x=0.5, y=0.5, font=dict(size=36, color="#306998"), showarrow=False
+    text=f"<b>Total</b><br>${total}M", x=0.5, y=0.5, font={"size": 36, "color": "#306998"}, showarrow=False
 )
 
 # Layout for 4800x2700 px
 fig.update_layout(
-    title=dict(text="donut-basic · plotly · pyplots.ai", font=dict(size=32), x=0.5, xanchor="center"),
+    title={"text": "donut-basic · plotly · pyplots.ai", "font": {"size": 32}, "x": 0.5, "xanchor": "center"},
     showlegend=True,
-    legend=dict(font=dict(size=20), orientation="v", yanchor="middle", y=0.5, xanchor="left", x=1.02),
+    legend={"font": {"size": 20}, "orientation": "v", "yanchor": "middle", "y": 0.5, "xanchor": "left", "x": 1.02},
     template="plotly_white",
-    margin=dict(l=50, r=200, t=100, b=50),
+    margin={"l": 50, "r": 200, "t": 100, "b": 50},
 )
 
 # Save as PNG and HTML

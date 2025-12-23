@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-basic: Basic Violin Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-14
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import tempfile
@@ -153,10 +153,6 @@ for v in violin_data:
     chart.add_series(series)
 
 # Add median markers as scatter points
-med_data = []
-for v in violin_data:
-    med_data.append({"x": v["index"], "y": v["median"], "name": v["category"]})
-
 med_series = ScatterSeries()
 med_series.data = [[float(v["index"]), float(v["median"])] for v in violin_data]
 med_series.name = "Median"

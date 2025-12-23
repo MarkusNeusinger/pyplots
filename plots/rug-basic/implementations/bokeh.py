@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 rug-basic: Basic Rug Plot
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -10,7 +10,7 @@ from bokeh.models import ColumnDataSource, Range1d
 from bokeh.plotting import figure
 
 
-# Data - bimodal distribution to show clustering
+# Data - bimodal distribution to show clustering patterns
 np.random.seed(42)
 cluster1 = np.random.normal(25, 4, 60)
 cluster2 = np.random.normal(55, 6, 40)
@@ -19,7 +19,7 @@ values = np.concatenate([cluster1, cluster2])
 # Rug tick height (small relative to plot)
 tick_height = 0.3
 
-# Create ColumnDataSource
+# Create ColumnDataSource for rug ticks
 source = ColumnDataSource(data={"x": values, "y0": np.zeros(len(values)), "y1": np.full(len(values), tick_height)})
 
 # Create figure (4800 x 2700 px)

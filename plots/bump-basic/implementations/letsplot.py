@@ -1,7 +1,7 @@
 """ pyplots.ai
 bump-basic: Basic Bump Chart
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import pandas as pd
@@ -16,7 +16,7 @@ from lets_plot import (
     ggsave,
     ggsize,
     labs,
-    scale_color_brewer,
+    scale_color_manual,
     scale_x_continuous,
     scale_y_reverse,
     theme,
@@ -69,6 +69,9 @@ df = pd.DataFrame(data)
 # Subset for labels at end of lines
 df_labels = df[df["period_num"] == 6].copy()
 
+# Colors - Python Blue first, then colorblind-safe palette
+colors = ["#306998", "#FFD43B", "#2CA02C", "#9467BD", "#E377C2"]
+
 # Plot
 plot = (
     ggplot(df, aes(x="period_num", y="rank", color="entity", group="entity"))
@@ -77,7 +80,7 @@ plot = (
     + geom_text(aes(label="entity"), data=df_labels, nudge_x=0.3, hjust=0, size=12)
     + scale_y_reverse(breaks=[1, 2, 3, 4, 5])
     + scale_x_continuous(breaks=[1, 2, 3, 4, 5, 6], labels=["Q1", "Q2", "Q3", "Q4", "Q5", "Q6"], limits=[0.5, 7.5])
-    + scale_color_brewer(type="qual", palette="Set2")
+    + scale_color_manual(values=colors)
     + labs(x="Quarter", y="Rank", title="bump-basic · letsplot · pyplots.ai", color="Company")
     + theme_minimal()
     + theme(

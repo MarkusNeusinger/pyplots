@@ -424,8 +424,14 @@ jobs:
           # Fallback if version is empty
           if [ -z "$LIBRARY_VERSION" ]; then
             echo "::warning::Could not get version for $LIBRARY, trying alternative method"
-            # Try with uv pip show as alternative
-            LIBRARY_VERSION=$(.venv/bin/python -c "import $LIBRARY; print(getattr($LIBRARY, '__version__', 'unknown'))" 2>/dev/null || echo "unknown")
+            # Map library names to Python module names
+            case "$LIBRARY" in
+              letsplot) PYTHON_MODULE="lets_plot" ;;
+              plotnine) PYTHON_MODULE="plotnine" ;;
+              highcharts) PYTHON_MODULE="highcharts_core" ;;
+              *) PYTHON_MODULE="$LIBRARY" ;;
+            esac
+            LIBRARY_VERSION=$(.venv/bin/python -c "import $PYTHON_MODULE; print(getattr($PYTHON_MODULE, '__version__', 'unknown'))" 2>/dev/null || echo "unknown")
           fi
           echo "::notice::Library version: $LIBRARY = $LIBRARY_VERSION"
 

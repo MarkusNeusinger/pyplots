@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 donut-basic: Basic Donut Chart
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -15,8 +15,8 @@ total = sum(values)
 # Colors - Python Blue as primary, then colorblind-safe palette
 colors = ["#306998", "#FFD43B", "#5BA0D0", "#8FBC8F", "#DDA0DD"]
 
-# Create plot (4800x2700 px)
-fig, ax = plt.subplots(figsize=(16, 9))
+# Create plot (3600x3600 px - square for symmetric pie/donut)
+fig, ax = plt.subplots(figsize=(12, 12))
 
 # Create donut chart with wedgeprops for ring width
 wedges, texts, autotexts = ax.pie(
@@ -30,16 +30,16 @@ wedges, texts, autotexts = ax.pie(
     labeldistance=1.1,
 )
 
-# Style labels and percentages for 4800x2700 px
+# Style labels and percentages for 3600x3600 px
 for text in texts:
-    text.set_fontsize(18)
+    text.set_fontsize(20)
 for autotext in autotexts:
-    autotext.set_fontsize(14)
+    autotext.set_fontsize(16)
     autotext.set_color("white")
     autotext.set_fontweight("bold")
 
 # Add center text with total
-ax.text(0, 0, f"Total\n${total}K", ha="center", va="center", fontsize=28, fontweight="bold", color="#306998")
+ax.text(0, 0, f"Total\n${total}K", ha="center", va="center", fontsize=32, fontweight="bold", color="#306998")
 
 # Ensure circular shape
 ax.set_aspect("equal")

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 sankey-basic: Basic Sankey Diagram
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 68/100 | Created: 2025-12-23
@@ -38,10 +38,13 @@ df = pd.DataFrame(flows_data)
 # Create figure with seaborn styling
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Use seaborn color palette - distinct colors for each source
+# Use seaborn color palettes - distinct colors for sources and targets
 source_names = df["source"].unique()
-palette = sns.color_palette("husl", n_colors=len(source_names))
-source_colors = dict(zip(source_names, palette, strict=True))
+target_names = df["target"].unique()
+source_palette = sns.color_palette("husl", n_colors=len(source_names))
+target_palette = sns.color_palette("Set2", n_colors=len(target_names))
+source_colors = dict(zip(source_names, source_palette, strict=True))
+target_colors = dict(zip(target_names, target_palette, strict=True))
 
 # Calculate node totals
 sources = df.groupby("source")["value"].sum().sort_values(ascending=False)
@@ -52,12 +55,12 @@ node_width = 0.06
 x_source = 0.12
 x_target = 0.88
 gap = 0.025
-total_height = 0.75
+total_height = 0.60  # Reduced to leave room for legends at bottom
 
 # Calculate source node positions (left side)
 total_source = sources.sum()
 source_positions = {}
-y_pos = 0.90
+y_pos = 0.92
 for source, value in sources.items():
     height = (value / total_source) * total_height
     source_positions[source] = {"y": y_pos - height, "height": height}
@@ -66,7 +69,7 @@ for source, value in sources.items():
 # Calculate target node positions (right side)
 total_target = targets.sum()
 target_positions = {}
-y_pos = 0.90
+y_pos = 0.92
 for target, value in targets.items():
     height = (value / total_target) * total_height
     target_positions[target] = {"y": y_pos - height, "height": height}
@@ -142,9 +145,7 @@ for source in sources.index:
         color="#2d2d2d",
     )
 
-# Draw target nodes (right) with neutral color
-target_palette = sns.color_palette("Greys", n_colors=4)
-target_color = target_palette[2]
+# Draw target nodes (right) with distinct colors from Set2 palette
 for target in targets.index:
     pos = target_positions[target]
     rect = patches.FancyBboxPatch(
@@ -152,7 +153,7 @@ for target in targets.index:
         node_width,
         pos["height"],
         boxstyle="round,pad=0.005,rounding_size=0.015",
-        facecolor=target_color,
+        facecolor=target_colors[target],
         edgecolor="white",
         linewidth=2.5,
     )
@@ -168,32 +169,40 @@ for target in targets.index:
         color="#2d2d2d",
     )
 
-# Create legend for energy sources using seaborn barplot with hue
-legend_data = pd.DataFrame(
-    {"Energy Source": list(source_names), "Value": [sources[s] for s in source_names], "Category": ["Source"] * 3}
+# Create legend using simple patches for sources and targets
+source_handles = [
+    patches.Patch(facecolor=source_colors[s], edgecolor="white", linewidth=1.5, label=s) for s in source_names
+]
+target_handles = [
+    patches.Patch(facecolor=target_colors[t], edgecolor="white", linewidth=1.5, label=t) for t in target_names
+]
+
+# Add source legend on the left
+source_legend = ax.legend(
+    handles=source_handles,
+    title="Energy Sources",
+    loc="lower left",
+    bbox_to_anchor=(0.02, 0.02),
+    fontsize=14,
+    title_fontsize=16,
+    frameon=True,
+    fancybox=True,
+    edgecolor="#cccccc",
 )
 
-# Use seaborn barplot to create legend handles
-legend_ax = fig.add_axes([0.35, 0.02, 0.30, 0.08])
-sns.barplot(
-    data=legend_data,
-    x="Energy Source",
-    y="Value",
-    hue="Energy Source",
-    palette=source_colors,
-    ax=legend_ax,
-    legend=False,
-    width=0.7,
+# Add target legend on the right
+ax.add_artist(source_legend)
+ax.legend(
+    handles=target_handles,
+    title="Sectors",
+    loc="lower right",
+    bbox_to_anchor=(0.98, 0.02),
+    fontsize=14,
+    title_fontsize=16,
+    frameon=True,
+    fancybox=True,
+    edgecolor="#cccccc",
 )
-legend_ax.set_ylabel("")
-legend_ax.set_xlabel("")
-legend_ax.set_yticks([])
-legend_ax.spines["top"].set_visible(False)
-legend_ax.spines["right"].set_visible(False)
-legend_ax.spines["left"].set_visible(False)
-legend_ax.spines["bottom"].set_visible(False)
-legend_ax.tick_params(axis="x", labelsize=16, length=0)
-legend_ax.set_title("Energy Sources", fontsize=18, fontweight="bold", pad=8)
 
 # Set title using the required format
 ax.set_title("sankey-basic · seaborn · pyplots.ai", fontsize=26, fontweight="bold", pad=25)

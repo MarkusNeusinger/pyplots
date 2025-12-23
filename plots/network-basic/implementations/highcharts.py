@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 network-basic: Basic Network Graph
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-17
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import json
@@ -81,9 +81,8 @@ edges = [
     ("Noah", "Quinn"),
 ]
 
-# Colors for groups (colorblind-safe)
-group_colors = ["#306998", "#FFD43B", "#4CAF50", "#FF7043"]
-group_names = ["Group A", "Group B", "Group C", "Group D"]
+# Colors for groups (colorblind-safe: Python Blue, Python Yellow, teal, purple)
+group_colors = ["#306998", "#FFD43B", "#17BECF", "#9467BD"]
 
 # Calculate node degrees for sizing
 degrees = {node["id"]: 0 for node in nodes}
@@ -97,8 +96,8 @@ for node in nodes:
     node_id = node["id"]
     group = node["group"]
     color = group_colors[group]
-    # Scale marker radius based on degree (base 35, plus 5 per connection)
-    radius = 35 + degrees[node_id] * 5
+    # Scale marker radius based on degree (base 25, plus 3 per connection)
+    radius = 25 + degrees[node_id] * 3
     nodes_config.append(
         {
             "id": node_id,
@@ -115,16 +114,16 @@ series.data_labels = {
     "enabled": True,
     "format": "{point.id}",
     "linkFormat": "",
-    "style": {"fontSize": "22px", "fontWeight": "bold", "textOutline": "2px white"},
+    "style": {"fontSize": "24px", "fontWeight": "bold", "textOutline": "3px white"},
 }
-series.marker = {"radius": 40}
+series.marker = {"radius": 28}
 series.layout_algorithm = {
     "enableSimulation": True,
-    "linkLength": 80,
-    "gravitationalConstant": 0.15,
-    "friction": -0.95,
+    "linkLength": 55,
+    "gravitationalConstant": 0.5,
+    "friction": -0.9,
     "initialPositions": "circle",
-    "maxIterations": 200,
+    "maxIterations": 400,
 }
 series.animation = False
 
@@ -136,13 +135,12 @@ chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "margin": [100, 200, 200, 200],  # top, right, bottom, left
+    "margin": [120, 500, 150, 500],
 }
 chart.options.title = {
     "text": "Social Network · network-basic · highcharts · pyplots.ai",
-    "style": {"fontSize": "48px"},
+    "style": {"fontSize": "48px", "fontWeight": "bold"},
 }
-# Disable legend (we use colors to distinguish groups visually)
 chart.options.legend = {"enabled": False}
 chart.add_series(series)
 
@@ -166,24 +164,22 @@ networkgraph_url = "https://code.highcharts.com/modules/networkgraph.js"
 with urllib.request.urlopen(networkgraph_url, timeout=30) as response:
     networkgraph_js = response.read().decode("utf-8")
 
-# Generate HTML with inline scripts
-# Add JS to remove unwanted link labels after chart renders
+# Cleanup JS to remove unwanted link labels after chart renders
 cleanup_js = """
 setTimeout(function() {
-    // Remove data labels that contain 'highcharts-' text (internal IDs)
     var labels = document.querySelectorAll('.highcharts-data-label text');
     labels.forEach(function(label) {
         if (label.textContent && label.textContent.indexOf('highcharts-') === 0) {
             label.parentNode.style.display = 'none';
         }
     });
-    // Force a redraw to ensure all markers are visible
     if (Highcharts.charts[0]) {
         Highcharts.charts[0].redraw();
     }
 }, 5000);
 """
 
+# Generate HTML with inline scripts
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>

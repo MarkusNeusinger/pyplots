@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 marimekko-basic: Basic Marimekko Chart
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-16
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import pandas as pd
@@ -147,7 +147,7 @@ plot = (
     + scale_y_continuous(breaks=[0, 25, 50, 75, 100], labels=["0%", "25%", "50%", "75%", "100%"], expand=(0.01, 0.01))
     + labs(
         x="Market Segment (width = total market size)",
-        y="Product Share",
+        y="Product Share (%)",
         title="Market Share by Region · marimekko-basic · plotnine · pyplots.ai",
         fill="Product Line",
     )

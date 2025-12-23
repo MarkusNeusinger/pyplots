@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-basic: Basic Histogram
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-13
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -10,9 +10,9 @@ from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
 
 
-# Data
+# Data - Heights in cm (realistic distribution)
 np.random.seed(42)
-values = np.random.normal(loc=170, scale=10, size=500)  # Heights in cm
+values = np.random.normal(loc=170, scale=10, size=500)
 
 # Calculate histogram bins
 counts, edges = np.histogram(values, bins=25)

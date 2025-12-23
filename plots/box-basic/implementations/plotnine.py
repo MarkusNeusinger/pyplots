@@ -1,7 +1,7 @@
 """ pyplots.ai
 box-basic: Basic Box Plot
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -14,7 +14,7 @@ np.random.seed(42)
 categories = ["Engineering", "Marketing", "Sales", "Support"]
 data = {"category": [], "value": []}
 
-# Generate salary data for each department
+# Generate salary data for each department with varied distributions
 for cat in categories:
     n = np.random.randint(50, 150)
     if cat == "Engineering":

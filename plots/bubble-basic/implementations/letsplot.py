@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-basic: Basic Bubble Chart
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-14
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -23,22 +23,25 @@ from lets_plot import (
 
 LetsPlot.setup_html()
 
-# Data
+# Data - market analysis scenario: companies by revenue vs growth with market share
 np.random.seed(42)
-n = 50
+n = 40
 
-x = np.random.randn(n) * 15 + 50
-y = x * 0.6 + np.random.randn(n) * 10 + 20
-size_values = np.abs(np.random.randn(n) * 30 + 50)
+# Revenue (millions USD)
+revenue = np.random.uniform(10, 200, n)
+# Growth rate (%) - loosely correlated with revenue
+growth_rate = 25 - revenue * 0.08 + np.random.randn(n) * 8
+# Market share (%) - the bubble size dimension
+market_share = np.abs(np.random.randn(n) * 8 + 12)
 
-df = pd.DataFrame({"x": x, "y": y, "size": size_values})
+df = pd.DataFrame({"revenue": revenue, "growth_rate": growth_rate, "market_share": market_share})
 
 # Plot
 plot = (
-    ggplot(df, aes(x="x", y="y", size="size"))
+    ggplot(df, aes(x="revenue", y="growth_rate", size="market_share"))
     + geom_point(color="#306998", alpha=0.6)
-    + scale_size(range=[3, 20], name="Size Value")
-    + labs(x="X Value", y="Y Value", title="bubble-basic · letsplot · pyplots.ai")
+    + scale_size(range=[3, 18], name="Market Share (%)")
+    + labs(x="Revenue (Million USD)", y="Growth Rate (%)", title="bubble-basic · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(
         axis_title=element_text(size=20),

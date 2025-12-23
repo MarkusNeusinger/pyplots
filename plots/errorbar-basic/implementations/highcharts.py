@@ -1,7 +1,7 @@
 """ pyplots.ai
 errorbar-basic: Basic Error Bar Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-17
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import json

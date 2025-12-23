@@ -1,0 +1,26 @@
+library: bokeh
+specification_id: density-basic
+created: '2025-12-23T10:03:19Z'
+updated: '2025-12-23T10:10:15Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20457534046
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/density-basic/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/density-basic/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/density-basic/bokeh/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent manual KDE implementation using Silverman's rule for bandwidth selection
+  - Clean rug plot implementation showing individual observations as vertical segments
+  - Professional styling with appropriate font sizes for large canvas
+  - Bimodal data effectively demonstrates distribution analysis use case
+  - Realistic web service response time scenario with meaningful context
+  weaknesses:
+  - Does not leverage Bokeh's interactive capabilities (hover tooltips showing density
+    values)
+  - Grid styling could be more prominent for better readability
+  - The rug plot ticks could be slightly more visible (currently line_width=2 with
+    alpha=0.5)

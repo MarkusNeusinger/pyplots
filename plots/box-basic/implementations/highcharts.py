@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 box-basic: Basic Box Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-14
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import tempfile
@@ -13,55 +13,46 @@ import numpy as np
 from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
 from highcharts_core.options.series.boxplot import BoxPlotSeries
+from highcharts_core.options.series.scatter import ScatterSeries
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data - generate sample data for 5 categories
+# Data - generate sample data for 5 categories with different distributions
 np.random.seed(42)
 categories = ["Group A", "Group B", "Group C", "Group D", "Group E"]
 colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF", "#8C564B"]
 
-# Generate data for each category (100 points each)
-raw_data = {
-    "Group A": np.random.normal(50, 10, 100),
-    "Group B": np.random.normal(65, 15, 100),
-    "Group C": np.random.normal(45, 8, 100),
-    "Group D": np.random.normal(70, 12, 100),
-    "Group E": np.random.normal(55, 20, 100),
-}
+# Generate raw data (100 points each with different means and spreads)
+raw_data = [
+    np.random.normal(50, 10, 100),  # Group A: moderate mean, moderate spread
+    np.random.normal(65, 15, 100),  # Group B: higher mean, larger spread
+    np.random.normal(45, 8, 100),  # Group C: lower mean, tighter spread
+    np.random.normal(70, 12, 100),  # Group D: highest mean
+    np.random.normal(55, 20, 100),  # Group E: moderate mean, widest spread
+]
 
-
-# Calculate box plot statistics for each category
-def calc_boxplot_stats(data):
-    q1 = np.percentile(data, 25)
-    median = np.percentile(data, 50)
-    q3 = np.percentile(data, 75)
-    iqr = q3 - q1
-    whisker_low = max(data.min(), q1 - 1.5 * iqr)
-    whisker_high = min(data.max(), q3 + 1.5 * iqr)
-
-    # Find outliers
-    outliers = data[(data < whisker_low) | (data > whisker_high)]
-
-    return {
-        "low": float(whisker_low),
-        "q1": float(q1),
-        "median": float(median),
-        "q3": float(q3),
-        "high": float(whisker_high),
-        "outliers": outliers.tolist(),
-    }
-
-
+# Calculate box plot statistics (inline, no functions)
 box_data = []
 outlier_data = []
-for i, cat in enumerate(categories):
-    stats = calc_boxplot_stats(raw_data[cat])
-    box_data.append([stats["low"], stats["q1"], stats["median"], stats["q3"], stats["high"]])
-    # Add outliers with x-index
-    for outlier in stats["outliers"]:
-        outlier_data.append([i, outlier])
+
+for i, data in enumerate(raw_data):
+    q1 = float(np.percentile(data, 25))
+    median = float(np.percentile(data, 50))
+    q3 = float(np.percentile(data, 75))
+    iqr = q3 - q1
+    whisker_low = max(float(data.min()), q1 - 1.5 * iqr)
+    whisker_high = min(float(data.max()), q3 + 1.5 * iqr)
+
+    # Box data: [low, q1, median, q3, high]
+    box_data.append(
+        {"low": whisker_low, "q1": q1, "median": median, "q3": q3, "high": whisker_high, "color": colors[i]}
+    )
+
+    # Find and add outliers
+    outliers = data[(data < whisker_low) | (data > whisker_high)]
+    for outlier in outliers:
+        outlier_data.append([i, float(outlier)])
 
 # Create chart
 chart = Chart(container="container")
@@ -73,7 +64,7 @@ chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "marginBottom": 300,
+    "marginBottom": 280,
     "spacingBottom": 80,
 }
 
@@ -87,7 +78,7 @@ chart.options.title = {
 chart.options.x_axis = {
     "categories": categories,
     "title": {"text": "Category", "style": {"fontSize": "48px"}},
-    "labels": {"style": {"fontSize": "36px"}},
+    "labels": {"style": {"fontSize": "40px"}},
 }
 
 # Y-axis
@@ -95,19 +86,18 @@ chart.options.y_axis = {
     "title": {"text": "Value", "style": {"fontSize": "48px"}},
     "labels": {"style": {"fontSize": "36px"}},
     "gridLineWidth": 1,
-    "gridLineColor": "#e0e0e0",
+    "gridLineColor": "rgba(0, 0, 0, 0.1)",
 }
 
 # Legend
 chart.options.legend = {"enabled": True, "itemStyle": {"fontSize": "36px"}}
 
-# Plot options for styling
+# Plot options for box styling
 chart.options.plot_options = {
     "boxplot": {
-        "fillColor": "#306998",
         "lineWidth": 4,
         "medianWidth": 6,
-        "medianColor": "#FFD43B",
+        "medianColor": "#1a1a1a",
         "stemWidth": 3,
         "whiskerWidth": 4,
         "whiskerLength": "50%",
@@ -115,7 +105,7 @@ chart.options.plot_options = {
     }
 }
 
-# Box plot series
+# Box plot series with individual colors per box
 box_series = BoxPlotSeries()
 box_series.name = "Distribution"
 box_series.data = box_data
@@ -125,8 +115,6 @@ chart.add_series(box_series)
 
 # Outliers as scatter series
 if outlier_data:
-    from highcharts_core.options.series.scatter import ScatterSeries
-
     outlier_series = ScatterSeries()
     outlier_series.name = "Outliers"
     outlier_series.data = outlier_data
@@ -134,7 +122,7 @@ if outlier_data:
         "fillColor": "#E74C3C",
         "lineWidth": 2,
         "lineColor": "#C0392B",
-        "radius": 10,
+        "radius": 12,
         "symbol": "circle",
     }
     chart.add_series(outlier_series)

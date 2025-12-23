@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 slope-basic: Basic Slope Chart
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import pandas as pd
@@ -40,7 +40,7 @@ q4_sales = [165, 70, 230, 135, 145, 190, 85, 160, 110, 155]
 # Calculate change direction for color coding
 changes = ["Increase" if q4 >= q1 else "Decrease" for q1, q4 in zip(q1_sales, q4_sales, strict=True)]
 
-# Create long-format DataFrame using numeric x values for continuous scale
+# Create long-format DataFrame for lines
 df_long = pd.DataFrame(
     {
         "entity": entities * 2,
@@ -50,22 +50,38 @@ df_long = pd.DataFrame(
     }
 )
 
-# Create label DataFrames (left labels at x=1, right labels at x=2)
-df_labels_left = pd.DataFrame({"entity": entities, "x": [1] * len(entities), "value": q1_sales, "change": changes})
+# Create label DataFrames
+df_labels_left = pd.DataFrame(
+    {
+        "entity": entities,
+        "x": [1] * len(entities),
+        "value": q1_sales,
+        "change": changes,
+        "label": [f"{e} ({v})" for e, v in zip(entities, q1_sales, strict=True)],
+    }
+)
 
-df_labels_right = pd.DataFrame({"entity": entities, "x": [2] * len(entities), "value": q4_sales, "change": changes})
+df_labels_right = pd.DataFrame(
+    {
+        "entity": entities,
+        "x": [2] * len(entities),
+        "value": q4_sales,
+        "change": changes,
+        "label": [str(v) for v in q4_sales],
+    }
+)
 
 # Plot
 plot = (
     ggplot(df_long, aes(x="x", y="value", group="entity", color="change"))
     + geom_line(size=1.5, alpha=0.8)
     + geom_point(size=5)
-    # Left labels (entity names)
-    + geom_text(aes(label="entity"), data=df_labels_left, ha="right", nudge_x=-0.05, size=11)
-    # Right labels (entity names)
-    + geom_text(aes(label="entity"), data=df_labels_right, ha="left", nudge_x=0.05, size=11)
+    # Left labels (entity name + value)
+    + geom_text(aes(label="label"), data=df_labels_left, ha="right", nudge_x=-0.08, size=10)
+    # Right labels (value only)
+    + geom_text(aes(label="label"), data=df_labels_right, ha="left", nudge_x=0.08, size=10)
     + scale_color_manual(values={"Increase": "#306998", "Decrease": "#FFD43B"})
-    + scale_x_continuous(breaks=[1, 2], labels=["Q1", "Q4"], limits=(0.5, 2.5))
+    + scale_x_continuous(breaks=[1, 2], labels=["Q1", "Q4"], limits=(0.3, 2.7))
     + labs(
         x="",
         y="Sales (thousands $)",

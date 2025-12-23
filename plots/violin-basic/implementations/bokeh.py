@@ -1,7 +1,7 @@
 """ pyplots.ai
 violin-basic: Basic Violin Plot
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -9,17 +9,17 @@ from bokeh.io import export_png, output_file, save
 from bokeh.plotting import figure
 
 
-# Data - Generate sample distributions for categories
+# Data - Salary distributions by department (realistic scenario)
 np.random.seed(42)
-categories = ["Group A", "Group B", "Group C", "Group D"]
+categories = ["Engineering", "Marketing", "Sales", "Support"]
 data = {
-    "Group A": np.random.normal(50, 10, 150),
-    "Group B": np.random.normal(65, 15, 150),
-    "Group C": np.random.normal(45, 8, 150),
-    "Group D": np.random.normal(70, 12, 150),
+    "Engineering": np.random.normal(85000, 15000, 150),
+    "Marketing": np.random.normal(65000, 12000, 150),
+    "Sales": np.random.normal(70000, 20000, 150),  # Higher variance
+    "Support": np.random.normal(50000, 8000, 150),  # Lower variance
 }
 
-# Colors
+# Colors - Python Blue and Yellow first, then accessible colors
 colors = ["#306998", "#FFD43B", "#4B8BBE", "#FFE873"]
 
 # Create figure with categorical x-axis
@@ -27,8 +27,8 @@ p = figure(
     width=4800,
     height=2700,
     title="violin-basic · bokeh · pyplots.ai",
-    x_axis_label="Category",
-    y_axis_label="Value",
+    x_axis_label="Department",
+    y_axis_label="Annual Salary (USD)",
     x_range=categories,
     toolbar_location=None,
 )
@@ -59,7 +59,7 @@ for i, cat in enumerate(categories):
     bandwidth = 0.9 * min(std, iqr / 1.34) * n ** (-0.2)
     bandwidth = max(bandwidth, 0.1)
 
-    y_grid = np.linspace(values.min() - 5, values.max() + 5, 100)
+    y_grid = np.linspace(values.min() - std, values.max() + std, 100)
     density = np.zeros_like(y_grid, dtype=float)
     for xi in values:
         density += np.exp(-0.5 * ((y_grid - xi) / bandwidth) ** 2)
@@ -89,7 +89,7 @@ for i, cat in enumerate(categories):
     # Compute quartiles
     q1, median, q3 = np.percentile(values, [25, 50, 75])
 
-    # Draw thin box inside violin
+    # Draw thin box inside violin (quartile markers)
     box_width = 0.06
     p.quad(
         left=[(cat, -box_width)],
@@ -113,9 +113,9 @@ for i, cat in enumerate(categories):
     )
 
     # Whiskers (to 1.5*IQR or data extent)
-    iqr = q3 - q1
-    whisker_low = max(values.min(), q1 - 1.5 * iqr)
-    whisker_high = min(values.max(), q3 + 1.5 * iqr)
+    iqr_val = q3 - q1
+    whisker_low = max(values.min(), q1 - 1.5 * iqr_val)
+    whisker_high = min(values.max(), q3 + 1.5 * iqr_val)
 
     # Vertical whisker lines
     p.segment(x0=[cat], y0=[q1], x1=[cat], y1=[whisker_low], line_color="black", line_width=3)

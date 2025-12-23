@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 errorbar-basic: Basic Error Bar Plot
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -15,7 +15,7 @@ np.random.seed(42)
 categories = ["Control", "Treatment A", "Treatment B", "Treatment C", "Treatment D", "Treatment E"]
 means = np.array([25.3, 38.7, 42.1, 35.8, 48.2, 31.5])
 
-# Asymmetric errors to demonstrate feature
+# Asymmetric errors to demonstrate feature (some treatments have larger lower uncertainty)
 lower_errors = np.array([2.1, 3.5, 2.8, 6.5, 4.8, 2.5])
 upper_errors = np.array([2.1, 3.5, 2.8, 2.8, 2.2, 2.5])
 

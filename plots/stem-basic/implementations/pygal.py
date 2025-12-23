@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 stem-basic: Basic Stem Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-23
@@ -38,12 +38,12 @@ chart = pygal.XY(
     style=custom_style,
     title="stem-basic · pygal · pyplots.ai",
     x_title="Sample Index (n)",
-    y_title="Amplitude (a.u.)",
+    y_title="Amplitude [a.u.]",
     show_legend=False,
     show_dots=True,
     stroke=True,
-    dots_size=14,
-    stroke_style={"width": 4},
+    dots_size=20,
+    stroke_style={"width": 6},
     show_x_guides=False,
     show_y_guides=True,
 )
@@ -59,7 +59,7 @@ for i in range(n_points):
     stem_data.append(None)  # Separator between stems
 
 # Add all stems as a single series for consistent coloring
-chart.add("", stem_data, show_dots=True, dots_size=14, stroke_style={"width": 4})
+chart.add("", stem_data, show_dots=True, dots_size=20, stroke_style={"width": 6})
 
 # Save as PNG and HTML
 chart.render_to_png("plot.png")

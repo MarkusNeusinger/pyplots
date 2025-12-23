@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-basic: Basic Network Graph
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-23
@@ -81,21 +81,21 @@ edges = [
 n = len(nodes)
 
 # Initialize positions in a circular layout based on groups for better separation
-# Position groups in a 2x2 grid arrangement to fill the canvas
+# Position groups in a balanced arrangement to fill canvas evenly
 group_centers = {
-    0: (0.22, 0.72),  # Top-left
-    1: (0.72, 0.78),  # Top-right
-    2: (0.28, 0.28),  # Bottom-left
-    3: (0.78, 0.22),  # Bottom-right
+    0: (0.25, 0.65),  # Upper-left
+    1: (0.75, 0.65),  # Upper-right
+    2: (0.25, 0.35),  # Lower-left
+    3: (0.75, 0.35),  # Lower-right
 }
 positions = np.zeros((n, 2))
 for i, node in enumerate(nodes):
     cx, cy = group_centers[node["group"]]
     angle = np.random.rand() * 2 * np.pi
-    radius = np.random.rand() * 0.15
+    radius = np.random.rand() * 0.12
     positions[i] = [cx + radius * np.cos(angle), cy + radius * np.sin(angle)]
 
-k = 0.15  # Optimal distance parameter (smaller for tighter clusters)
+k = 0.18  # Optimal distance parameter (balanced for spread and clustering)
 
 for iteration in range(200):
     displacement = np.zeros((n, 2))
@@ -207,15 +207,16 @@ for node in nodes:
 hover = HoverTool(tooltips=[("Name", "@label"), ("Connections", "@connections")], renderers=renderers_for_hover)
 p.add_tools(hover)
 
-# Add legend (positioned closer to plot, larger text for 4800x2700 canvas)
-legend = Legend(items=legend_items, location="center", title="Communities", title_text_font_size="32pt")
-legend.label_text_font_size = "26pt"
-legend.background_fill_alpha = 0.9
-legend.border_line_width = 3
-legend.padding = 25
-legend.spacing = 15
-legend.glyph_height = 40
-legend.glyph_width = 40
+# Add legend (positioned at top-right with much larger text for 4800x2700 canvas)
+legend = Legend(items=legend_items, location="top_right", title="Communities", title_text_font_size="48pt")
+legend.label_text_font_size = "40pt"
+legend.background_fill_alpha = 0.95
+legend.border_line_width = 4
+legend.padding = 40
+legend.spacing = 25
+legend.glyph_height = 60
+legend.glyph_width = 60
+legend.margin = 30
 p.add_layout(legend, "right")
 
 # Save outputs

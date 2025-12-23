@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 marimekko-basic: Basic Marimekko Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-23
@@ -20,6 +20,8 @@ from pygal.style import Style  # noqa: E402
 sys.path.insert(0, _cwd)
 
 
+# Custom class required: pygal has no native Marimekko/mekko chart type.
+# Variable-width stacked bars require extending the Graph base class.
 class Marimekko(Graph):
     """Custom Marimekko chart - stacked bars with variable widths based on column totals."""
 
@@ -174,6 +176,29 @@ class Marimekko(Graph):
 
                 x_pos += bar_width + gap_px
 
+        # Draw Y-axis percentage scale (0%, 25%, 50%, 75%, 100%)
+        y_axis_group = self.svg.node(mekko_group, class_="y-axis-labels")
+        for pct in [0, 25, 50, 75, 100]:
+            y_pos = y_bottom - (pct / 100) * plot_height
+            label_x = x_start - 25
+
+            self.svg.node(
+                y_axis_group, "text", x=label_x, y=y_pos + 5, fill="#666", **{"text-anchor": "end", "font-size": "34"}
+            ).text = f"{pct}%"
+
+            # Draw subtle gridline
+            if pct > 0:
+                self.svg.node(
+                    y_axis_group,
+                    "line",
+                    x1=x_start,
+                    y1=y_pos,
+                    x2=x_start + plot_width,
+                    y2=y_pos,
+                    stroke="#ddd",
+                    **{"stroke-width": "1", "stroke-dasharray": "5,5"},
+                )
+
     def _compute(self):
         """Compute the bounding box for rendering."""
         self._box.xmin = 0
@@ -216,11 +241,12 @@ chart = Marimekko(
     height=2700,
     gap=0.015,
     style=custom_style,
-    title="Market Share by Region · marimekko-basic · pygal · pyplots.ai",
+    title="marimekko-basic · pygal · pyplots.ai",
     show_legend=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=4,
     margin=80,
+    margin_left=160,
     margin_bottom=320,
     show_x_labels=False,
     show_y_labels=False,

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 band-basic: Basic Band Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-23
@@ -29,8 +29,9 @@ custom_style = Style(
     foreground_strong="#333333",
     foreground_subtle="#666666",
     colors=("#306998", "#FFD43B"),  # Blue for band, Yellow for center line
-    opacity=".35",  # Semi-transparent for band
-    opacity_hover=".5",
+    opacity=".65",  # Higher opacity for clearly visible band
+    opacity_hover=".75",
+    stroke_width=5,  # Thicker lines for better visibility
     title_font_size=60,
     label_font_size=42,
     major_label_font_size=42,
@@ -67,11 +68,11 @@ for xi, yi in zip(reversed(x), reversed(y_lower), strict=True):
 # Close polygon by returning to start
 band_polygon.append((float(x[0]), float(y_upper[0])))
 
-chart.add("Confidence Band", band_polygon, stroke=False)
+chart.add("Confidence Band", band_polygon, stroke=True, stroke_style={"width": 1})
 
-# Add center line (no fill, just stroke)
+# Add center line (no fill, just stroke) - using a contrasting color
 center_data = [(float(xi), float(yi)) for xi, yi in zip(x, y_center, strict=True)]
-chart.add("Central Trend", center_data, fill=False, stroke=True, dots_size=0)
+chart.add("Central Trend", center_data, fill=False, stroke=True, dots_size=0, stroke_style={"width": 6})
 
 # Save outputs
 chart.render_to_png("plot.png")

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 arc-basic: Basic Arc Diagram
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -33,7 +33,7 @@ np.random.seed(42)
 nodes = ["Alice", "Bob", "Carol", "David", "Eve", "Frank", "Grace", "Henry", "Iris", "Jack"]
 n_nodes = len(nodes)
 
-# Edges: pairs of connected nodes with weights
+# Edges: pairs of connected nodes with weights (source, target, weight)
 edges = [
     (0, 1, 3),  # Alice-Bob (strong connection)
     (0, 3, 2),  # Alice-David
@@ -89,7 +89,7 @@ label_df = pd.DataFrame({"x": x_positions, "y": [y_baseline - 0.05] * n_nodes, "
 # Create plot
 plot = (
     ggplot()
-    # Draw arcs
+    # Draw arcs with semi-transparency for overlapping connections
     + geom_path(data=arc_df, mapping=aes(x="x", y="y", group="edge_id", size="size"), color="#306998", alpha=0.6)
     + scale_size_identity()
     # Draw nodes
@@ -118,5 +118,5 @@ plot = (
 # Save as PNG (scale 3x to get 4800 x 2700 px)
 ggsave(plot, "plot.png", path=".", scale=3)
 
-# Save as HTML
+# Save as HTML for interactive viewing
 ggsave(plot, "plot.html", path=".")

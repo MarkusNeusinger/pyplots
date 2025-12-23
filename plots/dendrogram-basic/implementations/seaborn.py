@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 dendrogram-basic: Basic Dendrogram
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-23
@@ -7,7 +7,6 @@ Quality: 88/100 | Created: 2025-12-23
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from matplotlib.patches import Patch
 from scipy.cluster.hierarchy import dendrogram, linkage
 from sklearn.datasets import load_iris
 
@@ -22,38 +21,23 @@ iris = load_iris()
 species_names = ["Setosa", "Versicolor", "Virginica"]
 
 # Select 10 samples from each species (30 total) for clearer visualization
-indices = []
-for i in range(3):
-    species_indices = np.where(iris.target == i)[0]
-    selected = np.random.choice(species_indices, 10, replace=False)
-    indices.extend(selected)
-indices = np.array(indices)
+indices = np.concatenate([np.random.choice(np.where(iris.target == i)[0], 10, replace=False) for i in range(3)])
 
 X = iris.data[indices]
 
-# Create clear labels: Species-Number format
-labels = []
-species_count = {0: 0, 1: 0, 2: 0}
-for idx in indices:
-    species_id = iris.target[idx]
-    species_count[species_id] += 1
-    labels.append(f"{species_names[species_id]}-{species_count[species_id]}")
+# Create clear labels: Species-Number format using vectorized approach
+species_ids = iris.target[indices]
+labels = [f"{species_names[sid]}-{np.sum(species_ids[: i + 1] == sid)}" for i, sid in enumerate(species_ids)]
 
 # Compute linkage matrix using Ward's method
 linkage_matrix = linkage(X, method="ward")
 
 # Create figure
-_, ax = plt.subplots(figsize=(16, 9))
+fig, ax = plt.subplots(figsize=(16, 9))
 
 # Define custom colors using seaborn colorblind palette for species
 palette = sns.color_palette("colorblind", n_colors=3)
-species_colors = {species_names[i]: palette[i] for i in range(3)}
-
-# Map each leaf label to its species color
-label_colors = {}
-for label in labels:
-    species = label.rsplit("-", 1)[0]
-    label_colors[label] = species_colors[species]
+species_color_map = dict(zip(species_names, palette, strict=True))
 
 # Create dendrogram
 dendrogram(
@@ -66,12 +50,12 @@ dendrogram(
     color_threshold=0.7 * max(linkage_matrix[:, 2]),
 )
 
-# Color the x-axis labels by species
-x_labels = ax.get_xticklabels()
-for lbl in x_labels:
+# Color the x-axis labels by species using exact palette colors
+for lbl in ax.get_xticklabels():
     text = lbl.get_text()
-    if text in label_colors:
-        lbl.set_color(label_colors[text])
+    species = text.rsplit("-", 1)[0]
+    if species in species_color_map:
+        lbl.set_color(species_color_map[species])
         lbl.set_fontweight("bold")
 
 # Style the plot with seaborn-compatible settings
@@ -85,9 +69,10 @@ ax.tick_params(axis="x", labelsize=14)
 ax.grid(True, alpha=0.3, linestyle="--", axis="y")
 ax.set_axisbelow(True)
 
-# Add legend explaining species colors
-legend_elements = [Patch(facecolor=palette[i], label=species_names[i]) for i in range(3)]
-ax.legend(handles=legend_elements, title="Species", loc="upper right", fontsize=14, title_fontsize=16)
+# Add legend using scatter plot handles for exact color matching
+for i, species in enumerate(species_names):
+    ax.scatter([], [], c=[palette[i]], s=150, label=species, marker="s")
+ax.legend(title="Species", loc="upper right", fontsize=14, title_fontsize=16, framealpha=0.9)
 
 # Remove top and right spines for cleaner look
 sns.despine(ax=ax)

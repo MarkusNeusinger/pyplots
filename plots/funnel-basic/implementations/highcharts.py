@@ -1,7 +1,7 @@
 """ pyplots.ai
 funnel-basic: Basic Funnel Chart
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import tempfile
@@ -35,7 +35,7 @@ chart.options.chart = {
 
 # Title
 chart.options.title = {
-    "text": "funnel-basic · highcharts · pyplots.ai",
+    "text": "funnel-basic \u00b7 highcharts \u00b7 pyplots.ai",
     "style": {"fontSize": "72px", "fontWeight": "bold"},
 }
 
@@ -65,9 +65,7 @@ series.width = "80%"
 chart.add_series(series)
 
 # Legend configuration
-chart.options.legend = {
-    "enabled": False  # Disable legend since labels are on the funnel
-}
+chart.options.legend = {"enabled": False}
 
 # Plot options for funnel
 chart.options.plot_options = {"funnel": {"dataLabels": {"enabled": True, "style": {"fontSize": "36px"}}}}
@@ -104,9 +102,21 @@ with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encodin
     f.write(html_content)
     temp_path = f.name
 
-# Save HTML for interactive version
+# Save HTML for interactive version (use CDN for portability)
+html_cdn = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/funnel.js"></script>
+</head>
+<body style="margin:0;">
+    <div id="container" style="width: 100%; height: 100vh;"></div>
+    <script>{html_str}</script>
+</body>
+</html>"""
 with open("plot.html", "w", encoding="utf-8") as f:
-    f.write(html_content)
+    f.write(html_cdn)
 
 # Configure headless Chrome
 chrome_options = Options()

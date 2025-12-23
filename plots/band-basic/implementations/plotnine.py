@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 band-basic: Basic Band Plot
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 97/100 | Created: 2025-12-17
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -20,20 +20,20 @@ from plotnine import (
 )
 
 
-# Data - time series with confidence interval (e.g., model predictions with 95% CI)
+# Data - time series with 95% confidence interval (model predictions)
 np.random.seed(42)
 n_points = 50
 x = np.linspace(0, 10, n_points)
 
-# Generate central trend with some curvature
+# Generate central trend with curvature
 y_center = 3 * np.sin(0.5 * x) + 0.3 * x + 5
 
-# Uncertainty grows with x (heteroscedastic - more realistic)
+# Uncertainty grows with x (heteroscedastic - realistic for forecasts)
 uncertainty = 0.5 + 0.15 * x
 noise = np.random.normal(0, 0.3, n_points)
 y_center = y_center + noise
 
-# Confidence band boundaries
+# Confidence band boundaries (95% CI uses 1.96 standard errors)
 y_lower = y_center - 1.96 * uncertainty
 y_upper = y_center + 1.96 * uncertainty
 

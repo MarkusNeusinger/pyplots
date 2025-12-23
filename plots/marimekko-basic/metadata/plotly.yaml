@@ -1,17 +1,27 @@
 library: plotly
 specification_id: marimekko-basic
-created: 2025-12-16 19:39:47+00:00
-updated: 2025-12-16 19:39:47+00:00
+created: '2025-12-23T15:14:03Z'
+updated: '2025-12-23T15:19:45Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20280360965
-issue: 1002
+workflow_run: 20464353289
+issue: 0
 python_version: 3.13.11
 library_version: 6.5.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic/plotly/plot.html
-quality_score: 96
+quality_score: 93
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent implementation of Marimekko chart logic with correct proportional widths
+    and stacked heights
+  - Value labels inside segments provide immediate readability of actual dollar amounts
+  - Clean, professional appearance with white borders separating segments
+  - Descriptive axis labels explain the dual-encoding concept (width = market size)
+  - Well-structured hover templates with rich information (region, product, value,
+    share)
+  weaknesses:
+  - Grid lines are too subtle (alpha 0.1) making it difficult to read exact percentage
+    values
+  - Color palette could be more colorblind-friendly; blue and teal may be hard to
+    distinguish for some viewers

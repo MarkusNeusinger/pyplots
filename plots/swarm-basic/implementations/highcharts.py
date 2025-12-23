@@ -1,7 +1,7 @@
 """ pyplots.ai
 swarm-basic: Basic Swarm Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-17
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import tempfile
@@ -130,7 +130,7 @@ chart.options.x_axis = {
     "lineWidth": 2,
     "min": -0.5,
     "max": len(categories) - 0.5,
-    "tickPositions": [0, 1, 2, 3],  # Only show ticks at category positions
+    "tickPositions": [0, 1, 2, 3],
 }
 
 # Y-axis
@@ -172,7 +172,7 @@ for cat_idx, cat in enumerate(categories):
     }
     chart.add_series(series)
 
-# Add mean markers (reuse ScatterSeries)
+# Add mean markers
 mean_series = ScatterSeries()
 mean_series.name = "Mean"
 mean_series.data = [{"x": float(i), "y": means[cat]} for i, cat in enumerate(categories)]

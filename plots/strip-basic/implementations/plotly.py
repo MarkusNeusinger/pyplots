@@ -1,7 +1,7 @@
 """ pyplots.ai
 strip-basic: Basic Strip Plot
 Library: plotly 6.5.0 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -22,12 +22,15 @@ data = {
     "Group D": np.random.normal(70, 10, n_per_group[3]),  # Medium-high, moderate
 }
 
+# Python colors
+colors = ["#306998", "#FFD43B", "#306998", "#FFD43B"]
+
 # Create figure
 fig = go.Figure()
 
 # Add strip plot traces for each category with jitter
 for i, (cat, values) in enumerate(data.items()):
-    # Apply jitter to x positions
+    # Apply jitter to x positions (0.2 jitter width)
     jitter = np.random.uniform(-0.2, 0.2, len(values))
     x_positions = np.full(len(values), i) + jitter
 
@@ -37,7 +40,7 @@ for i, (cat, values) in enumerate(data.items()):
             y=values,
             mode="markers",
             name=cat,
-            marker={"size": 14, "opacity": 0.6},
+            marker={"size": 14, "opacity": 0.6, "color": colors[i]},
             hovertemplate=f"{cat}<br>Value: %{{y:.1f}}<extra></extra>",
         )
     )

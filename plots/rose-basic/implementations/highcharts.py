@@ -1,7 +1,7 @@
 """ pyplots.ai
 rose-basic: Basic Rose Chart
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-17
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import tempfile
@@ -60,10 +60,7 @@ chart.options.plot_options = {
 }
 
 # Pane configuration for polar chart
-chart.options.pane = {
-    "size": "85%",
-    "startAngle": -15,  # Start slightly rotated for better visual
-}
+chart.options.pane = {"size": "85%", "startAngle": -15}
 
 # Legend configuration
 chart.options.legend = {"enabled": True, "itemStyle": {"fontSize": "28px"}}
@@ -120,7 +117,7 @@ chrome_options.add_argument("--window-size=4800,2700")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
-time.sleep(5)  # Wait for chart to render
+time.sleep(5)
 driver.save_screenshot("plot.png")
 driver.quit()
 

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 sparkline-basic: Basic Sparkline
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-23
@@ -8,40 +8,39 @@ import pygal
 from pygal.style import Style
 
 
-# Data - simulated daily sales trend with realistic variation
-# 30 data points showing balanced growth and decline periods (not predominantly upward)
-# Pattern: start mid-range, rise, decline to minimum, recover to max, decline again
+# Data - simulated daily sales trend with balanced variation
+# 30 data points with clear ups and downs, no dominant trend
 values = [
-    75,
-    82,
-    88,
-    95,
-    100,
-    97,
-    90,
-    82,
-    75,
-    68,
-    58,
-    50,
-    45,
-    42,
-    48,
-    55,
     65,
-    78,
-    88,
-    98,
-    105,
-    108,
-    102,
-    95,
-    88,
-    82,
-    78,
-    75,
     72,
+    80,
+    85,
+    78,
     70,
+    60,
+    52,
+    45,
+    50,
+    58,
+    68,
+    82,
+    95,
+    105,
+    100,
+    88,
+    75,
+    65,
+    58,
+    62,
+    70,
+    78,
+    85,
+    80,
+    72,
+    65,
+    60,
+    55,
+    58,
 ]
 
 # Find min/max indices for highlighting
@@ -57,51 +56,48 @@ custom_style = Style(
     foreground="transparent",
     foreground_strong="transparent",
     foreground_subtle="transparent",
-    colors=("#306998",),  # Blue for main line
+    colors=("#306998", "#43A047", "#E53935"),  # Blue line, green max, red min
     title_font_size=72,
     label_font_size=1,
     major_label_font_size=1,
     legend_font_size=1,
     value_font_size=1,
     tooltip_font_size=1,
-    stroke_width=8,  # Thicker line for visibility at large canvas
+    stroke_width=8,
     opacity=1.0,
     opacity_hover=1.0,
 )
 
-# Create sparkline chart - pure visualization without chrome
+# Compact sparkline aspect ratio (4:1) as per spec
 chart = pygal.Line(
     width=4800,
-    height=2700,
+    height=1200,
     style=custom_style,
-    show_x_labels=False,  # No X axis labels for sparkline
-    show_y_labels=False,  # No Y axis labels for sparkline
-    show_x_guides=False,  # No vertical gridlines
-    show_y_guides=False,  # No horizontal gridlines
-    show_legend=False,  # No legend - sparklines are pure visualization
-    show_dots=False,  # No dots on main line
-    fill=True,  # Area fill under line
-    interpolate="cubic",  # Smooth line for clean appearance
-    margin=100,
+    show_x_labels=False,
+    show_y_labels=False,
+    show_x_guides=False,
+    show_y_guides=False,
+    show_legend=False,
+    show_dots=False,
+    fill=True,
+    interpolate="cubic",
+    margin=80,
     title="sparkline-basic · pygal · pyplots.ai",
+    dots_size=20,
 )
 
-# Create data with highlighted min/max points using dictionary format
-# This allows per-point styling with 'node' style overrides
-data_with_highlights = []
-for i, val in enumerate(values):
-    if i == min_idx:
-        # Min point - red highlight for minimum value
-        data_with_highlights.append({"value": val, "node": {"r": 25}, "color": "#E53935"})
-    elif i == max_idx:
-        # Max point - green highlight for maximum value
-        data_with_highlights.append({"value": val, "node": {"r": 25}, "color": "#43A047"})
-    else:
-        # Regular points - no visible dots
-        data_with_highlights.append({"value": val, "node": {"r": 0}})
+# Add main sparkline data without dots
+chart.add("", values)
 
-# Add sparkline data with highlighted points
-chart.add(None, data_with_highlights, show_dots=True)
+# Create max point series - only the max point has a value, rest are None
+max_series = [None] * len(values)
+max_series[max_idx] = max_val
+chart.add("", max_series, stroke=False, show_dots=True, fill=False)
+
+# Create min point series - only the min point has a value, rest are None
+min_series = [None] * len(values)
+min_series[min_idx] = min_val
+chart.add("", min_series, stroke=False, show_dots=True, fill=False)
 
 # Save outputs
 chart.render_to_file("plot.html")

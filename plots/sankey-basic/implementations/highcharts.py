@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 sankey-basic: Basic Sankey Diagram
 Library: highcharts unknown | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-23
@@ -9,12 +9,16 @@ import time
 import urllib.request
 from pathlib import Path
 
+import numpy as np
 from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
 from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
+
+# Reproducibility
+np.random.seed(42)
 
 # Data - Energy flow from sources to sectors (values in TWh - Terawatt-hours)
 # Format: [source, target, value]
@@ -111,7 +115,8 @@ series_config = {
     "nodePadding": 35,
     "linkOpacity": 0.5,
     "curveFactor": 0.5,
-    "colorByPoint": False,
+    "colorByPoint": True,
+    "linkColorMode": "from",
 }
 
 chart.options.series = [series_config]

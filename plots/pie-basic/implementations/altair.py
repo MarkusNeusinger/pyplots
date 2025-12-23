@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-basic: Basic Pie Chart
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import altair as alt
@@ -35,7 +35,7 @@ base = alt.Chart(data).encode(
     ],
 )
 
-# Pie slices with slight explode effect on largest slice
+# Pie slices with white stroke for separation
 pie = base.mark_arc(outerRadius=320, innerRadius=0, stroke="#ffffff", strokeWidth=2)
 
 # Percentage labels on slices
@@ -45,12 +45,12 @@ text = base.mark_text(radius=380, fontSize=20, fontWeight="bold").encode(text="l
 chart = (
     alt.layer(pie, text)
     .properties(
-        width=1400, height=800, title=alt.Title(text="pie-basic · altair · pyplots.ai", fontSize=28, anchor="middle")
+        width=1200, height=1200, title=alt.Title(text="pie-basic · altair · pyplots.ai", fontSize=28, anchor="middle")
     )
     .configure_view(strokeWidth=0)
 )
 
-# Save as PNG (scale_factor=3 gives us close to 4800x2700)
+# Save as PNG (scale_factor=3 gives us 3600x3600 for square format)
 chart.save("plot.png", scale_factor=3.0)
 
 # Save interactive HTML

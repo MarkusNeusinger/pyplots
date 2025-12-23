@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: sankey-basic
 created: '2025-12-23T19:45:06Z'
-updated: '2025-12-23T20:02:24Z'
+updated: '2025-12-23T20:08:00Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20469997330
 issue: 0
@@ -13,15 +13,18 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/h
 quality_score: 87
 review:
   strengths:
-  - Correct title format with spec-id, library, and pyplots.ai branding
-  - Realistic energy flow data with appropriate TWh units in subtitle and tooltip
-  - Multi-level flow visualization (sources → intermediate → end uses) demonstrates
-    Sankey capabilities well
-  - Node colors are distinct and colorblind-safe
-  - Link opacity (0.5) helps with crossing flow visibility as spec recommends
+  - Clear visualization of multi-stage energy flows from sources through electricity
+    to end uses
+  - Colorblind-safe color palette with distinct, distinguishable colors for each node
+    category
+  - Proper title format following spec-id · library · pyplots.ai convention
+  - Realistic energy flow data with appropriate TWh values representing U.S. energy
+    distribution
+  - Good use of link opacity (0.5) to handle crossing flows
+  - Subtitle provides context with units (TWh)
   weaknesses:
-  - All flow links use the same light blue color instead of inheriting from source
-    node colors, making it harder to trace flows from specific sources
-  - No np.random.seed(42) statement present (though data is hardcoded and deterministic)
-  - Flow coloring could leverage Highcharts colorByPoint or inherit source colors
-    for better traceability
+  - Node labels use white text with dark outline which works on dark nodes but may
+    be hard to read on lighter nodes like Natural Gas (goldenrod)
+  - Some node labels on left and right edges appear slightly cut off or positioned
+    at edges of visible area
+  - Interactive HTML version uses percentage width which differs from PNG fixed dimensions

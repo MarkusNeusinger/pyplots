@@ -1,14 +1,14 @@
-""" pyplots.ai
+"""pyplots.ai
 slope-basic: Basic Slope Chart
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
 
-# Data: Sales figures (in millions) for products comparing Q1 vs Q4
+# Data: Sales figures (in millions $) for products comparing Q1 vs Q4
 products = ["Product A", "Product B", "Product C", "Product D", "Product E", "Product F", "Product G", "Product H"]
 q1_sales = [12.5, 8.3, 15.2, 6.8, 10.1, 9.4, 7.2, 11.8]
 q4_sales = [14.8, 6.1, 18.5, 9.2, 8.7, 12.3, 10.5, 10.2]

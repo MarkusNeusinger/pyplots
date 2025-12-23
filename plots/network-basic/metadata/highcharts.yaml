@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: network-basic
 created: '2025-12-23T15:24:22Z'
-updated: '2025-12-23T15:26:55Z'
+updated: '2025-12-23T15:36:08Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20464359742
 issue: 0
@@ -10,19 +10,17 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/network-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/network-basic/highcharts/plot.html
-quality_score: 72
+quality_score: 85
 review:
   strengths:
-  - Excellent use of Highcharts networkgraph module with force-directed layout algorithm
-  - Colorblind-safe palette distinguishes 4 community groups effectively
-  - Node degree-based sizing adds meaningful visual encoding
-  - Cross-group bridge connections demonstrate network connectivity patterns
-  - Clean inline JS embedding for headless Chrome rendering
+  - Colorblind-safe palette with excellent visual distinction between communities
+    (blue, yellow, teal, purple)
+  - Node degree-based sizing effectively shows connection importance
+  - Correct title format following pyplots convention
+  - Clean data structure with realistic social network scenario
+  - Proper use of Highcharts networkgraph module with force-directed layout algorithm
   weaknesses:
-  - Network graph occupies only ~25-30% of canvas; should scale up significantly to
-    fill more space
-  - 'Title format incorrect: should be "network-basic · highcharts · pyplots.ai" without
-    "Social Network" prefix'
-  - Missing legend to explain what the 4 colors represent (group membership)
-  - Some node labels appear detached or nodes are barely visible (Leo, Eve, Mia appear
-    as floating text)
+  - Legend is positioned too far from the network with excessive whitespace on the
+    right side
+  - No random seed/fixed layout initialization means layout may vary between runs
+  - Some minor node overlap in dense areas could be improved with layout tuning

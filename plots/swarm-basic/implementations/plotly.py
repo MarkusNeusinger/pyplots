@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 swarm-basic: Basic Swarm Plot
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-17
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -13,75 +13,86 @@ np.random.seed(42)
 classrooms = ["Room A", "Room B", "Room C", "Room D"]
 colors = ["#306998", "#FFD43B", "#5A9BD4", "#E07B39"]
 
-data = {
-    "Room A": np.concatenate(
-        [np.random.normal(75, 8, 35), np.random.normal(90, 5, 10)]
-    ),  # Main cluster + high performers
-    "Room B": np.random.normal(68, 12, 50),  # Wide spread
-    "Room C": np.concatenate([np.random.normal(60, 6, 20), np.random.normal(82, 6, 25)]),  # Bimodal
-    "Room D": np.random.normal(78, 6, 40),  # Tight cluster
-}
+scores_a = np.concatenate([np.random.normal(75, 8, 35), np.random.normal(90, 5, 10)])
+scores_b = np.random.normal(68, 12, 50)  # Wide spread
+scores_c = np.concatenate([np.random.normal(60, 6, 20), np.random.normal(82, 6, 25)])  # Bimodal
+scores_d = np.random.normal(78, 6, 40)  # Tight cluster
 
+all_data = [scores_a, scores_b, scores_c, scores_d]
 
-# Beeswarm jitter function - spreads points horizontally based on density
-def beeswarm_positions(values, category_pos, width=0.35, point_size=0.015):
-    """Calculate x positions for beeswarm effect."""
-    sorted_indices = np.argsort(values)
-    y_sorted = values[sorted_indices]
-    x_positions = np.zeros(len(values))
+# Calculate beeswarm positions for each category
+x_all = []
+y_all = []
+color_all = []
+classroom_all = []
 
-    for i, idx in enumerate(sorted_indices):
+for cat_idx, scores in enumerate(all_data):
+    # Sort values to place nearby values together
+    sorted_indices = np.argsort(scores)
+    y_sorted = scores[sorted_indices]
+    x_positions = np.zeros(len(scores))
+
+    value_range = scores.max() - scores.min()
+    point_threshold = 0.015 * value_range  # Vertical proximity threshold
+
+    for i, orig_idx in enumerate(sorted_indices):
         y_val = y_sorted[i]
-        # Find nearby points already placed
+
+        # Find points already placed that are nearby vertically
         placed_y = y_sorted[:i]
         placed_x = x_positions[sorted_indices[:i]]
+        nearby_mask = np.abs(placed_y - y_val) < point_threshold
 
-        # Find points within point_size distance vertically
-        nearby_mask = np.abs(placed_y - y_val) < (point_size * (values.max() - values.min()))
         if not np.any(nearby_mask):
-            x_positions[idx] = category_pos
+            x_positions[orig_idx] = cat_idx
         else:
             nearby_x = placed_x[nearby_mask]
-            # Find available slot by alternating left/right
+            # Find available horizontal slot by alternating left/right
             offset = 0.02
+            found = False
             for sign in [1, -1, 1, -1, 1, -1, 1, -1]:
-                test_x = category_pos + sign * offset
+                test_x = cat_idx + sign * offset
                 if not np.any(np.abs(nearby_x - test_x) < 0.015):
-                    x_positions[idx] = test_x
+                    x_positions[orig_idx] = test_x
+                    found = True
                     break
                 offset += 0.015
-            else:
-                x_positions[idx] = category_pos + np.random.uniform(-width / 2, width / 2)
+            if not found:
+                x_positions[orig_idx] = cat_idx + np.random.uniform(-0.2, 0.2)
 
-    return x_positions
-
+    x_all.extend(x_positions)
+    y_all.extend(scores)
+    color_all.extend([colors[cat_idx]] * len(scores))
+    classroom_all.extend([classrooms[cat_idx]] * len(scores))
 
 # Create figure
 fig = go.Figure()
 
 # Add swarm points for each category
-for i, (classroom, scores) in enumerate(data.items()):
-    x_pos = beeswarm_positions(scores, i, width=0.4)
+for cat_idx, (classroom, scores) in enumerate(zip(classrooms, all_data, strict=True)):
+    mask = [c == classroom for c in classroom_all]
+    x_cat = [x_all[i] for i in range(len(x_all)) if mask[i]]
+    y_cat = [y_all[i] for i in range(len(y_all)) if mask[i]]
 
     fig.add_trace(
         go.Scatter(
-            x=x_pos,
-            y=scores,
+            x=x_cat,
+            y=y_cat,
             mode="markers",
             name=classroom,
-            marker={"size": 14, "color": colors[i], "opacity": 0.75, "line": {"width": 1, "color": "#333333"}},
+            marker={"size": 14, "color": colors[cat_idx], "opacity": 0.8, "line": {"width": 1.5, "color": "#333333"}},
             hovertemplate=f"{classroom}<br>Score: %{{y:.1f}}<extra></extra>",
         )
     )
 
-    # Add mean marker for each category
+    # Add mean marker
     mean_val = np.mean(scores)
     fig.add_trace(
         go.Scatter(
-            x=[i],
+            x=[cat_idx],
             y=[mean_val],
             mode="markers",
-            marker={"symbol": "diamond", "size": 18, "color": "white", "line": {"width": 3, "color": colors[i]}},
+            marker={"symbol": "diamond", "size": 20, "color": "white", "line": {"width": 3, "color": colors[cat_idx]}},
             showlegend=False,
             hovertemplate=f"{classroom} Mean: {mean_val:.1f}<extra></extra>",
         )

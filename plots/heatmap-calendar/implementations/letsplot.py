@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-calendar: Basic Calendar Heatmap
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 98/100 | Created: 2025-12-17
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-23
 """
 # ruff: noqa: F405
 

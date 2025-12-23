@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 quiver-basic: Basic Quiver Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-16
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -27,7 +27,7 @@ LetsPlot.setup_html()
 # Data - 2D rotation vector field: u = -y, v = x (circular flow pattern)
 np.random.seed(42)
 
-# Create grid
+# Create grid (15x15 = 225 arrows for visual clarity)
 grid_size = 15
 x_range = np.linspace(-3, 3, grid_size)
 y_range = np.linspace(-3, 3, grid_size)
@@ -67,7 +67,7 @@ plot = (
     )
 )
 
-# Save PNG (scale 3x to get 4800 × 2700 px)
+# Save PNG (scale 3x to get 4800 x 2700 px)
 ggsave(plot, filename="plot.png", path=".", scale=3)
 
 # Save HTML for interactive version

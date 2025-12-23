@@ -1,7 +1,7 @@
 """ pyplots.ai
 network-force-directed: Force-Directed Graph
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import altair as alt
@@ -118,8 +118,8 @@ for src, tgt in edges:
     edge_data.append({"edge_id": f"{src}-{tgt}", "x": positions[tgt][0], "y": positions[tgt][1], "order": 1})
 edge_df = pd.DataFrame(edge_data)
 
-# Community color mapping (Python Blue, Python Yellow, and colorblind-safe red)
-community_colors = {"Engineering": "#306998", "Marketing": "#FFD43B", "Sales": "#FF6B6B"}
+# Community color mapping (Python Blue, Python Yellow, and colorblind-safe coral)
+community_colors = ["#306998", "#FFD43B", "#FF6B6B"]
 
 # Create edges layer
 edges_chart = (
@@ -144,7 +144,7 @@ nodes_chart = (
         size=alt.Size("size:Q", legend=None, scale=alt.Scale(range=[200, 800])),
         color=alt.Color(
             "community:N",
-            scale=alt.Scale(domain=["Engineering", "Marketing", "Sales"], range=["#306998", "#FFD43B", "#FF6B6B"]),
+            scale=alt.Scale(domain=["Engineering", "Marketing", "Sales"], range=community_colors),
             legend=alt.Legend(title="Teams", titleFontSize=18, labelFontSize=16, symbolSize=400),
         ),
         tooltip=["community:N", "degree:Q"],
@@ -154,7 +154,6 @@ nodes_chart = (
 # Label high-degree nodes (hubs)
 hub_df = node_df[node_df["degree"] >= 7].copy()
 hub_df["label"] = "Hub"
-hub_df["y_offset"] = hub_df["y"] + 0.035
 
 hub_labels = (
     alt.Chart(hub_df)
@@ -165,9 +164,7 @@ hub_labels = (
 # Combine all layers
 chart = (
     (edges_chart + nodes_chart + hub_labels)
-    .properties(
-        width=1600, height=900, title=alt.Title("network-force-directed \u00b7 altair \u00b7 pyplots.ai", fontSize=28)
-    )
+    .properties(width=1600, height=900, title=alt.Title("network-force-directed · altair · pyplots.ai", fontSize=28))
     .configure_view(strokeWidth=0)
 )
 

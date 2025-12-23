@@ -1,7 +1,7 @@
 """ pyplots.ai
 network-basic: Basic Network Graph
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Quality: 88/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -79,10 +79,25 @@ edges = [
 
 # Calculate spring layout (force-directed algorithm)
 n = len(nodes)
-positions = np.random.rand(n, 2) * 2 - 1
-k = 0.4  # Optimal distance parameter
 
-for iteration in range(150):
+# Initialize positions in a circular layout based on groups for better separation
+# Position groups in a balanced 2x2 grid centered on the canvas
+group_centers = {
+    0: (0.35, 0.60),  # Upper-left
+    1: (0.65, 0.60),  # Upper-right
+    2: (0.35, 0.40),  # Lower-left
+    3: (0.65, 0.40),  # Lower-right
+}
+positions = np.zeros((n, 2))
+for i, node in enumerate(nodes):
+    cx, cy = group_centers[node["group"]]
+    angle = np.random.rand() * 2 * np.pi
+    radius = np.random.rand() * 0.12
+    positions[i] = [cx + radius * np.cos(angle), cy + radius * np.sin(angle)]
+
+k = 0.18  # Optimal distance parameter (balanced for spread and clustering)
+
+for iteration in range(200):
     displacement = np.zeros((n, 2))
 
     # Repulsive forces between all node pairs
@@ -94,7 +109,7 @@ for iteration in range(150):
             displacement[i] += force
             displacement[j] -= force
 
-    # Attractive forces for edges
+    # Attractive forces for edges (stronger for within-group)
     for src, tgt in edges:
         diff = positions[src] - positions[tgt]
         dist = max(np.linalg.norm(diff), 0.01)
@@ -103,16 +118,18 @@ for iteration in range(150):
         displacement[tgt] += force
 
     # Apply displacement with cooling
-    cooling = 1 - iteration / 150
+    cooling = 1 - iteration / 200
     for i in range(n):
         disp_norm = np.linalg.norm(displacement[i])
         if disp_norm > 0:
-            positions[i] += (displacement[i] / disp_norm) * min(disp_norm, 0.1 * cooling)
+            positions[i] += (displacement[i] / disp_norm) * min(disp_norm, 0.08 * cooling)
 
-# Normalize positions to [0.1, 0.9] range
+# Normalize positions to center the network on the canvas [0.15, 0.85] range
 pos_min = positions.min(axis=0)
 pos_max = positions.max(axis=0)
-positions = (positions - pos_min) / (pos_max - pos_min + 1e-6) * 0.8 + 0.1
+pos_range = pos_max - pos_min + 1e-6
+# Scale to fit 70% of canvas and center
+positions = (positions - pos_min) / pos_range * 0.70 + 0.15
 pos = {node["id"]: positions[i] for i, node in enumerate(nodes)}
 
 # Calculate node degrees for sizing
@@ -121,7 +138,7 @@ for src, tgt in edges:
     degrees[src] += 1
     degrees[tgt] += 1
 
-# Colors for groups
+# Colors for groups (Python Blue primary, then colorblind-safe)
 group_colors = ["#306998", "#FFD43B", "#4CAF50", "#FF7043"]
 group_names = ["Group A", "Group B", "Group C", "Group D"]
 
@@ -129,9 +146,9 @@ group_names = ["Group A", "Group B", "Group C", "Group D"]
 p = figure(
     width=4800,
     height=2700,
-    title="Social Network · network-basic · bokeh · pyplots.ai",
-    x_range=(-0.05, 1.05),
-    y_range=(-0.05, 1.05),
+    title="network-basic · bokeh · pyplots.ai",
+    x_range=(-0.02, 1.02),
+    y_range=(-0.02, 1.02),
     tools="pan,wheel_zoom,box_zoom,reset,save",
 )
 
@@ -150,6 +167,7 @@ for src, tgt in edges:
 
 # Draw nodes by group (for legend)
 legend_items = []
+renderers_for_hover = []
 for group_id, (color, name) in enumerate(zip(group_colors, group_names, strict=True)):
     group_nodes = [node for node in nodes if node["group"] == group_id]
     node_x = [pos[node["id"]][0] for node in group_nodes]
@@ -166,33 +184,50 @@ for group_id, (color, name) in enumerate(zip(group_colors, group_names, strict=T
         x="x", y="y", size="size", source=source, fill_color=color, line_color="#333333", line_width=2, fill_alpha=0.9
     )
     legend_items.append(LegendItem(label=name, renderers=[renderer]))
+    renderers_for_hover.append(renderer)
 
-# Add node labels
+# Add node labels with smart positioning to avoid canvas edge issues
+label_offset = 0.04  # Offset distance for labels
 for node in nodes:
     x, y = pos[node["id"]]
+    node_size = 45 + degrees[node["id"]] * 10
+
+    # Smart label positioning: place labels below nodes near top, above for others
+    if y > 0.75:
+        # Node near top edge - place label below
+        y_label = y - label_offset - node_size / 2000
+        baseline = "top"
+    else:
+        # Default: place label above node
+        y_label = y + label_offset + node_size / 2000
+        baseline = "bottom"
+
     p.text(
         x=[x],
-        y=[y],
+        y=[y_label],
         text=[node["label"]],
-        text_font_size="18pt",
+        text_font_size="20pt",
         text_font_style="bold",
         text_color="#222222",
         text_align="center",
-        text_baseline="middle",
+        text_baseline=baseline,
     )
 
 # Add hover tool
-hover = HoverTool(
-    tooltips=[("Name", "@label"), ("Connections", "@connections")],
-    renderers=[r for item in legend_items for r in item.renderers],
-)
+hover = HoverTool(tooltips=[("Name", "@label"), ("Connections", "@connections")], renderers=renderers_for_hover)
 p.add_tools(hover)
 
-# Add legend
-legend = Legend(items=legend_items, location="top_left", title="Communities", title_text_font_size="20pt")
-legend.label_text_font_size = "16pt"
-legend.background_fill_alpha = 0.9
-p.add_layout(legend, "left")
+# Add legend (positioned at right with large text for 4800x2700 canvas)
+legend = Legend(items=legend_items, location="center", title="Communities", title_text_font_size="56pt")
+legend.label_text_font_size = "48pt"
+legend.background_fill_alpha = 0.95
+legend.border_line_width = 4
+legend.padding = 50
+legend.spacing = 30
+legend.glyph_height = 70
+legend.glyph_width = 70
+legend.margin = 40
+p.add_layout(legend, "right")
 
 # Save outputs
 export_png(p, filename="plot.png")

@@ -1,7 +1,7 @@
 """ pyplots.ai
 network-force-directed: Force-Directed Graph
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -99,7 +99,7 @@ for src, tgt in edges:
     degrees[src] += 1
     degrees[tgt] += 1
 
-# Community colors
+# Community colors (Python Blue and Yellow first, then accessible red)
 community_colors = ["#306998", "#FFD43B", "#FF6B6B"]
 
 # Create figure (4800x2700 px)

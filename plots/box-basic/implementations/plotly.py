@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 box-basic: Basic Box Plot
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -13,11 +13,11 @@ np.random.seed(42)
 categories = ["Engineering", "Marketing", "Sales", "HR", "Finance"]
 colors = ["#306998", "#FFD43B", "#4B8BBE", "#FFE873", "#646464"]
 
-# Generate realistic salary data for each department
+# Generate realistic salary data for each department with varying distributions
 data = {
     "Engineering": np.random.normal(95000, 15000, 100),
     "Marketing": np.random.normal(75000, 12000, 80),
-    "Sales": np.random.normal(70000, 20000, 120),
+    "Sales": np.random.normal(70000, 20000, 120),  # Higher variance for more outliers
     "HR": np.random.normal(65000, 10000, 60),
     "Finance": np.random.normal(85000, 14000, 90),
 }

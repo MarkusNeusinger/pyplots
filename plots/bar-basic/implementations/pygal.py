@@ -1,14 +1,14 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-basic: Basic Bar Chart
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 96/100 | Created: 2025-12-13
+Library: pygal | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import pygal
 from pygal.style import Style
 
 
-# Data - Product sales by category
+# Data - Quarterly sales by product category
 categories = ["Electronics", "Clothing", "Home & Garden", "Sports", "Books", "Toys"]
 values = [45200, 32800, 28500, 19700, 15300, 12400]
 

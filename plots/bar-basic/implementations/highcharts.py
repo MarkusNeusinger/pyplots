@@ -1,7 +1,7 @@
 """ pyplots.ai
 bar-basic: Basic Bar Chart
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-13
+Library: highcharts unknown | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import json
@@ -14,11 +14,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data - Product sales by category
+# Data - Product sales by category (realistic retail scenario)
 categories = ["Electronics", "Clothing", "Home & Garden", "Sports", "Books", "Toys"]
 values = [4200, 3100, 2800, 2400, 1900, 1500]
 
-# Chart options as dictionary (directly for Highcharts)
+# Chart options for Highcharts
 chart_options = {
     "chart": {
         "type": "column",
@@ -26,32 +26,44 @@ chart_options = {
         "height": 2700,
         "backgroundColor": "#ffffff",
         "marginBottom": 250,
+        "marginTop": 130,
         "style": {"fontFamily": "Arial, sans-serif"},
     },
-    "title": {"text": "bar-basic · highcharts · pyplots.ai", "style": {"fontSize": "48px", "fontWeight": "bold"}},
+    "title": {
+        "text": "bar-basic · highcharts · pyplots.ai",
+        "style": {"fontSize": "52px", "fontWeight": "bold", "color": "#333333"},
+    },
     "xAxis": {
         "categories": categories,
-        "title": {"text": "Product Category", "style": {"fontSize": "36px"}},
-        "labels": {"style": {"fontSize": "28px"}},
+        "title": {"text": "Product Category", "style": {"fontSize": "38px", "color": "#444444"}},
+        "labels": {"style": {"fontSize": "30px", "color": "#444444"}},
+        "lineColor": "#cccccc",
+        "tickColor": "#cccccc",
     },
     "yAxis": {
-        "title": {"text": "Sales (Units)", "style": {"fontSize": "36px"}},
-        "labels": {"style": {"fontSize": "28px"}},
+        "title": {"text": "Sales (Units)", "style": {"fontSize": "38px", "color": "#444444"}},
+        "labels": {"style": {"fontSize": "30px", "color": "#444444"}},
         "gridLineColor": "#e0e0e0",
+        "gridLineWidth": 1,
     },
     "legend": {"enabled": False},
-    "plotOptions": {"column": {"pointPadding": 0.2, "borderWidth": 0, "groupPadding": 0.1}},
+    "plotOptions": {"column": {"pointPadding": 0.15, "borderWidth": 0, "groupPadding": 0.1, "borderRadius": 4}},
     "series": [
         {
             "name": "Sales",
             "data": values,
             "color": "#306998",
-            "dataLabels": {"enabled": True, "format": "{y:,.0f}", "style": {"fontSize": "24px", "fontWeight": "bold"}},
+            "dataLabels": {
+                "enabled": True,
+                "format": "{y:,.0f}",
+                "style": {"fontSize": "26px", "fontWeight": "bold", "color": "#333333"},
+            },
         }
     ],
+    "credits": {"enabled": False},
 }
 
-# Download Highcharts JS for inline embedding
+# Download Highcharts JS for inline embedding (required for headless Chrome)
 highcharts_url = "https://code.highcharts.com/highcharts.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
@@ -79,7 +91,7 @@ with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encodin
     f.write(html_content)
     temp_path = f.name
 
-# Also save the HTML for interactive viewing
+# Also save HTML for interactive viewing
 with open("plot.html", "w", encoding="utf-8") as f:
     f.write(html_content)
 

@@ -1,21 +1,25 @@
-""" pyplots.ai
+"""pyplots.ai
 funnel-basic: Basic Funnel Chart
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
-import pandas as pd
+import numpy as np
 import seaborn as sns
+from matplotlib.patches import Polygon
 
 
-# Data - Sales funnel example
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Data - Sales funnel example from specification
 stages = ["Awareness", "Interest", "Consideration", "Intent", "Purchase"]
 values = [1000, 600, 400, 200, 100]
-max_value = max(values)
+max_value = values[0]
 
-# Create dataframe
-df = pd.DataFrame({"stage": stages, "value": values, "percentage": [v / values[0] * 100 for v in values]})
+# Calculate percentages
+percentages = [v / max_value * 100 for v in values]
 
 # Seaborn styling
 sns.set_theme(style="white")
@@ -23,52 +27,82 @@ sns.set_theme(style="white")
 # Create figure
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Color palette using Python Blue and Yellow
-colors = ["#306998", "#4078A8", "#6AA8D1", "#FFD43B", "#E8C547"]
+# Color palette using Python Blue to Gold progression
+colors = sns.color_palette(["#306998", "#4078A8", "#6AA8D1", "#FFD43B", "#E8C547"])
 
-# Create horizontal bar chart using seaborn barplot
-sns.barplot(
-    data=df,
-    y="stage",
-    x="value",
-    hue="stage",
-    palette=colors,
-    ax=ax,
-    dodge=False,
-    legend=False,
-    order=stages,
-    hue_order=stages,
-    edgecolor="white",
-    linewidth=3,
-    width=0.85,
-)
+# Funnel parameters
+n_stages = len(stages)
+funnel_height = 0.8  # Total height of funnel
+stage_gap = 0.02  # Gap between stages
+stage_height = (funnel_height - (n_stages - 1) * stage_gap) / n_stages
+center_x = 0.5
 
-# Center the bars by adjusting xlim and moving bars
-# Get current bar positions and shift them to center
-for bar in ax.patches:
-    bar_width = bar.get_width()
-    # Shift bar to center it (move left edge to -width/2)
-    bar.set_x(-bar_width / 2)
+# Draw trapezoidal funnel segments
+for i in range(n_stages):
+    # Calculate widths - proportional to value relative to max
+    top_width = values[i] / max_value * 0.8
+    # Bottom width is the next stage's width, or smaller for last stage
+    if i < n_stages - 1:
+        bottom_width = values[i + 1] / max_value * 0.8
+    else:
+        bottom_width = values[i] / max_value * 0.8 * 0.6  # Narrower bottom for last stage
 
-# Remove axis decorations
-ax.set_xlabel("")
-ax.set_ylabel("")
-ax.tick_params(left=False, bottom=False, labelbottom=False)
-for spine in ax.spines.values():
-    spine.set_visible(False)
+    # Calculate y positions (top to bottom)
+    y_top = 1 - 0.1 - i * (stage_height + stage_gap)
+    y_bottom = y_top - stage_height
 
-# Style y-axis labels (stage names) - move them to the left
-ax.tick_params(axis="y", labelsize=20, pad=15)
+    # Create trapezoid vertices (clockwise from top-left)
+    vertices = [
+        (center_x - top_width / 2, y_top),  # Top-left
+        (center_x + top_width / 2, y_top),  # Top-right
+        (center_x + bottom_width / 2, y_bottom),  # Bottom-right
+        (center_x - bottom_width / 2, y_bottom),  # Bottom-left
+    ]
 
-# Add value and percentage labels on each bar
-for i, (value, pct) in enumerate(zip(values, df["percentage"], strict=True)):
-    label_text = f"{value:,} ({pct:.0f}%)"
+    # Draw trapezoid using matplotlib Polygon
+    trapezoid = Polygon(vertices, facecolor=colors[i], edgecolor="white", linewidth=3, closed=True)
+    ax.add_patch(trapezoid)
+
+    # Calculate center of trapezoid for label placement
+    center_y = (y_top + y_bottom) / 2
+
+    # Add stage name on the left
+    ax.text(
+        center_x - top_width / 2 - 0.05,
+        center_y,
+        stages[i],
+        ha="right",
+        va="center",
+        fontsize=20,
+        fontweight="bold",
+        color="#333333",
+    )
+
+    # Add value and percentage label in center
+    label_text = f"{values[i]:,} ({percentages[i]:.0f}%)"
     # Choose text color based on background brightness
     text_color = "white" if i < 3 else "#333333"
-    ax.text(0, i, label_text, ha="center", va="center", fontsize=18, fontweight="bold", color=text_color)
+    ax.text(center_x, center_y, label_text, ha="center", va="center", fontsize=18, fontweight="bold", color=text_color)
 
-# Set symmetric x limits for centered funnel look
-ax.set_xlim(-max_value / 2 * 1.15, max_value / 2 * 1.15)
+    # Add conversion rate between stages
+    if i < n_stages - 1:
+        conversion_rate = values[i + 1] / values[i] * 100
+        ax.text(
+            center_x + top_width / 2 + 0.05,
+            y_bottom,
+            f"↓ {conversion_rate:.0f}%",
+            ha="left",
+            va="center",
+            fontsize=14,
+            color="#666666",
+            style="italic",
+        )
+
+# Set axis limits and remove decorations
+ax.set_xlim(0, 1)
+ax.set_ylim(0, 1)
+ax.set_aspect("equal")
+ax.axis("off")
 
 # Title
 ax.set_title("funnel-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)

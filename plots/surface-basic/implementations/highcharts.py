@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 surface-basic: Basic 3D Surface Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-23
@@ -15,7 +15,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Viridis-like colormap RGB values
+# Viridis-like colormap RGB values (inline to follow KISS - no functions)
 VIRIDIS_COLORS = [
     (68, 1, 84),  # Dark purple
     (59, 82, 139),  # Blue-purple
@@ -23,18 +23,6 @@ VIRIDIS_COLORS = [
     (94, 201, 98),  # Green
     (253, 231, 37),  # Yellow
 ]
-
-
-def value_to_rgb(value):
-    """Convert normalized value (0-1) to RGB color string using viridis colormap."""
-    n_colors = len(VIRIDIS_COLORS) - 1
-    idx = min(int(value * n_colors), n_colors - 1)
-    t = (value * n_colors) - idx
-    r = int(VIRIDIS_COLORS[idx][0] + t * (VIRIDIS_COLORS[idx + 1][0] - VIRIDIS_COLORS[idx][0]))
-    g = int(VIRIDIS_COLORS[idx][1] + t * (VIRIDIS_COLORS[idx + 1][1] - VIRIDIS_COLORS[idx][1]))
-    b = int(VIRIDIS_COLORS[idx][2] + t * (VIRIDIS_COLORS[idx + 1][2] - VIRIDIS_COLORS[idx][2]))
-    return f"rgb({r},{g},{b})"
-
 
 # Data - Gaussian surface with peaks and valleys
 np.random.seed(42)
@@ -64,11 +52,18 @@ with urllib.request.urlopen(highcharts_url, timeout=30) as response:
 with urllib.request.urlopen(highcharts_3d_url, timeout=30) as response:
     highcharts_3d_js = response.read().decode("utf-8")
 
-# Create surface data as scatter3d points with colors
+# Create surface data as scatter3d points with colors (inline color calc for KISS)
 surface_data = []
+n_colors = len(VIRIDIS_COLORS) - 1
 for i in range(n_points):
     for j in range(n_points):
-        color = value_to_rgb(z_normalized[i, j])
+        val = z_normalized[i, j]
+        idx = min(int(val * n_colors), n_colors - 1)
+        t = (val * n_colors) - idx
+        r = int(VIRIDIS_COLORS[idx][0] + t * (VIRIDIS_COLORS[idx + 1][0] - VIRIDIS_COLORS[idx][0]))
+        g = int(VIRIDIS_COLORS[idx][1] + t * (VIRIDIS_COLORS[idx + 1][1] - VIRIDIS_COLORS[idx][1]))
+        b = int(VIRIDIS_COLORS[idx][2] + t * (VIRIDIS_COLORS[idx + 1][2] - VIRIDIS_COLORS[idx][2]))
+        color = f"rgb({r},{g},{b})"
         surface_data.append(
             {
                 "x": float(X[i, j]),
@@ -78,16 +73,28 @@ for i in range(n_points):
             }
         )
 
-# Create connecting lines for X direction to show surface structure
+# Create connecting lines for X direction (reduced density for cleaner surface)
 x_line_series = []
-for i in range(n_points):
+for i in range(0, n_points, 2):  # Skip every other line for cleaner appearance
     line_data = []
     for j in range(n_points):
-        color = value_to_rgb(z_normalized[i, j])
+        val = z_normalized[i, j]
+        idx = min(int(val * n_colors), n_colors - 1)
+        t = (val * n_colors) - idx
+        r = int(VIRIDIS_COLORS[idx][0] + t * (VIRIDIS_COLORS[idx + 1][0] - VIRIDIS_COLORS[idx][0]))
+        g = int(VIRIDIS_COLORS[idx][1] + t * (VIRIDIS_COLORS[idx + 1][1] - VIRIDIS_COLORS[idx][1]))
+        b = int(VIRIDIS_COLORS[idx][2] + t * (VIRIDIS_COLORS[idx + 1][2] - VIRIDIS_COLORS[idx][2]))
+        color = f"rgb({r},{g},{b})"
         line_data.append({"x": float(X[i, j]), "y": float(Z[i, j]), "z": float(Y[i, j]), "color": color})
 
     # Color for the line based on middle value
-    line_color = value_to_rgb(z_normalized[i, n_points // 2])
+    mid_val = z_normalized[i, n_points // 2]
+    mid_idx = min(int(mid_val * n_colors), n_colors - 1)
+    mid_t = (mid_val * n_colors) - mid_idx
+    mid_r = int(VIRIDIS_COLORS[mid_idx][0] + mid_t * (VIRIDIS_COLORS[mid_idx + 1][0] - VIRIDIS_COLORS[mid_idx][0]))
+    mid_g = int(VIRIDIS_COLORS[mid_idx][1] + mid_t * (VIRIDIS_COLORS[mid_idx + 1][1] - VIRIDIS_COLORS[mid_idx][1]))
+    mid_b = int(VIRIDIS_COLORS[mid_idx][2] + mid_t * (VIRIDIS_COLORS[mid_idx + 1][2] - VIRIDIS_COLORS[mid_idx][2]))
+    line_color = f"rgb({mid_r},{mid_g},{mid_b})"
     x_line_series.append(
         {
             "type": "scatter3d",
@@ -99,16 +106,28 @@ for i in range(n_points):
         }
     )
 
-# Create connecting lines for Y direction
+# Create connecting lines for Y direction (reduced density for cleaner surface)
 y_line_series = []
-for j in range(n_points):
+for j in range(0, n_points, 2):  # Skip every other line for cleaner appearance
     line_data = []
     for i in range(n_points):
-        color = value_to_rgb(z_normalized[i, j])
+        val = z_normalized[i, j]
+        idx = min(int(val * n_colors), n_colors - 1)
+        t = (val * n_colors) - idx
+        r = int(VIRIDIS_COLORS[idx][0] + t * (VIRIDIS_COLORS[idx + 1][0] - VIRIDIS_COLORS[idx][0]))
+        g = int(VIRIDIS_COLORS[idx][1] + t * (VIRIDIS_COLORS[idx + 1][1] - VIRIDIS_COLORS[idx][1]))
+        b = int(VIRIDIS_COLORS[idx][2] + t * (VIRIDIS_COLORS[idx + 1][2] - VIRIDIS_COLORS[idx][2]))
+        color = f"rgb({r},{g},{b})"
         line_data.append({"x": float(X[i, j]), "y": float(Z[i, j]), "z": float(Y[i, j]), "color": color})
 
     # Color for the line based on middle value
-    line_color = value_to_rgb(z_normalized[n_points // 2, j])
+    mid_val = z_normalized[n_points // 2, j]
+    mid_idx = min(int(mid_val * n_colors), n_colors - 1)
+    mid_t = (mid_val * n_colors) - mid_idx
+    mid_r = int(VIRIDIS_COLORS[mid_idx][0] + mid_t * (VIRIDIS_COLORS[mid_idx + 1][0] - VIRIDIS_COLORS[mid_idx][0]))
+    mid_g = int(VIRIDIS_COLORS[mid_idx][1] + mid_t * (VIRIDIS_COLORS[mid_idx + 1][1] - VIRIDIS_COLORS[mid_idx][1]))
+    mid_b = int(VIRIDIS_COLORS[mid_idx][2] + mid_t * (VIRIDIS_COLORS[mid_idx + 1][2] - VIRIDIS_COLORS[mid_idx][2]))
+    line_color = f"rgb({mid_r},{mid_g},{mid_b})"
     y_line_series.append(
         {
             "type": "scatter3d",
@@ -172,7 +191,7 @@ Highcharts.chart('container', {{
         max: 3.5,
         tickInterval: 1,
         title: {{
-            text: 'X Axis',
+            text: 'X Position (units)',
             style: {{ fontSize: '56px', color: '#306998', fontWeight: 'bold' }},
             margin: 80
         }},
@@ -189,7 +208,7 @@ Highcharts.chart('container', {{
         max: 1.2,
         tickInterval: 0.3,
         title: {{
-            text: 'Z (Height)',
+            text: 'Z Height (amplitude)',
             style: {{ fontSize: '56px', color: '#306998', fontWeight: 'bold' }},
             margin: 60
         }},
@@ -206,7 +225,7 @@ Highcharts.chart('container', {{
         max: 3.5,
         tickInterval: 1,
         title: {{
-            text: 'Y Axis',
+            text: 'Y Position (units)',
             style: {{ fontSize: '56px', color: '#306998', fontWeight: 'bold' }},
             margin: 80
         }},
@@ -311,7 +330,7 @@ for (var j = 0; j < 5; j++) {{
 }}
 
 // Colorbar title
-renderer.text('Height (Z)', colorbarX + colorbarWidth / 2, colorbarY - 50)
+renderer.text('Z Height (amplitude)', colorbarX + colorbarWidth / 2, colorbarY - 50)
     .attr({{
         align: 'center'
     }})

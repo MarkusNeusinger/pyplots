@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 line-basic: Basic Line Plot
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-13
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -32,8 +32,8 @@ fig.add_trace(
 fig.update_layout(
     title={"text": "line-basic · plotly · pyplots.ai", "font": {"size": 40}, "x": 0.5, "xanchor": "center"},
     xaxis={
-        "title": {"text": "Month", "font": {"size": 40}},
-        "tickfont": {"size": 32},
+        "title": {"text": "Month", "font": {"size": 36}},
+        "tickfont": {"size": 28},
         "tickmode": "array",
         "tickvals": months,
         "ticktext": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
@@ -42,8 +42,8 @@ fig.update_layout(
         "gridcolor": "rgba(0,0,0,0.1)",
     },
     yaxis={
-        "title": {"text": "Temperature (°C)", "font": {"size": 40}},
-        "tickfont": {"size": 32},
+        "title": {"text": "Temperature (°C)", "font": {"size": 36}},
+        "tickfont": {"size": 28},
         "showgrid": True,
         "gridwidth": 1,
         "gridcolor": "rgba(0,0,0,0.1)",

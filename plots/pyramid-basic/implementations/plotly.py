@@ -1,13 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 pyramid-basic: Basic Pyramid Chart
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import plotly.graph_objects as go
 
 
-# Data - Population pyramid by age group
+# Data - Population pyramid by age group (in thousands)
 age_groups = ["0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+"]
 male_population = [4200, 4800, 5500, 5200, 4900, 4100, 3200, 2100, 900]
 female_population = [4000, 4600, 5300, 5400, 5100, 4400, 3600, 2700, 1400]
@@ -47,35 +47,35 @@ tick_vals = [-5000, -2500, 0, 2500, 5000]
 tick_text = ["5,000", "2,500", "0", "2,500", "5,000"]
 
 fig.update_layout(
-    title=dict(
-        text="Population Distribution · pyramid-basic · plotly · pyplots.ai",
-        font=dict(size=36),
-        x=0.5,
-        xanchor="center",
-    ),
-    xaxis=dict(
-        title=dict(text="Population (thousands)", font=dict(size=28)),
-        tickfont=dict(size=22),
-        tickvals=tick_vals,
-        ticktext=tick_text,
-        range=[-max_val * 1.15, max_val * 1.15],
-        gridcolor="rgba(128, 128, 128, 0.3)",
-        gridwidth=1,
-        zeroline=True,
-        zerolinecolor="rgba(128, 128, 128, 0.5)",
-        zerolinewidth=2,
-    ),
-    yaxis=dict(
-        title=dict(text="Age Group", font=dict(size=28)),
-        tickfont=dict(size=22),
-        categoryorder="array",
-        categoryarray=age_groups,
-    ),
+    title={
+        "text": "Population Distribution · pyramid-basic · plotly · pyplots.ai",
+        "font": {"size": 36},
+        "x": 0.5,
+        "xanchor": "center",
+    },
+    xaxis={
+        "title": {"text": "Population (thousands)", "font": {"size": 28}},
+        "tickfont": {"size": 22},
+        "tickvals": tick_vals,
+        "ticktext": tick_text,
+        "range": [-max_val * 1.15, max_val * 1.15],
+        "gridcolor": "rgba(128, 128, 128, 0.3)",
+        "gridwidth": 1,
+        "zeroline": True,
+        "zerolinecolor": "rgba(128, 128, 128, 0.5)",
+        "zerolinewidth": 2,
+    },
+    yaxis={
+        "title": {"text": "Age Group", "font": {"size": 28}},
+        "tickfont": {"size": 22},
+        "categoryorder": "array",
+        "categoryarray": age_groups,
+    },
     barmode="overlay",
     bargap=0.15,
     template="plotly_white",
-    legend=dict(font=dict(size=24), orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
-    margin=dict(l=120, r=80, t=150, b=100),
+    legend={"font": {"size": 24}, "orientation": "h", "yanchor": "bottom", "y": 1.02, "xanchor": "center", "x": 0.5},
+    margin={"l": 120, "r": 80, "t": 150, "b": 100},
 )
 
 # Save outputs

@@ -1,7 +1,7 @@
 """ pyplots.ai
 scatter-basic: Basic Scatter Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-13
+Library: letsplot unknown | Python 3.13.11
+Quality: 90/100 | Created: 2025-12-22
 """
 
 import numpy as np
@@ -12,20 +12,27 @@ from lets_plot.export import ggsave as export_ggsave
 
 LetsPlot.setup_html()  # noqa: F405
 
-# Data
+# Data - Simulating study hours vs exam scores relationship
 np.random.seed(42)
-n = 150
-x = np.random.randn(n) * 2 + 10
-y = x * 0.8 + np.random.randn(n) * 2
+n = 120
+study_hours = np.random.uniform(1, 10, n)
+exam_scores = study_hours * 8 + 20 + np.random.randn(n) * 5
 
-df = pd.DataFrame({"x": x, "y": y})
+df = pd.DataFrame({"study_hours": study_hours, "exam_scores": exam_scores})
 
-# Plot
+# Plot with interactive tooltips
 plot = (
-    ggplot(df, aes(x="x", y="y"))  # noqa: F405
-    + geom_point(color="#306998", size=5, alpha=0.7)  # noqa: F405
+    ggplot(df, aes(x="study_hours", y="exam_scores"))  # noqa: F405
+    + geom_point(  # noqa: F405
+        color="#306998",
+        size=6,
+        alpha=0.7,
+        tooltips=layer_tooltips()  # noqa: F405
+        .line("Study Hours|@study_hours")
+        .line("Exam Score|@exam_scores"),
+    )
     + labs(  # noqa: F405
-        x="X Value", y="Y Value", title="scatter-basic · lets-plot · pyplots.ai"
+        x="Study Hours (hrs)", y="Exam Score (points)", title="scatter-basic · letsplot · pyplots.ai"
     )
     + ggsize(1600, 900)  # noqa: F405
     + theme_minimal()  # noqa: F405
@@ -37,7 +44,7 @@ plot = (
     )
 )
 
-# Save PNG (scale 3x to get 4800 × 2700 px)
+# Save PNG (scale 3x to get 4800 x 2700 px)
 export_ggsave(plot, filename="plot.png", path=".", scale=3)
 
 # Save HTML for interactive version

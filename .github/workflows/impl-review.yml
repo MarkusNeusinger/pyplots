@@ -274,46 +274,64 @@ jobs:
             WEAKNESSES=$(cat review_weaknesses.json)
           fi
 
-          # Update metadata file with quality score and review feedback
+          # Update metadata file with quality score, timestamp, and review feedback
           if [ -f "$METADATA_FILE" ]; then
-            # Update quality_score
-            sed -i "s/quality_score: null.*/quality_score: ${SCORE}/" "$METADATA_FILE"
-            sed -i "s/quality_score: [0-9]\+.*/quality_score: ${SCORE}/" "$METADATA_FILE"
-
-            # Update updated timestamp
+            # Update all metadata using Python for proper YAML handling
+            # Pass JSON via files to avoid shell escaping issues with quotes
             TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-            sed -i "s/^updated: .*/updated: ${TIMESTAMP}/" "$METADATA_FILE"
 
-            # Update review section using Python for proper YAML handling
-            python3 -c "
+            # Write Python script to temp file to avoid YAML/shell escaping issues
+            cat > /tmp/update_metadata.py << 'EOF'
           import yaml
           import json
           import sys
+          from pathlib import Path
 
-          metadata_file = '$METADATA_FILE'
-          strengths = '$STRENGTHS'
-          weaknesses = '$WEAKNESSES'
+          metadata_file = sys.argv[1]
+          score = int(sys.argv[2])
+          timestamp = sys.argv[3]
+
+          strengths = []
+          weaknesses = []
+
+          if Path('review_strengths.json').exists():
+              try:
+                  with open('review_strengths.json') as f:
+                      strengths = json.load(f)
+              except:
+                  pass
+
+          if Path('review_weaknesses.json').exists():
+              try:
+                  with open('review_weaknesses.json') as f:
+                      weaknesses = json.load(f)
+              except:
+                  pass
 
           with open(metadata_file, 'r') as f:
               data = yaml.safe_load(f)
 
+          data['quality_score'] = score
+          data['updated'] = timestamp
+
           if 'review' not in data:
               data['review'] = {}
 
-          try:
-              data['review']['strengths'] = json.loads(strengths)
-          except:
-              data['review']['strengths'] = []
+          data['review']['strengths'] = strengths
+          data['review']['weaknesses'] = weaknesses
 
-          try:
-              data['review']['weaknesses'] = json.loads(weaknesses)
-          except:
-              data['review']['weaknesses'] = []
+          def str_representer(dumper, data):
+              if isinstance(data, str) and data.endswith('Z') and 'T' in data:
+                  return dumper.represent_scalar('tag:yaml.org,2002:str', data, style="'")
+              return dumper.represent_scalar('tag:yaml.org,2002:str', data)
+
+          yaml.add_representer(str, str_representer)
 
           with open(metadata_file, 'w') as f:
               yaml.dump(data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
-          "
+          EOF
 
+            python3 /tmp/update_metadata.py "$METADATA_FILE" "$SCORE" "$TIMESTAMP"
             echo "::notice::Updated metadata with quality score ${SCORE} and review feedback"
           fi
 

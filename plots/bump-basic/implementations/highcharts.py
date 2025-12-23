@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bump-basic: Basic Bump Chart
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import tempfile
@@ -52,7 +52,7 @@ chart.options.chart = {
 
 # Title
 chart.options.title = {
-    "text": "bump-basic \u00b7 highcharts \u00b7 pyplots.ai",
+    "text": "bump-basic · highcharts · pyplots.ai",
     "style": {"fontSize": "72px", "fontWeight": "bold"},
 }
 

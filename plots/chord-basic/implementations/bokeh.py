@@ -1,14 +1,16 @@
-""" pyplots.ai
+"""pyplots.ai
 chord-basic: Basic Chord Diagram
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 89/100 | Created: 2025-12-14
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
-from bokeh.io import export_png, save
+from bokeh.io import export_png, output_file, save
 from bokeh.models import ColumnDataSource, HoverTool
 from bokeh.plotting import figure
 
+
+output_file("plot.html", title="chord-basic · bokeh · pyplots.ai")
 
 # Data - Migration flows between continents (in millions)
 entities = ["Africa", "Asia", "Europe", "N. America", "S. America", "Oceania"]
@@ -27,7 +29,7 @@ flow_matrix = np.array(
     ]
 )
 
-# Colors for each entity (colorblind-safe palette)
+# Colors for each entity (colorblind-safe palette starting with Python colors)
 colors = ["#306998", "#FFD43B", "#E69F00", "#56B4E9", "#009E73", "#CC79A7"]
 
 # Calculate total flows for each entity (sum of incoming and outgoing)
@@ -35,15 +37,15 @@ total_flows = flow_matrix.sum(axis=1) + flow_matrix.sum(axis=0)
 total_all = total_flows.sum()
 
 # Calculate arc angles for each entity
-gap = 0.02 * 2 * np.pi  # Gap between arcs
+gap = 0.03 * 2 * np.pi  # Gap between arcs
 total_gap = gap * n
 available = 2 * np.pi - total_gap
 arc_angles = (total_flows / total_all) * available
 
-# Calculate start and end angles for each entity's arc
+# Calculate start and end angles for each entity's arc (start from top)
 arc_starts = np.zeros(n)
 arc_ends = np.zeros(n)
-current_angle = 0
+current_angle = np.pi / 2  # Start from top
 for i in range(n):
     arc_starts[i] = current_angle
     arc_ends[i] = current_angle + arc_angles[i]
@@ -52,15 +54,14 @@ for i in range(n):
 # Calculate midpoint angles for each entity
 arc_mids = (arc_starts + arc_ends) / 2
 
-# Create figure
+# Create square figure for better chord diagram proportions
 p = figure(
-    width=4800,
-    height=2700,
+    width=3600,
+    height=3600,
     title="chord-basic · bokeh · pyplots.ai",
-    x_range=(-1.5, 1.5),
-    y_range=(-1.1, 1.1),
+    x_range=(-1.5, 2.0),
+    y_range=(-1.5, 1.5),
     tools="hover,pan,wheel_zoom,reset",
-    match_aspect=True,
 )
 
 # Remove axes and grid for cleaner look
@@ -69,13 +70,13 @@ p.grid.visible = False
 p.outline_line_color = None
 
 # Style title
-p.title.text_font_size = "32pt"
+p.title.text_font_size = "36pt"
 p.title.align = "center"
 
 # Draw outer arcs for each entity
 outer_radius = 0.95
-inner_radius = 0.88
-arc_resolution = 50
+inner_radius = 0.87
+arc_resolution = 60
 
 for i in range(n):
     # Create arc points
@@ -100,29 +101,28 @@ for i in range(n):
     p.patches("x", "y", source=source, fill_color=colors[i], fill_alpha=0.9, line_color="white", line_width=2)
 
 # Add entity labels outside the arcs
-label_radius = 1.08
+label_radius = 1.12
 for i in range(n):
     angle = arc_mids[i]
     x = label_radius * np.cos(angle)
     y = label_radius * np.sin(angle)
 
-    # Adjust text angle for readability
-    text_angle = angle
-    if angle > np.pi / 2 and angle < 3 * np.pi / 2:
-        text_angle = angle + np.pi
+    # Determine text alignment based on angle
+    angle_deg = np.degrees(angle) % 360
+    if angle_deg > 80 and angle_deg < 100:
+        anchor = "center"
+    elif angle_deg > 260 and angle_deg < 280:
+        anchor = "center"
+    elif angle_deg > 90 and angle_deg < 270:
         anchor = "right"
     else:
         anchor = "left"
-
-    # Center labels at top and bottom
-    if abs(angle - np.pi / 2) < 0.3 or abs(angle - 3 * np.pi / 2) < 0.3:
-        anchor = "center"
 
     p.text(
         x=[x],
         y=[y],
         text=[entities[i]],
-        text_font_size="22pt",
+        text_font_size="26pt",
         text_align=anchor,
         text_baseline="middle",
         text_color=colors[i],
@@ -130,39 +130,39 @@ for i in range(n):
     )
 
 
-# Function to create bezier curve points for chords
-def bezier_chord(start_angle1, end_angle1, start_angle2, end_angle2, radius=0.85, n_points=50):
+# Create bezier curve points for chords
+def bezier_chord(start1, end1, start2, end2, radius=0.85, n_points=40):
     """Create bezier curve points for a chord connecting two arcs."""
-    # Start and end points on the inner circle
-    x1_start = radius * np.cos(start_angle1)
-    y1_start = radius * np.sin(start_angle1)
-    x1_end = radius * np.cos(end_angle1)
-    y1_end = radius * np.sin(end_angle1)
+    # Points on the inner circle for each arc
+    x1_start = radius * np.cos(start1)
+    y1_start = radius * np.sin(start1)
+    x1_end = radius * np.cos(end1)
+    y1_end = radius * np.sin(end1)
 
-    x2_start = radius * np.cos(start_angle2)
-    y2_start = radius * np.sin(start_angle2)
-    x2_end = radius * np.cos(end_angle2)
-    y2_end = radius * np.sin(end_angle2)
+    x2_start = radius * np.cos(start2)
+    y2_start = radius * np.sin(start2)
+    x2_end = radius * np.cos(end2)
+    y2_end = radius * np.sin(end2)
 
-    # Bezier curve from arc1 to arc2
+    # Bezier curves through center
     t = np.linspace(0, 1, n_points)
+    ctrl = np.array([0, 0])
 
-    # First curve: end of arc1 to start of arc2 (through center)
-    ctrl1 = np.array([0, 0])  # Control point at center
-    curve1_x = (1 - t) ** 2 * x1_end + 2 * (1 - t) * t * ctrl1[0] + t**2 * x2_start
-    curve1_y = (1 - t) ** 2 * y1_end + 2 * (1 - t) * t * ctrl1[1] + t**2 * y2_start
+    # First curve: end of arc1 to start of arc2
+    curve1_x = (1 - t) ** 2 * x1_end + 2 * (1 - t) * t * ctrl[0] + t**2 * x2_start
+    curve1_y = (1 - t) ** 2 * y1_end + 2 * (1 - t) * t * ctrl[1] + t**2 * y2_start
 
-    # Arc along entity 2's segment
-    theta2 = np.linspace(start_angle2, end_angle2, 10)
+    # Arc along entity 2
+    theta2 = np.linspace(start2, end2, 15)
     arc2_x = radius * np.cos(theta2)
     arc2_y = radius * np.sin(theta2)
 
-    # Second curve: end of arc2 to start of arc1 (through center)
-    curve2_x = (1 - t) ** 2 * x2_end + 2 * (1 - t) * t * ctrl1[0] + t**2 * x1_start
-    curve2_y = (1 - t) ** 2 * y2_end + 2 * (1 - t) * t * ctrl1[1] + t**2 * y1_start
+    # Second curve: end of arc2 to start of arc1
+    curve2_x = (1 - t) ** 2 * x2_end + 2 * (1 - t) * t * ctrl[0] + t**2 * x1_start
+    curve2_y = (1 - t) ** 2 * y2_end + 2 * (1 - t) * t * ctrl[1] + t**2 * y1_start
 
-    # Arc along entity 1's segment
-    theta1 = np.linspace(start_angle1, end_angle1, 10)
+    # Arc along entity 1
+    theta1 = np.linspace(start1, end1, 15)
     arc1_x = radius * np.cos(theta1)
     arc1_y = radius * np.sin(theta1)
 
@@ -174,68 +174,93 @@ def bezier_chord(start_angle1, end_angle1, start_angle2, end_angle2, radius=0.85
 
 
 # Track position within each entity's arc for chord placement
-entity_positions = arc_starts.copy()
+entity_out_pos = arc_starts.copy()  # Track outgoing chord positions
+entity_in_pos = {}  # Track incoming chord positions
+for i in range(n):
+    entity_in_pos[i] = arc_ends[i]  # Start from end for incoming
 
 # Draw chords for each flow
 chord_data = {"x": [], "y": [], "source_name": [], "target_name": [], "value": [], "color": []}
 
 for i in range(n):
-    for j in range(n):
-        if i != j and flow_matrix[i, j] > 0:
-            value = flow_matrix[i, j]
-            # Calculate the angular width of this chord at each end
-            chord_width_i = (value / total_flows[i]) * arc_angles[i]
-            chord_width_j = (value / total_flows[j]) * arc_angles[j]
+    for j in range(i + 1, n):  # Only process each pair once
+        # Combined bidirectional flow for visual clarity
+        val_ij = flow_matrix[i, j]
+        val_ji = flow_matrix[j, i]
 
-            # Get start/end angles for this chord at entity i
-            start_i = entity_positions[i]
+        if val_ij > 0 or val_ji > 0:
+            total_flow = val_ij + val_ji
+
+            # Calculate chord width at each end based on total bidirectional flow
+            chord_width_i = (total_flow / total_flows[i]) * arc_angles[i]
+            chord_width_j = (total_flow / total_flows[j]) * arc_angles[j]
+
+            # Get positions for this chord at entity i
+            start_i = entity_out_pos[i]
             end_i = start_i + chord_width_i
-            entity_positions[i] = end_i
+            entity_out_pos[i] = end_i
 
-            # For the target, we need to track separately
-            # Using a simple proportion of the arc for visual effect
-            mid_j = arc_mids[j]
-            start_j = mid_j - chord_width_j / 2
-            end_j = mid_j + chord_width_j / 2
+            # Get positions for this chord at entity j
+            start_j = entity_out_pos[j]
+            end_j = start_j + chord_width_j
+            entity_out_pos[j] = end_j
 
             # Create bezier chord
-            x, y = bezier_chord(start_i, end_i, start_j, end_j, radius=inner_radius - 0.01)
+            x, y = bezier_chord(start_i, end_i, start_j, end_j, radius=inner_radius - 0.02)
 
+            # Use gradient color - blend source and target colors for bidirectional
             chord_data["x"].append(list(x))
             chord_data["y"].append(list(y))
             chord_data["source_name"].append(entities[i])
             chord_data["target_name"].append(entities[j])
-            chord_data["value"].append(value)
-            chord_data["color"].append(colors[i])
+            chord_data["value"].append(total_flow)
+            # Color by entity with larger outgoing flow
+            chord_data["color"].append(colors[i] if val_ij >= val_ji else colors[j])
 
 # Draw all chords
 chord_source = ColumnDataSource(data=chord_data)
 chords = p.patches(
-    "x", "y", source=chord_source, fill_color="color", fill_alpha=0.5, line_color="color", line_alpha=0.7, line_width=1
+    "x",
+    "y",
+    source=chord_source,
+    fill_color="color",
+    fill_alpha=0.55,
+    line_color="color",
+    line_alpha=0.75,
+    line_width=1.5,
 )
 
-# Add hover tool for chords
+# Configure hover tool for chords
 hover = p.select(type=HoverTool)
-hover.tooltips = [("From", "@source_name"), ("To", "@target_name"), ("Flow", "@value million")]
+hover.tooltips = [("From", "@source_name"), ("To", "@target_name"), ("Total Flow", "@value million")]
 hover.renderers = [chords]
 
-# Add legend manually
-legend_x = 1.15
-legend_y = 0.8
+# Add legend (positioned to avoid label overlap)
+legend_x = 1.35
+legend_y = 0.6
+p.text(
+    x=[legend_x - 0.02],
+    y=[legend_y + 0.15],
+    text=["Migration Flows"],
+    text_font_size="22pt",
+    text_font_style="bold",
+    text_color="#333333",
+)
+
 for i, (entity, color) in enumerate(zip(entities, colors, strict=True)):
-    y_pos = legend_y - i * 0.12
+    y_pos = legend_y - i * 0.14
     # Draw color box
-    p.rect(x=[legend_x], y=[y_pos], width=0.08, height=0.06, fill_color=color, line_color="white", line_width=1)
+    p.rect(x=[legend_x], y=[y_pos], width=0.1, height=0.08, fill_color=color, line_color="white", line_width=2)
     # Draw label
     p.text(
-        x=[legend_x + 0.08],
+        x=[legend_x + 0.1],
         y=[y_pos],
         text=[entity],
-        text_font_size="18pt",
+        text_font_size="20pt",
         text_baseline="middle",
         text_color="#333333",
     )
 
 # Save as PNG and HTML
 export_png(p, filename="plot.png")
-save(p, filename="plot.html", title="chord-basic · bokeh · pyplots.ai")
+save(p)

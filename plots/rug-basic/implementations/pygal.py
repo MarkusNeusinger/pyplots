@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 rug-basic: Basic Rug Plot
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-17
+Library: pygal | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -20,6 +20,7 @@ values = np.concatenate(
     ]
 )
 values = np.clip(values, 30, 500)  # Realistic bounds
+values = np.sort(values)  # Sort for better visual ordering
 
 # Custom style for 4800x2700 px canvas
 custom_style = Style(
@@ -34,7 +35,7 @@ custom_style = Style(
     major_label_font_size=42,
     legend_font_size=42,
     value_font_size=36,
-    opacity=0.6,
+    opacity=0.7,
     opacity_hover=0.9,
 )
 
@@ -49,27 +50,26 @@ chart = pygal.XY(
     show_legend=False,
     show_dots=False,
     stroke=True,
-    stroke_style={"width": 3},
-    show_x_guides=False,  # Disable x guides to avoid visual clutter with tick marks
+    stroke_style={"width": 4},
+    show_x_guides=False,
     show_y_guides=False,
-    show_y_labels=False,  # Hide y-axis labels since they're not meaningful for rug
+    show_y_labels=False,  # Hide y-axis labels (not meaningful for rug plot)
+    range=(0, 1),  # Fixed y-axis range
+    margin=60,
 )
 
-# Create rug plot by adding each tick as a separate vertical line
-# This creates the distinctive tick mark appearance of a rug plot
-# Traditional rug plots have short ticks at the bottom of the plot area
-tick_height = 0.12  # Short tick marks (12% of plot height)
+# Rug plot parameters
+tick_height = 0.15  # Height of tick marks (15% of plot height)
 
-# Add invisible anchor points to set y-axis range (pygal auto-scales to data)
-# Use two vertical invisible lines at the edges to set the range without diagonal line
+# Add invisible anchor points to set x-axis range with padding
 x_min, x_max = float(values.min()), float(values.max())
-chart.add("", [(x_min, 0), (x_min, 1.0)], stroke_style={"width": 0}, show_dots=False)
-chart.add("", [(x_max, 0), (x_max, 1.0)], stroke_style={"width": 0}, show_dots=False)
+x_padding = (x_max - x_min) * 0.05
+chart.add("", [(x_min - x_padding, 0), (x_min - x_padding, 0)], stroke_style={"width": 0}, show_dots=False)
+chart.add("", [(x_max + x_padding, 0), (x_max + x_padding, 0)], stroke_style={"width": 0}, show_dots=False)
 
-# Add rug ticks
+# Add rug ticks - each tick is a short vertical line from the bottom
 for val in values:
     x = float(val)
-    # Each tick is a short vertical line segment from bottom
     chart.add("", [(x, 0), (x, tick_height)], stroke_style={"width": 4})
 
 # Save outputs

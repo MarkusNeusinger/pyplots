@@ -1,7 +1,7 @@
 """ pyplots.ai
 sparkline-basic: Basic Sparkline
 Library: plotly 6.5.0 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-16
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -26,7 +26,7 @@ fig.add_trace(
 )
 
 # Highlight min point (red dot)
-min_idx = np.argmin(values)
+min_idx = int(np.argmin(values))
 fig.add_trace(
     go.Scatter(
         x=[min_idx], y=[values[min_idx]], mode="markers", marker={"color": "#E74C3C", "size": 16}, hoverinfo="skip"
@@ -34,7 +34,7 @@ fig.add_trace(
 )
 
 # Highlight max point (green dot)
-max_idx = np.argmax(values)
+max_idx = int(np.argmax(values))
 fig.add_trace(
     go.Scatter(
         x=[max_idx], y=[values[max_idx]], mode="markers", marker={"color": "#27AE60", "size": 16}, hoverinfo="skip"
@@ -54,7 +54,13 @@ fig.add_trace(
 
 # Sparkline layout - no axes, no labels, no gridlines
 fig.update_layout(
-    title={"text": "sparkline-basic · plotly · pyplots.ai", "font": {"size": 48}, "x": 0.5, "xanchor": "center", "y": 0.95},
+    title={
+        "text": "sparkline-basic · plotly · pyplots.ai",
+        "font": {"size": 48},
+        "x": 0.5,
+        "xanchor": "center",
+        "y": 0.95,
+    },
     xaxis={"visible": False, "showgrid": False, "zeroline": False, "showticklabels": False},
     yaxis={"visible": False, "showgrid": False, "zeroline": False, "showticklabels": False},
     showlegend=False,

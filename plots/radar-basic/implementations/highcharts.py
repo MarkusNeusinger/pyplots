@@ -1,7 +1,7 @@
 """ pyplots.ai
 radar-basic: Basic Radar Chart
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Library: highcharts unknown | Python 3.13.11
+Quality: 99/100 | Created: 2025-12-23
 """
 
 import tempfile
@@ -33,7 +33,7 @@ chart.options.chart = {"polar": True, "width": 4800, "height": 2700, "background
 
 # Title
 chart.options.title = {
-    "text": "radar-basic \u00b7 highcharts \u00b7 pyplots.ai",
+    "text": "radar-basic · highcharts · pyplots.ai",
     "style": {"fontSize": "72px", "fontWeight": "bold"},
 }
 

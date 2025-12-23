@@ -1,17 +1,25 @@
 library: plotly
 specification_id: sankey-basic
-created: 2025-12-14 18:21:20+00:00
-updated: 2025-12-14 18:21:20+00:00
+created: '2025-12-23T19:43:26Z'
+updated: '2025-12-23T19:52:16Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20212159928
-issue: 810
+workflow_run: 20469993740
+issue: 0
 python_version: 3.13.11
 library_version: 6.5.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/plotly/plot.html
-quality_score: 92
+quality_score: 93
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent use of Plotly go.Sankey with proper node/link configuration
+  - Well-chosen color scheme with source-based link coloring and appropriate transparency
+  - Realistic energy distribution scenario that effectively demonstrates Sankey diagram
+    purpose
+  - Clean code structure following KISS principles with clear data organization
+  - Proper output sizing (1600x900 scale=3) producing 4800x2700 target resolution
+  weaknesses:
+  - Could include flow value labels on hover or annotations to show exact TWh values
+  - Transportation sector only receives flows from Gas and Renewables, missing Coal
+    and Nuclear contributions

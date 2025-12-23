@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 sparkline-basic: Basic Sparkline
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-16
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -35,34 +35,35 @@ highlight_df = pd.DataFrame(
 )
 
 # Plot - minimal sparkline with highlighted points
+# Using wider aspect ratio typical for sparklines (approximately 5:1)
 plot = (
     ggplot(df, aes(x="day", y="price"))  # noqa: F405
     + geom_area(fill="#306998", alpha=0.15)  # noqa: F405
-    + geom_line(color="#306998", size=1.5)  # noqa: F405
+    + geom_line(color="#306998", size=2.0)  # noqa: F405
     + geom_point(  # noqa: F405
         data=highlight_df[highlight_df["type"] == "min"],
         mapping=aes(x="day", y="price"),  # noqa: F405
         color="#DC2626",
-        size=6,
+        size=8,
     )  # Min point (red)
     + geom_point(  # noqa: F405
         data=highlight_df[highlight_df["type"] == "max"],
         mapping=aes(x="day", y="price"),  # noqa: F405
         color="#16A34A",
-        size=6,
+        size=8,
     )  # Max point (green)
     + geom_point(  # noqa: F405
         data=highlight_df[highlight_df["type"].isin(["first", "last"])],
         mapping=aes(x="day", y="price"),  # noqa: F405
         color="#FFD43B",
-        size=5,
+        size=6,
     )  # First/last points (yellow)
     + labs(title="sparkline-basic · lets-plot · pyplots.ai")  # noqa: F405
     + ggsize(1600, 900)  # noqa: F405
     + theme_void()  # noqa: F405
     + theme(  # noqa: F405
-        plot_title=element_text(size=24, hjust=0.5),  # noqa: F405
-        plot_margin=[60, 40, 40, 40],
+        plot_title=element_text(size=28, hjust=0.5),  # noqa: F405
+        plot_margin=[80, 60, 60, 60],
     )
 )
 

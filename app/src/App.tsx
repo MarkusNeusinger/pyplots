@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Alert from '@mui/material/Alert';
@@ -63,6 +63,7 @@ function App() {
   // Filter state - initialize from URL params immediately
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>(() => parseUrlFilters());
   const [filterCounts, setFilterCounts] = useState<FilterCounts | null>(null);
+  const [globalCounts, setGlobalCounts] = useState<FilterCounts | null>(null);
   const [orCounts, setOrCounts] = useState<Record<string, number>[]>([]);
 
   // Data state
@@ -78,6 +79,10 @@ function App() {
   const [error, setError] = useState<string>('');
   const [modalImage, setModalImage] = useState<PlotImage | null>(null);
   const [openImageTooltip, setOpenImageTooltip] = useState<string | null>(null);
+  const [randomAnimation, setRandomAnimation] = useState<{ index: number; phase: 'out' | 'in'; oldLabel?: string } | null>(null);
+
+  // Refs
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Custom hooks
   const { trackPageview, trackEvent } = useAnalytics();
@@ -148,31 +153,74 @@ function App() {
     setActiveFilters((prev) => prev.filter((_, i) => i !== groupIndex));
   }, []);
 
-  // Shuffle a group (random value from that category)
-  const handleShuffle = useCallback(
-    (groupIndex: number) => {
-      if (!filterCounts) return;
+  // Random filter - replaces last filter slot (or adds first one)
+  const handleRandom = useCallback(() => {
+    // Use contextual counts if filters exist, otherwise global
+    const countsToUse = activeFilters.length > 0 ? filterCounts : globalCounts;
+    if (!countsToUse) return;
 
-      setActiveFilters((prev) => {
-        const group = prev[groupIndex];
-        if (!group) return prev;
+    const availableCategories = FILTER_CATEGORIES.filter((cat) => {
+      const counts = countsToUse[cat];
+      return counts && Object.keys(counts).length > 0;
+    });
 
-        const counts = filterCounts[group.category];
-        const availableValues = Object.keys(counts);
-        if (availableValues.length === 0) return prev;
+    if (availableCategories.length === 0) return;
 
-        // Pick a random value that's not in this group
-        const otherValues = availableValues.filter((v) => !group.values.includes(v));
-        const pool = otherValues.length > 0 ? otherValues : availableValues;
-        const randomValue = pool[Math.floor(Math.random() * pool.length)];
+    const randomCategory = availableCategories[Math.floor(Math.random() * availableCategories.length)];
+    const values = Object.keys(countsToUse[randomCategory]);
 
-        const newFilters = [...prev];
-        newFilters[groupIndex] = { ...group, values: [randomValue] };
-        return newFilters;
-      });
-    },
-    [filterCounts]
-  );
+    if (values.length === 0) return;
+
+    const randomValue = values[Math.floor(Math.random() * values.length)];
+    const newFilter = { category: randomCategory, values: [randomValue] };
+
+    // Get old label before changing
+    const newIndex = activeFilters.length === 0 ? 0 : activeFilters.length - 1;
+    const oldGroup = activeFilters[newIndex];
+    const oldLabel = oldGroup ? `${oldGroup.category}:${oldGroup.values.join(',')}` : '';
+
+    // Start animation with old label, change filter immediately (so images load)
+    setRandomAnimation({ index: newIndex, phase: 'out', oldLabel });
+    setActiveFilters((prev) => {
+      if (prev.length === 0) {
+        return [newFilter];
+      }
+      return [...prev.slice(0, -1), newFilter];
+    });
+
+    // Switch to 'in' phase at halfway point (now showing new label)
+    setTimeout(() => {
+      setRandomAnimation({ index: newIndex, phase: 'in' });
+    }, 500);
+
+    // Clear animation state
+    setTimeout(() => setRandomAnimation(null), 1000);
+
+    trackEvent('filter_random', { category: randomCategory, value: randomValue });
+  }, [activeFilters.length, filterCounts, globalCounts, trackEvent]);
+
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if typing in input or modal is open
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || modalImage) return;
+
+      if (e.key === ' ') {
+        e.preventDefault();
+        handleRandom();
+      } else if (e.key === 'Enter' && searchInputRef.current) {
+        e.preventDefault();
+        searchInputRef.current.focus();
+      } else if (e.key === 'Backspace' && activeFilters.length > 0) {
+        e.preventDefault();
+        handleRemoveGroup(activeFilters.length - 1);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleRandom, handleRemoveGroup, activeFilters.length, modalImage]);
 
   // Load initial data on mount
   useEffect(() => {
@@ -246,6 +294,7 @@ function App() {
 
         // Update filter counts
         setFilterCounts(data.counts);  // Contextual for AND additions
+        setGlobalCounts(data.globalCounts || data.counts);  // Global for random
         setOrCounts(data.orCounts || []);  // Per-group for OR additions
 
         // Shuffle and set images
@@ -272,7 +321,7 @@ function App() {
   return (
     <Box onClick={handleContainerClick} sx={{ minHeight: '100vh', bgcolor: '#fafafa', py: 5 }}>
       <Container maxWidth={false} sx={{ px: { xs: 4, sm: 8, lg: 12 } }}>
-        <Header stats={stats} />
+        <Header stats={stats} onRandom={handleRandom} />
 
         {error && (
           <Alert severity="error" sx={{ mb: 4, maxWidth: 500, mx: 'auto' }}>
@@ -285,11 +334,12 @@ function App() {
           filterCounts={filterCounts}
           orCounts={orCounts}
           currentTotal={allImages.length}
+          randomAnimation={randomAnimation}
+          searchInputRef={searchInputRef}
           onAddFilter={handleAddFilter}
           onAddValueToGroup={handleAddValueToGroup}
           onRemoveFilter={handleRemoveFilter}
           onRemoveGroup={handleRemoveGroup}
-          onShuffle={handleShuffle}
           onTrackEvent={trackEvent}
         />
 

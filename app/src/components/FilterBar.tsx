@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Menu from '@mui/material/Menu';
@@ -7,7 +7,6 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import Divider from '@mui/material/Divider';
-import ShuffleIcon from '@mui/icons-material/Shuffle';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
@@ -20,11 +19,12 @@ interface FilterBarProps {
   filterCounts: FilterCounts | null;  // Contextual counts (for AND additions)
   orCounts: Record<string, number>[];  // Per-group counts for OR additions
   currentTotal: number;  // Current number of displayed images
+  randomAnimation: { index: number; phase: 'out' | 'in'; oldLabel?: string } | null;
+  searchInputRef?: React.RefObject<HTMLInputElement | null>;
   onAddFilter: (category: FilterCategory, value: string) => void;
   onAddValueToGroup: (groupIndex: number, value: string) => void;
   onRemoveFilter: (groupIndex: number, value: string) => void;
   onRemoveGroup: (groupIndex: number) => void;
-  onShuffle: (groupIndex: number) => void;
   onTrackEvent: (event: string, props?: Record<string, string>) => void;
 }
 
@@ -33,11 +33,12 @@ export function FilterBar({
   filterCounts,
   orCounts,
   currentTotal,
+  randomAnimation,
+  searchInputRef,
   onAddFilter,
   onAddValueToGroup,
   onRemoveFilter,
   onRemoveGroup,
-  onShuffle,
   onTrackEvent,
 }: FilterBarProps) {
   // Search/dropdown state
@@ -45,11 +46,15 @@ export function FilterBar({
   const [dropdownAnchor, setDropdownAnchor] = useState<HTMLElement | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<FilterCategory | null>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const localInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = searchInputRef || localInputRef;
 
   // Chip menu state
   const [chipMenuAnchor, setChipMenuAnchor] = useState<HTMLElement | null>(null);
   const [activeGroupIndex, setActiveGroupIndex] = useState<number | null>(null);
+
+  // Dropdown keyboard navigation
+  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
 
   // Open dropdown
   const handleSearchFocus = useCallback(() => {
@@ -97,17 +102,6 @@ export function FilterBar({
     },
     []
   );
-
-  // Shuffle group
-  const handleShuffle = useCallback(() => {
-    if (activeGroupIndex !== null) {
-      const group = activeFilters[activeGroupIndex];
-      onShuffle(activeGroupIndex);
-      onTrackEvent('filter_shuffle', { category: group?.category || '' });
-    }
-    setChipMenuAnchor(null);
-    setActiveGroupIndex(null);
-  }, [activeGroupIndex, activeFilters, onShuffle, onTrackEvent]);
 
   // Remove single value from group
   const handleRemoveValue = useCallback(
@@ -213,21 +207,55 @@ export function FilterBar({
   const hasQuery = searchQuery.trim().length > 0;
   const maxFiltersReached = activeFilters.length >= 5;
 
-  // Handle Enter key - select first result
+  // Get dropdown items for keyboard navigation
+  const getDropdownItems = useCallback(() => {
+    if (!selectedCategory && !hasQuery) {
+      // Categories list
+      return FILTER_CATEGORIES
+        .filter((cat) => {
+          const availableValues = filterCounts?.[cat] ? Object.keys(filterCounts[cat]).filter((v) => !activeFilters.some((f) => f.category === cat && f.values.includes(v))) : [];
+          return availableValues.length > 0;
+        })
+        .map((cat) => ({ type: 'category' as const, category: cat }));
+    } else {
+      // Search results or category values
+      return searchResults.map((r) => ({ type: 'value' as const, ...r }));
+    }
+  }, [selectedCategory, hasQuery, filterCounts, activeFilters, searchResults]);
+
+  const dropdownItems = getDropdownItems();
+
+  // Reset highlight when dropdown content changes
+  useEffect(() => {
+    setHighlightedIndex(-1);
+  }, [searchQuery, selectedCategory, dropdownAnchor]);
+
+  // Handle keyboard navigation
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
-      if (event.key === 'Enter') {
+      if (event.key === 'ArrowDown') {
         event.preventDefault();
-        if (searchResults.length > 0) {
-          const first = searchResults[0];
-          handleValueSelect(first.category, first.value);
+        setHighlightedIndex((prev) => Math.min(prev + 1, dropdownItems.length - 1));
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        setHighlightedIndex((prev) => Math.max(prev - 1, -1));
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        const item = dropdownItems[highlightedIndex] || dropdownItems[0];
+        if (item) {
+          if (item.type === 'category') {
+            handleCategorySelect(item.category);
+            setHighlightedIndex(-1);
+          } else {
+            handleValueSelect(item.category, item.value);
+          }
         }
       } else if (event.key === 'Escape') {
         handleDropdownClose();
         inputRef.current?.blur();
       }
     },
-    [searchResults, handleValueSelect, handleDropdownClose]
+    [dropdownItems, highlightedIndex, handleCategorySelect, handleValueSelect, handleDropdownClose]
   );
 
   // Get active group for chip menu
@@ -235,35 +263,58 @@ export function FilterBar({
   const availableValuesForActiveGroup = activeGroupIndex !== null ? getAvailableValuesForGroup(activeGroupIndex) : [];
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        mb: 4,
-        px: 2,
-      }}
-    >
-      {/* Active filter chips */}
-      {activeFilters.map((group, index) => (
-        <Chip
-          key={`${group.category}-${index}`}
-          label={`${group.category}:${group.values.join(',')}`}
-          onClick={(e) => handleChipClick(e, index)}
-          sx={{
-            fontFamily: '"JetBrains Mono", monospace',
-            fontSize: '0.85rem',
-            height: 32,
-            bgcolor: '#f3f4f6',
-            border: '1px solid #3776AB',
-            color: '#374151',
-            cursor: 'pointer',
-            '&:hover': { bgcolor: '#e5e7eb' },
-          }}
-        />
-      ))}
+    <Box sx={{ mb: 4, px: 2 }}>
+      {/* Filter chips row */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        {/* Active filter chips */}
+      {activeFilters.map((group, index) => {
+        const isAnimating = randomAnimation?.index === index;
+        const animationClass = isAnimating ? `chip-blur-${randomAnimation.phase}` : undefined;
+        // Show old label during 'out' phase, new label during 'in' phase
+        const displayLabel = isAnimating && randomAnimation.phase === 'out' && randomAnimation.oldLabel
+          ? randomAnimation.oldLabel
+          : `${group.category}:${group.values.join(',')}`;
+
+        return (
+          <Chip
+            key={`${group.category}-${index}`}
+            label={displayLabel}
+            onClick={(e) => handleChipClick(e, index)}
+            sx={{
+              fontFamily: '"JetBrains Mono", monospace',
+              fontSize: '0.85rem',
+              height: 32,
+              bgcolor: '#f3f4f6',
+              border: '1px solid #3776AB',
+              color: '#374151',
+              cursor: 'pointer',
+              '&:hover': { bgcolor: '#e5e7eb' },
+              ...(animationClass === 'chip-blur-out' && {
+                animation: 'chip-roll-out 0.5s ease-in forwards',
+              }),
+              ...(animationClass === 'chip-blur-in' && {
+                animation: 'chip-roll-in 0.5s ease-out forwards',
+              }),
+              '@keyframes chip-roll-out': {
+                '0%': { transform: 'perspective(200px) rotateX(0deg)' },
+                '100%': { transform: 'perspective(200px) rotateX(180deg)' },
+              },
+              '@keyframes chip-roll-in': {
+                '0%': { transform: 'perspective(200px) rotateX(180deg)' },
+                '100%': { transform: 'perspective(200px) rotateX(360deg)' },
+              },
+            }}
+          />
+        );
+      })}
 
       {/* Search input - hidden when max 5 filters reached */}
       {!maxFiltersReached && (
@@ -330,6 +381,7 @@ export function FilterBar({
           )}
         </Box>
       )}
+      </Box>
 
       {/* Dropdown menu */}
       <Menu
@@ -362,10 +414,13 @@ export function FilterBar({
             FILTER_CATEGORIES.map((category) => {
               const availableValues = getAvailableValues(category);
               if (availableValues.length === 0) return null;
+              // Calculate actual index among visible items
+              const visibleIdx = dropdownItems.findIndex((item) => item.type === 'category' && item.category === category);
               return (
                 <MenuItem
                   key={category}
                   onClick={() => handleCategorySelect(category)}
+                  selected={visibleIdx === highlightedIndex}
                   sx={{ fontFamily: '"JetBrains Mono", monospace' }}
                 >
                   <ListItemText
@@ -402,10 +457,11 @@ export function FilterBar({
                   ]
                 : []),
               ...(searchResults.length > 0
-                ? searchResults.map(({ category, value, count }) => (
+                ? searchResults.map(({ category, value, count }, idx) => (
                     <MenuItem
                       key={`${category}-${value}`}
                       onClick={() => handleValueSelect(category, value)}
+                      selected={idx === highlightedIndex}
                       sx={{ fontFamily: '"JetBrains Mono", monospace' }}
                     >
                       <ListItemText
@@ -495,16 +551,6 @@ export function FilterBar({
                 <Divider key="divider-add" />,
               ]
             : []),
-          // Shuffle
-          <MenuItem
-            key="shuffle"
-            onClick={handleShuffle}
-            sx={{ fontFamily: '"JetBrains Mono", monospace' }}
-          >
-            <ShuffleIcon fontSize="small" sx={{ mr: 1, color: '#3776AB' }} />
-            shuffle
-          </MenuItem>,
-          <Divider key="divider-shuffle" />,
           // Remove individual values
           ...activeGroup.values.map((value) => (
             <MenuItem

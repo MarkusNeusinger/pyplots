@@ -32,37 +32,37 @@ Track progress of regenerating all implementations using the stricter evaluation
 - [x] funnel-basic ✓ (90-96)
 - [x] gauge-basic ✓ (91-95)
 - [x] heatmap-basic ✓ (91-94)
-- [ ] heatmap-calendar
+- [x] heatmap-calendar ✓ (88-93)
 - [x] hexbin-basic ✓ (52-93, altair 52 after 3 attempts)
 - [x] histogram-basic ✓ (91-94)
-- [x] line-basic ✓ (91-94, plotnine kept old)
-- [ ] lollipop-basic
-- [ ] marimekko-basic
-- [ ] network-basic
-- [ ] network-force-directed
-- [ ] parallel-basic
+- [x] line-basic ✓ (91-94)
+- [x] lollipop-basic ✓ (91-92)
+- [x] marimekko-basic ✓ (88-93)
+- [x] network-basic ✓ (8/9: 88-92, plotnine not-feasible)
+- [x] network-force-directed ✓ (8/9: 88-92, plotnine not-feasible)
+- [x] parallel-basic ✓ (78-97)
 - [x] pie-basic ✓ (91-92)
-- [ ] polar-basic (7/9: missing seaborn, plotnine)
-- [ ] pyramid-basic
-- [ ] qq-basic
-- [ ] quiver-basic
-- [ ] radar-basic (7/9: missing seaborn, plotnine)
-- [ ] ridgeline-basic
-- [ ] rose-basic
-- [ ] rug-basic
-- [ ] sankey-basic
+- [x] polar-basic ✓ (91-92)
+- [x] pyramid-basic ✓ (90-98)
+- [x] qq-basic ✓ (90-92)
+- [x] quiver-basic ✓ (8/9: 82-99, seaborn not-feasible)
+- [x] radar-basic ✓ (88-99)
+- [x] ridgeline-basic ✓ (91-93)
+- [x] rose-basic ✓ (73-92, pygal 73 after 3 attempts)
+- [x] rug-basic ✓ (78-94, bokeh 78 after 3 attempts)
+- [x] sankey-basic ✓ (78-93, seaborn 78 after 3 attempts)
 - [x] scatter-basic ✓ (85-93)
-- [ ] slope-basic
-- [ ] span-basic
-- [ ] sparkline-basic
-- [ ] stem-basic
-- [ ] step-basic
-- [ ] streamgraph-basic
-- [ ] strip-basic
+- [x] slope-basic ✓ (86-92, pygal 86 after 3 attempts)
+- [x] span-basic ✓ (91-93)
+- [x] sparkline-basic ✓ (78-93, pygal 78 after 3 attempts)
+- [x] stem-basic ✓ (86-94, pygal 86 after 3 attempts)
+- [x] step-basic ✓ (90-94)
+- [x] streamgraph-basic ✓ (75-93, pygal 75 after 3 attempts)
+- [x] strip-basic ✓ (91-96)
 - [x] sudoku-basic ✓ (91-94)
-- [ ] sunburst-basic
-- [ ] surface-basic
-- [ ] swarm-basic
+- [x] sunburst-basic ✓ (7/9: 88-92, plotnine+pygal not-feasible)
+- [x] surface-basic ✓ (6/9: 87-91, seaborn+plotnine+pygal not-feasible)
+- [x] swarm-basic ✓ (91-94)
 - [ ] ternary-basic
 - [ ] treemap-basic
 - [x] violin-basic ✓ (91-92)

@@ -1,7 +1,7 @@
 """ pyplots.ai
 density-basic: Basic Density Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-15
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import tempfile
@@ -26,25 +26,19 @@ values_a = np.random.normal(165, 7, n_samples // 2)  # Female heights
 values_b = np.random.normal(178, 8, n_samples // 2)  # Male heights
 values = np.concatenate([values_a, values_b])
 
-
-# Kernel Density Estimation (Gaussian kernel)
-def kde(data, x_grid, bandwidth=None):
-    """Compute Gaussian KDE at given x values."""
-    n = len(data)
-    if bandwidth is None:
-        # Silverman's rule of thumb
-        bandwidth = 1.06 * np.std(data) * n ** (-1 / 5)
-    result = np.zeros_like(x_grid)
-    for xi in data:
-        result += np.exp(-0.5 * ((x_grid - xi) / bandwidth) ** 2)
-    result /= n * bandwidth * np.sqrt(2 * np.pi)
-    return result
-
-
-# Calculate KDE
+# Kernel Density Estimation (Gaussian kernel) - inline calculation
 x_min, x_max = values.min() - 10, values.max() + 10
 x_grid = np.linspace(x_min, x_max, 200)
-density = kde(values, x_grid)
+
+# Silverman's rule of thumb for bandwidth
+n = len(values)
+bandwidth = 1.06 * np.std(values) * n ** (-1 / 5)
+
+# Compute Gaussian KDE
+density = np.zeros_like(x_grid)
+for xi in values:
+    density += np.exp(-0.5 * ((x_grid - xi) / bandwidth) ** 2)
+density /= n * bandwidth * np.sqrt(2 * np.pi)
 
 # Create chart
 chart = Chart(container="container")

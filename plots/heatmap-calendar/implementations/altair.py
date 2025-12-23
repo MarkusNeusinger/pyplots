@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-calendar: Basic Calendar Heatmap
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import altair as alt
@@ -58,7 +58,7 @@ heatmap = (
     alt.Chart(df)
     .mark_rect(cornerRadius=3)
     .encode(
-        x=alt.X("week_of_year:O", title="", axis=alt.Axis(labels=False, ticks=False, domain=False, labelFontSize=14)),
+        x=alt.X("week_of_year:O", title="", axis=alt.Axis(labels=False, ticks=False, domain=False)),
         y=alt.Y(
             "weekday_name:O",
             title="",
@@ -95,10 +95,7 @@ chart = (
         width=1500,
         height=800,
         title=alt.Title(
-            "Daily Contributions 2024 \u00b7 heatmap-calendar \u00b7 altair \u00b7 pyplots.ai",
-            fontSize=28,
-            anchor="start",
-            offset=20,
+            "Daily Contributions 2024 · heatmap-calendar · altair · pyplots.ai", fontSize=28, anchor="start", offset=20
         ),
     )
     .configure_axis(grid=False)

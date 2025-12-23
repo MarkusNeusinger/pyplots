@@ -1,7 +1,7 @@
 """ pyplots.ai
 dendrogram-basic: Basic Dendrogram
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-17
+Quality: 90/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -63,14 +63,31 @@ linkage_matrix = linkage(data, method="ward")
 
 # Build dendrogram coordinates from linkage matrix
 n = len(labels)
+
 # Track x-position and height for each node (original samples + merged clusters)
 node_x = {}
 node_height = {}
 
-# Initialize leaf positions (evenly spaced)
-for i in range(n):
-    node_x[i] = i
-    node_height[i] = 0
+# Compute leaf order from linkage for proper x-axis positioning (iterative approach)
+root_node = 2 * n - 2
+stack = [root_node]
+leaf_order = []
+while stack:
+    node_id = stack.pop()
+    if node_id < n:
+        leaf_order.append(node_id)
+    else:
+        idx = node_id - n
+        left = int(linkage_matrix[idx, 0])
+        right = int(linkage_matrix[idx, 1])
+        # Push right first so left is processed first (maintains order)
+        stack.append(right)
+        stack.append(left)
+
+# Initialize leaf positions based on their order in the dendrogram
+for pos, leaf_id in enumerate(leaf_order):
+    node_x[leaf_id] = pos
+    node_height[leaf_id] = 0
 
 # Build merged clusters and collect line segments
 segments = []
@@ -95,38 +112,25 @@ for idx, (left, right, dist, _) in enumerate(linkage_matrix):
     # Right vertical line (from right child up to merge height)
     segments.append([(x_right, h_right), (x_right, dist)])
 
-# Compute leaf order from linkage for proper x-axis labels (iterative approach)
-root_node = 2 * n - 2
-stack = [root_node]
-leaf_order = []
-while stack:
-    node_id = stack.pop()
-    if node_id < n:
-        leaf_order.append(node_id)
-    else:
-        idx = node_id - n
-        left = int(linkage_matrix[idx, 0])
-        right = int(linkage_matrix[idx, 1])
-        # Push right first so left is processed first (maintains order)
-        stack.append(right)
-        stack.append(left)
+# Labels in dendrogram order
 ordered_labels = [labels[i] for i in leaf_order]
 
-# Custom style for pyplots
+# Custom style for pyplots - larger fonts for 4800x2700 canvas
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333",
     foreground_strong="#333",
-    foreground_subtle="#666",
-    colors=("#306998", "#FFD43B", "#4ECDC4", "#E74C3C", "#9B59B6"),
-    title_font_size=48,
-    label_font_size=32,
-    major_label_font_size=28,
-    legend_font_size=28,
-    value_font_size=24,
-    stroke_width=4,
+    foreground_subtle="#999",  # Lighter grid lines for subtlety
+    colors=("#306998",),  # Python Blue for dendrogram lines
+    title_font_size=56,
+    label_font_size=44,  # Larger x-axis tick labels for readability
+    major_label_font_size=40,
+    legend_font_size=32,
+    value_font_size=28,
+    stroke_width=5,
     opacity=1.0,
+    guide_stroke_color="#ddd",  # Subtle grid color
 )
 
 # Create XY chart for dendrogram
@@ -134,22 +138,28 @@ chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
-    title="dendrogram-basic \u00b7 pygal \u00b7 pyplots.ai",
+    title="dendrogram-basic · pygal · pyplots.ai",
     x_title="Sample",
-    y_title="Distance (Ward)",
+    y_title="Distance (Ward's Method)",
     show_legend=False,
     show_dots=False,
-    stroke_style={"width": 4},
+    stroke_style={"width": 5},
     fill=False,
     show_x_guides=False,
     show_y_guides=True,
-    x_labels=ordered_labels,
     x_label_rotation=45,
+    truncate_label=20,
+    xrange=(min(node_x.values()) - 0.5, max(leaf_order) + 0.5),  # Proper x-axis range
 )
 
+# Set x-axis labels at exact leaf positions using x_labels_major
+chart.x_labels = list(range(n))
+chart.x_labels_major = list(range(n))
+chart.x_value_formatter = lambda x: ordered_labels[int(round(x))] if 0 <= x < n else ""
+
 # Add each segment as a separate series to draw the dendrogram
-for i, seg in enumerate(segments):
-    chart.add(f"seg{i}", seg, show_dots=False, stroke_style={"width": 4})
+for seg in segments:
+    chart.add(None, seg, show_dots=False, stroke_style={"width": 5})
 
 # Save outputs
 chart.render_to_file("plot.html")

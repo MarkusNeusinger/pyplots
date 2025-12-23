@@ -1,17 +1,27 @@
 library: altair
 specification_id: candlestick-basic
-created: 2025-12-14 18:24:21+00:00
-updated: 2025-12-14 18:24:21+00:00
+created: '2025-12-23T10:01:24Z'
+updated: '2025-12-23T10:07:56Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20212205011
-issue: 812
+workflow_run: 20457531337
+issue: 0
 python_version: 3.13.11
 library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/candlestick-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/candlestick-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/candlestick-basic/altair/plot.html
-quality_score: 90
+quality_score: 91
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent candlestick construction using layered approach (wicks as mark_rule,
+    bodies as mark_bar)
+  - Clean declarative encoding with proper type annotations (:T for temporal, :Q for
+    quantitative, :N for nominal)
+  - Comprehensive tooltips showing all OHLC values with proper formatting
+  - Good data generation showing realistic price movements with varying volatility
+  - Correct title format and appropriate font sizing throughout
+  weaknesses:
+  - Legend for Bullish/Bearish direction is not visible in the rendered output despite
+    being configured in code
+  - Color scheme uses red-green which is not ideal for colorblind accessibility
+  - Missing interactive() method which is Altair signature feature for web-based exploration

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 network-force-directed: Force-Directed Graph
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-17
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -17,7 +17,7 @@ np.random.seed(42)
 nodes = []
 edges = []
 
-# Create 3 communities
+# Create 3 communities representing company departments
 community_sizes = [18, 17, 15]  # Total: 50 nodes
 community_names = ["Engineering", "Marketing", "Sales"]
 node_id = 0
@@ -86,10 +86,10 @@ for iteration in range(iterations):
             # Limit movement by temperature
             positions[i] += (displacement[i] / disp_norm) * min(disp_norm, 0.15 * temperature)
 
-# Normalize positions to [0.05, 0.95] range
+# Normalize positions to [0.08, 0.92] range for better margins
 pos_min = positions.min(axis=0)
 pos_max = positions.max(axis=0)
-positions = (positions - pos_min) / (pos_max - pos_min + 1e-6) * 0.9 + 0.05
+positions = (positions - pos_min) / (pos_max - pos_min + 1e-6) * 0.84 + 0.08
 pos = {node["id"]: positions[i] for i, node in enumerate(nodes)}
 
 # Calculate node degrees (number of connections)
@@ -101,42 +101,68 @@ for src, tgt in edges:
 # Create plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Community colors
-community_colors = ["#306998", "#FFD43B", "#FF6B6B"]
+# Community colors (Python Blue, Python Yellow, and a colorblind-safe coral)
+community_colors = ["#306998", "#FFD43B", "#E07B53"]
 
 # Draw edges first (behind nodes)
 edge_lines = [[(pos[src][0], pos[src][1]), (pos[tgt][0], pos[tgt][1])] for src, tgt in edges]
-lc = LineCollection(edge_lines, colors="#AAAAAA", linewidths=1.5, alpha=0.4, zorder=1)
+lc = LineCollection(edge_lines, colors="#888888", linewidths=1.5, alpha=0.35, zorder=1)
 ax.add_collection(lc)
 
 # Draw nodes sized by degree
 for node in nodes:
     x, y = pos[node["id"]]
     degree = degrees[node["id"]]
-    size = 400 + degree * 100  # Scale size by connections
+    size = 450 + degree * 120  # Scale size by connections
     color = community_colors[node["community"]]
     ax.scatter(x, y, s=size, c=color, edgecolors="#333333", linewidths=1.5, alpha=0.85, zorder=2)
 
-# Label only high-degree nodes (hubs)
+# Label only top hubs (highest degree nodes per community)
+# Find top 2 nodes per community to avoid clutter
+top_hubs = []
+for comm_idx in range(3):
+    comm_nodes = [n for n in nodes if n["community"] == comm_idx]
+    comm_degrees = [(n["id"], degrees[n["id"]]) for n in comm_nodes]
+    comm_degrees.sort(key=lambda x: x[1], reverse=True)
+    top_hubs.extend([n_id for n_id, _ in comm_degrees[:2]])
+
 for node in nodes:
-    if degrees[node["id"]] >= 7:
+    if node["id"] in top_hubs:
         x, y = pos[node["id"]]
+        team_initial = community_names[node["community"]][0]
         ax.text(
-            x, y + 0.035, "Hub", fontsize=12, fontweight="bold", ha="center", va="bottom", color="#333333", zorder=3
+            x,
+            y + 0.045,
+            f"Hub ({team_initial})",
+            fontsize=14,
+            fontweight="bold",
+            ha="center",
+            va="bottom",
+            color="#333333",
+            zorder=3,
         )
 
 # Styling
-ax.set_title("network-force-directed · matplotlib · pyplots.ai", fontsize=24)
-ax.set_xlim(-0.05, 1.05)
-ax.set_ylim(-0.05, 1.05)
+ax.set_title("network-force-directed · matplotlib · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
+ax.set_xlim(-0.02, 1.02)
+ax.set_ylim(-0.02, 1.02)
 ax.axis("off")
 
 # Legend for communities
 legend_handles = [
-    ax.scatter([], [], c=color, s=500, edgecolors="#333333", linewidths=1.5, label=name)
+    ax.scatter([], [], c=color, s=600, edgecolors="#333333", linewidths=1.5, label=name)
     for color, name in zip(community_colors, community_names, strict=True)
 ]
-ax.legend(handles=legend_handles, loc="upper left", fontsize=16, framealpha=0.9, title="Teams", title_fontsize=18)
+ax.legend(
+    handles=legend_handles,
+    loc="upper left",
+    fontsize=16,
+    framealpha=0.95,
+    title="Teams",
+    title_fontsize=18,
+    edgecolor="#CCCCCC",
+    fancybox=True,
+)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 marimekko-basic: Basic Marimekko Chart
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-16
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import os
@@ -104,7 +104,7 @@ plot = (
         limits=[0, 100],
     )
     + scale_y_continuous(name="Share within Region (%)", limits=[0, 100])
-    + labs(title="marimekko-basic \u00b7 letsplot \u00b7 pyplots.ai")
+    + labs(title="marimekko-basic · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(
         plot_title=element_text(size=24, hjust=0.5),

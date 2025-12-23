@@ -1,7 +1,7 @@
 """ pyplots.ai
 step-basic: Basic Step Plot
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-15
+Quality: 92/100 | Created: 2025-12-23
 """
 
 from bokeh.io import export_png, output_file

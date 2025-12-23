@@ -1,6 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 sunburst-basic: Basic Sunburst Chart
-Library: highcharts unknown | Python 3.13.11
+Library: highcharts 1.10.3 | Python 3.13
 Quality: 89/100 | Created: 2025-12-23
 """
 
@@ -102,7 +102,12 @@ chart.options.series = [
             {
                 "level": 3,
                 "colorVariation": {"key": "brightness", "to": 0.35},
-                "dataLabels": {"style": {"fontSize": "26px"}, "rotationMode": "parallel"},
+                "dataLabels": {
+                    "style": {"fontSize": "28px"},
+                    "rotationMode": "circular",
+                    "allowOverlap": False,
+                    "filter": {"property": "innerArcLength", "operator": ">", "value": 40},
+                },
             },
         ],
     }

@@ -1,17 +1,24 @@
 library: plotly
 specification_id: donut-basic
-created: 2025-12-14 10:13:44+00:00
-updated: 2025-12-14 10:13:44+00:00
+created: '2025-12-23T00:48:01Z'
+updated: '2025-12-23T01:21:10Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20206399959
-issue: 733
+workflow_run: 20447959475
+issue: 0
 python_version: 3.13.11
 library_version: 6.5.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/donut-basic/plotly/plot.html
-quality_score: 94
+quality_score: 92
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent use of center annotation for total budget display
+  - Clean colorblind-safe color palette with Python blue as primary
+  - White borders between segments improve visual separation
+  - Subtle pull effect adds visual interest without distraction
+  - Both PNG and interactive HTML outputs generated
+  - Realistic budget allocation scenario
+  weaknesses:
+  - Legend positioning creates slight layout imbalance
+  - Could leverage more Plotly interactivity features like custom hover templates

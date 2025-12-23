@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 streamgraph-basic: Basic Stream Graph
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import altair as alt
@@ -18,10 +18,13 @@ genres = ["Pop", "Rock", "Hip-Hop", "Electronic", "Jazz", "Classical"]
 # Generate smooth, realistic streaming data for each genre
 data = []
 for genre in genres:
-    # Base value varies by genre
+    # Base value varies by genre popularity
     base = {"Pop": 150, "Rock": 100, "Hip-Hop": 120, "Electronic": 80, "Jazz": 40, "Classical": 30}[genre]
-    # Generate smooth curve with seasonal variation
-    values = base + 30 * np.sin(np.linspace(0, 4 * np.pi, 24)) + np.random.randn(24).cumsum() * 5
+    # Generate smooth curve with seasonal variation and organic growth
+    trend = np.linspace(0, 20, 24)  # Slight growth over time
+    seasonal = 30 * np.sin(np.linspace(0, 4 * np.pi, 24))
+    noise = np.random.randn(24).cumsum() * 5
+    values = base + trend + seasonal + noise
     values = np.maximum(values, 10)  # Ensure positive values
     for i, month in enumerate(months):
         data.append({"time": month, "category": genre, "value": values[i]})
@@ -45,7 +48,7 @@ chart = (
         y=alt.Y(
             "value:Q",
             title="Streaming Hours (millions)",
-            stack="center",
+            stack="center",  # Center baseline for streamgraph aesthetic
             axis=alt.Axis(
                 labelFontSize=18,
                 titleFontSize=22,
@@ -65,9 +68,7 @@ chart = (
     .properties(
         width=1600, height=900, title=alt.Title("streamgraph-basic · altair · pyplots.ai", fontSize=28, anchor="middle")
     )
-    .configure_axis(
-        grid=False  # Remove grid for cleaner streamgraph
-    )
+    .configure_axis(grid=False)  # Remove grid for cleaner streamgraph
     .configure_view(strokeWidth=0)
 )
 

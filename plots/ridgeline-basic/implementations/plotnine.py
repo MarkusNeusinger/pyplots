@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 ridgeline-basic: Basic Ridgeline Plot
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-15
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -99,7 +99,7 @@ plot = (
     + geom_ribbon(alpha=0.85, color="#333333", size=0.5)
     + scale_fill_manual(values=colors)
     + scale_y_continuous(breaks=list(range(12)), labels=months, limits=(-0.5, 14))
-    + labs(x="Temperature (\u00b0C)", y="Month", title="ridgeline-basic \u00b7 plotnine \u00b7 pyplots.ai")
+    + labs(x="Temperature (°C)", y="Month", title="ridgeline-basic · plotnine · pyplots.ai")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),

@@ -1,7 +1,7 @@
 """ pyplots.ai
 streamgraph-basic: Basic Stream Graph
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -82,7 +82,6 @@ ax.stackplot(months, data, labels=categories, colors=colors, baseline="wiggle", 
 
 # Styling
 ax.set_xlabel("Month", fontsize=20)
-ax.set_ylabel("Streaming Hours (millions)", fontsize=20)
 ax.set_title("streamgraph-basic · matplotlib · pyplots.ai", fontsize=24)
 
 # X-axis labels
@@ -92,7 +91,6 @@ ax.tick_params(axis="y", labelsize=16)
 
 # Remove y-axis ticks for cleaner stream appearance (values are relative)
 ax.set_yticks([])
-ax.set_ylabel("")
 
 # Add legend
 ax.legend(loc="upper left", fontsize=16, framealpha=0.9)

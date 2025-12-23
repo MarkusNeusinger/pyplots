@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pyramid-basic: Basic Pyramid Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-23
@@ -13,7 +13,7 @@ age_groups = ["0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-7
 male = [4.8, 5.2, 6.1, 7.3, 8.5, 7.8, 5.9, 3.2, 1.2]  # Millions
 female = [4.5, 5.0, 6.3, 7.5, 8.7, 8.2, 6.4, 4.1, 2.1]  # Millions
 
-# Custom style for 4800x2700 canvas
+# Custom style for 4800x2700 canvas with larger legend text
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -22,9 +22,9 @@ custom_style = Style(
     foreground_subtle="#666",
     colors=("#FFD43B", "#306998"),  # Yellow for Female (right), Blue for Male (left)
     title_font_size=60,
-    label_font_size=36,
-    major_label_font_size=32,
-    legend_font_size=36,
+    label_font_size=40,
+    major_label_font_size=36,
+    legend_font_size=48,  # Larger legend for better readability
     value_font_size=28,
     stroke_width=1,
 )
@@ -36,10 +36,12 @@ chart = pygal.Pyramid(
     style=custom_style,
     title="pyramid-basic · pygal · pyplots.ai",
     x_title="Population (millions)",
+    y_title="Age Group",
     show_y_guides=True,
     show_x_guides=False,
     print_values=False,
-    legend_at_bottom=False,
+    legend_at_bottom=True,  # Position legend at bottom for better visibility
+    legend_box_size=24,
     show_legend=True,
     human_readable=True,
 )

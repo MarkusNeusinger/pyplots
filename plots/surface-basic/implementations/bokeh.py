@@ -1,7 +1,7 @@
 """ pyplots.ai
 surface-basic: Basic 3D Surface Plot
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-17
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -21,10 +21,10 @@ x = np.linspace(-3, 3, n_points)
 y = np.linspace(-3, 3, n_points)
 X, Y = np.meshgrid(x, y)
 
-# Surface function
+# Surface function: combination of sin and cos for interesting terrain
 Z = np.sin(X) * np.cos(Y)
 
-# 3D to 2D projection (elevation=25, azimuth=45)
+# 3D to 2D projection using isometric-like view (elevation=25°, azimuth=45°)
 elev_rad = np.radians(25)
 azim_rad = np.radians(45)
 
@@ -32,7 +32,7 @@ azim_rad = np.radians(45)
 X_rot = X * np.cos(azim_rad) - Y * np.sin(azim_rad)
 Y_rot = X * np.sin(azim_rad) + Y * np.cos(azim_rad)
 
-# Rotation around x-axis (elevation) and project
+# Rotation around x-axis (elevation) and project to 2D
 X_proj = X_rot
 Z_proj = Y_rot * np.sin(elev_rad) + Z * np.cos(elev_rad)
 
@@ -61,7 +61,7 @@ quad_xs = [q[1] for q in quads]
 quad_ys = [q[2] for q in quads]
 quad_colors = [q[3] for q in quads]
 
-# Color mapping
+# Color mapping using Viridis colormap
 z_min, z_max = Z.min(), Z.max()
 color_mapper = LinearColorMapper(palette=Viridis256, low=z_min, high=z_max)
 
@@ -76,16 +76,15 @@ for z_val in quad_colors:
 # Create Bokeh figure
 p = figure(width=4800, height=2700, title="surface-basic · bokeh · pyplots.ai", toolbar_location=None, tools="")
 
-# Draw surface patches
+# Draw surface patches with subtle edges
 p.patches(xs=quad_xs, ys=quad_ys, fill_color=colors, line_color="#306998", line_alpha=0.3, line_width=0.5, alpha=0.9)
 
-# Set appropriate ranges
+# Set appropriate ranges with padding
 x_min = min(min(xs) for xs in quad_xs)
 x_max = max(max(xs) for xs in quad_xs)
 y_min = min(min(ys) for ys in quad_ys)
 y_max = max(max(ys) for ys in quad_ys)
 
-# Add padding
 x_pad = (x_max - x_min) * 0.15
 y_pad = (y_max - y_min) * 0.15
 
@@ -96,7 +95,7 @@ p.y_range = Range1d(y_min - y_pad, y_max + y_pad)
 p.xaxis.visible = False
 p.yaxis.visible = False
 
-# Add text annotations for 3D axes
+# Add text annotations for 3D axes labels
 p.text(
     x=[x_max + x_pad * 0.4],
     y=[(y_min + y_max) / 2],
@@ -135,7 +134,7 @@ color_bar = ColorBar(
 )
 p.add_layout(color_bar, "right")
 
-# Styling for 4800x2700 px
+# Title styling for large canvas
 p.title.text_font_size = "32pt"
 
 # Grid styling - subtle
@@ -146,11 +145,11 @@ p.ygrid.grid_line_alpha = 0.2
 p.xgrid.grid_line_dash = [6, 4]
 p.ygrid.grid_line_dash = [6, 4]
 
-# Background
+# Background styling
 p.background_fill_color = "#fafafa"
 p.border_fill_color = "white"
 p.outline_line_color = None
-p.min_border_right = 200  # Make room for colorbar
+p.min_border_right = 200
 
 # Save PNG
 export_png(p, filename="plot.png")

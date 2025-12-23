@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hexbin-basic: Basic Hexbin Plot
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-23
@@ -6,46 +6,60 @@ Quality: 82/100 | Created: 2025-12-23
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 
 
-# Data - create clustered distribution with multiple density regions
+# Data - simulate GPS coordinates for urban traffic hotspot analysis
 np.random.seed(42)
 
-# Create multiple clusters to show density variation
-n_points = 5000
-cluster1 = np.random.multivariate_normal([2, 2], [[1, 0.5], [0.5, 1]], n_points // 2)
-cluster2 = np.random.multivariate_normal([6, 6], [[0.5, -0.3], [-0.3, 0.5]], n_points // 3)
-cluster3 = np.random.multivariate_normal([7, 2], [[0.3, 0], [0, 0.8]], n_points // 6)
+# Create realistic GPS coordinate clusters representing traffic hotspots
+# Using a larger dataset (50,000 points) to demonstrate hexbin advantage over scatter
+n_points = 50000
 
-# Combine clusters
-x = np.concatenate([cluster1[:, 0], cluster2[:, 0], cluster3[:, 0]])
-y = np.concatenate([cluster1[:, 1], cluster2[:, 1], cluster3[:, 1]])
+# Downtown business district - high density
+downtown = np.random.multivariate_normal([-73.985, 40.748], [[0.0001, 0.00005], [0.00005, 0.0001]], n_points // 2)
+
+# Airport area - medium density
+airport = np.random.multivariate_normal([-73.875, 40.775], [[0.00008, -0.00003], [-0.00003, 0.00008]], n_points // 3)
+
+# Shopping district - smaller cluster
+shopping = np.random.multivariate_normal([-73.965, 40.785], [[0.00004, 0], [0, 0.00006]], n_points // 6)
+
+# Combine clusters into DataFrame for seaborn
+longitude = np.concatenate([downtown[:, 0], airport[:, 0], shopping[:, 0]])
+latitude = np.concatenate([downtown[:, 1], airport[:, 1], shopping[:, 1]])
+df = pd.DataFrame({"Longitude": longitude, "Latitude": latitude})
 
 # Set seaborn style for clean aesthetics
 sns.set_style("whitegrid")
 sns.set_context("talk", font_scale=1.2)
 
-# Create figure
-fig, ax = plt.subplots(figsize=(16, 9))
+# Create figure using seaborn's JointGrid for hexbin visualization
+g = sns.JointGrid(data=df, x="Longitude", y="Latitude", height=9, ratio=6)
 
-# Create hexbin plot using matplotlib's hexbin via the axes
-# Seaborn provides styling but hexbin is a matplotlib function
-hb = ax.hexbin(x, y, gridsize=30, cmap="viridis", mincnt=1, edgecolors="none")
+# Main hexbin plot using seaborn's plot_joint with matplotlib hexbin
+g.plot_joint(plt.hexbin, gridsize=35, cmap="viridis", mincnt=1, edgecolors="none")
+
+# Marginal distributions using seaborn's histplot
+g.plot_marginals(sns.histplot, kde=True, color="#306998", alpha=0.6)
 
 # Add colorbar to show density scale
-cbar = plt.colorbar(hb, ax=ax, pad=0.02)
+cbar = g.figure.colorbar(g.ax_joint.collections[0], ax=g.ax_joint, pad=0.02)
 cbar.set_label("Point Count", fontsize=20)
 cbar.ax.tick_params(labelsize=16)
 
 # Labels and title with proper sizing
-ax.set_xlabel("X Coordinate", fontsize=20)
-ax.set_ylabel("Y Coordinate", fontsize=20)
-ax.set_title("hexbin-basic \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24)
-ax.tick_params(axis="both", labelsize=16)
+g.ax_joint.set_xlabel("Longitude (°W)", fontsize=20)
+g.ax_joint.set_ylabel("Latitude (°N)", fontsize=20)
+g.figure.suptitle("hexbin-basic · seaborn · pyplots.ai", fontsize=24, y=1.02)
+g.ax_joint.tick_params(axis="both", labelsize=16)
 
 # Adjust grid to be subtle
-ax.grid(True, alpha=0.3, linestyle="--")
+g.ax_joint.grid(True, alpha=0.3, linestyle="--")
+
+# Resize figure to match expected dimensions
+g.figure.set_size_inches(16, 9)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

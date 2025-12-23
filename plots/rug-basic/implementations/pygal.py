@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 rug-basic: Basic Rug Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-23
@@ -50,16 +50,19 @@ chart = pygal.XY(
     show_legend=False,
     show_dots=False,
     stroke=True,
-    stroke_style={"width": 4},
+    stroke_style={"width": 8},  # Thicker strokes for visibility
     show_x_guides=False,
     show_y_guides=False,
     show_y_labels=False,  # Hide y-axis labels (not meaningful for rug plot)
+    y_labels=[],  # Hide y-axis line by providing empty labels
     range=(0, 1),  # Fixed y-axis range
     margin=60,
+    margin_top=80,  # Compact top margin
+    margin_bottom=180,  # Room for x-axis labels
 )
 
 # Rug plot parameters
-tick_height = 0.15  # Height of tick marks (15% of plot height)
+tick_height = 0.85  # Height of tick marks (85% of plot height for better canvas utilization)
 
 # Add invisible anchor points to set x-axis range with padding
 x_min, x_max = float(values.min()), float(values.max())
@@ -67,10 +70,10 @@ x_padding = (x_max - x_min) * 0.05
 chart.add("", [(x_min - x_padding, 0), (x_min - x_padding, 0)], stroke_style={"width": 0}, show_dots=False)
 chart.add("", [(x_max + x_padding, 0), (x_max + x_padding, 0)], stroke_style={"width": 0}, show_dots=False)
 
-# Add rug ticks - each tick is a short vertical line from the bottom
+# Add rug ticks - each tick is a vertical line from the bottom
 for val in values:
     x = float(val)
-    chart.add("", [(x, 0), (x, tick_height)], stroke_style={"width": 4})
+    chart.add("", [(x, 0), (x, tick_height)], stroke_style={"width": 8})
 
 # Save outputs
 chart.render_to_png("plot.png")

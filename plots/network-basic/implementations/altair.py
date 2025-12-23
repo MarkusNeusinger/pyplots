@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 network-basic: Basic Network Graph
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-17
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import altair as alt
@@ -141,7 +141,7 @@ edges_df = pd.DataFrame(
     + [{"edge_id": i, "x": pos[tgt][0], "y": pos[tgt][1], "order": 1} for i, (_, tgt) in enumerate(edges)]
 )
 
-# Define group colors
+# Define group colors (Python Blue, Python Yellow, and colorblind-safe complementary)
 group_colors = ["#306998", "#FFD43B", "#4CAF50", "#FF7043"]
 
 # Draw edges as lines

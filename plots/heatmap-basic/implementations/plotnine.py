@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-basic: Basic Heatmap
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 100/100 | Created: 2025-12-14
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import numpy as np
@@ -20,12 +20,12 @@ from plotnine import (
 )
 
 
-# Data - 8x8 matrix with meaningful patterns
+# Data - 8x8 matrix with meaningful patterns (performance metrics by region and quarter)
 np.random.seed(42)
 rows = ["Region A", "Region B", "Region C", "Region D", "Region E", "Region F", "Region G", "Region H"]
 cols = ["Q1 2023", "Q2 2023", "Q3 2023", "Q4 2023", "Q1 2024", "Q2 2024", "Q3 2024", "Q4 2024"]
 
-# Create data with a trend and some variation
+# Create data with a trend and variation
 base_values = np.linspace(-30, 40, 8)  # Trend across columns
 row_effects = np.random.uniform(-10, 10, 8)  # Row-specific offsets
 values = np.zeros((8, 8))
@@ -57,7 +57,7 @@ plot = (
         midpoint=0,
         name="Value",
     )
-    + labs(x="Time Period", y="Region", title="heatmap-basic \u00b7 plotnine \u00b7 pyplots.ai")
+    + labs(x="Time Period", y="Region", title="heatmap-basic · plotnine · pyplots.ai")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),

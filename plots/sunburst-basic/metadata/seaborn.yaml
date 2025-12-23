@@ -1,0 +1,32 @@
+library: seaborn
+specification_id: sunburst-basic
+created: '2025-12-23T21:57:04Z'
+updated: '2025-12-23T22:02:17Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20472384817
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent sunburst visualization with three clear hierarchical levels (Department
+    > Team > Project)
+  - Smart use of seaborn light_palette() to create color gradients showing parent-child
+    relationships within each branch
+  - Effective dual-view layout combining sunburst with summary bar chart using seaborn
+    barplot
+  - Clear labeling with conditional display based on segment size to avoid clutter
+  - Center annotation shows total budget, providing immediate context
+  - Good color differentiation between branches (blue, yellow, light blue)
+  - Professional styling with sns.set_theme() for consistent poster-quality output
+  weaknesses:
+  - Title format should use interpunct (·) separator per spec - currently correct
+    but data label is prepended
+  - Some outer ring labels (CI/CD, Database, Mobile) appear cramped or partially overlap
+    with wedge edges
+  - The bar chart colors do not match the sunburst branch colors (Engineering shows
+    blue in sunburst but bar chart has different mapping due to hue parameter)

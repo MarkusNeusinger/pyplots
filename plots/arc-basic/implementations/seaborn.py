@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 arc-basic: Basic Arc Diagram
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-23
@@ -12,9 +12,9 @@ import seaborn as sns
 from matplotlib.lines import Line2D
 
 
-# Data: Character interactions in a story
+# Data: Character interactions in a story (12 characters for readability)
 np.random.seed(42)
-nodes = ["Alice", "Bob", "Carol", "Dave", "Eve", "Frank", "Grace", "Henry"]
+nodes = ["Alice", "Bob", "Carol", "Dave", "Eve", "Frank", "Grace", "Henry", "Ivy", "Jack", "Kate", "Leo"]
 n_nodes = len(nodes)
 
 # Create edges with weights (character interaction strength)
@@ -28,9 +28,15 @@ edges = [
     (3, 6, 3),  # Dave - Grace
     (4, 7, 4),  # Eve - Henry
     (5, 6, 2),  # Frank - Grace
-    (0, 7, 1),  # Alice - Henry (distant)
+    (0, 11, 1),  # Alice - Leo (distant, long arc)
     (2, 6, 3),  # Carol - Grace
     (1, 5, 2),  # Bob - Frank
+    (7, 8, 4),  # Henry - Ivy
+    (8, 9, 3),  # Ivy - Jack
+    (9, 10, 5),  # Jack - Kate (close)
+    (10, 11, 2),  # Kate - Leo
+    (6, 9, 2),  # Grace - Jack
+    (5, 10, 1),  # Frank - Kate (distant)
 ]
 
 # Node positions along x-axis
@@ -79,20 +85,16 @@ for start, end, weight in edges:
 for i, name in enumerate(nodes):
     ax.text(x_positions[i], -0.15, name, ha="center", va="top", fontsize=16, fontweight="bold", color="#306998")
 
-# Styling
+# Styling - adjust limits for 12 nodes
 ax.set_xlim(-0.8, n_nodes - 0.2)
-ax.set_ylim(-0.8, 3.5)
-ax.set_title("arc-basic · seaborn · pyplots.ai", fontsize=24)
-ax.set_xlabel("")
-ax.set_ylabel("")
+ax.set_ylim(-0.8, 5.0)  # More vertical space for longer arcs
+ax.set_title("arc-basic · seaborn · pyplots.ai", fontsize=24, pad=20)
 
-# Remove axes completely - arc diagrams are abstract visualizations
+# Remove all axis elements for abstract visualization
+for spine in ax.spines.values():
+    spine.set_visible(False)
 ax.set_xticks([])
 ax.set_yticks([])
-ax.set_xticklabels([])
-ax.set_yticklabels([])
-ax.axis("off")  # Complete axis removal
-sns.despine(left=True, bottom=True, right=True, top=True)
 
 # Add a subtle horizontal baseline
 ax.axhline(y=0, color="#306998", linewidth=2, alpha=0.3, zorder=1)
@@ -103,7 +105,16 @@ legend_elements = [
     Line2D([0], [0], color="#FFD43B", linewidth=2.9, alpha=0.6, label="Medium (3)"),
     Line2D([0], [0], color="#FFD43B", linewidth=4.5, alpha=0.6, label="Strong (5)"),
 ]
-ax.legend(handles=legend_elements, title="Interaction Strength", loc="upper right", fontsize=14, title_fontsize=16)
+legend = ax.legend(
+    handles=legend_elements,
+    title="Interaction Strength",
+    loc="upper right",
+    fontsize=14,
+    title_fontsize=16,
+    frameon=True,
+    fancybox=True,
+    framealpha=0.9,
+)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

@@ -489,12 +489,7 @@ jobs:
 
                 # Commit and push
                 git add -A
-                git commit -m "chore(${LIBRARY}): remove ${SPEC_ID} implementation (score < 50 after 3 attempts)
-
-Quality score ${SCORE}/100 is below acceptable threshold.
-PR #${PR_NUM} was closed.
-
-🤖 Generated with [Claude Code](https://claude.ai/code)"
+                git commit -m "chore(${LIBRARY}): remove ${SPEC_ID} impl (score ${SCORE} < 50 after 3 attempts)"
                 git push origin main
                 echo "::notice::Old implementation removed from main"
               else

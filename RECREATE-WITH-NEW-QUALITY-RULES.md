@@ -11,14 +11,14 @@ Track progress of regenerating all implementations using the stricter evaluation
 ## Progress
 
 ### All Specs (59 total)
-- [x] arc-basic ✓ (91-94, seaborn pending)
+- [x] arc-basic ✓ (88-94)
 - [x] area-basic ✓ (91-92)
 - [x] band-basic ✓ (91-98)
 - [x] bar-basic ✓ (91-100)
 - [x] box-basic ✓ (91-98)
 - [x] bubble-basic ✓ (90-93)
-- [x] bubble-packed (8/9 done)
-- [x] bullet-basic (8/9 done)
+- [x] bubble-packed ✓ (90-93)
+- [x] bullet-basic ✓ (91-97)
 - [x] bump-basic ✓ (94-96)
 - [ ] candlestick-basic
 - [ ] chord-basic

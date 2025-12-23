@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 sunburst-basic: Basic Sunburst Chart
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-14
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import tempfile
@@ -65,7 +65,7 @@ chart.options.chart = {"type": "sunburst", "width": 4800, "height": 2700, "backg
 
 # Title
 chart.options.title = {
-    "text": "sunburst-basic \u00b7 highcharts \u00b7 pyplots.ai",
+    "text": "sunburst-basic · highcharts · pyplots.ai",
     "style": {"fontSize": "48px", "fontWeight": "bold"},
 }
 

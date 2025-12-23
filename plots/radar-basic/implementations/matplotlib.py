@@ -1,14 +1,14 @@
-""" pyplots.ai
+"""pyplots.ai
 radar-basic: Basic Radar Chart
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-# Data - Employee performance comparison across competencies
+# Data - Employee performance comparison across competencies (deterministic, no random)
 categories = ["Communication", "Technical Skills", "Teamwork", "Problem Solving", "Leadership", "Creativity"]
 employee_a = [85, 90, 78, 88, 72, 80]  # Senior Developer
 employee_b = [75, 70, 92, 65, 85, 88]  # Team Lead
@@ -25,7 +25,7 @@ employee_b_closed = employee_b + [employee_b[0]]
 angles_closed = angles + [angles[0]]
 
 # Create square plot (better for radar charts)
-fig, ax = plt.subplots(figsize=(12, 12), subplot_kw={"polar": True})
+_, ax = plt.subplots(figsize=(12, 12), subplot_kw={"polar": True})
 
 # Plot Employee A (Python Blue)
 ax.fill(angles_closed, employee_a_closed, color="#306998", alpha=0.25)
@@ -44,7 +44,10 @@ ax.set_xticklabels(categories, fontsize=18)
 # Set radial limits and gridlines
 ax.set_ylim(0, 100)
 ax.set_yticks([20, 40, 60, 80, 100])
-ax.set_yticklabels(["20", "40", "60", "80", "100"], fontsize=14, color="gray")
+
+# Position radial tick labels outside the chart for better clarity
+ax.set_rlabel_position(22.5)  # Move labels to 22.5 degrees for better visibility
+ax.set_yticklabels(["20", "40", "60", "80", "100"], fontsize=14, color="#555555", fontweight="medium")
 
 # Style grid
 ax.grid(True, alpha=0.4, linestyle="--", linewidth=1.5)

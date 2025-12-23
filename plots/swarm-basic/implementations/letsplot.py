@@ -1,7 +1,7 @@
 """ pyplots.ai
 swarm-basic: Basic Swarm Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -68,7 +68,7 @@ plot = (
     )
     + scale_color_manual(values=colors)
     + scale_fill_manual(values=colors)
-    + labs(x="Department", y="Performance Score", title="swarm-basic \u00b7 letsplot \u00b7 pyplots.ai")
+    + labs(x="Department", y="Performance Score", title="swarm-basic · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(
         plot_title=element_text(size=24, face="bold"),

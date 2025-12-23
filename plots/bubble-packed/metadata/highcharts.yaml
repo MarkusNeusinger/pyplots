@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: bubble-packed
 created: '2025-12-23T09:16:17Z'
-updated: '2025-12-23T09:18:57Z'
+updated: '2025-12-23T09:25:45Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20456562080
 issue: 0
@@ -10,19 +10,19 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/highcharts/plot.html
-quality_score: 88
+quality_score: 90
 review:
   strengths:
-  - Excellent use of Highcharts native packedbubble chart type with proper layout
-    algorithm configuration
-  - Good colorblind-safe palette with clear visual distinction between sectors
-  - Clean grouping of bubbles by sector with splitSeries enabled
-  - Subtitle effectively explains the size encoding
-  - Interactive HTML version also generated for web viewing
+  - Excellent use of Highcharts packedbubble chart type with proper physics simulation
+  - Colorblind-safe palette with good contrast between sectors
+  - Smart data label filtering to show labels only on larger bubbles (value > 230)
+  - Realistic market sector data that perfectly demonstrates the packed bubble use
+    case
+  - Clean separation of sectors in the legend with appropriate grouping
+  - Proper inline JavaScript embedding for headless Chrome rendering
   weaknesses:
-  - 'Title format should lead with spec-id: bubble-packed · Market Sectors · highcharts
-    · pyplots.ai'
-  - Layout has excessive empty space around the packed bubbles - could use tighter
-    packing or larger minSize
-  - Some smaller categories (Cybersecurity, Fintech, Utilities, Entertainment, Healthcare
-    Services) have no visible labels due to the value filter threshold
+  - Large whitespace around the packed bubble cluster could be reduced by adjusting
+    layout parameters
+  - Title includes extra descriptor which deviates slightly from the pure spec-id
+    format
+  - Some smaller bubbles have no visible labels even though they are part of the visualization

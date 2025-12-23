@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
 Library: highcharts unknown | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-23
+Quality: 90/100 | Created: 2025-12-23
 """
 
 import tempfile

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-basic: Basic Scatter Plot
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-22
@@ -20,28 +20,29 @@ exam_scores = np.clip(exam_scores, 0, 100)
 source = ColumnDataSource(data={"study_hours": study_hours, "exam_scores": exam_scores})
 
 # Create figure (4800 x 2700 px for 16:9 aspect ratio)
-p = figure(
-    width=4800,
-    height=2700,
-    title="scatter-basic · bokeh · pyplots.ai",
-    x_axis_label="Study Hours (hrs)",
-    y_axis_label="Exam Score (%)",
-)
+p = figure(width=4800, height=2700, title="scatter-basic · bokeh · pyplots.ai")
+
+# Set axis labels explicitly (more reliable than figure parameters)
+p.xaxis.axis_label = "Study Hours (hrs)"
+p.yaxis.axis_label = "Exam Score (%)"
 
 # Plot scatter points (size increased for visibility on large canvas)
-p.scatter(x="study_hours", y="exam_scores", source=source, size=28, color="#306998", alpha=0.7)
+p.scatter(x="study_hours", y="exam_scores", source=source, size=50, color="#306998", alpha=0.7)
 
 # Add HoverTool for interactivity (key Bokeh distinctive feature)
 hover = HoverTool(tooltips=[("Study Hours", "@study_hours{0.1} hrs"), ("Exam Score", "@exam_scores{0.1}%")])
 p.add_tools(hover)
 
-# Styling (scaled for 4800x2700 px canvas)
-p.title.text_font_size = "28pt"
-p.xaxis.axis_label_text_font_size = "22pt"
-p.yaxis.axis_label_text_font_size = "22pt"
-p.xaxis.major_label_text_font_size = "18pt"
-p.yaxis.major_label_text_font_size = "18pt"
-p.grid.grid_line_alpha = 0.3
+# Styling (scaled for 4800x2700 px canvas - larger sizes for readability)
+p.title.text_font_size = "64pt"
+p.xaxis.axis_label_text_font_size = "48pt"
+p.yaxis.axis_label_text_font_size = "48pt"
+p.xaxis.major_label_text_font_size = "36pt"
+p.yaxis.major_label_text_font_size = "36pt"
+
+# Grid styling (more visible)
+p.grid.grid_line_alpha = 0.5
+p.grid.grid_line_width = 2
 p.grid.grid_line_dash = "dashed"
 
 # Save as PNG

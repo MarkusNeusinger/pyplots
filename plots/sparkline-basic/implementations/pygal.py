@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 sparkline-basic: Basic Sparkline
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-16
+Library: pygal | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import pygal
@@ -9,6 +9,7 @@ from pygal.style import Style
 
 
 # Data - simulated daily sales trend showing realistic variation
+# 30 data points representing a month of daily sales
 values = [
     42,
     45,
@@ -55,11 +56,11 @@ custom_style = Style(
     foreground_subtle="#666",
     colors=("#306998",),  # Python Blue for main line
     title_font_size=72,
-    label_font_size=1,  # Minimize label size
+    label_font_size=1,
     major_label_font_size=1,
     legend_font_size=48,
     value_font_size=1,
-    stroke_width=6,  # Visible line at large canvas
+    stroke_width=8,  # Slightly thicker line for visibility at large canvas
     opacity=1.0,
     opacity_hover=1.0,
 )
@@ -73,34 +74,29 @@ chart = pygal.Line(
     show_y_labels=False,  # No Y axis labels for sparkline
     show_x_guides=False,  # No vertical gridlines
     show_y_guides=False,  # No horizontal gridlines
-    show_legend=True,  # Show minimal legend with title
+    show_legend=True,
     legend_at_bottom=True,
-    show_dots=False,  # Hide regular dots
-    fill=True,  # Area fill for visual effect
-    interpolate="cubic",  # Smooth line
+    show_dots=False,
+    fill=True,  # Area fill under line
+    interpolate="cubic",  # Smooth line for clean appearance
     margin=100,
     title="sparkline-basic · pygal · pyplots.ai",
 )
 
 # Prepare data with highlighted min/max points
-# Create main series with None placeholders for special points
-main_data = [{"value": v, "color": "#306998"} for v in values]
+main_data = [{"value": v} for v in values]
 
-# Highlight min point (Python Yellow)
-main_data[min_idx] = {
-    "value": values[min_idx],
-    "color": "#FFD43B",
-    "node": {"r": 20},  # Larger dot for visibility
-}
+# Highlight min point (Python Yellow) with larger marker
+main_data[min_idx] = {"value": values[min_idx], "color": "#FFD43B", "node": {"r": 24}}
 
-# Highlight max point (Python Yellow)
-main_data[max_idx] = {"value": values[max_idx], "color": "#FFD43B", "node": {"r": 20}}
+# Highlight max point (Python Yellow) with larger marker
+main_data[max_idx] = {"value": values[max_idx], "color": "#FFD43B", "node": {"r": 24}}
 
-# Highlight first and last points
-main_data[0] = {"value": values[0], "color": "#306998", "node": {"r": 15}}
-main_data[-1] = {"value": values[-1], "color": "#306998", "node": {"r": 15}}
+# Highlight first and last points with smaller markers
+main_data[0] = {"value": values[0], "color": "#306998", "node": {"r": 18}}
+main_data[-1] = {"value": values[-1], "color": "#306998", "node": {"r": 18}}
 
-chart.add("Daily Sales Trend", main_data, show_dots=True, dots_size=8)
+chart.add("Daily Sales Trend", main_data, show_dots=True, dots_size=10)
 
 # Save outputs
 chart.render_to_file("plot.html")

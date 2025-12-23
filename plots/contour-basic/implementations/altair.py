@@ -1,7 +1,7 @@
 """ pyplots.ai
 contour-basic: Basic Contour Plot
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-14
+Quality: 98/100 | Created: 2025-12-23
 """
 
 import altair as alt
@@ -15,13 +15,13 @@ x = np.linspace(-3, 3, 80)
 y = np.linspace(-3, 3, 80)
 X, Y = np.meshgrid(x, y)
 
-# Two overlapping Gaussian peaks
+# Two overlapping Gaussian peaks for interesting contour patterns
 Z = np.exp(-((X - 1) ** 2 + (Y - 1) ** 2)) + 0.8 * np.exp(-((X + 1) ** 2 + (Y + 0.5) ** 2))
 
 # Flatten to DataFrame for filled contour background
 df_fill = pd.DataFrame({"x": X.ravel(), "y": Y.ravel(), "z": Z.ravel()})
 
-# Extract contour line segments using marching squares (inlined for KISS)
+# Extract contour line segments using marching squares algorithm
 levels = np.linspace(0.1, 1.6, 10)
 segments = []
 

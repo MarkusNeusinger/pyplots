@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 chord-basic: Basic Chord Diagram
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 89/100 | Created: 2025-12-14
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import math
@@ -29,25 +29,29 @@ from lets_plot.export import ggsave
 
 LetsPlot.setup_html()
 
-# Migration flow data between continents
+# Migration flow data between continents (bidirectional flows)
 flows = [
     ("Asia", "Europe", 45),
     ("Asia", "North America", 38),
     ("Asia", "Africa", 12),
+    ("Asia", "Oceania", 16),
     ("Europe", "North America", 28),
     ("Europe", "Asia", 22),
     ("Europe", "Africa", 15),
+    ("Europe", "South America", 10),
     ("Africa", "Europe", 35),
     ("Africa", "Asia", 18),
+    ("Africa", "North America", 8),
     ("North America", "Europe", 20),
     ("North America", "Asia", 15),
+    ("North America", "South America", 12),
     ("South America", "North America", 25),
     ("South America", "Europe", 18),
     ("Oceania", "Asia", 14),
     ("Oceania", "Europe", 8),
 ]
 
-# Get unique entities and assign colors
+# Get unique entities and assign distinct colors
 entities = list(dict.fromkeys([f[0] for f in flows] + [f[1] for f in flows]))
 colors = ["#306998", "#FFD43B", "#27AE60", "#E74C3C", "#9B59B6", "#1ABC9C"]
 entity_colors = {e: colors[i % len(colors)] for i, e in enumerate(entities)}
@@ -60,7 +64,7 @@ for src, tgt, val in flows:
 
 # Calculate arc positions around the circle
 total_flow = sum(entity_totals.values())
-gap_angle = 0.04  # Gap between entities in radians
+gap_angle = 0.05  # Gap between entities in radians
 total_gap = gap_angle * len(entities)
 available_angle = 2 * math.pi - total_gap
 
@@ -77,12 +81,12 @@ entity_offsets = {e: entity_arcs[e]["start"] for e in entities}
 
 # Chord diagram radius
 outer_radius = 1.0
-inner_radius = 0.95
-chord_radius = 0.90
+inner_radius = 0.94
+chord_radius = 0.92
 
 # Build outer arc segments (the ring around the circle)
 arc_data = []
-n_arc_points = 50
+n_arc_points = 60
 for entity in entities:
     arc = entity_arcs[entity]
     angles = np.linspace(arc["start"], arc["end"], n_arc_points)
@@ -115,27 +119,27 @@ chord_data = []
 chord_id = 0
 
 for src, tgt, val in flows:
-    # Calculate angular width for this flow
+    # Calculate angular width for this flow based on value proportion
     src_width = (val / total_flow) * available_angle
     tgt_width = (val / total_flow) * available_angle
 
     # Source arc segment
     src_start = entity_offsets[src]
     src_end = src_start + src_width
-    entity_offsets[src] = src_end + 0.005  # Small gap between chords
+    entity_offsets[src] = src_end + 0.003  # Small gap between chords
 
     # Target arc segment
     tgt_start = entity_offsets[tgt]
     tgt_end = tgt_start + tgt_width
-    entity_offsets[tgt] = tgt_end + 0.005
+    entity_offsets[tgt] = tgt_end + 0.003
 
     # Create bezier-like chord using quadratic control points through center
-    n_points = 40
+    n_bezier = 50
 
     # Source arc points
-    src_angles = np.linspace(src_start, src_end, 10)
+    src_angles = np.linspace(src_start, src_end, 12)
     # Target arc points
-    tgt_angles = np.linspace(tgt_end, tgt_start, 10)
+    tgt_angles = np.linspace(tgt_end, tgt_start, 12)
 
     # Build chord polygon
     polygon_x = []
@@ -152,9 +156,9 @@ for src, tgt, val in flows:
     tgt_start_x = chord_radius * np.cos(tgt_start)
     tgt_start_y = chord_radius * np.sin(tgt_start)
 
-    for i in range(1, n_points):
-        t = i / n_points
-        # Quadratic bezier through origin
+    for i in range(1, n_bezier):
+        t = i / n_bezier
+        # Quadratic bezier through origin for smooth curves
         x = (1 - t) ** 2 * src_end_x + 2 * (1 - t) * t * 0 + t**2 * tgt_start_x
         y = (1 - t) ** 2 * src_end_y + 2 * (1 - t) * t * 0 + t**2 * tgt_start_y
         polygon_x.append(x)
@@ -171,8 +175,8 @@ for src, tgt, val in flows:
     src_start_x = chord_radius * np.cos(src_start)
     src_start_y = chord_radius * np.sin(src_start)
 
-    for i in range(1, n_points):
-        t = i / n_points
+    for i in range(1, n_bezier):
+        t = i / n_bezier
         x = (1 - t) ** 2 * tgt_end_x + 2 * (1 - t) * t * 0 + t**2 * src_start_x
         y = (1 - t) ** 2 * tgt_end_y + 2 * (1 - t) * t * 0 + t**2 * src_start_y
         polygon_x.append(x)
@@ -186,9 +190,9 @@ for src, tgt, val in flows:
 
 chord_df = pd.DataFrame(chord_data)
 
-# Create entity labels
+# Create entity labels positioned outside the ring
 label_data = []
-label_radius = 1.12
+label_radius = 1.15
 for entity in entities:
     arc = entity_arcs[entity]
     mid_angle = arc["mid"]
@@ -203,38 +207,40 @@ for entity in entities:
 
 label_df = pd.DataFrame(label_data)
 
-# Build plot
+# Build plot with square format for circular visualization
 plot = (
     ggplot()
-    # Chords (flows between entities)
+    # Chords (flows between entities) - use source color for chord
     + geom_polygon(
-        aes(x="x", y="y", group="chord_id", fill="source"), data=chord_df, alpha=0.6, color="white", size=0.2
+        aes(x="x", y="y", group="chord_id", fill="source"), data=chord_df, alpha=0.55, color="white", size=0.3
     )
     # Outer arcs (entity segments)
-    + geom_polygon(aes(x="x", y="y", group="arc_id", fill="entity"), data=arc_df, alpha=0.9, color="white", size=0.5)
+    + geom_polygon(aes(x="x", y="y", group="arc_id", fill="entity"), data=arc_df, alpha=0.95, color="white", size=0.8)
     # Entity labels
-    + geom_text(aes(x="x", y="y", label="label"), data=label_df, size=14, color="#333333", fontface="bold")
+    + geom_text(aes(x="x", y="y", label="label"), data=label_df, size=16, color="#2C3E50", fontface="bold")
     + scale_fill_manual(values=colors, name="Continent")
     + coord_fixed(ratio=1)
-    + scale_x_continuous(limits=(-1.5, 1.5))
-    + scale_y_continuous(limits=(-1.5, 1.5))
-    + labs(title="Migration Flows · chord-basic · letsplot · pyplots.ai")
-    + ggsize(1600, 900)
+    + scale_x_continuous(limits=(-1.55, 1.55))
+    + scale_y_continuous(limits=(-1.55, 1.55))
+    + labs(title="Migration Flows Between Continents · chord-basic · letsplot · pyplots.ai")
+    + ggsize(1200, 1200)  # Square format for circular diagram
     + theme(
-        plot_title=element_text(size=28, face="bold"),
+        plot_title=element_text(size=26, face="bold", color="#2C3E50"),
         axis_title=element_blank(),
         axis_text=element_blank(),
         axis_ticks=element_blank(),
         axis_line=element_blank(),
         panel_grid=element_blank(),
-        legend_text=element_text(size=14),
-        legend_title=element_text(size=16),
-        legend_position="right",
+        legend_text=element_text(size=16),
+        legend_title=element_text(size=18, face="bold"),
+        legend_position="bottom",
+        panel_background=element_blank(),
+        plot_background=element_blank(),
     )
 )
 
-# Save as PNG
+# Save as PNG (scale 3x for 3600x3600 px output)
 ggsave(plot, "plot.png", path=".", scale=3)
 
-# Save as HTML
+# Save as HTML for interactivity
 ggsave(plot, "plot.html", path=".")

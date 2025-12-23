@@ -1,7 +1,7 @@
 """ pyplots.ai
 polar-basic: Basic Polar Chart
 Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-23
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -21,6 +21,20 @@ radius = base_temp + noise
 # Create polar chart
 fig = go.Figure()
 
+# Add baseline reference circle at r=0 for clarity
+baseline_theta = np.linspace(0, 360, 100)
+fig.add_trace(
+    go.Scatterpolar(
+        r=[0] * 100,
+        theta=baseline_theta,
+        mode="lines",
+        line={"width": 2, "color": "rgba(0, 0, 0, 0.5)"},
+        showlegend=False,
+        hoverinfo="skip",
+    )
+)
+
+# Main temperature trace
 fig.add_trace(
     go.Scatterpolar(
         r=radius,
@@ -43,18 +57,22 @@ fig.update_layout(
             "range": [0, max(radius) * 1.1],
             "tickfont": {"size": 18},
             "title": {"text": "Temperature (°C)", "font": {"size": 22}},
-            "gridcolor": "rgba(0, 0, 0, 0.2)",
+            "gridcolor": "rgba(0, 0, 0, 0.35)",
             "gridwidth": 1,
+            "linecolor": "rgba(0, 0, 0, 0.5)",
+            "linewidth": 2,
         },
         "angularaxis": {
             "tickmode": "array",
             "tickvals": list(range(0, 360, 30)),
             "ticktext": ["0h", "2h", "4h", "6h", "8h", "10h", "12h", "14h", "16h", "18h", "20h", "22h"],
             "tickfont": {"size": 18},
-            "gridcolor": "rgba(0, 0, 0, 0.2)",
+            "gridcolor": "rgba(0, 0, 0, 0.35)",
             "gridwidth": 1,
             "direction": "clockwise",
             "rotation": 90,  # Start at top (midnight)
+            "linecolor": "rgba(0, 0, 0, 0.5)",
+            "linewidth": 2,
         },
         "bgcolor": "white",
     },

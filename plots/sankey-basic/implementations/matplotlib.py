@@ -1,70 +1,99 @@
 """ pyplots.ai
 sankey-basic: Basic Sankey Diagram
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-14
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
 from matplotlib.sankey import Sankey
 
 
-# Data - Energy flow example (in arbitrary units)
-# A single balanced flow: Total input = Total output
-# Sources flow into a central node, which distributes to sectors
+# Data - Energy flow example (in TWh - Terawatt-hours)
+# This shows how energy from primary sources flows through generation
+# to end-use sectors, demonstrating the typical Sankey flow pattern
 
-# Flow values
-coal_in = 60
-gas_in = 60
-nuclear_in = 45
-total_in = coal_in + gas_in + nuclear_in  # 165
+# Primary energy sources (inputs)
+coal = 120
+natural_gas = 90
+nuclear = 60
+renewables = 30
+total_primary = coal + natural_gas + nuclear + renewables  # 300 TWh
 
-residential_out = 50
-commercial_out = 45
-industrial_out = 70
-total_out = residential_out + commercial_out + industrial_out  # 165
+# Energy lost in generation/transmission
+losses = 100
+
+# Net energy delivered to sectors
+residential = 55
+commercial = 45
+industrial = 80
+transportation = 20
+net_delivered = residential + commercial + industrial + transportation  # 200 TWh
+
+# Verify balance: inputs = outputs + losses
+assert total_primary == net_delivered + losses, "Energy balance must be maintained"
 
 # Create figure
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Create Sankey diagram
-# Flows: positive = input, negative = output
-# They must sum to zero for a balanced diagram
+# Create Sankey diagram with improved settings
 sankey = Sankey(
-    ax=ax, scale=0.004, offset=0.3, head_angle=110, format="%.0f", unit=" units", gap=0.4, radius=0.1, shoulder=0.03
+    ax=ax, scale=0.0025, offset=0.25, head_angle=120, format="", unit="", gap=0.5, radius=0.15, shoulder=0.04
 )
 
-# Add the main diagram
-# Inputs (positive) come from left, outputs (negative) go to right
-flows = [coal_in, gas_in, nuclear_in, -residential_out, -commercial_out, -industrial_out]
-labels = ["Coal", "Gas", "Nuclear", "Residential", "Commercial", "Industrial"]
-orientations = [-1, 0, 1, -1, 0, 1]  # -1=down, 0=horizontal, 1=up
-pathlengths = [0.5, 0.25, 0.5, 0.5, 0.25, 0.5]
-
+# Add primary sources to generation hub (first diagram)
+# Positive flows = inputs (from sources)
+# Negative flows = outputs (to next stage or losses)
 sankey.add(
-    flows=flows,
-    labels=labels,
-    orientations=orientations,
-    pathlengths=pathlengths,
+    flows=[coal, natural_gas, nuclear, renewables, -losses, -net_delivered],
+    labels=["Coal\n120 TWh", "Natural Gas\n90 TWh", "Nuclear\n60 TWh", "Renewables\n30 TWh", "Losses\n100 TWh", ""],
+    orientations=[-1, 0, 1, 1, -1, 0],
+    pathlengths=[0.6, 0.3, 0.6, 0.8, 0.5, 0.5],
     facecolor="#306998",
-    alpha=0.7,
     edgecolor="#1a3a52",
+    alpha=0.75,
     linewidth=2,
 )
 
-# Finish and style the diagram
+# Add distribution to end-use sectors (second diagram connected to first)
+sankey.add(
+    flows=[net_delivered, -residential, -commercial, -industrial, -transportation],
+    labels=["", "Residential\n55 TWh", "Commercial\n45 TWh", "Industrial\n80 TWh", "Transport\n20 TWh"],
+    orientations=[0, -1, 0, 1, 1],
+    pathlengths=[0.3, 0.6, 0.3, 0.6, 0.8],
+    prior=0,
+    connect=(5, 0),
+    facecolor="#FFD43B",
+    edgecolor="#b8960f",
+    alpha=0.75,
+    linewidth=2,
+)
+
+# Finish and get diagram objects
 diagrams = sankey.finish()
 
-# Increase text sizes for all labels
+# Style all labels with larger fonts for visibility
 for diagram in diagrams:
     for text in diagram.texts:
-        text.set_fontsize(20)
+        text.set_fontsize(18)
         text.set_fontweight("bold")
 
-# Set title and style
-ax.set_title(
-    "Energy Flow Distribution · sankey-basic · matplotlib · pyplots.ai", fontsize=24, fontweight="bold", pad=20
-)
+# Set title
+ax.set_title("National Energy Flow · sankey-basic · matplotlib · pyplots.ai", fontsize=26, fontweight="bold", pad=30)
+
+# Remove axes for cleaner look
 ax.axis("off")
+
+# Add a subtle annotation explaining the diagram
+ax.text(
+    0.5,
+    -0.08,
+    "Energy sources → Generation & Losses → End-use sectors (300 TWh total primary energy)",
+    transform=ax.transAxes,
+    fontsize=16,
+    ha="center",
+    color="#555555",
+    style="italic",
+)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

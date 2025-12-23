@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bump-basic: Basic Bump Chart
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 from bokeh.io import export_png, output_file, save
@@ -33,8 +33,8 @@ p = figure(
     title="bump-basic · bokeh · pyplots.ai",
     x_range=periods,
     y_range=(5.5, 0.5),  # Inverted: rank 1 at top
-    x_axis_label="Period",
-    y_axis_label="Rank",
+    x_axis_label="Week",
+    y_axis_label="Rank Position",
 )
 
 # Plot lines and markers for each entity

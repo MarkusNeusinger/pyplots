@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 surface-basic: Basic 3D Surface Plot
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -13,7 +13,7 @@ x = np.linspace(-4, 4, 40)
 y = np.linspace(-4, 4, 40)
 X, Y = np.meshgrid(x, y)
 
-# Gaussian-like surface with interesting features
+# Gaussian-like surface with interesting features (radial ripple pattern)
 Z = np.sin(np.sqrt(X**2 + Y**2)) * np.exp(-0.1 * (X**2 + Y**2))
 
 # Create 3D plot (4800x2700 px)

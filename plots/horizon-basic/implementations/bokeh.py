@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 horizon-basic: Horizon Chart
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 86/100 | Created: 2025-12-24
+Quality: 91/100 | Created: 2025-12-24
 """
 
 import numpy as np

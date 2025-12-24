@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 hive-basic: Basic Hive Plot
 Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 85/100 | Created: 2025-12-24
+Quality: 82/100 | Created: 2025-12-24
 """
 
 import numpy as np

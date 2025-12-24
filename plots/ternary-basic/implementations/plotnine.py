@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 ternary-basic: Basic Ternary Plot
 Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-24
+Quality: 91/100 | Created: 2025-12-24
 """
 
 import numpy as np

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hive-basic: Basic Hive Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-24
@@ -130,7 +130,7 @@ for axis_id in range(n_axes):
         y = center_y + radius * math.sin(angle)
         node_positions[node["id"]] = (x, y, axis_id)
 
-# Custom style - axis lines, axis label markers, edges (3 groups by source), nodes (3 groups)
+# Custom style - axis lines, axis labels, edges (3 groups), nodes (3 groups)
 # Color order: 3 axis lines (gray), 3 axis label markers, 3 edge groups, 3 node groups
 custom_style = Style(
     background="white",
@@ -143,20 +143,20 @@ custom_style = Style(
         "#AAAAAA",
         "#AAAAAA",  # Axis lines (gray)
         "#306998",
-        "#FFD43B",
-        "#4CAF50",  # Axis label markers (match axis colors)
+        "#B8860B",
+        "#2E7D32",  # Axis label markers (darker versions for visibility)
         "#30699866",
         "#FFD43B88",
         "#4CAF5066",  # Edges by source axis (semi-transparent)
         "#306998",
         "#FFD43B",
-        "#4CAF50",  # Nodes by axis
+        "#4CAF50",  # Nodes by axis (Core, Utility, Interface)
     ),
     title_font_size=72,
-    label_font_size=40,
-    major_label_font_size=36,
+    label_font_size=48,
+    major_label_font_size=42,
     legend_font_size=44,
-    value_font_size=32,
+    value_font_size=36,
     tooltip_font_size=28,
     stroke_width=2,
     opacity=0.9,
@@ -182,12 +182,13 @@ chart = pygal.XY(
     legend_at_bottom_columns=3,
     range=(0, 10),
     xrange=(0, 10),
-    print_labels=False,
+    print_labels=True,  # Enable labels to show axis names on the plot
     print_values=False,
 )
 
-# Draw axis lines first (as visual guides)
-label_radius = outer_radius + 0.6  # Position for axis labels
+# Draw axis lines with labeled endpoints
+# Position axis labels beyond the outer nodes for visibility
+label_radius = outer_radius + 0.8
 for axis_id in range(n_axes):
     angle = axis_angles[axis_id]
     x1 = center_x + (inner_radius - 0.3) * math.cos(angle)
@@ -204,20 +205,20 @@ for axis_id in range(n_axes):
         stroke_style={"width": 6, "linecap": "round"},
     )
 
-# Add axis labels at endpoints - use series title for legend visibility
-# Position labels beyond the axis endpoints
+# Add axis endpoint labels as visible text markers
+# These appear beyond the axis lines to clearly identify each axis
 for axis_id in range(n_axes):
     angle = axis_angles[axis_id]
     label_x = center_x + label_radius * math.cos(angle)
     label_y = center_y + label_radius * math.sin(angle)
-    # Create a small marker at axis endpoint with axis name as the series title
-    # This shows in legend and provides axis identification
+    # Add a labeled point that will display the axis name on the plot
+    # Use None for series name to hide from legend (nodes will show in legend)
     chart.add(
-        axis_names[axis_id],  # Series name shows in legend
-        [{"value": (label_x, label_y), "label": f"{axis_names[axis_id]} Axis"}],
+        None,
+        [{"value": (label_x, label_y), "label": axis_names[axis_id]}],
         stroke=False,
         show_dots=True,
-        dots_size=8,  # Small but visible marker at axis end
+        dots_size=15,  # Visible marker at axis endpoint
     )
 
 # Draw edges as curved paths between nodes, grouped by source axis for coloring
@@ -260,7 +261,7 @@ for axis_id in range(n_axes):
         stroke_style={"width": 2, "linecap": "round"},
     )
 
-# Add nodes grouped by axis for legend
+# Add nodes grouped by axis for legend (simplified legend names - just axis names)
 for axis_id in range(n_axes):
     nodes_on_axis = axis_nodes[axis_id]
     node_points = []
@@ -268,7 +269,8 @@ for axis_id in range(n_axes):
         x, y, _ = node_positions[node["id"]]
         # Include module name in tooltip
         node_points.append({"value": (x, y), "label": f"{node['label']} (degree: {node['degree']})"})
-    chart.add(f"{axis_names[axis_id]} Modules", node_points, stroke=False)
+    # Use axis name only to avoid redundant legend entries
+    chart.add(axis_names[axis_id], node_points, stroke=False)
 
 # Save outputs
 chart.render_to_file("plot.svg")

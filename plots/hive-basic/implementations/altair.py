@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hive-basic: Basic Hive Plot
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 81/100 | Created: 2025-12-24
@@ -10,7 +10,6 @@ import pandas as pd
 
 
 # Data: Software module dependency network
-np.random.seed(42)
 
 # Define nodes with module types (axis assignment) and importance (position on axis)
 # Spread importance values evenly to avoid label overlap
@@ -67,12 +66,12 @@ edges_data = [
 # Convert to DataFrame
 nodes_df = pd.DataFrame(nodes_data)
 
-# Axis configuration - adjusted angles for better square canvas utilization
-# Using 120-degree separation with rotation to center the plot
+# Axis configuration - centered on canvas with 120-degree separation
+# Rotated to place Core at upper-right, balancing visual weight across canvas
 axis_config = {
-    "Core": {"angle": 90, "color": "#306998"},  # Python Blue - top
-    "Utility": {"angle": 210, "color": "#FFD43B"},  # Python Yellow - bottom left
-    "Interface": {"angle": 330, "color": "#4ECDC4"},  # Teal - bottom right
+    "Core": {"angle": 30, "color": "#306998"},  # Python Blue - upper right
+    "Utility": {"angle": 150, "color": "#FFD43B"},  # Python Yellow - upper left
+    "Interface": {"angle": 270, "color": "#4ECDC4"},  # Teal - bottom center
 }
 
 # Calculate node positions - inline polar to Cartesian conversion
@@ -180,27 +179,32 @@ nodes_chart = (
     )
 )
 
-# Node labels - calculated offsets to avoid overlap
+# Node labels - calculated offsets based on axis direction to avoid overlap
 node_labels_data = nodes_df.copy()
 label_offset = 0.12
 
 for idx, row in node_labels_data.iterrows():
     axis = row["axis"]
     if axis == "Core":
-        # Labels to the right of nodes (Core axis points up)
+        # Core axis at 30 degrees (upper right) - labels to the right
         node_labels_data.at[idx, "label_x"] = row["x"] + label_offset
         node_labels_data.at[idx, "label_y"] = row["y"]
         node_labels_data.at[idx, "align"] = "left"
     elif axis == "Utility":
-        # Labels to the left of nodes (Utility axis points bottom-left)
+        # Utility axis at 150 degrees (upper left) - labels to the left
         node_labels_data.at[idx, "label_x"] = row["x"] - label_offset
         node_labels_data.at[idx, "label_y"] = row["y"]
         node_labels_data.at[idx, "align"] = "right"
     else:  # Interface
-        # Labels to the right of nodes (Interface axis points bottom-right)
-        node_labels_data.at[idx, "label_x"] = row["x"] + label_offset
+        # Interface axis at 270 degrees (bottom center) - labels alternating left/right
+        # Alternate sides based on importance to spread labels out
+        if row["importance"] > 0.5:
+            node_labels_data.at[idx, "label_x"] = row["x"] + label_offset
+            node_labels_data.at[idx, "align"] = "left"
+        else:
+            node_labels_data.at[idx, "label_x"] = row["x"] - label_offset
+            node_labels_data.at[idx, "align"] = "right"
         node_labels_data.at[idx, "label_y"] = row["y"]
-        node_labels_data.at[idx, "align"] = "left"
 
 node_labels = (
     alt.Chart(node_labels_data)
@@ -230,6 +234,7 @@ chart = (
         ),
     )
     .configure_view(strokeWidth=0)
+    .configure_legend(disable=True)
 )
 
 # Save - square format for radial plot (3600x3600 at scale 4)

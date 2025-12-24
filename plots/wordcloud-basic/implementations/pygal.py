@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 wordcloud-basic: Basic Word Cloud
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 86/100 | Created: 2025-12-24
@@ -46,11 +46,11 @@ word_frequencies = {
 canvas_w = 4800
 canvas_h = 2700
 
-# Scale frequencies to font sizes - increased minimum for better visibility
+# Scale frequencies to font sizes - increased for better canvas utilization
 min_freq = min(word_frequencies.values())
 max_freq = max(word_frequencies.values())
-min_size = 48  # Larger minimum size for better readability of small words
-max_size = 180
+min_size = 72  # Larger minimum to ensure small words are visible at canvas scale
+max_size = 240  # Larger maximum to fill more canvas space
 
 # Sort by frequency (largest first for better placement)
 sorted_words = sorted(word_frequencies.items(), key=lambda x: x[1], reverse=True)
@@ -70,27 +70,27 @@ for i, (word, freq) in enumerate(sorted_words):
     w = len(word) * size * 0.55
     h = size * 1.2
 
-    # Spiral placement - center lowered to fill bottom area better
-    cx, cy = canvas_w / 2, canvas_h / 2 + 150
+    # Spiral placement - centered for maximum canvas utilization
+    cx, cy = canvas_w / 2, canvas_h / 2 + 100
     angle = 0
     radius = 0
     x, y = cx, cy
     box = (cx - w / 2, cy - h / 2, w, h)
 
-    for _ in range(25000):
-        # Elliptical spiral - stretched to fill 16:9 canvas better
-        test_x = cx + radius * 2.2 * np.cos(angle) - w / 2
-        test_y = cy + radius * 1.3 * np.sin(angle) - h / 2
+    for _ in range(30000):
+        # Elliptical spiral - stretched to fill 16:9 canvas (wider horizontal)
+        test_x = cx + radius * 2.6 * np.cos(angle) - w / 2
+        test_y = cy + radius * 1.6 * np.sin(angle) - h / 2
 
-        # Check bounds (leave margin for edges and title)
-        if 60 < test_x < canvas_w - w - 60 and 160 < test_y < canvas_h - h - 60:
+        # Check bounds (leave margin for edges and title, use more vertical space)
+        if 80 < test_x < canvas_w - w - 80 and 180 < test_y < canvas_h - h - 80:
             test_box = (test_x, test_y, w, h)
             # Check for overlap with placed words
             overlap = False
             for pb in placed_boxes:
                 x1, y1, w1, h1 = test_box
                 x2, y2, w2, h2 = pb
-                padding = 40  # Tighter padding to fit more words
+                padding = 30  # Tighter padding to fit larger words
                 if not (
                     x1 + w1 + padding < x2 or x2 + w2 + padding < x1 or y1 + h1 + padding < y2 or y2 + h2 + padding < y1
                 ):
@@ -102,8 +102,8 @@ for i, (word, freq) in enumerate(sorted_words):
                 box = test_box
                 break
 
-        angle += 0.10  # Slower angle for more positions to try
-        radius += 3.0  # Faster radius growth to spread outward quickly
+        angle += 0.08  # Slower angle for more positions to try
+        radius += 4.0  # Faster radius growth to spread outward and fill canvas
 
     placed_boxes.append(box)
     word_data.append({"word": word, "x": x, "y": y, "size": size, "color": color_palette[i % len(color_palette)]})
@@ -135,8 +135,8 @@ root = ET.fromstring(svg_string)
 # Add title
 title = ET.SubElement(root, "text")
 title.set("x", "2400")
-title.set("y", "100")
-title.set("font-size", "72")
+title.set("y", "110")
+title.set("font-size", "84")
 title.set("font-weight", "bold")
 title.set("fill", "#333")
 title.set("text-anchor", "middle")

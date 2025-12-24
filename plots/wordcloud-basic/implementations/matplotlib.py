@@ -1,14 +1,14 @@
-""" pyplots.ai
+"""pyplots.ai
 wordcloud-basic: Basic Word Cloud
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-16
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-24
 """
 
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 
 
-# Data - Tech industry survey responses about skills
+# Data - Tech industry survey responses about most valued skills
 word_frequencies = {
     "Python": 150,
     "JavaScript": 120,
@@ -52,7 +52,7 @@ word_frequencies = {
     "Documentation": 7,
 }
 
-# Create word cloud
+# Create word cloud with Python-themed colors
 wc = WordCloud(
     width=4800,
     height=2700,

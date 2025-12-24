@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 wireframe-3d-basic: Basic 3D Wireframe Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-24
@@ -17,7 +17,7 @@ from selenium.webdriver.chrome.options import Options
 
 # Data - 3D ripple function z = sin(sqrt(x^2 + y^2))
 np.random.seed(42)
-n_points = 20  # Reduced grid size to prevent cluttering near center
+n_points = 18  # Grid size optimized for wireframe clarity
 x = np.linspace(-5, 5, n_points)
 y = np.linspace(-5, 5, n_points)
 X, Y = np.meshgrid(x, y)
@@ -51,7 +51,7 @@ for i in range(n_points):
             "type": "scatter3d",
             "data": line_data,
             "color": "#306998",
-            "lineWidth": 5,
+            "lineWidth": 6,
             "showInLegend": False,
             "marker": {"enabled": False},
         }
@@ -68,7 +68,7 @@ for j in range(n_points):
             "type": "scatter3d",
             "data": line_data,
             "color": "#1e4c73",
-            "lineWidth": 5,
+            "lineWidth": 6,
             "showInLegend": False,
             "marker": {"enabled": False},
         }
@@ -78,7 +78,7 @@ all_series = x_line_series + y_line_series
 series_json = json.dumps(all_series)
 
 # Highcharts chart configuration with 3D scatter and lines
-# Improved canvas utilization with reduced margins and larger plot area
+# Improved canvas utilization with better viewing angle and larger 3D frame
 chart_config = f"""
 Highcharts.chart('container', {{
     chart: {{
@@ -89,35 +89,35 @@ Highcharts.chart('container', {{
         backgroundColor: '#ffffff',
         options3d: {{
             enabled: true,
-            alpha: 15,
+            alpha: 18,
             beta: 30,
-            depth: 600,
-            viewDistance: 4,
-            fitToPlot: false,
+            depth: 900,
+            viewDistance: 5,
+            fitToPlot: true,
             frame: {{
-                bottom: {{ size: 2, color: 'rgba(0,0,0,0.08)' }},
-                back: {{ size: 2, color: 'rgba(0,0,0,0.06)' }},
-                side: {{ size: 2, color: 'rgba(0,0,0,0.06)' }}
+                bottom: {{ size: 3, color: 'rgba(48, 105, 152, 0.15)' }},
+                back: {{ size: 3, color: 'rgba(48, 105, 152, 0.10)' }},
+                side: {{ size: 3, color: 'rgba(48, 105, 152, 0.12)' }}
             }}
         }},
-        marginTop: 160,
-        marginBottom: 100,
-        marginLeft: 120,
-        marginRight: 120,
-        spacingTop: 20,
-        spacingBottom: 20,
-        spacingLeft: 20,
-        spacingRight: 20
+        marginTop: 180,
+        marginBottom: 80,
+        marginLeft: 80,
+        marginRight: 80,
+        spacingTop: 10,
+        spacingBottom: 10,
+        spacingLeft: 10,
+        spacingRight: 10
     }},
     title: {{
         text: 'wireframe-3d-basic · highcharts · pyplots.ai',
         style: {{ fontSize: '80px', fontWeight: 'bold' }},
-        y: 60
+        y: 70
     }},
     subtitle: {{
         text: 'z = sin(√(x² + y²))',
         style: {{ fontSize: '56px', color: '#555555' }},
-        y: 120
+        y: 130
     }},
     xAxis: {{
         min: -5,
@@ -125,15 +125,15 @@ Highcharts.chart('container', {{
         tickInterval: 2.5,
         title: {{
             text: 'X Axis',
-            style: {{ fontSize: '56px', color: '#306998', fontWeight: 'bold' }},
-            margin: 50
+            style: {{ fontSize: '52px', color: '#306998', fontWeight: 'bold' }},
+            margin: 40
         }},
         labels: {{
-            style: {{ fontSize: '40px' }},
+            style: {{ fontSize: '36px' }},
             format: '{{value}}'
         }},
-        gridLineWidth: 1,
-        gridLineColor: 'rgba(0, 0, 0, 0.12)'
+        gridLineWidth: 2,
+        gridLineColor: 'rgba(0, 0, 0, 0.15)'
     }},
     yAxis: {{
         min: -5,
@@ -141,30 +141,31 @@ Highcharts.chart('container', {{
         tickInterval: 2.5,
         title: {{
             text: 'Y Axis',
-            style: {{ fontSize: '56px', color: '#306998', fontWeight: 'bold' }},
+            style: {{ fontSize: '52px', color: '#306998', fontWeight: 'bold' }},
             margin: 40
         }},
         labels: {{
-            style: {{ fontSize: '40px' }},
+            style: {{ fontSize: '36px' }},
             format: '{{value}}'
         }},
-        gridLineWidth: 1,
-        gridLineColor: 'rgba(0, 0, 0, 0.12)'
+        gridLineWidth: 2,
+        gridLineColor: 'rgba(0, 0, 0, 0.15)'
     }},
     zAxis: {{
         min: -1.2,
         max: 1.2,
-        tickInterval: 0.5,
+        tickInterval: 0.4,
         title: {{
-            text: 'Z Axis (Height)',
-            style: {{ fontSize: '56px', color: '#306998', fontWeight: 'bold' }}
+            text: 'Z (Height)',
+            style: {{ fontSize: '52px', color: '#306998', fontWeight: 'bold' }},
+            margin: 30
         }},
         labels: {{
-            style: {{ fontSize: '40px' }},
+            style: {{ fontSize: '36px' }},
             format: '{{value:.1f}}'
         }},
-        gridLineWidth: 1,
-        gridLineColor: 'rgba(0, 0, 0, 0.12)'
+        gridLineWidth: 2,
+        gridLineColor: 'rgba(0, 0, 0, 0.15)'
     }},
     legend: {{
         enabled: false
@@ -177,7 +178,7 @@ Highcharts.chart('container', {{
     }},
     plotOptions: {{
         scatter3d: {{
-            lineWidth: 5,
+            lineWidth: 6,
             marker: {{
                 enabled: false
             }},

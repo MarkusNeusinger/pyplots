@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 wordcloud-basic: Basic Word Cloud
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 68/100 | Created: 2025-12-24

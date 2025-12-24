@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hive-basic: Basic Hive Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-24
@@ -98,9 +98,10 @@ axis_colors = ["#306998", "#FFD43B", "#4CAF50"]
 
 # Calculate node positions along each axis
 # Position along axis based on degree (higher degree = closer to center)
+# Use larger radii to improve canvas utilization
 center_x, center_y = 5.0, 5.0
-inner_radius = 1.2
-outer_radius = 3.8
+inner_radius = 1.0
+outer_radius = 4.2
 
 # Sort nodes by axis and degree for positioning
 axis_nodes = {i: [] for i in range(n_axes)}
@@ -129,20 +130,34 @@ for axis_id in range(n_axes):
         y = center_y + radius * math.sin(angle)
         node_positions[node["id"]] = (x, y, axis_id)
 
-# Custom style - axis lines, edges, then nodes
-# Color order: 3 axis lines (gray), 1 edge series (gray), 3 node groups
+# Custom style - axis lines, axis label markers, edges (3 groups by source), nodes (3 groups)
+# Color order: 3 axis lines (gray), 3 axis label markers, 3 edge groups, 3 node groups
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#CCCCCC", "#CCCCCC", "#CCCCCC", "#88888866") + tuple(axis_colors),
+    colors=(
+        "#AAAAAA",
+        "#AAAAAA",
+        "#AAAAAA",  # Axis lines (gray)
+        "#306998",
+        "#FFD43B",
+        "#4CAF50",  # Axis label markers (match axis colors)
+        "#30699866",
+        "#FFD43B88",
+        "#4CAF5066",  # Edges by source axis (semi-transparent)
+        "#306998",
+        "#FFD43B",
+        "#4CAF50",  # Nodes by axis
+    ),
     title_font_size=72,
     label_font_size=40,
     major_label_font_size=36,
     legend_font_size=44,
     value_font_size=32,
+    tooltip_font_size=28,
     stroke_width=2,
     opacity=0.9,
     opacity_hover=1.0,
@@ -172,12 +187,13 @@ chart = pygal.XY(
 )
 
 # Draw axis lines first (as visual guides)
+label_radius = outer_radius + 0.6  # Position for axis labels
 for axis_id in range(n_axes):
     angle = axis_angles[axis_id]
-    x1 = center_x + (inner_radius - 0.2) * math.cos(angle)
-    y1 = center_y + (inner_radius - 0.2) * math.sin(angle)
-    x2 = center_x + (outer_radius + 0.3) * math.cos(angle)
-    y2 = center_y + (outer_radius + 0.3) * math.sin(angle)
+    x1 = center_x + (inner_radius - 0.3) * math.cos(angle)
+    y1 = center_y + (inner_radius - 0.3) * math.sin(angle)
+    x2 = center_x + (outer_radius + 0.4) * math.cos(angle)
+    y2 = center_y + (outer_radius + 0.4) * math.sin(angle)
     # Draw axis line (hidden from legend)
     chart.add(
         None,
@@ -188,9 +204,26 @@ for axis_id in range(n_axes):
         stroke_style={"width": 6, "linecap": "round"},
     )
 
-# Draw edges as curved paths between nodes
+# Add axis labels at endpoints - use series title for legend visibility
+# Position labels beyond the axis endpoints
+for axis_id in range(n_axes):
+    angle = axis_angles[axis_id]
+    label_x = center_x + label_radius * math.cos(angle)
+    label_y = center_y + label_radius * math.sin(angle)
+    # Create a small marker at axis endpoint with axis name as the series title
+    # This shows in legend and provides axis identification
+    chart.add(
+        axis_names[axis_id],  # Series name shows in legend
+        [{"value": (label_x, label_y), "label": f"{axis_names[axis_id]} Axis"}],
+        stroke=False,
+        show_dots=True,
+        dots_size=8,  # Small but visible marker at axis end
+    )
+
+# Draw edges as curved paths between nodes, grouped by source axis for coloring
 # Using quadratic Bezier curves that bend around the center
-edge_points = []
+edge_points_by_axis = {0: [], 1: [], 2: []}
+
 for src, tgt in edges:
     src_x, src_y, src_axis = node_positions[src]
     tgt_x, tgt_y, tgt_axis = node_positions[tgt]
@@ -213,11 +246,19 @@ for src, tgt in edges:
         t = t_idx / n_points
         bx = (1 - t) ** 2 * src_x + 2 * (1 - t) * t * ctrl_x + t**2 * tgt_x
         by = (1 - t) ** 2 * src_y + 2 * (1 - t) * t * ctrl_y + t**2 * tgt_y
-        edge_points.append((bx, by))
-    edge_points.append(None)  # Break between edges
+        edge_points_by_axis[src_axis].append((bx, by))
+    edge_points_by_axis[src_axis].append(None)  # Break between edges
 
-# Add all edges as one series
-chart.add(None, edge_points, stroke=True, show_dots=False, fill=False, stroke_style={"width": 1.5, "linecap": "round"})
+# Add edges grouped by source axis for color differentiation
+for axis_id in range(n_axes):
+    chart.add(
+        None,
+        edge_points_by_axis[axis_id],
+        stroke=True,
+        show_dots=False,
+        fill=False,
+        stroke_style={"width": 2, "linecap": "round"},
+    )
 
 # Add nodes grouped by axis for legend
 for axis_id in range(n_axes):

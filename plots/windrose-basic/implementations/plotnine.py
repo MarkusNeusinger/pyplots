@@ -1,0 +1,243 @@
+"""pyplots.ai
+windrose-basic: Wind Rose Chart
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-24
+"""
+
+import math
+
+import numpy as np
+import pandas as pd
+from plotnine import (
+    aes,
+    element_blank,
+    element_rect,
+    element_text,
+    geom_line,
+    geom_polygon,
+    geom_text,
+    ggplot,
+    labs,
+    scale_fill_manual,
+    scale_x_continuous,
+    scale_y_continuous,
+    theme,
+)
+
+
+# Data - Simulated wind measurements from a coastal weather station
+# 8 direction bins: N, NE, E, SE, S, SW, W, NW
+# 5 speed bins: 0-5, 5-10, 10-15, 15-20, 20+ m/s
+np.random.seed(42)
+
+directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+n_dirs = len(directions)
+
+# Wind speed bins and their labels
+speed_bins = ["0-5", "5-10", "10-15", "15-20", "20+"]
+n_speeds = len(speed_bins)
+
+# Frequencies (%) for each direction and speed bin
+# Coastal station with prevailing SW winds
+frequencies = {
+    "N": [2.5, 1.5, 0.8, 0.3, 0.1],
+    "NE": [3.0, 2.0, 1.0, 0.4, 0.1],
+    "E": [2.8, 1.8, 0.9, 0.3, 0.1],
+    "SE": [3.5, 2.5, 1.2, 0.5, 0.2],
+    "S": [4.0, 3.0, 1.8, 0.8, 0.3],
+    "SW": [5.5, 4.5, 3.0, 1.5, 0.6],  # Prevailing wind direction
+    "W": [4.8, 3.8, 2.2, 1.0, 0.4],
+    "NW": [3.2, 2.2, 1.2, 0.5, 0.2],
+}
+
+# Colors for wind speed bins (cool to warm progression)
+speed_colors = {
+    "0-5": "#306998",  # Python Blue (calm)
+    "5-10": "#4A90C2",  # Light blue
+    "10-15": "#7FB069",  # Green
+    "15-20": "#FFD43B",  # Python Yellow
+    "20+": "#E85D04",  # Orange (strong)
+}
+
+# Calculate direction angles (N=top, clockwise)
+# N is at 90 degrees (top), going clockwise
+dir_angles = {
+    "N": math.pi / 2,
+    "NE": math.pi / 4,
+    "E": 0,
+    "SE": -math.pi / 4,
+    "S": -math.pi / 2,
+    "SW": -3 * math.pi / 4,
+    "W": math.pi,
+    "NW": 3 * math.pi / 4,
+}
+
+# Create stacked wedges for each direction
+wedge_rows = []
+n_arc_points = 20  # Points along the arc for smooth edges
+wedge_width = 2 * math.pi / n_dirs  # Width of each direction bin
+
+wedge_id = 0
+for direction in directions:
+    center_angle = dir_angles[direction]
+    start_angle = center_angle + wedge_width / 2 - 0.03  # Small gap
+    end_angle = center_angle - wedge_width / 2 + 0.03
+
+    cumulative_radius = 0
+    for speed_idx, speed_bin in enumerate(speed_bins):
+        freq = frequencies[direction][speed_idx]
+        if freq <= 0:
+            continue
+
+        # Inner and outer radius for this stack segment
+        inner_radius = cumulative_radius
+        outer_radius = cumulative_radius + freq
+
+        # Build wedge polygon: inner arc -> outer arc -> close
+        # Start with inner arc (from start to end angle)
+        arc_angles = np.linspace(start_angle, end_angle, n_arc_points)
+
+        # Inner arc points (counterclockwise from start to end)
+        for angle in arc_angles:
+            x = inner_radius * math.cos(angle)
+            y = inner_radius * math.sin(angle)
+            wedge_rows.append({"x": x, "y": y, "wedge_id": wedge_id, "speed": speed_bin, "direction": direction})
+
+        # Outer arc points (clockwise from end to start)
+        for angle in reversed(arc_angles):
+            x = outer_radius * math.cos(angle)
+            y = outer_radius * math.sin(angle)
+            wedge_rows.append({"x": x, "y": y, "wedge_id": wedge_id, "speed": speed_bin, "direction": direction})
+
+        # Close the polygon
+        first_x = inner_radius * math.cos(start_angle)
+        first_y = inner_radius * math.sin(start_angle)
+        wedge_rows.append(
+            {"x": first_x, "y": first_y, "wedge_id": wedge_id, "speed": speed_bin, "direction": direction}
+        )
+
+        cumulative_radius = outer_radius
+        wedge_id += 1
+
+df = pd.DataFrame(wedge_rows)
+
+# Preserve speed order for legend
+df["speed"] = pd.Categorical(df["speed"], categories=speed_bins, ordered=True)
+
+# Create radial gridlines (circles at frequency percentages)
+grid_rows = []
+grid_angles = np.linspace(0, 2 * math.pi, 101)
+grid_radii = [5, 10, 15]  # Frequency percentage circles
+
+for radius in grid_radii:
+    for angle in grid_angles:
+        grid_rows.append({"x": radius * math.cos(angle), "y": radius * math.sin(angle), "radius": radius})
+
+grid_df = pd.DataFrame(grid_rows)
+
+# Create spoke lines (one for each direction)
+spoke_rows = []
+max_radius = 18  # Extend spokes beyond data
+for i, direction in enumerate(directions):
+    angle = dir_angles[direction]
+    spoke_rows.append({"x": 0, "y": 0, "spoke_id": i})
+    spoke_rows.append({"x": max_radius * math.cos(angle), "y": max_radius * math.sin(angle), "spoke_id": i})
+
+spoke_df = pd.DataFrame(spoke_rows)
+
+# Create direction labels positioned outside the chart
+label_rows = []
+label_radius = 20
+for direction in directions:
+    angle = dir_angles[direction]
+    label_rows.append({"label": direction, "x": label_radius * math.cos(angle), "y": label_radius * math.sin(angle)})
+
+label_df = pd.DataFrame(label_rows)
+
+# Create frequency labels on gridlines (positioned on right side)
+freq_label_rows = []
+for radius in grid_radii:
+    freq_label_rows.append({"label": f"{radius}%", "x": radius + 1, "y": 0.8})
+
+freq_label_df = pd.DataFrame(freq_label_rows)
+
+# Create legend entries (positioned in top-right corner, outside chart area)
+legend_rows = []
+legend_x_base = 16
+legend_y_base = 20
+box_height = 2
+box_width = 3
+
+for i, speed_bin in enumerate(speed_bins):
+    y = legend_y_base - i * (box_height + 0.5)
+    # Box polygon
+    legend_rows.append({"x": legend_x_base, "y": y, "speed": speed_bin, "legend_id": i})
+    legend_rows.append({"x": legend_x_base + box_width, "y": y, "speed": speed_bin, "legend_id": i})
+    legend_rows.append({"x": legend_x_base + box_width, "y": y - box_height, "speed": speed_bin, "legend_id": i})
+    legend_rows.append({"x": legend_x_base, "y": y - box_height, "speed": speed_bin, "legend_id": i})
+    legend_rows.append({"x": legend_x_base, "y": y, "speed": speed_bin, "legend_id": i})  # Close
+
+legend_df = pd.DataFrame(legend_rows)
+legend_df["speed"] = pd.Categorical(legend_df["speed"], categories=speed_bins, ordered=True)
+
+# Legend text labels
+legend_text_rows = []
+for i, speed_bin in enumerate(speed_bins):
+    y = legend_y_base - i * (box_height + 0.5) - box_height / 2
+    legend_text_rows.append({"label": f"{speed_bin} m/s", "x": legend_x_base + box_width + 1, "y": y})
+
+legend_text_df = pd.DataFrame(legend_text_rows)
+
+# Legend title
+legend_title_df = pd.DataFrame(
+    [{"label": "Wind Speed", "x": legend_x_base + box_width / 2 + 1, "y": legend_y_base + 1.8}]
+)
+
+# Plot
+plot = (
+    ggplot()
+    # Gridlines (circles)
+    + geom_line(
+        aes(x="x", y="y", group="radius"), data=grid_df, color="#AAAAAA", size=0.5, alpha=0.7, linetype="dashed"
+    )
+    # Spoke lines
+    + geom_line(aes(x="x", y="y", group="spoke_id"), data=spoke_df, color="#CCCCCC", size=0.4, alpha=0.6)
+    # Wind rose wedges (stacked)
+    + geom_polygon(aes(x="x", y="y", fill="speed", group="wedge_id"), data=df, color="#FFFFFF", size=0.2, alpha=0.9)
+    # Legend boxes
+    + geom_polygon(
+        aes(x="x", y="y", fill="speed", group="legend_id"), data=legend_df, color="#333333", size=0.3, alpha=0.9
+    )
+    # Direction labels
+    + geom_text(aes(x="x", y="y", label="label"), data=label_df, size=16, fontweight="bold", color="#333333")
+    # Frequency labels
+    + geom_text(aes(x="x", y="y", label="label"), data=freq_label_df, size=10, color="#666666")
+    # Legend title
+    + geom_text(aes(x="x", y="y", label="label"), data=legend_title_df, size=12, fontweight="bold", color="#333333")
+    # Legend text
+    + geom_text(aes(x="x", y="y", label="label"), data=legend_text_df, size=10, color="#333333", ha="left")
+    # Colors
+    + scale_fill_manual(values=speed_colors)
+    # Axis scaling with room for legend
+    + scale_x_continuous(limits=(-25, 30))
+    + scale_y_continuous(limits=(-25, 25))
+    # Title
+    + labs(title="windrose-basic · plotnine · pyplots.ai")
+    # Theme for clean wind rose appearance
+    + theme(
+        figure_size=(12, 12),
+        plot_title=element_text(size=24, ha="center", color="#333333"),
+        axis_title=element_blank(),
+        axis_text=element_blank(),
+        axis_ticks=element_blank(),
+        axis_line=element_blank(),
+        panel_grid_major=element_blank(),
+        panel_grid_minor=element_blank(),
+        panel_background=element_rect(fill="#FFFFFF"),
+        plot_background=element_rect(fill="#FFFFFF"),
+        legend_position="none",
+    )
+)
+
+# Save
+plot.save("plot.png", dpi=300)

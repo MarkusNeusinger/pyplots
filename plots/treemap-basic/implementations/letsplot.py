@@ -1,7 +1,7 @@
 """ pyplots.ai
 treemap-basic: Basic Treemap
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 90/100 | Created: 2025-12-14
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-24
 """
 
 import pandas as pd
@@ -24,17 +24,19 @@ from lets_plot.export import ggsave
 
 LetsPlot.setup_html()
 
-# Data - Budget allocation by department
-categories = ["Engineering", "Marketing", "Sales", "Operations", "HR", "Finance", "R&D", "Support"]
-values = [35, 20, 18, 12, 8, 4, 2, 1]
+# Data - Budget allocation by department (realistic corporate budget scenario)
+data = {
+    "category": ["Engineering", "Marketing", "Sales", "Operations", "HR", "Finance", "R&D", "Legal"],
+    "value": [32, 22, 18, 12, 7, 5, 3, 1],
+}
 
-df_data = pd.DataFrame({"category": categories, "value": values})
+df_data = pd.DataFrame(data)
 df_data = df_data.sort_values("value", ascending=False).reset_index(drop=True)
 
 
-# Simple squarify algorithm for treemap layout
+# Squarify algorithm for treemap layout
 def squarify(values, x, y, width, height):
-    """Compute treemap rectangles using a simple squarify algorithm."""
+    """Compute treemap rectangles using squarify algorithm."""
     if len(values) == 0:
         return []
 
@@ -55,12 +57,11 @@ def squarify(values, x, y, width, height):
             row_sum = 0
             best_ratio = float("inf")
 
-            for _i, v in enumerate(remaining_values):
+            for v in remaining_values:
                 test_values = row_values + [v]
                 test_sum = row_sum + v
                 row_width = (test_sum / total) * width if total > 0 else 0
 
-                # Calculate worst aspect ratio in this row
                 if row_width > 0:
                     worst_ratio = 0
                     for rv in test_values:
@@ -97,12 +98,11 @@ def squarify(values, x, y, width, height):
             col_sum = 0
             best_ratio = float("inf")
 
-            for _i, v in enumerate(remaining_values):
+            for v in remaining_values:
                 test_values = col_values + [v]
                 test_sum = col_sum + v
                 col_height = (test_sum / total) * height if total > 0 else 0
 
-                # Calculate worst aspect ratio in this column
                 if col_height > 0:
                     worst_ratio = 0
                     for cv in test_values:
@@ -160,29 +160,43 @@ rect_df["label_y"] = (rect_df["ymin"] + rect_df["ymax"]) / 2
 rect_df["width"] = rect_df["xmax"] - rect_df["xmin"]
 rect_df["height"] = rect_df["ymax"] - rect_df["ymin"]
 
-# Create labels - omit labels for smaller rectangles per spec: "smaller ones may omit labels"
-total = sum(values)
-rect_df["label"] = rect_df.apply(
-    lambda r: f"{r['category']}\n{r['value'] / total * 100:.1f}%" if r["width"] > 8 and r["height"] > 10 else "", axis=1
-)
+# Create labels - show percentage for larger rectangles, omit for smaller ones
+total_value = df_data["value"].sum()
 
-# Define colors - Python palette extended with colorblind-safe colors
+
+def make_label(row):
+    w, h = row["width"], row["height"]
+    pct = row["value"] / total_value * 100
+    # Large rectangles: full label with name and percentage
+    if w > 18 and h > 18:
+        return f"{row['category']}\n{pct:.0f}%"
+    # Medium rectangles: just percentage
+    elif w > 8 and h > 8:
+        return f"{pct:.0f}%"
+    # Small rectangles: no label (visible in legend)
+    return ""
+
+
+rect_df["label"] = rect_df.apply(make_label, axis=1)
+
+# Colors - Python palette primary, extended with colorblind-safe colors
 colors = ["#306998", "#FFD43B", "#4CAF50", "#FF7043", "#AB47BC", "#26A69A", "#7E57C2", "#5C6BC0"]
 
 # Plot
 plot = (
     ggplot(rect_df)
     + geom_rect(
-        aes(xmin="xmin", ymin="ymin", xmax="xmax", ymax="ymax", fill="category"), color="white", size=2, alpha=0.9
+        aes(xmin="xmin", ymin="ymin", xmax="xmax", ymax="ymax", fill="category"), color="white", size=2.5, alpha=0.92
     )
-    + geom_text(aes(x="label_x", y="label_y", label="label"), size=12, color="white", fontface="bold")
+    + geom_text(aes(x="label_x", y="label_y", label="label"), size=14, color="white", fontface="bold")
     + scale_fill_manual(values=colors)
-    + labs(title="treemap-basic \u00b7 letsplot \u00b7 pyplots.ai", fill="Department")
+    + labs(title="Budget Allocation · treemap-basic · letsplot · pyplots.ai", fill="Department")
     + theme_void()
     + theme(
         plot_title=element_text(size=24, hjust=0.5),
         legend_title=element_text(size=18),
         legend_text=element_text(size=16),
+        legend_position=[0.85, 0.5],
         axis_title=element_blank(),
         axis_text=element_blank(),
     )

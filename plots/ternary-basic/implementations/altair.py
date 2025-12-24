@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 ternary-basic: Basic Ternary Plot
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-24
 """
 
 import altair as alt
@@ -21,10 +21,9 @@ clay = raw[:, 2]
 
 # Ternary to Cartesian conversion
 # In a standard ternary plot with equilateral triangle:
-# - Bottom-left vertex (0,0): 100% component A (sand)
-# - Bottom-right vertex (1,0): 100% component B (silt)
-# - Top vertex (0.5, sqrt(3)/2): 100% component C (clay)
-# Formula: x = b/(a+b+c) + 0.5*c/(a+b+c), y = c/(a+b+c) * sqrt(3)/2
+# - Bottom-left vertex (0,0): 100% Sand
+# - Bottom-right vertex (1,0): 100% Silt
+# - Top vertex (0.5, sqrt(3)/2): 100% Clay
 height = np.sqrt(3) / 2
 total = sand + silt + clay
 x = silt / total + 0.5 * clay / total
@@ -70,11 +69,11 @@ for pct in [20, 40, 60, 80]:
 
 grid_df = pd.DataFrame(grid_lines)
 
-# Create tick marks along each edge
+# Create tick marks along each edge (exclude 0 and 100 to avoid vertex overlap)
 tick_data = []
 tick_length = 0.03
 
-for pct in [0, 20, 40, 60, 80, 100]:
+for pct in [20, 40, 60, 80]:
     # Bottom edge ticks (sand axis) - from left (100%) to right (0%)
     tx = pct / 100
     tick_data.append(
@@ -93,8 +92,8 @@ for pct in [0, 20, 40, 60, 80, 100]:
             "x2": cx + dx,
             "y2": cy + dy,
             "label": str(pct),
-            "label_x": cx + dx * 2,
-            "label_y": cy + dy * 2,
+            "label_x": cx + dx * 2.5,
+            "label_y": cy + dy * 2.5,
         }
     )
 
@@ -110,8 +109,8 @@ for pct in [0, 20, 40, 60, 80, 100]:
             "x2": sx + dx,
             "y2": sy + dy,
             "label": str(pct),
-            "label_x": sx + dx * 2,
-            "label_y": sy + dy * 2,
+            "label_x": sx + dx * 2.5,
+            "label_y": sy + dy * 2.5,
         }
     )
 

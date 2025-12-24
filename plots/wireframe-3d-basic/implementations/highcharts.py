@@ -1,6 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 wireframe-3d-basic: Basic 3D Wireframe Plot
-Library: highcharts unknown | Python 3.13.11
+Library: highcharts | Python 3.13
 Quality: 85/100 | Created: 2025-12-24
 """
 
@@ -101,13 +101,13 @@ Highcharts.chart('container', {{
             }}
         }},
         marginTop: 180,
-        marginBottom: 80,
-        marginLeft: 80,
-        marginRight: 80,
+        marginBottom: 200,
+        marginLeft: 120,
+        marginRight: 120,
         spacingTop: 10,
-        spacingBottom: 10,
-        spacingLeft: 10,
-        spacingRight: 10
+        spacingBottom: 60,
+        spacingLeft: 30,
+        spacingRight: 30
     }},
     title: {{
         text: 'wireframe-3d-basic · highcharts · pyplots.ai',
@@ -124,12 +124,12 @@ Highcharts.chart('container', {{
         max: 5,
         tickInterval: 2.5,
         title: {{
-            text: 'X Axis',
+            text: 'X Position (units)',
             style: {{ fontSize: '52px', color: '#306998', fontWeight: 'bold' }},
-            margin: 40
+            margin: 50
         }},
         labels: {{
-            style: {{ fontSize: '36px' }},
+            style: {{ fontSize: '40px' }},
             format: '{{value}}'
         }},
         gridLineWidth: 2,
@@ -140,12 +140,12 @@ Highcharts.chart('container', {{
         max: 5,
         tickInterval: 2.5,
         title: {{
-            text: 'Y Axis',
+            text: 'Y Position (units)',
             style: {{ fontSize: '52px', color: '#306998', fontWeight: 'bold' }},
-            margin: 40
+            margin: 50
         }},
         labels: {{
-            style: {{ fontSize: '36px' }},
+            style: {{ fontSize: '40px' }},
             format: '{{value}}'
         }},
         gridLineWidth: 2,
@@ -156,12 +156,12 @@ Highcharts.chart('container', {{
         max: 1.2,
         tickInterval: 0.4,
         title: {{
-            text: 'Z (Height)',
+            text: 'Z Amplitude',
             style: {{ fontSize: '52px', color: '#306998', fontWeight: 'bold' }},
-            margin: 30
+            margin: 50
         }},
         labels: {{
-            style: {{ fontSize: '36px' }},
+            style: {{ fontSize: '40px' }},
             format: '{{value:.1f}}'
         }},
         gridLineWidth: 2,
@@ -220,7 +220,7 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2800")
+chrome_options.add_argument("--window-size=4800,2900")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")

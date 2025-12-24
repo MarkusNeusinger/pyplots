@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 windrose-basic: Wind Rose Chart
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-24
@@ -17,6 +17,7 @@ from plotnine import (
     geom_polygon,
     geom_text,
     ggplot,
+    guide_legend,
     labs,
     scale_fill_manual,
     scale_x_continuous,
@@ -35,7 +36,6 @@ n_dirs = len(directions)
 
 # Wind speed bins and their labels
 speed_bins = ["0-5", "5-10", "10-15", "15-20", "20+"]
-n_speeds = len(speed_bins)
 
 # Frequencies (%) for each direction and speed bin
 # Coastal station with prevailing SW winds
@@ -166,38 +166,6 @@ freq_label_df = pd.DataFrame(freq_label_rows)
 # Create "Frequency (%)" label to explain what gridlines represent
 freq_axis_label_df = pd.DataFrame([{"label": "Frequency (%)", "x": -3, "y": 22}])
 
-# Create legend entries (positioned in bottom-right corner, clear of all labels)
-legend_rows = []
-legend_x_base = 14
-legend_y_base = -18
-box_height = 1.5
-box_width = 2.0
-
-for i, speed_bin in enumerate(speed_bins):
-    y = legend_y_base - i * (box_height + 0.3)
-    # Box polygon
-    legend_rows.append({"x": legend_x_base, "y": y, "speed": speed_bin, "legend_id": i})
-    legend_rows.append({"x": legend_x_base + box_width, "y": y, "speed": speed_bin, "legend_id": i})
-    legend_rows.append({"x": legend_x_base + box_width, "y": y - box_height, "speed": speed_bin, "legend_id": i})
-    legend_rows.append({"x": legend_x_base, "y": y - box_height, "speed": speed_bin, "legend_id": i})
-    legend_rows.append({"x": legend_x_base, "y": y, "speed": speed_bin, "legend_id": i})  # Close
-
-legend_df = pd.DataFrame(legend_rows)
-legend_df["speed"] = pd.Categorical(legend_df["speed"], categories=speed_bins, ordered=True)
-
-# Legend text labels
-legend_text_rows = []
-for i, speed_bin in enumerate(speed_bins):
-    y = legend_y_base - i * (box_height + 0.3) - box_height / 2
-    legend_text_rows.append({"label": f"{speed_bin} m/s", "x": legend_x_base + box_width + 0.8, "y": y})
-
-legend_text_df = pd.DataFrame(legend_text_rows)
-
-# Legend title
-legend_title_df = pd.DataFrame(
-    [{"label": "Wind Speed", "x": legend_x_base + box_width / 2 + 0.8, "y": legend_y_base + 1.8}]
-)
-
 # Plot
 plot = (
     ggplot()
@@ -209,25 +177,17 @@ plot = (
     + geom_line(aes(x="x", y="y", group="spoke_id"), data=spoke_df, color="#CCCCCC", size=0.4, alpha=0.6)
     # Wind rose wedges (stacked)
     + geom_polygon(aes(x="x", y="y", fill="speed", group="wedge_id"), data=df, color="#FFFFFF", size=0.2, alpha=0.9)
-    # Legend boxes
-    + geom_polygon(
-        aes(x="x", y="y", fill="speed", group="legend_id"), data=legend_df, color="#333333", size=0.3, alpha=0.9
-    )
     # Direction labels
     + geom_text(aes(x="x", y="y", label="label"), data=label_df, size=16, fontweight="bold", color="#333333")
-    # Frequency labels (larger for better readability)
+    # Frequency labels
     + geom_text(aes(x="x", y="y", label="label"), data=freq_label_df, size=18, color="#333333", fontweight="bold")
     # Frequency axis label
     + geom_text(aes(x="x", y="y", label="label"), data=freq_axis_label_df, size=16, color="#333333", fontstyle="italic")
-    # Legend title
-    + geom_text(aes(x="x", y="y", label="label"), data=legend_title_df, size=14, fontweight="bold", color="#333333")
-    # Legend text
-    + geom_text(aes(x="x", y="y", label="label"), data=legend_text_df, size=12, color="#333333", ha="left")
-    # Colors
-    + scale_fill_manual(values=speed_colors)
-    # Axis scaling - balanced limits with room for legend on right
-    + scale_x_continuous(limits=(-26, 26))
-    + scale_y_continuous(limits=(-30, 26))
+    # Colors with native legend
+    + scale_fill_manual(values=speed_colors, name="Wind Speed (m/s)", guide=guide_legend(reverse=False))
+    # Axis scaling
+    + scale_x_continuous(limits=(-24, 24))
+    + scale_y_continuous(limits=(-26, 24))
     # Title
     + labs(title="windrose-basic · plotnine · pyplots.ai")
     # Theme for clean wind rose appearance
@@ -242,7 +202,11 @@ plot = (
         panel_grid_minor=element_blank(),
         panel_background=element_rect(fill="#FFFFFF"),
         plot_background=element_rect(fill="#FFFFFF"),
-        legend_position="none",
+        legend_position="right",
+        legend_title=element_text(size=14, fontweight="bold"),
+        legend_text=element_text(size=12),
+        legend_background=element_rect(fill="#FFFFFF", color="#CCCCCC", size=0.5),
+        legend_key_size=20,
     )
 )
 

@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: horizon-basic
 created: '2025-12-24T22:16:46Z'
-updated: '2025-12-24T22:21:18Z'
+updated: '2025-12-24T22:33:45Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20494682670
 issue: 0
@@ -10,20 +10,20 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 72
+quality_score: 78
 review:
   strengths:
-  - Excellent realistic data generation with distinct server behavior patterns (Web
-    Server daily cycle, Database spikes, Cache periodic flushes, Auth login spikes)
-  - Clean implementation of horizon chart folding technique with 3 bands
-  - Good use of blue sequential color palette for the bands
-  - Well-organized code structure following KISS principles
-  - Proper subplot layout with shared x-axis and minimal spacing
+  - Well-structured data generation with distinct server behavior patterns (daily
+    cycles, spikes, periodic flushes)
+  - 'Good use of seaborn styling: set_style, set_context, color_palette, despine'
+  - Clean subplot layout with shared x-axis and appropriate spacing
+  - Proper horizon chart band folding technique with 3 bands
+  - Appropriate text sizing for high-resolution output
   weaknesses:
-  - Does not import or use seaborn library - this is a pure matplotlib implementation
-    that should fail AR-05
-  - Missing positive/negative mirroring with contrasting colors (spec mentions blue/red)
-  - Title format incorrect - should be "horizon-basic · seaborn · pyplots.ai" not
-    "Server CPU Usage · horizon-basic · seaborn · pyplots.ai"
-  - Text sizes slightly below recommended (title 22pt vs 24pt, labels 14pt vs 20pt)
-  - No grid lines to help track values across time periods
+  - 'Title format incorrect: shows "Server CPU Usage" prefix but should be just "horizon-basic
+    · seaborn · pyplots.ai"'
+  - Negative values not visible in output despite code generating negative deviations
+    and defining red palette - the red bands for values below baseline are not appearing
+    in the rendered image
+  - 'Legend content mismatch: shows 3 items but code defines 6 legend patches (3 positive
+    blue + 3 negative red)'

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hive-basic: Basic Hive Plot
 Library: plotly 6.5.0 | Python 3.13.11
 Quality: 86/100 | Created: 2025-12-24
@@ -176,11 +176,12 @@ for cat in categories:
         )
     )
 
-# Add axis labels at end of each axis
+# Add axis labels beyond the endpoints to avoid overlap with node labels
 for i, cat in enumerate(categories):
     angle_rad = np.radians(axis_angles[i])
-    label_x = outer_radius * 1.12 * np.cos(angle_rad)
-    label_y = outer_radius * 1.12 * np.sin(angle_rad)
+    # Position labels much further out (1.28x) to clear node labels at endpoints
+    label_x = outer_radius * 1.28 * np.cos(angle_rad)
+    label_y = outer_radius * 1.28 * np.sin(angle_rad)
     fig.add_annotation(
         x=label_x, y=label_y, text=f"<b>{cat.upper()}</b>", showarrow=False, font=dict(size=22, color=axis_colors[cat])
     )
@@ -203,10 +204,8 @@ fig.update_layout(
         bordercolor="#cccccc",
         borderwidth=1,
     ),
-    xaxis=dict(showgrid=False, zeroline=False, showticklabels=False, range=[-1.25, 1.25]),
-    yaxis=dict(
-        showgrid=False, zeroline=False, showticklabels=False, range=[-1.25, 1.25], scaleanchor="x", scaleratio=1
-    ),
+    xaxis=dict(showgrid=False, zeroline=False, showticklabels=False, range=[-1.4, 1.4]),
+    yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, range=[-1.4, 1.4], scaleanchor="x", scaleratio=1),
     plot_bgcolor="white",
     paper_bgcolor="white",
     margin=dict(l=40, r=40, t=120, b=40),

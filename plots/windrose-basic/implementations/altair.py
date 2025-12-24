@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 windrose-basic: Wind Rose Chart
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-24
@@ -213,21 +213,21 @@ radial_lines = (
     )
 )
 
-# Add percentage labels on circles (positioned between N and NE to avoid overlap)
+# Add percentage labels on circles (positioned at 115° between N and NW to avoid NE overlap)
 pct_label_data = pd.DataFrame(
     [
-        {"label": f"{r}%", "x": r * np.cos(np.radians(70)) + 1.0, "y": r * np.sin(np.radians(70)) + 0.5}
+        {"label": f"{r}%", "x": r * np.cos(np.radians(115)) - 1.5, "y": r * np.sin(np.radians(115)) + 0.5}
         for r in circle_radii
     ]
 )
 
-# Add radial axis title "Frequency (%)" positioned near the axis
+# Add radial axis title "Frequency (%)" positioned prominently near the radial axis
 axis_title_data = pd.DataFrame(
     [
         {
             "label": "Frequency (%)",
-            "x": (max_freq / 2) * np.cos(np.radians(70)) + 4,
-            "y": (max_freq / 2) * np.sin(np.radians(70)) + 3,
+            "x": (max_freq * 0.7) * np.cos(np.radians(115)) - 3,
+            "y": (max_freq * 0.7) * np.sin(np.radians(115)) + 2,
         }
     ]
 )
@@ -244,7 +244,7 @@ pct_labels = (
 
 axis_title = (
     alt.Chart(axis_title_data)
-    .mark_text(fontSize=20, align="left", color="#333333", fontWeight="bold", angle=340)
+    .mark_text(fontSize=22, align="center", color="#333333", fontWeight="bold", angle=335)
     .encode(
         x=alt.X("x:Q").scale(domain=axis_range).axis(None),
         y=alt.Y("y:Q").scale(domain=axis_range).axis(None),

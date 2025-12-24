@@ -1,0 +1,23 @@
+library: matplotlib
+specification_id: bar-grouped
+created: '2025-12-24T21:29:23Z'
+updated: '2025-12-24T21:34:51Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494136513
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 95
+review:
+  strengths:
+  - Excellent visual clarity with well-sized text and properly spaced bars
+  - Colorblind-safe color palette using Python brand colors plus complementary green
+  - Value labels on bars enhance precise comparisons as suggested in spec notes
+  - Data tells a realistic story with different growth patterns per product line
+  - Clean KISS code structure following matplotlib best practices
+  weaknesses:
+  - Legend position in upper left may conflict with data if values were higher in
+    Q1 (upper right or outside plot would be safer)

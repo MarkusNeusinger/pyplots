@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 waffle-basic: Basic Waffle Chart
-Library: matplotlib | Python 3.13
-Quality: pending | Created: 2025-12-24
+Library: matplotlib 3.10.8 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-24
 """
 
 import matplotlib.patches as mpatches

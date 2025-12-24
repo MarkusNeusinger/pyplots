@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 horizon-basic: Horizon Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-24
@@ -92,13 +92,13 @@ class HorizonChart(Graph):
             text_node.set("style", f"font-size:{label_font_size}px;font-weight:bold;font-family:sans-serif")
             text_node.text = series_name
 
-            # Draw background for this row
+            # Draw background for this row with clearer separation
             bg_rect = self.svg.node(
                 horizon_group, "rect", x=x_offset, y=row_y, width=available_width, height=actual_row_height
             )
             bg_rect.set("fill", "#f8f9fa")
-            bg_rect.set("stroke", "#e9ecef")
-            bg_rect.set("stroke-width", "1")
+            bg_rect.set("stroke", "#d0d0d0")
+            bg_rect.set("stroke-width", "2")
 
             # Draw horizon bands for each time point
             for j, value in enumerate(values):
@@ -141,6 +141,17 @@ class HorizonChart(Graph):
                     rect.set("stroke", "none")
 
                     remaining -= band_size
+
+        # Draw subtle vertical grid lines at regular intervals for time readability
+        grid_interval = max(1, n_points // 12)
+        for j in range(0, n_points + 1, grid_interval):
+            grid_x = x_offset + j * cell_width
+            line = self.svg.node(
+                horizon_group, "line", x1=grid_x, y1=y_offset, x2=grid_x, y2=y_offset + n_series * row_height
+            )
+            line.set("stroke", "#cccccc")
+            line.set("stroke-width", "1")
+            line.set("stroke-dasharray", "4,4")
 
         # Draw x-axis labels
         x_label_font_size = 36
@@ -292,7 +303,7 @@ chart = HorizonChart(
     width=4800,
     height=2700,
     style=custom_style,
-    title="Server Metrics (24h) · horizon-basic · pygal · pyplots.ai",
+    title="horizon-basic · pygal · pyplots.ai",
     series_data=metrics,
     time_labels=hours,
     n_bands=3,

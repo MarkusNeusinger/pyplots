@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hive-basic: Basic Hive Plot
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-24
@@ -72,8 +72,8 @@ edges = [
 n_axes = 3
 # Rotate axes to point outward from center: up-right, up-left, down
 axis_angles = [np.pi / 6, 5 * np.pi / 6, 3 * np.pi / 2]  # 120° apart, starting from 30°
-inner_radius = 250
-outer_radius = 1200
+inner_radius = 400
+outer_radius = 1500
 axis_colors = ["#306998", "#FFD43B", "#4CAF50"]  # Python Blue, Python Yellow, Green
 axis_labels = ["Core", "Utility", "Interface"]
 
@@ -93,13 +93,13 @@ for axis_id in range(n_axes):
         y = radius * np.sin(angle)
         node_positions[name] = {"x": x, "y": y, "axis": axis_id, "degree": data["degree"]}
 
-# Create figure - center the plot with appropriate range
+# Create figure - center the plot with appropriate range for better canvas utilization
 p = figure(
     width=3600,
     height=3600,
     title="hive-basic · bokeh · pyplots.ai",
-    x_range=(-1500, 1500),
-    y_range=(-1500, 1500),
+    x_range=(-1900, 1900),
+    y_range=(-1900, 1900),
     tools="",
     toolbar_location=None,
 )
@@ -109,27 +109,27 @@ p.axis.visible = False
 p.grid.visible = False
 p.outline_line_color = None
 
-# Styling
-p.title.text_font_size = "32pt"
+# Styling - larger text for better readability
+p.title.text_font_size = "48pt"
 p.title.align = "center"
 p.background_fill_color = "#FAFAFA"
 
-# Draw radial axes
+# Draw radial axes - thicker lines for better visibility
 for i, angle in enumerate(axis_angles):
     x_start = inner_radius * np.cos(angle)
     y_start = inner_radius * np.sin(angle)
     x_end = outer_radius * np.cos(angle)
     y_end = outer_radius * np.sin(angle)
-    p.line([x_start, x_end], [y_start, y_end], line_width=4, line_color="#888888", line_alpha=0.5)
-    # Axis label
-    label_radius = outer_radius + 120
+    p.line([x_start, x_end], [y_start, y_end], line_width=8, line_color="#666666", line_alpha=0.7)
+    # Axis label - larger text
+    label_radius = outer_radius + 180
     label_x = label_radius * np.cos(angle)
     label_y = label_radius * np.sin(angle)
     label = Label(
         x=label_x,
         y=label_y,
         text=axis_labels[i],
-        text_font_size="24pt",
+        text_font_size="36pt",
         text_align="center",
         text_baseline="middle",
         text_color=axis_colors[i],
@@ -154,16 +154,17 @@ for source, target in edges:
 
     # Color based on source axis
     edge_color = axis_colors[src_pos["axis"]]
-    p.line(curve_x.tolist(), curve_y.tolist(), line_width=2, line_color=edge_color, line_alpha=0.4)
+    p.line(curve_x.tolist(), curve_y.tolist(), line_width=3, line_color=edge_color, line_alpha=0.5)
 
-# Draw nodes
+# Draw nodes - larger sizes for better visibility
 for axis_id in range(n_axes):
     axis_node_data = [(name, data) for name, data in node_positions.items() if data["axis"] == axis_id]
     x_coords = [d["x"] for _, d in axis_node_data]
     y_coords = [d["y"] for _, d in axis_node_data]
-    sizes = [12 + d["degree"] * 2 for _, d in axis_node_data]
+    names = [name for name, _ in axis_node_data]
+    sizes = [25 + d["degree"] * 4 for _, d in axis_node_data]
 
-    source = ColumnDataSource(data={"x": x_coords, "y": y_coords, "size": sizes})
+    source = ColumnDataSource(data={"x": x_coords, "y": y_coords, "size": sizes, "name": names})
 
     p.scatter(
         x="x",
@@ -172,9 +173,34 @@ for axis_id in range(n_axes):
         source=source,
         fill_color=axis_colors[axis_id],
         line_color="white",
-        line_width=2,
+        line_width=3,
         alpha=0.9,
     )
+
+# Add node labels for identification
+for name, data in node_positions.items():
+    # Calculate offset for label positioning (perpendicular to axis direction)
+    angle = axis_angles[data["axis"]]
+    # Offset perpendicular to axis (outward from center line)
+    label_offset = 80
+    offset_angle = angle + np.pi / 2  # Perpendicular
+    label_x = data["x"] + label_offset * np.cos(offset_angle)
+    label_y = data["y"] + label_offset * np.sin(offset_angle)
+
+    # Shorter display name (remove prefix)
+    short_name = name.split("_")[1] if "_" in name else name
+
+    node_label = Label(
+        x=label_x,
+        y=label_y,
+        text=short_name,
+        text_font_size="16pt",
+        text_align="center",
+        text_baseline="middle",
+        text_color="#333333",
+        text_alpha=0.8,
+    )
+    p.add_layout(node_label)
 
 # Save outputs
 export_png(p, filename="plot.png")

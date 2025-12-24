@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 histogram-kde: Histogram with KDE Overlay
-Library: plotly | Python 3.13
-Quality: pending | Created: 2025-12-24
+Library: plotly 6.5.0 | Python 3.13.11
+Quality: 98/100 | Created: 2025-12-24
 """
 
 import numpy as np

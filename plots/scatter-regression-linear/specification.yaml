@@ -1,0 +1,30 @@
+# Specification-level metadata for scatter-regression-linear
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: scatter-regression-linear
+title: Scatter Plot with Linear Regression
+
+# Specification tracking
+created: 2025-12-24T21:21:30Z
+updated: null
+issue: 1821
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - scatter
+    - regression
+  data_type:
+    - numeric
+    - continuous
+  domain:
+    - general
+    - statistics
+    - research
+  features:
+    - regression
+    - confidence-interval
+    - correlation
+    - trendline

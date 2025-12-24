@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 treemap-basic: Basic Treemap
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-14
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-24
 """
 
 import tempfile

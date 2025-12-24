@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 waterfall-basic: Basic Waterfall Chart
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-24
 """
 
 import pandas as pd
@@ -27,7 +27,7 @@ from lets_plot.export import ggsave
 
 LetsPlot.setup_html()
 
-# Data - Quarterly financial breakdown
+# Data - Quarterly financial breakdown from revenue to net income
 categories = [
     "Starting Balance",
     "Product Sales",

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 ternary-basic: Basic Ternary Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 62/100 | Created: 2025-12-24
@@ -6,6 +6,7 @@ Quality: 62/100 | Created: 2025-12-24
 
 import math
 
+import cairosvg
 import pygal
 from pygal.style import Style
 
@@ -92,7 +93,7 @@ custom_style = Style(
     title_font_size=80,
     label_font_size=48,
     major_label_font_size=44,
-    legend_font_size=48,
+    legend_font_size=44,
     value_font_size=40,
     opacity=0.85,
 )
@@ -104,7 +105,7 @@ chart = pygal.XY(
     style=custom_style,
     show_legend=True,
     legend_at_bottom=True,
-    legend_at_bottom_columns=1,
+    legend_at_bottom_columns=4,
     show_x_guides=False,
     show_y_guides=False,
     show_x_labels=False,
@@ -115,14 +116,16 @@ chart = pygal.XY(
     dots_size=20,
     stroke=False,
     include_x_axis=False,
-    xrange=(-0.20, 1.20),
-    yrange=(-0.25, 1.10),
+    xrange=(-0.15, 1.15),
+    yrange=(-0.20, 1.05),
     explicit_size=True,
+    margin=50,
+    margin_bottom=120,
 )
 
 # Triangle outline
 chart.add(
-    "Boundary",
+    "Triangle Boundary",
     [vertex_clay, vertex_silt, vertex_sand, vertex_clay],
     stroke=True,
     show_dots=False,
@@ -133,18 +136,53 @@ chart.add(
 chart.add("Grid (20%)", grid_lines, stroke=True, show_dots=False, stroke_style={"width": 2, "dasharray": "8,5"})
 
 # Data points (soil samples)
-chart.add("Soil Samples (15 compositions)", data_points, stroke=False, dots_size=22)
+chart.add("Soil Samples", data_points, stroke=False, dots_size=22)
 
 # Tick marks along edges
-chart.add("Ticks", tick_marks, stroke=True, show_dots=False, stroke_style={"width": 3})
+chart.add("Tick Marks", tick_marks, stroke=True, show_dots=False, stroke_style={"width": 3})
 
-# Vertex labels as separate data series with positioned annotations
-# Labels positioned just outside each vertex
-label_offset = 0.08
-chart.add("SAND (Top)", [(vertex_sand[0], vertex_sand[1] + label_offset)], stroke=False, dots_size=0)
-chart.add("SILT (Right)", [(vertex_silt[0] + label_offset, vertex_silt[1])], stroke=False, dots_size=0)
-chart.add("CLAY (Left)", [(vertex_clay[0] - label_offset, vertex_clay[1])], stroke=False, dots_size=0)
+# Render to SVG string first
+svg_content = chart.render().decode("utf-8")
 
-# Save outputs
-chart.render_to_png("plot.png")
-chart.render_to_file("plot.html")
+# Calculate pixel positions for vertex labels
+# The chart has xrange=(-0.15, 1.15) = 1.30 range and yrange=(-0.20, 1.05) = 1.25 range
+# With 3600px width and margins, we need to calculate positions
+# Approximate: plot area starts after margin and title
+plot_x_start = 150
+plot_x_end = 3450
+plot_y_start = 250  # After title
+plot_y_end = 3350  # Before legend
+
+x_range = 1.30  # -0.15 to 1.15
+y_range = 1.25  # -0.20 to 1.05
+
+
+def data_to_pixel(x, y):
+    """Convert data coordinates to pixel coordinates."""
+    px = plot_x_start + (x + 0.15) / x_range * (plot_x_end - plot_x_start)
+    # Y is inverted in SVG (0 at top)
+    py = plot_y_start + (1.05 - y) / y_range * (plot_y_end - plot_y_start)
+    return px, py
+
+
+# Get pixel positions for labels (offset slightly from vertices)
+sand_px, sand_py = data_to_pixel(0.5, H + 0.06)
+silt_px, silt_py = data_to_pixel(1.07, -0.03)
+clay_px, clay_py = data_to_pixel(-0.07, -0.03)
+
+# Create SVG text elements for vertex labels
+vertex_labels_svg = f"""
+  <text x="{sand_px}" y="{sand_py}" text-anchor="middle" font-size="60" font-weight="bold" fill="#333333" font-family="sans-serif">SAND</text>
+  <text x="{silt_px}" y="{silt_py}" text-anchor="start" font-size="60" font-weight="bold" fill="#333333" font-family="sans-serif">SILT</text>
+  <text x="{clay_px}" y="{clay_py}" text-anchor="end" font-size="60" font-weight="bold" fill="#333333" font-family="sans-serif">CLAY</text>
+"""
+
+# Insert labels before the closing </svg> tag
+svg_content = svg_content.replace("</svg>", vertex_labels_svg + "</svg>")
+
+# Save as SVG for HTML output
+with open("plot.html", "w") as f:
+    f.write(svg_content)
+
+# Convert to PNG
+cairosvg.svg2png(bytestring=svg_content.encode("utf-8"), write_to="plot.png")

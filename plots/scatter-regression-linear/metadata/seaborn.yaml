@@ -1,0 +1,24 @@
+library: seaborn
+specification_id: scatter-regression-linear
+created: '2025-12-24T21:29:45Z'
+updated: '2025-12-24T21:35:43Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494135992
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 94
+review:
+  strengths:
+  - Excellent use of seaborn regplot function with built-in confidence interval
+  - Perfect title format matching the spec-id · library · pyplots.ai convention
+  - R² and regression equation annotation clearly displayed in a styled box
+  - Good color choices with Python blue for points and yellow for regression line
+  - Appropriate marker size and alpha for the data density (80 points)
+  - Realistic educational context (study hours vs exam scores)
+  weaknesses:
+  - X-axis label Study Hours could include units like Study Hours (h) for full marks
+    on VQ-06

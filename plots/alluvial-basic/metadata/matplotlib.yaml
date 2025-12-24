@@ -1,0 +1,26 @@
+library: matplotlib
+specification_id: alluvial-basic
+created: '2025-12-24T22:21:18Z'
+updated: '2025-12-24T22:31:13Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494683388
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of alluvial diagram from scratch using matplotlib low-level
+    Path and patches API
+  - Clean bezier curves for flow bands with appropriate transparency (alpha=0.4) for
+    overlapping flows
+  - Consistent color scheme across all time points for easy category tracking
+  - Realistic voter migration data with believable patterns
+  - Well-structured flow matrix data that accurately represents transitions between
+    categories
+  weaknesses:
+  - Legend uses Independent but nodes use Indep abbreviation - should be consistent
+  - Node labels could be slightly larger for the smallest nodes

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 wordcloud-basic: Basic Word Cloud
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-16
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-24
 """
 
 import numpy as np
@@ -35,68 +35,16 @@ words_data = [
     ("Big", 32),
 ]
 
-# Scale frequencies to font sizes (20-100 pt for 4800x2700 canvas)
-min_freq = min(f for _, f in words_data)
-max_freq = max(f for _, f in words_data)
-min_size, max_size = 24, 100
-
-
-def scale_size(freq):
-    """Scale frequency to font size."""
-    return int(min_size + (freq - min_freq) / (max_freq - min_freq) * (max_size - min_size))
-
-
 # Canvas dimensions
 canvas_width = 4800
 canvas_height = 2700
 
+# Scale frequencies to font sizes (24-100 pt for 4800x2700 canvas)
+min_freq = min(f for _, f in words_data)
+max_freq = max(f for _, f in words_data)
+min_size, max_size = 24, 100
 
-def estimate_width(word, size):
-    """Estimate word width for collision detection."""
-    return len(word) * size * 0.65
-
-
-def estimate_height(size):
-    """Estimate word height for collision detection."""
-    return size * 1.4
-
-
-def boxes_overlap(box1, box2, padding=40):
-    """Check if two boxes overlap with padding."""
-    x1, y1, w1, h1 = box1
-    x2, y2, w2, h2 = box2
-    return not (x1 + w1 + padding < x2 or x2 + w2 + padding < x1 or y1 + h1 + padding < y2 or y2 + h2 + padding < y1)
-
-
-def find_position(word, size, placed):
-    """Find non-overlapping position using Archimedean spiral."""
-    w = estimate_width(word, size)
-    h = estimate_height(size)
-    cx, cy = canvas_width / 2, canvas_height / 2
-
-    # Spiral placement - wider spread for better distribution
-    angle = 0
-    radius = 0
-
-    for _ in range(10000):
-        # Elliptical spiral to match 16:9 aspect ratio
-        x = cx + radius * 1.5 * np.cos(angle) - w / 2
-        y = cy + radius * np.sin(angle) - h / 2
-
-        # Check bounds
-        if 150 < x < canvas_width - w - 150 and 250 < y < canvas_height - h - 250:
-            box = (x, y, w, h)
-            if not any(boxes_overlap(box, pb) for pb in placed):
-                return x + w / 2, y + h / 2, box
-
-        angle += 0.2
-        radius += 2.5
-
-    # Fallback
-    return cx, cy, (cx - w / 2, cy - h / 2, w, h)
-
-
-# Build word positions
+# Build word positions using Archimedean spiral placement
 words = []
 x_pos = []
 y_pos = []
@@ -105,13 +53,56 @@ colors = []
 placed_boxes = []
 
 for i, (word, freq) in enumerate(words_data):
-    size = scale_size(freq)
-    x, y, box = find_position(word, size, placed_boxes)
-    placed_boxes.append(box)
+    # Scale frequency to font size
+    size = int(min_size + (freq - min_freq) / (max_freq - min_freq) * (max_size - min_size))
 
+    # Estimate word dimensions for collision detection
+    word_width = len(word) * size * 0.65
+    word_height = size * 1.4
+
+    # Find non-overlapping position using Archimedean spiral
+    cx, cy = canvas_width / 2, canvas_height / 2
+    angle = 0
+    radius = 0
+    padding = 40
+    found_x, found_y = cx, cy
+    found_box = (cx - word_width / 2, cy - word_height / 2, word_width, word_height)
+
+    for _ in range(10000):
+        # Elliptical spiral to match 16:9 aspect ratio
+        test_x = cx + radius * 1.5 * np.cos(angle) - word_width / 2
+        test_y = cy + radius * np.sin(angle) - word_height / 2
+
+        # Check bounds
+        if 150 < test_x < canvas_width - word_width - 150 and 250 < test_y < canvas_height - word_height - 250:
+            test_box = (test_x, test_y, word_width, word_height)
+
+            # Check for overlaps with placed words
+            overlap = False
+            for pb in placed_boxes:
+                px, py, pw, ph = pb
+                if not (
+                    test_x + word_width + padding < px
+                    or px + pw + padding < test_x
+                    or test_y + word_height + padding < py
+                    or py + ph + padding < test_y
+                ):
+                    overlap = True
+                    break
+
+            if not overlap:
+                found_x = test_x + word_width / 2
+                found_y = test_y + word_height / 2
+                found_box = test_box
+                break
+
+        angle += 0.2
+        radius += 2.5
+
+    placed_boxes.append(found_box)
     words.append(word)
-    x_pos.append(x)
-    y_pos.append(y)
+    x_pos.append(found_x)
+    y_pos.append(found_y)
     sizes.append(f"{size}pt")
     # Alternate between Python Blue and Python Yellow
     colors.append("#306998" if i % 2 == 0 else "#FFD43B")
@@ -120,7 +111,7 @@ for i, (word, freq) in enumerate(words_data):
 p = figure(
     width=4800,
     height=2700,
-    title="wordcloud-basic \u00b7 bokeh \u00b7 pyplots.ai",
+    title="wordcloud-basic · bokeh · pyplots.ai",
     x_range=(0, canvas_width),
     y_range=(0, canvas_height),
     tools="",

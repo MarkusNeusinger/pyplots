@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hive-basic: Basic Hive Plot
 Library: plotly 6.5.0 | Python 3.13.11
 Quality: 86/100 | Created: 2025-12-24
@@ -114,7 +114,7 @@ for i, cat in enumerate(categories):
             x=[x_start, x_end],
             y=[y_start, y_end],
             mode="lines",
-            line=dict(color=axis_colors[cat], width=5),
+            line={"color": axis_colors[cat], "width": 5},
             showlegend=False,
             hoverinfo="skip",
         )
@@ -143,7 +143,7 @@ for source, target in edges:
             x=curve_x,
             y=curve_y,
             mode="lines",
-            line=dict(color=edge_color, width=2.5),
+            line={"color": edge_color, "width": 2.5},
             opacity=0.35,
             showlegend=False,
             hoverinfo="skip",
@@ -166,10 +166,10 @@ for cat in categories:
             x=xs,
             y=ys,
             mode="markers+text",
-            marker=dict(size=sizes, color=axis_colors[cat], line=dict(color="white", width=2.5)),
+            marker={"size": sizes, "color": axis_colors[cat], "line": {"color": "white", "width": 2.5}},
             text=labels,
             textposition=label_offset_map[cat],
-            textfont=dict(size=15, color="#333333"),
+            textfont={"size": 18, "color": "#333333"},
             name=cat.capitalize(),
             hovertemplate="<b>%{text}</b><br>Degree: %{customdata}<extra></extra>",
             customdata=degrees,
@@ -177,38 +177,50 @@ for cat in categories:
     )
 
 # Add axis labels beyond the endpoints to avoid overlap with node labels
+# Include sorting context (by degree) as per spec requirement
 for i, cat in enumerate(categories):
     angle_rad = np.radians(axis_angles[i])
-    # Position labels much further out (1.28x) to clear node labels at endpoints
-    label_x = outer_radius * 1.28 * np.cos(angle_rad)
-    label_y = outer_radius * 1.28 * np.sin(angle_rad)
+    # Position labels further out (1.35x) to clear node labels at endpoints
+    label_x = outer_radius * 1.35 * np.cos(angle_rad)
+    label_y = outer_radius * 1.35 * np.sin(angle_rad)
     fig.add_annotation(
-        x=label_x, y=label_y, text=f"<b>{cat.upper()}</b>", showarrow=False, font=dict(size=22, color=axis_colors[cat])
+        x=label_x,
+        y=label_y,
+        text=f"<b>{cat.upper()}</b><br><span style='font-size:14px'>(sorted by degree)</span>",
+        showarrow=False,
+        font={"size": 22, "color": axis_colors[cat]},
     )
 
 # Layout - maximized canvas utilization
 fig.update_layout(
-    title=dict(
-        text="hive-basic · plotly · pyplots.ai<br><sup>Software Dependency Network: nodes by module type, positioned by degree</sup>",
-        font=dict(size=32, color="#333333"),
-        x=0.5,
-        xanchor="center",
-    ),
+    title={
+        "text": "hive-basic · plotly · pyplots.ai<br><sup>Software Dependency Network: nodes by module type, positioned by degree</sup>",
+        "font": {"size": 32, "color": "#333333"},
+        "x": 0.5,
+        "xanchor": "center",
+    },
     showlegend=True,
-    legend=dict(
-        title=dict(text="Module Type", font=dict(size=20)),
-        font=dict(size=18),
-        x=0.01,
-        y=0.99,
-        bgcolor="rgba(255,255,255,0.9)",
-        bordercolor="#cccccc",
-        borderwidth=1,
-    ),
-    xaxis=dict(showgrid=False, zeroline=False, showticklabels=False, range=[-1.4, 1.4]),
-    yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, range=[-1.4, 1.4], scaleanchor="x", scaleratio=1),
+    legend={
+        "title": {"text": "Module Type", "font": {"size": 20}},
+        "font": {"size": 18},
+        "x": 0.01,
+        "y": 0.99,
+        "bgcolor": "rgba(255,255,255,0.9)",
+        "bordercolor": "#cccccc",
+        "borderwidth": 1,
+    },
+    xaxis={"showgrid": False, "zeroline": False, "showticklabels": False, "range": [-1.5, 1.5]},
+    yaxis={
+        "showgrid": False,
+        "zeroline": False,
+        "showticklabels": False,
+        "range": [-1.5, 1.5],
+        "scaleanchor": "x",
+        "scaleratio": 1,
+    },
     plot_bgcolor="white",
     paper_bgcolor="white",
-    margin=dict(l=40, r=40, t=120, b=40),
+    margin={"l": 40, "r": 40, "t": 120, "b": 40},
 )
 
 # Save outputs

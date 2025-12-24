@@ -1,0 +1,28 @@
+library: highcharts
+specification_id: bar-grouped
+created: '2025-12-24T21:30:39Z'
+updated: '2025-12-24T21:40:33Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494139008
+issue: 0
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent title formatting following the spec-id · library · pyplots.ai convention
+  - Professional colorblind-safe palette (Python Blue, Yellow, Purple)
+  - 'Good use of Highcharts features: data labels, styled legend with border/shadow,
+    dashed grid lines'
+  - Appropriate 4800x2700 sizing with properly scaled font sizes
+  - Clean code structure following the library-specific export pattern with inline
+    JS
+  - Realistic business scenario with meaningful data context
+  weaknesses:
+  - Y-axis has too many tick intervals (every $10K from 0 to $420K creates 43 tick
+    marks), making the grid overly dense
+  - All three product lines show uniform upward trends - data could demonstrate more
+    varied patterns (e.g., one declining, seasonal variations)

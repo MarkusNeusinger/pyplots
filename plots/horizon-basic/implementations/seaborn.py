@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 horizon-basic: Horizon Chart
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-24
@@ -66,10 +66,6 @@ df = pd.DataFrame(data)
 n_bands = 3
 band_height = 50 / n_bands  # Each band covers ~16.7% of the range (0-50 for each direction)
 
-# Color bands - blue for positive, red for negative (increasing intensity with magnitude)
-colors_positive = ["#a6cee3", "#1f78b4", "#08306b"]  # Light to dark blue
-colors_negative = ["#fbb4ae", "#e31a1c", "#67000d"]  # Light to dark red
-
 # Create figure
 fig, axes = plt.subplots(len(servers), 1, figsize=(16, 9), sharex=True)
 fig.subplots_adjust(hspace=0.08)
@@ -88,24 +84,26 @@ for idx, server in enumerate(servers):
     positive_vals = np.maximum(values, 0)
     negative_vals = np.abs(np.minimum(values, 0))
 
-    # Draw positive bands (blue) - using seaborn palette for consistency
-    blue_palette = sns.color_palette("Blues", n_colors=n_bands + 1)[1:]
-    for band_idx in range(n_bands):
-        band_min = band_idx * band_height
-        folded = np.clip(positive_vals - band_min, 0, band_height)
-        mask = positive_vals > band_min
-        if mask.any():
-            ax.fill_between(x, 0, folded, color=blue_palette[band_idx], alpha=0.9, linewidth=0)
+    # Get seaborn color palettes
+    blue_palette = sns.color_palette("Blues", n_colors=n_bands + 2)[2:]  # Skip lightest colors
+    red_palette = sns.color_palette("Reds", n_colors=n_bands + 2)[2:]  # Skip lightest colors
 
-    # Draw negative bands (red) - mirrored, using seaborn palette
-    red_palette = sns.color_palette("Reds", n_colors=n_bands + 1)[1:]
-    for band_idx in range(n_bands):
+    # Draw horizon bands - each point is either positive or negative, not both
+    # Draw from highest band to lowest so layering works correctly
+    for band_idx in range(n_bands - 1, -1, -1):
         band_min = band_idx * band_height
-        folded = np.clip(negative_vals - band_min, 0, band_height)
-        mask = negative_vals > band_min
-        if mask.any():
-            # Draw negative as overlay with lower alpha to show contrast
-            ax.fill_between(x, 0, folded, color=red_palette[band_idx], alpha=0.85, linewidth=0)
+
+        # Positive bands (blue) - only where values are positive
+        pos_folded = np.clip(positive_vals - band_min, 0, band_height)
+        pos_mask = positive_vals > band_min
+        pos_y = np.where(pos_mask, pos_folded, 0)
+        ax.fill_between(x, 0, pos_y, color=blue_palette[band_idx], alpha=0.9, linewidth=0)
+
+        # Negative bands (red) - only where values are negative (shown as absolute magnitude)
+        neg_folded = np.clip(negative_vals - band_min, 0, band_height)
+        neg_mask = negative_vals > band_min
+        neg_y = np.where(neg_mask, neg_folded, 0)
+        ax.fill_between(x, 0, neg_y, color=red_palette[band_idx], alpha=0.9, linewidth=0)
 
     # Style each row - use seaborn's despine for cleaner look
     ax.set_ylabel(server, fontsize=16, rotation=0, ha="right", va="center", labelpad=15)
@@ -130,14 +128,16 @@ axes[-1].tick_params(axis="x", labelsize=16)
 # Title - correct format per SC-06
 fig.suptitle("horizon-basic · seaborn · pyplots.ai", fontsize=24, y=0.98, fontweight="bold")
 
-# Legend with both positive and negative indicators
+# Legend with both positive and negative indicators - create palettes again for legend
+legend_blue = sns.color_palette("Blues", n_colors=n_bands + 2)[2:]
+legend_red = sns.color_palette("Reds", n_colors=n_bands + 2)[2:]
 legend_patches = [
-    mpatches.Patch(color=blue_palette[0], label="0-17% above"),
-    mpatches.Patch(color=blue_palette[1], label="17-33% above"),
-    mpatches.Patch(color=blue_palette[2], label="33-50% above"),
-    mpatches.Patch(color=red_palette[0], label="0-17% below"),
-    mpatches.Patch(color=red_palette[1], label="17-33% below"),
-    mpatches.Patch(color=red_palette[2], label="33-50% below"),
+    mpatches.Patch(color=legend_blue[0], label="0-17% above"),
+    mpatches.Patch(color=legend_blue[1], label="17-33% above"),
+    mpatches.Patch(color=legend_blue[2], label="33-50% above"),
+    mpatches.Patch(color=legend_red[0], label="0-17% below"),
+    mpatches.Patch(color=legend_red[1], label="17-33% below"),
+    mpatches.Patch(color=legend_red[2], label="33-50% below"),
 ]
 fig.legend(
     handles=legend_patches,

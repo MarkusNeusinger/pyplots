@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hive-basic: Basic Hive Plot
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-24
@@ -10,6 +10,9 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+
+# Set seaborn theme for consistent styling
+sns.set_theme(style="white", context="talk", font_scale=1.2)
 
 # Data: Software module dependency network
 np.random.seed(42)
@@ -95,16 +98,35 @@ for axis_name, angle in axis_angles.items():
         color=axis_colors[axis_name],
     )
 
-# Draw edges with bezier curves
+# Build edge curves as DataFrame for seaborn lineplot
 node_pos = nodes_df.set_index("id")[["x", "y"]]
-for source, target in edges:
+edge_curves = []
+for edge_id, (source, target) in enumerate(edges):
     src_x, src_y = node_pos.loc[source]
     tgt_x, tgt_y = node_pos.loc[target]
     t = np.linspace(0, 1, 50)
     ctrl_x, ctrl_y = 0.1 * (src_x + tgt_x), 0.1 * (src_y + tgt_y)
     curve_x = (1 - t) ** 2 * src_x + 2 * (1 - t) * t * ctrl_x + t**2 * tgt_x
     curve_y = (1 - t) ** 2 * src_y + 2 * (1 - t) * t * ctrl_y + t**2 * tgt_y
-    ax.plot(curve_x, curve_y, color="#888888", alpha=0.4, linewidth=1.5, zorder=2)
+    for i in range(len(t)):
+        edge_curves.append({"edge_id": edge_id, "x": curve_x[i], "y": curve_y[i]})
+edges_df = pd.DataFrame(edge_curves)
+
+# Draw edges using seaborn lineplot with lower alpha for better bundling
+sns.lineplot(
+    data=edges_df,
+    x="x",
+    y="y",
+    hue="edge_id",
+    palette=["#888888"] * len(edges),
+    alpha=0.25,
+    linewidth=1.5,
+    legend=False,
+    units="edge_id",
+    estimator=None,
+    ax=ax,
+    zorder=2,
+)
 
 # Draw nodes using seaborn scatterplot
 sns.scatterplot(
@@ -135,9 +157,7 @@ ax.set_xlim(-1.5, 1.5)
 ax.set_ylim(-1.5, 1.5)
 ax.set_aspect("equal")
 ax.axis("off")
-ax.set_title(
-    "Software Dependencies\nhive-basic \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24, fontweight="bold", pad=20
-)
+ax.set_title("hive-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")

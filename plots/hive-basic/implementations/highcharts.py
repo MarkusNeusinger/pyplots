@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hive-basic: Basic Hive Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-24
@@ -56,34 +56,34 @@ edges = [
     ("util_format", "iface_cli"),
 ]
 
-# Hive plot configuration
+# Hive plot configuration - centered for better canvas utilization
 num_axes = 3
-# Angles: bottom (270°), upper-right (30°), upper-left (150°)
-axis_angles = [3 * math.pi / 2, math.pi / 6, 5 * math.pi / 6]
+axis_angles = [3 * math.pi / 2, math.pi / 6, 5 * math.pi / 6]  # bottom, upper-right, upper-left
 inner_radius = 250
-outer_radius = 1000
-center_x = 2200
+outer_radius = 950
+center_x = 2400
 center_y = 1450
 
-# Axis colors (colorblind-safe)
+# Axis colors (colorblind-safe) and labels
 axis_colors = ["#306998", "#FFD43B", "#9467BD"]
 axis_labels = ["Core", "Utility", "Interface"]
 
-# Create node lookup
+# Create node lookup and pre-compute coordinates inline
 node_lookup = {n["id"]: n for n in nodes}
-
-
-def get_node_coords(node):
-    """Convert node to x, y coordinates on hive plot"""
+node_coords = {}
+for node in nodes:
     angle = axis_angles[node["axis"]]
     radius = inner_radius + (outer_radius - inner_radius) * node["position"]
-    x = center_x + radius * math.cos(angle)
-    y = center_y + radius * math.sin(angle)
-    return x, y
+    node_coords[node["id"]] = (center_x + radius * math.cos(angle), center_y + radius * math.sin(angle))
 
+# Download Highcharts JS
+highcharts_url = "https://code.highcharts.com/highcharts.js"
+with urllib.request.urlopen(highcharts_url, timeout=30) as response:
+    highcharts_js = response.read().decode("utf-8")
 
-# Build SVG elements
-svg_elements = []
+# Build Highcharts renderer commands for the hive plot
+# Using Highcharts.SVGRenderer API to draw custom elements
+renderer_commands = []
 
 # Draw axis lines with labels
 for axis_idx in range(num_axes):
@@ -94,83 +94,74 @@ for axis_idx in range(num_axes):
     y2 = center_y + (outer_radius + 50) * math.sin(angle)
     color = axis_colors[axis_idx]
 
-    # Axis line
-    svg_elements.append(
-        f'<line x1="{x1:.0f}" y1="{y1:.0f}" x2="{x2:.0f}" y2="{y2:.0f}" '
-        f'stroke="{color}" stroke-width="12" stroke-linecap="round" opacity="0.8"/>'
+    renderer_commands.append(
+        f"chart.renderer.path(['M', {x1:.0f}, {y1:.0f}, 'L', {x2:.0f}, {y2:.0f}])"
+        f".attr({{stroke: '{color}', 'stroke-width': 12, 'stroke-linecap': 'round', opacity: 0.8}}).add();"
     )
 
-    # Axis label at end
-    label_x = center_x + (outer_radius + 120) * math.cos(angle)
-    label_y = center_y + (outer_radius + 120) * math.sin(angle)
-    svg_elements.append(
-        f'<text x="{label_x:.0f}" y="{label_y:.0f}" font-size="42" font-weight="bold" '
-        f'fill="{color}" text-anchor="middle" dominant-baseline="middle">{axis_labels[axis_idx]}</text>'
+    label_x = center_x + (outer_radius + 130) * math.cos(angle)
+    label_y = center_y + (outer_radius + 130) * math.sin(angle)
+    renderer_commands.append(
+        f"chart.renderer.text('{axis_labels[axis_idx]}', {label_x:.0f}, {label_y:.0f})"
+        f".attr({{align: 'center'}}).css({{fontSize: '42px', fontWeight: 'bold', color: '{color}'}}).add();"
     )
 
-# Draw edges as curved paths (quadratic Bezier through center region)
+# Draw edges as curved paths using Highcharts renderer
 for source_id, target_id in edges:
     source = node_lookup[source_id]
-    target = node_lookup[target_id]
-    x1, y1 = get_node_coords(source)
-    x2, y2 = get_node_coords(target)
+    x1, y1 = node_coords[source_id]
+    x2, y2 = node_coords[target_id]
 
-    # Control point: pull toward center for smooth curves
     mid_x = (x1 + x2) / 2
     mid_y = (y1 + y2) / 2
     ctrl_x = center_x + (mid_x - center_x) * 0.15
     ctrl_y = center_y + (mid_y - center_y) * 0.15
-
-    # Edge color gradient based on source axis
     edge_color = axis_colors[source["axis"]]
 
-    svg_elements.append(
-        f'<path d="M {x1:.0f} {y1:.0f} Q {ctrl_x:.0f} {ctrl_y:.0f} {x2:.0f} {y2:.0f}" '
-        f'stroke="{edge_color}" stroke-width="5" fill="none" opacity="0.45"/>'
+    renderer_commands.append(
+        f"chart.renderer.path(['M', {x1:.0f}, {y1:.0f}, 'Q', {ctrl_x:.0f}, {ctrl_y:.0f}, {x2:.0f}, {y2:.0f}])"
+        f".attr({{stroke: '{edge_color}', 'stroke-width': 5, fill: 'none', opacity: 0.45}}).add();"
     )
 
 # Draw central hub
-svg_elements.append(f'<circle cx="{center_x}" cy="{center_y}" r="40" fill="#666666" opacity="0.5"/>')
+renderer_commands.append(
+    f"chart.renderer.circle({center_x}, {center_y}, 45).attr({{fill: '#666666', opacity: 0.5}}).add();"
+)
 
-# Draw nodes on top of edges
+# Draw nodes and labels
 for node in nodes:
-    x, y = get_node_coords(node)
+    x, y = node_coords[node["id"]]
     color = axis_colors[node["axis"]]
 
-    # Node circle
-    svg_elements.append(f'<circle cx="{x:.0f}" cy="{y:.0f}" r="28" fill="{color}" stroke="#ffffff" stroke-width="4"/>')
-
-    # Node label - position based on axis
-    angle = axis_angles[node["axis"]]
-    # Offset label perpendicular to axis
-    label_offset = 55
-    if node["axis"] == 0:  # Bottom axis - labels to the right
-        lx = x + label_offset
-        ly = y
-        anchor = "start"
-    elif node["axis"] == 1:  # Upper-right - labels to the right
-        lx = x + label_offset * 0.8
-        ly = y - label_offset * 0.3
-        anchor = "start"
-    else:  # Upper-left - labels to the left
-        lx = x - label_offset * 0.8
-        ly = y - label_offset * 0.3
-        anchor = "end"
-
-    svg_elements.append(
-        f'<text x="{lx:.0f}" y="{ly:.0f}" font-size="32" font-weight="500" '
-        f'fill="#333333" text-anchor="{anchor}" dominant-baseline="middle">{node["label"]}</text>'
+    renderer_commands.append(
+        f"chart.renderer.circle({x:.0f}, {y:.0f}, 28).attr({{fill: '{color}', stroke: '#ffffff', 'stroke-width': 4}}).add();"
     )
 
-svg_content = "\n            ".join(svg_elements)
+    label_offset = 55
+    if node["axis"] == 0:
+        lx, ly, align = x + label_offset, y, "left"
+    elif node["axis"] == 1:
+        lx, ly, align = x + label_offset * 0.8, y - label_offset * 0.3, "left"
+    else:
+        lx, ly, align = x - label_offset * 0.8, y - label_offset * 0.3, "right"
 
-# Download Highcharts JS for interactive HTML
-highcharts_url = "https://code.highcharts.com/highcharts.js"
-with urllib.request.urlopen(highcharts_url, timeout=30) as response:
-    highcharts_js = response.read().decode("utf-8")
+    renderer_commands.append(
+        f"chart.renderer.text('{node['label']}', {lx:.0f}, {ly:.0f})"
+        f".attr({{align: '{align}'}}).css({{fontSize: '32px', fontWeight: '500', color: '#333333'}}).add();"
+    )
 
-# Build complete HTML - using Highcharts for interactivity wrapper but SVG for the actual hive plot
-# Since Highcharts doesn't have native hive plots, we use custom SVG rendering
+renderer_js = "\n        ".join(renderer_commands)
+
+# Build legend items - labels match axis labels exactly
+legend_items = ""
+for i, label in enumerate(axis_labels):
+    legend_items += f"""
+            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: {axis_colors[i]}; margin-right: 20px;"></div>
+                <span>{label}</span>
+            </div>"""
+
+# Build complete HTML using Highcharts chart and renderer API
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -178,60 +169,37 @@ html_content = f"""<!DOCTYPE html>
     <script>{highcharts_js}</script>
     <style>
         body {{ margin: 0; padding: 0; font-family: Arial, sans-serif; background: #ffffff; }}
-        #container {{ width: 4800px; height: 2700px; position: relative; }}
-        .title {{
-            position: absolute;
-            top: 60px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 48px;
-            font-weight: bold;
-            color: #333333;
-        }}
-        .legend {{
-            position: absolute;
-            top: 180px;
-            right: 200px;
-            font-size: 32px;
-        }}
-        .legend-item {{
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }}
-        .legend-color {{
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 20px;
-        }}
     </style>
 </head>
 <body>
-    <div id="container">
-        <div class="title">Software Dependencies · hive-basic · highcharts · pyplots.ai</div>
-        <div class="legend">
-            <div class="legend-item">
-                <div class="legend-color" style="background: #306998;"></div>
-                <span>Core Modules</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background: #FFD43B;"></div>
-                <span>Utility Modules</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background: #9467BD;"></div>
-                <span>Interface Modules</span>
-            </div>
-        </div>
-        <svg width="4800" height="2700" style="position: absolute; top: 0; left: 0;">
-            {svg_content}
-        </svg>
+    <div id="container" style="width: 4800px; height: 2700px;"></div>
+    <div style="position: absolute; top: 180px; right: 200px; font-size: 32px;">
+        {legend_items}
     </div>
     <script>
-        // Highcharts is loaded for potential interactivity extensions
-        console.log('Highcharts version:', Highcharts.version);
+        var chart = Highcharts.chart('container', {{
+            chart: {{
+                width: 4800,
+                height: 2700,
+                backgroundColor: '#ffffff',
+                events: {{
+                    load: function() {{
+                        var chart = this;
+                        {renderer_js}
+                    }}
+                }}
+            }},
+            title: {{
+                text: 'hive-basic · highcharts · pyplots.ai',
+                style: {{ fontSize: '48px', fontWeight: 'bold', color: '#333333' }},
+                y: 80
+            }},
+            credits: {{ enabled: false }},
+            legend: {{ enabled: false }},
+            xAxis: {{ visible: false }},
+            yAxis: {{ visible: false }},
+            series: [{{ type: 'scatter', data: [] }}]
+        }});
     </script>
 </body>
 </html>"""
@@ -254,7 +222,7 @@ chrome_options.add_argument("--window-size=4800,2700")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
-time.sleep(3)
+time.sleep(5)
 driver.save_screenshot("plot.png")
 driver.quit()
 

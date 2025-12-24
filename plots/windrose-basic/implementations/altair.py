@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 windrose-basic: Wind Rose Chart
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-24

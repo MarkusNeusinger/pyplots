@@ -1,7 +1,7 @@
 """ pyplots.ai
 treemap-basic: Basic Treemap
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-14
+Quality: 91/100 | Created: 2025-12-24
 """
 
 import matplotlib.patches as mpatches

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hive-basic: Basic Hive Plot
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-24
@@ -93,13 +93,13 @@ for axis_id in range(n_axes):
         y = radius * np.sin(angle)
         node_positions[name] = {"x": x, "y": y, "axis": axis_id, "degree": data["degree"]}
 
-# Create figure - center the plot with appropriate range for better canvas utilization
+# Create figure - center the plot with tighter range for better canvas utilization
 p = figure(
     width=3600,
     height=3600,
     title="hive-basic · bokeh · pyplots.ai",
-    x_range=(-1900, 1900),
-    y_range=(-1900, 1900),
+    x_range=(-2000, 2000),
+    y_range=(-1800, 2200),
     tools="",
     toolbar_location=None,
 )
@@ -177,15 +177,14 @@ for axis_id in range(n_axes):
         alpha=0.9,
     )
 
-# Add node labels for identification
+# Add node labels for identification - positioned outside the node
 for name, data in node_positions.items():
-    # Calculate offset for label positioning (perpendicular to axis direction)
+    # Calculate offset for label positioning (along axis direction, outward from node)
     angle = axis_angles[data["axis"]]
-    # Offset perpendicular to axis (outward from center line)
-    label_offset = 80
-    offset_angle = angle + np.pi / 2  # Perpendicular
-    label_x = data["x"] + label_offset * np.cos(offset_angle)
-    label_y = data["y"] + label_offset * np.sin(offset_angle)
+    # Offset along axis direction (away from center)
+    label_offset = 120
+    label_x = data["x"] + label_offset * np.cos(angle)
+    label_y = data["y"] + label_offset * np.sin(angle)
 
     # Shorter display name (remove prefix)
     short_name = name.split("_")[1] if "_" in name else name
@@ -194,13 +193,50 @@ for name, data in node_positions.items():
         x=label_x,
         y=label_y,
         text=short_name,
-        text_font_size="16pt",
+        text_font_size="22pt",
         text_align="center",
         text_baseline="middle",
-        text_color="#333333",
-        text_alpha=0.8,
+        text_color="#222222",
+        text_font_style="bold",
     )
     p.add_layout(node_label)
+
+# Add legend for node size
+legend_x = 1300
+legend_y = -1400
+legend_title = Label(
+    x=legend_x,
+    y=legend_y,
+    text="Node Size = Degree",
+    text_font_size="28pt",
+    text_align="left",
+    text_baseline="middle",
+    text_color="#333333",
+    text_font_style="bold",
+)
+p.add_layout(legend_title)
+
+# Add legend items showing size scale
+legend_sizes = [2, 5, 8]
+legend_labels = ["Low (2)", "Medium (5)", "High (8)"]
+for i, (deg, label_text) in enumerate(zip(legend_sizes, legend_labels, strict=True)):
+    node_size = 25 + deg * 4
+    item_y = legend_y - 120 - i * 100
+    # Draw sample node
+    p.scatter(
+        [legend_x + 30], [item_y], size=node_size, fill_color="#666666", line_color="white", line_width=2, alpha=0.9
+    )
+    # Draw label
+    size_label = Label(
+        x=legend_x + 100,
+        y=item_y,
+        text=label_text,
+        text_font_size="22pt",
+        text_align="left",
+        text_baseline="middle",
+        text_color="#555555",
+    )
+    p.add_layout(size_label)
 
 # Save outputs
 export_png(p, filename="plot.png")

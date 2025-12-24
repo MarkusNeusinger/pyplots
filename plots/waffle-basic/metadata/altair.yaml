@@ -1,17 +1,26 @@
 library: altair
 specification_id: waffle-basic
-created: 2025-12-16 07:44:42+00:00
-updated: 2025-12-16 07:44:42+00:00
+created: '2025-12-24T09:49:39Z'
+updated: '2025-12-24T09:52:20Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20260265980
-issue: 998
+workflow_run: 20483446438
+issue: 0
 python_version: 3.13.11
 library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/altair/plot.html
-quality_score: 95
+quality_score: 91
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent implementation of waffle chart using Altair declarative syntax with
+    mark_rect
+  - Creative use of labelExpr to dynamically append percentages to legend labels
+  - Clean visual design with rounded corners, white stroke, and well-chosen color
+    palette
+  - Proper 10x10 grid construction with correct row/column positioning
+  - Good font sizing throughout (title 32pt, legend title 24pt, labels 20pt)
+  weaknesses:
+  - Could include a smaller category (<5%) to better demonstrate waffle chart capability
+    with small proportions
+  - Legend symbol size (500) is quite large relative to the actual grid squares

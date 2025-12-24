@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 wordcloud-basic: Basic Word Cloud
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 68/100 | Created: 2025-12-24
@@ -13,7 +13,7 @@ import seaborn as sns
 # Set random seed for reproducibility
 np.random.seed(42)
 
-# Data - Tech industry survey responses about skills
+# Data - Tech industry survey responses about skills (30 words)
 word_frequencies = {
     "Python": 150,
     "JavaScript": 120,
@@ -36,7 +36,7 @@ word_frequencies = {
     "TypeScript": 42,
     "Node": 40,
     "REST": 38,
-    "CI/CD": 35,
+    "CICD": 35,
     "Azure": 30,
     "MongoDB": 28,
     "Redis": 26,
@@ -47,92 +47,113 @@ word_frequencies = {
     "Backend": 16,
 }
 
-# Convert to DataFrame for seaborn
-words = list(word_frequencies.keys())
-frequencies = list(word_frequencies.values())
-n_words = len(words)
-
-# Sort by frequency descending
-sorted_pairs = sorted(zip(words, frequencies, strict=True), key=lambda x: -x[1])
+# Sort by frequency descending for placement priority
+sorted_pairs = sorted(word_frequencies.items(), key=lambda x: -x[1])
 words = [p[0] for p in sorted_pairs]
 frequencies = [p[1] for p in sorted_pairs]
+n_words = len(words)
 
-# Grid-based layout with variable row heights
-n_cols = 5
+# Calculate font sizes with better differentiation (14pt to 58pt range)
+freq_array = np.array(frequencies)
+max_freq, min_freq = freq_array.max(), freq_array.min()
+freq_range = max_freq - min_freq
+font_sizes = 14 + (freq_array - min_freq) / freq_range * 44
+
+# Spiral placement algorithm to avoid overlaps
+placed_boxes = []
+
+
+def get_text_bbox(x, y, word, fsize):
+    """Estimate bounding box for text (width based on char count, height on font size)."""
+    char_width = fsize * 0.012
+    width = len(word) * char_width
+    height = fsize * 0.022
+    return (x - width / 2, y - height / 2, x + width / 2, y + height / 2)
+
+
+def boxes_overlap(box1, box2, padding=0.03):
+    """Check if two boxes overlap with padding."""
+    x1_min, y1_min, x1_max, y1_max = box1
+    x2_min, y2_min, x2_max, y2_max = box2
+    return not (
+        x1_max + padding < x2_min or x2_max + padding < x1_min or y1_max + padding < y2_min or y2_max + padding < y1_min
+    )
+
+
+def find_position(word, fsize, placed):
+    """Find non-overlapping position using spiral search."""
+    # Start from center and spiral outward
+    for radius in np.linspace(0, 1.6, 80):
+        for angle in np.linspace(0, 2 * np.pi, max(8, int(radius * 20))):
+            x = radius * np.cos(angle) * 1.1
+            y = radius * np.sin(angle) * 0.55
+            bbox = get_text_bbox(x, y, word, fsize)
+            # Check bounds
+            if bbox[0] < -1.7 or bbox[2] > 1.7 or bbox[1] < -0.85 or bbox[3] > 0.85:
+                continue
+            # Check overlaps
+            overlap = False
+            for pb in placed:
+                if boxes_overlap(bbox, pb):
+                    overlap = True
+                    break
+            if not overlap:
+                return x, y, bbox
+    # Fallback - place at edge
+    return 1.5, 0.7 - len(placed) * 0.1, get_text_bbox(1.5, 0.7 - len(placed) * 0.1, word, fsize)
+
+
+# Place words using spiral algorithm
 x_positions = []
 y_positions = []
-
-x_base = 3.6
-y_levels = [0.9, 0.5, 0.15, -0.15, -0.45, -0.75]
-
-row = 0
-col = 0
-for _i in range(n_words):
-    x_offset = (np.random.random() - 0.5) * 0.15
-    y_offset = (np.random.random() - 0.5) * 0.08
-    x_pos = (col - n_cols / 2 + 0.5) * (x_base / n_cols) + x_offset
-    y_pos = y_levels[min(row, len(y_levels) - 1)] + y_offset
-    x_positions.append(x_pos)
-    y_positions.append(y_pos)
-    col += 1
-    if col >= n_cols:
-        col = 0
-        row += 1
-
-# Normalize frequencies for marker sizing
-freq_array = np.array(frequencies)
-size_normalized = (freq_array / freq_array.max()) * 2000 + 400
+for word, fsize in zip(words, font_sizes, strict=True):
+    x, y, bbox = find_position(word, fsize, placed_boxes)
+    x_positions.append(x)
+    y_positions.append(y)
+    placed_boxes.append(bbox)
 
 # Create DataFrame
-df = pd.DataFrame(
-    {"word": words, "frequency": frequencies, "x": x_positions, "y": y_positions, "size": size_normalized}
-)
+df = pd.DataFrame({"word": words, "frequency": frequencies, "x": x_positions, "y": y_positions, "fontsize": font_sizes})
 
 # Plot using seaborn
 sns.set_theme(style="white", context="poster", font_scale=1.0)
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Use seaborn scatterplot as base layer for word cloud visualization
+# Use seaborn scatterplot as subtle background layer
 sns.scatterplot(
     data=df,
     x="x",
     y="y",
     size="frequency",
-    sizes=(300, 3500),
+    sizes=(200, 2500),
     hue="frequency",
     palette="viridis",
-    alpha=0.25,
+    alpha=0.15,
     legend=False,
     ax=ax,
 )
 
-# Add word labels with size based on frequency
-max_freq = df["frequency"].max()
-min_freq = df["frequency"].min()
-freq_range = max_freq - min_freq
-
-colors = sns.color_palette("bright", n_colors=10)
-for idx, row in df.iterrows():
-    font_size = 18 + (row["frequency"] - min_freq) / freq_range * 30
-    color_idx = idx % len(colors)
+# Add word labels with frequency-based sizing and seaborn palette colors
+colors = sns.color_palette("husl", n_colors=n_words)
+for idx, row_data in df.iterrows():
     ax.text(
-        row["x"],
-        row["y"],
-        row["word"],
-        fontsize=font_size,
+        row_data["x"],
+        row_data["y"],
+        row_data["word"],
+        fontsize=row_data["fontsize"],
         fontweight="bold",
         ha="center",
         va="center",
-        color=colors[color_idx],
+        color=colors[idx],
     )
 
 # Clean up axes for word cloud appearance
-ax.set_xlim(-2.0, 2.0)
-ax.set_ylim(-1.1, 1.2)
+ax.set_xlim(-1.9, 1.9)
+ax.set_ylim(-1.0, 1.05)
 ax.axis("off")
 
-# Title following pyplots.ai conventions
-fig.suptitle("wordcloud-basic · seaborn · pyplots.ai", fontsize=28, fontweight="bold", y=0.97)
+# Title following exact pyplots.ai format
+ax.set_title("wordcloud-basic · seaborn · pyplots.ai", fontsize=26, fontweight="bold", pad=20)
 
-plt.tight_layout(rect=[0, 0, 1, 0.94])
+plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")

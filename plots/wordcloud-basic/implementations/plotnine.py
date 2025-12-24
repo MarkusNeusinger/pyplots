@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 wordcloud-basic: Basic Word Cloud
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 68/100 | Created: 2025-12-24
@@ -8,6 +8,8 @@ import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
+    annotate,
+    coord_cartesian,
     element_blank,
     element_rect,
     element_text,
@@ -42,125 +44,59 @@ words_data = {
         "Integration",
         "Platform",
         "Infrastructure",
-        "Performance",
-        "Scalability",
         "Testing",
         "Deployment",
         "Monitoring",
-        "Architecture",
         "Framework",
-        "Microservices",
-        "Container",
-        "Kubernetes",
         "Docker",
         "AWS",
         "Azure",
-        "Innovation",
-        "Digital",
-        "Transform",
-        "Agile",
     ],
-    "frequency": [
-        95,
-        88,
-        82,
-        78,
-        75,
-        70,
-        65,
-        62,
-        58,
-        55,
-        52,
-        48,
-        45,
-        42,
-        38,
-        35,
-        32,
-        30,
-        28,
-        26,
-        24,
-        22,
-        20,
-        18,
-        16,
-        14,
-        13,
-        12,
-        11,
-        10,
-        9,
-        8,
-        7,
-        6,
-        5,
-    ],
+    "frequency": [95, 88, 82, 78, 75, 70, 65, 62, 58, 55, 52, 48, 45, 42, 38, 35, 32, 30, 28, 26, 24, 22, 20, 18, 16],
 }
 
 df = pd.DataFrame(words_data)
 
-# Calculate font sizes scaled by frequency (range 14-48 for better visual impact)
+# Calculate font sizes scaled by frequency (range 10-36)
 min_freq, max_freq = df["frequency"].min(), df["frequency"].max()
-df["size"] = 14 + (df["frequency"] - min_freq) / (max_freq - min_freq) * 34
+df["size"] = 10 + (df["frequency"] - min_freq) / (max_freq - min_freq) * 26
 
-# Sort by frequency descending for placement (largest words first)
+# Sort by frequency descending
 df = df.sort_values("frequency", ascending=False).reset_index(drop=True)
 
-# Fixed positions using concentric rings to guarantee no overlaps
-np.random.seed(42)
-width, height = 100, 56.25
-center_x, center_y = width / 2, height / 2
-
-# Define rings with word counts: fewer center words with better spacing
-rings = [
-    {"count": 3, "radius": 0},  # Center - only 3 largest words
-    {"count": 6, "radius": 12},  # Ring 1 - close inner ring
-    {"count": 8, "radius": 20},  # Ring 2
-    {"count": 9, "radius": 30},  # Ring 3
-    {"count": 9, "radius": 42},  # Ring 4 (outer)
+# Hand-crafted positions to ensure no overlap
+# Using a carefully planned layout based on word lengths and sizes
+# Canvas is 100x56.25 with legend in top-right
+positions = [
+    (45, 30),  # Python (largest) - center
+    (70, 38),  # Data
+    (22, 25),  # Machine
+    (72, 25),  # Learning
+    (30, 38),  # AI
+    (55, 18),  # Cloud
+    (20, 42),  # API
+    (45, 45),  # Database
+    (68, 48),  # Security
+    (25, 12),  # DevOps
+    (50, 8),  # Analytics
+    (78, 10),  # Automation
+    (8, 30),  # Software
+    (88, 32),  # Code
+    (35, 52),  # Development
+    (60, 52),  # Integration
+    (15, 52),  # Platform
+    (82, 52),  # Infrastructure
+    (8, 18),  # Testing
+    (8, 42),  # Deployment
+    (55, 38),  # Monitoring
+    (85, 42),  # Framework
+    (30, 8),  # Docker
+    (8, 8),  # AWS
+    (75, 8),  # Azure
 ]
 
-positions_x = []
-positions_y = []
-word_idx = 0
-
-# Place center words in a horizontal line with generous spacing
-center_words = 3
-center_spacing = 22
-center_start_x = center_x - (center_words - 1) * center_spacing / 2
-for i in range(center_words):
-    x = center_start_x + i * center_spacing
-    y = center_y
-    positions_x.append(x)
-    positions_y.append(y)
-word_idx = center_words
-
-# Place remaining words in concentric rings with vertical spread
-for ring_idx, ring in enumerate(rings[1:]):
-    ring_count = min(ring["count"], len(df) - word_idx)
-    if ring_count <= 0:
-        break
-    # Offset starting angle for each ring to avoid alignment
-    start_angle = ring_idx * 0.4
-    for i in range(ring_count):
-        angle = start_angle + (2 * np.pi * i / ring_count)
-        # Better aspect ratio adjustment for vertical spread
-        x = center_x + ring["radius"] * np.cos(angle) * 1.15
-        y = center_y + ring["radius"] * np.sin(angle) * 0.55
-
-        # Keep within bounds with better margins
-        x = np.clip(x, 10, width - 10)
-        y = np.clip(y, 5, height - 5)
-
-        positions_x.append(x)
-        positions_y.append(y)
-    word_idx += ring_count
-
-df = df.head(len(positions_x))
-df["x"] = positions_x
-df["y"] = positions_y
+df["x"] = [p[0] for p in positions]
+df["y"] = [p[1] for p in positions]
 
 # Assign colors based on frequency tiers
 colors = []
@@ -175,12 +111,27 @@ for freq in df["frequency"]:
         colors.append("#95E1A3")  # Light green - low frequency
 df["color"] = colors
 
+# Create legend data - positioned in top right area
+legend_df = pd.DataFrame(
+    {
+        "x": [88, 88, 88, 88],
+        "y": [48, 44, 40, 36],
+        "label": ["■ High (65+)", "■ Medium (35-64)", "■ Low-Med (15-34)", "■ Low (<15)"],
+        "color": ["#306998", "#FFD43B", "#4ECDC4", "#95E1A3"],
+    }
+)
+
 # Create plot
 plot = (
     ggplot(df, aes(x="x", y="y", label="word", size="size", color="color"))
     + geom_text(family="sans-serif", fontstyle="normal", show_legend=False)
+    + geom_text(
+        data=legend_df, mapping=aes(x="x", y="y", label="label", color="color"), size=9, ha="left", show_legend=False
+    )
+    + annotate("text", x=88, y=52, label="Frequency", size=11, ha="left", fontweight="bold")
     + scale_size_identity()
     + scale_color_identity()
+    + coord_cartesian(xlim=(0, 100), ylim=(0, 56.25))
     + labs(title="Tech Survey Keywords · wordcloud-basic · plotnine · pyplots.ai")
     + theme(
         figure_size=(16, 9),

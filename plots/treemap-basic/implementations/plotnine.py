@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 treemap-basic: Basic Treemap
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2025-12-24
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-24
 """
 
 import pandas as pd

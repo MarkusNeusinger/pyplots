@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 hive-basic: Basic Hive Plot
 Library: plotly 6.5.0 | Python 3.13.11
 Quality: 86/100 | Created: 2025-12-24

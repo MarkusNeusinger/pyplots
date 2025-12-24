@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 wordcloud-basic: Basic Word Cloud
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-24
@@ -59,13 +59,13 @@ words_data = [
 canvas_width = 4800
 canvas_height = 2700
 
-# Scale frequencies to font sizes (60-200 pt for better canvas fill)
+# Scale frequencies to font sizes (45-220 pt for better readability and canvas fill)
 min_freq = min(f for _, f in words_data)
 max_freq = max(f for _, f in words_data)
-min_size, max_size = 60, 200
+min_size, max_size = 45, 220
 
 # Rotation angles for visual interest (0, 90, -90 degrees)
-rotations = [0, 0, 0, 90, -90]  # 60% horizontal, 40% rotated
+rotations = [0, 0, 90, -90]  # 50% horizontal, 50% rotated for variety
 
 # Build word positions using Archimedean spiral placement with rotation
 words = []
@@ -81,9 +81,9 @@ for i, (word, freq) in enumerate(words_data):
     # Scale frequency to font size
     size = int(min_size + (freq - min_freq) / (max_freq - min_freq) * (max_size - min_size))
 
-    # Assign rotation based on pattern (larger words stay horizontal)
-    if freq >= 70:
-        angle_deg = 0  # Keep high-frequency words horizontal for readability
+    # Assign rotation based on pattern (top 5 words stay horizontal for readability)
+    if i < 5:
+        angle_deg = 0  # Keep top words horizontal for readability
     else:
         angle_deg = rotations[i % len(rotations)]
     angle_rad = np.radians(angle_deg)
@@ -102,18 +102,18 @@ for i, (word, freq) in enumerate(words_data):
     cx, cy = canvas_width / 2, canvas_height / 2
     spiral_angle = 0
     radius = 0
-    padding = 15  # Tighter packing
+    padding = 10  # Tighter packing for better density
     found_x, found_y = cx, cy
     found_box = (cx - word_width / 2, cy - word_height / 2, word_width, word_height)
 
-    for _ in range(20000):
-        # Elliptical spiral to match 16:9 aspect ratio with wider spread
-        test_x = cx + radius * 1.8 * np.cos(spiral_angle) - word_width / 2
+    for _ in range(25000):
+        # Elliptical spiral to better fill 16:9 canvas
+        test_x = cx + radius * 2.0 * np.cos(spiral_angle) - word_width / 2
         test_y = cy + radius * np.sin(spiral_angle) - word_height / 2
 
-        # Check bounds - use more of canvas (smaller margins)
-        margin_x = 50
-        margin_y = 80
+        # Check bounds - minimal margins to maximize canvas usage
+        margin_x = 30
+        margin_y = 50
         if (
             margin_x < test_x < canvas_width - word_width - margin_x
             and margin_y < test_y < canvas_height - word_height - margin_y
@@ -139,8 +139,8 @@ for i, (word, freq) in enumerate(words_data):
                 found_box = test_box
                 break
 
-        spiral_angle += 0.12  # Fine spiral steps
-        radius += 1.2  # Gradual radius growth
+        spiral_angle += 0.08  # Finer spiral steps for tighter packing
+        radius += 0.8  # Slower radius growth keeps words closer together
 
     placed_boxes.append(found_box)
     words.append(word)

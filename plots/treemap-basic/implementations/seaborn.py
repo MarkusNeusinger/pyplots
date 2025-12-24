@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 treemap-basic: Basic Treemap
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 85/100 | Created: 2025-12-24
+Quality: 91/100 | Created: 2025-12-24
 """
 
 import matplotlib.pyplot as plt

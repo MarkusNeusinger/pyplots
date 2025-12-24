@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 wordcloud-basic: Basic Word Cloud
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-24
@@ -6,11 +6,11 @@ Quality: 78/100 | Created: 2025-12-24
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColumnDataSource, Text
+from bokeh.models import ColumnDataSource, HoverTool, LabelSet
 from bokeh.plotting import figure
 
 
-# Data: Technology terms with frequencies (35 words for good density)
+# Data: Technology terms with frequencies (40 words for good density)
 np.random.seed(42)
 words_data = [
     ("Python", 100),
@@ -48,48 +48,76 @@ words_data = [
     ("Token", 20),
     ("Epoch", 18),
     ("Layer", 16),
+    ("Cluster", 14),
+    ("Stream", 12),
+    ("Config", 10),
+    ("Debug", 8),
+    ("Stack", 6),
 ]
 
 # Canvas dimensions
 canvas_width = 4800
 canvas_height = 2700
 
-# Scale frequencies to font sizes (48-160 pt for better visibility on 4800x2700 canvas)
+# Scale frequencies to font sizes (60-200 pt for better canvas fill)
 min_freq = min(f for _, f in words_data)
 max_freq = max(f for _, f in words_data)
-min_size, max_size = 48, 160
+min_size, max_size = 60, 200
 
-# Build word positions using Archimedean spiral placement
+# Rotation angles for visual interest (0, 90, -90 degrees)
+rotations = [0, 0, 0, 90, -90]  # 60% horizontal, 40% rotated
+
+# Build word positions using Archimedean spiral placement with rotation
 words = []
 x_pos = []
 y_pos = []
 sizes = []
 colors = []
+angles = []
+frequencies = []
 placed_boxes = []
 
 for i, (word, freq) in enumerate(words_data):
     # Scale frequency to font size
     size = int(min_size + (freq - min_freq) / (max_freq - min_freq) * (max_size - min_size))
 
-    # Estimate word dimensions for collision detection
-    word_width = len(word) * size * 0.65
-    word_height = size * 1.4
+    # Assign rotation based on pattern (larger words stay horizontal)
+    if freq >= 70:
+        angle_deg = 0  # Keep high-frequency words horizontal for readability
+    else:
+        angle_deg = rotations[i % len(rotations)]
+    angle_rad = np.radians(angle_deg)
+
+    # Estimate word dimensions for collision detection (swap for rotated words)
+    base_width = len(word) * size * 0.58
+    base_height = size * 1.2
+    if angle_deg != 0:
+        word_width = base_height
+        word_height = base_width
+    else:
+        word_width = base_width
+        word_height = base_height
 
     # Find non-overlapping position using Archimedean spiral
     cx, cy = canvas_width / 2, canvas_height / 2
-    angle = 0
+    spiral_angle = 0
     radius = 0
-    padding = 20  # Tighter packing for better density
+    padding = 15  # Tighter packing
     found_x, found_y = cx, cy
     found_box = (cx - word_width / 2, cy - word_height / 2, word_width, word_height)
 
-    for _ in range(15000):
-        # Elliptical spiral to match 16:9 aspect ratio
-        test_x = cx + radius * 1.6 * np.cos(angle) - word_width / 2
-        test_y = cy + radius * np.sin(angle) - word_height / 2
+    for _ in range(20000):
+        # Elliptical spiral to match 16:9 aspect ratio with wider spread
+        test_x = cx + radius * 1.8 * np.cos(spiral_angle) - word_width / 2
+        test_y = cy + radius * np.sin(spiral_angle) - word_height / 2
 
-        # Check bounds - allow words closer to edges for better canvas utilization
-        if 80 < test_x < canvas_width - word_width - 80 and 120 < test_y < canvas_height - word_height - 120:
+        # Check bounds - use more of canvas (smaller margins)
+        margin_x = 50
+        margin_y = 80
+        if (
+            margin_x < test_x < canvas_width - word_width - margin_x
+            and margin_y < test_y < canvas_height - word_height - margin_y
+        ):
             test_box = (test_x, test_y, word_width, word_height)
 
             # Check for overlaps with placed words
@@ -111,27 +139,79 @@ for i, (word, freq) in enumerate(words_data):
                 found_box = test_box
                 break
 
-        angle += 0.15  # Smaller angle steps for finer spiral
-        radius += 1.5  # Slower radius growth for tighter packing
+        spiral_angle += 0.12  # Fine spiral steps
+        radius += 1.2  # Gradual radius growth
 
     placed_boxes.append(found_box)
     words.append(word)
     x_pos.append(found_x)
     y_pos.append(found_y)
-    sizes.append(f"{size}pt")
-    # Alternate between Python Blue and Python Yellow
-    colors.append("#306998" if i % 2 == 0 else "#FFD43B")
+    sizes.append(size)
+    angles.append(angle_rad)
+    frequencies.append(freq)
+    # Color by frequency range (semantic coloring)
+    if freq >= 80:
+        colors.append("#306998")  # Python Blue - highest frequency
+    elif freq >= 50:
+        colors.append("#4B8BBE")  # Lighter blue - medium-high
+    elif freq >= 25:
+        colors.append("#FFD43B")  # Python Yellow - medium-low
+    else:
+        colors.append("#FFE873")  # Lighter yellow - lowest
 
-# Create Bokeh figure
+# Create Bokeh figure with hover tool
 p = figure(
     width=4800,
     height=2700,
     title="wordcloud-basic · bokeh · pyplots.ai",
     x_range=(0, canvas_width),
     y_range=(0, canvas_height),
-    tools="",
+    tools="hover",
     toolbar_location=None,
 )
+
+# Calculate hit area sizes (proportional to font size)
+hit_sizes = [s * 0.8 for s in sizes]
+
+# Create data source with all attributes for hover
+source = ColumnDataSource(
+    data={
+        "x": x_pos,
+        "y": y_pos,
+        "text": words,
+        "size": sizes,
+        "hit_size": hit_sizes,
+        "color": colors,
+        "angle": angles,
+        "frequency": frequencies,
+    }
+)
+
+# Add invisible scatter points for hover detection
+p.scatter(x="x", y="y", size="hit_size", source=source, fill_alpha=0, line_alpha=0)
+
+# Configure hover tool to show word frequency
+hover = p.select_one(HoverTool)
+hover.tooltips = [("Word", "@text"), ("Frequency", "@frequency")]
+hover.mode = "mouse"
+
+# Convert sizes to string format for LabelSet
+source.data["size"] = [f"{s}pt" for s in sizes]
+
+# Add words as labels with rotation
+labels = LabelSet(
+    x="x",
+    y="y",
+    text="text",
+    text_font_size="size",
+    text_color="color",
+    text_align="center",
+    text_baseline="middle",
+    text_font_style="bold",
+    angle="angle",
+    source=source,
+)
+p.add_layout(labels)
 
 # Clean appearance - no axes or grid
 p.axis.visible = False
@@ -141,22 +221,6 @@ p.outline_line_color = None
 # Style title
 p.title.text_font_size = "36pt"
 p.title.align = "center"
-
-# Add words as text glyphs
-source = ColumnDataSource(data={"x": x_pos, "y": y_pos, "text": words, "text_font_size": sizes, "text_color": colors})
-
-text_glyph = Text(
-    x="x",
-    y="y",
-    text="text",
-    text_font_size="text_font_size",
-    text_color="text_color",
-    text_align="center",
-    text_baseline="middle",
-    text_font_style="bold",
-)
-
-p.add_glyph(source, text_glyph)
 
 # Light background
 p.background_fill_color = "#FAFAFA"

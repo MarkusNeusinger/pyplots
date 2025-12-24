@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 wordcloud-basic: Basic Word Cloud
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-24
@@ -46,11 +46,11 @@ word_frequencies = {
 canvas_w = 4800
 canvas_h = 2700
 
-# Scale frequencies to font sizes - wider range for dramatic difference
+# Scale frequencies to font sizes - increased minimum for better visibility
 min_freq = min(word_frequencies.values())
 max_freq = max(word_frequencies.values())
-min_size = 32
-max_size = 200
+min_size = 48  # Larger minimum size for better readability of small words
+max_size = 180
 
 # Sort by frequency (largest first for better placement)
 sorted_words = sorted(word_frequencies.items(), key=lambda x: x[1], reverse=True)
@@ -70,27 +70,27 @@ for i, (word, freq) in enumerate(sorted_words):
     w = len(word) * size * 0.55
     h = size * 1.2
 
-    # Spiral placement starting from center
-    cx, cy = canvas_w / 2, canvas_h / 2 + 50
+    # Spiral placement - center lowered to fill bottom area better
+    cx, cy = canvas_w / 2, canvas_h / 2 + 150
     angle = 0
     radius = 0
     x, y = cx, cy
     box = (cx - w / 2, cy - h / 2, w, h)
 
-    for _ in range(20000):
-        # Elliptical spiral for 16:9 aspect ratio - wider spread
-        test_x = cx + radius * 2.0 * np.cos(angle) - w / 2
-        test_y = cy + radius * 1.1 * np.sin(angle) - h / 2
+    for _ in range(25000):
+        # Elliptical spiral - stretched to fill 16:9 canvas better
+        test_x = cx + radius * 2.2 * np.cos(angle) - w / 2
+        test_y = cy + radius * 1.3 * np.sin(angle) - h / 2
 
         # Check bounds (leave margin for edges and title)
-        if 80 < test_x < canvas_w - w - 80 and 180 < test_y < canvas_h - h - 80:
+        if 60 < test_x < canvas_w - w - 60 and 160 < test_y < canvas_h - h - 60:
             test_box = (test_x, test_y, w, h)
-            # Check for overlap with placed words - increased padding
+            # Check for overlap with placed words
             overlap = False
             for pb in placed_boxes:
                 x1, y1, w1, h1 = test_box
                 x2, y2, w2, h2 = pb
-                padding = 55  # Good padding to prevent overlap
+                padding = 40  # Tighter padding to fit more words
                 if not (
                     x1 + w1 + padding < x2 or x2 + w2 + padding < x1 or y1 + h1 + padding < y2 or y2 + h2 + padding < y1
                 ):
@@ -102,8 +102,8 @@ for i, (word, freq) in enumerate(sorted_words):
                 box = test_box
                 break
 
-        angle += 0.12  # Slower angle increment for better spread
-        radius += 2.5  # Faster radius growth to fill edges
+        angle += 0.10  # Slower angle for more positions to try
+        radius += 3.0  # Faster radius growth to spread outward quickly
 
     placed_boxes.append(box)
     word_data.append({"word": word, "x": x, "y": y, "size": size, "color": color_palette[i % len(color_palette)]})

@@ -1,0 +1,33 @@
+# Specification-level metadata for windrose-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: windrose-basic
+title: Wind Rose Chart
+
+# Specification tracking
+created: 2025-12-24T22:10:17Z
+updated: null
+issue: 1880
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - windrose
+    - polar
+    - histogram
+  data_type:
+    - numeric
+    - continuous
+    - directional
+  domain:
+    - meteorology
+    - environment
+    - science
+    - energy
+  features:
+    - basic
+    - stacked
+    - distribution
+    - frequency

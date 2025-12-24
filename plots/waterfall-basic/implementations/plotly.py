@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 waterfall-basic: Basic Waterfall Chart
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-24
 """
 
 import plotly.graph_objects as go
@@ -14,10 +14,10 @@ categories = ["Revenue", "Product Costs", "Operating Expenses", "Marketing", "Ot
 # Revenue is the starting total, Net Income is the ending total
 values = [500000, -180000, -95000, -45000, 25000, -51250, 153750]
 
-# Define measure types: total for first/last, relative for changes
+# Define measure types: absolute for start, relative for changes, total for end
 measures = ["absolute", "relative", "relative", "relative", "relative", "relative", "total"]
 
-# Create waterfall chart
+# Create waterfall chart using Plotly's native Waterfall trace
 fig = go.Figure(
     go.Waterfall(
         name="Financial Breakdown",
@@ -35,14 +35,9 @@ fig = go.Figure(
     )
 )
 
-# Update layout for 4800x2700 px
+# Update layout for 4800x2700 px canvas
 fig.update_layout(
-    title={
-        "text": "waterfall-basic \u00b7 plotly \u00b7 pyplots.ai",
-        "font": {"size": 32},
-        "x": 0.5,
-        "xanchor": "center",
-    },
+    title={"text": "waterfall-basic · plotly · pyplots.ai", "font": {"size": 32}, "x": 0.5, "xanchor": "center"},
     xaxis={"title": {"text": "Category", "font": {"size": 24}}, "tickfont": {"size": 18}},
     yaxis={
         "title": {"text": "Amount ($)", "font": {"size": 24}},
@@ -54,7 +49,7 @@ fig.update_layout(
     },
     template="plotly_white",
     showlegend=False,
-    margin={"t": 100, "b": 80, "l": 100, "r": 50},
+    margin={"t": 100, "b": 80, "l": 120, "r": 50},
 )
 
 # Save as PNG (4800x2700 px)

@@ -1,11 +1,12 @@
 """ pyplots.ai
 wordcloud-basic: Basic Word Cloud
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-16
+Quality: 86/100 | Created: 2025-12-24
 """
 
 import xml.etree.ElementTree as ET
 
+import cairosvg
 import numpy as np
 import pygal
 from pygal.style import Style
@@ -41,61 +42,15 @@ word_frequencies = {
     "GraphQL": 22,
 }
 
-# Scale frequencies to font sizes
+# Canvas dimensions
+canvas_w = 4800
+canvas_h = 2700
+
+# Scale frequencies to font sizes - increased for better canvas utilization
 min_freq = min(word_frequencies.values())
 max_freq = max(word_frequencies.values())
-min_size = 40
-max_size = 160
-
-
-def scale_size(freq):
-    """Scale frequency to font size."""
-    return int(min_size + (freq - min_freq) / (max_freq - min_freq) * (max_size - min_size))
-
-
-def estimate_width(word, size):
-    """Estimate word width for collision detection."""
-    return len(word) * size * 0.55
-
-
-def estimate_height(size):
-    """Estimate word height for collision detection."""
-    return size * 1.2
-
-
-def boxes_overlap(box1, box2, padding=40):
-    """Check if two boxes overlap with padding."""
-    x1, y1, w1, h1 = box1
-    x2, y2, w2, h2 = box2
-    return not (x1 + w1 + padding < x2 or x2 + w2 + padding < x1 or y1 + h1 + padding < y2 or y2 + h2 + padding < y1)
-
-
-def find_position(word, size, placed, canvas_w=4800, canvas_h=2700):
-    """Find non-overlapping position using spiral algorithm."""
-    w = estimate_width(word, size)
-    h = estimate_height(size)
-    cx, cy = canvas_w / 2, canvas_h / 2 + 50  # Offset down slightly for title
-
-    angle = 0
-    radius = 0
-
-    for _ in range(10000):
-        # Elliptical spiral for 16:9 aspect ratio
-        x = cx + radius * 1.6 * np.cos(angle) - w / 2
-        y = cy + radius * np.sin(angle) - h / 2
-
-        # Check bounds (leave margin for edges and title)
-        if 100 < x < canvas_w - w - 100 and 200 < y < canvas_h - h - 100:
-            box = (x, y, w, h)
-            if not any(boxes_overlap(box, pb) for pb in placed):
-                return x + w / 2, y + h / 2, box
-
-        angle += 0.2
-        radius += 1.5
-
-    # Fallback position
-    return cx, cy, (cx - w / 2, cy - h / 2, w, h)
-
+min_size = 72  # Larger minimum to ensure small words are visible at canvas scale
+max_size = 240  # Larger maximum to fill more canvas space
 
 # Sort by frequency (largest first for better placement)
 sorted_words = sorted(word_frequencies.items(), key=lambda x: x[1], reverse=True)
@@ -103,53 +58,63 @@ sorted_words = sorted(word_frequencies.items(), key=lambda x: x[1], reverse=True
 # Color palette based on pyplots primary colors
 color_palette = ["#306998", "#FFD43B", "#4B8BBE", "#646464", "#3776AB", "#FFE873"]
 
-# Build word positions
+# Build word positions using spiral algorithm with better distribution
 word_data = []
 placed_boxes = []
 
 for i, (word, freq) in enumerate(sorted_words):
-    size = scale_size(freq)
-    x, y, box = find_position(word, size, placed_boxes)
+    # Scale frequency to font size
+    size = int(min_size + (freq - min_freq) / (max_freq - min_freq) * (max_size - min_size))
+
+    # Estimate dimensions
+    w = len(word) * size * 0.55
+    h = size * 1.2
+
+    # Spiral placement - centered for maximum canvas utilization
+    cx, cy = canvas_w / 2, canvas_h / 2 + 100
+    angle = 0
+    radius = 0
+    x, y = cx, cy
+    box = (cx - w / 2, cy - h / 2, w, h)
+
+    for _ in range(30000):
+        # Elliptical spiral - stretched to fill 16:9 canvas (wider horizontal)
+        test_x = cx + radius * 2.6 * np.cos(angle) - w / 2
+        test_y = cy + radius * 1.6 * np.sin(angle) - h / 2
+
+        # Check bounds (leave margin for edges and title, use more vertical space)
+        if 80 < test_x < canvas_w - w - 80 and 180 < test_y < canvas_h - h - 80:
+            test_box = (test_x, test_y, w, h)
+            # Check for overlap with placed words
+            overlap = False
+            for pb in placed_boxes:
+                x1, y1, w1, h1 = test_box
+                x2, y2, w2, h2 = pb
+                padding = 30  # Tighter padding to fit larger words
+                if not (
+                    x1 + w1 + padding < x2 or x2 + w2 + padding < x1 or y1 + h1 + padding < y2 or y2 + h2 + padding < y1
+                ):
+                    overlap = True
+                    break
+            if not overlap:
+                x = test_x + w / 2
+                y = test_y + h / 2
+                box = test_box
+                break
+
+        angle += 0.08  # Slower angle for more positions to try
+        radius += 4.0  # Faster radius growth to spread outward and fill canvas
+
     placed_boxes.append(box)
     word_data.append({"word": word, "x": x, "y": y, "size": size, "color": color_palette[i % len(color_palette)]})
 
-
-def add_word_cloud_elements(root):
-    """Add word cloud text elements to the SVG root element."""
-    # Add title
-    title = ET.SubElement(root, "text")
-    title.set("x", "2400")
-    title.set("y", "100")
-    title.set("font-size", "72")
-    title.set("font-weight", "bold")
-    title.set("fill", "#333")
-    title.set("text-anchor", "middle")
-    title.set("font-family", "sans-serif")
-    title.text = "wordcloud-basic · pygal · pyplots.ai"
-
-    # Add word cloud text elements
-    for item in word_data:
-        text_elem = ET.SubElement(root, "text")
-        text_elem.set("x", str(int(item["x"])))
-        text_elem.set("y", str(int(item["y"])))
-        text_elem.set("font-size", str(item["size"]))
-        text_elem.set("font-weight", "bold")
-        text_elem.set("fill", item["color"])
-        text_elem.set("text-anchor", "middle")
-        text_elem.set("dominant-baseline", "middle")
-        text_elem.set("font-family", "sans-serif")
-        text_elem.text = item["word"]
-
-    return root
-
-
-# Create minimal chart as canvas
+# Create minimal pygal chart as canvas
 custom_style = Style(background="white", plot_background="white")
 
 chart = pygal.XY(
     style=custom_style,
-    width=4800,
-    height=2700,
+    width=canvas_w,
+    height=canvas_h,
     show_legend=False,
     show_x_labels=False,
     show_y_labels=False,
@@ -160,21 +125,48 @@ chart = pygal.XY(
     margin=0,
 )
 
-# Add XML filter to inject word cloud elements
-chart.add_xml_filter(add_word_cloud_elements)
-
 # Add dummy data (required for chart to render)
 chart.add("", [(0, 0)])
 
-# Save outputs
-chart.render_to_file("plot.svg")
-chart.render_to_png("plot.png")
+# Render SVG and manually inject word cloud elements (KISS: no function wrapper)
+svg_string = chart.render(is_unicode=True)
+root = ET.fromstring(svg_string)
 
-# Also save as HTML for interactive viewing
+# Add title
+title = ET.SubElement(root, "text")
+title.set("x", "2400")
+title.set("y", "110")
+title.set("font-size", "84")
+title.set("font-weight", "bold")
+title.set("fill", "#333")
+title.set("text-anchor", "middle")
+title.set("font-family", "sans-serif")
+title.text = "wordcloud-basic · pygal · pyplots.ai"
+
+# Add word cloud text elements
+for item in word_data:
+    text_elem = ET.SubElement(root, "text")
+    text_elem.set("x", str(int(item["x"])))
+    text_elem.set("y", str(int(item["y"])))
+    text_elem.set("font-size", str(item["size"]))
+    text_elem.set("font-weight", "bold")
+    text_elem.set("fill", item["color"])
+    text_elem.set("text-anchor", "middle")
+    text_elem.set("dominant-baseline", "middle")
+    text_elem.set("font-family", "sans-serif")
+    text_elem.text = item["word"]
+
+# Write modified SVG
+modified_svg = ET.tostring(root, encoding="unicode")
+with open("plot.svg", "w") as f:
+    f.write(modified_svg)
+
+# Render PNG using cairosvg
+cairosvg.svg2png(bytestring=modified_svg.encode(), write_to="plot.png")
+
+# Save as HTML for interactive viewing
 with open("plot.html", "w") as f:
-    svg_content = chart.render(is_unicode=True)
-    f.write(
-        f"""<!DOCTYPE html>
+    f.write(f"""<!DOCTYPE html>
 <html>
 <head>
     <title>wordcloud-basic · pygal · pyplots.ai</title>
@@ -184,7 +176,6 @@ with open("plot.html", "w") as f:
     </style>
 </head>
 <body>
-{svg_content}
+{modified_svg}
 </body>
-</html>"""
-    )
+</html>""")

@@ -1,28 +1,33 @@
-""" pyplots.ai
+"""pyplots.ai
 treemap-basic: Basic Treemap
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-24
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
+import squarify
 from matplotlib.patches import Patch, Rectangle
 
+
+# Random seed for reproducibility
+np.random.seed(42)
 
 # Set seaborn style for clean aesthetics
 sns.set_style("white")
 
-# Data - Budget allocation by department and project (sorted by value descending)
+# Data - Budget allocation by department and project
 data = [
     ("Engineering", "Product Dev", 45),
-    ("Sales", "Enterprise", 35),
-    ("Marketing", "Digital", 30),
     ("Engineering", "Infrastructure", 25),
+    ("Engineering", "QA", 15),
+    ("Sales", "Enterprise", 35),
     ("Sales", "SMB", 25),
+    ("Sales", "Partners", 15),
+    ("Marketing", "Digital", 30),
     ("Marketing", "Events", 20),
     ("Operations", "Logistics", 20),
-    ("Engineering", "QA", 15),
-    ("Sales", "Partners", 15),
     ("Operations", "Support", 15),
     ("HR", "Recruiting", 12),
     ("HR", "Training", 8),
@@ -37,103 +42,59 @@ unique_categories = ["Engineering", "Sales", "Marketing", "Operations", "HR"]
 palette = sns.color_palette("colorblind", n_colors=len(unique_categories))
 category_colors = dict(zip(unique_categories, palette, strict=True))
 
-# Normalize values to fill a 160x90 area (matching figsize aspect ratio)
-total = sum(values)
+# Normalize values to fill the rectangle area (160x90 to match figsize aspect ratio)
 width, height = 160, 90
-normalized = [v / total * width * height for v in values]
 
-# Squarify algorithm - compute rectangle positions
-rects = []
-remaining = list(zip(normalized, range(len(normalized)), strict=True))
-x, y, w, h = 0, 0, width, height
-
-while remaining:
-    strip_items = []
-    strip_area = 0
-
-    if w >= h:
-        # Vertical strip
-        for area, idx in remaining:
-            strip_items.append((area, idx))
-            strip_area += area
-            strip_width = strip_area / h
-            if len(strip_items) > 1:
-                aspects = [
-                    max(strip_width / (a / strip_width), (a / strip_width) / strip_width) for a, _ in strip_items
-                ]
-                prev_area = strip_area - area
-                if prev_area > 0:
-                    prev_width = prev_area / h
-                    prev_aspects = [
-                        max(prev_width / (a / prev_width), (a / prev_width) / prev_width) for a, _ in strip_items[:-1]
-                    ]
-                    if max(aspects) > max(prev_aspects):
-                        strip_items.pop()
-                        strip_area -= area
-                        break
-        strip_width = strip_area / h if h > 0 else 0
-        cy = y
-        for area, idx in strip_items:
-            rect_h = area / strip_width if strip_width > 0 else 0
-            rects.append((x, cy, strip_width, rect_h, idx))
-            cy += rect_h
-        x += strip_width
-        w -= strip_width
-    else:
-        # Horizontal strip
-        for area, idx in remaining:
-            strip_items.append((area, idx))
-            strip_area += area
-            strip_height = strip_area / w
-            if len(strip_items) > 1:
-                aspects = [
-                    max(strip_height / (a / strip_height), (a / strip_height) / strip_height) for a, _ in strip_items
-                ]
-                prev_area = strip_area - area
-                if prev_area > 0:
-                    prev_height = prev_area / w
-                    prev_aspects = [
-                        max(prev_height / (a / prev_height), (a / prev_height) / prev_height)
-                        for a, _ in strip_items[:-1]
-                    ]
-                    if max(aspects) > max(prev_aspects):
-                        strip_items.pop()
-                        strip_area -= area
-                        break
-        strip_height = strip_area / w if w > 0 else 0
-        cx = x
-        for area, idx in strip_items:
-            rect_w = area / strip_height if strip_height > 0 else 0
-            rects.append((cx, y, rect_w, strip_height, idx))
-            cx += rect_w
-        y += strip_height
-        h -= strip_height
-
-    placed_indices = {idx for _, idx in strip_items}
-    remaining = [(a, i) for a, i in remaining if i not in placed_indices]
+# Use squarify to compute rectangle positions
+rects = squarify.normalize_sizes(values, width, height)
+rects = squarify.squarify(rects, 0, 0, width, height)
 
 # Create plot (4800x2700 px at 300 dpi)
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Draw rectangles
-for rx, ry, rw, rh, idx in rects:
-    color = category_colors[categories[idx]]
-    rect = Rectangle((rx, ry), rw, rh, facecolor=color, edgecolor="white", linewidth=3, alpha=0.85)
-    ax.add_patch(rect)
+# Count items per category to compute depth shading
+category_counts = {}
+category_indices = {}
+for i, cat in enumerate(categories):
+    if cat not in category_counts:
+        category_counts[cat] = 0
+        category_indices[cat] = []
+    category_indices[cat].append(i)
+    category_counts[cat] += 1
+
+# Draw rectangles with depth-based shading (hierarchy visualization)
+for i, rect in enumerate(rects):
+    cat = categories[i]
+    base_color = category_colors[cat]
+
+    # Create depth shading: use seaborn's light_palette to generate shades
+    # Larger values (more prominent) get darker colors, smaller get lighter
+    cat_items = category_indices[cat]
+    rank_in_category = cat_items.index(i)
+    num_in_category = len(cat_items)
+
+    # Generate shades using seaborn's light_palette
+    shades = sns.light_palette(base_color, n_colors=num_in_category + 2, reverse=True)
+    shade_color = shades[rank_in_category + 1]  # Skip the darkest (index 0)
+
+    rectangle = Rectangle(
+        (rect["x"], rect["y"]), rect["dx"], rect["dy"], facecolor=shade_color, edgecolor="white", linewidth=3, alpha=0.9
+    )
+    ax.add_patch(rectangle)
 
     # Add label for larger rectangles
-    area = rw * rh
+    area = rect["dx"] * rect["dy"]
     if area > 150:
         # Determine text color based on luminance
-        r_val, g_val, b_val = color[:3]
+        r_val, g_val, b_val = shade_color[:3]
         luminance = 0.299 * r_val + 0.587 * g_val + 0.114 * b_val
         text_color = "white" if luminance < 0.5 else "black"
         fontsize = min(18, max(12, int(area**0.35)))
 
-        label = f"{subcategories[idx]}\n${values[idx]}M"
+        label = f"{subcategories[i]}\n${values[i]}M"
         ax.text(
-            rx + rw / 2,
-            ry + rh / 2,
+            rect["x"] + rect["dx"] / 2,
+            rect["y"] + rect["dy"] / 2,
             label,
             ha="center",
             va="center",

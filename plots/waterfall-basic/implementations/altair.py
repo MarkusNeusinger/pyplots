@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 waterfall-basic: Basic Waterfall Chart
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 98/100 | Created: 2025-12-14
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-24
 """
 
 import altair as alt
@@ -52,7 +52,7 @@ for i, val in enumerate(values):
     if val is None:
         display_values.append(f"${int(running_total[i])}")
     elif val >= 0:
-        display_values.append(f"${int(val)}")
+        display_values.append(f"+${int(val)}")
     else:
         display_values.append(f"-${int(abs(val))}")
 
@@ -70,7 +70,7 @@ df = pd.DataFrame(
     }
 )
 
-# Color scale: blue for totals, green for positive, red for negative
+# Color scale: Python Blue for totals, green for positive, red for negative
 color_scale = alt.Scale(domain=["total", "positive", "negative"], range=["#306998", "#4CAF50", "#E53935"])
 
 # Sort by order field
@@ -79,15 +79,15 @@ sort_order = alt.EncodingSortField(field="order", order="ascending")
 # Create bar chart using bar marks with y and y2
 bars = (
     alt.Chart(df)
-    .mark_bar(size=60, stroke="white", strokeWidth=2)
+    .mark_bar(size=65, stroke="white", strokeWidth=2)
     .encode(
         x=alt.X(
             "category:N",
             sort=sort_order,
             title="Category",
-            axis=alt.Axis(labelFontSize=16, titleFontSize=20, labelAngle=-15),
+            axis=alt.Axis(labelFontSize=18, titleFontSize=22, labelAngle=-20),
         ),
-        y=alt.Y("bar_bottom:Q", title="Amount ($)", axis=alt.Axis(labelFontSize=16, titleFontSize=20)),
+        y=alt.Y("bar_bottom:Q", title="Amount ($)", axis=alt.Axis(labelFontSize=18, titleFontSize=22)),
         y2=alt.Y2("bar_top:Q"),
         color=alt.Color("bar_type:N", scale=color_scale, legend=None),
     )
@@ -96,7 +96,7 @@ bars = (
 # Value labels on bars
 labels = (
     alt.Chart(df)
-    .mark_text(fontSize=16, fontWeight="bold", color="white")
+    .mark_text(fontSize=18, fontWeight="bold", color="white")
     .encode(x=alt.X("category:N", sort=sort_order), y=alt.Y("label_y:Q"), text="display_value:N")
 )
 

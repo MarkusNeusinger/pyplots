@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 waterfall-basic: Basic Waterfall Chart
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 98/100 | Created: 2025-12-14
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-24
 """
 
 import matplotlib.pyplot as plt
@@ -10,8 +10,8 @@ import numpy as np
 
 # Data: Quarterly financial breakdown from revenue to net income
 categories = ["Revenue", "Cost of Goods", "Gross Profit", "Operating Expenses", "Other Income", "Taxes", "Net Income"]
-# Values: First and last are totals, middle values are changes
-values = [500, -200, None, -150, 25, -45, None]  # None = calculated totals
+# Values: First and last are totals, middle values are changes (None = calculated totals)
+values = [500, -200, None, -150, 25, -45, None]
 
 # Calculate running totals and determine actual bar values
 n = len(categories)
@@ -61,13 +61,6 @@ bars = ax.bar(x, np.abs(bar_values), width=bar_width, bottom=bar_bottom, color=c
 
 # Draw connecting lines between bars
 for i in range(n - 1):
-    # Connect from top/bottom of current bar to start of next bar
-    if values[i + 1] is None:
-        # Next bar is a total, connect to its bottom (0)
-        y_end = 0
-    else:
-        y_end = running_total[i]
-
     ax.plot(
         [x[i] + bar_width / 2, x[i + 1] - bar_width / 2],
         [running_total[i], running_total[i]],

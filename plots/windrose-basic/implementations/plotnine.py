@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 windrose-basic: Wind Rose Chart
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 86/100 | Created: 2025-12-24
@@ -159,9 +159,12 @@ freq_label_rows = []
 for radius in grid_radii:
     # Position labels at top of each circle (90 degrees) with slight offset
     angle = math.pi / 2 + 0.15  # Slightly offset from North spoke
-    freq_label_rows.append({"label": f"{radius}%", "x": radius * math.cos(angle) + 1.5, "y": radius * math.sin(angle)})
+    freq_label_rows.append({"label": f"{radius}%", "x": radius * math.cos(angle) + 1.8, "y": radius * math.sin(angle)})
 
 freq_label_df = pd.DataFrame(freq_label_rows)
+
+# Create "Frequency (%)" label to explain what gridlines represent
+freq_axis_label_df = pd.DataFrame([{"label": "Frequency (%)", "x": -3, "y": 22}])
 
 # Create legend entries (positioned in bottom-right corner, clear of all labels)
 legend_rows = []
@@ -213,16 +216,18 @@ plot = (
     # Direction labels
     + geom_text(aes(x="x", y="y", label="label"), data=label_df, size=16, fontweight="bold", color="#333333")
     # Frequency labels (larger for better readability)
-    + geom_text(aes(x="x", y="y", label="label"), data=freq_label_df, size=14, color="#444444", fontweight="bold")
+    + geom_text(aes(x="x", y="y", label="label"), data=freq_label_df, size=18, color="#333333", fontweight="bold")
+    # Frequency axis label
+    + geom_text(aes(x="x", y="y", label="label"), data=freq_axis_label_df, size=16, color="#333333", fontstyle="italic")
     # Legend title
     + geom_text(aes(x="x", y="y", label="label"), data=legend_title_df, size=14, fontweight="bold", color="#333333")
     # Legend text
     + geom_text(aes(x="x", y="y", label="label"), data=legend_text_df, size=12, color="#333333", ha="left")
     # Colors
     + scale_fill_manual(values=speed_colors)
-    # Axis scaling - balanced limits with room for legend
-    + scale_x_continuous(limits=(-25, 28))
-    + scale_y_continuous(limits=(-30, 25))
+    # Axis scaling - balanced limits with room for legend on right
+    + scale_x_continuous(limits=(-26, 26))
+    + scale_y_continuous(limits=(-30, 26))
     # Title
     + labs(title="windrose-basic · plotnine · pyplots.ai")
     # Theme for clean wind rose appearance

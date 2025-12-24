@@ -1,0 +1,27 @@
+library: plotly
+specification_id: horizon-basic
+created: '2025-12-24T22:16:35Z'
+updated: '2025-12-24T22:19:57Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494683025
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent horizon chart implementation with proper band folding technique showing
+    positive (blue) and negative (red) values
+  - Good use of subplots for multiple series comparison with shared x-axis
+  - Clean visual design with appropriate color intensity progression (light to dark)
+    for magnitude encoding
+  - Proper title format following pyplots.ai conventions
+  - Realistic server CPU monitoring scenario with 6 servers over 24 hours
+  - Good legend annotation explaining color interpretation
+  weaknesses:
+  - Series labels (Server A-F) could be larger for better readability at full resolution
+  - X-axis tick font size (16) is slightly below optimal for 4800x2700 output
+  - Color legend annotation text is small and could be more prominent

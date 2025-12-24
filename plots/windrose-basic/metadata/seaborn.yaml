@@ -1,0 +1,26 @@
+library: seaborn
+specification_id: windrose-basic
+created: '2025-12-24T22:16:59Z'
+updated: '2025-12-24T22:21:55Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494683616
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent wind rose visualization with proper meteorological conventions (North
+    at top, clockwise direction)
+  - Beautiful color progression using seaborn YlOrRd palette from cool to warm
+  - Realistic simulated wind data with dominant SW and secondary NE patterns matching
+    real-world scenarios
+  - Clean stacked bar implementation with white edges for visual separation
+  - Well-positioned and styled legend with proper title
+  weaknesses:
+  - Missing explicit radial axis label (should indicate Frequency or similar)
+  - Seaborn is used primarily for styling rather than seaborn plotting functions -
+    actual bars drawn with matplotlib polar bar plot

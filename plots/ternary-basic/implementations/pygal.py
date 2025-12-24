@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 ternary-basic: Basic Ternary Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 68/100 | Created: 2025-12-24
@@ -61,6 +61,26 @@ for pct in [0.2, 0.4, 0.6, 0.8]:
     p2 = (0.5 * (2 * (1 - pct)), 0.0)
     grid_lines.extend([p1, p2, (None, None)])
 
+# Tick marks along each edge at 20% intervals
+tick_marks = []
+tick_len = 0.03  # Length of tick marks
+
+for pct in [0.2, 0.4, 0.6, 0.8]:
+    # Ticks on left edge (Clay-Sand): perpendicular outward
+    x_left = 0.5 * pct
+    y_left = H * pct
+    tick_marks.extend([(x_left, y_left), (x_left - tick_len, y_left), (None, None)])
+
+    # Ticks on right edge (Sand-Silt): perpendicular outward
+    x_right = 0.5 * (2 - pct)
+    y_right = H * pct
+    tick_marks.extend([(x_right, y_right), (x_right + tick_len, y_right), (None, None)])
+
+    # Ticks on base (Clay-Silt): perpendicular downward
+    x_base = pct
+    y_base = 0.0
+    tick_marks.extend([(x_base, y_base), (x_base, y_base - tick_len), (None, None)])
+
 # Custom style for 3600x3600 px canvas
 custom_style = Style(
     background="white",
@@ -68,11 +88,11 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#333333", "#AAAAAA", "#306998"),  # Triangle, Grid, Data
-    title_font_size=68,
+    colors=("#333333", "#AAAAAA", "#306998", "#333333"),  # Boundary, Grid, Data, Ticks
+    title_font_size=80,
     label_font_size=48,
     major_label_font_size=44,
-    legend_font_size=44,
+    legend_font_size=48,
     value_font_size=40,
     opacity=0.85,
 )
@@ -82,7 +102,9 @@ chart = pygal.XY(
     width=3600,
     height=3600,
     style=custom_style,
-    show_legend=False,
+    show_legend=True,
+    legend_at_bottom=True,
+    legend_at_bottom_columns=1,
     show_x_guides=False,
     show_y_guides=False,
     show_x_labels=False,
@@ -93,8 +115,8 @@ chart = pygal.XY(
     dots_size=20,
     stroke=False,
     include_x_axis=False,
-    xrange=(-0.15, 1.15),
-    yrange=(-0.15, 1.05),
+    xrange=(-0.20, 1.20),
+    yrange=(-0.25, 1.10),
     explicit_size=True,
 )
 
@@ -108,10 +130,20 @@ chart.add(
 )
 
 # Grid lines (20% intervals)
-chart.add("Grid", grid_lines, stroke=True, show_dots=False, stroke_style={"width": 2, "dasharray": "8,5"})
+chart.add("Grid (20%)", grid_lines, stroke=True, show_dots=False, stroke_style={"width": 2, "dasharray": "8,5"})
 
 # Data points (soil samples)
-chart.add("Samples", data_points, stroke=False, dots_size=22)
+chart.add("Soil Samples (15 compositions)", data_points, stroke=False, dots_size=22)
+
+# Tick marks along edges
+chart.add("Ticks", tick_marks, stroke=True, show_dots=False, stroke_style={"width": 3})
+
+# Vertex labels as separate data series with positioned annotations
+# Labels positioned just outside each vertex
+label_offset = 0.08
+chart.add("SAND (Top)", [(vertex_sand[0], vertex_sand[1] + label_offset)], stroke=False, dots_size=0)
+chart.add("SILT (Right)", [(vertex_silt[0] + label_offset, vertex_silt[1])], stroke=False, dots_size=0)
+chart.add("CLAY (Left)", [(vertex_clay[0] - label_offset, vertex_clay[1])], stroke=False, dots_size=0)
 
 # Save outputs
 chart.render_to_png("plot.png")

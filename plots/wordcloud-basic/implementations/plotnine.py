@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 wordcloud-basic: Basic Word Cloud
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-24
@@ -57,67 +57,67 @@ words_data = {
 
 df = pd.DataFrame(words_data)
 
-# Calculate font sizes scaled by frequency (range 10-36)
+# Calculate font sizes scaled by frequency (range 14-38) - larger minimum for better visibility
 min_freq, max_freq = df["frequency"].min(), df["frequency"].max()
-df["size"] = 10 + (df["frequency"] - min_freq) / (max_freq - min_freq) * 26
+df["size"] = 14 + (df["frequency"] - min_freq) / (max_freq - min_freq) * 24
 
 # Sort by frequency descending
 df = df.sort_values("frequency", ascending=False).reset_index(drop=True)
 
 # Hand-crafted positions to ensure no overlap
-# Using a carefully planned layout based on word lengths and sizes
+# Improved layout with better vertical distribution (shifted upward for balance)
 # Canvas is 100x56.25 with legend in top-right
 positions = [
-    (45, 30),  # Python (largest) - center
-    (70, 38),  # Data
-    (22, 25),  # Machine
-    (72, 25),  # Learning
-    (30, 38),  # AI
-    (55, 18),  # Cloud
-    (20, 42),  # API
-    (45, 45),  # Database
-    (68, 48),  # Security
-    (25, 12),  # DevOps
-    (50, 8),  # Analytics
-    (78, 10),  # Automation
-    (8, 30),  # Software
-    (88, 32),  # Code
-    (35, 52),  # Development
-    (60, 52),  # Integration
-    (15, 52),  # Platform
-    (82, 52),  # Infrastructure
-    (8, 18),  # Testing
-    (8, 42),  # Deployment
-    (55, 38),  # Monitoring
-    (85, 42),  # Framework
-    (30, 8),  # Docker
-    (8, 8),  # AWS
-    (75, 8),  # Azure
+    (45, 28),  # Python (largest) - center
+    (70, 36),  # Data
+    (22, 24),  # Machine
+    (72, 22),  # Learning
+    (30, 36),  # AI
+    (55, 16),  # Cloud
+    (18, 42),  # API
+    (45, 42),  # Database
+    (68, 46),  # Security
+    (25, 10),  # DevOps
+    (50, 6),  # Analytics
+    (78, 8),  # Automation
+    (6, 28),  # Software
+    (88, 28),  # Code
+    (35, 50),  # Development
+    (60, 50),  # Integration
+    (12, 50),  # Platform
+    (82, 50),  # Infrastructure
+    (6, 16),  # Testing
+    (6, 40),  # Deployment
+    (55, 36),  # Monitoring
+    (88, 40),  # Framework
+    (30, 6),  # Docker
+    (6, 6),  # AWS
+    (75, 6),  # Azure
 ]
 
 df["x"] = [p[0] for p in positions]
 df["y"] = [p[1] for p in positions]
 
-# Assign colors based on frequency tiers
+# Assign colors based on frequency tiers - using high contrast colors
 colors = []
 for freq in df["frequency"]:
     if freq >= 65:
         colors.append("#306998")  # Python Blue - high frequency
     elif freq >= 35:
-        colors.append("#FFD43B")  # Python Yellow - medium frequency
+        colors.append("#E67E22")  # Deep Orange - medium frequency (high contrast)
     elif freq >= 15:
-        colors.append("#4ECDC4")  # Teal - lower medium
+        colors.append("#27AE60")  # Emerald Green - lower medium
     else:
-        colors.append("#95E1A3")  # Light green - low frequency
+        colors.append("#8E44AD")  # Purple - low frequency
 df["color"] = colors
 
-# Create legend data - positioned in top right area
+# Create legend data with colored squares - positioned in top right area
 legend_df = pd.DataFrame(
     {
-        "x": [88, 88, 88, 88],
-        "y": [48, 44, 40, 36],
-        "label": ["■ High (65+)", "■ Medium (35-64)", "■ Low-Med (15-34)", "■ Low (<15)"],
-        "color": ["#306998", "#FFD43B", "#4ECDC4", "#95E1A3"],
+        "x": [92, 92, 92, 92],
+        "y": [46, 42, 38, 34],
+        "label": ["● High (65+)", "● Medium (35-64)", "● Low-Med (15-34)", "● Low (<15)"],
+        "color": ["#306998", "#E67E22", "#27AE60", "#8E44AD"],
     }
 )
 
@@ -128,7 +128,7 @@ plot = (
     + geom_text(
         data=legend_df, mapping=aes(x="x", y="y", label="label", color="color"), size=9, ha="left", show_legend=False
     )
-    + annotate("text", x=88, y=52, label="Frequency", size=11, ha="left", fontweight="bold")
+    + annotate("text", x=92, y=50, label="Frequency", size=11, ha="left", fontweight="bold")
     + scale_size_identity()
     + scale_color_identity()
     + coord_cartesian(xlim=(0, 100), ylim=(0, 56.25))

@@ -1,13 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 treemap-basic: Basic Treemap
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-14
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-24
 """
 
 import plotly.graph_objects as go
 
 
-# Data - Budget allocation by department and project
+# Data - Budget allocation by department and project (in thousands)
 categories = [
     "Engineering",
     "Engineering",
@@ -43,25 +43,21 @@ subcategories = [
 values = [450, 380, 120, 200, 280, 150, 90, 320, 180, 140, 160, 120, 110, 80]
 
 # Build parent-child hierarchy for treemap
-labels = ["Budget"] + list(set(categories)) + subcategories
-parents = [""] + ["Budget"] * len(set(categories)) + categories
-# Values: root is sum, categories are sums of their subcategories, leaves are actual values
+unique_cats_ordered = ["Engineering", "Marketing", "Sales", "Operations", "HR"]
+
+# Calculate category totals
 category_totals = {}
-for cat, val in zip(categories, values):
+for cat, val in zip(categories, values, strict=True):
     category_totals[cat] = category_totals.get(cat, 0) + val
 
+# Construct labels, parents, and values for treemap
+labels = ["Budget"] + unique_cats_ordered + subcategories
+parents = [""] + ["Budget"] * len(unique_cats_ordered) + categories
 treemap_values = [sum(values)]  # Root total
-unique_cats = list(set(categories))
-# Maintain order consistency
-unique_cats_ordered = ["Engineering", "Marketing", "Sales", "Operations", "HR"]
 treemap_values += [category_totals[cat] for cat in unique_cats_ordered]
 treemap_values += values
 
-# Update labels and parents to match ordered categories
-labels = ["Budget"] + unique_cats_ordered + subcategories
-parents = [""] + ["Budget"] * len(unique_cats_ordered) + categories
-
-# Colors for main categories (colorblind-safe)
+# Colors for main categories (Python colors + colorblind-safe)
 color_map = {
     "Budget": "#FFFFFF",
     "Engineering": "#306998",
@@ -87,8 +83,8 @@ fig = go.Figure(
         labels=labels,
         parents=parents,
         values=treemap_values,
-        marker=dict(colors=colors, line=dict(width=2, color="white")),
-        textfont=dict(size=24),
+        marker={"colors": colors, "line": {"width": 2, "color": "white"}},
+        textfont={"size": 24},
         textinfo="label+value",
         hovertemplate="<b>%{label}</b><br>Value: $%{value}K<br>Percent of parent: %{percentParent:.1%}<extra></extra>",
         branchvalues="total",
@@ -97,8 +93,8 @@ fig = go.Figure(
 
 # Layout
 fig.update_layout(
-    title=dict(text="treemap-basic · plotly · pyplots.ai", font=dict(size=32), x=0.5, xanchor="center"),
-    margin=dict(t=80, l=20, r=20, b=20),
+    title={"text": "treemap-basic · plotly · pyplots.ai", "font": {"size": 32}, "x": 0.5, "xanchor": "center"},
+    margin={"t": 80, "l": 20, "r": 20, "b": 20},
     template="plotly_white",
 )
 

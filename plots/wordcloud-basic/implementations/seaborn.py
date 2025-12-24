@@ -13,104 +13,81 @@ import seaborn as sns
 # Set random seed for reproducibility
 np.random.seed(42)
 
-# Data - Tech industry survey responses about skills (30 words)
+# Data - Tech industry survey responses about skills (50 words)
 word_frequencies = {
-    "Python": 150,
-    "JavaScript": 120,
-    "DataScience": 110,
-    "ML": 100,
-    "Cloud": 95,
-    "API": 90,
-    "Database": 85,
-    "Security": 80,
-    "DevOps": 75,
-    "Docker": 70,
-    "Kubernetes": 65,
-    "React": 60,
-    "SQL": 58,
-    "AWS": 55,
-    "Git": 52,
-    "Agile": 50,
-    "Testing": 48,
-    "Linux": 45,
-    "TypeScript": 42,
-    "Node": 40,
-    "REST": 38,
-    "CICD": 35,
-    "Azure": 30,
-    "MongoDB": 28,
-    "Redis": 26,
-    "GraphQL": 24,
-    "Terraform": 22,
-    "Spark": 20,
-    "Analytics": 18,
-    "Backend": 16,
+    "Python": 180,
+    "JavaScript": 160,
+    "React": 145,
+    "Docker": 135,
+    "AWS": 130,
+    "SQL": 125,
+    "Linux": 120,
+    "Git": 115,
+    "API": 110,
+    "DevOps": 105,
+    "Cloud": 100,
+    "Testing": 95,
+    "Agile": 90,
+    "TypeScript": 87,
+    "Node": 84,
+    "Kubernetes": 81,
+    "MongoDB": 78,
+    "Security": 75,
+    "Azure": 72,
+    "REST": 69,
+    "Redis": 66,
+    "GraphQL": 63,
+    "Analytics": 60,
+    "PostgreSQL": 57,
+    "Terraform": 54,
+    "Backend": 51,
+    "Frontend": 48,
+    "CICD": 45,
+    "Spark": 42,
+    "Kafka": 39,
+    "Flask": 36,
+    "Django": 33,
+    "Pandas": 30,
+    "NumPy": 28,
+    "FastAPI": 26,
+    "Vue": 24,
+    "Angular": 22,
+    "Nginx": 20,
+    "OAuth": 18,
+    "Jenkins": 16,
+    "Ansible": 14,
+    "Prometheus": 12,
+    "Grafana": 10,
+    "RabbitMQ": 8,
+    "Elasticsearch": 7,
+    "Hadoop": 6,
+    "Airflow": 5,
+    "dbt": 4,
+    "Pulumi": 3,
+    "Istio": 2,
 }
 
-# Sort by frequency descending for placement priority
+# Sort by frequency descending
 sorted_pairs = sorted(word_frequencies.items(), key=lambda x: -x[1])
 words = [p[0] for p in sorted_pairs]
 frequencies = [p[1] for p in sorted_pairs]
 n_words = len(words)
 
-# Calculate font sizes with better differentiation (14pt to 58pt range)
-freq_array = np.array(frequencies)
-max_freq, min_freq = freq_array.max(), freq_array.min()
-freq_range = max_freq - min_freq
-font_sizes = 14 + (freq_array - min_freq) / freq_range * 44
-
-# Spiral placement algorithm to avoid overlaps
-placed_boxes = []
-
-
-def get_text_bbox(x, y, word, fsize):
-    """Estimate bounding box for text (width based on char count, height on font size)."""
-    char_width = fsize * 0.012
-    width = len(word) * char_width
-    height = fsize * 0.022
-    return (x - width / 2, y - height / 2, x + width / 2, y + height / 2)
-
-
-def boxes_overlap(box1, box2, padding=0.03):
-    """Check if two boxes overlap with padding."""
-    x1_min, y1_min, x1_max, y1_max = box1
-    x2_min, y2_min, x2_max, y2_max = box2
-    return not (
-        x1_max + padding < x2_min or x2_max + padding < x1_min or y1_max + padding < y2_min or y2_max + padding < y1_min
-    )
-
-
-def find_position(word, fsize, placed):
-    """Find non-overlapping position using spiral search."""
-    # Start from center and spiral outward
-    for radius in np.linspace(0, 1.6, 80):
-        for angle in np.linspace(0, 2 * np.pi, max(8, int(radius * 20))):
-            x = radius * np.cos(angle) * 1.1
-            y = radius * np.sin(angle) * 0.55
-            bbox = get_text_bbox(x, y, word, fsize)
-            # Check bounds
-            if bbox[0] < -1.7 or bbox[2] > 1.7 or bbox[1] < -0.85 or bbox[3] > 0.85:
-                continue
-            # Check overlaps
-            overlap = False
-            for pb in placed:
-                if boxes_overlap(bbox, pb):
-                    overlap = True
-                    break
-            if not overlap:
-                return x, y, bbox
-    # Fallback - place at edge
-    return 1.5, 0.7 - len(placed) * 0.1, get_text_bbox(1.5, 0.7 - len(placed) * 0.1, word, fsize)
-
-
-# Place words using spiral algorithm
+# Spiral-based layout using golden angle for even distribution (no overlap)
+golden_angle = np.pi * (3 - np.sqrt(5))
 x_positions = []
 y_positions = []
-for word, fsize in zip(words, font_sizes, strict=True):
-    x, y, bbox = find_position(word, fsize, placed_boxes)
-    x_positions.append(x)
-    y_positions.append(y)
-    placed_boxes.append(bbox)
+
+for i in range(n_words):
+    angle = i * golden_angle
+    radius = 0.15 * np.sqrt(i + 1)  # Sqrt for even spacing
+    x_positions.append(radius * np.cos(angle) * 2.0)
+    y_positions.append(radius * np.sin(angle) * 1.1)
+
+# Calculate font sizes (14-48pt range for better differentiation)
+freq_array = np.array(frequencies)
+max_freq, min_freq = freq_array.max(), freq_array.min()
+font_sizes = 14 + (freq_array - min_freq) / (max_freq - min_freq) * 34
 
 # Create DataFrame
 df = pd.DataFrame({"word": words, "frequency": frequencies, "x": x_positions, "y": y_positions, "fontsize": font_sizes})
@@ -119,22 +96,22 @@ df = pd.DataFrame({"word": words, "frequency": frequencies, "x": x_positions, "y
 sns.set_theme(style="white", context="poster", font_scale=1.0)
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Use seaborn scatterplot as subtle background layer
+# Use seaborn scatterplot as background layer
 sns.scatterplot(
     data=df,
     x="x",
     y="y",
     size="frequency",
-    sizes=(200, 2500),
+    sizes=(100, 2000),
     hue="frequency",
-    palette="viridis",
+    palette="muted",
     alpha=0.15,
     legend=False,
     ax=ax,
 )
 
-# Add word labels with frequency-based sizing and seaborn palette colors
-colors = sns.color_palette("husl", n_colors=n_words)
+# Add word labels with seaborn muted palette colors
+colors = sns.color_palette("muted", n_colors=10)
 for idx, row_data in df.iterrows():
     ax.text(
         row_data["x"],
@@ -144,12 +121,12 @@ for idx, row_data in df.iterrows():
         fontweight="bold",
         ha="center",
         va="center",
-        color=colors[idx],
+        color=colors[idx % len(colors)],
     )
 
 # Clean up axes for word cloud appearance
-ax.set_xlim(-1.9, 1.9)
-ax.set_ylim(-1.0, 1.05)
+ax.set_xlim(-2.4, 2.4)
+ax.set_ylim(-1.4, 1.4)
 ax.axis("off")
 
 # Title following exact pyplots.ai format

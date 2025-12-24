@@ -1,7 +1,7 @@
 """ pyplots.ai
 waffle-basic: Basic Waffle Chart
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-16
+Quality: 91/100 | Created: 2025-12-24
 """
 
 import altair as alt
@@ -28,7 +28,7 @@ df = pd.DataFrame(squares)
 # Create waffle chart
 chart = (
     alt.Chart(df)
-    .mark_rect(stroke="white", strokeWidth=2, cornerRadius=4)
+    .mark_rect(stroke="white", strokeWidth=3, cornerRadius=6)
     .encode(
         x=alt.X("col:O", axis=None),
         y=alt.Y("row:O", axis=None, sort="descending"),
@@ -37,9 +37,9 @@ chart = (
             scale=alt.Scale(domain=categories, range=colors),
             legend=alt.Legend(
                 title="Category",
-                titleFontSize=22,
-                labelFontSize=18,
-                symbolSize=400,
+                titleFontSize=24,
+                labelFontSize=20,
+                symbolSize=500,
                 orient="right",
                 labelExpr="datum.label + ' (' + {"
                 + ", ".join([f"'{cat}': '{val}%'" for cat, val in zip(categories, values, strict=True)])

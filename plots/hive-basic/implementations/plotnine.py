@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hive-basic: Basic Hive Plot
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-24
@@ -28,53 +28,59 @@ np.random.seed(42)
 
 # Create sample software module dependency network
 # Nodes: modules categorized by type (core, utility, interface)
+# Balanced distribution: 7 core, 7 utility, 7 interface = 21 nodes
 nodes = pd.DataFrame(
     {
         "id": [
+            # Core modules (7)
             "auth",
             "db",
+            "core",
+            "session",
+            "kernel",
+            "runtime",
+            "engine",
+            # Utility modules (7)
             "cache",
             "logger",
             "config",
             "validator",
+            "crypto",
+            "parser",
+            "queue",
+            # Interface modules (7)
             "api",
             "web",
             "cli",
-            "core",
-            "utils",
-            "crypto",
-            "http",
-            "parser",
             "router",
-            "session",
-            "queue",
-            "storage",
-            "monitor",
-            "scheduler",
+            "http",
+            "grpc",
+            "websocket",
         ],
         "category": [
             "core",
             "core",
-            "utility",
-            "utility",
-            "utility",
-            "utility",
-            "interface",
-            "interface",
-            "interface",
+            "core",
+            "core",
+            "core",
+            "core",
             "core",
             "utility",
             "utility",
             "utility",
             "utility",
+            "utility",
+            "utility",
+            "utility",
             "interface",
-            "core",
-            "utility",
-            "utility",
-            "utility",
-            "utility",
+            "interface",
+            "interface",
+            "interface",
+            "interface",
+            "interface",
+            "interface",
         ],
-        "degree": [8, 7, 5, 6, 4, 5, 6, 5, 4, 9, 3, 4, 5, 3, 5, 6, 4, 5, 4, 3],
+        "degree": [8, 7, 9, 6, 5, 4, 6, 5, 6, 4, 5, 4, 3, 4, 6, 5, 4, 5, 5, 3, 4],
     }
 )
 
@@ -108,9 +114,10 @@ edges = pd.DataFrame(
             "session",
             "http",
             "crypto",
-            "queue",
-            "storage",
-            "monitor",
+            "grpc",
+            "websocket",
+            "kernel",
+            "runtime",
         ],
         "target": [
             "auth",
@@ -128,7 +135,7 @@ edges = pd.DataFrame(
             "logger",
             "logger",
             "config",
-            "utils",
+            "validator",
             "logger",
             "db",
             "cache",
@@ -138,10 +145,11 @@ edges = pd.DataFrame(
             "cache",
             "crypto",
             "parser",
-            "utils",
-            "storage",
-            "logger",
-            "logger",
+            "parser",
+            "auth",
+            "session",
+            "runtime",
+            "engine",
         ],
     }
 )
@@ -152,38 +160,27 @@ axis_angles = {"core": 90, "utility": 210, "interface": 330}  # degrees
 axis_colors = {"core": "#306998", "utility": "#FFD43B", "interface": "#4ECDC4"}
 
 # Calculate node positions on axes
-# Nodes positioned along axis by degree (higher degree = further from center)
-
-
-def get_axis_position(category, degree, max_degree, idx_in_axis, count_in_axis):
-    """Calculate Cartesian coordinates for a node on its axis."""
-    angle_deg = axis_angles[category]
-    angle_rad = np.radians(angle_deg)
-
-    # Normalize degree to radial distance (0.3 to 0.95 of axis length)
-    # Add small offset based on index to prevent overlapping
-    base_radius = 0.3 + (degree / max_degree) * 0.6
-    jitter = (idx_in_axis - count_in_axis / 2) * 0.02
-    radius = np.clip(base_radius + jitter, 0.25, 0.98)
-
-    x = radius * np.cos(angle_rad)
-    y = radius * np.sin(angle_rad)
-    return x, y
-
-
-# Assign positions to nodes
 max_degree = nodes["degree"].max()
 
-# Count nodes per category for jittering
+# Count nodes per category for spacing
 category_counts = nodes.groupby("category").cumcount()
 category_totals = nodes.groupby("category")["id"].transform("count")
 
 nodes["idx_in_axis"] = category_counts
 nodes["count_in_axis"] = category_totals
 
+# Calculate positions for each node (flat code, no function)
 positions = []
 for _, row in nodes.iterrows():
-    x, y = get_axis_position(row["category"], row["degree"], max_degree, row["idx_in_axis"], row["count_in_axis"])
+    angle_deg = axis_angles[row["category"]]
+    angle_rad = np.radians(angle_deg)
+
+    # Normalize degree to radial distance (0.25 to 0.90 of axis length)
+    # Space nodes more evenly along axis using index-based positioning
+    base_radius = 0.25 + (row["idx_in_axis"] / max(row["count_in_axis"] - 1, 1)) * 0.65
+
+    x = base_radius * np.cos(angle_rad)
+    y = base_radius * np.sin(angle_rad)
     positions.append({"id": row["id"], "x": x, "y": y, "category": row["category"]})
 
 node_positions = pd.DataFrame(positions)
@@ -193,20 +190,26 @@ axis_lines = []
 for cat, angle in axis_angles.items():
     angle_rad = np.radians(angle)
     axis_lines.append(
-        {"x": 0, "y": 0, "xend": 1.05 * np.cos(angle_rad), "yend": 1.05 * np.sin(angle_rad), "category": cat}
+        {"x": 0, "y": 0, "xend": 1.0 * np.cos(angle_rad), "yend": 1.0 * np.sin(angle_rad), "category": cat}
     )
 axis_df = pd.DataFrame(axis_lines)
 
-# Create edge data with Bezier curves (quadratic approximation using control points)
+# Create edge data with Bezier curves
 edge_data = []
 for _, row in edges.iterrows():
-    src_pos = node_positions[node_positions["id"] == row["source"]].iloc[0]
-    tgt_pos = node_positions[node_positions["id"] == row["target"]].iloc[0]
+    src_match = node_positions[node_positions["id"] == row["source"]]
+    tgt_match = node_positions[node_positions["id"] == row["target"]]
+
+    if len(src_match) == 0 or len(tgt_match) == 0:
+        continue
+
+    src_pos = src_match.iloc[0]
+    tgt_pos = tgt_match.iloc[0]
 
     src_cat = src_pos["category"]
     tgt_cat = tgt_pos["category"]
 
-    # Determine if edge is within same axis or between axes
+    # Determine curve control point based on edge type
     if src_cat == tgt_cat:
         # Same axis: curve inward toward center
         mid_factor = 0.3
@@ -214,7 +217,6 @@ for _, row in edges.iterrows():
         # Different axes: curve through center area
         mid_factor = 0.15
 
-    # Simple curved edge using multiple segments
     # Control point toward center
     ctrl_x = mid_factor * (src_pos["x"] + tgt_pos["x"]) / 2
     ctrl_y = mid_factor * (src_pos["y"] + tgt_pos["y"]) / 2
@@ -240,34 +242,34 @@ axis_labels = []
 for cat, angle in axis_angles.items():
     angle_rad = np.radians(angle)
     axis_labels.append(
-        {"x": 1.18 * np.cos(angle_rad), "y": 1.18 * np.sin(angle_rad), "label": cat.upper(), "category": cat}
+        {"x": 1.12 * np.cos(angle_rad), "y": 1.12 * np.sin(angle_rad), "label": cat.upper(), "category": cat}
     )
 label_df = pd.DataFrame(axis_labels)
 
 # Create the plot
 plot = (
     ggplot()
-    # Draw edges first (behind nodes) with transparency
-    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend"), data=edge_df, color="#888888", size=0.5, alpha=0.25)
+    # Draw edges first (behind nodes) with improved transparency
+    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend"), data=edge_df, color="#666666", size=0.6, alpha=0.5)
     # Draw axis lines
-    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend", color="category"), data=axis_df, size=2.5, alpha=0.7)
+    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend", color="category"), data=axis_df, size=3, alpha=0.8)
     # Draw nodes
-    + geom_point(aes(x="x", y="y", color="category"), data=node_positions, size=6, alpha=0.9)
+    + geom_point(aes(x="x", y="y", color="category"), data=node_positions, size=8, alpha=0.95)
     # Add axis labels
-    + geom_text(aes(x="x", y="y", label="label", color="category"), data=label_df, size=14, fontweight="bold")
+    + geom_text(aes(x="x", y="y", label="label", color="category"), data=label_df, size=16, fontweight="bold")
     # Color scale
     + scale_color_manual(values=axis_colors)
     # Styling
     + coord_fixed(ratio=1)
-    + xlim(-1.4, 1.4)
-    + ylim(-1.4, 1.4)
+    + xlim(-1.3, 1.3)
+    + ylim(-1.3, 1.3)
     + labs(title="hive-basic · plotnine · pyplots.ai")
     + theme_void()
     + theme(
         figure_size=(12, 12),
-        plot_title=element_text(size=22, ha="center", weight="bold"),
+        plot_title=element_text(size=24, ha="center", weight="bold"),
         legend_position="none",
-        plot_margin=0.05,
+        plot_margin=0.02,
     )
 )
 

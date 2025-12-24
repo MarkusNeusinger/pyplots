@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 windrose-basic: Wind Rose Chart
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-24
@@ -154,22 +154,24 @@ for direction in directions:
 
 label_df = pd.DataFrame(label_rows)
 
-# Create frequency labels on gridlines (positioned on right side)
+# Create frequency labels on gridlines (positioned at top of circles for better visibility)
 freq_label_rows = []
 for radius in grid_radii:
-    freq_label_rows.append({"label": f"{radius}%", "x": radius + 1, "y": 0.8})
+    # Position labels at top of each circle (90 degrees) with slight offset
+    angle = math.pi / 2 + 0.15  # Slightly offset from North spoke
+    freq_label_rows.append({"label": f"{radius}%", "x": radius * math.cos(angle) + 1.5, "y": radius * math.sin(angle)})
 
 freq_label_df = pd.DataFrame(freq_label_rows)
 
-# Create legend entries (positioned in top-right corner, outside chart area)
+# Create legend entries (positioned in bottom-right corner, clear of all labels)
 legend_rows = []
-legend_x_base = 16
-legend_y_base = 20
-box_height = 2
-box_width = 3
+legend_x_base = 14
+legend_y_base = -18
+box_height = 1.5
+box_width = 2.0
 
 for i, speed_bin in enumerate(speed_bins):
-    y = legend_y_base - i * (box_height + 0.5)
+    y = legend_y_base - i * (box_height + 0.3)
     # Box polygon
     legend_rows.append({"x": legend_x_base, "y": y, "speed": speed_bin, "legend_id": i})
     legend_rows.append({"x": legend_x_base + box_width, "y": y, "speed": speed_bin, "legend_id": i})
@@ -183,14 +185,14 @@ legend_df["speed"] = pd.Categorical(legend_df["speed"], categories=speed_bins, o
 # Legend text labels
 legend_text_rows = []
 for i, speed_bin in enumerate(speed_bins):
-    y = legend_y_base - i * (box_height + 0.5) - box_height / 2
-    legend_text_rows.append({"label": f"{speed_bin} m/s", "x": legend_x_base + box_width + 1, "y": y})
+    y = legend_y_base - i * (box_height + 0.3) - box_height / 2
+    legend_text_rows.append({"label": f"{speed_bin} m/s", "x": legend_x_base + box_width + 0.8, "y": y})
 
 legend_text_df = pd.DataFrame(legend_text_rows)
 
 # Legend title
 legend_title_df = pd.DataFrame(
-    [{"label": "Wind Speed", "x": legend_x_base + box_width / 2 + 1, "y": legend_y_base + 1.8}]
+    [{"label": "Wind Speed", "x": legend_x_base + box_width / 2 + 0.8, "y": legend_y_base + 1.8}]
 )
 
 # Plot
@@ -210,17 +212,17 @@ plot = (
     )
     # Direction labels
     + geom_text(aes(x="x", y="y", label="label"), data=label_df, size=16, fontweight="bold", color="#333333")
-    # Frequency labels
-    + geom_text(aes(x="x", y="y", label="label"), data=freq_label_df, size=10, color="#666666")
+    # Frequency labels (larger for better readability)
+    + geom_text(aes(x="x", y="y", label="label"), data=freq_label_df, size=14, color="#444444", fontweight="bold")
     # Legend title
-    + geom_text(aes(x="x", y="y", label="label"), data=legend_title_df, size=12, fontweight="bold", color="#333333")
+    + geom_text(aes(x="x", y="y", label="label"), data=legend_title_df, size=14, fontweight="bold", color="#333333")
     # Legend text
-    + geom_text(aes(x="x", y="y", label="label"), data=legend_text_df, size=10, color="#333333", ha="left")
+    + geom_text(aes(x="x", y="y", label="label"), data=legend_text_df, size=12, color="#333333", ha="left")
     # Colors
     + scale_fill_manual(values=speed_colors)
-    # Axis scaling with room for legend
-    + scale_x_continuous(limits=(-25, 30))
-    + scale_y_continuous(limits=(-25, 25))
+    # Axis scaling - balanced limits with room for legend
+    + scale_x_continuous(limits=(-25, 28))
+    + scale_y_continuous(limits=(-30, 25))
     # Title
     + labs(title="windrose-basic · plotnine · pyplots.ai")
     # Theme for clean wind rose appearance

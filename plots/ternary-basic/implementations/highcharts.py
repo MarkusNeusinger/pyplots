@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 ternary-basic: Basic Ternary Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-24
 """
 
 import math
@@ -37,7 +37,6 @@ def ternary_to_cartesian(a, b, c):
     a_norm = a / total
     b_norm = b / total
     c_norm = c / total
-    # x = (1/2)(2b + c) / (a + b + c), y = (sqrt(3)/2) * c / (a + b + c)
     x = 0.5 * (2 * b_norm + c_norm)
     y = (math.sqrt(3) / 2) * a_norm
     return x, y
@@ -69,7 +68,7 @@ chart.options.chart = {
 
 # Title
 chart.options.title = {
-    "text": "Soil Composition \u00b7 ternary-basic \u00b7 highcharts \u00b7 pyplots.ai",
+    "text": "Soil Composition · ternary-basic · highcharts · pyplots.ai",
     "style": {"fontSize": "72px", "fontWeight": "bold"},
 }
 

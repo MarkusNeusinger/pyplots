@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-multi: Multi-Line Comparison Plot
-Library: pygal | Python 3.13
-Quality: pending | Created: 2025-12-24
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-24
 """
 
 import pygal

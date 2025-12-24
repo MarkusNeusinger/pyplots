@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 windrose-basic: Wind Rose Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 58/100 | Created: 2025-12-24
@@ -66,34 +66,31 @@ for dir_center in [0, 45, 90, 135, 180, 225, 270, 315]:
         freq_pct = (count / len(directions)) * 100
         frequencies[speed_labels[j]].append(round(freq_pct, 2))
 
-# Build reverse cumulative values for stacked rendering
-# We add series from strongest (outermost, largest values) to calmest (innermost)
-# This way pygal draws outer ring first, then inner rings overlay on top
-# Cumulative from top: >12 includes all, 9-12 includes up to 9-12, etc.
-reverse_cumulative = {}
-for i, label in enumerate(reversed(speed_labels)):
-    idx = len(speed_labels) - 1 - i  # 4, 3, 2, 1, 0
-    # Sum from bin 0 to bin idx (inclusive)
-    reverse_cumulative[label] = [sum(frequencies[speed_labels[k]][j] for k in range(idx + 1)) for j in range(8)]
+# Build cumulative values for proper stacked rendering
+# Each layer shows the cumulative sum up to that speed range
+# We'll draw from outermost (total) to innermost (calm only)
+cumulative = {}
+for i, label in enumerate(speed_labels):
+    # Sum from bin 0 to bin i (inclusive) - cumulative from calm to strong
+    cumulative[label] = [sum(frequencies[speed_labels[k]][j] for k in range(i + 1)) for j in range(8)]
 
 # Custom style for large canvas - cool to warm colors for wind speeds
-# Meteorological convention: cool colors (calm) → warm colors (strong)
-# Colors in order matching legend (0-3 first = green, >12 last = red)
+# Colors assigned per-series (added strongest first, so colors match that order)
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#222222",
     foreground_subtle="#666666",
-    colors=("#A8D5BA", "#5BA0D0", "#FFD43B", "#FF8C42", "#E74C3C"),  # Calm→Strong
+    colors=("#E74C3C", "#FF8C42", "#FFD43B", "#5BA0D0", "#A8D5BA"),  # Strong→Calm (draw order)
     title_font_size=56,
-    label_font_size=40,
-    major_label_font_size=40,
-    legend_font_size=32,
+    label_font_size=48,
+    major_label_font_size=48,
+    legend_font_size=36,
     value_font_size=28,
     value_label_font_size=28,
     tooltip_font_size=28,
-    stroke_width=2,
+    stroke_width=1,
     opacity=1.0,
     opacity_hover=1.0,
     guide_stroke_width=0.5,
@@ -110,13 +107,13 @@ chart = pygal.Radar(
     show_legend=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=5,
-    legend_box_size=28,
+    legend_box_size=32,
     fill=True,
     stroke=True,
     show_dots=False,
     inner_radius=0,
     truncate_legend=-1,
-    margin=80,
+    margin=100,
     spacing=50,
     show_y_guides=True,
     show_x_guides=False,
@@ -125,12 +122,12 @@ chart = pygal.Radar(
 # Set direction labels
 chart.x_labels = direction_labels
 
-# Add series in legend order (calm→strong: 0-3, 3-6, 6-9, 9-12, >12)
-# Each series uses its cumulative data (inner layers have smaller cumulative values)
-# Pygal draws series in order added, so calm winds appear on top of strong winds
-# This creates the correct visual where strong winds (red) show as the outer ring
-for label in speed_labels:
-    chart.add(label, reverse_cumulative[label])
+# Add series from strongest to calmest (drawing order)
+# Strongest winds drawn first (largest cumulative), then weaker winds overlay on top
+# This creates proper visual stacking where each layer is visible
+reversed_labels = list(reversed(speed_labels))  # [">12 m/s", "9-12 m/s", ...]
+for label in reversed_labels:
+    chart.add(label, cumulative[label])
 
 # Save outputs
 chart.render_to_file("plot.html")

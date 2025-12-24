@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-kde: Histogram with KDE Overlay
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-24
@@ -64,7 +64,7 @@ chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
-    title="histogram-kde · pygal · pyplots.ai",
+    title="histogram-kde \u00b7 pygal \u00b7 pyplots.ai",
     x_title="Daily Return (%)",
     y_title="Probability Density",
     show_dots=False,
@@ -72,15 +72,15 @@ chart = pygal.XY(
     legend_at_bottom=True,
     legend_box_size=24,
     show_y_guides=True,
-    show_x_guides=False,
+    show_x_guides=True,
 )
 
 # Add histogram as filled step area
 chart.add("Histogram", hist_xy, fill=True, stroke_style={"width": 2})
 
-# Add KDE curve with prominent stroke
+# Add KDE curve with prominent stroke for visibility
 kde_data = [(float(x), float(y)) for x, y in zip(x_range, kde, strict=True)]
-chart.add("KDE Curve", kde_data, fill=False, stroke_style={"width": 6})
+chart.add("KDE Curve", kde_data, fill=False, stroke_style={"width": 10})
 
 # Save outputs
 chart.render_to_file("plot.html")

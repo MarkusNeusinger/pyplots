@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 ternary-basic: Basic Ternary Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-24
@@ -7,9 +7,12 @@ Quality: 72/100 | Created: 2025-12-24
 import math
 
 import cairosvg
+import numpy as np
 import pygal
 from pygal.style import Style
 
+
+np.random.seed(42)
 
 # Triangle height for equilateral triangle with base = 1
 H = math.sqrt(3) / 2
@@ -123,62 +126,79 @@ chart = pygal.XY(
     margin_bottom=120,
 )
 
-# Triangle outline
+# Triangle outline (no legend entry - structural element)
 chart.add(
-    "Triangle Boundary",
-    [vertex_clay, vertex_silt, vertex_sand, vertex_clay],
-    stroke=True,
-    show_dots=False,
-    stroke_style={"width": 5},
+    None, [vertex_clay, vertex_silt, vertex_sand, vertex_clay], stroke=True, show_dots=False, stroke_style={"width": 5}
 )
 
-# Grid lines (20% intervals)
-chart.add("Grid (20%)", grid_lines, stroke=True, show_dots=False, stroke_style={"width": 2, "dasharray": "8,5"})
+# Grid lines at 20% intervals (no legend entry - structural element)
+chart.add(None, grid_lines, stroke=True, show_dots=False, stroke_style={"width": 2, "dasharray": "8,5"})
 
-# Data points (soil samples)
+# Data points (soil samples) - the only legend-worthy series
 chart.add("Soil Samples", data_points, stroke=False, dots_size=22)
 
-# Tick marks along edges
-chart.add("Tick Marks", tick_marks, stroke=True, show_dots=False, stroke_style={"width": 3})
+# Tick marks along edges (no legend entry - structural element)
+chart.add(None, tick_marks, stroke=True, show_dots=False, stroke_style={"width": 3})
 
 # Render to SVG string first
 svg_content = chart.render().decode("utf-8")
 
-# Calculate pixel positions for vertex labels
+# Calculate pixel positions for labels (inline conversion - KISS principle)
 # The chart has xrange=(-0.15, 1.15) = 1.30 range and yrange=(-0.20, 1.05) = 1.25 range
-# With 3600px width and margins, we need to calculate positions
 # Approximate: plot area starts after margin and title
 plot_x_start = 150
 plot_x_end = 3450
-plot_y_start = 250  # After title
-plot_y_end = 3350  # Before legend
+plot_y_start = 250
+plot_y_end = 3350
+x_range = 1.30
+y_range = 1.25
 
-x_range = 1.30  # -0.15 to 1.15
-y_range = 1.25  # -0.20 to 1.05
+# Vertex label positions (offset from triangle vertices)
+sand_px = plot_x_start + (0.5 + 0.15) / x_range * (plot_x_end - plot_x_start)
+sand_py = plot_y_start + (1.05 - (H + 0.06)) / y_range * (plot_y_end - plot_y_start)
+silt_px = plot_x_start + (1.07 + 0.15) / x_range * (plot_x_end - plot_x_start)
+silt_py = plot_y_start + (1.05 - (-0.03)) / y_range * (plot_y_end - plot_y_start)
+clay_px = plot_x_start + (-0.07 + 0.15) / x_range * (plot_x_end - plot_x_start)
+clay_py = plot_y_start + (1.05 - (-0.03)) / y_range * (plot_y_end - plot_y_start)
 
-
-def data_to_pixel(x, y):
-    """Convert data coordinates to pixel coordinates."""
-    px = plot_x_start + (x + 0.15) / x_range * (plot_x_end - plot_x_start)
-    # Y is inverted in SVG (0 at top)
-    py = plot_y_start + (1.05 - y) / y_range * (plot_y_end - plot_y_start)
-    return px, py
-
-
-# Get pixel positions for labels (offset slightly from vertices)
-sand_px, sand_py = data_to_pixel(0.5, H + 0.06)
-silt_px, silt_py = data_to_pixel(1.07, -0.03)
-clay_px, clay_py = data_to_pixel(-0.07, -0.03)
-
-# Create SVG text elements for vertex labels
+# Build SVG text elements for vertex labels
 vertex_labels_svg = f"""
   <text x="{sand_px}" y="{sand_py}" text-anchor="middle" font-size="60" font-weight="bold" fill="#333333" font-family="sans-serif">SAND</text>
   <text x="{silt_px}" y="{silt_py}" text-anchor="start" font-size="60" font-weight="bold" fill="#333333" font-family="sans-serif">SILT</text>
   <text x="{clay_px}" y="{clay_py}" text-anchor="end" font-size="60" font-weight="bold" fill="#333333" font-family="sans-serif">CLAY</text>
 """
 
-# Insert labels before the closing </svg> tag
-svg_content = svg_content.replace("</svg>", vertex_labels_svg + "</svg>")
+# Percentage labels along each edge at 20%, 40%, 60%, 80%
+pct_labels_svg = ""
+pct_font_size = 36
+
+for pct in [20, 40, 60, 80]:
+    frac = pct / 100.0
+
+    # Left edge (Clay-Sand): Sand % increases going up, Clay % decreases
+    left_x = 0.5 * frac
+    left_y = H * frac
+    left_px = plot_x_start + (left_x - 0.06 + 0.15) / x_range * (plot_x_end - plot_x_start)
+    left_py = plot_y_start + (1.05 - left_y) / y_range * (plot_y_end - plot_y_start)
+    pct_labels_svg += f'  <text x="{left_px}" y="{left_py}" text-anchor="end" font-size="{pct_font_size}" fill="#666666" font-family="sans-serif">{pct}</text>\n'
+
+    # Right edge (Sand-Silt): Sand % increases going up, Silt % increases going down-right
+    right_x = 0.5 * (2 - frac)
+    right_y = H * frac
+    right_px = plot_x_start + (right_x + 0.04 + 0.15) / x_range * (plot_x_end - plot_x_start)
+    right_py = plot_y_start + (1.05 - right_y) / y_range * (plot_y_end - plot_y_start)
+    pct_labels_svg += f'  <text x="{right_px}" y="{right_py}" text-anchor="start" font-size="{pct_font_size}" fill="#666666" font-family="sans-serif">{pct}</text>\n'
+
+    # Bottom edge (Clay-Silt): Clay % decreases left-to-right, Silt % increases
+    base_x = frac
+    base_y = -0.05
+    base_px = plot_x_start + (base_x + 0.15) / x_range * (plot_x_end - plot_x_start)
+    base_py = plot_y_start + (1.05 - base_y) / y_range * (plot_y_end - plot_y_start)
+    pct_labels_svg += f'  <text x="{base_px}" y="{base_py}" text-anchor="middle" font-size="{pct_font_size}" fill="#666666" font-family="sans-serif">{pct}</text>\n'
+
+# Insert all labels before the closing </svg> tag
+all_labels_svg = vertex_labels_svg + pct_labels_svg
+svg_content = svg_content.replace("</svg>", all_labels_svg + "</svg>")
 
 # Save as SVG for HTML output
 with open("plot.html", "w") as f:

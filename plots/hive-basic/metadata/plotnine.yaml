@@ -1,0 +1,30 @@
+library: plotnine
+specification_id: hive-basic
+created: '2025-12-24T22:18:58Z'
+updated: '2025-12-24T22:46:22Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494684701
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/hive-basic/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hive-basic/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 82
+review:
+  strengths:
+  - Creative implementation of a hive plot using plotnine basic geoms (segments and
+    points) since plotnine has no native network/hive plot support
+  - Excellent use of Bezier curves for edge visualization with appropriate curvature
+    for same-axis vs cross-axis connections
+  - Well-chosen software dependency network example that clearly demonstrates the
+    hive plot concept
+  - Good color scheme with colorblind-accessible palette (blue, yellow, teal)
+  - Node sizing by degree adds meaningful information encoding
+  weaknesses:
+  - Node labels on the UTILITY axis have some crowding (crypto, parser, validator)
+    making them harder to read
+  - The plot occupies the upper portion of the canvas with significant whitespace
+    at the bottom
+  - Node positioning along axes uses index rather than a meaningful metric like degree
+    (spec suggests degree-based positioning)

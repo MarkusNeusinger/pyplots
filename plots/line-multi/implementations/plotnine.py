@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-multi: Multi-Line Comparison Plot
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2025-12-24
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 93/100 | Created: 2025-12-24
 """
 
 import numpy as np

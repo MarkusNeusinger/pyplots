@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 wordcloud-basic: Basic Word Cloud
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-16
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-24
 """
 
 import altair as alt
@@ -39,63 +39,20 @@ word_frequencies = {
     "GraphQL": 22,
 }
 
-# Scale frequencies to font sizes (20-80 for Altair text marks)
+# Canvas dimensions
+canvas_w = 1600
+canvas_h = 900
+
+# Scale frequencies to font sizes (24-80 for Altair text marks)
 min_freq = min(word_frequencies.values())
 max_freq = max(word_frequencies.values())
 min_size = 24
 max_size = 80
 
+# Color palette using Python colors and complementary tones
+color_palette = ["#306998", "#FFD43B", "#4B8BBE", "#646464", "#3776AB", "#FFE873"]
 
-def scale_size(freq):
-    """Scale frequency to font size."""
-    return int(min_size + (freq - min_freq) / (max_freq - min_freq) * (max_size - min_size))
-
-
-def estimate_width(word, size):
-    """Estimate word width for collision detection."""
-    return len(word) * size * 0.6
-
-
-def estimate_height(size):
-    """Estimate word height for collision detection."""
-    return size * 1.3
-
-
-def boxes_overlap(box1, box2, padding=30):
-    """Check if two boxes overlap with padding."""
-    x1, y1, w1, h1 = box1
-    x2, y2, w2, h2 = box2
-    return not (x1 + w1 + padding < x2 or x2 + w2 + padding < x1 or y1 + h1 + padding < y2 or y2 + h2 + padding < y1)
-
-
-def find_position(word, size, placed, canvas_w=1600, canvas_h=900):
-    """Find non-overlapping position using spiral algorithm."""
-    w = estimate_width(word, size)
-    h = estimate_height(size)
-    cx, cy = canvas_w / 2, canvas_h / 2
-
-    angle = 0
-    radius = 0
-
-    for _ in range(8000):
-        # Elliptical spiral for 16:9 aspect ratio
-        x = cx + radius * 1.6 * np.cos(angle) - w / 2
-        y = cy + radius * np.sin(angle) - h / 2
-
-        # Check bounds (leave margin for title and edges)
-        if 50 < x < canvas_w - w - 50 and 80 < y < canvas_h - h - 50:
-            box = (x, y, w, h)
-            if not any(boxes_overlap(box, pb) for pb in placed):
-                return x + w / 2, y + h / 2, box
-
-        angle += 0.25
-        radius += 2
-
-    # Fallback position
-    return cx, cy, (cx - w / 2, cy - h / 2, w, h)
-
-
-# Build dataframe with positions
+# Build data with spiral positioning
 words_list = []
 x_positions = []
 y_positions = []
@@ -106,16 +63,57 @@ placed_boxes = []
 # Sort by frequency (largest first for better placement)
 sorted_words = sorted(word_frequencies.items(), key=lambda x: x[1], reverse=True)
 
-color_palette = ["#306998", "#FFD43B", "#4B8BBE", "#646464", "#3776AB", "#FFE873"]
-
 for i, (word, freq) in enumerate(sorted_words):
-    size = scale_size(freq)
-    x, y, box = find_position(word, size, placed_boxes)
-    placed_boxes.append(box)
+    # Scale frequency to font size
+    size = int(min_size + (freq - min_freq) / (max_freq - min_freq) * (max_size - min_size))
 
+    # Estimate word dimensions
+    word_width = len(word) * size * 0.6
+    word_height = size * 1.3
+    padding = 30
+
+    # Find position using spiral algorithm
+    cx, cy = canvas_w / 2, canvas_h / 2
+    angle = 0
+    radius = 0
+    found_x, found_y = cx, cy
+    found_box = (cx - word_width / 2, cy - word_height / 2, word_width, word_height)
+
+    for _ in range(8000):
+        # Elliptical spiral for 16:9 aspect ratio
+        x = cx + radius * 1.6 * np.cos(angle) - word_width / 2
+        y = cy + radius * np.sin(angle) - word_height / 2
+
+        # Check bounds (leave margin for title and edges)
+        if 50 < x < canvas_w - word_width - 50 and 80 < y < canvas_h - word_height - 50:
+            box = (x, y, word_width, word_height)
+
+            # Check for overlaps with placed words
+            has_overlap = False
+            for pb in placed_boxes:
+                px, py, pw, ph = pb
+                if not (
+                    x + word_width + padding < px
+                    or px + pw + padding < x
+                    or y + word_height + padding < py
+                    or py + ph + padding < y
+                ):
+                    has_overlap = True
+                    break
+
+            if not has_overlap:
+                found_x = x + word_width / 2
+                found_y = y + word_height / 2
+                found_box = box
+                break
+
+        angle += 0.25
+        radius += 2
+
+    placed_boxes.append(found_box)
     words_list.append(word)
-    x_positions.append(x)
-    y_positions.append(y)
+    x_positions.append(found_x)
+    y_positions.append(found_y)
     font_sizes.append(size)
     colors.append(color_palette[i % len(color_palette)])
 
@@ -127,14 +125,16 @@ chart = (
     alt.Chart(df)
     .mark_text(fontWeight="bold")
     .encode(
-        x=alt.X("x:Q", scale=alt.Scale(domain=[0, 1600]), axis=None),
-        y=alt.Y("y:Q", scale=alt.Scale(domain=[0, 900]), axis=None),
+        x=alt.X("x:Q", scale=alt.Scale(domain=[0, canvas_w]), axis=None),
+        y=alt.Y("y:Q", scale=alt.Scale(domain=[0, canvas_h]), axis=None),
         text="word:N",
         size=alt.Size("size:Q", scale=None, legend=None),
         color=alt.Color("color:N", scale=None, legend=None),
     )
     .properties(
-        width=1600, height=900, title=alt.Title("wordcloud-basic · altair · pyplots.ai", fontSize=28, anchor="middle")
+        width=canvas_w,
+        height=canvas_h,
+        title=alt.Title("wordcloud-basic · altair · pyplots.ai", fontSize=28, anchor="middle"),
     )
     .configure_view(strokeWidth=0)
 )

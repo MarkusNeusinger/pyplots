@@ -1,0 +1,28 @@
+library: letsplot
+specification_id: windrose-basic
+created: '2025-12-24T22:24:01Z'
+updated: '2025-12-24T22:32:15Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494712306
+issue: 0
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/letsplot/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent polar coordinate implementation with correct North orientation and clockwise
+    direction
+  - Professional color scheme progressing from cool to warm that is colorblind-accessible
+  - Realistic wind data simulation with Weibull distribution and direction-dependent
+    speed variation
+  - Clean 16-sector binning with appropriate speed categories matching meteorological
+    conventions
+  - Good use of coord_polar with proper start=0 and direction=1 parameters
+  weaknesses:
+  - No lets-plot distinctive features used (tooltips, interactivity exported to HTML
+    could be enhanced)
+  - Radial axis label Frequency (%) appears on left side which is unconventional for
+    polar plots

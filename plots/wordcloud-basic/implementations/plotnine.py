@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 wordcloud-basic: Basic Word Cloud
-Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 72/100 | Created: 2025-12-24
+Library: plotnine 0.15.2 | Python 3.13
 """
 
 import numpy as np
@@ -101,9 +100,9 @@ words_data = {
 
 df = pd.DataFrame(words_data)
 
-# Calculate font sizes scaled by frequency (range 10-36 for readability)
+# Calculate font sizes scaled by frequency (range 14-48 for better visual impact)
 min_freq, max_freq = df["frequency"].min(), df["frequency"].max()
-df["size"] = 10 + (df["frequency"] - min_freq) / (max_freq - min_freq) * 26
+df["size"] = 14 + (df["frequency"] - min_freq) / (max_freq - min_freq) * 34
 
 # Sort by frequency descending for placement (largest words first)
 df = df.sort_values("frequency", ascending=False).reset_index(drop=True)
@@ -113,21 +112,22 @@ np.random.seed(42)
 width, height = 100, 56.25
 center_x, center_y = width / 2, height / 2
 
-# Define rings with word counts: inner ring has fewer, larger words
+# Define rings with word counts: fewer center words with better spacing
 rings = [
-    {"count": 5, "radius": 0, "y_offset": 0},  # Center - 5 largest words
-    {"count": 8, "radius": 16, "y_offset": 0},  # Ring 1
-    {"count": 10, "radius": 28, "y_offset": 0},  # Ring 2
-    {"count": 12, "radius": 40, "y_offset": 0},  # Ring 3 (outer)
+    {"count": 3, "radius": 0},  # Center - only 3 largest words
+    {"count": 6, "radius": 12},  # Ring 1 - close inner ring
+    {"count": 8, "radius": 20},  # Ring 2
+    {"count": 9, "radius": 30},  # Ring 3
+    {"count": 9, "radius": 42},  # Ring 4 (outer)
 ]
 
 positions_x = []
 positions_y = []
 word_idx = 0
 
-# Place center words in a horizontal line with spacing
-center_words = 5
-center_spacing = 14
+# Place center words in a horizontal line with generous spacing
+center_words = 3
+center_spacing = 22
 center_start_x = center_x - (center_words - 1) * center_spacing / 2
 for i in range(center_words):
     x = center_start_x + i * center_spacing
@@ -136,20 +136,22 @@ for i in range(center_words):
     positions_y.append(y)
 word_idx = center_words
 
-# Place remaining words in concentric rings
-for ring in rings[1:]:
+# Place remaining words in concentric rings with vertical spread
+for ring_idx, ring in enumerate(rings[1:]):
     ring_count = min(ring["count"], len(df) - word_idx)
     if ring_count <= 0:
         break
+    # Offset starting angle for each ring to avoid alignment
+    start_angle = ring_idx * 0.4
     for i in range(ring_count):
-        angle = (2 * np.pi * i / ring_count) + np.random.uniform(-0.1, 0.1)
-        # Adjust radius based on 16:9 aspect ratio
-        x = center_x + ring["radius"] * np.cos(angle) * 1.1
-        y = center_y + ring["radius"] * np.sin(angle) * 0.6
+        angle = start_angle + (2 * np.pi * i / ring_count)
+        # Better aspect ratio adjustment for vertical spread
+        x = center_x + ring["radius"] * np.cos(angle) * 1.15
+        y = center_y + ring["radius"] * np.sin(angle) * 0.55
 
-        # Keep within bounds
-        x = np.clip(x, 12, width - 12)
-        y = np.clip(y, 6, height - 6)
+        # Keep within bounds with better margins
+        x = np.clip(x, 10, width - 10)
+        y = np.clip(y, 5, height - 5)
 
         positions_x.append(x)
         positions_y.append(y)

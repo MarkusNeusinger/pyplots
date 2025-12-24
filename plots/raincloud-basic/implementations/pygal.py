@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-24
@@ -27,7 +27,7 @@ data["Treatment B"] = np.append(data["Treatment B"], [480, 180])
 group_colors = ["#306998", "#FFD43B", "#4CAF50"]
 palette = tuple(group_colors) + tuple(group_colors) + ("#333333", "#333333", "#333333")
 
-# Custom style for 4800x2700 px canvas - NO legend box
+# Custom style for 4800x2700 px canvas - with legend enabled
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -38,13 +38,13 @@ custom_style = Style(
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
-    legend_font_size=0,  # Hide legend text completely
+    legend_font_size=36,  # Legend for group identification
     value_font_size=36,
     opacity=0.6,  # Balanced opacity for visibility
     opacity_hover=0.8,
 )
 
-# Create XY chart for raincloud plot - legend fully disabled
+# Create XY chart for raincloud plot - legend enabled for group identification
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -52,8 +52,8 @@ chart = pygal.XY(
     title="raincloud-basic · pygal · pyplots.ai",
     x_title="Treatment Group",
     y_title="Reaction Time (ms)",
-    show_legend=False,  # Disable legend display
-    legend_at_bottom=False,  # Ensure no bottom legend
+    show_legend=True,  # Enable legend for group identification
+    legend_at_bottom=True,  # Place legend at bottom for better layout
     stroke=True,
     fill=True,
     dots_size=0,
@@ -132,7 +132,7 @@ for _category, rain_points, _color in rain_data:
         rain_points,
         stroke=False,
         fill=False,
-        dots_size=12,
+        dots_size=18,  # Larger points for better visibility at full resolution
     )
 
 # Add box plots last (no color needed, use black strokes)
@@ -150,9 +150,9 @@ for center_x, median, q1, q3, whisker_low, whisker_high in box_data:
     ]
     chart.add(None, quartile_box, stroke=True, fill=False, show_dots=False, stroke_style={"width": 8})
 
-    # Median line - thicker and more prominent
-    median_line = [(center_x + box_offset - box_width * 1.3, median), (center_x + box_offset + box_width * 1.3, median)]
-    chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 12})
+    # Median line - significantly thicker and more prominent for distinction from quartile box
+    median_line = [(center_x + box_offset - box_width * 1.5, median), (center_x + box_offset + box_width * 1.5, median)]
+    chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 16, "dasharray": "0"})
 
     # Whiskers - thicker lines
     whisker_top = [(center_x + box_offset, q3), (center_x + box_offset, whisker_high)]

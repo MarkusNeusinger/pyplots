@@ -1,17 +1,26 @@
 library: highcharts
 specification_id: waffle-basic
-created: 2025-12-16 22:01:07+00:00
-updated: 2025-12-16 22:01:07+00:00
+created: '2025-12-24T09:53:24Z'
+updated: '2025-12-24T10:02:59Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20283944804
-issue: 998
+workflow_run: 20483448940
+issue: 0
 python_version: 3.13.11
-library_version: 1.10.3
+library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/highcharts/plot.html
-quality_score: 95
+quality_score: 92
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent implementation using scatter plot with square markers to create waffle
+    grid effect
+  - Perfect colorblind-safe palette with Python blue and complementary colors
+  - Clean white borders between squares enhance visual separation
+  - Legend includes percentages making data immediately interpretable
+  - Correct title format following pyplots.ai convention
+  - Grid fills logically from bottom to top
+  - Both PNG and HTML outputs generated correctly
+  weaknesses:
+  - Category names are generic (Product A/B/C/D) rather than a realistic scenario
+    like budget allocation or survey responses

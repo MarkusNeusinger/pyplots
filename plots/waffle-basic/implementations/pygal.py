@@ -1,7 +1,7 @@
 """ pyplots.ai
 waffle-basic: Basic Waffle Chart
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-16
+Quality: 91/100 | Created: 2025-12-24
 """
 
 import sys
@@ -52,9 +52,8 @@ class Waffle(Graph):
         grid_height = self.rows * (square_size + gap) - gap
 
         # Calculate the actual plot area boundaries
-        # view.y(rows) gives the top of the plot area in SVG coordinates
         x_start = self.view.x(0)
-        y_start = self.view.y(self.rows)  # Top of the plot area in SVG coordinates
+        y_start = self.view.y(self.rows)
 
         # Center the grid within the plot area
         x_offset = x_start + (plot_width - grid_width) / 2
@@ -103,7 +102,6 @@ class Waffle(Graph):
 
     def _compute(self):
         """Compute the box for rendering."""
-        # Set basic box dimensions
         self._box.xmin = 0
         self._box.xmax = self.cols
         self._box.ymin = 0

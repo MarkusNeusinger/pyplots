@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-regression-linear: Scatter Plot with Linear Regression
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 78/100 | Created: 2025-12-24
+Quality: 90/100 | Created: 2025-12-24
 """
 
 import numpy as np

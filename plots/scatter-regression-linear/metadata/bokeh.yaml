@@ -1,0 +1,27 @@
+library: bokeh
+specification_id: scatter-regression-linear
+created: '2025-12-24T21:29:46Z'
+updated: '2025-12-24T21:36:09Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494137046
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - 'Excellent implementation of all spec requirements: regression line, confidence
+    band, R² value, and equation annotation'
+  - Clean, readable code following KISS principles with proper random seed
+  - Good color contrast between blue scatter points and yellow regression line
+  - Realistic educational scenario with plausible data distribution
+  - Proper use of Bokeh ColumnDataSource and Band for the confidence interval
+  weaknesses:
+  - Some exam scores exceed 100% which is unrealistic for percentage scores
+  - Legend positioned far from the annotation; could be consolidated or moved closer
+    to the statistical information
+  - Does not leverage Bokeh distinctive interactive features (hover tooltips showing
+    point values would enhance the visualization)

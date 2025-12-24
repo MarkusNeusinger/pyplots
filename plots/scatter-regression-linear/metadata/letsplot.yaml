@@ -1,0 +1,29 @@
+library: letsplot
+specification_id: scatter-regression-linear
+created: '2025-12-24T21:30:06Z'
+updated: '2025-12-24T21:36:54Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494139106
+issue: 0
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/letsplot/plot.html
+quality_score: 93
+review:
+  strengths:
+  - 'Excellent implementation of all spec requirements: regression line, 95% CI band,
+    R² annotation, and equation'
+  - Clean, publication-quality visualization with proper color scheme and contrast
+  - Interactive tooltips enhance the lets-plot experience by showing individual data
+    point values on hover
+  - Well-positioned annotation that does not overlap with data points
+  - Realistic business analytics scenario that clearly demonstrates the purpose of
+    regression analysis
+  weaknesses:
+  - Grid styling uses dashed lines which may be slightly distracting; solid subtle
+    lines might be cleaner
+  - Wildcard import pattern (from lets_plot import *) is necessary but not ideal
+  - Points could be slightly larger (size=6-7) for optimal visibility at 100 data
+    points

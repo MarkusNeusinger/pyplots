@@ -63,13 +63,13 @@ Track progress of regenerating all implementations using the stricter evaluation
 - [x] sunburst-basic ✓ (7/9: 88-92, plotnine+pygal not-feasible)
 - [x] surface-basic ✓ (6/9: 87-91, seaborn+plotnine+pygal not-feasible)
 - [x] swarm-basic ✓ (91-94)
-- [ ] ternary-basic
-- [ ] treemap-basic
+- [x] ternary-basic ✓ (8/9: 62-92, pygal 62 after 3 attempts)
+- [x] treemap-basic ✓ (91-92)
 - [x] violin-basic ✓ (91-92)
-- [ ] waffle-basic
-- [ ] waterfall-basic
-- [ ] wireframe-3d-basic
-- [ ] wordcloud-basic
+- [x] waffle-basic ✓ (91-92)
+- [x] waterfall-basic ✓ (90-97)
+- [x] wireframe-3d-basic ✓ (6/9: 82-92, seaborn+plotnine+pygal not-feasible)
+- [x] wordcloud-basic ✓ (68-92, plotnine 68 after 3 attempts, bokeh 78 after 3 attempts, seaborn 78 after 3 attempts)
 
 ## Notes
 - Started: 2025-12-23

@@ -98,6 +98,10 @@ function App() {
   // Handle card click - open modal
   const handleCardClick = useCallback(
     (img: PlotImage) => {
+      // Blur any focused element to prevent aria-hidden conflict
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
       setModalImage(img);
       trackEvent('modal_open', { spec: img.spec_id || '', library: img.library });
     },

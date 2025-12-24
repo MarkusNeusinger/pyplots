@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 alluvial-basic: Basic Alluvial Diagram
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-24
+Quality: 91/100 | Created: 2025-12-24
 """
 
 import matplotlib.patches as mpatches

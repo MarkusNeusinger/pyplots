@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: alluvial-basic
 created: '2025-12-24T22:18:59Z'
-updated: '2025-12-24T22:27:24Z'
+updated: '2025-12-24T22:36:50Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20494683116
 issue: 0
@@ -10,22 +10,17 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 88
+quality_score: 91
 review:
   strengths:
-  - Excellent colorblind-safe color palette with distinct, meaningful colors for each
-    party
-  - Clean implementation of alluvial diagram using Bezier curves for smooth flow bands
-  - Appropriate use of transparency (alpha=0.35) for overlapping flows as specified
-  - Realistic, comprehensible voter migration scenario with actual election years
-  - Well-organized data structure with clear flow transition matrices
-  - Proper seaborn styling applied (whitegrid, talk context)
-  - Good legend placement and subtitle explanation
+  - Excellent visual clarity with well-chosen colorblind-safe palette
+  - Smooth Bezier curves for flow bands create professional appearance
+  - Proper use of transparency (alpha=0.35) allows overlapping flows to remain readable
+  - Labels on both left and right sides improve readability without a separate legend
+  - Title follows exact spec format
+  - Realistic election data scenario that clearly demonstrates voter migration patterns
+  - Clean white background with no distracting grid elements
   weaknesses:
-  - Title format includes extra content beyond required spec-id · library · pyplots.ai
-    format
-  - Limited use of seaborn-specific features - mostly matplotlib drawing with seaborn
-    styling only
-  - Party labels on left side only - could be mirrored on right for balance
-  - Some flow data inconsistencies (e.g., 2016->2020 Other flows sum to 26.9 but Other
-    only had 4.5M voters in 2016)
+  - Seaborn used only for styling (set_style, set_context) rather than core plotting
+    functions - acceptable since seaborn has no native alluvial support
+  - No units or scale information displayed on the diagram

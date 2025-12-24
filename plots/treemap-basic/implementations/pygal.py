@@ -1,14 +1,14 @@
-""" pyplots.ai
+"""pyplots.ai
 treemap-basic: Basic Treemap
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-14
+Library: pygal | Python 3.13
+Quality: pending | Created: 2025-12-24
 """
 
 import pygal
 from pygal.style import Style
 
 
-# Data - Budget allocation by department and project
+# Data - Budget allocation by department and project (in $K)
 data = {
     "Engineering": [
         {"value": 450, "label": "R&D"},
@@ -32,7 +32,7 @@ data = {
     ],
 }
 
-# Custom style for 4800x2700 px
+# Custom style for 4800x2700 px canvas
 custom_style = Style(
     background="white",
     plot_background="white",

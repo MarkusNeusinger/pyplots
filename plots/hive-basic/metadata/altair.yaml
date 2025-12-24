@@ -1,7 +1,7 @@
 library: altair
 specification_id: hive-basic
 created: '2025-12-24T22:18:58Z'
-updated: '2025-12-24T22:27:12Z'
+updated: '2025-12-24T22:36:25Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20494684740
 issue: 0
@@ -10,24 +10,23 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/hive-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hive-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hive-basic/altair/plot.html
-quality_score: 78
+quality_score: 81
 review:
   strengths:
   - Excellent realistic software dependency scenario that perfectly fits the hive
     plot use case
+  - KISS principle now followed with inline polar-to-cartesian calculations
   - Clean color scheme with Python-inspired blue and yellow plus complementary teal
-  - Good edge transparency (0.4) prevents hairball effect while showing connections
-  - Proper 3-axis hive plot structure with meaningful axis assignment (Core/Utility/Interface)
-  - Includes tooltips for interactive exploration when viewing HTML version
-  - Node positioning based on importance creates meaningful hierarchy within each
-    axis
+  - Good edge transparency (0.35) prevents hairball effect while showing connection
+    structure
+  - Proper 3-axis hive plot structure with meaningful axis assignment by module type
+  - Includes tooltips for interactive exploration in HTML version
+  - Square canvas format appropriate for radial plot
   weaknesses:
-  - Layout has poor canvas utilization - plot is centered in upper portion leaving
+  - Canvas utilization still suboptimal - plot occupies mainly upper portion with
     ~40% empty space at bottom
-  - Uses helper function polar_to_cartesian violating KISS principle - should inline
-    the calculations
-  - Legend is redundant since axis labels already show module types with colors
-  - Some label overlap on the Interface axis where nodes are closer together
-  - Does not leverage Altair data transformation capabilities - manual position calculation
-    is not idiomatic Altair
-  - Font sizes could be larger for better readability at target resolution
+  - Legend appears despite legend=None in code - may need global configure to fully
+    disable
+  - Some label crowding on Interface axis where lower-importance nodes cluster
+  - np.random.seed(42) set but no random generation actually used - unnecessary import
+  - Does not leverage Altair data transformation capabilities for position calculation

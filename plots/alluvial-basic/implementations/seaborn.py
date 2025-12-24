@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 alluvial-basic: Basic Alluvial Diagram
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-24
@@ -77,10 +77,10 @@ flows = [
         ("Independent", "Republican"): 1.5,
         ("Independent", "Independent"): 0.5,
         ("Independent", "Other"): 0.3,
-        ("Other", "Democratic"): 12.3,
-        ("Other", "Republican"): 12.2,
-        ("Other", "Independent"): 1.7,
-        ("Other", "Other"): 0.7,
+        ("Other", "Democratic"): 2.0,
+        ("Other", "Republican"): 1.5,
+        ("Other", "Independent"): 0.5,
+        ("Other", "Other"): 0.5,
     },
     # 2020 -> 2024
     {
@@ -140,13 +140,24 @@ for year_idx, year in enumerate(years):
         )
         ax.add_patch(rect)
 
-        # Add party labels on first column only (right side has legend)
+        # Add party labels on both first and last columns for balance
         if year_idx == 0:
             ax.text(
                 x - bar_width / 2 - 0.15,
                 (y_bottom + y_top) / 2,
                 party,
                 ha="right",
+                va="center",
+                fontsize=16,
+                fontweight="bold",
+                color=party_colors[party],
+            )
+        elif year_idx == n_years - 1:
+            ax.text(
+                x + bar_width / 2 + 0.15,
+                (y_bottom + y_top) / 2,
+                party,
+                ha="left",
                 va="center",
                 fontsize=16,
                 fontweight="bold",
@@ -223,7 +234,7 @@ for flow_idx, flow_dict in enumerate(flows):
         target_offsets[target_party] = y1_top
 
 # Styling
-ax.set_xlim(-2.0, 12.5)
+ax.set_xlim(-2.5, 13.0)
 ax.set_ylim(-5, 115)
 ax.set_aspect("auto")
 
@@ -237,13 +248,8 @@ ax.spines["left"].set_visible(False)
 ax.set_facecolor("white")
 fig.patch.set_facecolor("white")
 
-# Title
-ax.set_title(
-    "US Voter Migration 2012-2024 \u00b7 alluvial-basic \u00b7 seaborn \u00b7 pyplots.ai",
-    fontsize=24,
-    fontweight="bold",
-    pad=20,
-)
+# Title (strictly following spec-id · library · pyplots.ai format)
+ax.set_title("alluvial-basic \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24, fontweight="bold", pad=20)
 
 # Add subtitle
 ax.text(
@@ -257,11 +263,7 @@ ax.text(
     style="italic",
 )
 
-# Create legend - position below the title on the right
-legend_patches = [mpatches.Patch(color=party_colors[party], label=party) for party in parties]
-ax.legend(
-    handles=legend_patches, loc="lower right", fontsize=14, framealpha=0.9, edgecolor="none", bbox_to_anchor=(1.0, 0.0)
-)
+# Legend not needed - party labels are shown on both left and right sides
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")

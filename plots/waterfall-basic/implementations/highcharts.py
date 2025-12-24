@@ -1,7 +1,7 @@
 """ pyplots.ai
 waterfall-basic: Basic Waterfall Chart
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 90/100 | Created: 2025-12-14
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-24
 """
 
 import json
@@ -27,16 +27,17 @@ categories = [
 ]
 
 # Values: positive = increase, negative = decrease
-# Revenue (start as intermediate sum), costs (negative), and final net income (total)
+# Revenue (start), costs (negative), income (positive), and final net income (total)
+# Using colorblind-safe colors: Python Blue for totals, teal for increases, orange for decreases
 values = [
-    {"y": 500000, "isIntermediateSum": False, "color": "#306998"},  # Revenue - starting total (blue)
-    {"y": -150000, "color": "#DC2626"},  # Product Costs (red)
-    {"y": -80000, "color": "#DC2626"},  # Operating Expenses (red)
-    {"y": -45000, "color": "#DC2626"},  # Marketing (red)
-    {"y": -35000, "color": "#DC2626"},  # R&D (red)
-    {"y": 20000, "color": "#22C55E"},  # Other Income (green)
-    {"y": -52000, "color": "#DC2626"},  # Taxes (red)
-    {"isSum": True, "color": "#306998"},  # Net Income - ending total (blue)
+    {"y": 500000, "isIntermediateSum": False, "color": "#306998"},  # Revenue - starting total (Python Blue)
+    {"y": -150000, "color": "#E67300"},  # Product Costs (orange - decrease)
+    {"y": -80000, "color": "#E67300"},  # Operating Expenses (orange - decrease)
+    {"y": -45000, "color": "#E67300"},  # Marketing (orange - decrease)
+    {"y": -35000, "color": "#E67300"},  # R&D (orange - decrease)
+    {"y": 20000, "color": "#17BECF"},  # Other Income (teal - increase)
+    {"y": -52000, "color": "#E67300"},  # Taxes (orange - decrease)
+    {"isSum": True, "color": "#306998"},  # Net Income - ending total (Python Blue)
 ]
 
 # Chart options for Highcharts waterfall
@@ -82,8 +83,8 @@ chart_options = {
         {
             "name": "Financial Breakdown",
             "data": values,
-            "upColor": "#22C55E",  # Green for positive changes
-            "color": "#DC2626",  # Red for negative changes
+            "upColor": "#17BECF",  # Teal for positive changes (colorblind-safe)
+            "color": "#E67300",  # Orange for negative changes (colorblind-safe)
         }
     ],
 }

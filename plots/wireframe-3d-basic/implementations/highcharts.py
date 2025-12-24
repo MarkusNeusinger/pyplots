@@ -1,7 +1,7 @@
 """ pyplots.ai
 wireframe-3d-basic: Basic 3D Wireframe Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-16
+Library: highcharts unknown | Python 3.13.11
+Quality: 90/100 | Created: 2025-12-24
 """
 
 import json
@@ -17,7 +17,7 @@ from selenium.webdriver.chrome.options import Options
 
 # Data - 3D ripple function z = sin(sqrt(x^2 + y^2))
 np.random.seed(42)
-n_points = 25  # Grid size for clarity
+n_points = 18  # Grid size optimized for wireframe clarity
 x = np.linspace(-5, 5, n_points)
 y = np.linspace(-5, 5, n_points)
 X, Y = np.meshgrid(x, y)
@@ -41,9 +41,9 @@ for i in range(n_points):
     for j in range(n_points):
         line_data.append(
             [
-                float(X[i, j]),
-                float(Z[i, j]),  # Height is Z value
-                float(Y[i, j]),  # Depth is Y grid position
+                float(X[i, j]),  # X axis
+                float(Y[i, j]),  # Y axis (corrected)
+                float(Z[i, j]),  # Z axis (height)
             ]
         )
     x_line_series.append(
@@ -51,7 +51,7 @@ for i in range(n_points):
             "type": "scatter3d",
             "data": line_data,
             "color": "#306998",
-            "lineWidth": 4,
+            "lineWidth": 6,
             "showInLegend": False,
             "marker": {"enabled": False},
         }
@@ -62,13 +62,13 @@ y_line_series = []
 for j in range(n_points):
     line_data = []
     for i in range(n_points):
-        line_data.append([float(X[i, j]), float(Z[i, j]), float(Y[i, j])])
+        line_data.append([float(X[i, j]), float(Y[i, j]), float(Z[i, j])])
     y_line_series.append(
         {
             "type": "scatter3d",
             "data": line_data,
             "color": "#1e4c73",
-            "lineWidth": 4,
+            "lineWidth": 6,
             "showInLegend": False,
             "marker": {"enabled": False},
         }
@@ -78,6 +78,7 @@ all_series = x_line_series + y_line_series
 series_json = json.dumps(all_series)
 
 # Highcharts chart configuration with 3D scatter and lines
+# Improved canvas utilization with better viewing angle and larger 3D frame
 chart_config = f"""
 Highcharts.chart('container', {{
     chart: {{
@@ -88,75 +89,83 @@ Highcharts.chart('container', {{
         backgroundColor: '#ffffff',
         options3d: {{
             enabled: true,
-            alpha: 12,
-            beta: 25,
-            depth: 400,
-            viewDistance: 6,
+            alpha: 18,
+            beta: 30,
+            depth: 900,
+            viewDistance: 5,
             fitToPlot: true,
             frame: {{
-                bottom: {{ size: 1, color: 'rgba(0,0,0,0.06)' }},
-                back: {{ size: 1, color: 'rgba(0,0,0,0.04)' }},
-                side: {{ size: 1, color: 'rgba(0,0,0,0.04)' }}
+                bottom: {{ size: 3, color: 'rgba(48, 105, 152, 0.15)' }},
+                back: {{ size: 3, color: 'rgba(48, 105, 152, 0.10)' }},
+                side: {{ size: 3, color: 'rgba(48, 105, 152, 0.12)' }}
             }}
         }},
-        marginTop: 220,
-        marginBottom: 220,
-        marginLeft: 200,
-        marginRight: 200
+        marginTop: 180,
+        marginBottom: 200,
+        marginLeft: 120,
+        marginRight: 120,
+        spacingTop: 10,
+        spacingBottom: 60,
+        spacingLeft: 30,
+        spacingRight: 30
     }},
     title: {{
         text: 'wireframe-3d-basic · highcharts · pyplots.ai',
-        style: {{ fontSize: '72px', fontWeight: 'bold' }}
+        style: {{ fontSize: '80px', fontWeight: 'bold' }},
+        y: 70
     }},
     subtitle: {{
         text: 'z = sin(√(x² + y²))',
-        style: {{ fontSize: '48px', color: '#666666' }}
+        style: {{ fontSize: '56px', color: '#555555' }},
+        y: 130
     }},
     xAxis: {{
         min: -5,
         max: 5,
-        tickInterval: 2,
+        tickInterval: 2.5,
         title: {{
-            text: 'X',
-            style: {{ fontSize: '48px', color: '#306998', fontWeight: 'bold' }},
-            margin: 40
+            text: 'X Position (units)',
+            style: {{ fontSize: '52px', color: '#306998', fontWeight: 'bold' }},
+            margin: 50
         }},
         labels: {{
-            style: {{ fontSize: '32px' }},
+            style: {{ fontSize: '40px' }},
             format: '{{value}}'
         }},
-        gridLineWidth: 1,
-        gridLineColor: 'rgba(0, 0, 0, 0.1)'
+        gridLineWidth: 2,
+        gridLineColor: 'rgba(0, 0, 0, 0.15)'
     }},
     yAxis: {{
+        min: -5,
+        max: 5,
+        tickInterval: 2.5,
+        title: {{
+            text: 'Y Position (units)',
+            style: {{ fontSize: '52px', color: '#306998', fontWeight: 'bold' }},
+            margin: 50
+        }},
+        labels: {{
+            style: {{ fontSize: '40px' }},
+            format: '{{value}}'
+        }},
+        gridLineWidth: 2,
+        gridLineColor: 'rgba(0, 0, 0, 0.15)'
+    }},
+    zAxis: {{
         min: -1.2,
         max: 1.2,
         tickInterval: 0.4,
         title: {{
-            text: 'Z',
-            style: {{ fontSize: '48px', color: '#306998', fontWeight: 'bold' }},
-            margin: 30
+            text: 'Z Amplitude',
+            style: {{ fontSize: '52px', color: '#306998', fontWeight: 'bold' }},
+            margin: 50
         }},
         labels: {{
-            style: {{ fontSize: '32px' }},
+            style: {{ fontSize: '40px' }},
             format: '{{value:.1f}}'
         }},
-        gridLineWidth: 1,
-        gridLineColor: 'rgba(0, 0, 0, 0.1)'
-    }},
-    zAxis: {{
-        min: -5,
-        max: 5,
-        tickInterval: 2,
-        title: {{
-            text: 'Y',
-            style: {{ fontSize: '48px', color: '#306998', fontWeight: 'bold' }}
-        }},
-        labels: {{
-            style: {{ fontSize: '32px' }}
-        }},
-        gridLineWidth: 1,
-        gridLineColor: 'rgba(0, 0, 0, 0.1)'
+        gridLineWidth: 2,
+        gridLineColor: 'rgba(0, 0, 0, 0.15)'
     }},
     legend: {{
         enabled: false
@@ -169,7 +178,7 @@ Highcharts.chart('container', {{
     }},
     plotOptions: {{
         scatter3d: {{
-            lineWidth: 4,
+            lineWidth: 6,
             marker: {{
                 enabled: false
             }},
@@ -211,7 +220,7 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2800")
+chrome_options.add_argument("--window-size=4800,2900")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")

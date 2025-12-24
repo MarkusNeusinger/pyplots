@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hive-basic: Basic Hive Plot
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-24
@@ -181,7 +181,13 @@ for _, row in nodes.iterrows():
 
     x = base_radius * np.cos(angle_rad)
     y = base_radius * np.sin(angle_rad)
-    positions.append({"id": row["id"], "x": x, "y": y, "category": row["category"]})
+
+    # Calculate node size based on degree (min 4, max 12)
+    node_size = 4 + (row["degree"] / max_degree) * 8
+
+    positions.append(
+        {"id": row["id"], "x": x, "y": y, "category": row["category"], "degree": row["degree"], "node_size": node_size}
+    )
 
 node_positions = pd.DataFrame(positions)
 
@@ -233,7 +239,17 @@ for _, row in edges.iterrows():
         x1 = (1 - t1) ** 2 * src_pos["x"] + 2 * (1 - t1) * t1 * ctrl_x + t1**2 * tgt_pos["x"]
         y1 = (1 - t1) ** 2 * src_pos["y"] + 2 * (1 - t1) * t1 * ctrl_y + t1**2 * tgt_pos["y"]
 
-        edge_data.append({"x": x0, "y": y0, "xend": x1, "yend": y1, "src_cat": src_cat, "tgt_cat": tgt_cat})
+        edge_data.append(
+            {
+                "x": x0,
+                "y": y0,
+                "xend": x1,
+                "yend": y1,
+                "src_cat": src_cat,
+                "tgt_cat": tgt_cat,
+                "edge_color": axis_colors[src_cat],
+            }
+        )
 
 edge_df = pd.DataFrame(edge_data)
 
@@ -246,23 +262,40 @@ for cat, angle in axis_angles.items():
     )
 label_df = pd.DataFrame(axis_labels)
 
+# Create node labels offset from node positions
+node_labels = []
+for _, row in node_positions.iterrows():
+    angle_deg = axis_angles[row["category"]]
+    angle_rad = np.radians(angle_deg)
+
+    # Offset label perpendicular to axis (to avoid overlap with axis line)
+    offset = 0.08
+    perp_angle = angle_rad + np.pi / 2  # perpendicular direction
+    label_x = row["x"] + offset * np.cos(perp_angle)
+    label_y = row["y"] + offset * np.sin(perp_angle)
+
+    node_labels.append({"x": label_x, "y": label_y, "label": row["id"], "category": row["category"]})
+node_labels_df = pd.DataFrame(node_labels)
+
 # Create the plot
 plot = (
     ggplot()
-    # Draw edges first (behind nodes) with improved transparency
-    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend"), data=edge_df, color="#666666", size=0.6, alpha=0.5)
+    # Draw edges first (behind nodes) colored by source category
+    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend", color="src_cat"), data=edge_df, size=0.5, alpha=0.4)
     # Draw axis lines
     + geom_segment(aes(x="x", y="y", xend="xend", yend="yend", color="category"), data=axis_df, size=3, alpha=0.8)
-    # Draw nodes
-    + geom_point(aes(x="x", y="y", color="category"), data=node_positions, size=8, alpha=0.95)
-    # Add axis labels
+    # Draw nodes with size based on degree
+    + geom_point(aes(x="x", y="y", color="category", size="node_size"), data=node_positions, alpha=0.95)
+    # Add node labels (module names)
+    + geom_text(aes(x="x", y="y", label="label"), data=node_labels_df, size=8, color="#333333")
+    # Add axis category labels
     + geom_text(aes(x="x", y="y", label="label", color="category"), data=label_df, size=16, fontweight="bold")
     # Color scale
     + scale_color_manual(values=axis_colors)
     # Styling
     + coord_fixed(ratio=1)
-    + xlim(-1.3, 1.3)
-    + ylim(-1.3, 1.3)
+    + xlim(-1.4, 1.4)
+    + ylim(-1.4, 1.4)
     + labs(title="hive-basic · plotnine · pyplots.ai")
     + theme_void()
     + theme(

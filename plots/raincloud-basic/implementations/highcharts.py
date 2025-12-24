@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-24
@@ -18,6 +18,7 @@ from selenium.webdriver.chrome.options import Options
 # Data - Reaction times (ms) for different experimental conditions
 np.random.seed(42)
 categories = ["Control", "Treatment A", "Treatment B", "Treatment C"]
+colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF"]
 
 # Generate realistic reaction time data with different distributions
 control = np.random.normal(450, 60, 80)  # Normal distribution
@@ -56,47 +57,72 @@ scatter_data = []
 for i, data in enumerate(all_data):
     for val in data:
         jitter = np.random.uniform(-0.08, 0.08)
-        scatter_data.append([i + 0.25 + jitter, float(val)])
-
-
-# Create KDE data for half-violin (the "cloud")
-def compute_kde_simple(data, num_points=50):
-    """Compute kernel density estimate using Gaussian kernel."""
-    data = np.array(data)
-    n = len(data)
-    std = np.std(data)
-    iqr = np.percentile(data, 75) - np.percentile(data, 25)
-    bandwidth = 0.9 * min(std, iqr / 1.34) * (n ** (-0.2))
-
-    y_range = np.linspace(min(data) - 20, max(data) + 20, num_points)
-    density = np.zeros(num_points)
-
-    for point in data:
-        density += np.exp(-0.5 * ((y_range - point) / bandwidth) ** 2)
-
-    density = density / (n * bandwidth * np.sqrt(2 * np.pi))
-    density = density / density.max() * 0.35
-    return y_range, density
-
-
-violin_series = []
-for i, data in enumerate(all_data):
-    y_vals, density = compute_kde_simple(data)
-    violin_points = []
-    for y, d in zip(y_vals, density, strict=True):
-        violin_points.append([i - d - 0.05, float(y)])
-    violin_series.append(violin_points)
+        scatter_data.append({"x": i + 0.25 + jitter, "y": float(val), "color": colors[i]})
 
 # Box plot series data
 box_series_data = []
-for box in box_data:
-    box_series_data.append([box["low"], box["q1"], box["median"], box["q3"], box["high"]])
+for i, box in enumerate(box_data):
+    box_series_data.append(
+        {
+            "low": box["low"],
+            "q1": box["q1"],
+            "median": box["median"],
+            "q3": box["q3"],
+            "high": box["high"],
+            "color": colors[i],
+            "fillColor": f"rgba({int(colors[i][1:3], 16)}, {int(colors[i][3:5], 16)}, {int(colors[i][5:7], 16)}, 0.6)",
+        }
+    )
 
-# Build chart JavaScript
+# Create polygon data for half-violin (the "cloud") - inline KDE
+violin_polygons = []
+for i, data in enumerate(all_data):
+    # Inline KDE computation (Gaussian kernel)
+    data_arr = np.array(data)
+    n = len(data_arr)
+    std = np.std(data_arr)
+    iqr_val = np.percentile(data_arr, 75) - np.percentile(data_arr, 25)
+    bandwidth = 0.9 * min(std, iqr_val / 1.34) * (n ** (-0.2))
+    y_range = np.linspace(min(data_arr) - 20, max(data_arr) + 20, 50)
+    density = np.zeros(50)
+    for point in data_arr:
+        density += np.exp(-0.5 * ((y_range - point) / bandwidth) ** 2)
+    density = density / (n * bandwidth * np.sqrt(2 * np.pi))
+    density = density / density.max() * 0.35
+
+    # Create polygon points for filled half-violin (close the polygon)
+    polygon_points = []
+    for y, d in zip(y_range, density, strict=True):
+        polygon_points.append([float(i - d - 0.05), float(y)])
+    # Close polygon by going back along the baseline
+    for y in reversed(y_range):
+        polygon_points.append([float(i - 0.05), float(y)])
+    # Close the polygon
+    polygon_points.append(polygon_points[0])
+    violin_polygons.append({"points": polygon_points, "color": colors[i]})
+
+# Build chart JavaScript with polygon series for clouds
+polygon_series_js = []
+for idx, poly in enumerate(violin_polygons):
+    show_legend = "true" if idx == 0 else "false"
+    linked = "" if idx == 0 else "linkedTo: ':previous',"
+    polygon_series_js.append(f"""{{
+            name: 'Density Cloud',
+            type: 'polygon',
+            data: {json.dumps(poly["points"])},
+            color: '{poly["color"]}',
+            fillOpacity: 0.6,
+            lineWidth: 2,
+            lineColor: '{poly["color"]}',
+            enableMouseTracking: false,
+            showInLegend: {show_legend},
+            {linked}
+            marker: {{ enabled: false }}
+        }}""")
+
 chart_js = f"""
 Highcharts.chart('container', {{
     chart: {{
-        type: 'boxplot',
         width: 4800,
         height: 2700,
         backgroundColor: '#ffffff',
@@ -119,7 +145,10 @@ Highcharts.chart('container', {{
             style: {{ fontSize: '36px' }}
         }},
         lineWidth: 2,
-        tickWidth: 2
+        tickWidth: 2,
+        min: -0.5,
+        max: 3.5,
+        tickPositions: [0, 1, 2, 3]
     }},
     yAxis: {{
         title: {{
@@ -132,7 +161,7 @@ Highcharts.chart('container', {{
         gridLineWidth: 1,
         gridLineDashStyle: 'Dash',
         min: 200,
-        max: 650
+        max: 660
     }},
     legend: {{
         enabled: true,
@@ -145,14 +174,12 @@ Highcharts.chart('container', {{
     }},
     plotOptions: {{
         boxplot: {{
-            fillColor: 'rgba(48, 105, 152, 0.7)',
-            medianColor: '#FFD43B',
+            medianColor: '#1a1a1a',
             medianWidth: 6,
             stemWidth: 4,
             whiskerWidth: 4,
             whiskerLength: '40%',
             lineWidth: 3,
-            color: '#306998',
             pointWidth: 60
         }},
         scatter: {{
@@ -161,16 +188,18 @@ Highcharts.chart('container', {{
                 symbol: 'circle'
             }}
         }},
-        spline: {{
-            lineWidth: 4
+        polygon: {{
+            fillOpacity: 0.6,
+            lineWidth: 2
         }}
     }},
     series: [
+        {",".join(polygon_series_js)},
         {{
             name: 'Box Plot',
             type: 'boxplot',
             data: {json.dumps(box_series_data)},
-            color: '#306998',
+            colorByPoint: true,
             tooltip: {{
                 headerFormat: '<b>{{point.key}}</b><br/>',
                 pointFormat: 'Max: {{point.high:.0f}} ms<br/>Q3: {{point.q3:.0f}} ms<br/>Median: {{point.median:.0f}} ms<br/>Q1: {{point.q1:.0f}} ms<br/>Min: {{point.low:.0f}} ms'
@@ -180,51 +209,15 @@ Highcharts.chart('container', {{
             name: 'Individual Points',
             type: 'scatter',
             data: {json.dumps(scatter_data)},
-            color: 'rgba(48, 105, 152, 0.5)',
             marker: {{
                 radius: 8,
                 lineWidth: 1,
-                lineColor: '#306998'
+                lineColor: 'rgba(0,0,0,0.3)'
             }},
+            opacity: 0.6,
             tooltip: {{
                 pointFormat: 'Value: {{point.y:.0f}} ms'
             }}
-        }},
-        {{
-            name: 'Density (Control)',
-            type: 'spline',
-            data: {json.dumps(violin_series[0])},
-            color: '#306998',
-            lineWidth: 4,
-            marker: {{ enabled: false }},
-            enableMouseTracking: false
-        }},
-        {{
-            name: 'Density (Treatment A)',
-            type: 'spline',
-            data: {json.dumps(violin_series[1])},
-            color: '#FFD43B',
-            lineWidth: 4,
-            marker: {{ enabled: false }},
-            enableMouseTracking: false
-        }},
-        {{
-            name: 'Density (Treatment B)',
-            type: 'spline',
-            data: {json.dumps(violin_series[2])},
-            color: '#9467BD',
-            lineWidth: 4,
-            marker: {{ enabled: false }},
-            enableMouseTracking: false
-        }},
-        {{
-            name: 'Density (Treatment C)',
-            type: 'spline',
-            data: {json.dumps(violin_series[3])},
-            color: '#17BECF',
-            lineWidth: 4,
-            marker: {{ enabled: false }},
-            enableMouseTracking: false
         }}
     ]
 }});

@@ -1,0 +1,23 @@
+library: bokeh
+specification_id: bar-grouped
+created: '2025-12-24T21:31:03Z'
+updated: '2025-12-24T21:35:01Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494137963
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Clean grouped bar implementation using Bokeh FactorRange and factor_cmap
+  - Value labels on each bar enhance readability and data interpretation
+  - Good use of group_padding for visual separation between quarters
+  - Realistic business scenario with meaningful data variation across quarters
+  - Proper 4800x2700 canvas size with appropriately scaled text
+  weaknesses:
+  - Legend color swatches all show the same blue color instead of the actual bar colors
+  - No np.random.seed(42) even though data is deterministic

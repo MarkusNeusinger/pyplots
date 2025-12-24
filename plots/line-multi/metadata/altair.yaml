@@ -1,0 +1,27 @@
+library: altair
+specification_id: line-multi
+created: '2025-12-24T21:30:29Z'
+updated: '2025-12-24T21:40:23Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494138523
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-multi/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-multi/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-multi/altair/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Altair declarative grammar with long-format data transformation
+  - Colorblind-safe palette starting with Python Blue (#306998)
+  - Combines line styles (strokeDash) with colors for additional differentiation
+  - Proper font sizing throughout (18pt labels, 22pt titles, 28pt chart title)
+  - Generates both PNG and interactive HTML output
+  - Realistic monthly sales data with distinct trends for each product line
+  weaknesses:
+  - Legend symbols show filled circles which do not clearly match the line stroke
+    colors in the chart
+  - Could add tooltips for better interactivity in the HTML version
+  - Y-axis starting at 0 creates unnecessary whitespace when minimum data is around
+    40

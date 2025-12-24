@@ -1,0 +1,25 @@
+library: seaborn
+specification_id: heatmap-annotated
+created: '2025-12-24T21:30:34Z'
+updated: '2025-12-24T21:39:08Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494136901
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-annotated/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-annotated/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 93
+review:
+  strengths:
+  - 'Excellent use of seaborn heatmap with all key parameters: annot, fmt, cmap, center,
+    vmin/vmax, square, linewidths'
+  - Automatic text contrast (white on dark, dark on light) improves readability significantly
+  - Financial correlation matrix provides realistic, meaningful context that demonstrates
+    the plot type perfectly
+  - Square aspect ratio is ideal for correlation matrices
+  - Diverging colormap centered at 0 correctly represents positive/negative correlations
+  weaknesses:
+  - Missing axis titles (e.g., Asset Class for both axes) would add context
+  - Colorbar could have more intermediate tick values for precision reading

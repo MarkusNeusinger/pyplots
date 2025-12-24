@@ -1,0 +1,24 @@
+library: seaborn
+specification_id: bar-grouped
+created: '2025-12-24T21:28:43Z'
+updated: '2025-12-24T21:32:00Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494136560
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 96
+review:
+  strengths:
+  - Excellent use of seaborn's native barplot with hue parameter for clean grouped
+    bars
+  - Clear, realistic business data scenario with meaningful quarterly growth patterns
+  - Perfect title format and axis labeling with units
+  - Colorblind-safe palette with good visual distinction between groups
+  - Clean KISS code structure following library guidelines
+  weaknesses:
+  - Legend positioned in upper left partially overlaps with Q1 bars; consider placing
+    outside plot or in upper right

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-regression-linear: Scatter Plot with Linear Regression
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-24
@@ -40,7 +40,7 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998", "#FFD43B", "#306998"),
+    colors=("#306998", "#E74C3C", "#82B366"),
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
@@ -62,27 +62,40 @@ chart = pygal.XY(
     show_legend=True,
     legend_at_bottom=False,
     legend_box_size=36,
-    dots_size=12,
+    dots_size=18,
     stroke=False,
     show_x_guides=True,
     show_y_guides=True,
     truncate_legend=-1,
 )
 
-# Add scatter points
+# Add scatter points with larger dots for better visibility
 scatter_data = [{"value": (float(x[i]), float(y[i])), "label": ""} for i in range(n_points)]
-chart.add("Data Points", scatter_data, dots_size=12, stroke=False)
+chart.add("Data Points", scatter_data, dots_size=18, stroke=False)
 
-# Add regression line
-line_data = [(float(x_line[i]), float(y_line[i])) for i in range(len(x_line))]
-chart.add(f"Regression (R² = {r_squared:.3f})", line_data, stroke=True, show_dots=False, stroke_style={"width": 6})
+# Add confidence interval as a filled band
+# Create filled area by plotting upper bound going forward, then lower bound going backward
+ci_band_data = []
+step = 3
+for i in range(0, len(x_line), step):
+    ci_band_data.append((float(x_line[i]), float(ci_upper[i])))
+for i in range(len(x_line) - 1, -1, -step):
+    ci_band_data.append((float(x_line[i]), float(ci_lower[i])))
+ci_band_data.append(ci_band_data[0])
 
-# Add confidence interval bounds (upper and lower)
-ci_upper_data = [(float(x_line[i]), float(ci_upper[i])) for i in range(0, len(x_line), 5)]
-ci_lower_data = [(float(x_line[i]), float(ci_lower[i])) for i in range(0, len(x_line), 5)]
+chart.add(
+    "95% CI Band", ci_band_data, stroke=True, fill=True, show_dots=False, stroke_style={"width": 2, "opacity": 0.3}
+)
 
-chart.add("95% CI Upper", ci_upper_data, stroke=True, show_dots=False, stroke_style={"width": 3, "dasharray": "10,5"})
-chart.add("95% CI Lower", ci_lower_data, stroke=True, show_dots=False, stroke_style={"width": 3, "dasharray": "10,5"})
+# Add regression line with equation annotation
+equation = f"y = {slope:.2f}x + {intercept:.1f}"
+chart.add(
+    f"Regression: {equation} (R² = {r_squared:.3f})",
+    [(float(x_line[i]), float(y_line[i])) for i in range(len(x_line))],
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": 6},
+)
 
 # Render to PNG and HTML
 chart.render_to_png("plot.png")

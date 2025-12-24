@@ -1,17 +1,27 @@
 library: bokeh
 specification_id: wordcloud-basic
-created: 2025-12-16 05:31:21+00:00
-updated: 2025-12-16 05:31:21+00:00
+created: '2025-12-24T09:50:17Z'
+updated: '2025-12-24T10:19:49Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20257491847
-issue: 1012
+workflow_run: 20483448200
+issue: 0
 python_version: 3.13.11
 library_version: 3.8.1
 preview_url: https://storage.googleapis.com/pyplots-images/plots/wordcloud-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/wordcloud-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/wordcloud-basic/bokeh/plot.html
-quality_score: 92
+quality_score: 78
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Clean semantic color scheme using Python blue/yellow branding that encodes frequency
+    ranges
+  - Comprehensive hover functionality with word and frequency tooltips for HTML export
+  - Proper collision detection algorithm using Archimedean spiral placement
+  - Good word selection with realistic technology/data science domain context
+  - Correct title format following pyplots.ai conventions
+  weaknesses:
+  - Word cloud only fills ~35% of canvas with excessive whitespace; should expand
+    to utilize more of the 4800x2700 canvas
+  - Word rotation appears non-functional in output despite rotation logic in code
+  - HoverTool and interactive features do not render in PNG export
+  - Some minor word overlap in densely packed areas reduces readability

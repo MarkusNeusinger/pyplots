@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 wireframe-3d-basic: Basic 3D Wireframe Plot
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 85/100 | Created: 2025-12-24
+Quality: 82/100 | Created: 2025-12-24
 """
 
 import numpy as np

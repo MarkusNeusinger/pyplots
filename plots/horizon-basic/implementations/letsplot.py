@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 horizon-basic: Horizon Chart
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-24
@@ -53,6 +53,9 @@ band_size = max_val / n_bands
 # Each band clips values to its range and overlays them
 horizon_records = []
 
+# Band labels for legend (more descriptive)
+band_labels = {"pos0": "+Low", "pos1": "+Medium", "pos2": "+High", "neg0": "-Low", "neg1": "-Medium", "neg2": "-High"}
+
 for series in series_names:
     series_data = df[df["series"] == series]
     values = series_data["value"].values
@@ -79,27 +82,29 @@ for series in series_names:
 
 horizon_df = pd.DataFrame(horizon_records)
 
-# Color scheme: Python blue for positive (light to dark), warm red for negative
+# Color scheme: Colorblind-safe diverging palette (purple-orange)
+# Purple for positive values (above baseline), orange for negative (below baseline)
 colors = {
-    "pos0": "#b3d4fc",  # Light blue
-    "pos1": "#5a9bd4",  # Medium blue
-    "pos2": "#306998",  # Python blue (dark)
-    "neg0": "#ffb3b3",  # Light red
-    "neg1": "#e06666",  # Medium red
-    "neg2": "#b91c1c",  # Dark red
+    "pos0": "#dadaeb",  # Light purple
+    "pos1": "#9e9ac8",  # Medium purple
+    "pos2": "#6a51a3",  # Dark purple
+    "neg0": "#fdbe85",  # Light orange
+    "neg1": "#fd8d3c",  # Medium orange
+    "neg2": "#d94701",  # Dark orange
 }
 
 # Create the horizon chart
 plot = (
     ggplot(horizon_df, aes(x="hour", y="value", fill="band"))
     + geom_area(position="identity", alpha=0.85, color="white", size=0.1)
-    + scale_fill_manual(values=colors)
+    + scale_fill_manual(values=colors, labels=band_labels)
     + facet_wrap("series", ncol=2)
     + scale_x_continuous(breaks=[0, 24, 48, 72, 96, 120, 144], labels=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"])
     + labs(
         title="Server CPU Usage Deviation · horizon-basic · letsplot · pyplots.ai",
         x="Day of Week",
-        y="Deviation Band (%)",
+        y="Folded Value (stacked bands)",
+        fill="Band Intensity",
     )
     + theme_minimal()
     + theme(
@@ -108,7 +113,9 @@ plot = (
         axis_text_x=element_text(size=14),
         axis_text_y=element_text(size=14),
         strip_text=element_text(size=18, face="bold"),
-        legend_position="none",
+        legend_position="right",
+        legend_title=element_text(size=16, face="bold"),
+        legend_text=element_text(size=14),
         panel_grid_major=element_line(color="#e0e0e0", size=0.3),
         panel_grid_minor=element_blank(),
         panel_background=element_rect(fill="white"),

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 windrose-basic: Wind Rose Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-24
@@ -75,24 +75,26 @@ for i, label in enumerate(speed_labels):
         cumulative[label] = [sum(frequencies[speed_labels[k]][j] for k in range(i + 1)) for j in range(8)]
 
 # Custom style for large canvas - cool to warm colors for wind speeds
+# Meteorological convention: cool colors (calm) → warm colors (strong)
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#222222",
     foreground_subtle="#666666",
-    colors=("#306998", "#5BA0D0", "#FFD43B", "#FF8C42", "#E74C3C"),  # Cool to warm
+    colors=("#A8D5BA", "#5BA0D0", "#FFD43B", "#FF8C42", "#E74C3C"),  # Calm→Strong
     title_font_size=56,
-    label_font_size=36,
-    major_label_font_size=32,
+    label_font_size=40,
+    major_label_font_size=40,
     legend_font_size=32,
     value_font_size=28,
-    value_label_font_size=24,
+    value_label_font_size=28,
     tooltip_font_size=28,
-    stroke_width=3,
-    opacity=0.9,
+    stroke_width=2,
+    opacity=0.85,
     opacity_hover=0.95,
-    guide_stroke_width=1,
+    guide_stroke_width=0.5,
+    guide_stroke_color="#cccccc",
 )
 
 # Create radar chart (wind rose)

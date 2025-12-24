@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hive-basic: Basic Hive Plot
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-24
@@ -269,7 +269,8 @@ for _, row in node_positions.iterrows():
     angle_rad = np.radians(angle_deg)
 
     # Offset label perpendicular to axis (to avoid overlap with axis line)
-    offset = 0.08
+    # Use larger offset for better visibility
+    offset = 0.12
     perp_angle = angle_rad + np.pi / 2  # perpendicular direction
     label_x = row["x"] + offset * np.cos(perp_angle)
     label_y = row["y"] + offset * np.sin(perp_angle)
@@ -281,26 +282,30 @@ node_labels_df = pd.DataFrame(node_labels)
 plot = (
     ggplot()
     # Draw edges first (behind nodes) colored by source category
-    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend", color="src_cat"), data=edge_df, size=0.5, alpha=0.4)
+    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend", color="src_cat"), data=edge_df, size=1.2, alpha=0.6)
     # Draw axis lines
     + geom_segment(aes(x="x", y="y", xend="xend", yend="yend", color="category"), data=axis_df, size=3, alpha=0.8)
     # Draw nodes with size based on degree
     + geom_point(aes(x="x", y="y", color="category", size="node_size"), data=node_positions, alpha=0.95)
-    # Add node labels (module names)
-    + geom_text(aes(x="x", y="y", label="label"), data=node_labels_df, size=8, color="#333333")
+    # Add node labels (module names) with larger size and white background effect
+    + geom_text(aes(x="x", y="y", label="label"), data=node_labels_df, size=11, color="#1a1a1a", fontweight="bold")
     # Add axis category labels
     + geom_text(aes(x="x", y="y", label="label", color="category"), data=label_df, size=16, fontweight="bold")
     # Color scale
     + scale_color_manual(values=axis_colors)
     # Styling
     + coord_fixed(ratio=1)
-    + xlim(-1.4, 1.4)
-    + ylim(-1.4, 1.4)
-    + labs(title="hive-basic · plotnine · pyplots.ai")
+    + xlim(-1.5, 1.5)
+    + ylim(-1.5, 1.5)
+    + labs(
+        title="hive-basic · plotnine · pyplots.ai",
+        subtitle="Node size indicates connection degree (larger = more connections)",
+    )
     + theme_void()
     + theme(
         figure_size=(12, 12),
         plot_title=element_text(size=24, ha="center", weight="bold"),
+        plot_subtitle=element_text(size=14, ha="center", color="#555555"),
         legend_position="none",
         plot_margin=0.02,
     )

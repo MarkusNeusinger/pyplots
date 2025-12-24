@@ -1,74 +1,64 @@
-""" pyplots.ai
+"""pyplots.ai
 waterfall-basic: Basic Waterfall Chart
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-14
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-24
 """
 
 from bokeh.io import export_png
-from bokeh.models import ColumnDataSource, Label
+from bokeh.models import ColumnDataSource, FactorRange, Label
 from bokeh.plotting import figure, save
 
 
-# Data - quarterly financial breakdown
+# Data - quarterly financial breakdown from revenue to net income
 categories = ["Starting Revenue", "Product Sales", "Services", "Refunds", "Operating Costs", "Marketing", "Net Income"]
-values = [0, 150000, 45000, -12000, -85000, -28000, 0]
+# First value is the starting total, last value will be calculated as final total
+# Middle values are changes (positive = increase, negative = decrease)
+changes = [150000, 50000, 35000, -8000, -75000, -22000, 0]  # Last is placeholder for total
 
 # Calculate waterfall positions
 running_total = 0
 bar_bottoms = []
-bar_heights = []
+bar_tops = []
 bar_colors = []
-totals_at_step = []
+display_values = []  # For labels
 
-for i, (_cat, val) in enumerate(zip(categories, values, strict=True)):
+for i, (_cat, change) in enumerate(zip(categories, changes, strict=True)):
     if i == 0:
-        # Starting total - show as a full bar from 0
-        running_total = 150000  # Initial value
+        # Starting total - full bar from 0
+        running_total = change
         bar_bottoms.append(0)
-        bar_heights.append(running_total)
+        bar_tops.append(running_total)
         bar_colors.append("#306998")  # Python Blue for totals
-        totals_at_step.append(running_total)
+        display_values.append(running_total)
     elif i == len(categories) - 1:
-        # Final total - show as a full bar from 0
+        # Final total - full bar from 0 to current running total
         bar_bottoms.append(0)
-        bar_heights.append(running_total)
+        bar_tops.append(running_total)
         bar_colors.append("#306998")  # Python Blue for totals
-        totals_at_step.append(running_total)
+        display_values.append(running_total)
     else:
-        # Intermediate values - changes from running total
-        if val >= 0:
+        # Intermediate changes
+        if change >= 0:
             bar_bottoms.append(running_total)
-            bar_heights.append(val)
+            bar_tops.append(running_total + change)
             bar_colors.append("#2ECC71")  # Green for positive
         else:
-            bar_bottoms.append(running_total + val)
-            bar_heights.append(abs(val))
+            bar_bottoms.append(running_total + change)
+            bar_tops.append(running_total)
             bar_colors.append("#E74C3C")  # Red for negative
-        running_total += val
-        totals_at_step.append(running_total)
-
-# Calculate tops for bars
-bar_tops = [b + h for b, h in zip(bar_bottoms, bar_heights, strict=True)]
+        running_total += change
+        display_values.append(change)
 
 # Create data source
-source = ColumnDataSource(
-    data={
-        "categories": categories,
-        "bottom": bar_bottoms,
-        "top": bar_tops,
-        "height": bar_heights,
-        "color": bar_colors,
-        "totals": totals_at_step,
-    }
-)
+source = ColumnDataSource(data={"categories": categories, "bottom": bar_bottoms, "top": bar_tops, "color": bar_colors})
 
 # Create figure (4800 x 2700 px)
 p = figure(
-    x_range=categories,
+    x_range=FactorRange(*categories, range_padding=0.1),
     width=4800,
     height=2700,
     title="waterfall-basic · bokeh · pyplots.ai",
-    x_axis_label="Category",
+    x_axis_label="Financial Category",
     y_axis_label="Amount ($)",
     toolbar_location=None,
 )
@@ -86,38 +76,49 @@ p.vbar(
     alpha=0.9,
 )
 
-# Draw connector lines between bars
-for i in range(len(categories) - 1):
-    # Line from top of current bar to start of next bar
-    current_top = bar_bottoms[i] + bar_heights[i]
+# Calculate running totals for connector lines
+running_totals = []
+rt = 0
+for i, change in enumerate(changes):
     if i == 0:
-        # From starting total to next bar
-        next_bottom = bar_bottoms[i + 1] if values[i + 1] >= 0 else bar_bottoms[i + 1] + bar_heights[i + 1]
-    else:
-        next_bottom = bar_bottoms[i + 1] if values[i + 1] >= 0 else bar_bottoms[i + 1] + bar_heights[i + 1]
+        rt = change
+    elif i < len(changes) - 1:
+        rt += change
+    running_totals.append(rt)
 
-    if i < len(categories) - 2:  # Don't draw connector to final total bar
-        p.line(
-            x=[categories[i], categories[i + 1]],
-            y=[current_top, current_top],
-            line_color="#7F8C8D",
-            line_width=2,
-            line_dash="dashed",
-            alpha=0.7,
-        )
+# Draw connector lines between bars (showing running total flow)
+for i in range(len(categories) - 2):  # Don't draw connector to final total bar
+    # The connector should be at the running total level after bar i
+    connector_y = running_totals[i]
+
+    p.line(
+        x=[categories[i], categories[i + 1]],
+        y=[connector_y, connector_y],
+        line_color="#7F8C8D",
+        line_width=2,
+        line_dash="dashed",
+        alpha=0.7,
+    )
 
 # Add value labels on bars
-for i, (_cat, bottom, height, total) in enumerate(
-    zip(categories, bar_bottoms, bar_heights, totals_at_step, strict=True)
+max_value = max(bar_tops)
+label_offset = max_value * 0.03  # 3% of max value for offset
+
+for i, (_cat, _bottom, top, display_val) in enumerate(
+    zip(categories, bar_bottoms, bar_tops, display_values, strict=True)
 ):
-    # Label position
-    label_y = bottom + height + 5000
+    # Label position - above the bar
+    label_y = top + label_offset
+
     if i == 0 or i == len(categories) - 1:
-        label_text = f"${total:,.0f}"
+        # Total bars - show absolute value
+        label_text = f"${display_val:,.0f}"
     else:
-        val = values[i]
-        sign = "+" if val >= 0 else ""
-        label_text = f"{sign}${val:,.0f}"
+        # Change bars - show with sign
+        if display_val >= 0:
+            label_text = f"+${display_val:,.0f}"
+        else:
+            label_text = f"-${abs(display_val):,.0f}"
 
     label = Label(
         x=i,
@@ -149,8 +150,9 @@ p.border_fill_color = "#FFFFFF"
 
 # Axis styling
 p.yaxis.formatter.use_scientific = False
-p.y_range.start = -10000
-p.y_range.end = max(totals_at_step) + 25000
+p.y_range.start = 0
+p.y_range.end = max_value * 1.15  # 15% padding above max
+p.min_border_left = 80  # Extra left margin for y-axis labels
 
 # Save as PNG and HTML
 export_png(p, filename="plot.png")

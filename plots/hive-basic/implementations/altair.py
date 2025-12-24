@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hive-basic: Basic Hive Plot
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-24
@@ -12,26 +12,23 @@ import pandas as pd
 # Data: Software module dependency network
 
 # Define nodes with module types (axis assignment) and importance (position on axis)
-# Spread importance values evenly to avoid label overlap
+# Wider spacing on Core axis to avoid label crowding
 nodes_data = [
-    # Core modules (axis 0) - foundational components
+    # Core modules (axis 0) - foundational components - wider spacing
     {"id": "core_main", "name": "Main", "axis": "Core", "importance": 1.0},
-    {"id": "core_db", "name": "Database", "axis": "Core", "importance": 0.85},
-    {"id": "core_config", "name": "Config", "axis": "Core", "importance": 0.70},
-    {"id": "core_logger", "name": "Logger", "axis": "Core", "importance": 0.55},
-    {"id": "core_events", "name": "Events", "axis": "Core", "importance": 0.40},
-    {"id": "core_cache", "name": "Cache", "axis": "Core", "importance": 0.25},
+    {"id": "core_db", "name": "Database", "axis": "Core", "importance": 0.80},
+    {"id": "core_config", "name": "Config", "axis": "Core", "importance": 0.60},
+    {"id": "core_logger", "name": "Logger", "axis": "Core", "importance": 0.40},
+    {"id": "core_cache", "name": "Cache", "axis": "Core", "importance": 0.20},
     # Utility modules (axis 1) - helper components
     {"id": "util_http", "name": "HTTP", "axis": "Utility", "importance": 1.0},
-    {"id": "util_file", "name": "FileIO", "axis": "Utility", "importance": 0.80},
-    {"id": "util_string", "name": "String", "axis": "Utility", "importance": 0.60},
-    {"id": "util_date", "name": "DateTime", "axis": "Utility", "importance": 0.40},
-    {"id": "util_crypto", "name": "Crypto", "axis": "Utility", "importance": 0.20},
+    {"id": "util_file", "name": "FileIO", "axis": "Utility", "importance": 0.75},
+    {"id": "util_string", "name": "String", "axis": "Utility", "importance": 0.50},
+    {"id": "util_date", "name": "DateTime", "axis": "Utility", "importance": 0.25},
     # Interface modules (axis 2) - external-facing components
     {"id": "iface_api", "name": "REST API", "axis": "Interface", "importance": 1.0},
-    {"id": "iface_web", "name": "WebUI", "axis": "Interface", "importance": 0.75},
-    {"id": "iface_cli", "name": "CLI", "axis": "Interface", "importance": 0.50},
-    {"id": "iface_ws", "name": "WebSocket", "axis": "Interface", "importance": 0.25},
+    {"id": "iface_web", "name": "WebUI", "axis": "Interface", "importance": 0.66},
+    {"id": "iface_cli", "name": "CLI", "axis": "Interface", "importance": 0.33},
 ]
 
 # Define edges (dependencies between modules)
@@ -43,24 +40,20 @@ edges_data = [
     ("core_config", "util_string"),
     ("core_logger", "util_date"),
     ("core_logger", "util_file"),
-    ("core_cache", "util_crypto"),
+    ("core_cache", "util_date"),
     ("core_db", "util_string"),
-    ("core_events", "util_date"),
     # Core to Interface connections
     ("core_main", "iface_api"),
     ("core_main", "iface_cli"),
     ("core_config", "iface_api"),
     ("core_db", "iface_api"),
     ("core_logger", "iface_web"),
-    ("core_events", "iface_ws"),
     # Utility to Interface connections
     ("util_http", "iface_api"),
     ("util_http", "iface_web"),
     ("util_string", "iface_cli"),
     ("util_file", "iface_cli"),
-    ("util_crypto", "iface_api"),
     ("util_date", "iface_web"),
-    ("util_http", "iface_ws"),
 ]
 
 # Convert to DataFrame
@@ -122,14 +115,23 @@ for axis_name, config in axis_config.items():
     )
 axis_df = pd.DataFrame(axis_lines)
 
-# Create axis labels - positioned at end of axes
+# Create axis labels - positioned at end of axes with proper offsets
 axis_labels = []
 for axis_name, config in axis_config.items():
     angle_rad = np.radians(config["angle"])
-    axis_labels.append(
-        {"x": 1.05 * np.cos(angle_rad), "y": 1.05 * np.sin(angle_rad), "label": axis_name, "color": config["color"]}
-    )
+    # Larger offset for axis labels to avoid overlap with node labels
+    label_dist = 1.12
+    axis_labels.append({"x": label_dist * np.cos(angle_rad), "y": label_dist * np.sin(angle_rad), "label": axis_name})
 axis_labels_df = pd.DataFrame(axis_labels)
+
+# Create legend data for the three module types
+legend_data = pd.DataFrame(
+    [
+        {"axis": "Core", "description": "Core: Foundational modules"},
+        {"axis": "Utility", "description": "Utility: Helper components"},
+        {"axis": "Interface", "description": "Interface: External-facing"},
+    ]
+)
 
 # Plot: Layer edges, axis lines, nodes, and labels
 
@@ -212,30 +214,52 @@ node_labels = (
     .encode(x="label_x:Q", y="label_y:Q", text="name:N", color=alt.value("#222222"))
 )
 
-# Axis labels - larger font for readability
+# Axis labels - larger font with explicit color mapping for visibility
 axis_label_chart = (
     alt.Chart(axis_labels_df)
-    .mark_text(fontSize=32, fontWeight="bold")
-    .encode(x="x:Q", y="y:Q", text="label:N", color="color:N")
-)
-
-# Combine all layers - use square aspect ratio for better hive plot layout
-chart = (
-    (edges_chart + axis_chart + nodes_chart + node_labels + axis_label_chart)
-    .properties(
-        width=900,
-        height=900,
-        title=alt.Title(
-            text="hive-basic · altair · pyplots.ai",
-            subtitle="Software Module Dependency Network",
-            fontSize=32,
-            subtitleFontSize=22,
-            anchor="middle",
+    .mark_text(fontSize=36, fontWeight="bold")
+    .encode(
+        x="x:Q",
+        y="y:Q",
+        text="label:N",
+        color=alt.Color(
+            "label:N",
+            scale=alt.Scale(domain=["Core", "Utility", "Interface"], range=["#306998", "#B8860B", "#2E8B8B"]),
+            legend=None,
         ),
     )
-    .configure_view(strokeWidth=0)
-    .configure_legend(disable=True)
 )
+
+# Legend in corner showing the three module types
+legend_chart = (
+    alt.Chart(legend_data)
+    .mark_point(size=400, filled=True)
+    .encode(
+        y=alt.Y("axis:N", title=None, axis=alt.Axis(labelFontSize=20, labelFontWeight="bold")),
+        color=alt.Color(
+            "axis:N",
+            scale=alt.Scale(domain=["Core", "Utility", "Interface"], range=["#306998", "#FFD43B", "#4ECDC4"]),
+            legend=None,
+        ),
+    )
+    .properties(title=alt.Title("Module Types", fontSize=22), width=50, height=100)
+)
+
+# Combine all layers for hive plot
+hive_chart = (edges_chart + axis_chart + nodes_chart + node_labels + axis_label_chart).properties(
+    width=900,
+    height=900,
+    title=alt.Title(
+        text="hive-basic · altair · pyplots.ai",
+        subtitle="Software Module Dependency Network",
+        fontSize=32,
+        subtitleFontSize=22,
+        anchor="middle",
+    ),
+)
+
+# Combine hive plot with legend (horizontal concatenation)
+chart = alt.hconcat(hive_chart, legend_chart, spacing=40).configure_view(strokeWidth=0).configure_axis(grid=False)
 
 # Save - square format for radial plot (3600x3600 at scale 4)
 chart.save("plot.png", scale_factor=4.0)

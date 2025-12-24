@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 wireframe-3d-basic: Basic 3D Wireframe Plot
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-16
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-24
 """
 
 import numpy as np
@@ -65,11 +65,10 @@ p.yaxis.visible = False
 # Draw wireframe using multi_line with Python Blue
 p.multi_line(xs=all_xs, ys=all_ys, line_color="#306998", line_width=2, line_alpha=0.8)
 
-# Set equal aspect ratio and appropriate ranges
+# Set appropriate ranges with padding
 x_min, x_max = min(min(xs) for xs in all_xs), max(max(xs) for xs in all_xs)
 y_min, y_max = min(min(ys) for ys in all_ys), max(max(ys) for ys in all_ys)
 
-# Add padding
 x_pad = (x_max - x_min) * 0.1
 y_pad = (y_max - y_min) * 0.1
 

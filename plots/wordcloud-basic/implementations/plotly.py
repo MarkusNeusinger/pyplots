@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 wordcloud-basic: Basic Word Cloud
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-16
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-24
 """
 
 import random
@@ -53,14 +53,6 @@ min_freq = min(word_frequencies.values())
 # Scale font sizes for 4800x2700 output
 min_size = 28
 max_size = 90
-
-
-def scale_font_size(freq):
-    """Scale frequency to font size range."""
-    if max_freq == min_freq:
-        return (min_size + max_size) / 2
-    return min_size + (freq - min_freq) / (max_freq - min_freq) * (max_size - min_size)
-
 
 # Colors - using Python-themed palette with variations
 colors = [
@@ -127,7 +119,8 @@ for i, (word, freq) in enumerate(zip(words, freqs)):
         x = random.uniform(0.1, 0.9)
         y = random.uniform(0.1, 0.9)
 
-    font_size = scale_font_size(freq)
+    # Scale frequency to font size range (inline calculation)
+    font_size = min_size + (freq - min_freq) / (max_freq - min_freq) * (max_size - min_size)
     color = colors[i % len(colors)]
 
     fig.add_trace(

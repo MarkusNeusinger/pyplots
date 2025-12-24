@@ -1,11 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 hive-basic: Basic Hive Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-24
 """
 
 import math
+import re
 
+import cairosvg
 import numpy as np
 import pygal
 from pygal.style import Style
@@ -130,8 +132,8 @@ for axis_id in range(n_axes):
         y = center_y + radius * math.sin(angle)
         node_positions[node["id"]] = (x, y, axis_id)
 
-# Custom style - axis lines, axis labels, edges (3 groups), nodes (3 groups)
-# Color order: 3 axis lines (gray), 3 axis label markers, 3 edge groups, 3 node groups
+# Custom style - axis lines, edges (3 groups), nodes (3 groups)
+# Color order: 3 axis lines (gray), 3 edge groups (semi-transparent), 3 node groups
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -142,9 +144,6 @@ custom_style = Style(
         "#AAAAAA",
         "#AAAAAA",
         "#AAAAAA",  # Axis lines (gray)
-        "#306998",
-        "#B8860B",
-        "#2E7D32",  # Axis label markers (darker versions for visibility)
         "#30699866",
         "#FFD43B88",
         "#4CAF5066",  # Edges by source axis (semi-transparent)
@@ -153,11 +152,12 @@ custom_style = Style(
         "#4CAF50",  # Nodes by axis (Core, Utility, Interface)
     ),
     title_font_size=72,
-    label_font_size=48,
-    major_label_font_size=42,
-    legend_font_size=44,
-    value_font_size=36,
-    tooltip_font_size=28,
+    label_font_size=56,  # Increased for more prominent node labels
+    major_label_font_size=48,
+    legend_font_size=48,
+    value_font_size=44,  # Increased for value labels on nodes
+    value_label_font_size=44,  # Explicit value label size
+    tooltip_font_size=32,
     stroke_width=2,
     opacity=0.9,
     opacity_hover=1.0,
@@ -177,18 +177,18 @@ chart = pygal.XY(
     show_x_labels=False,
     show_y_labels=False,
     stroke=True,
-    dots_size=20,
+    dots_size=28,  # Increased for more prominent nodes
     legend_at_bottom=True,
     legend_at_bottom_columns=3,
     range=(0, 10),
     xrange=(0, 10),
-    print_labels=True,  # Enable labels to show axis names on the plot
+    print_labels=True,  # Enable labels to show node names on the plot
     print_values=False,
 )
 
-# Draw axis lines with labeled endpoints
+# Draw axis lines
 # Position axis labels beyond the outer nodes for visibility
-label_radius = outer_radius + 0.8
+label_radius = outer_radius + 0.9
 for axis_id in range(n_axes):
     angle = axis_angles[axis_id]
     x1 = center_x + (inner_radius - 0.3) * math.cos(angle)
@@ -205,21 +205,14 @@ for axis_id in range(n_axes):
         stroke_style={"width": 6, "linecap": "round"},
     )
 
-# Add axis endpoint labels as visible text markers
-# These appear beyond the axis lines to clearly identify each axis
+# Store axis label positions for SVG post-processing
+# (pygal's native labeling doesn't give us enough control for axis endpoint labels)
+axis_label_positions = []
 for axis_id in range(n_axes):
     angle = axis_angles[axis_id]
     label_x = center_x + label_radius * math.cos(angle)
     label_y = center_y + label_radius * math.sin(angle)
-    # Add a labeled point that will display the axis name on the plot
-    # Use None for series name to hide from legend (nodes will show in legend)
-    chart.add(
-        None,
-        [{"value": (label_x, label_y), "label": axis_names[axis_id]}],
-        stroke=False,
-        show_dots=True,
-        dots_size=15,  # Visible marker at axis endpoint
-    )
+    axis_label_positions.append((label_x, label_y, axis_names[axis_id], axis_colors[axis_id]))
 
 # Draw edges as curved paths between nodes, grouped by source axis for coloring
 # Using quadratic Bezier curves that bend around the center
@@ -272,9 +265,79 @@ for axis_id in range(n_axes):
     # Use axis name only to avoid redundant legend entries
     chart.add(axis_names[axis_id], node_points, stroke=False)
 
-# Save outputs
-chart.render_to_file("plot.svg")
-chart.render_to_png("plot.png")
+# Render initial SVG
+svg_content = chart.render().decode("utf-8")
+
+# Post-process SVG to add axis endpoint labels directly on the plot
+# Calculate SVG coordinate transformation (pygal uses viewBox scaling)
+# The chart range is 0-10 for both axes, and viewBox handles the scaling
+# Find the plot area in the SVG by examining the viewBox
+viewbox_match = re.search(r'viewBox="([^"]+)"', svg_content)
+if viewbox_match:
+    vb_parts = viewbox_match.group(1).split()
+    vb_width = float(vb_parts[2])
+    vb_height = float(vb_parts[3])
+else:
+    vb_width = 3600
+    vb_height = 3600
+
+# Pygal XY chart maps data coordinates to plot area
+# For range (0,10) and xrange (0,10), we need to calculate the offset and scale
+# The plot area has margins for title, legend, etc.
+# Approximate: plot area starts around 5% from left and 10% from top (after title)
+# and ends around 95% width and 85% height (before legend)
+plot_left = vb_width * 0.08
+plot_right = vb_width * 0.92
+plot_top = vb_height * 0.12
+plot_bottom = vb_height * 0.82
+
+plot_width = plot_right - plot_left
+plot_height = plot_bottom - plot_top
+
+# Data range is 0-10 for both axes
+data_range = 10.0
+
+
+def data_to_svg(dx, dy):
+    """Convert data coordinates to SVG coordinates."""
+    sx = plot_left + (dx / data_range) * plot_width
+    # Y is inverted in SVG (0 at top)
+    sy = plot_bottom - (dy / data_range) * plot_height
+    return sx, sy
+
+
+# Create axis label text elements
+axis_label_svg = ""
+for dx, dy, label, color in axis_label_positions:
+    sx, sy = data_to_svg(dx, dy)
+    # Adjust text anchor based on position (top label centered, bottom labels angled)
+    if dy > center_y:  # Top axis (Core)
+        text_anchor = "middle"
+        dy_offset = -35
+        dx_offset = 0
+    elif dx < center_x:  # Left axis (Utility)
+        text_anchor = "end"
+        dy_offset = 10
+        dx_offset = -25
+    else:  # Right axis (Interface)
+        text_anchor = "start"
+        dy_offset = 10
+        dx_offset = 25
+
+    axis_label_svg += f'''
+    <text x="{sx + dx_offset}" y="{sy + dy_offset}" fill="{color}"
+          font-size="60" font-weight="bold" font-family="sans-serif"
+          text-anchor="{text_anchor}">{label}</text>'''
+
+# Insert axis labels before the closing </svg> tag
+svg_content = svg_content.replace("</svg>", f"{axis_label_svg}\n</svg>")
+
+# Save modified SVG
+with open("plot.svg", "w") as f:
+    f.write(svg_content)
+
+# Render PNG from the modified SVG
+cairosvg.svg2png(bytestring=svg_content.encode("utf-8"), write_to="plot.png")
 
 # Save HTML for interactive version
 with open("plot.html", "w") as f:

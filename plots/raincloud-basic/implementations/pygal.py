@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-24
@@ -22,6 +22,9 @@ data["Control"] = np.append(data["Control"], [650, 680, 250])
 data["Treatment A"] = np.append(data["Treatment A"], [550, 200])
 data["Treatment B"] = np.append(data["Treatment B"], [480, 180])
 
+# Group colors for consistent styling
+group_colors = ["#306998", "#FFD43B", "#4CAF50"]
+
 # Custom style for 4800x2700 px canvas
 custom_style = Style(
     background="white",
@@ -29,14 +32,14 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998", "#FFD43B", "#4CAF50", "#333333", "#666666", "#999999"),
+    colors=tuple(group_colors) + ("#333333", "#666666", "#999999"),
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
     legend_font_size=42,
     value_font_size=36,
-    opacity=0.7,
-    opacity_hover=0.9,
+    opacity=0.5,  # Reduced opacity so box plot is visible behind violin
+    opacity_hover=0.7,
 )
 
 # Create XY chart for raincloud plot
@@ -47,9 +50,7 @@ chart = pygal.XY(
     title="raincloud-basic · pygal · pyplots.ai",
     x_title="Treatment Group",
     y_title="Reaction Time (ms)",
-    show_legend=True,
-    legend_at_bottom=True,
-    legend_at_bottom_columns=3,
+    show_legend=False,  # Remove redundant legend (x-axis already shows categories)
     stroke=True,
     fill=True,
     dots_size=0,
@@ -112,9 +113,9 @@ for i, (_category, values) in enumerate(data.items()):
     whisker_low = float(max(values.min(), q1 - 1.5 * iqr))
     whisker_high = float(min(values.max(), q3 + 1.5 * iqr))
 
-    box_width = 0.08
+    box_width = 0.12  # Wider box for better visibility
 
-    # IQR box
+    # IQR box - thicker stroke for visibility
     quartile_box = [
         (center_x + box_offset - box_width, q1),
         (center_x + box_offset - box_width, q3),
@@ -122,32 +123,35 @@ for i, (_category, values) in enumerate(data.items()):
         (center_x + box_offset + box_width, q1),
         (center_x + box_offset - box_width, q1),
     ]
-    chart.add(None, quartile_box, stroke=True, fill=False, show_dots=False)
+    chart.add(None, quartile_box, stroke=True, fill=False, show_dots=False, stroke_style={"width": 5})
 
-    # Median line
-    median_line = [(center_x + box_offset - box_width * 1.2, median), (center_x + box_offset + box_width * 1.2, median)]
-    chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 6})
+    # Median line - thicker and more prominent
+    median_line = [(center_x + box_offset - box_width * 1.3, median), (center_x + box_offset + box_width * 1.3, median)]
+    chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 8})
 
-    # Whiskers
+    # Whiskers - thicker lines
     whisker_top = [(center_x + box_offset, q3), (center_x + box_offset, whisker_high)]
     whisker_bottom = [(center_x + box_offset, q1), (center_x + box_offset, whisker_low)]
-    chart.add(None, whisker_top, stroke=True, fill=False, show_dots=False, stroke_style={"width": 3})
-    chart.add(None, whisker_bottom, stroke=True, fill=False, show_dots=False, stroke_style={"width": 3})
+    chart.add(None, whisker_top, stroke=True, fill=False, show_dots=False, stroke_style={"width": 5})
+    chart.add(None, whisker_bottom, stroke=True, fill=False, show_dots=False, stroke_style={"width": 5})
 
-    # Whisker caps
-    cap_width = 0.04
+    # Whisker caps - thicker and wider
+    cap_width = 0.06
     cap_top = [(center_x + box_offset - cap_width, whisker_high), (center_x + box_offset + cap_width, whisker_high)]
     cap_bottom = [(center_x + box_offset - cap_width, whisker_low), (center_x + box_offset + cap_width, whisker_low)]
-    chart.add(None, cap_top, stroke=True, fill=False, show_dots=False, stroke_style={"width": 3})
-    chart.add(None, cap_bottom, stroke=True, fill=False, show_dots=False, stroke_style={"width": 3})
+    chart.add(None, cap_top, stroke=True, fill=False, show_dots=False, stroke_style={"width": 5})
+    chart.add(None, cap_bottom, stroke=True, fill=False, show_dots=False, stroke_style={"width": 5})
 
     # --- Jittered Points (rain) - on the right side ---
     np.random.seed(42 + i)  # Consistent jitter per group
     jitter = np.random.uniform(-0.08, 0.08, len(values))
-    rain_points = [(center_x + jitter_offset + j, float(v)) for j, v in zip(jitter, values, strict=True)]
+    rain_points = [
+        {"value": (center_x + jitter_offset + j, float(v)), "color": group_colors[i]}
+        for j, v in zip(jitter, values, strict=True)
+    ]
 
-    # Add points with smaller dots and transparency
-    chart.add(None, rain_points, stroke=False, fill=False, dots_size=8)
+    # Add points with matching group colors and visible dots
+    chart.add(None, rain_points, stroke=False, fill=False, dots_size=10)
 
 # X-axis labels at category positions
 chart.x_labels = ["", "Control", "Treatment A", "Treatment B", ""]

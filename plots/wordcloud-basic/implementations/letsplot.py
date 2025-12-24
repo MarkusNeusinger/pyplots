@@ -1,7 +1,7 @@
 """ pyplots.ai
 wordcloud-basic: Basic Word Cloud
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-16
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-24
 """
 
 import math
@@ -68,85 +68,70 @@ sorted_indices = np.argsort(frequencies)[::-1]
 words = [words[i] for i in sorted_indices]
 frequencies = [frequencies[i] for i in sorted_indices]
 
-# Wider canvas to fit all words including long ones like TypeScript
+# Canvas dimensions
 canvas_width = 280
 canvas_height = 140
 
-# Scale font sizes for readability
+# Scale font sizes for readability (inline calculation)
 min_freq, max_freq = min(frequencies), max(frequencies)
-min_size, max_size = 7, 24
+min_size, max_size = 9, 26  # Increased minimum for better readability
 
-
-def scale_size(freq):
-    """Scale frequency to font size with non-linear scaling."""
-    if max_freq == min_freq:
-        return (min_size + max_size) / 2
+sizes = []
+for freq in frequencies:
     normalized = (freq - min_freq) / (max_freq - min_freq)
-    return min_size + (normalized**0.6) * (max_size - min_size)
+    size = min_size + (normalized**0.6) * (max_size - min_size)
+    sizes.append(size)
 
+# Spiral word placement with collision detection (inline)
+placed = []
+positions_x = []
+positions_y = []
+char_width_ratio = 0.52
 
-sizes = [scale_size(f) for f in frequencies]
+for word, size in zip(words, sizes, strict=True):
+    word_width = len(word) * size * char_width_ratio
+    word_height = size * 1.05
 
+    t = 0
+    step = 0.08
+    max_iterations = 4000
+    placed_word = False
 
-# Spiral word placement with improved packing
-def place_words(words, sizes, canvas_width, canvas_height):
-    """Place words using Archimedean spiral with tight packing."""
-    placed = []
-    positions_x = []
-    positions_y = []
+    while t < max_iterations and not placed_word:
+        r = 0.1 + t * 0.08
+        angle = t * 0.35
+        # Center bias to improve layout balance
+        x = canvas_width / 2 + r * math.cos(angle) * 0.95
+        y = canvas_height / 2 + r * math.sin(angle)
 
-    char_width_ratio = 0.52
+        margin = 3
+        if (
+            x - word_width / 2 < margin
+            or x + word_width / 2 > canvas_width - margin
+            or y - word_height / 2 < margin
+            or y + word_height / 2 > canvas_height - margin
+        ):
+            t += step
+            continue
 
-    for word, size in zip(words, sizes, strict=True):
-        word_width = len(word) * size * char_width_ratio
-        word_height = size * 1.05
+        collision = False
+        padding = 0.6
+        for px, py, pw, ph in placed:
+            if abs(x - px) < (word_width / 2 + pw / 2 + padding) and abs(y - py) < (word_height / 2 + ph / 2 + padding):
+                collision = True
+                break
 
-        t = 0
-        step = 0.08
-        max_iterations = 4000
-        placed_word = False
+        if not collision:
+            placed.append((x, y, word_width, word_height))
+            positions_x.append(x)
+            positions_y.append(y)
+            placed_word = True
+        else:
+            t += step
 
-        while t < max_iterations and not placed_word:
-            r = 0.1 + t * 0.08
-            angle = t * 0.35
-            x = canvas_width / 2 + r * math.cos(angle)
-            y = canvas_height / 2 + r * math.sin(angle)
-
-            margin = 2
-            if (
-                x - word_width / 2 < margin
-                or x + word_width / 2 > canvas_width - margin
-                or y - word_height / 2 < margin
-                or y + word_height / 2 > canvas_height - margin
-            ):
-                t += step
-                continue
-
-            collision = False
-            padding = 0.5
-            for px, py, pw, ph in placed:
-                if abs(x - px) < (word_width / 2 + pw / 2 + padding) and abs(y - py) < (
-                    word_height / 2 + ph / 2 + padding
-                ):
-                    collision = True
-                    break
-
-            if not collision:
-                placed.append((x, y, word_width, word_height))
-                positions_x.append(x)
-                positions_y.append(y)
-                placed_word = True
-            else:
-                t += step
-
-        if not placed_word:
-            positions_x.append(None)
-            positions_y.append(None)
-
-    return positions_x, positions_y
-
-
-positions_x, positions_y = place_words(words, sizes, canvas_width, canvas_height)
+    if not placed_word:
+        positions_x.append(None)
+        positions_y.append(None)
 
 # Build dataframe with placed words
 df_data = []
@@ -179,8 +164,6 @@ plot = (
     + ggsize(1600, 900)
 )
 
-# Save PNG (scale=3 gives 4800x2700)
+# Save to current directory (not default lets-plot-images folder)
 ggsave(plot, "plot.png", path=".", scale=3)
-
-# Save HTML for interactivity
 ggsave(plot, "plot.html", path=".")

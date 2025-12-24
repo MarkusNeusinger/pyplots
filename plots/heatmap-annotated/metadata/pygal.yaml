@@ -1,0 +1,31 @@
+library: pygal
+specification_id: heatmap-annotated
+created: '2025-12-24T21:32:08Z'
+updated: '2025-12-24T21:40:56Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494139651
+issue: 0
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-annotated/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-annotated/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-annotated/pygal/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of an annotated heatmap in pygal, which does not natively
+    support heatmaps
+  - Beautiful diverging colormap (blue-white-red) appropriate for correlation data
+  - Automatic contrast calculation for text annotations ensures readability on all
+    background colors
+  - Well-designed colorbar with proper labeling and gradient visualization
+  - Realistic business metrics correlation data that demonstrates the visualization
+    utility
+  - Proper use of 3600x3600 square canvas which is ideal for symmetric matrices
+  - Clean visual design with rounded corners on cells and subtle white borders
+  weaknesses:
+  - Code uses a custom class structure (AnnotatedHeatmap) which violates the KISS
+    principle, though this is arguably necessary since pygal has no native heatmap
+    support
+  - The colormap only shows positive correlations (0.28 to 1.00); for a fully diverging
+    colormap demo, negative correlations would better showcase the blue end

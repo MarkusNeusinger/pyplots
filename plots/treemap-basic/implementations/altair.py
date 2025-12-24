@@ -1,14 +1,14 @@
 """ pyplots.ai
 treemap-basic: Basic Treemap
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-14
+Quality: 91/100 | Created: 2025-12-24
 """
 
 import altair as alt
 import pandas as pd
 
 
-# Data - Market capitalization by sector and company
+# Data - Market capitalization by sector and company (in billions USD)
 data = [
     {"category": "Technology", "subcategory": "Apple", "value": 2800},
     {"category": "Technology", "subcategory": "Microsoft", "value": 2400},
@@ -18,9 +18,9 @@ data = [
     {"category": "Finance", "subcategory": "BofA", "value": 300},
     {"category": "Finance", "subcategory": "Wells Fargo", "value": 200},
     {"category": "Healthcare", "subcategory": "UnitedHealth", "value": 450},
-    {"category": "Healthcare", "subcategory": "Johnson & Johnson", "value": 380},
+    {"category": "Healthcare", "subcategory": "J&J", "value": 380},
     {"category": "Healthcare", "subcategory": "Pfizer", "value": 250},
-    {"category": "Energy", "subcategory": "ExxonMobil", "value": 420},
+    {"category": "Energy", "subcategory": "Exxon", "value": 420},
     {"category": "Energy", "subcategory": "Chevron", "value": 300},
     {"category": "Consumer", "subcategory": "Amazon", "value": 1500},
     {"category": "Consumer", "subcategory": "Walmart", "value": 400},
@@ -29,166 +29,70 @@ data = [
 
 df = pd.DataFrame(data)
 
-# Canvas dimensions
-width = 1400
-height = 800
+# Canvas dimensions for 16:9 aspect ratio (4800x2700 at scale_factor=3)
+width = 1600
+height = 900
 
-
-# Simple squarify algorithm for treemap layout
-def compute_treemap(values, x, y, dx, dy):
-    """Compute treemap rectangles using slice-and-dice algorithm."""
-    rects = []
-    total = sum(values)
-    if total == 0:
-        return rects
-
-    n = len(values)
-    if n == 0:
-        return rects
-
-    if n == 1:
-        return [{"x": x, "y": y, "dx": dx, "dy": dy}]
-
-    # Sort values in descending order with indices
-    indexed = sorted(enumerate(values), key=lambda x: -x[1])
-    sorted_indices = [i for i, _ in indexed]
-    sorted_values = [v for _, v in indexed]
-
-    # Slice-and-dice: alternate horizontal and vertical splits
-    result = [None] * n
-    remaining_x, remaining_y = x, y
-    remaining_dx, remaining_dy = dx, dy
-
-    for idx, (orig_idx, val) in enumerate(zip(sorted_indices, sorted_values)):
-        remaining_total = sum(sorted_values[idx:])
-        if remaining_total == 0:
-            break
-        ratio = val / remaining_total
-
-        # Alternate split direction based on remaining rectangle aspect ratio
-        if remaining_dx >= remaining_dy:
-            # Vertical split (cut horizontally)
-            rect_dx = remaining_dx * ratio
-            result[orig_idx] = {"x": remaining_x, "y": remaining_y, "dx": rect_dx, "dy": remaining_dy}
-            remaining_x += rect_dx
-            remaining_dx -= rect_dx
-        else:
-            # Horizontal split (cut vertically)
-            rect_dy = remaining_dy * ratio
-            result[orig_idx] = {"x": remaining_x, "y": remaining_y, "dx": remaining_dx, "dy": rect_dy}
-            remaining_y += rect_dy
-            remaining_dy -= rect_dy
-
-    return [r for r in result if r is not None]
-
-
-# Better squarify implementation
-def squarify_layout(values, x, y, dx, dy):
-    """Compute treemap using squarify algorithm for more square-like rectangles."""
-    rects = []
-    total = sum(values)
-    if total == 0 or len(values) == 0:
-        return rects
-
-    # Normalize values to fit the area
-    area = dx * dy
-    normalized = [v / total * area for v in values]
-
-    # Sort by value descending
-    items = sorted(enumerate(normalized), key=lambda x: -x[1])
-    indices = [i for i, _ in items]
-    sizes = [v for _, v in items]
-
-    result = [None] * len(values)
-    layout_row(sizes, indices, x, y, dx, dy, result)
-    return result
-
-
-def layout_row(sizes, indices, x, y, dx, dy, result):
-    """Recursively layout rectangles."""
-    if not sizes:
-        return
-
-    if len(sizes) == 1:
-        result[indices[0]] = {"x": x, "y": y, "dx": dx, "dy": dy}
-        return
-
-    # Find the best split point
-    total = sum(sizes)
-    if dx >= dy:
-        # Lay out in columns
-        width_per_unit = dx / total
-        current_x = x
-        for i, (idx, size) in enumerate(zip(indices, sizes)):
-            rect_width = size * width_per_unit
-            result[idx] = {"x": current_x, "y": y, "dx": rect_width, "dy": dy}
-            current_x += rect_width
-    else:
-        # Lay out in rows
-        height_per_unit = dy / total
-        current_y = y
-        for i, (idx, size) in enumerate(zip(indices, sizes)):
-            rect_height = size * height_per_unit
-            result[idx] = {"x": x, "y": current_y, "dx": dx, "dy": rect_height}
-            current_y += rect_height
-
-
-# Compute treemap layout using hierarchical approach
-# First group by category, then layout within each category
-categories = df["category"].unique()
-category_totals = df.groupby("category")["value"].sum().to_dict()
-
-# Sort categories by total value
-sorted_cats = sorted(categories, key=lambda c: -category_totals[c])
-cat_values = [category_totals[c] for c in sorted_cats]
-
-# Layout category rectangles
-cat_rects = squarify_layout(cat_values, 0, 0, width, height)
-
-# For each category, layout subcategories within its rectangle
-all_rects = []
-for cat, cat_rect in zip(sorted_cats, cat_rects):
-    cat_df = df[df["category"] == cat]
-    sub_values = cat_df["value"].tolist()
-    sub_names = cat_df["subcategory"].tolist()
-
-    # Layout subcategories within category rectangle
-    sub_rects = squarify_layout(sub_values, cat_rect["x"], cat_rect["y"], cat_rect["dx"], cat_rect["dy"])
-
-    for sub_rect, name, val in zip(sub_rects, sub_names, sub_values):
-        all_rects.append(
-            {
-                "category": cat,
-                "subcategory": name,
-                "value": val,
-                "x": sub_rect["x"],
-                "y": sub_rect["y"],
-                "dx": sub_rect["dx"],
-                "dy": sub_rect["dy"],
-            }
-        )
-
-rects_df = pd.DataFrame(all_rects)
-
-# Calculate coordinates for Altair (x2, y2 for mark_rect)
-rects_df["x2"] = rects_df["x"] + rects_df["dx"]
-rects_df["y2"] = rects_df["y"] + rects_df["dy"]
-rects_df["x_center"] = rects_df["x"] + rects_df["dx"] / 2
-rects_df["y_center"] = rects_df["y"] + rects_df["dy"] / 2
-
-# Format value for display
-rects_df["display_value"] = rects_df["value"].apply(lambda x: f"${x}B")
-
-# Color palette - distinct colors per main category
+# Color palette - Python Blue first, then colorblind-safe colors
 colors = {
     "Technology": "#306998",
     "Finance": "#FFD43B",
     "Healthcare": "#4ECDC4",
-    "Energy": "#FF6B6B",
-    "Consumer": "#95E1D3",
+    "Energy": "#E07A5F",
+    "Consumer": "#81B29A",
 }
 
-# Treemap rectangles
+# Compute category totals and sort
+category_totals = df.groupby("category")["value"].sum().sort_values(ascending=False)
+sorted_cats = list(category_totals.index)
+cat_values = list(category_totals.values)
+total_value = sum(cat_values)
+
+# Simple strip layout - categories as vertical strips, subcategories stacked within
+cat_rects = {}
+current_x = 0
+for cat, val in zip(sorted_cats, cat_values, strict=False):
+    rect_width = (val / total_value) * width
+    cat_rects[cat] = {"x": current_x, "y": 0, "dx": rect_width, "dy": height}
+    current_x += rect_width
+
+# Compute subcategory rectangles within each category (stacked vertically)
+all_rects = []
+for cat in sorted_cats:
+    cat_df = df[df["category"] == cat].sort_values("value", ascending=False)
+    cat_rect = cat_rects[cat]
+    cat_total = cat_df["value"].sum()
+
+    current_y = 0
+    for _, row in cat_df.iterrows():
+        rect_height = (row["value"] / cat_total) * cat_rect["dy"]
+        all_rects.append(
+            {
+                "category": cat,
+                "subcategory": row["subcategory"],
+                "value": row["value"],
+                "x": cat_rect["x"],
+                "y": current_y,
+                "dx": cat_rect["dx"],
+                "dy": rect_height,
+            }
+        )
+        current_y += rect_height
+
+rects_df = pd.DataFrame(all_rects)
+
+# Calculate corner and center coordinates for Altair
+rects_df["x2"] = rects_df["x"] + rects_df["dx"]
+rects_df["y2"] = rects_df["y"] + rects_df["dy"]
+rects_df["x_center"] = rects_df["x"] + rects_df["dx"] / 2
+rects_df["y_center"] = rects_df["y"] + rects_df["dy"] / 2
+rects_df["display_value"] = rects_df["value"].apply(lambda x: f"${x}B")
+
+# Determine which rectangles are large enough for labels
+rects_df["area"] = rects_df["dx"] * rects_df["dy"]
+min_area_for_label = width * height * 0.02
+
+# Treemap rectangles with white borders
 rects_chart = (
     alt.Chart(rects_df)
     .mark_rect(stroke="#ffffff", strokeWidth=3)
@@ -200,7 +104,7 @@ rects_chart = (
         color=alt.Color(
             "category:N",
             scale=alt.Scale(domain=list(colors.keys()), range=list(colors.values())),
-            legend=alt.Legend(title="Sector", titleFontSize=20, labelFontSize=18, symbolSize=300, orient="right"),
+            legend=alt.Legend(title="Sector", titleFontSize=22, labelFontSize=18, symbolSize=400, orient="right"),
         ),
         tooltip=[
             alt.Tooltip("category:N", title="Sector"),
@@ -210,14 +114,13 @@ rects_chart = (
     )
 )
 
-# Text labels - show company name for rectangles large enough
-rects_df["area"] = rects_df["dx"] * rects_df["dy"]
-min_area_for_label = width * height * 0.015
+# Filter for large rectangles that can fit labels
 labels_df = rects_df[rects_df["area"] >= min_area_for_label].copy()
 
-text_chart = (
+# Company name labels (white bold text)
+name_labels = (
     alt.Chart(labels_df)
-    .mark_text(fontSize=18, fontWeight="bold", color="#ffffff")
+    .mark_text(fontSize=20, fontWeight="bold", color="#ffffff", dy=-10)
     .encode(
         x=alt.X("x_center:Q", scale=alt.Scale(domain=[0, width])),
         y=alt.Y("y_center:Q", scale=alt.Scale(domain=[0, height])),
@@ -225,9 +128,20 @@ text_chart = (
     )
 )
 
-# Combine layers
+# Value labels (white text, smaller)
+value_labels = (
+    alt.Chart(labels_df)
+    .mark_text(fontSize=16, color="#ffffff", dy=10)
+    .encode(
+        x=alt.X("x_center:Q", scale=alt.Scale(domain=[0, width])),
+        y=alt.Y("y_center:Q", scale=alt.Scale(domain=[0, height])),
+        text="display_value:N",
+    )
+)
+
+# Combine all layers
 chart = (
-    alt.layer(rects_chart, text_chart)
+    alt.layer(rects_chart, name_labels, value_labels)
     .properties(
         width=width,
         height=height,
@@ -236,6 +150,6 @@ chart = (
     .configure_view(strokeWidth=0)
 )
 
-# Save
+# Save outputs - scale_factor=3 gives 4800x2700
 chart.save("plot.png", scale_factor=3.0)
 chart.save("plot.html")

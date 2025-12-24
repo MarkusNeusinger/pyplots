@@ -1,17 +1,26 @@
 library: highcharts
 specification_id: waterfall-basic
-created: 2025-12-14 11:34:11+00:00
-updated: 2025-12-14 11:34:11+00:00
+created: '2025-12-24T09:53:31Z'
+updated: '2025-12-24T10:04:46Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20207314190
-issue: 777
+workflow_run: 20483449525
+issue: 0
 python_version: 3.13.11
-library_version: 1.10.3
+library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/waterfall-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/waterfall-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/waterfall-basic/highcharts/plot.html
-quality_score: 90
+quality_score: 91
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent use of colorblind-safe color palette (blue for totals, orange for decreases,
+    teal for increases)
+  - Clean waterfall visualization with proper connecting lines between bars
+  - Data labels show +/- prefixes for clarity on direction of change
+  - Realistic financial scenario that demonstrates the waterfall concept well
+  - Proper use of Highcharts isSum property for the final total bar
+  - Title follows the required pyplots.ai format exactly
+  weaknesses:
+  - Grid lines are very subtle and could be more visible for easier value reading
+  - Data labels on smaller bars appear somewhat cramped
+  - X-axis Category label is not particularly informative for this financial context

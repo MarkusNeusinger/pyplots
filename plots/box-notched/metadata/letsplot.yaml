@@ -1,0 +1,24 @@
+library: letsplot
+specification_id: box-notched
+created: '2025-12-25T19:54:31Z'
+updated: '2025-12-25T19:56:43Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20510123516
+issue: 2019
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/box-notched/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-notched/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/box-notched/letsplot/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Clear notched box plot with visible notches around medians for statistical comparison
+  - Excellent data design with varied distributions showing outliers in Marketing
+    and Sales
+  - Good color palette with distinct colors for each department
+  - Proper title format following spec-id · library · pyplots.ai convention
+  - Clean KISS code structure with reproducible seed
+  weaknesses:
+  - Outlier points use gray color instead of matching box fill colors, reducing visual
+    cohesion

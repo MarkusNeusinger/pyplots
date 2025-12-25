@@ -1,0 +1,24 @@
+library: bokeh
+specification_id: bar-stacked-percent
+created: '2025-12-25T22:50:38Z'
+updated: '2025-12-25T22:53:40Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20511964905
+issue: 2008
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/bokeh/plot.html
+quality_score: 98
+review:
+  strengths:
+  - Excellent use of ColumnDataSource and LabelSet for in-segment percentage labels
+    with smart visibility threshold (>=10%)
+  - Perfect title format and professional styling with appropriate font sizes for
+    the 4800x2700 canvas
+  - Smart text color contrast (white on dark segments, dark on light segments)
+  - Clean normalization logic ensuring bars always sum to 100%
+  - Dual output (PNG + HTML) leveraging Bokeh interactive capabilities
+  weaknesses:
+  - Blue and cyan colors could be slightly more distinct for better colorblind accessibility

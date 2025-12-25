@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 box-grouped: Grouped Box Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-25
@@ -60,8 +60,8 @@ custom_style = Style(
     opacity_hover=1.0,
 )
 
-# Create box chart with legend at bottom showing 3 subcategories
-# Use legend_at_bottom_columns=3 so each row shows Jr, Sr, Ld pattern
+# Create box chart with legend showing only 3 experience levels
+# Set y-axis range to focus on actual data range (35-110)
 chart = pygal.Box(
     width=4800,
     height=2700,
@@ -71,7 +71,7 @@ chart = pygal.Box(
     y_title="Performance Score",
     show_legend=True,
     legend_at_bottom=True,
-    legend_at_bottom_columns=9,
+    legend_at_bottom_columns=3,
     legend_box_size=36,
     truncate_legend=-1,
     show_y_guides=True,
@@ -79,17 +79,26 @@ chart = pygal.Box(
     margin=80,
     box_mode="tukey",
     x_label_rotation=0,
+    range=(35, 110),
+    y_labels=[40, 50, 60, 70, 80, 90, 100, 110],
 )
 
-# Add boxes in order: for each department, add Junior, Senior, Lead
-# Name series by experience level only - colors cycle with the pattern
+# Track which experience levels have been labeled in legend
+labeled_levels = set()
+
+# Add the 9 boxes grouped by department
 for dept in departments:
     for level in experience_levels:
         values = data[(dept, level)].tolist()
-        chart.add(level, values)
+        # Only first occurrence of each experience level gets a legend entry
+        if level not in labeled_levels:
+            chart.add(level, values)
+            labeled_levels.add(level)
+        else:
+            # Suppress legend entry with None label
+            chart.add(None, values)
 
 # X-axis labels: show department name in center of each group
-# Use empty strings for non-center positions
 x_labels = ["", "Engineering", "", "", "Marketing", "", "", "Sales", ""]
 chart.x_labels = x_labels
 

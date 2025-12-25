@@ -1,0 +1,26 @@
+library: seaborn
+specification_id: box-grouped
+created: '2025-12-25T19:54:36Z'
+updated: '2025-12-25T19:56:53Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20510142880
+issue: 2017
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/box-grouped/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-grouped/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent data generation with realistic department/experience level scenario
+    showing meaningful variation
+  - Proper use of seaborn hue parameter for grouping with custom color palette
+  - Good visual hierarchy with appropriate font sizes for 4800x2700 resolution
+  - Clean separation of boxes within each category with consistent widths
+  - Outliers are clearly visible and add to the data story
+  weaknesses:
+  - 'The two blue colors (Junior #306998 and Senior #4B8BBE) are somewhat similar
+    and could be more distinct for colorblind accessibility'
+  - Axis labels lack units (though Performance Score is inherently unitless, could
+    add 0-100 for clarity)

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-diverging: Diverging Bar Chart
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2025-12-25
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 94/100 | Created: 2025-12-25
 """
 
 import pandas as pd

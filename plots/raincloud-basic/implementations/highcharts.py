@@ -60,14 +60,15 @@ for data in all_data:
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration
+# Chart configuration - HORIZONTAL orientation
 chart.options.chart = {
     "type": "boxplot",
+    "inverted": True,  # Swap axes for horizontal orientation
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "marginBottom": 280,
-    "marginLeft": 220,
+    "marginBottom": 200,
+    "marginLeft": 280,
     "marginRight": 200,
     "spacingBottom": 80,
 }
@@ -78,19 +79,16 @@ chart.options.title = {
     "style": {"fontSize": "56px", "fontWeight": "bold"},
 }
 
-# X-axis (categories)
+# X-axis (categories - but shown on left due to inverted)
 chart.options.x_axis = {
     "title": {"text": "Experimental Condition", "style": {"fontSize": "44px"}},
     "labels": {"style": {"fontSize": "36px"}},
     "categories": categories,
     "lineWidth": 2,
     "tickWidth": 2,
-    "min": -0.5,
-    "max": 3.5,
-    "tickPositions": [0, 1, 2, 3],
 }
 
-# Y-axis (values)
+# Y-axis (values - shown on bottom due to inverted)
 chart.options.y_axis = {
     "title": {"text": "Reaction Time (ms)", "style": {"fontSize": "44px"}},
     "labels": {"style": {"fontSize": "36px"}},
@@ -137,8 +135,8 @@ chart.options.plot_options = {
     "polygon": {"fillOpacity": 0.6, "lineWidth": 2},
 }
 
-# Create polygon data for half-violin (the "cloud") - inline KDE
-# Cloud on RIGHT side for vertical orientation (rain falls from cloud)
+# Create polygon data for half-violin (the "cloud") on TOP
+# With inverted=True, "positive" x offset becomes TOP visually
 for i, data in enumerate(all_data):
     # Inline KDE computation (Gaussian kernel)
     data_arr = np.array(data)
@@ -153,9 +151,10 @@ for i, data in enumerate(all_data):
     density = density / (n * bandwidth * np.sqrt(2 * np.pi))
     density = density / density.max() * 0.35
 
-    # Create polygon points for filled half-violin on RIGHT side
+    # Create polygon points for filled half-violin on TOP
     polygon_points = []
-    # Right side: baseline at category, extend RIGHT (positive direction)
+    # With inverted chart: x=category position, y=value
+    # Cloud extends in positive x direction from category center
     for y, d in zip(y_range, density, strict=True):
         polygon_points.append([float(i + d + 0.05), float(y)])
     # Close polygon by going back along the baseline
@@ -194,12 +193,12 @@ box_series.color = "#1a1a1a"
 box_series.color_by_point = True
 chart.add_series(box_series)
 
-# Create jittered scatter data (the "rain") - one series per category for legend
+# Create jittered scatter data (the "rain") BELOW
 for i, data in enumerate(all_data):
     scatter_points = []
     for val in data:
         jitter = np.random.uniform(-0.08, 0.08)
-        # Rain on LEFT side (negative offset from category center)
+        # Rain on negative side (BELOW with inverted chart)
         scatter_points.append([float(i - 0.25 + jitter), float(val)])
 
     scatter_series = ScatterSeries()

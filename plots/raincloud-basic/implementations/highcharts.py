@@ -1,7 +1,7 @@
 """ pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: highcharts unknown | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Quality: 78/100 | Created: 2025-12-25
 """
 
 import json
@@ -19,6 +19,8 @@ from selenium.webdriver.chrome.options import Options
 np.random.seed(42)
 categories = ["Control", "Treatment A", "Treatment B", "Treatment C"]
 colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF"]
+# Fill colors for box plots with good visibility (increased opacity)
+box_fill_colors = ["rgba(48,105,152,0.7)", "rgba(255,212,59,0.7)", "rgba(148,103,189,0.7)", "rgba(23,190,207,0.7)"]
 
 # Generate realistic reaction time data with different distributions
 control = np.random.normal(450, 60, 80)  # Normal distribution
@@ -52,14 +54,15 @@ for data in all_data:
         }
     )
 
-# Create jittered scatter data (the "rain")
+# Create jittered scatter data (the "rain" - falls LEFT of the cloud for vertical orientation)
 scatter_data = []
 for i, data in enumerate(all_data):
     for val in data:
         jitter = np.random.uniform(-0.08, 0.08)
-        scatter_data.append({"x": i + 0.25 + jitter, "y": float(val), "color": colors[i]})
+        # Rain on LEFT side (negative offset from category center)
+        scatter_data.append({"x": i - 0.25 + jitter, "y": float(val), "color": colors[i]})
 
-# Box plot series data
+# Box plot series data with semi-transparent fill and dark borders
 box_series_data = []
 for i, box in enumerate(box_data):
     box_series_data.append(
@@ -69,12 +72,13 @@ for i, box in enumerate(box_data):
             "median": box["median"],
             "q3": box["q3"],
             "high": box["high"],
-            "color": colors[i],
-            "fillColor": f"rgba({int(colors[i][1:3], 16)}, {int(colors[i][3:5], 16)}, {int(colors[i][5:7], 16)}, 0.6)",
+            "color": "#1a1a1a",  # Dark border for visibility
+            "fillColor": box_fill_colors[i],
         }
     )
 
 # Create polygon data for half-violin (the "cloud") - inline KDE
+# Cloud on RIGHT side for vertical orientation (rain falls from cloud, so cloud is RIGHT/TOP)
 violin_polygons = []
 for i, data in enumerate(all_data):
     # Inline KDE computation (Gaussian kernel)
@@ -90,13 +94,14 @@ for i, data in enumerate(all_data):
     density = density / (n * bandwidth * np.sqrt(2 * np.pi))
     density = density / density.max() * 0.35
 
-    # Create polygon points for filled half-violin (close the polygon)
+    # Create polygon points for filled half-violin on RIGHT side (close the polygon)
     polygon_points = []
+    # Right side: baseline at category, extend RIGHT (positive direction)
     for y, d in zip(y_range, density, strict=True):
-        polygon_points.append([float(i - d - 0.05), float(y)])
+        polygon_points.append([float(i + d + 0.05), float(y)])
     # Close polygon by going back along the baseline
     for y in reversed(y_range):
-        polygon_points.append([float(i - 0.05), float(y)])
+        polygon_points.append([float(i + 0.05), float(y)])
     # Close the polygon
     polygon_points.append(polygon_points[0])
     violin_polygons.append({"points": polygon_points, "color": colors[i]})
@@ -117,6 +122,7 @@ for idx, poly in enumerate(violin_polygons):
             enableMouseTracking: false,
             showInLegend: {show_legend},
             {linked}
+            legendSymbol: 'areaMarker',
             marker: {{ enabled: false }}
         }}""")
 
@@ -128,7 +134,7 @@ Highcharts.chart('container', {{
         backgroundColor: '#ffffff',
         marginBottom: 280,
         marginLeft: 220,
-        marginRight: 350,
+        marginRight: 200,
         spacingBottom: 80
     }},
     title: {{
@@ -158,33 +164,42 @@ Highcharts.chart('container', {{
         labels: {{
             style: {{ fontSize: '36px' }}
         }},
-        gridLineWidth: 1,
-        gridLineDashStyle: 'Dash',
-        min: 200,
-        max: 660
+        gridLineWidth: 2,
+        gridLineColor: 'rgba(0, 0, 0, 0.35)',
+        gridLineDashStyle: 'Solid',
+        tickInterval: 50,
+        min: 250,
+        max: 650
     }},
     legend: {{
         enabled: true,
-        itemStyle: {{ fontSize: '32px' }},
+        itemStyle: {{ fontSize: '36px' }},
         align: 'right',
         verticalAlign: 'top',
         layout: 'vertical',
         x: -50,
-        y: 100
+        y: 100,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        borderWidth: 1,
+        borderColor: '#cccccc',
+        padding: 20
     }},
     plotOptions: {{
         boxplot: {{
-            medianColor: '#1a1a1a',
-            medianWidth: 6,
+            medianColor: '#000000',
+            medianWidth: 8,
+            medianDashStyle: 'Solid',
+            stemColor: '#1a1a1a',
             stemWidth: 4,
-            whiskerWidth: 4,
-            whiskerLength: '40%',
-            lineWidth: 3,
-            pointWidth: 60
+            whiskerColor: '#1a1a1a',
+            whiskerWidth: 5,
+            whiskerLength: '50%',
+            lineWidth: 4,
+            pointWidth: 70
         }},
         scatter: {{
             marker: {{
-                radius: 10,
+                radius: 18,
                 symbol: 'circle'
             }}
         }},
@@ -196,10 +211,13 @@ Highcharts.chart('container', {{
     series: [
         {",".join(polygon_series_js)},
         {{
-            name: 'Box Plot',
+            name: 'Box Plot (Q1-Q3)',
             type: 'boxplot',
             data: {json.dumps(box_series_data)},
             colorByPoint: true,
+            showInLegend: true,
+            legendSymbol: 'rectangle',
+            color: '#1a1a1a',
             tooltip: {{
                 headerFormat: '<b>{{point.key}}</b><br/>',
                 pointFormat: 'Max: {{point.high:.0f}} ms<br/>Q3: {{point.q3:.0f}} ms<br/>Median: {{point.median:.0f}} ms<br/>Q1: {{point.q1:.0f}} ms<br/>Min: {{point.low:.0f}} ms'
@@ -210,11 +228,11 @@ Highcharts.chart('container', {{
             type: 'scatter',
             data: {json.dumps(scatter_data)},
             marker: {{
-                radius: 8,
-                lineWidth: 1,
-                lineColor: 'rgba(0,0,0,0.3)'
+                radius: 16,
+                lineWidth: 2,
+                lineColor: 'rgba(0,0,0,0.4)'
             }},
-            opacity: 0.6,
+            opacity: 0.65,
             tooltip: {{
                 pointFormat: 'Value: {{point.y:.0f}} ms'
             }}

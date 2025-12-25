@@ -1,0 +1,22 @@
+library: plotly
+specification_id: histogram-overlapping
+created: '2025-12-25T21:47:33Z'
+updated: '2025-12-25T21:49:39Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20511324975
+issue: 2010
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-overlapping/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-overlapping/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-overlapping/plotly/plot.html
+quality_score: 96
+review:
+  strengths:
+  - Excellent use of overlay barmode for true overlapping histograms with proper transparency
+  - Colorblind-safe color palette (blue/yellow) with good contrast
+  - Realistic height data scenario that clearly demonstrates distribution overlap
+  - Proper font sizing scaled for 4800x2700 output
+  - Includes both PNG and interactive HTML export (leveraging plotly strengths)
+  - Clean, well-structured code following KISS principles
+  weaknesses: []

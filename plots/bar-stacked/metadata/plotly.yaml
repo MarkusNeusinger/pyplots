@@ -1,0 +1,25 @@
+library: plotly
+specification_id: bar-stacked
+created: '2025-12-25T08:35:46Z'
+updated: '2025-12-25T08:39:49Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20502052958
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/plotly/plot.html
+quality_score: 93
+review:
+  strengths:
+  - Excellent text sizing throughout with large, readable fonts at all levels
+  - Clean implementation following the spec recommendation for total value labels
+    above stacks
+  - Well-chosen color palette with good visual distinction between categories
+  - Proper use of Plotly barmode=stack and annotation features
+  - Professional business context (quarterly revenue) that clearly demonstrates stacked
+    bar use case
+  weaknesses:
+  - Legend order is inverted compared to visual stacking order (shows Support first
+    instead of Software)

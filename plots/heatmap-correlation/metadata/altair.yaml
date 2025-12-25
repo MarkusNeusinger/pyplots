@@ -1,0 +1,28 @@
+library: altair
+specification_id: heatmap-correlation
+created: '2025-12-25T08:37:00Z'
+updated: '2025-12-25T08:44:21Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20502055364
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-correlation/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-correlation/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-correlation/altair/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent diverging color scheme (red-blue) centered at zero for intuitive correlation
+    interpretation
+  - All correlation values clearly annotated with 2 decimal places and smart text
+    color contrast (white on dark, black on light)
+  - Good use of realistic financial metrics data that shows varied correlation patterns
+    (positive, negative, near-zero)
+  - Clean square layout with well-sized cells and proper variable ordering on both
+    axes
+  - 'Title follows required format exactly: heatmap-correlation · altair · pyplots.ai'
+  weaknesses:
+  - X-axis labels are rotated at -45 degrees which works but could be slightly harder
+    to read than horizontal or vertical
+  - Colorbar could be slightly larger for better visibility

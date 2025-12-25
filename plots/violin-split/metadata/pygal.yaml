@@ -1,0 +1,29 @@
+library: pygal
+specification_id: violin-split
+created: '2025-12-25T08:38:32Z'
+updated: '2025-12-25T08:47:12Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20502060044
+issue: 0
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-split/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-split/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-split/pygal/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Creative use of XY chart to construct split violin shapes from scratch - demonstrates
+    advanced pygal customization
+  - Excellent color scheme with Python blue/yellow that provides good contrast and
+    colorblind accessibility
+  - Well-implemented KDE calculation with Silverman bandwidth selection for smooth
+    density curves
+  - Quartile markers (IQR lines and median) clearly show statistical summaries within
+    each half-violin
+  - Clean split violin design where Before/After halves meet at center line as specified
+  weaknesses:
+  - Legend at bottom shows many unlabeled series entries (small dots) which clutters
+    the legend area - consider hiding legend entries for marker series
+  - Title uses context-specific wording rather than generic spec description - could
+    be "Split Violin Plot" for clarity

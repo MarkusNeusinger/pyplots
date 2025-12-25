@@ -1,0 +1,26 @@
+library: plotnine
+specification_id: box-grouped
+created: '2025-12-25T19:54:59Z'
+updated: '2025-12-25T19:57:21Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20510142938
+issue: 2017
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/box-grouped/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-grouped/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of plotnine grammar of graphics with proper layered construction
+  - Well-designed data generation with realistic variation across departments and
+    experience levels
+  - Good use of position_dodge2 for clean grouped box arrangement
+  - Appropriate outlier handling with clear visibility
+  - Clean theme customization with appropriate font sizes for high-resolution output
+  - Categorical ordering ensures consistent experience level display order
+  weaknesses:
+  - The two blue colors (Junior and Senior) are somewhat similar; a more distinct
+    palette would improve differentiation
+  - Y-axis label could include units (e.g., Performance Score (0-100))

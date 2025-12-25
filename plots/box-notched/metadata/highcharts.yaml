@@ -1,0 +1,25 @@
+library: highcharts
+specification_id: box-notched
+created: '2025-12-25T19:55:42Z'
+updated: '2025-12-25T20:07:34Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20510123478
+issue: 2019
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/box-notched/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-notched/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/box-notched/highcharts/plot.html
+quality_score: 90
+review:
+  strengths:
+  - Excellent clinical trial context with dose-response relationship clearly visible
+  - Creative use of error bars to represent notch confidence intervals
+  - Clean colorblind-safe color palette
+  - Proper outlier visualization as separate scatter series
+  - Well-structured code following KISS principles
+  - Informative subtitle explaining the 95% CI notation
+  weaknesses:
+  - Notches represented as error bars rather than actual notched box shape (Highcharts
+    limitation, acceptable workaround)
+  - Legend text slightly small relative to the 4800x2700 canvas

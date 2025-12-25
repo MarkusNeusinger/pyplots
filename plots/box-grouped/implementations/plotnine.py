@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 box-grouped: Grouped Box Plot
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2025-12-25
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-25
 """
 
 import numpy as np

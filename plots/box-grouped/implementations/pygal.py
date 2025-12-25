@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 box-grouped: Grouped Box Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-25
@@ -12,8 +12,8 @@ from pygal.style import Style
 # Data - Employee performance scores across departments and experience levels
 np.random.seed(42)
 
-categories = ["Engineering", "Marketing", "Sales"]
-subcategories = ["Junior", "Senior", "Lead"]
+departments = ["Engineering", "Marketing", "Sales"]
+experience_levels = ["Junior", "Senior", "Lead"]
 
 # Generate performance distributions with realistic differences
 data = {}
@@ -37,11 +37,11 @@ data[("Engineering", "Junior")] = np.append(data[("Engineering", "Junior")], [45
 data[("Sales", "Senior")] = np.append(data[("Sales", "Senior")], [40, 105])
 data[("Marketing", "Lead")] = np.append(data[("Marketing", "Lead")], [60, 100])
 
-# Subcategory colors (colorblind-safe palette)
-subcategory_colors = ["#306998", "#FFD43B", "#4CAF50"]  # Blue, Yellow, Green
+# Subcategory colors (colorblind-safe: blue, orange, teal)
+subcategory_colors = ("#306998", "#E69F00", "#009E73")
 
-# Build color list: repeat pattern for each category group
-colors_list = subcategory_colors * len(categories)
+# Build full color tuple: repeat pattern for each department group
+all_colors = subcategory_colors * len(departments)
 
 # Custom style for large canvas
 custom_style = Style(
@@ -50,25 +50,26 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=tuple(colors_list),
+    colors=all_colors,
     title_font_size=64,
     label_font_size=36,
     major_label_font_size=32,
     legend_font_size=40,
     value_font_size=28,
+    opacity=0.85,
+    opacity_hover=1.0,
 )
 
-# Create box chart - use series names to show grouping
+# Create box chart - legend disabled since pygal can't show only 3 of 9 series
+# The x-axis labels and color pattern clearly show the grouping structure
 chart = pygal.Box(
     width=4800,
     height=2700,
     style=custom_style,
     title="box-grouped · pygal · pyplots.ai",
-    x_title="Department / Experience Level",
-    y_title="Performance Score (0-100)",
-    show_legend=True,
-    legend_at_bottom=True,
-    legend_box_size=32,
+    x_title="Department (Junior | Senior | Lead)",
+    y_title="Performance Score",
+    show_legend=False,
     show_y_guides=True,
     show_x_guides=False,
     margin=60,
@@ -76,12 +77,20 @@ chart = pygal.Box(
     x_label_rotation=0,
 )
 
-# Add data series with descriptive labels showing category and subcategory
-# This makes the grouping structure clear through naming
-for category in categories:
-    for subcategory in subcategories:
-        label = f"{category} - {subcategory}"
-        chart.add(label, data[(category, subcategory)].tolist())
+# Add boxes ordered by department then experience level
+# Colors cycle: Junior=blue, Senior=orange, Lead=teal for each department
+for dept in departments:
+    for level in experience_levels:
+        values = data[(dept, level)].tolist()
+        chart.add(f"{dept} - {level}", values)
+
+# X-axis labels: show department with experience level pattern
+# Pattern repeats: Jr, Sr, Ld for each department
+x_labels = []
+for dept in departments:
+    short = {"Engineering": "Eng", "Marketing": "Mkt", "Sales": "Sales"}[dept]
+    x_labels.extend([f"{short}-Jr", f"{short}-Sr", f"{short}-Ld"])
+chart.x_labels = x_labels
 
 # Save outputs
 chart.render_to_file("plot.html")

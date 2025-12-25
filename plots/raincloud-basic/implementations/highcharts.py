@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: highcharts unknown | Python 3.13.11
-Quality: 72/100 | Created: 2025-12-25
+Quality: 78/100 | Created: 2025-12-25
 """
 
 import json

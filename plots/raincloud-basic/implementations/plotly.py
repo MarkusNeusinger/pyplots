@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-24
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-25
 """
 
 import numpy as np
@@ -37,20 +37,25 @@ colors = ["#306998", "#4B8BBE", "#FFD43B", "#646464"]
 fig = go.Figure()
 
 # Positioning parameters
-violin_side = "positive"
 box_width = 0.08
-point_jitter = 0.06
 violin_width = 0.4
 
 for i, (condition, values) in enumerate(data.items()):
     color = colors[i]
 
-    # Half-violin (cloud) - positioned on one side
+    # Calculate statistics for hover info
+    median_val = np.median(values)
+    q1 = np.percentile(values, 25)
+    q3 = np.percentile(values, 75)
+    mean_val = np.mean(values)
+    std_val = np.std(values)
+
+    # Half-violin (cloud) - positioned on top (positive side)
     fig.add_trace(
         go.Violin(
             y=values,
             x=[condition] * len(values),
-            side=violin_side,
+            side="positive",
             width=violin_width,
             line_color=color,
             fillcolor=color,
@@ -58,12 +63,15 @@ for i, (condition, values) in enumerate(data.items()):
             meanline_visible=False,
             box_visible=False,
             points=False,
-            name=condition,
-            showlegend=False,
+            name=f"{condition} (Cloud)",
+            legendgroup=condition,
+            showlegend=True,
+            hoverinfo="y+name",
+            hoveron="violins",
         )
     )
 
-    # Box plot - in the middle
+    # Box plot - in the middle with custom hover
     fig.add_trace(
         go.Box(
             y=values,
@@ -73,12 +81,20 @@ for i, (condition, values) in enumerate(data.items()):
             line_color="#333333",
             fillcolor="white",
             boxpoints=False,
-            name=condition,
+            name=f"{condition} (Stats)",
+            legendgroup=condition,
             showlegend=False,
+            hovertemplate=(
+                f"<b>{condition}</b><br>"
+                f"Median: {median_val:.0f} ms<br>"
+                f"Q1-Q3: {q1:.0f}-{q3:.0f} ms<br>"
+                f"Mean: {mean_val:.1f} ± {std_val:.1f} ms"
+                "<extra></extra>"
+            ),
         )
     )
 
-    # Jittered strip points (rain) - on the opposite side using pointpos
+    # Jittered strip points (rain) - on the bottom (negative side)
     fig.add_trace(
         go.Violin(
             y=values,
@@ -91,8 +107,10 @@ for i, (condition, values) in enumerate(data.items()):
             marker=dict(size=8, color=color, opacity=0.6, line=dict(width=0.5, color="#333333")),
             line_width=0,
             fillcolor="rgba(0,0,0,0)",
-            name=condition,
+            name=f"{condition} (Rain)",
+            legendgroup=condition,
             showlegend=False,
+            hovertemplate=f"<b>{condition}</b><br>Value: %{{y:.0f}} ms<extra></extra>",
         )
     )
 
@@ -118,9 +136,21 @@ fig.update_layout(
     template="plotly_white",
     plot_bgcolor="white",
     paper_bgcolor="white",
-    margin=dict(l=100, r=80, t=100, b=100),
+    margin=dict(l=100, r=180, t=100, b=100),
     violingap=0,
     violinmode="overlay",
+    legend=dict(
+        title=dict(text="Components", font=dict(size=18)),
+        font=dict(size=16),
+        bgcolor="rgba(255,255,255,0.9)",
+        bordercolor="rgba(0,0,0,0.2)",
+        borderwidth=1,
+        x=1.02,
+        y=0.98,
+        xanchor="left",
+        yanchor="top",
+    ),
+    hoverlabel=dict(bgcolor="white", bordercolor="#333333", font=dict(size=16, color="#333333")),
 )
 
 # Save as PNG (4800x2700) and HTML

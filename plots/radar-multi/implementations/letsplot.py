@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 radar-multi: Multi-Series Radar Chart
-Library: letsplot | Python 3.13
-Quality: pending | Created: 2025-12-25
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-25
 """
 
 import math

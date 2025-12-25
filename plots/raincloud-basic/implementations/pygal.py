@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 75/100 | Created: 2025-12-25
@@ -43,33 +43,34 @@ custom_style = Style(
     opacity_hover=0.8,
 )
 
-# Create HORIZONTAL XY chart for raincloud plot
-# X-axis = Reaction Time (value), Y-axis = Treatment Group (category)
-# This allows cloud ABOVE, boxplot centered, rain BELOW for each group
+# Create VERTICAL XY chart for raincloud plot
+# X-axis = Treatment Group (category), Y-axis = Reaction Time (value)
+# For vertical orientation: cloud on RIGHT side, boxplot centered, rain on LEFT
+# This follows the spec's guidance for vertical raincloud layout
 chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
     title="raincloud-basic · pygal · pyplots.ai",
-    x_title="Reaction Time (ms)",
-    y_title="Treatment Group",
-    show_legend=False,  # Y-axis labels show group names, no legend needed
+    x_title="Treatment Group",
+    y_title="Reaction Time (ms)",
+    show_legend=False,
     stroke=True,
     fill=True,
     dots_size=0,
     show_x_guides=True,
     show_y_guides=True,
-    xrange=(100, 750),
-    range=(0, 4),
-    margin=80,  # Increased margin for larger fonts
+    range=(100, 750),
+    xrange=(0, 4),
+    margin=80,
     explicit_size=True,
 )
 
-# Raincloud layout parameters (horizontal orientation)
-# CRITICAL: Cloud ABOVE boxplot, rain BELOW - like rain falling from cloud
-# Y-axis: higher Y = cloud (top), lower Y = rain (bottom)
-cloud_offset = 0.25  # Cloud extends ABOVE center (positive Y)
-rain_offset = -0.30  # Rain falls BELOW center (negative Y)
+# Raincloud layout parameters (vertical orientation)
+# CRITICAL: Cloud on RIGHT side, boxplot centered, rain on LEFT
+# This creates the visual metaphor of rain falling from cloud
+cloud_offset = 0.28  # Cloud extends to the RIGHT (positive X offset)
+rain_offset = -0.32  # Rain falls to the LEFT (negative X offset)
 n_kde_points = 80
 
 # Pre-compute all raincloud components
@@ -78,40 +79,40 @@ rain_data = []
 box_data = []
 
 for i, (category, values) in enumerate(data.items()):
-    center_y = i + 1  # Y position for this group (1, 2, 3)
+    center_x = i + 1  # X position for this group (1, 2, 3)
     values = np.array(values)
 
-    # --- Half-Violin (cloud) - ABOVE the boxplot ---
+    # --- Half-Violin (cloud) - on RIGHT side of boxplot ---
     # Compute KDE using Silverman's rule
     n = len(values)
     std = np.std(values)
     iqr_val = np.percentile(values, 75) - np.percentile(values, 25)
     bandwidth = 0.9 * min(std, iqr_val / 1.34) * n ** (-0.2)
 
-    # Create range of x values (reaction times) for density
-    x_min, x_max = values.min(), values.max()
-    padding = (x_max - x_min) * 0.1
-    x_range = np.linspace(x_min - padding, x_max + padding, n_kde_points)
+    # Create range of y values (reaction times) for density
+    y_min, y_max = values.min(), values.max()
+    padding = (y_max - y_min) * 0.1
+    y_range = np.linspace(y_min - padding, y_max + padding, n_kde_points)
 
     # Gaussian kernel density estimation
-    density = np.zeros_like(x_range)
+    density = np.zeros_like(y_range)
     for v in values:
-        density += np.exp(-0.5 * ((x_range - v) / bandwidth) ** 2)
+        density += np.exp(-0.5 * ((y_range - v) / bandwidth) ** 2)
     density /= n * bandwidth * np.sqrt(2 * np.pi)
 
-    # Normalize density and place ABOVE center (cloud on top)
+    # Normalize density and place on RIGHT side (cloud)
     density = density / density.max() * cloud_offset
 
-    # Create half-violin shape - cloud extends upward (higher Y)
-    cloud_points = [(x, center_y + d) for x, d in zip(x_range, density, strict=True)]
+    # Create half-violin shape - cloud extends to right (higher X)
+    cloud_points = [(center_x + d, y) for y, d in zip(y_range, density, strict=True)]
     # Close the shape along the center line
-    cloud_points = [(x_range[0], center_y)] + cloud_points + [(x_range[-1], center_y), (x_range[0], center_y)]
+    cloud_points = [(center_x, y_range[0])] + cloud_points + [(center_x, y_range[-1]), (center_x, y_range[0])]
     cloud_data.append((category, cloud_points, group_colors[i]))
 
-    # --- Jittered Points (rain) - BELOW the boxplot (rain falls from cloud) ---
+    # --- Jittered Points (rain) - on LEFT side (rain falls from cloud) ---
     np.random.seed(42 + i)
     jitter = np.random.uniform(-0.08, 0.08, len(values))
-    rain_points = [(float(v), center_y + rain_offset + j) for j, v in zip(jitter, values, strict=True)]
+    rain_points = [(center_x + rain_offset + j, float(v)) for j, v in zip(jitter, values, strict=True)]
     rain_data.append((category, rain_points, group_colors[i]))
 
     # --- Box Plot (centered at group position) ---
@@ -121,51 +122,50 @@ for i, (category, values) in enumerate(data.items()):
     iqr = q3 - q1
     whisker_low = float(max(values.min(), q1 - 1.5 * iqr))
     whisker_high = float(min(values.max(), q3 + 1.5 * iqr))
-    box_data.append((center_y, median, q1, q3, whisker_low, whisker_high, group_colors[i]))
+    box_data.append((center_x, median, q1, q3, whisker_low, whisker_high, group_colors[i]))
 
-# Add clouds (half-violins) with category labels for legend
-for category, cloud_points, _color in cloud_data:
-    chart.add(category, cloud_points, stroke=True, fill=True)
+# Add clouds (half-violins) - no labels since y-axis labels already show groups
+for _category, cloud_points, _color in cloud_data:
+    chart.add(None, cloud_points, stroke=True, fill=True)
 
-# Add rain points (no legend entry to avoid duplicates)
-# Increased dots_size for better visibility on 4800x2700 canvas
+# Add rain points - increased dots_size for visibility on 4800x2700 canvas
 for _category, rain_points, _color in rain_data:
-    chart.add(None, rain_points, stroke=False, fill=False, dots_size=22)
+    chart.add(None, rain_points, stroke=False, fill=False, dots_size=24)
 
-# Add box plots - horizontal boxes centered at each group
-# Increased dimensions for better visibility on 4800x2700 canvas
-box_height = 0.12
-cap_height = 0.06
+# Add box plots - vertical boxes centered at each group
+# Significantly increased line weights for 4800x2700 canvas
+box_width = 0.10
+cap_width = 0.06
 
-for center_y, median, q1, q3, whisker_low, whisker_high, _color in box_data:
-    # IQR box (horizontal rectangle) - thick border for visibility
+for center_x, median, q1, q3, whisker_low, whisker_high, _color in box_data:
+    # IQR box (vertical rectangle) - thick border for visibility
     quartile_box = [
-        (q1, center_y - box_height),
-        (q1, center_y + box_height),
-        (q3, center_y + box_height),
-        (q3, center_y - box_height),
-        (q1, center_y - box_height),
+        (center_x - box_width, q1),
+        (center_x - box_width, q3),
+        (center_x + box_width, q3),
+        (center_x + box_width, q1),
+        (center_x - box_width, q1),
     ]
-    chart.add(None, quartile_box, stroke=True, fill=False, show_dots=False, stroke_style={"width": 12})
+    chart.add(None, quartile_box, stroke=True, fill=False, show_dots=False, stroke_style={"width": 20})
 
-    # Median line (vertical line within box) - thickest for emphasis
-    median_line = [(median, center_y - box_height * 1.3), (median, center_y + box_height * 1.3)]
-    chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 16})
+    # Median line (horizontal line within box) - thickest for emphasis
+    median_line = [(center_x - box_width * 1.3, median), (center_x + box_width * 1.3, median)]
+    chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 28})
 
-    # Whiskers (horizontal lines from box to caps)
-    whisker_left = [(whisker_low, center_y), (q1, center_y)]
-    whisker_right = [(q3, center_y), (whisker_high, center_y)]
-    chart.add(None, whisker_left, stroke=True, fill=False, show_dots=False, stroke_style={"width": 8})
-    chart.add(None, whisker_right, stroke=True, fill=False, show_dots=False, stroke_style={"width": 8})
+    # Whiskers (vertical lines from box to caps)
+    whisker_bottom = [(center_x, whisker_low), (center_x, q1)]
+    whisker_top = [(center_x, q3), (center_x, whisker_high)]
+    chart.add(None, whisker_bottom, stroke=True, fill=False, show_dots=False, stroke_style={"width": 14})
+    chart.add(None, whisker_top, stroke=True, fill=False, show_dots=False, stroke_style={"width": 14})
 
-    # Whisker caps (vertical lines at ends)
-    cap_left = [(whisker_low, center_y - cap_height), (whisker_low, center_y + cap_height)]
-    cap_right = [(whisker_high, center_y - cap_height), (whisker_high, center_y + cap_height)]
-    chart.add(None, cap_left, stroke=True, fill=False, show_dots=False, stroke_style={"width": 8})
-    chart.add(None, cap_right, stroke=True, fill=False, show_dots=False, stroke_style={"width": 8})
+    # Whisker caps (horizontal lines at ends)
+    cap_bottom = [(center_x - cap_width, whisker_low), (center_x + cap_width, whisker_low)]
+    cap_top = [(center_x - cap_width, whisker_high), (center_x + cap_width, whisker_high)]
+    chart.add(None, cap_bottom, stroke=True, fill=False, show_dots=False, stroke_style={"width": 14})
+    chart.add(None, cap_top, stroke=True, fill=False, show_dots=False, stroke_style={"width": 14})
 
-# Y-axis labels for treatment groups
-chart.y_labels = [
+# X-axis labels for treatment groups
+chart.x_labels = [
     {"value": 0, "label": ""},
     {"value": 1, "label": "Control"},
     {"value": 2, "label": "Treatment A"},

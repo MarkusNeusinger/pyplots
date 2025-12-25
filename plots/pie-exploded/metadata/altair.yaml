@@ -1,7 +1,7 @@
 library: altair
 specification_id: pie-exploded
 created: '2025-12-25T20:16:14Z'
-updated: '2025-12-25T20:18:37Z'
+updated: '2025-12-25T20:25:50Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20510238868
 issue: 2013
@@ -10,20 +10,18 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/altair/plot.html
-quality_score: 82
+quality_score: 84
 review:
   strengths:
-  - Clean, declarative Altair code with proper layering of pie, exploded overlay,
-    and labels
-  - Excellent colorblind-safe palette starting with Python signature blue
-  - Well-formatted percentage labels that are clearly readable
-  - Realistic market share scenario that demonstrates the use case
-  - Proper title format following pyplots convention
+  - Excellent use of realistic market share data with meaningful segment names
+  - Clean implementation using Altair layering approach to overlay exploded arcs
+  - Good color palette starting with Python blue (#306998) and colorblind-safe colors
+  - Proper title format following specification requirements
+  - Legend is well-positioned and clearly readable
+  - Percentage labels are bold white and visible on all slice colors
   weaknesses:
-  - Explosion effect is subtle - uses inner radius trick rather than true positional
-    offset; the slice appears slightly separated but not dramatically exploded
-  - Pie chart is not vertically centered; positioned in upper portion leaving significant
-    empty space below
-  - Only one slice is exploded; spec suggests demonstrating 1-3 exploded slices to
-    show the feature flexibility
-  - Square canvas with pie only filling upper portion reduces canvas utilization
+  - The explosion effect is implemented as radius variation rather than true positional
+    offset - slices should physically separate from the center
+  - Significant empty space in the lower portion of the canvas could be better utilized
+  - The chart only occupies about 60% of the vertical space despite using 1200x1200
+    canvas

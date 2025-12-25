@@ -1,0 +1,27 @@
+library: highcharts
+specification_id: residual-basic
+created: '2025-12-25T14:57:32Z'
+updated: '2025-12-25T14:59:39Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20506834541
+issue: 2030
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-basic/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-basic/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/residual-basic/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of all spec requirements including zero reference line
+    with label, smoothed trend line, and proper transparency
+  - Symmetric y-axis around zero as recommended for residual plots
+  - Colorblind-safe palette with good contrast between scatter points and trend line
+  - Clean, well-structured code following KISS principles with proper seed for reproducibility
+  - Good data generation showing realistic residual patterns with intentional outliers
+    and mild heteroscedasticity
+  weaknesses:
+  - Axis labels lack units or more specific context (could use parenthetical explanations)
+  - Margins are generous but slightly excessive, reducing the effective plot area
+  - Trend line label says Trend (Smoothed) but spec suggests LOWESS/LOESS terminology
+    would be more precise

@@ -1,0 +1,31 @@
+library: seaborn
+specification_id: donut-nested
+created: '2025-12-25T20:04:30Z'
+updated: '2025-12-25T20:06:52Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20510190017
+issue: 2015
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-nested/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-nested/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent hierarchical color scheme using seaborn light_palette() to create cohesive
+    color families per region
+  - Clean visual separation with white edges between segments
+  - Well-organized dual legend system clearly distinguishing inner (regions) and outer
+    (categories) rings
+  - Center text effectively communicates total budget
+  - Labels on inner ring include both region names and values for quick reference
+  - Realistic business scenario (regional budget allocation) makes the visualization
+    immediately understandable
+  weaknesses:
+  - Seaborn is primarily used for styling/palettes rather than native plot functions
+    (pie charts are matplotlib-native)
+  - Inner ring labels at fontsize=13 could be slightly larger for better readability
+    at full resolution
+  - Category legend only shows blue shades which may cause slight confusion as each
+    region has different color shades for the same categories

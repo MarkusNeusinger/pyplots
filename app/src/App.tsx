@@ -5,7 +5,7 @@ import Alert from '@mui/material/Alert';
 
 import type { PlotImage, LibraryInfo, SpecInfo, FilterCategory, ActiveFilters, FilterCounts } from './types';
 import { FILTER_CATEGORIES } from './types';
-import { API_URL, BATCH_SIZE } from './constants';
+import { API_URL, BATCH_SIZE, IMAGE_SIZES, type ImageSize } from './constants';
 import { useInfiniteScroll, useAnalytics } from './hooks';
 import { Header, Footer, FilterBar, ImagesGrid, FullscreenModal } from './components';
 
@@ -80,6 +80,15 @@ function App() {
   const [modalImage, setModalImage] = useState<PlotImage | null>(null);
   const [openImageTooltip, setOpenImageTooltip] = useState<string | null>(null);
   const [randomAnimation, setRandomAnimation] = useState<{ index: number; phase: 'out' | 'in'; oldLabel?: string } | null>(null);
+  const [imageSize, setImageSize] = useState<ImageSize>(() => {
+    const stored = localStorage.getItem('imageSize');
+    return (stored && stored in IMAGE_SIZES) ? stored as ImageSize : 'L';
+  });
+
+  // Persist imageSize to localStorage
+  useEffect(() => {
+    localStorage.setItem('imageSize', imageSize);
+  }, [imageSize]);
 
   // Refs
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -340,6 +349,8 @@ function App() {
           currentTotal={allImages.length}
           randomAnimation={randomAnimation}
           searchInputRef={searchInputRef}
+          imageSize={imageSize}
+          onImageSizeChange={setImageSize}
           onAddFilter={handleAddFilter}
           onAddValueToGroup={handleAddValueToGroup}
           onRemoveFilter={handleRemoveFilter}
@@ -359,6 +370,7 @@ function App() {
           specsData={specsData}
           openTooltip={openImageTooltip}
           loadMoreRef={loadMoreRef}
+          imageSize={imageSize}
           onTooltipToggle={setOpenImageTooltip}
           onCardClick={handleCardClick}
           onTrackEvent={trackEvent}

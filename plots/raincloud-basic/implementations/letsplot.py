@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-25
@@ -97,9 +97,11 @@ plot = (
         axis_text_y=element_text(size=16),
         panel_grid_major_x=element_blank(),
         panel_grid_minor=element_blank(),
-        panel_grid_major_y=element_line(color="#cccccc", size=0.5),
+        panel_grid_major_y=element_line(color="rgba(0, 0, 0, 0.15)", size=0.5),
     )
     + ggsize(1600, 900)
+    # Lets-plot distinctive feature: coordinated color flavor for cohesive styling
+    + flavor_high_contrast_light()
 )
 
 # Save outputs

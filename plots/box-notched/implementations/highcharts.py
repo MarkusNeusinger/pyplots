@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 box-notched: Notched Box Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-25
@@ -35,13 +35,18 @@ data_dict["Medium Dose"] = np.append(data_dict["Medium Dose"], [30, 95])
 
 colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF"]
 
+# Calculate box plot statistics inline (KISS - no functions)
+box_data = []
+errorbar_data = []
+outlier_data = []
 
-# Calculate box plot statistics with notches
-def calc_boxplot_stats(data):
-    """Calculate boxplot statistics including notch bounds."""
-    q1 = np.percentile(data, 25)
-    median = np.percentile(data, 50)
-    q3 = np.percentile(data, 75)
+for i, cat in enumerate(categories):
+    data = data_dict[cat]
+
+    # Calculate quartiles and IQR
+    q1 = float(np.percentile(data, 25))
+    median = float(np.percentile(data, 50))
+    q3 = float(np.percentile(data, 75))
     iqr = q3 - q1
 
     # Whiskers at 1.5*IQR
@@ -62,51 +67,26 @@ def calc_boxplot_stats(data):
     # Outliers
     outliers = data[(data < lower_fence) | (data > upper_fence)]
 
-    return {
-        "low": lower_whisker,
-        "q1": float(q1),
-        "median": float(median),
-        "q3": float(q3),
-        "high": upper_whisker,
-        "notchLow": float(notch_low),
-        "notchHigh": float(notch_high),
-        "outliers": outliers.tolist(),
-    }
-
-
-# Calculate stats for each category
-all_stats = []
-outlier_data = []
-
-for i, cat in enumerate(categories):
-    stats = calc_boxplot_stats(data_dict[cat])
-    all_stats.append(stats)
-    for outlier in stats["outliers"]:
-        outlier_data.append({"x": i, "y": outlier})
-
-# Build Highcharts config directly with custom SVG rendering for notches
-# Since Highcharts doesn't natively support notched box plots, we use error bars
-# to visualize the confidence interval around the median
-
-box_data = []
-for i, stats in enumerate(all_stats):
+    # Box data
     box_data.append(
         {
-            "low": round(stats["low"], 2),
-            "q1": round(stats["q1"], 2),
-            "median": round(stats["median"], 2),
-            "q3": round(stats["q3"], 2),
-            "high": round(stats["high"], 2),
+            "low": round(lower_whisker, 2),
+            "q1": round(q1, 2),
+            "median": round(median, 2),
+            "q3": round(q3, 2),
+            "high": round(upper_whisker, 2),
             "color": colors[i],
         }
     )
 
-# Error bar data for notch visualization (95% CI around median)
-errorbar_data = []
-for i, stats in enumerate(all_stats):
-    errorbar_data.append({"x": i, "low": round(stats["notchLow"], 2), "high": round(stats["notchHigh"], 2)})
+    # Error bar data for notch visualization (95% CI around median)
+    errorbar_data.append({"x": i, "low": round(notch_low, 2), "high": round(notch_high, 2)})
 
-# Build chart config as dict for more control
+    # Outlier data
+    for outlier in outliers:
+        outlier_data.append({"x": i, "y": round(float(outlier), 2)})
+
+# Build chart config
 chart_config = {
     "chart": {
         "type": "boxplot",
@@ -115,10 +95,11 @@ chart_config = {
         "backgroundColor": "#ffffff",
         "marginBottom": 200,
         "marginLeft": 150,
+        "marginRight": 350,
     },
     "title": {"text": "box-notched · highcharts · pyplots.ai", "style": {"fontSize": "48px", "fontWeight": "bold"}},
     "subtitle": {
-        "text": "Treatment Response by Dose (Clinical Trial Data) — Notches show 95% CI for median",
+        "text": "Treatment Response by Dose — Error bars indicate 95% CI (notch) for median comparison",
         "style": {"fontSize": "32px", "color": "#666666"},
     },
     "xAxis": {
@@ -138,8 +119,12 @@ chart_config = {
         "align": "right",
         "verticalAlign": "top",
         "layout": "vertical",
-        "x": -50,
-        "y": 100,
+        "x": -100,
+        "y": 80,
+        "backgroundColor": "#ffffff",
+        "borderColor": "#cccccc",
+        "borderWidth": 1,
+        "padding": 15,
     },
     "plotOptions": {
         "boxplot": {

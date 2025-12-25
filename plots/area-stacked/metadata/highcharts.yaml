@@ -1,0 +1,25 @@
+library: highcharts
+specification_id: area-stacked
+created: '2025-12-25T17:42:59Z'
+updated: '2025-12-25T17:45:23Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20508665983
+issue: 2022
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stacked/highcharts/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent colorblind-safe palette choice with high contrast between series
+  - Perfect spec compliance with correct title format and all required features
+  - Realistic business scenario with 24 months of revenue data showing clear trends
+  - Proper baseline at zero as required by spec
+  - Good use of Highcharts stacking with normal stacking mode and fillOpacity for
+    visibility
+  - Well-configured tooltip with shared format showing all series values
+  weaknesses:
+  - Legend background color creates slight visual disconnection from the chart area
+  - Grid lines could be slightly more subtle (currently visible but not distracting)

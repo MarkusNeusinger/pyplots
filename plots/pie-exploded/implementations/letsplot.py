@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-exploded: Exploded Pie Chart
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-25
@@ -14,8 +14,9 @@ LetsPlot.setup_html()  # noqa: F405
 # Data - Budget allocation by department with R&D (highest) and Sales emphasized
 categories = ["Marketing", "Operations", "R&D", "Sales", "HR", "IT"]
 values = [18, 15, 32, 20, 8, 7]
-# Explode R&D (largest, index 2) and Sales (emphasis, index 3)
-explode = [0, 0, 0.15, 0.1, 0, 0]
+# Explode R&D (largest, index 2) and Sales (emphasis, index 3) with visible explosion
+# Larger values (0.25-0.3) needed for clearly visible explosion effect
+explode = [0, 0, 0.3, 0.2, 0, 0]
 
 df = pd.DataFrame({"category": categories, "value": values, "explode": explode})
 
@@ -29,15 +30,16 @@ df["category"] = pd.Categorical(df["category"], categories=categories, ordered=T
 # Define colors - Python Blue first, then colorblind-safe palette
 colors = ["#306998", "#FFD43B", "#4CAF50", "#FF7043", "#AB47BC", "#42A5F5"]
 
-# Plot - lets-plot geom_pie supports explode parameter
+# Plot - lets-plot geom_pie with weight aesthetic and visible explosion
 plot = (
     ggplot(df)  # noqa: F405
     + geom_pie(  # noqa: F405
-        aes(slice="value", fill="category", explode="explode"),  # noqa: F405
-        stat="identity",
+        aes(fill="category", weight="value", explode="explode"),  # noqa: F405
         size=38,  # Larger size for better canvas utilization
         hole=0,  # Full pie (not donut)
-        stroke=1.5,  # Add edge definition
+        color="white",  # White edge for slice separation
+        stroke=3,  # Thicker stroke for visibility
+        stroke_side="both",  # Stroke on both sides
         labels=layer_labels()  # noqa: F405
         .line("@pct")
         .format("pct", "{.1f}%")

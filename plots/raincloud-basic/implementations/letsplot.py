@@ -1,8 +1,10 @@
 """ pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-24
+Quality: 91/100 | Created: 2025-12-25
 """
+
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -34,18 +36,58 @@ df = pd.DataFrame(
 )
 
 # Create raincloud plot: half-violin (cloud) + box plot + jittered points (rain)
+# Layout: cloud on right, boxplot slightly left of center, rain on left (like rain falling from cloud)
 plot = (
-    ggplot(df, aes(x="condition", y="reaction_time", fill="condition"))
-    # Half-violin (cloud) - show only right half
-    + geom_violin(trim=False, show_half=1, show_legend=False, size=0.8, alpha=0.7)
-    # Box plot - positioned in center
-    + geom_boxplot(
-        width=0.12, outlier_shape=None, fill="white", color="#333333", size=0.8, alpha=0.95, show_legend=False
+    ggplot(df, aes(x="condition", y="reaction_time", fill="condition", color="condition"))
+    # Half-violin (cloud) - nudged to right side
+    + geom_violin(
+        trim=False,
+        show_half=1,  # Show only right/upper half (the "cloud")
+        size=0.8,
+        alpha=0.7,
+        position=position_nudge(x=0.15),
+        tooltips=layer_tooltips()
+        .title("@condition")
+        .line("Distribution of reaction times")
+        .format("@..density..", ".3f"),
     )
-    # Jittered points (rain) - spread for visibility
-    + geom_jitter(width=0.08, height=0, size=2.5, alpha=0.5, color="#1a1a1a", show_legend=False)
+    # Box plot - slightly left of center
+    + geom_boxplot(
+        width=0.1,
+        outlier_shape=None,
+        fill="white",
+        color="#333333",
+        size=0.8,
+        alpha=0.95,
+        show_legend=False,
+        position=position_nudge(x=-0.02),
+        tooltips=layer_tooltips()
+        .title("Summary Statistics")
+        .line("Median: @..middle..")
+        .line("Q1: @..lower..")
+        .line("Q3: @..upper.."),
+    )
+    # Jittered points (rain) - clearly positioned to left of boxplot (rain falling from cloud)
+    + geom_jitter(
+        width=0.04,
+        height=0,
+        size=2.5,
+        alpha=0.6,
+        shape=21,  # Filled circle with border
+        fill="#1a1a1a",
+        color="#1a1a1a",
+        show_legend=False,
+        position=position_nudge(x=-0.2),
+        tooltips=layer_tooltips().line("Reaction Time|@reaction_time ms"),
+    )
+    # Colors
     + scale_fill_manual(values=["#306998", "#FFD43B", "#5BA85B"])
+    + scale_color_manual(values=["#306998", "#FFD43B", "#5BA85B"])
+    # Labels and title
     + labs(x="Experimental Condition", y="Reaction Time (ms)", title="raincloud-basic · letsplot · pyplots.ai")
+    # Hide legend since categories are already on X-axis
+    + guides(fill="none", color="none")
+    # Theme
     + theme_minimal()
     + theme(
         plot_title=element_text(size=24, face="bold"),
@@ -55,11 +97,14 @@ plot = (
         axis_text_y=element_text(size=16),
         panel_grid_major_x=element_blank(),
         panel_grid_minor=element_blank(),
-        panel_grid_major_y=element_line(color="#cccccc", size=0.5),
+        panel_grid_major_y=element_line(color="rgba(0, 0, 0, 0.15)", size=0.5),
     )
     + ggsize(1600, 900)
+    # Lets-plot distinctive feature: coordinated color flavor for cohesive styling
+    + flavor_high_contrast_light()
 )
 
 # Save outputs
-ggsave(plot, "plot.png", scale=3)
-ggsave(plot, "plot.html")
+output_dir = Path(__file__).parent
+ggsave(plot, str(output_dir / "plot.png"), scale=3)
+ggsave(plot, str(output_dir / "plot.html"))

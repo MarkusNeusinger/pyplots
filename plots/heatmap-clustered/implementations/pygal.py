@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-clustered: Clustered Heatmap
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-25
@@ -154,18 +154,21 @@ class ClusteredHeatmap(Graph):
         plot_width = self.view.width
         plot_height = self.view.height
 
-        # Layout: [row_dend][heatmap][colorbar]
-        #              [col_dend]
-        row_dend_width = 180
-        col_dend_height = 180
+        # Layout: [axis_label][row_dend][row_labels][heatmap][colorbar]
+        #                                          [col_dend]
+        #                                          [col_labels]
+        #                                          [axis_label]
+        axis_label_width = 80  # Space for "Genes" and "Samples" labels
+        row_dend_width = 280  # Increased width for row dendrogram (was 180)
+        col_dend_height = 200  # Slightly increased for balance
         label_margin_left = 280
-        label_margin_bottom = 180
-        label_margin_top = 60
-        colorbar_width = 200
+        label_margin_bottom = 220  # Increased for samples axis label
+        label_margin_top = 80  # Increased for better top spacing
+        colorbar_width = 220  # Slightly wider for better proportion
 
-        # Heatmap area
-        heatmap_x = row_dend_width + label_margin_left
-        heatmap_width = plot_width - heatmap_x - colorbar_width
+        # Heatmap area - adjusted for axis labels and wider dendrogram
+        heatmap_x = axis_label_width + row_dend_width + label_margin_left
+        heatmap_width = plot_width - heatmap_x - colorbar_width - 20  # Small right margin
         heatmap_height = plot_height - col_dend_height - label_margin_bottom - label_margin_top
 
         cell_width = heatmap_width / n_cols
@@ -175,13 +178,13 @@ class ClusteredHeatmap(Graph):
         plot_node = self.nodes["plot"]
         heatmap_group = self.svg.node(plot_node, class_="clustered-heatmap")
 
-        # Draw row dendrogram (left side)
+        # Draw row dendrogram (left side) - positioned with more space
         self._draw_dendrogram(
             heatmap_group,
             self.row_linkage,
-            self.view.x(0) + label_margin_left,
+            self.view.x(0) + axis_label_width + 40,  # Account for axis label
             self.view.y(n_rows) + label_margin_top,
-            row_dend_width,
+            row_dend_width - 40,  # Slightly narrower to fit after axis label
             heatmap_height,
             orientation="left",
         )
@@ -310,6 +313,28 @@ class ClusteredHeatmap(Graph):
         text_node.set("style", f"font-size:{cb_title_size}px;font-weight:bold;font-family:sans-serif")
         text_node.text = "Z-Score"
 
+        # Axis label: "Genes" (left side, rotated 90 degrees)
+        axis_label_size = 48
+        genes_label_x = self.view.x(0) + 50
+        genes_label_y = self.view.y(n_rows) + label_margin_top + heatmap_height / 2
+        genes_text = self.svg.node(heatmap_group, "text", x=genes_label_x, y=genes_label_y)
+        genes_text.set("text-anchor", "middle")
+        genes_text.set("fill", "#333333")
+        genes_text.set("style", f"font-size:{axis_label_size}px;font-weight:bold;font-family:sans-serif")
+        genes_text.set("transform", f"rotate(-90, {genes_label_x}, {genes_label_y})")
+        genes_text.text = "Genes"
+
+        # Axis label: "Samples" (bottom, horizontal)
+        samples_label_x = self.view.x(0) + heatmap_x + heatmap_width / 2
+        samples_label_y = (
+            self.view.y(n_rows) + label_margin_top + heatmap_height + col_dend_height + label_margin_bottom - 30
+        )
+        samples_text = self.svg.node(heatmap_group, "text", x=samples_label_x, y=samples_label_y)
+        samples_text.set("text-anchor", "middle")
+        samples_text.set("fill", "#333333")
+        samples_text.set("style", f"font-size:{axis_label_size}px;font-weight:bold;font-family:sans-serif")
+        samples_text.text = "Samples"
+
     def _compute(self):
         """Compute the box for rendering."""
         n_rows = len(self.matrix_data) if self.matrix_data else 1
@@ -422,9 +447,10 @@ chart = ClusteredHeatmap(
     col_order=col_order,
     show_values=False,
     show_legend=False,
-    margin=100,
-    margin_top=180,
-    margin_bottom=80,
+    margin=120,  # Increased base margin for better spacing
+    margin_top=200,  # More space for title
+    margin_bottom=100,  # More space at bottom for samples label
+    margin_left=80,  # Account for genes axis label
     show_x_labels=False,
     show_y_labels=False,
 )

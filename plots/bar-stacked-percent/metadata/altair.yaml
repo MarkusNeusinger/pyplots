@@ -1,0 +1,26 @@
+library: altair
+specification_id: bar-stacked-percent
+created: '2025-12-25T22:49:25Z'
+updated: '2025-12-25T22:52:06Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20511964949
+issue: 2008
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/altair/plot.html
+quality_score: 98
+review:
+  strengths:
+  - Excellent use of Altair's declarative grammar with proper encoding types (:N,
+    :Q)
+  - Perfect implementation of 100% stacking using stack="normalize"
+  - Colorblind-safe palette with good visual contrast between segments
+  - Real-world energy mix data scenario that perfectly demonstrates proportional comparison
+  - Clean segment separation with white strokes improves readability
+  - Interactive tooltips enhance data exploration
+  - Consistent component ordering across all bars
+  weaknesses:
+  - Y-axis label "Share of Energy Mix" could include explicit unit notation like "(%)"
+    even though format shows percentages

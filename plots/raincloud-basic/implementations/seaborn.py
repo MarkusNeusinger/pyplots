@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
-Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Library: seaborn | Python 3.13
+Quality: pending | Created: 2025-12-25
 """
 
 import matplotlib.pyplot as plt
@@ -17,7 +17,7 @@ np.random.seed(42)
 control = np.random.normal(450, 60, 80)
 treatment_a = np.random.normal(380, 50, 80)  # Faster, less variable
 treatment_b = np.concatenate(
-    [  # Bimodal - shows advantage of raincloud
+    [  # Bimodal - shows advantage of raincloud over box plots
         np.random.normal(350, 30, 50),
         np.random.normal(480, 40, 30),
     ]
@@ -37,15 +37,16 @@ fig, ax = plt.subplots(figsize=(16, 9))
 
 # Define colors - improved yellow (#E6A800) for better contrast
 palette = {"Control": "#306998", "Treatment A": "#E6A800", "Treatment B": "#4DAF4A"}
+order = ["Control", "Treatment A", "Treatment B"]
 
-# Half-violin (the "cloud") - using seaborn violinplot with split
-# We use inner=None and cut=0 for clean half-violins
+# Half-violin (the "cloud") - on right side
 sns.violinplot(
     data=data,
     x="Condition",
     y="Reaction Time",
     hue="Condition",
     palette=palette,
+    order=order,
     inner=None,
     cut=0,
     width=0.6,
@@ -56,6 +57,7 @@ sns.violinplot(
 )
 
 # Clip violins to show only right half (the "cloud" effect)
+# This creates the half-violin appearance per specification
 for violin in ax.collections:
     if hasattr(violin, "get_paths") and violin.get_paths():
         path = violin.get_paths()[0]
@@ -63,13 +65,14 @@ for violin in ax.collections:
         m = np.mean(vertices[:, 0])
         vertices[:, 0] = np.clip(vertices[:, 0], m, np.inf)
 
-# Box plot (in the middle) - narrow, using seaborn boxplot
+# Box plot (in the middle) - narrow box showing summary statistics
 sns.boxplot(
     data=data,
     x="Condition",
     y="Reaction Time",
     hue="Condition",
     palette=palette,
+    order=order,
     width=0.15,
     showfliers=False,
     linewidth=2,
@@ -81,25 +84,36 @@ sns.boxplot(
     legend=False,
 )
 
-# Jittered strip points (the "rain") - on left side using seaborn stripplot
-# Shift points to the left by adjusting after plotting
-order = ["Control", "Treatment A", "Treatment B"]
-for i, cond in enumerate(order):
-    subset = data[data["Condition"] == cond]
-    y = subset["Reaction Time"].values
-    # Position points to left of box (at i - 0.25)
-    x = np.ones(len(y)) * i - 0.25 + np.random.uniform(-0.08, 0.08, len(y))
-    ax.scatter(
-        x,
-        y,
-        s=80,
-        alpha=0.6,
-        color=palette[cond],
-        edgecolor="white",
-        linewidth=0.5,
-        zorder=3,
-        label=cond if i == 0 else None,
-    )
+# Jittered strip points (the "rain") - using sns.stripplot
+# First stripplot then shift the points left manually
+strip_ax = sns.stripplot(
+    data=data,
+    x="Condition",
+    y="Reaction Time",
+    hue="Condition",
+    palette=palette,
+    order=order,
+    size=7,
+    alpha=0.6,
+    jitter=0.08,
+    edgecolor="white",
+    linewidth=0.5,
+    ax=ax,
+    zorder=3,
+    legend=False,
+)
+
+# Shift strip points to the left (the "rain" below the cloud)
+# The stripplot collections are the last 3 added (one per condition)
+n_violins = len(order)  # Number of violin collections to skip
+point_collections = [c for c in ax.collections if hasattr(c, "get_offsets")]
+
+# The strip collections are the last ones added
+for collection in point_collections[-n_violins:]:
+    offsets = collection.get_offsets()
+    # Shift x coordinates to the left by 0.25
+    offsets[:, 0] = offsets[:, 0] - 0.25
+    collection.set_offsets(offsets)
 
 # Create custom legend
 handles = [

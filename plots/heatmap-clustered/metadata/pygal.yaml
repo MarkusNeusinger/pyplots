@@ -1,0 +1,31 @@
+library: pygal
+specification_id: heatmap-clustered
+created: '2025-12-25T19:21:36Z'
+updated: '2025-12-25T19:42:38Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20509770804
+issue: 2021
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/pygal/plot.html
+quality_score: 88
+review:
+  strengths:
+  - Excellent implementation of a complex visualization type (clustered heatmap) that
+    pygal does not natively support
+  - Colorblind-safe diverging colormap (Purple-Green from ColorBrewer)
+  - Both row and column dendrograms with proper hierarchical clustering using Ward
+    method
+  - Biologically meaningful gene expression data with clear tumor vs normal sample
+    grouping
+  - Proper reordering of rows and columns based on clustering results
+  - HTML output with embedded SVG for interactivity
+  - Good text legibility with 45-degree rotation for column labels
+  weaknesses:
+  - Custom class structure deviates from KISS principle though necessary for this
+    complex plot type in pygal
+  - Colorbar Z-Score label could be more descriptive such as Expression Z-Score
+  - Dendrograms could be slightly more prominent or thicker for better visibility
+    at thumbnail size

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 86/100 | Created: 2025-12-25
@@ -14,16 +14,16 @@ from plotnine import (
     element_text,
     geom_boxplot,
     geom_point,
-    geom_violin,
+    geom_ribbon,
     ggplot,
     labs,
-    position_nudge,
     scale_color_manual,
     scale_fill_manual,
     scale_x_continuous,
     theme,
     theme_minimal,
 )
+from scipy import stats
 
 
 # Data - Reaction times (ms) for three experimental conditions
@@ -52,23 +52,51 @@ df = pd.DataFrame(
 condition_map = {"Control": 2, "Treatment A": 1, "Treatment B": 0}
 df["x_pos"] = df["condition"].map(condition_map).astype(float)
 
-# Add jitter for rain points (below center)
+# Add jitter for rain points (below center, after coord_flip)
 np.random.seed(123)
-df["x_rain"] = df["x_pos"] - 0.2 + np.random.uniform(-0.05, 0.05, len(df))
+df["x_rain"] = df["x_pos"] - 0.22 + np.random.uniform(-0.06, 0.06, len(df))
 
 # Colors - dictionary mapping for condition names
 colors = {"Control": "#306998", "Treatment A": "#FFD43B", "Treatment B": "#5BA85B"}
 
+# Create half-violin (cloud) data using KDE
+# The cloud should be on TOP only (positive direction after coord_flip)
+cloud_dfs = []
+for cond, x_base in condition_map.items():
+    data = df[df["condition"] == cond]["reaction_time"].values
+    kde = stats.gaussian_kde(data)
+    y_range = np.linspace(data.min() - 10, data.max() + 10, 200)
+    density = kde(y_range)
+    # Normalize density and scale for visual width (half-violin on TOP only)
+    density_scaled = density / density.max() * 0.35
+    cloud_df = pd.DataFrame(
+        {
+            "reaction_time": y_range,
+            "ymin": x_base,  # Base position (center line)
+            "ymax": x_base + density_scaled,  # Extend upward only (becomes top after flip)
+            "condition": cond,
+        }
+    )
+    cloud_dfs.append(cloud_df)
+
+cloud_data = pd.concat(cloud_dfs, ignore_index=True)
+
 # Create raincloud plot with horizontal orientation (coord_flip)
-# After flip: Cloud (violin) on TOP, boxplot centered, rain points BELOW
+# After flip: Cloud (half-violin) on TOP, boxplot centered, rain points BELOW
 plot = (
-    ggplot(df, aes(x="x_pos", y="reaction_time", fill="condition", color="condition"))
-    # Half-violin (cloud) - nudged upward (becomes top after flip)
-    + geom_violin(position=position_nudge(x=0.2), width=0.45, trim=True, size=0.6, alpha=0.85, show_legend=False)
-    # Box plot - centered, narrow, white fill, grouped by condition
+    ggplot()
+    # Half-violin (cloud) using geom_ribbon - extends from center to one side only
+    + geom_ribbon(
+        data=cloud_data,
+        mapping=aes(x="reaction_time", ymin="ymin", ymax="ymax", fill="condition"),
+        alpha=0.85,
+        show_legend=False,
+    )
+    # Box plot - centered, narrow, white fill
     + geom_boxplot(
-        aes(group="condition"),
-        width=0.1,
+        data=df,
+        mapping=aes(x="x_pos", y="reaction_time", group="condition"),
+        width=0.08,
         outlier_shape="",
         fill="white",
         color="#333333",
@@ -76,8 +104,10 @@ plot = (
         alpha=0.95,
         show_legend=False,
     )
-    # Jittered points (rain) - using pre-computed positions below
-    + geom_point(aes(x="x_rain"), size=2, alpha=0.6, show_legend=False)
+    # Jittered points (rain) - below the center line (after flip)
+    + geom_point(
+        data=df, mapping=aes(x="x_rain", y="reaction_time", color="condition"), size=2, alpha=0.6, show_legend=False
+    )
     + scale_fill_manual(values=colors)
     + scale_color_manual(values=colors)
     + scale_x_continuous(breaks=[0, 1, 2], labels=["Treatment B", "Treatment A", "Control"])

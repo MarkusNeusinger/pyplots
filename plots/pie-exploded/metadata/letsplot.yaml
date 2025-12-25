@@ -1,0 +1,25 @@
+library: letsplot
+specification_id: pie-exploded
+created: '2025-12-25T20:06:26Z'
+updated: '2025-12-25T20:18:13Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20510238922
+issue: 2013
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/letsplot/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Explosion effect is clearly visible with R&D (0.3) and Sales (0.2) noticeably
+    separated
+  - Clean colorblind-safe palette with Python Blue (#306998) as primary color
+  - Percentage labels are well-formatted and positioned on each slice
+  - White stroke between slices provides good visual separation
+  - Realistic budget allocation scenario with meaningful data
+  - Proper use of lets-plot geom_pie with explode aesthetic
+  weaknesses:
+  - Legend text could be slightly larger for better readability at full resolution
+  - Pie chart is slightly left-of-center due to legend placement

@@ -1,0 +1,30 @@
+# Specification-level metadata for scatter-regression-polynomial
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: scatter-regression-polynomial
+title: Scatter Plot with Polynomial Regression
+
+# Specification tracking
+created: 2025-12-25T09:02:27Z
+updated: 2025-12-25T09:02:27Z
+issue: 2028
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - scatter
+    - regression
+  data_type:
+    - numeric
+    - continuous
+  domain:
+    - general
+    - statistics
+    - science
+  features:
+    - regression
+    - polynomial
+    - curve-fitting
+    - correlation

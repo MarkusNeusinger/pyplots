@@ -1,0 +1,26 @@
+library: pygal
+specification_id: bar-stacked
+created: '2025-12-25T08:35:31Z'
+updated: '2025-12-25T08:38:57Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20502055965
+issue: 0
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/pygal/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent color scheme with four distinct, colorblind-accessible colors
+  - Clear part-to-whole visualization showing quarterly revenue composition
+  - Proper title format following pyplots.ai conventions
+  - Realistic business data scenario with logical growth patterns
+  - Clean, simple code structure following KISS principles
+  - Good use of pygal custom Style for font sizing on large canvas
+  weaknesses:
+  - Grid lines are barely visible; could benefit from slightly more prominent horizontal
+    guides
+  - Legend placement in upper-left is disconnected from the chart area
+  - No value labels on segments (spec suggests consider adding total value labels)

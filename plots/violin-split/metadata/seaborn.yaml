@@ -1,0 +1,25 @@
+library: seaborn
+specification_id: violin-split
+created: '2025-12-25T08:36:14Z'
+updated: '2025-12-25T08:43:13Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20502054902
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-split/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-split/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 94
+review:
+  strengths:
+  - Excellent use of seaborn split violin feature with inner quartile markers
+  - Highly realistic and relevant data scenario (salary by gender/department)
+  - Clean, readable code following KISS principles
+  - Professional color palette with good contrast and accessibility
+  - Well-formatted currency axis labels
+  - Title follows exact spec format
+  weaknesses:
+  - Distribution shapes are relatively similar across all groups - more variety would
+    better showcase split violin comparative power
+  - Only horizontal grid lines present

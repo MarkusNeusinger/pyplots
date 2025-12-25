@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
-Library: highcharts unknown | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-25
 """
 
 import json
@@ -19,6 +19,8 @@ from selenium.webdriver.chrome.options import Options
 np.random.seed(42)
 categories = ["Control", "Treatment A", "Treatment B", "Treatment C"]
 colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF"]
+# Simplified fill colors (no rgba calculation)
+fill_colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF"]
 
 # Generate realistic reaction time data with different distributions
 control = np.random.normal(450, 60, 80)  # Normal distribution
@@ -52,14 +54,14 @@ for data in all_data:
         }
     )
 
-# Create jittered scatter data (the "rain")
+# Create jittered scatter data (the "rain" - falls below the cloud)
 scatter_data = []
 for i, data in enumerate(all_data):
     for val in data:
         jitter = np.random.uniform(-0.08, 0.08)
         scatter_data.append({"x": i + 0.25 + jitter, "y": float(val), "color": colors[i]})
 
-# Box plot series data
+# Box plot series data with simplified fill colors
 box_series_data = []
 for i, box in enumerate(box_data):
     box_series_data.append(
@@ -70,7 +72,7 @@ for i, box in enumerate(box_data):
             "q3": box["q3"],
             "high": box["high"],
             "color": colors[i],
-            "fillColor": f"rgba({int(colors[i][1:3], 16)}, {int(colors[i][3:5], 16)}, {int(colors[i][5:7], 16)}, 0.6)",
+            "fillColor": fill_colors[i],
         }
     )
 
@@ -128,7 +130,7 @@ Highcharts.chart('container', {{
         backgroundColor: '#ffffff',
         marginBottom: 280,
         marginLeft: 220,
-        marginRight: 350,
+        marginRight: 200,
         spacingBottom: 80
     }},
     title: {{
@@ -166,11 +168,10 @@ Highcharts.chart('container', {{
     legend: {{
         enabled: true,
         itemStyle: {{ fontSize: '32px' }},
-        align: 'right',
-        verticalAlign: 'top',
-        layout: 'vertical',
-        x: -50,
-        y: 100
+        align: 'center',
+        verticalAlign: 'bottom',
+        layout: 'horizontal',
+        y: 40
     }},
     plotOptions: {{
         boxplot: {{
@@ -180,11 +181,12 @@ Highcharts.chart('container', {{
             whiskerWidth: 4,
             whiskerLength: '40%',
             lineWidth: 3,
-            pointWidth: 60
+            pointWidth: 60,
+            fillOpacity: 0.7
         }},
         scatter: {{
             marker: {{
-                radius: 10,
+                radius: 14,
                 symbol: 'circle'
             }}
         }},
@@ -210,11 +212,11 @@ Highcharts.chart('container', {{
             type: 'scatter',
             data: {json.dumps(scatter_data)},
             marker: {{
-                radius: 8,
-                lineWidth: 1,
-                lineColor: 'rgba(0,0,0,0.3)'
+                radius: 12,
+                lineWidth: 2,
+                lineColor: 'rgba(0,0,0,0.4)'
             }},
-            opacity: 0.6,
+            opacity: 0.65,
             tooltip: {{
                 pointFormat: 'Value: {{point.y:.0f}} ms'
             }}

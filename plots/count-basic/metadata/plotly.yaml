@@ -1,0 +1,24 @@
+library: plotly
+specification_id: count-basic
+created: '2025-12-25T12:42:33Z'
+updated: '2025-12-25T12:44:40Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20505207163
+issue: 2033
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/count-basic/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/count-basic/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/count-basic/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Clean, professional appearance with well-balanced layout and proportions
+  - Correct implementation of count plot with automatic counting from raw data
+  - Excellent text legibility with appropriately sized fonts for 4800x2700 output
+  - Realistic survey response scenario that clearly demonstrates the plot type
+  - Count labels positioned outside bars for easy reading
+  weaknesses:
+  - Could enhance Plotly interactivity with custom hover templates showing percentages
+  - Y-axis label could include units (e.g., Count (n) or Frequency)
+  - Bar colors could use a gradient or vary by value to better showcase Plotly capabilities

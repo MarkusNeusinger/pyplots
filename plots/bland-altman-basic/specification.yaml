@@ -1,0 +1,32 @@
+# Specification-level metadata for bland-altman-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: bland-altman-basic
+title: Bland-Altman Agreement Plot
+
+# Specification tracking
+created: 2025-12-25T09:03:03Z
+updated: null
+issue: 2032
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - bland-altman
+    - scatter
+    - agreement
+  data_type:
+    - numeric
+    - continuous
+    - paired
+  domain:
+    - healthcare
+    - statistics
+    - research
+  features:
+    - basic
+    - comparison
+    - limits-of-agreement
+    - method-comparison

@@ -1,0 +1,29 @@
+library: pygal
+specification_id: heatmap-correlation
+created: '2025-12-25T08:36:47Z'
+updated: '2025-12-25T08:44:19Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20502057317
+issue: 0
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-correlation/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-correlation/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-correlation/pygal/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent custom implementation extending pygal's Graph class to create a heatmap
+    (pygal doesn't have native heatmap support)
+  - Beautiful diverging colormap with smooth interpolation between colors
+  - Smart adaptive text color based on background brightness for optimal readability
+  - Professional colorbar with clear labels and title
+  - Realistic financial portfolio metrics data showcasing various correlation strengths
+  - Clean visual design with rounded corners and consistent spacing
+  - Generates both PNG and interactive HTML outputs leveraging pygal's SVG nature
+  weaknesses:
+  - Uses a custom class instead of simple script structure (though justified since
+    pygal lacks native heatmap support)
+  - Column labels could be slightly larger for better readability
+  - No axis titles (though not strictly needed for correlation matrices where variables
+    serve as labels)

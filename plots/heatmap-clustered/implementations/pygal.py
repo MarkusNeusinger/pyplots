@@ -1,6 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-clustered: Clustered Heatmap
-Library: pygal 3.1.0 | Python 3.13.11
+Library: pygal 3.1.0 | Python 3.13
 Quality: 88/100 | Created: 2025-12-25
 """
 
@@ -158,13 +158,13 @@ class ClusteredHeatmap(Graph):
         #                                          [col_dend]
         #                                          [col_labels]
         #                                          [axis_label]
-        axis_label_width = 80  # Space for "Genes" and "Samples" labels
-        row_dend_width = 280  # Increased width for row dendrogram (was 180)
-        col_dend_height = 200  # Slightly increased for balance
-        label_margin_left = 280
-        label_margin_bottom = 220  # Increased for samples axis label
-        label_margin_top = 80  # Increased for better top spacing
-        colorbar_width = 220  # Slightly wider for better proportion
+        axis_label_width = 80  # Space for "Genes" label
+        row_dend_width = 280  # Width for row dendrogram
+        col_dend_height = 180  # Height for column dendrogram
+        label_margin_left = 280  # Space for row labels
+        label_margin_bottom = 300  # Increased for rotated column labels + axis label
+        label_margin_top = 80  # Space for title
+        colorbar_width = 180  # Tighter colorbar for better integration
 
         # Heatmap area - adjusted for axis labels and wider dendrogram
         heatmap_x = axis_label_width + row_dend_width + label_margin_left
@@ -211,16 +211,17 @@ class ClusteredHeatmap(Graph):
             text_node.set("style", f"font-size:{row_font_size}px;font-weight:600;font-family:sans-serif")
             text_node.text = label
 
-        # Draw column labels (rotated)
-        col_font_size = min(36, int(cell_width * 0.6))
+        # Draw column labels (rotated at 60 degrees for better readability)
+        col_font_size = min(32, int(cell_width * 0.55))
         for j, label in enumerate(reordered_col_labels):
             x = self.view.x(0) + heatmap_x + j * cell_width + cell_width / 2
-            y = self.view.y(n_rows) + label_margin_top + heatmap_height + col_dend_height + 25
+            y = self.view.y(n_rows) + label_margin_top + heatmap_height + col_dend_height + 20
             text_node = self.svg.node(heatmap_group, "text", x=x, y=y)
             text_node.set("text-anchor", "start")
             text_node.set("fill", "#333333")
             text_node.set("style", f"font-size:{col_font_size}px;font-weight:600;font-family:sans-serif")
-            text_node.set("transform", f"rotate(45, {x}, {y})")
+            # Use 60 degree rotation for less cramped labels
+            text_node.set("transform", f"rotate(60, {x}, {y})")
             text_node.text = label
 
         # Draw heatmap cells
@@ -253,10 +254,10 @@ class ClusteredHeatmap(Graph):
                     text_node.set("style", f"font-size:{value_font_size}px;font-weight:bold;font-family:sans-serif")
                     text_node.text = f"{value:.1f}"
 
-        # Draw colorbar on the right
-        colorbar_bar_width = 50
-        colorbar_height = heatmap_height * 0.7
-        colorbar_x = self.view.x(0) + heatmap_x + heatmap_width + 60
+        # Draw colorbar on the right - positioned closer to heatmap for better integration
+        colorbar_bar_width = 45
+        colorbar_height = heatmap_height * 0.75
+        colorbar_x = self.view.x(0) + heatmap_x + heatmap_width + 40
         colorbar_y = self.view.y(n_rows) + label_margin_top + (heatmap_height - colorbar_height) / 2
 
         # Draw gradient colorbar
@@ -289,24 +290,24 @@ class ClusteredHeatmap(Graph):
             stroke="#333333",
         )
 
-        # Colorbar labels
-        cb_label_size = 36
+        # Colorbar labels - positioned next to bar with proper spacing
+        cb_label_size = 32
         for val, y_pos in [
             (max_val, colorbar_y),
             (0, colorbar_y + colorbar_height / 2),
             (min_val, colorbar_y + colorbar_height),
         ]:
             text_node = self.svg.node(
-                heatmap_group, "text", x=colorbar_x + colorbar_bar_width + 15, y=y_pos + cb_label_size * 0.35
+                heatmap_group, "text", x=colorbar_x + colorbar_bar_width + 12, y=y_pos + cb_label_size * 0.35
             )
             text_node.set("fill", "#333333")
             text_node.set("style", f"font-size:{cb_label_size}px;font-family:sans-serif")
             text_node.text = f"{val:+.1f}"
 
-        # Colorbar title
-        cb_title_size = 40
+        # Colorbar title - positioned above the bar
+        cb_title_size = 36
         cb_title_x = colorbar_x + colorbar_bar_width / 2
-        cb_title_y = colorbar_y - 35
+        cb_title_y = colorbar_y - 25
         text_node = self.svg.node(heatmap_group, "text", x=cb_title_x, y=cb_title_y)
         text_node.set("text-anchor", "middle")
         text_node.set("fill", "#333333")
@@ -324,10 +325,10 @@ class ClusteredHeatmap(Graph):
         genes_text.set("transform", f"rotate(-90, {genes_label_x}, {genes_label_y})")
         genes_text.text = "Genes"
 
-        # Axis label: "Samples" (bottom, horizontal)
+        # Axis label: "Samples" (bottom, horizontal) - positioned with proper spacing
         samples_label_x = self.view.x(0) + heatmap_x + heatmap_width / 2
         samples_label_y = (
-            self.view.y(n_rows) + label_margin_top + heatmap_height + col_dend_height + label_margin_bottom - 30
+            self.view.y(n_rows) + label_margin_top + heatmap_height + col_dend_height + label_margin_bottom - 40
         )
         samples_text = self.svg.node(heatmap_group, "text", x=samples_label_x, y=samples_label_y)
         samples_text.set("text-anchor", "middle")
@@ -447,10 +448,10 @@ chart = ClusteredHeatmap(
     col_order=col_order,
     show_values=False,
     show_legend=False,
-    margin=120,  # Increased base margin for better spacing
-    margin_top=200,  # More space for title
-    margin_bottom=100,  # More space at bottom for samples label
-    margin_left=80,  # Account for genes axis label
+    margin=100,  # Base margin
+    margin_top=180,  # Space for title
+    margin_bottom=80,  # Space at bottom
+    margin_left=60,  # Account for genes axis label
     show_x_labels=False,
     show_y_labels=False,
 )

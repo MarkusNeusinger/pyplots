@@ -1,0 +1,26 @@
+library: letsplot
+specification_id: violin-split
+created: '2025-12-25T08:42:31Z'
+updated: '2025-12-25T08:48:48Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20502064272
+issue: 0
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-split/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-split/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-split/letsplot/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of letsplot's show_half parameter to create proper split violins
+  - Well-designed data with varied distribution shapes showing different improvement
+    patterns
+  - Inner boxplots provide additional statistical context as recommended in spec
+  - Interactive tooltips enhance the HTML version
+  - Python-branded color scheme (yellow/blue) is distinctive and colorblind-friendly
+  - Proper sizing with ggsize(1600, 900) and scale=3 for 4800x2700 output
+  weaknesses:
+  - Grid lines are too subtle (alpha=0.15) making it harder to read precise values
+  - Y-axis extends to 120 when satisfaction scores are capped at 100, creating unnecessary
+    whitespace

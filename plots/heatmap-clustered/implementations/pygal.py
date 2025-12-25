@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-clustered: Clustered Heatmap
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-25
@@ -211,17 +211,17 @@ class ClusteredHeatmap(Graph):
             text_node.set("style", f"font-size:{row_font_size}px;font-weight:600;font-family:sans-serif")
             text_node.text = label
 
-        # Draw column labels (rotated at 60 degrees for better readability)
-        col_font_size = min(32, int(cell_width * 0.55))
+        # Draw column labels (rotated at 45 degrees for optimal readability)
+        col_font_size = min(30, int(cell_width * 0.5))
         for j, label in enumerate(reordered_col_labels):
             x = self.view.x(0) + heatmap_x + j * cell_width + cell_width / 2
-            y = self.view.y(n_rows) + label_margin_top + heatmap_height + col_dend_height + 20
+            y = self.view.y(n_rows) + label_margin_top + heatmap_height + col_dend_height + 25
             text_node = self.svg.node(heatmap_group, "text", x=x, y=y)
             text_node.set("text-anchor", "start")
             text_node.set("fill", "#333333")
             text_node.set("style", f"font-size:{col_font_size}px;font-weight:600;font-family:sans-serif")
-            # Use 60 degree rotation for less cramped labels
-            text_node.set("transform", f"rotate(60, {x}, {y})")
+            # Use 45 degree rotation for less cramped, more readable labels
+            text_node.set("transform", f"rotate(45, {x}, {y})")
             text_node.text = label
 
         # Draw heatmap cells
@@ -419,17 +419,20 @@ custom_style = Style(
     font_family="sans-serif",
 )
 
-# Diverging colormap: blue (low) -> white (zero) -> red (high)
+# Colorblind-friendly diverging colormap: purple (low) -> white (zero) -> green (high)
+# Based on ColorBrewer PRGn (Purple-Green) which is colorblind-safe
 diverging_colormap = [
-    "#2166ac",  # Strong blue (negative)
-    "#4393c3",
-    "#92c5de",
-    "#d1e5f0",
+    "#40004b",  # Dark purple (negative)
+    "#762a83",
+    "#9970ab",
+    "#c2a5cf",
+    "#e7d4e8",
     "#f7f7f7",  # White (zero)
-    "#fddbc7",
-    "#f4a582",
-    "#d6604d",
-    "#b2182b",  # Strong red (positive)
+    "#d9f0d3",
+    "#a6dba0",
+    "#5aae61",
+    "#1b7837",
+    "#00441b",  # Dark green (positive)
 ]
 
 # Create clustered heatmap

@@ -1,0 +1,28 @@
+library: highcharts
+specification_id: donut-nested
+created: '2025-12-25T20:05:51Z'
+updated: '2025-12-25T20:10:11Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20510190085
+issue: 2015
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-nested/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-nested/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/donut-nested/highcharts/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent color scheme using consistent hue families (blue gradients for Engineering,
+    yellow for Marketing, etc.) that clearly show parent-child relationships
+  - Clean separation between inner and outer rings with appropriate sizing (inner
+    20-45%, outer 55-85%)
+  - Professional title format with informative subtitle explaining the ring hierarchy
+  - Realistic budget allocation scenario with plausible department/expense values
+  - Good use of Highcharts PieSeries configuration for nested donut effect
+  - HTML output also generated for interactive viewing
+  weaknesses:
+  - Some outer ring labels (especially smaller segments like Software, CRM Tools)
+    could benefit from larger font sizes for better readability at full resolution
+  - Spec suggests using a legend for smaller segments, but legend is disabled; this
+    is a minor deviation from spec guidance

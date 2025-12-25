@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 68/100 | Created: 2025-12-25
@@ -19,8 +19,8 @@ from selenium.webdriver.chrome.options import Options
 np.random.seed(42)
 categories = ["Control", "Treatment A", "Treatment B", "Treatment C"]
 colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF"]
-# Simplified fill colors (no rgba calculation)
-fill_colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF"]
+# Lighter fill colors for box plots with transparency effect (50% lighter)
+box_fill_colors = ["rgba(48,105,152,0.35)", "rgba(255,212,59,0.35)", "rgba(148,103,189,0.35)", "rgba(23,190,207,0.35)"]
 
 # Generate realistic reaction time data with different distributions
 control = np.random.normal(450, 60, 80)  # Normal distribution
@@ -62,7 +62,7 @@ for i, data in enumerate(all_data):
         # Rain on LEFT side (negative offset from category center)
         scatter_data.append({"x": i - 0.25 + jitter, "y": float(val), "color": colors[i]})
 
-# Box plot series data with simplified fill colors
+# Box plot series data with semi-transparent fill and dark borders
 box_series_data = []
 for i, box in enumerate(box_data):
     box_series_data.append(
@@ -72,8 +72,8 @@ for i, box in enumerate(box_data):
             "median": box["median"],
             "q3": box["q3"],
             "high": box["high"],
-            "color": colors[i],
-            "fillColor": fill_colors[i],
+            "color": "#1a1a1a",  # Dark border for visibility
+            "fillColor": box_fill_colors[i],
         }
     )
 
@@ -163,8 +163,10 @@ Highcharts.chart('container', {{
         labels: {{
             style: {{ fontSize: '36px' }}
         }},
-        gridLineWidth: 1,
-        gridLineDashStyle: 'Dash',
+        gridLineWidth: 2,
+        gridLineColor: 'rgba(0, 0, 0, 0.15)',
+        gridLineDashStyle: 'Solid',
+        tickInterval: 50,
         min: 200,
         max: 660
     }},
@@ -183,14 +185,16 @@ Highcharts.chart('container', {{
     }},
     plotOptions: {{
         boxplot: {{
-            medianColor: '#1a1a1a',
-            medianWidth: 6,
+            medianColor: '#000000',
+            medianWidth: 8,
+            medianDashStyle: 'Solid',
+            stemColor: '#1a1a1a',
             stemWidth: 4,
-            whiskerWidth: 4,
-            whiskerLength: '40%',
-            lineWidth: 3,
-            pointWidth: 60,
-            fillOpacity: 0.7
+            whiskerColor: '#1a1a1a',
+            whiskerWidth: 5,
+            whiskerLength: '50%',
+            lineWidth: 4,
+            pointWidth: 70
         }},
         scatter: {{
             marker: {{
@@ -206,10 +210,13 @@ Highcharts.chart('container', {{
     series: [
         {",".join(polygon_series_js)},
         {{
-            name: 'Box Plot',
+            name: 'Box Plot (Q1-Q3)',
             type: 'boxplot',
             data: {json.dumps(box_series_data)},
             colorByPoint: true,
+            showInLegend: true,
+            legendSymbol: 'rectangle',
+            color: '#1a1a1a',
             tooltip: {{
                 headerFormat: '<b>{{point.key}}</b><br/>',
                 pointFormat: 'Max: {{point.high:.0f}} ms<br/>Q3: {{point.q3:.0f}} ms<br/>Median: {{point.median:.0f}} ms<br/>Q1: {{point.q1:.0f}} ms<br/>Min: {{point.low:.0f}} ms'

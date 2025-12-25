@@ -1,0 +1,28 @@
+library: altair
+specification_id: alluvial-basic
+created: '2025-12-25T07:11:31Z'
+updated: '2025-12-25T07:13:52Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20500908866
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of alluvial diagram using Altair mark_line with filled
+    polygons - creative approach given Altair lacks native Sankey/alluvial support
+  - Smooth Bezier-like curves using smoothstep interpolation for flow bands
+  - Consistent color scheme maintained across time points as specified
+  - Proper use of transparency (0.5 opacity) for overlapping flows improving readability
+  - 'Clean layered architecture: flows → nodes → labels'
+  - Tooltips provide additional context (party, year, voter count)
+  - Professional visual quality suitable for publication
+  weaknesses:
+  - Legend labels could be slightly larger for better readability at full resolution
+  - Title includes Voter Migration prefix rather than pure spec-id format
+  - No node labels directly on the chart - users must rely on colors and legend
+  - Could benefit from Altair interactive features (selection, zoom)

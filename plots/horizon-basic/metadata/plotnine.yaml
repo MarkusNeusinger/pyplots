@@ -1,0 +1,29 @@
+library: plotnine
+specification_id: horizon-basic
+created: '2025-12-25T07:10:03Z'
+updated: '2025-12-25T07:12:26Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20500901764
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of horizon chart concept using plotnine grammar of graphics
+  - Creative use of geom_area with position=identity and facet_wrap for multi-series
+    display
+  - Blue/orange diverging color scheme is colorblind-accessible and aesthetically
+    pleasing
+  - Realistic server CPU deviation scenario with daily/weekly patterns and random
+    spikes
+  - Comprehensive theme customization with appropriate font sizes for large canvas
+  - Clean band-folding algorithm that correctly separates positive and negative values
+  weaknesses:
+  - Y-axis label says Folded Value (stacked bands) which is slightly misleading since
+    position=identity means bands overlay rather than stack
+  - Some band colors within the same polarity (e.g., +Low, +Medium, +High) are somewhat
+    similar and could benefit from more contrast

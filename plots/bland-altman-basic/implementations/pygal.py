@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bland-altman-basic: Bland-Altman Agreement Plot
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-25
+Quality: 94/100 | Created: 2025-12-25
 """
 
 import numpy as np

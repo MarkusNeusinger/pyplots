@@ -1,0 +1,26 @@
+library: seaborn
+specification_id: bar-stacked
+created: '2025-12-25T08:35:51Z'
+updated: '2025-12-25T08:40:33Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20502052844
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent visual presentation with clear segment boundaries (white edge lines)
+  - Total value labels above stacks add significant value for quick interpretation
+  - Python-themed color palette is distinctive and harmonious
+  - Realistic business scenario with meaningful seasonal variations in the data
+  - Clean code structure following KISS principles
+  - Proper use of seaborn styling functions (set_style, set_context, despine)
+  weaknesses:
+  - Uses matplotlib ax.bar for stacking rather than seaborn native plotting functions
+    - does not showcase seaborn distinctive capabilities
+  - The two yellow shades (Clothing and Sports) are somewhat similar which could cause
+    confusion for some viewers

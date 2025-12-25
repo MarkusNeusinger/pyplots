@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-horizontal: Horizontal Bar Chart
-Library: lets-plot | Python 3.13
-Quality: pending | Created: 2025-12-25
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 98/100 | Created: 2025-12-25
 """
 
 import pandas as pd

@@ -1,0 +1,26 @@
+library: pygal
+specification_id: box-grouped
+created: '2025-12-25T19:57:08Z'
+updated: '2025-12-25T20:27:17Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20510142994
+issue: 2017
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/box-grouped/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-grouped/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/box-grouped/pygal/plot.html
+quality_score: 85
+review:
+  strengths:
+  - Colorblind-safe color palette (blue, orange, teal) provides excellent accessibility
+  - Clean legend placement at bottom with 3 columns showing experience levels clearly
+  - Realistic employee performance data context with meaningful variation between
+    groups
+  - Proper use of box_mode=tukey for standard box plot whisker calculation
+  - Well-structured code following KISS principles with fixed random seed
+  weaknesses:
+  - Y-axis renders from 0 despite range=(35, 110) setting, creating excessive whitespace
+    below the data
+  - Outlier markers are very small dots that are difficult to see clearly
+  - Grid lines are somewhat prominent and could be more subtle for better visual balance

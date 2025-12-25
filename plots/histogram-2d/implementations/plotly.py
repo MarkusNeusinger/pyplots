@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 histogram-2d: 2D Histogram Heatmap
 Library: plotly 6.5.0 | Python 3.13.11
-Quality: 78/100 | Created: 2025-12-25
+Quality: 91/100 | Created: 2025-12-25
 """
 
 import numpy as np

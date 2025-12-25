@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-25
@@ -25,19 +25,20 @@ data["Treatment B"] = np.append(data["Treatment B"], [480, 180])
 # Group colors - distinct for each category (colorblind-safe)
 group_colors = ["#306998", "#FFD43B", "#4CAF50"]
 
-# Custom style for 4800x2700 px canvas
+# Custom style for 4800x2700 px canvas - scaled up for visibility
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
+    foreground_subtle="#999999",
+    guide_stroke_color="#cccccc",
     colors=tuple(group_colors * 3) + ("#222222",) * 30,
-    title_font_size=72,
-    label_font_size=48,
-    major_label_font_size=42,
-    legend_font_size=42,
-    value_font_size=36,
+    title_font_size=96,
+    label_font_size=60,
+    major_label_font_size=54,
+    legend_font_size=54,
+    value_font_size=42,
     opacity=0.6,
     opacity_hover=0.8,
 )
@@ -52,10 +53,7 @@ chart = pygal.XY(
     title="raincloud-basic · pygal · pyplots.ai",
     x_title="Reaction Time (ms)",
     y_title="Treatment Group",
-    show_legend=True,
-    legend_at_bottom=True,
-    legend_box_size=30,
-    truncate_legend=-1,
+    show_legend=False,  # Y-axis labels show group names, no legend needed
     stroke=True,
     fill=True,
     dots_size=0,
@@ -63,7 +61,7 @@ chart = pygal.XY(
     show_y_guides=True,
     xrange=(100, 750),
     range=(0, 4),
-    margin=50,
+    margin=80,  # Increased margin for larger fonts
     explicit_size=True,
 )
 
@@ -130,15 +128,17 @@ for category, cloud_points, _color in cloud_data:
     chart.add(category, cloud_points, stroke=True, fill=True)
 
 # Add rain points (no legend entry to avoid duplicates)
+# Increased dots_size for better visibility on 4800x2700 canvas
 for _category, rain_points, _color in rain_data:
-    chart.add(None, rain_points, stroke=False, fill=False, dots_size=14)
+    chart.add(None, rain_points, stroke=False, fill=False, dots_size=22)
 
 # Add box plots - horizontal boxes centered at each group
-box_height = 0.08
-cap_height = 0.04
+# Increased dimensions for better visibility on 4800x2700 canvas
+box_height = 0.12
+cap_height = 0.06
 
 for center_y, median, q1, q3, whisker_low, whisker_high, _color in box_data:
-    # IQR box (horizontal rectangle)
+    # IQR box (horizontal rectangle) - thick border for visibility
     quartile_box = [
         (q1, center_y - box_height),
         (q1, center_y + box_height),
@@ -146,23 +146,23 @@ for center_y, median, q1, q3, whisker_low, whisker_high, _color in box_data:
         (q3, center_y - box_height),
         (q1, center_y - box_height),
     ]
-    chart.add(None, quartile_box, stroke=True, fill=False, show_dots=False, stroke_style={"width": 6})
+    chart.add(None, quartile_box, stroke=True, fill=False, show_dots=False, stroke_style={"width": 12})
 
-    # Median line (vertical line within box)
+    # Median line (vertical line within box) - thickest for emphasis
     median_line = [(median, center_y - box_height * 1.3), (median, center_y + box_height * 1.3)]
-    chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 10})
+    chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 16})
 
     # Whiskers (horizontal lines from box to caps)
     whisker_left = [(whisker_low, center_y), (q1, center_y)]
     whisker_right = [(q3, center_y), (whisker_high, center_y)]
-    chart.add(None, whisker_left, stroke=True, fill=False, show_dots=False, stroke_style={"width": 5})
-    chart.add(None, whisker_right, stroke=True, fill=False, show_dots=False, stroke_style={"width": 5})
+    chart.add(None, whisker_left, stroke=True, fill=False, show_dots=False, stroke_style={"width": 8})
+    chart.add(None, whisker_right, stroke=True, fill=False, show_dots=False, stroke_style={"width": 8})
 
     # Whisker caps (vertical lines at ends)
     cap_left = [(whisker_low, center_y - cap_height), (whisker_low, center_y + cap_height)]
     cap_right = [(whisker_high, center_y - cap_height), (whisker_high, center_y + cap_height)]
-    chart.add(None, cap_left, stroke=True, fill=False, show_dots=False, stroke_style={"width": 5})
-    chart.add(None, cap_right, stroke=True, fill=False, show_dots=False, stroke_style={"width": 5})
+    chart.add(None, cap_left, stroke=True, fill=False, show_dots=False, stroke_style={"width": 8})
+    chart.add(None, cap_right, stroke=True, fill=False, show_dots=False, stroke_style={"width": 8})
 
 # Y-axis labels for treatment groups
 chart.y_labels = [

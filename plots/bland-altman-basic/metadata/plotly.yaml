@@ -1,0 +1,26 @@
+library: plotly
+specification_id: bland-altman-basic
+created: '2025-12-25T13:17:12Z'
+updated: '2025-12-25T13:19:27Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20505628304
+issue: 2032
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bland-altman-basic/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bland-altman-basic/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bland-altman-basic/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Plotly add_hline with annotation positioning for the reference
+    lines
+  - Interactive hover template provides detailed information for each observation
+  - Clean visual design with appropriate color contrast between data points and reference
+    lines
+  - Proper statistical calculations for Bland-Altman analysis (mean ± 1.96 SD)
+  - Realistic medical measurement context that aligns perfectly with spec blood pressure
+    example
+  weaknesses:
+  - Data could include a few clear outliers beyond the limits of agreement to demonstrate
+    how such cases appear on the plot

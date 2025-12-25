@@ -1,0 +1,28 @@
+library: bokeh
+specification_id: residual-basic
+created: '2025-12-25T14:57:12Z'
+updated: '2025-12-25T14:59:26Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20506834490
+issue: 2030
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-basic/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-basic/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/residual-basic/bokeh/plot.html
+quality_score: 92
+review:
+  strengths:
+  - 'Excellent use of Bokeh-specific features: ColumnDataSource, HoverTool with custom
+    formatting, and Span for reference line'
+  - Proper scaling for 4800x2700 canvas with appropriately sized text (72pt title,
+    48pt labels, 36pt ticks) and markers (size=40)
+  - Realistic housing price regression scenario with meaningful outliers and subtle
+    heteroscedasticity
+  - Clean, well-structured code following KISS principles
+  - Both PNG and HTML outputs for static and interactive viewing
+  weaknesses:
+  - The LOWESS/LOESS trend line mentioned in the spec notes as "consider adding" is
+    not implemented (optional but would enhance diagnostic capability)
+  - Feature coverage could show more pronounced heteroscedasticity pattern for better
+    demonstration of this diagnostic feature

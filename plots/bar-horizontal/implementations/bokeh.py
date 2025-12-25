@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-horizontal: Horizontal Bar Chart
-Library: bokeh | Python 3.13
-Quality: pending | Created: 2025-12-25
+Library: bokeh 3.8.1 | Python 3.13.11
+Quality: 94/100 | Created: 2025-12-25
 """
 
 from bokeh.io import export_png, output_file, save

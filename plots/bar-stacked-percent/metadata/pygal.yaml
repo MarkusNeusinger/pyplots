@@ -1,0 +1,28 @@
+library: pygal
+specification_id: bar-stacked-percent
+created: '2025-12-25T22:48:48Z'
+updated: '2025-12-25T22:51:08Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20511964934
+issue: 2008
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/pygal/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent real-world data scenario showing energy mix by country with meaningful
+    variation
+  - Perfect title format and axis labeling with units
+  - Clean percentage labels positioned within each bar segment
+  - Well-balanced layout with good use of canvas space at 4800x2700
+  - Proper normalization of values to 100% even though input data already sums to
+    100
+  - Legend placement at bottom with 3-column layout is clean and non-intrusive
+  weaknesses:
+  - Nuclear segment shows limited variation (1-8% across all countries) - more diversity
+    would better demonstrate the chart type
+  - Font sizes in the library rules suggest smaller values (title_font_size=28) but
+    implementation uses much larger (60) - while readable, it deviates from guidelines

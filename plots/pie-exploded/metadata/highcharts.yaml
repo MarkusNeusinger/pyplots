@@ -1,0 +1,29 @@
+library: highcharts
+specification_id: pie-exploded
+created: '2025-12-25T20:06:14Z'
+updated: '2025-12-25T20:11:15Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20510238884
+issue: 2013
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/highcharts/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Highcharts sliced property and slicedOffset for controlling explosion
+    effect
+  - Clean, professional visualization with appropriate font sizes for 3600x3600 canvas
+  - Colorblind-safe palette with good color contrast between segments
+  - Proper title format following pyplots.ai convention
+  - Realistic market share scenario that demonstrates the purpose of exploded pie
+    charts
+  - Both PNG and HTML outputs generated correctly
+  - Inline Highcharts JS loading for reliable headless Chrome rendering
+  weaknesses:
+  - 'Minor layout imbalance: pie appears slightly left-heavy due to vertical legend
+    on right side'
+  - Data variation could be more dramatic to better showcase the explosion feature
+    contrast

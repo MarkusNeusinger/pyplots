@@ -1,0 +1,28 @@
+library: altair
+specification_id: scatter-3d
+created: '2025-12-25T08:38:06Z'
+updated: '2025-12-25T08:53:07Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20502061408
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/altair/plot.html
+quality_score: 90
+review:
+  strengths:
+  - Excellent 3D-to-2D isometric projection using mathematical rotation matrices
+  - Creative use of opacity encoding for depth perception (Y mapped to transparency)
+  - Proper painters algorithm via order encoding for correct point layering
+  - Clean code with clear comments explaining projection math
+  - 'Good use of Altair declarative features: selection_interval for pan/zoom, tooltips
+    showing original X/Y/Z'
+  - White strokes on points improve visibility
+  weaknesses:
+  - Y-axis label text is confusing - states Z-axis (Y encodes depth via opacity) when
+    the visual axis should be labeled more simply
+  - Legend uses absolute positioning (legendX=1300) which may not adapt to different
+    display sizes
+  - Subtitle is quite long and technical for a gallery example

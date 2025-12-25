@@ -7,12 +7,15 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import Divider from '@mui/material/Divider';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 
 import type { FilterCategory, ActiveFilters, FilterCounts } from '../types';
 import { FILTER_LABELS, FILTER_CATEGORIES } from '../types';
+import type { ImageSize } from '../constants';
 
 interface FilterBarProps {
   activeFilters: ActiveFilters;
@@ -21,6 +24,8 @@ interface FilterBarProps {
   currentTotal: number;  // Current number of displayed images
   randomAnimation: { index: number; phase: 'out' | 'in'; oldLabel?: string } | null;
   searchInputRef?: React.RefObject<HTMLInputElement | null>;
+  imageSize: ImageSize;
+  onImageSizeChange: (size: ImageSize) => void;
   onAddFilter: (category: FilterCategory, value: string) => void;
   onAddValueToGroup: (groupIndex: number, value: string) => void;
   onRemoveFilter: (groupIndex: number, value: string) => void;
@@ -35,6 +40,8 @@ export function FilterBar({
   currentTotal,
   randomAnimation,
   searchInputRef,
+  imageSize,
+  onImageSizeChange,
   onAddFilter,
   onAddValueToGroup,
   onRemoveFilter,
@@ -222,7 +229,8 @@ export function FilterBar({
   };
 
   const searchResults = getSearchResults();
-  const isDropdownOpen = Boolean(dropdownAnchor);
+  // Only open if anchor is valid and in document
+  const isDropdownOpen = Boolean(dropdownAnchor) && document.body.contains(dropdownAnchor);
   const hasQuery = searchQuery.trim().length > 0;
   const maxFiltersReached = activeFilters.length >= 5;
 
@@ -444,6 +452,37 @@ export function FilterBar({
           )}
         </Box>
       )}
+
+      {/* Size toggle */}
+      <ToggleButtonGroup
+        size="small"
+        value={imageSize}
+        exclusive
+        onChange={(_, newSize) => newSize && onImageSizeChange(newSize)}
+        sx={{
+          ml: 'auto',
+          height: 28,
+          '& .MuiToggleButton-root': {
+            fontFamily: '"JetBrains Mono", monospace',
+            fontSize: '0.75rem',
+            px: 1,
+            py: 0,
+            color: '#9ca3af',
+            borderColor: '#e5e7eb',
+            '&.Mui-selected': {
+              bgcolor: '#f3f4f6',
+              color: '#3776AB',
+              borderColor: '#3776AB',
+              '&:hover': { bgcolor: '#e5e7eb' },
+            },
+            '&:hover': { bgcolor: '#f9fafb' },
+          },
+        }}
+      >
+        <ToggleButton value="S">S</ToggleButton>
+        <ToggleButton value="M">M</ToggleButton>
+        <ToggleButton value="L">L</ToggleButton>
+      </ToggleButtonGroup>
       </Box>
 
       {/* Dropdown menu */}

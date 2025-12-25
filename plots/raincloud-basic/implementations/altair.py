@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-25
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-25
 """
 
 import altair as alt
@@ -30,12 +30,13 @@ data = pd.DataFrame(
 )
 
 # Create jittered x positions for strip plot (rain below the cloud)
-# For vertical layout: rain should be on LEFT (lower x values), cloud on RIGHT (higher x values)
+# For vertical layout: rain on LEFT (lower x values), cloud on RIGHT (higher x values)
 np.random.seed(42)
-data["jitter"] = np.random.uniform(-0.35, -0.15, len(data))  # Wider range, more offset left
+data["jitter"] = np.random.uniform(-0.35, -0.15, len(data))
 
 # Map conditions to numeric positions for layering
-condition_map = {"Control": 0, "Treatment A": 1, "Treatment B": 2}
+condition_order = ["Control", "Treatment A", "Treatment B"]
+condition_map = {c: i for i, c in enumerate(condition_order)}
 data["condition_num"] = data["condition"].map(condition_map)
 data["jitter_pos"] = data["condition_num"] + data["jitter"]
 
@@ -56,9 +57,22 @@ violin = (
         x2="violin_pos:Q",
         color=alt.Color(
             "condition:N",
-            scale=alt.Scale(range=["#306998", "#FFD43B", "#4CAF50"]),
-            legend=alt.Legend(title="Condition", titleFontSize=20, labelFontSize=18, orient="right"),
+            scale=alt.Scale(domain=condition_order, range=["#306998", "#FFD43B", "#4CAF50"]),
+            legend=alt.Legend(
+                title="Condition",
+                titleFontSize=20,
+                labelFontSize=18,
+                orient="right",
+                fillColor="white",
+                strokeColor="#cccccc",
+                padding=12,
+                cornerRadius=4,
+            ),
         ),
+        tooltip=[
+            alt.Tooltip("condition:N", title="Condition"),
+            alt.Tooltip("reaction_time:Q", title="Reaction Time (ms)", format=".0f"),
+        ],
     )
 )
 
@@ -75,39 +89,50 @@ boxplot = (
     .encode(
         x=alt.X("box_pos:Q", axis=None),
         y=alt.Y("reaction_time:Q", title="Reaction Time (ms)", scale=alt.Scale(domain=[200, 600])),
-        color=alt.Color("condition:N", scale=alt.Scale(range=["#306998", "#FFD43B", "#4CAF50"])),
+        color=alt.Color(
+            "condition:N", scale=alt.Scale(domain=condition_order, range=["#306998", "#FFD43B", "#4CAF50"])
+        ),
     )
 )
 
-# Jittered strip plot (rain) - positioned clearly to the LEFT (below/before the cloud)
+# Jittered strip plot (rain) - positioned clearly to the LEFT (below the cloud)
 strip = (
     alt.Chart(data)
-    .mark_circle(size=50, opacity=0.6)  # Smaller point size to reduce overlap
+    .mark_circle(size=40, opacity=0.6)  # Smaller size to reduce overlap
     .encode(
         x=alt.X("jitter_pos:Q", axis=None),
         y=alt.Y("reaction_time:Q"),
-        color=alt.Color("condition:N", scale=alt.Scale(range=["#306998", "#FFD43B", "#4CAF50"])),
+        color=alt.Color(
+            "condition:N", scale=alt.Scale(domain=condition_order, range=["#306998", "#FFD43B", "#4CAF50"])
+        ),
+        tooltip=[
+            alt.Tooltip("condition:N", title="Condition"),
+            alt.Tooltip("reaction_time:Q", title="Reaction Time (ms)", format=".1f"),
+        ],
     )
 )
 
-# Create X-axis using rule marks at condition positions with text labels
-x_axis_data = pd.DataFrame({"condition": ["Control", "Treatment A", "Treatment B"], "x_pos": [0, 1, 2]})
+# Main chart layer with raincloud elements
+main_chart = (
+    alt.layer(violin, boxplot, strip).properties(width=1600, height=850).interactive()  # Enable zoom and pan
+)
+
+# X-axis labels as a separate chart below the main chart
+x_axis_data = pd.DataFrame({"condition": condition_order, "x_pos": [0, 1, 2]})
 
 x_axis_labels = (
     alt.Chart(x_axis_data)
-    .mark_text(fontSize=20, fontWeight="bold", baseline="top", dy=15)
-    .encode(x=alt.X("x_pos:Q", scale=alt.Scale(domain=[-0.6, 2.6])), y=alt.value(900), text="condition:N")
+    .mark_text(fontSize=20, fontWeight="bold", baseline="middle")
+    .encode(x=alt.X("x_pos:Q", scale=alt.Scale(domain=[-0.6, 2.6]), axis=None), text="condition:N")
+    .properties(width=1600, height=50)
 )
 
-# Combine all layers
+# Combine using vertical concatenation
 chart = (
-    alt.layer(violin, boxplot, strip, x_axis_labels)
-    .properties(
-        width=1600, height=900, title=alt.Title("raincloud-basic · altair · pyplots.ai", fontSize=28, anchor="middle")
-    )
+    alt.vconcat(main_chart, x_axis_labels, spacing=5)
+    .properties(title=alt.Title("raincloud-basic · altair · pyplots.ai", fontSize=28, anchor="middle"))
     .configure_axis(labelFontSize=18, titleFontSize=22, gridOpacity=0.3)
     .configure_view(strokeWidth=0)
-    .configure_legend(padding=10)  # Removed stroke border for cleaner look
 )
 
 # Save outputs

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 residual-basic: Residual Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-25
@@ -24,6 +24,10 @@ residuals = np.random.randn(n_points) * (1 + 0.03 * (fitted - 30))
 outlier_indices = [15, 45, 78]
 residuals[outlier_indices] = [8.5, -9.2, 7.8]
 
+# Calculate symmetric y-axis range for visual balance
+y_abs_max = max(abs(np.min(residuals)), abs(np.max(residuals)))
+y_range = (-y_abs_max - 1, y_abs_max + 1)
+
 # Custom style for large canvas
 custom_style = Style(
     background="white",
@@ -32,11 +36,11 @@ custom_style = Style(
     foreground_strong="#333333",
     foreground_subtle="#666666",
     colors=("#306998", "#E74C3C"),  # Python Blue for points, Red for reference
-    title_font_size=48,
-    label_font_size=36,
-    major_label_font_size=32,
-    legend_font_size=32,
-    value_font_size=28,
+    title_font_size=56,
+    label_font_size=42,
+    major_label_font_size=38,
+    legend_font_size=36,
+    value_font_size=32,
     stroke_width=3,
     opacity=0.6,
     opacity_hover=0.9,
@@ -51,9 +55,9 @@ chart = pygal.XY(
     x_title="Fitted Values",
     y_title="Residuals",
     show_legend=True,
-    legend_at_bottom=False,
-    legend_box_size=24,
-    dots_size=8,
+    legend_at_bottom=True,  # Move legend to bottom to avoid overlap with outliers
+    legend_box_size=28,
+    dots_size=14,  # Increased from 8 for better visibility
     stroke=False,  # No lines connecting points
     show_x_guides=False,
     show_y_guides=True,
@@ -61,6 +65,7 @@ chart = pygal.XY(
     truncate_label=-1,
     explicit_size=True,
     print_values=False,
+    range=(y_range[0], y_range[1]),  # Symmetric y-axis range
 )
 
 # Prepare data as list of tuples for XY chart

@@ -1,0 +1,29 @@
+library: matplotlib
+specification_id: area-stacked
+created: '2025-12-25T17:38:56Z'
+updated: '2025-12-25T17:40:53Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20508665814
+issue: 2022
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent real-world context using website traffic sources over 24 months
+  - Perfect title format following spec-id · library · pyplots.ai convention
+  - Clean, readable code following KISS principles with proper random seed
+  - Y-axis correctly starts at zero to avoid misleading proportions
+  - Good use of alpha transparency (0.85) for the stacked areas
+  - Legend is well-positioned and non-intrusive
+  - Proper ordering of series by size (largest at bottom)
+  weaknesses:
+  - Series sizes are relatively similar which does not dramatically showcase the stacking
+    effect; more variation between categories would better demonstrate how parts contribute
+    to whole
+  - Axis labels lack units
+  - Could benefit from more distinct color separation between adjacent green and purple
+    bands for colorblind accessibility

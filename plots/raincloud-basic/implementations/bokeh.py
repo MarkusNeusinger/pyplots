@@ -6,9 +6,8 @@ Quality: 91/100 | Created: 2025-12-25
 
 import numpy as np
 from bokeh.io import export_png
-from bokeh.models import ColumnDataSource
+from bokeh.models import ColumnDataSource, HoverTool, Legend, LegendItem
 from bokeh.plotting import figure, output_file, save
-from scipy import stats
 
 
 # Data - Reaction times (ms) for different treatment groups
@@ -38,6 +37,7 @@ p = figure(
     y_axis_label="Treatment Group",
     y_range=[-0.5, len(categories) - 0.5],
     x_range=[150, 650],
+    tools="pan,box_zoom,wheel_zoom,reset,save",
 )
 
 # Style settings
@@ -53,15 +53,28 @@ p.grid.grid_line_dash = [6, 4]
 p.yaxis.ticker = list(range(len(categories)))
 p.yaxis.major_label_overrides = dict(enumerate(categories))
 
+# Legend items
+legend_items = []
+
 # Plot each category
-for idx, (_cat, values) in enumerate(data.items()):
+for idx, (cat, values) in enumerate(data.items()):
     color = colors[idx]
     y_base = idx
 
-    # Calculate KDE for half-violin (cloud)
-    kde = stats.gaussian_kde(values)
-    x_kde = np.linspace(min(values) - 20, max(values) + 20, 200)
-    y_kde = kde(x_kde)
+    # Calculate KDE for half-violin (cloud) using Silverman's rule
+    n = len(values)
+    std = np.std(values)
+    bw = 1.06 * std * n ** (-1 / 5)  # Silverman bandwidth
+
+    x_min, x_max = values.min() - 20, values.max() + 20
+    x_kde = np.linspace(x_min, x_max, 200)
+
+    # Gaussian kernel density estimation
+    y_kde = np.zeros_like(x_kde)
+    for point in values:
+        y_kde += np.exp(-0.5 * ((x_kde - point) / bw) ** 2) / (bw * np.sqrt(2 * np.pi))
+    y_kde /= n
+
     # Normalize and scale KDE to fit in 0.35 height above the center line
     y_kde_scaled = y_kde / y_kde.max() * 0.35
 
@@ -74,13 +87,41 @@ for idx, (_cat, values) in enumerate(data.items()):
 
     # Jittered points (rain) - below center
     jitter = np.random.uniform(-0.25, -0.05, len(values))
-    source_points = ColumnDataSource(data={"x": values, "y": y_base + jitter})
-    p.scatter(x="x", y="y", source=source_points, size=12, color=color, alpha=0.6, line_color="white", line_width=1)
 
-    # Box plot elements - at center
+    # Calculate statistics for tooltip
     q1 = np.percentile(values, 25)
     q2 = np.percentile(values, 50)  # median
     q3 = np.percentile(values, 75)
+    mean_val = np.mean(values)
+    std_val = np.std(values)
+
+    source_points = ColumnDataSource(
+        data={
+            "x": values,
+            "y": y_base + jitter,
+            "category": [cat] * len(values),
+            "value": values,
+            "mean": [f"{mean_val:.1f}"] * len(values),
+            "median": [f"{q2:.1f}"] * len(values),
+            "std": [f"{std_val:.1f}"] * len(values),
+        }
+    )
+    scatter_glyph = p.scatter(
+        x="x",
+        y="y",
+        source=source_points,
+        size=12,
+        color=color,
+        alpha=0.6,
+        line_color="white",
+        line_width=1,
+        name=f"points_{idx}",
+    )
+
+    # Add legend item (only one per category, using the scatter points)
+    legend_items.append(LegendItem(label=cat, renderers=[scatter_glyph]))
+
+    # Box plot elements - at center
     iqr = q3 - q1
     whisker_low = max(min(values), q1 - 1.5 * iqr)
     whisker_high = min(max(values), q3 + 1.5 * iqr)
@@ -116,6 +157,38 @@ for idx, (_cat, values) in enumerate(data.items()):
 
     # Median line
     p.line(x=[q2, q2], y=[y_base - box_height, y_base + box_height], line_color="#333333", line_width=4)
+
+# Collect scatter renderers for HoverTool
+scatter_renderers = [r for r in p.renderers if hasattr(r, "name") and r.name and r.name.startswith("points_")]
+
+# Add HoverTool for interactive exploration
+hover = HoverTool(
+    renderers=scatter_renderers,
+    tooltips=[
+        ("Group", "@category"),
+        ("Value", "@value{0.1f} ms"),
+        ("Mean", "@mean ms"),
+        ("Median", "@median ms"),
+        ("Std Dev", "@std ms"),
+    ],
+    mode="mouse",
+)
+p.add_tools(hover)
+
+# Create legend and position it outside the plot area (right side)
+legend = Legend(
+    items=legend_items,
+    location="center",
+    label_text_font_size="18pt",
+    glyph_width=30,
+    glyph_height=30,
+    spacing=10,
+    padding=15,
+    background_fill_alpha=0.9,
+    border_line_color="#cccccc",
+)
+p.add_layout(legend, "right")
+p.legend.click_policy = "hide"
 
 # Save outputs
 export_png(p, filename="plot.png")

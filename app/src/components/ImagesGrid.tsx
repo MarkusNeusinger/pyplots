@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import Alert from '@mui/material/Alert';
 import { ImageCard } from './ImageCard';
 import { LoaderSpinner } from './LoaderSpinner';
 import type { PlotImage, LibraryInfo, SpecInfo } from '../types';
+import { IMAGE_SIZES, type ImageSize } from '../constants';
 
 interface ImagesGridProps {
   images: PlotImage[];
@@ -17,6 +17,7 @@ interface ImagesGridProps {
   specsData: SpecInfo[];
   openTooltip: string | null;
   loadMoreRef: React.RefObject<HTMLDivElement | null>;
+  imageSize: ImageSize;
   onTooltipToggle: (id: string | null) => void;
   onCardClick: (image: PlotImage) => void;
   onTrackEvent?: (name: string, props?: Record<string, string | undefined>) => void;
@@ -34,11 +35,13 @@ export function ImagesGrid({
   specsData,
   openTooltip,
   loadMoreRef,
+  imageSize,
   onTooltipToggle,
   onCardClick,
   onTrackEvent,
 }: ImagesGridProps) {
   void _selectedLibrary; // Preserved for API compatibility
+  const { minWidth, maxWidth, containerMax } = IMAGE_SIZES[imageSize];
   // Always show content - the old condition was breaking the "show all" default view
   // viewMode is now just for display purposes (spec name vs library name on cards)
 
@@ -82,22 +85,21 @@ export function ImagesGrid({
             No images found for this spec.
           </Alert>
         ) : (
-          <Grid
-            container
-            spacing={3}
-            justifyContent="center"
+          <Box
             sx={{
-              maxWidth: 1800,
+              display: 'grid',
+              gridTemplateColumns: `repeat(auto-fit, minmax(${minWidth}px, ${maxWidth}px))`,
+              justifyContent: 'center',
+              gap: 3,
               mx: 'auto',
               opacity: isTransitioning ? 0 : 1,
               transition: 'opacity 0.15s ease-in-out',
             }}
           >
             {images.map((image, index) => (
-              <Grid
-                size={{ xs: 12, sm: 6, lg: 4 }}
+              <Box
                 key={image.spec_id ? `${image.spec_id}-${image.library}` : image.library}
-                sx={{ maxWidth: 600 }}
+                sx={{ width: '100%', maxWidth, mx: 'auto' }}
               >
                 <ImageCard
                   image={image}
@@ -111,17 +113,17 @@ export function ImagesGrid({
                   onClick={() => onCardClick(image)}
                   onTrackEvent={onTrackEvent}
                 />
-              </Grid>
+              </Box>
             ))}
-            {/* Load more indicator */}
-            {hasMore && (
-              <Grid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-                <div ref={loadMoreRef}>
-                  <LoaderSpinner size="small" />
-                </div>
-              </Grid>
-            )}
-          </Grid>
+          </Box>
+        )}
+        {/* Load more indicator */}
+        {hasMore && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+            <div ref={loadMoreRef}>
+              <LoaderSpinner size="small" />
+            </div>
+          </Box>
         )}
       </Box>
     );

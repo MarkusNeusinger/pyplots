@@ -20,8 +20,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### scatter-categorical 📋
 **Description:** Scatter plot with points colored by category. Distinct colors for each group with legend.
 
-### scatter-regression 📋
-**Description:** Scatter plot with linear regression line and confidence interval band.
+### scatter-regression-linear ✅
+**Description:** A scatter plot showing the relationship between two variables with a fitted linear regression line and confidence interval band.
 
 ### scatter-marginal 📋
 **Description:** Scatter plot with marginal histograms or KDE on axes showing distributions.
@@ -39,8 +39,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### line-basic ✅
 **Description:** A basic line plot connects data points with straight lines to show how a continuous variable changes over a sequence or time.
 
-### line-multi 📋
-**Description:** Multiple lines on the same axes for comparison with legend.
+### line-multi ✅
+**Description:** A line plot showing multiple data series on the same axes for direct comparison with a legend.
 
 ### line-styled 📋
 **Description:** Line plot with different line styles (solid, dashed, dotted) for black-and-white printing.
@@ -76,8 +76,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### bar-horizontal 📋
 **Description:** Horizontal bars, useful for long category names.
 
-### bar-grouped 📋
-**Description:** Side-by-side bars for comparing groups within categories.
+### bar-grouped ✅
+**Description:** A grouped bar chart with side-by-side bars for comparing values across multiple groups within each category.
 
 ### bar-stacked 📋
 **Description:** Bars stacked on top of each other showing composition.
@@ -122,8 +122,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### histogram-stepwise 📋
 **Description:** Histogram with step outline only (no filled bars).
 
-### histogram-kde 📋
-**Description:** Histogram with kernel density estimate overlay.
+### histogram-kde ✅
+**Description:** A histogram showing the distribution of continuous data with a smooth kernel density estimate (KDE) curve overlaid.
 
 ### density-basic ✅
 **Description:** A density plot (Kernel Density Estimation) visualizes the distribution of a continuous variable by smoothing the data into a continuous probability density curve.
@@ -193,6 +193,9 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### rug-basic ✅
 **Description:** A rug plot displays individual data points as small tick marks along an axis, typically at the bottom or side of another plot.
 
+### raincloud-basic 📋
+**Description:** A raincloud plot combining half-violin/KDE ("cloud"), jittered strip plot ("rain"), and box plot to show distribution shape alongside raw data points.
+
 ---
 
 ## 7. Heatmaps
@@ -200,8 +203,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### heatmap-basic ✅
 **Description:** A heatmap displaying values in a matrix format using color intensity. Each cell's color represents the magnitude of the value.
 
-### heatmap-annotated 📋
-**Description:** Heatmap with values displayed in cells.
+### heatmap-annotated ✅
+**Description:** A heatmap with numeric values displayed inside each cell, essential for correlation matrices and confusion matrices.
 
 ### heatmap-correlation 📋
 **Description:** Correlation matrix visualization with diverging colormap.
@@ -258,6 +261,9 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ### radar-multi 📋
 **Description:** Multiple overlapping radar polygons for comparison.
+
+### windrose-basic 📋
+**Description:** A windrose displays wind speed and direction as a polar stacked histogram showing frequency distribution by compass direction.
 
 ---
 
@@ -347,6 +353,9 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### sparkline-basic ✅
 **Description:** A sparkline is a small, condensed line chart designed to be embedded inline with text or in dashboard cells. Pure data visualization in minimal space.
 
+### horizon-basic 📋
+**Description:** A horizon chart displays many time series compactly by folding values into color-coded bands, preserving local resolution while minimizing vertical space.
+
 ---
 
 ## 14. Geographic & Spatial
@@ -428,6 +437,12 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ### sankey-basic ✅
 **Description:** A Sankey diagram visualizes flow or transfer between nodes using links with widths proportional to flow values.
+
+### alluvial-basic 📋
+**Description:** An alluvial diagram showing how entities flow or change between discrete categories or time points, with bands connecting related segments.
+
+### hive-basic 📋
+**Description:** A hive plot arranges network nodes on radial axes based on node properties, enabling reproducible and directly comparable network visualizations.
 
 ---
 
@@ -546,6 +561,9 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### andrews-curves 📋
 **Description:** Multivariate data as Fourier curves.
 
+### chernoff-basic 📋
+**Description:** Chernoff faces map multivariate data to facial features (eyes, mouth, nose), leveraging human face recognition ability for pattern detection.
+
 ---
 
 ## 24. Financial Charts
@@ -594,6 +612,15 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ### efficient-frontier 📋
 **Description:** Portfolio risk-return optimization curve.
+
+### renko-basic 📋
+**Description:** A Renko chart plots "bricks" of fixed size only when price moves by a defined amount, filtering market noise and focusing on price action.
+
+### kagi-basic 📋
+**Description:** A Kagi chart uses varying line thickness to show trend reversals, changing direction only on significant price movements.
+
+### pnf-basic 📋
+**Description:** A Point & Figure (P&F) chart uses columns of X (rises) and O (falls) to visualize price movements while ignoring time.
 
 ---
 
@@ -735,6 +762,9 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### smith-chart 📋
 **Description:** RF/microwave impedance chart.
 
+### skewt-basic 📋
+**Description:** A Skew-T Log-P diagram displays atmospheric thermodynamic profiles with logarithmic pressure axis and 45-degree skewed temperature isotherms.
+
 ### survival-curve 📋
 **Description:** Kaplan-Meier survival analysis plot.
 
@@ -767,8 +797,8 @@ Druckbare Vorlagen und spielerische Visualisierungen.
 
 ### Puzzles & Games
 
-### sudoku-basic 📋
-**Description:** Standard 9x9 Sudoku-Raster mit 3x3 Boxen. Dicke Linien für Regionen, dünne für Zellen. Leer oder mit Startzahlen zum Ausdrucken und Lösen.
+### sudoku-basic ✅
+**Description:** A Sudoku grid displays the classic 9x9 puzzle layout with thick lines separating 3x3 regions and thin lines for individual cells.
 
 ### sudoku-filled 📋
 **Description:** Sudoku-Rätsel mit vorgegebenen Zahlen und eindeutiger Lösung. Vorgegebene Zahlen optisch hervorgehoben.
@@ -803,9 +833,9 @@ Druckbare Vorlagen und spielerische Visualisierungen.
 
 ## Statistics
 
-- **Total Plot Types:** 210+
-- **Implemented:** 58 ✅
-- **Planned:** 150+ 📋
+- **Total Plot Types:** 220+
+- **Implemented:** 64 ✅
+- **Planned:** 155+ 📋
 - **Categories:** 30
 
 ---
@@ -814,10 +844,10 @@ Druckbare Vorlagen und spielerische Visualisierungen.
 
 Each plot type in this catalog can become a spec file. Priority order suggestion:
 
-1. **Essential basics** - Complete the basic variants (scatter-regression, bar-grouped, histogram-kde)
+1. **Essential basics** - Complete the basic variants (bar-horizontal, bar-stacked, histogram-normalized)
 2. **Statistical** - heatmap-correlation, violin-split, regression-linear
 3. **Interactive** - scatter-3d, map-choropleth, drilldown-pie
 4. **Financial** - stock-candlestick, indicator-macd, efficient-frontier
-5. **Fun** - sudoku-basic, maze-basic, qr-code
+5. **Fun** - maze-basic, qr-code, crossword-basic
 
 To create a spec, use the format: `plots/{spec-id}/specification.md`

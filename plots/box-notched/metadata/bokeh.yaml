@@ -1,0 +1,28 @@
+library: bokeh
+specification_id: box-notched
+created: '2025-12-25T19:54:33Z'
+updated: '2025-12-25T19:56:48Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20510123461
+issue: 2019
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/box-notched/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-notched/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/box-notched/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of notched box plots using Bokeh primitives (quad, patch,
+    segment)
+  - Notch calculation correctly implements ±1.57 × IQR / √n formula per specification
+  - Clean visual design with appropriate sizing for 4800×2700 canvas
+  - Proper colorblind-friendly palette with five distinct hues
+  - Outliers correctly identified and rendered with contrasting hollow circle style
+  weaknesses:
+  - Unused variable xs (lines 135-146) is dead code that should be removed
+  - Y-axis label lacks units (should be Performance Score 0-100 or similar)
+  - Some generated outlier values exceed 100, which is unrealistic for a 0-100 performance
+    scale
+  - No legend mapping colors to departments (though categories on x-axis partially
+    compensate)

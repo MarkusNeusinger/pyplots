@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 68/100 | Created: 2025-12-25
@@ -35,60 +35,58 @@ df = pd.DataFrame(
     }
 )
 
-# Create raincloud plot: half-violin (cloud) on top + box plot + jittered points (rain) below
-# Using horizontal orientation: cloud on right side, boxplot center, rain on left
+# Create raincloud plot: half-violin (cloud) + box plot + jittered points (rain)
+# Layout: cloud on right, boxplot slightly left of center, rain on left (like rain falling from cloud)
 plot = (
     ggplot(df, aes(x="condition", y="reaction_time", fill="condition", color="condition"))
-    # Half-violin (cloud) - show only right half (positive side)
+    # Half-violin (cloud) - nudged to right side
     + geom_violin(
         trim=False,
         show_half=1,  # Show only right/upper half (the "cloud")
         size=0.8,
         alpha=0.7,
+        position=position_nudge(x=0.15),
         tooltips=layer_tooltips()
         .title("@condition")
         .line("Distribution of reaction times")
         .format("@..density..", ".3f"),
     )
-    # Box plot - centered, shows quartiles and median
+    # Box plot - slightly left of center
     + geom_boxplot(
-        width=0.12,
+        width=0.1,
         outlier_shape=None,
         fill="white",
         color="#333333",
         size=0.8,
         alpha=0.95,
         show_legend=False,
+        position=position_nudge(x=-0.02),
         tooltips=layer_tooltips()
         .title("Summary Statistics")
         .line("Median: @..middle..")
         .line("Q1: @..lower..")
         .line("Q3: @..upper.."),
     )
-    # Jittered points (rain) - spread for visibility, positioned to left of center
+    # Jittered points (rain) - clearly positioned to left of boxplot (rain falling from cloud)
     + geom_jitter(
-        width=0.08,
+        width=0.04,
         height=0,
         size=2.5,
-        alpha=0.5,
+        alpha=0.6,
         shape=21,  # Filled circle with border
         fill="#1a1a1a",
         color="#1a1a1a",
         show_legend=False,
+        position=position_nudge(x=-0.2),
         tooltips=layer_tooltips().line("Reaction Time|@reaction_time ms"),
     )
     # Colors
     + scale_fill_manual(values=["#306998", "#FFD43B", "#5BA85B"])
     + scale_color_manual(values=["#306998", "#FFD43B", "#5BA85B"])
     # Labels and title
-    + labs(
-        x="Experimental Condition",
-        y="Reaction Time (ms)",
-        title="raincloud-basic · letsplot · pyplots.ai",
-        fill="Condition",
-    )
-    # Legend positioning - show legend for fill
-    + guides(color="none")  # Hide color legend since it duplicates fill
+    + labs(x="Experimental Condition", y="Reaction Time (ms)", title="raincloud-basic · letsplot · pyplots.ai")
+    # Hide legend since categories are already on X-axis
+    + guides(fill="none", color="none")
     # Theme
     + theme_minimal()
     + theme(
@@ -97,9 +95,6 @@ plot = (
         axis_title_y=element_text(size=20),
         axis_text_x=element_text(size=16),
         axis_text_y=element_text(size=16),
-        legend_title=element_text(size=18),
-        legend_text=element_text(size=14),
-        legend_position="right",
         panel_grid_major_x=element_blank(),
         panel_grid_minor=element_blank(),
         panel_grid_major_y=element_line(color="#cccccc", size=0.5),

@@ -193,7 +193,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### rug-basic ✅
 **Description:** A rug plot displays individual data points as small tick marks along an axis, typically at the bottom or side of another plot.
 
-### raincloud-basic 📋
+### raincloud-basic ✅
 **Description:** A raincloud plot combining half-violin/KDE ("cloud"), jittered strip plot ("rain"), and box plot to show distribution shape alongside raw data points.
 
 ---
@@ -262,7 +262,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### radar-multi 📋
 **Description:** Multiple overlapping radar polygons for comparison.
 
-### windrose-basic 📋
+### windrose-basic ✅
 **Description:** A windrose displays wind speed and direction as a polar stacked histogram showing frequency distribution by compass direction.
 
 ---
@@ -353,7 +353,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### sparkline-basic ✅
 **Description:** A sparkline is a small, condensed line chart designed to be embedded inline with text or in dashboard cells. Pure data visualization in minimal space.
 
-### horizon-basic 📋
+### horizon-basic ✅
 **Description:** A horizon chart displays many time series compactly by folding values into color-coded bands, preserving local resolution while minimizing vertical space.
 
 ---
@@ -438,10 +438,10 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### sankey-basic ✅
 **Description:** A Sankey diagram visualizes flow or transfer between nodes using links with widths proportional to flow values.
 
-### alluvial-basic 📋
+### alluvial-basic ✅
 **Description:** An alluvial diagram showing how entities flow or change between discrete categories or time points, with bands connecting related segments.
 
-### hive-basic 📋
+### hive-basic ✅
 **Description:** A hive plot arranges network nodes on radial axes based on node properties, enabling reproducible and directly comparable network visualizations.
 
 ---
@@ -834,8 +834,8 @@ Druckbare Vorlagen und spielerische Visualisierungen.
 ## Statistics
 
 - **Total Plot Types:** 220+
-- **Implemented:** 64 ✅
-- **Planned:** 155+ 📋
+- **Implemented:** 69 ✅
+- **Planned:** 150+ 📋
 - **Categories:** 30
 
 ---

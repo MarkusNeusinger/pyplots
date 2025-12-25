@@ -1,16 +1,18 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-correlation: Correlation Matrix Heatmap
-Library: highcharts unknown | Python 3.13.11
+Library: highcharts 2.1.0 | Python 3.13
 Quality: 88/100 | Created: 2025-12-25
 """
 
-import json
 import tempfile
 import time
 import urllib.request
 from pathlib import Path
 
 import numpy as np
+from highcharts_core.chart import Chart
+from highcharts_core.options import HighchartsOptions
+from highcharts_core.options.series.heatmap import HeatmapSeries
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -42,6 +44,98 @@ for i in range(n_vars):
 # Variable labels for axes (reversed for y-axis)
 reversed_vars = list(reversed(variables))
 
+# Create chart using highcharts-core Python library
+chart = Chart(container="container")
+chart.options = HighchartsOptions()
+
+# Chart configuration
+chart.options.chart = {
+    "type": "heatmap",
+    "width": 3600,
+    "height": 3600,
+    "backgroundColor": "#ffffff",
+    "marginTop": 180,
+    "marginBottom": 300,
+    "marginLeft": 280,
+    "marginRight": 220,
+}
+
+# Title
+chart.options.title = {
+    "text": "heatmap-correlation \u00b7 highcharts \u00b7 pyplots.ai",
+    "style": {"fontSize": "48px", "fontWeight": "bold"},
+}
+
+# Subtitle
+chart.options.subtitle = {
+    "text": "Financial Metrics Correlation Matrix",
+    "style": {"fontSize": "32px", "color": "#666666"},
+}
+
+# X-axis
+chart.options.x_axis = {
+    "categories": variables,
+    "title": None,
+    "labels": {"style": {"fontSize": "28px"}, "rotation": 315},
+}
+
+# Y-axis
+chart.options.y_axis = {
+    "categories": reversed_vars,
+    "title": None,
+    "labels": {"style": {"fontSize": "28px"}},
+    "reversed": False,
+}
+
+# Color axis - using blue-white-red (coolwarm) as spec suggests
+chart.options.color_axis = {
+    "min": -1,
+    "max": 1,
+    "stops": [
+        [0, "#3B4CC0"],  # Blue for negative correlations
+        [0.5, "#FFFFFF"],  # White for zero
+        [1, "#B40426"],  # Red for positive correlations
+    ],
+    "labels": {"style": {"fontSize": "24px"}},
+    "tickInterval": 0.5,
+}
+
+# Legend
+chart.options.legend = {
+    "align": "right",
+    "layout": "vertical",
+    "verticalAlign": "middle",
+    "symbolHeight": 600,
+    "itemStyle": {"fontSize": "24px"},
+}
+
+# Tooltip
+chart.options.tooltip = {
+    "formatter": """function() {
+        var xCat = this.series.xAxis.categories[this.point.x];
+        var yCat = this.series.yAxis.categories[this.point.y];
+        return '<b>' + yCat + ' vs ' + xCat + '</b><br>Correlation: <b>' +
+               Highcharts.numberFormat(this.point.value, 2) + '</b>';
+    }""",
+    "style": {"fontSize": "20px"},
+}
+
+# Create and add series
+series = HeatmapSeries()
+series.name = "Correlation"
+series.data = heatmap_data
+series.border_width = 1  # Reduced from 3px for cleaner appearance
+series.border_color = "#ffffff"
+series.data_labels = {
+    "enabled": True,
+    "formatter": """function() {
+        return Highcharts.numberFormat(this.point.value, 2);
+    }""",
+    "style": {"fontSize": "26px", "fontWeight": "bold", "textOutline": "2px white"},
+}
+
+chart.add_series(series)
+
 # Download Highcharts JS and Heatmap module
 highcharts_url = "https://code.highcharts.com/highcharts.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
@@ -51,7 +145,8 @@ heatmap_url = "https://code.highcharts.com/modules/heatmap.js"
 with urllib.request.urlopen(heatmap_url, timeout=30) as response:
     heatmap_js = response.read().decode("utf-8")
 
-# Create complete HTML with inline Highcharts configuration
+# Generate HTML with inline scripts
+html_str = chart.to_js_literal()
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -61,87 +156,7 @@ html_content = f"""<!DOCTYPE html>
 </head>
 <body style="margin:0; background-color: #ffffff;">
     <div id="container" style="width: 3600px; height: 3600px;"></div>
-    <script>
-        Highcharts.chart('container', {{
-            chart: {{
-                type: 'heatmap',
-                width: 3600,
-                height: 3600,
-                backgroundColor: '#ffffff',
-                marginTop: 180,
-                marginBottom: 300,
-                marginLeft: 280,
-                marginRight: 220
-            }},
-            title: {{
-                text: 'heatmap-correlation \\u00b7 highcharts \\u00b7 pyplots.ai',
-                style: {{fontSize: '48px', fontWeight: 'bold'}}
-            }},
-            subtitle: {{
-                text: 'Financial Metrics Correlation Matrix',
-                style: {{fontSize: '32px', color: '#666666'}}
-            }},
-            xAxis: {{
-                categories: {json.dumps(variables)},
-                title: null,
-                labels: {{
-                    style: {{fontSize: '28px'}},
-                    rotation: 315
-                }}
-            }},
-            yAxis: {{
-                categories: {json.dumps(reversed_vars)},
-                title: null,
-                labels: {{style: {{fontSize: '28px'}}}},
-                reversed: false
-            }},
-            colorAxis: {{
-                min: -1,
-                max: 1,
-                stops: [
-                    [0, '#306998'],
-                    [0.5, '#ffffff'],
-                    [1, '#FFD43B']
-                ],
-                labels: {{style: {{fontSize: '24px'}}}},
-                tickInterval: 0.5
-            }},
-            legend: {{
-                align: 'right',
-                layout: 'vertical',
-                verticalAlign: 'middle',
-                symbolHeight: 600,
-                itemStyle: {{fontSize: '24px'}}
-            }},
-            tooltip: {{
-                formatter: function() {{
-                    var xCat = this.series.xAxis.categories[this.point.x];
-                    var yCat = this.series.yAxis.categories[this.point.y];
-                    return '<b>' + yCat + ' vs ' + xCat + '</b><br>Correlation: <b>' +
-                           Highcharts.numberFormat(this.point.value, 2) + '</b>';
-                }},
-                style: {{fontSize: '20px'}}
-            }},
-            series: [{{
-                type: 'heatmap',
-                name: 'Correlation',
-                data: {json.dumps(heatmap_data)},
-                borderWidth: 3,
-                borderColor: '#ffffff',
-                dataLabels: {{
-                    enabled: true,
-                    formatter: function() {{
-                        return Highcharts.numberFormat(this.point.value, 2);
-                    }},
-                    style: {{
-                        fontSize: '26px',
-                        fontWeight: 'bold',
-                        textOutline: '2px white'
-                    }}
-                }}
-            }}]
-        }});
-    </script>
+    <script>{html_str}</script>
 </body>
 </html>"""
 

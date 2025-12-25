@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 count-basic: Basic Count Plot
-Library: pygal | Python 3.13
-Quality: pending | Created: 2025-12-25
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-25
 """
 
 from collections import Counter

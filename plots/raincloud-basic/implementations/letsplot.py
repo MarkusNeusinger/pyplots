@@ -1,14 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
-Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-25
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-25
 """
-
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 from lets_plot import *
+from lets_plot.export import ggsave
 
 
 LetsPlot.setup_html()
@@ -85,9 +84,7 @@ plot = (
     + scale_color_manual(values=["#306998", "#FFD43B", "#5BA85B"])
     # Labels and title
     + labs(x="Experimental Condition", y="Reaction Time (ms)", title="raincloud-basic · letsplot · pyplots.ai")
-    # Hide legend since categories are already on X-axis
-    + guides(fill="none", color="none")
-    # Theme
+    # Legend positioned at bottom-right to not cover data
     + theme_minimal()
     + theme(
         plot_title=element_text(size=24, face="bold"),
@@ -95,6 +92,10 @@ plot = (
         axis_title_y=element_text(size=20),
         axis_text_x=element_text(size=16),
         axis_text_y=element_text(size=16),
+        legend_title=element_blank(),
+        legend_text=element_text(size=14),
+        legend_position=[0.92, 0.15],
+        legend_justification=[1, 0],
         panel_grid_major_x=element_blank(),
         panel_grid_minor=element_blank(),
         panel_grid_major_y=element_line(color="rgba(0, 0, 0, 0.15)", size=0.5),
@@ -104,7 +105,6 @@ plot = (
     + flavor_high_contrast_light()
 )
 
-# Save outputs
-output_dir = Path(__file__).parent
-ggsave(plot, str(output_dir / "plot.png"), scale=3)
-ggsave(plot, str(output_dir / "plot.html"))
+# Save outputs - using simple filenames as required
+ggsave(plot, "plot.png", path=".", scale=3)
+ggsave(plot, "plot.html", path=".")

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-3d: 3D Scatter Plot
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-25
@@ -56,12 +56,22 @@ scatter = (
     alt.Chart(df)
     .mark_circle(size=280, strokeWidth=1.5, stroke="white")
     .encode(
-        x=alt.X("x_proj:Q", axis=alt.Axis(title="X (projected)", labelFontSize=18, titleFontSize=22)),
-        y=alt.Y("z_proj:Q", axis=alt.Axis(title="Z (height)", labelFontSize=18, titleFontSize=22)),
+        x=alt.X("x_proj:Q", axis=alt.Axis(title="X-axis (isometric projection)", labelFontSize=18, titleFontSize=22)),
+        y=alt.Y(
+            "z_proj:Q", axis=alt.Axis(title="Z-axis (Y encodes depth via opacity)", labelFontSize=18, titleFontSize=22)
+        ),
         color=alt.Color(
             "cluster:N",
             scale=alt.Scale(domain=["Cluster 1", "Cluster 2", "Cluster 3"], range=["#306998", "#FFD43B", "#E07B39"]),
-            legend=alt.Legend(title="Cluster", titleFontSize=20, labelFontSize=16),
+            legend=alt.Legend(
+                title="Cluster",
+                titleFontSize=20,
+                labelFontSize=16,
+                orient="none",
+                legendX=1300,
+                legendY=100,
+                direction="vertical",
+            ),
         ),
         opacity=alt.Opacity("opacity:Q", legend=None),
         order=alt.Order("depth:Q", sort="ascending"),
@@ -80,7 +90,17 @@ pan_zoom = alt.selection_interval(bind="scales", encodings=["x", "y"])
 # Final chart
 chart = (
     scatter.add_params(pan_zoom)
-    .properties(width=1600, height=900, title=alt.Title("scatter-3d · altair · pyplots.ai", fontSize=28))
+    .properties(
+        width=1600,
+        height=900,
+        title=alt.Title(
+            text="scatter-3d · altair · pyplots.ai",
+            subtitle="Isometric 3D projection: X/Z shown on axes, Y mapped to depth (opacity)",
+            fontSize=28,
+            subtitleFontSize=18,
+            subtitleColor="#666666",
+        ),
+    )
     .configure_axis(grid=True, gridOpacity=0.3, gridDash=[6, 4])
     .configure_view(strokeWidth=0)
 )

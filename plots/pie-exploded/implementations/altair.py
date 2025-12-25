@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-exploded: Exploded Pie Chart
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 84/100 | Created: 2025-12-25
@@ -13,8 +13,8 @@ categories = ["Enterprise", "Consumer", "Government", "SMB", "Education"]
 values = [38, 25, 18, 12, 7]
 
 # Explode distances: Enterprise (leader) and Government (government contracts) emphasized
-# Values represent offset distance from center (0 = no explode, 0.1 = typical)
-explode = [0.12, 0, 0.08, 0, 0]
+# Altair achieves explosion via padAngle (gap between slices) and radius variation
+explode = [0.15, 0, 0.10, 0, 0]
 
 # Colors - Python palette first, then colorblind-safe
 colors = ["#306998", "#FFD43B", "#4ECDC4", "#FF6B6B", "#95E1D3"]
@@ -35,65 +35,60 @@ df = pd.DataFrame(
 )
 df["label"] = df["percentage"].apply(lambda x: f"{x:.1f}%")
 
-# Separate exploded and non-exploded slices
-exploded_df = df[df["explode"] > 0]
+# Chart dimensions - larger radius to fill more canvas
+base_radius = 480
 
-# Base radius for pie chart (large to fill canvas)
-base_radius = 450
-
-# Base pie with all slices (centered)
+# Base pie chart with all slices
 base_pie = (
     alt.Chart(df)
-    .mark_arc(outerRadius=base_radius, innerRadius=0, stroke="white", strokeWidth=4)
+    .mark_arc(outerRadius=base_radius, innerRadius=0, stroke="white", strokeWidth=5, padAngle=0.03)
     .encode(
         theta=alt.Theta("value:Q", stack=True),
         color=alt.Color(
             "category:N",
             scale=alt.Scale(domain=categories, range=colors),
             legend=alt.Legend(
-                title="Segment", titleFontSize=24, labelFontSize=20, symbolSize=400, orient="right", offset=40
+                title="Segment", titleFontSize=26, labelFontSize=22, symbolSize=600, orient="right", offset=20
             ),
         ),
         order=alt.Order("order:O"),
     )
 )
 
-# Create exploded slice overlays with larger radius to create visual separation
+# Create explosion effect layers - exploded slices drawn with larger radius and gap
 exploded_layers = []
-for _, row in exploded_df.iterrows():
-    slice_df = df[df["category"] == row["category"]]
-    explosion_amount = row["explode"]
-
-    # Larger outer radius and inner gap creates dramatic explosion effect
-    outer_r = base_radius + int(explosion_amount * 250)
-    inner_r = int(explosion_amount * 120)
+for _, row in df[df["explode"] > 0].iterrows():
+    explosion_factor = row["explode"]
+    # Explosion creates: larger outer radius + inner gap (donut effect) + wider pad angle
+    outer_radius = base_radius + int(explosion_factor * 350)
+    inner_gap = int(explosion_factor * 200)
 
     exploded_arc = (
-        alt.Chart(slice_df)
-        .mark_arc(outerRadius=outer_r, innerRadius=inner_r, stroke="white", strokeWidth=5)
+        alt.Chart(df)
+        .transform_filter(alt.datum.category == row["category"])
+        .mark_arc(outerRadius=outer_radius, innerRadius=inner_gap, stroke="white", strokeWidth=6, padAngle=0.08)
         .encode(
-            theta=alt.Theta("value:Q"),
+            theta=alt.Theta("value:Q", stack=True),
             color=alt.Color("category:N", scale=alt.Scale(domain=categories, range=colors), legend=None),
+            order=alt.Order("order:O"),
         )
     )
     exploded_layers.append(exploded_arc)
 
-# Labels positioned at appropriate radius for visibility
+# Labels positioned for visibility on all slices
 labels = (
     alt.Chart(df)
-    .mark_text(radius=310, fontSize=28, fontWeight="bold", fill="white")
+    .mark_text(radius=320, fontSize=36, fontWeight="bold", fill="white")
     .encode(theta=alt.Theta("value:Q", stack=True), text="label:N", order=alt.Order("order:O"))
 )
 
-# Combine all layers: base pie, exploded overlays, then labels on top
-all_layers = [base_pie] + exploded_layers + [labels]
-
+# Combine all layers
 chart = (
-    alt.layer(*all_layers)
+    alt.layer(base_pie, *exploded_layers, labels)
     .properties(
         width=1200,
         height=1200,
-        title=alt.Title("pie-exploded · altair · pyplots.ai", fontSize=32, anchor="middle", dy=-20),
+        title=alt.Title("pie-exploded · altair · pyplots.ai", fontSize=36, anchor="middle", dy=-15),
     )
     .configure_view(strokeWidth=0)
 )

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-3d: 3D Scatter Plot
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 79/100 | Created: 2025-12-25
@@ -27,91 +27,74 @@ from lets_plot.export import ggsave
 
 LetsPlot.setup_html()
 
-# Data - Generate 3D clustered data for demonstration
+# Data - Simulated 3D spatial measurements (e.g., sensor readings in a volume)
 np.random.seed(42)
 
-# Create 3 clusters in 3D space
-n_per_cluster = 50
-clusters = []
+# Create 3 distinct clusters with varied characteristics
+n_points = 150
 
-# Cluster 1: centered at (2, 2, 2)
-c1_x = np.random.randn(n_per_cluster) * 0.8 + 2
-c1_y = np.random.randn(n_per_cluster) * 0.8 + 2
-c1_z = np.random.randn(n_per_cluster) * 0.8 + 2
+# Cluster 1: Dense spherical cluster (tight sensor group) - 60 points
+n1 = 60
+c1_x = np.random.randn(n1) * 0.5 + 3
+c1_y = np.random.randn(n1) * 0.5 + 2
+c1_z = np.random.randn(n1) * 0.5 + 1
 
-# Cluster 2: centered at (-2, -1, 3)
-c2_x = np.random.randn(n_per_cluster) * 0.6 - 2
-c2_y = np.random.randn(n_per_cluster) * 0.6 - 1
-c2_z = np.random.randn(n_per_cluster) * 0.6 + 3
+# Cluster 2: Elongated ellipsoid (stretched along X) - 50 points
+n2 = 50
+c2_x = np.random.randn(n2) * 1.8 - 2
+c2_y = np.random.randn(n2) * 0.4 - 1
+c2_z = np.random.randn(n2) * 0.6 + 3.5
 
-# Cluster 3: centered at (0, -2, -1)
-c3_x = np.random.randn(n_per_cluster) * 0.7
-c3_y = np.random.randn(n_per_cluster) * 0.7 - 2
-c3_z = np.random.randn(n_per_cluster) * 0.7 - 1
+# Cluster 3: Flat disk (spread in X-Y plane, thin in Z) - 40 points
+n3 = 40
+c3_x = np.random.randn(n3) * 1.2 + 0.5
+c3_y = np.random.randn(n3) * 1.2 - 2.5
+c3_z = np.random.randn(n3) * 0.2 - 1.5
 
 x = np.concatenate([c1_x, c2_x, c3_x])
 y = np.concatenate([c1_y, c2_y, c3_y])
 z = np.concatenate([c1_z, c2_z, c3_z])
 
-# 3D to 2D isometric projection
-# Rotation angles for good viewing angle
-elev = np.radians(20)  # elevation angle
-azim = np.radians(-60)  # azimuth angle
+# 3D to 2D isometric projection with rotation angles for good viewing
+elev = np.radians(25)  # elevation angle
+azim = np.radians(-50)  # azimuth angle
 
-# Apply rotation transformations
-# First rotate around z-axis (azimuth)
-x_rot = x * np.cos(azim) - y * np.sin(azim)
-y_rot = x * np.sin(azim) + y * np.cos(azim)
+# Apply rotation: first around z-axis (azimuth), then x-axis (elevation)
+cos_azim, sin_azim = np.cos(azim), np.sin(azim)
+cos_elev, sin_elev = np.cos(elev), np.sin(elev)
 
-# Then rotate around x-axis (elevation) and project to 2D
+x_rot = x * cos_azim - y * sin_azim
+y_rot = x * sin_azim + y * cos_azim
+
+# Project to 2D
 x_proj = x_rot
-y_proj = y_rot * np.sin(elev) + z * np.cos(elev)
+y_proj = y_rot * sin_elev + z * cos_elev
 
-# Depth for sorting (points in back rendered first)
-depth = y_rot * np.cos(elev) - z * np.sin(elev)
-
-# Normalize depth for size variation (perspective effect)
+# Depth for sorting (painter's algorithm - back to front)
+depth = y_rot * cos_elev - z * sin_elev
 depth_norm = (depth - depth.min()) / (depth.max() - depth.min())
-# Points closer (higher depth) appear larger
-point_sizes = 4 + depth_norm * 6  # sizes from 4 to 10
+point_sizes = 4 + depth_norm * 6  # perspective: closer points larger
 
-# Create DataFrame
-df = pd.DataFrame({"x_proj": x_proj, "y_proj": y_proj, "z": z, "depth": depth, "size": point_sizes})
-
-# Sort by depth (back to front - painter's algorithm)
+# Create DataFrame and sort by depth
+df = pd.DataFrame({"x_proj": x_proj, "y_proj": y_proj, "altitude": z, "depth": depth, "size": point_sizes})
 df = df.sort_values("depth").reset_index(drop=True)
 
-# Create axis lines for 3D orientation
+# Project axis endpoints inline (no helper function)
 axis_length = 4
-# Origin in 3D
-origin = np.array([0, 0, 0])
+ox, oy = 0.0, 0.0  # origin projection
+ax_x = axis_length * cos_azim
+ax_y = axis_length * sin_azim * sin_elev
+ay_x = -axis_length * sin_azim
+ay_y = axis_length * cos_azim * sin_elev
+az_x = 0.0
+az_y = axis_length * cos_elev
 
-# Axis endpoints
-x_end = np.array([axis_length, 0, 0])
-y_end = np.array([0, axis_length, 0])
-z_end = np.array([0, 0, axis_length])
-
-# Project axis endpoints
-
-
-def project_point(px, py, pz):
-    x_r = px * np.cos(azim) - py * np.sin(azim)
-    y_r = px * np.sin(azim) + py * np.cos(azim)
-    return x_r, y_r * np.sin(elev) + pz * np.cos(elev)
-
-
-o_proj = project_point(0, 0, 0)
-x_proj_axis = project_point(axis_length, 0, 0)
-y_proj_axis = project_point(0, axis_length, 0)
-z_proj_axis = project_point(0, 0, axis_length)
-
-# Create axes dataframe
 axes_df = pd.DataFrame(
     {
-        "x": [o_proj[0], o_proj[0], o_proj[0]],
-        "y": [o_proj[1], o_proj[1], o_proj[1]],
-        "xend": [x_proj_axis[0], y_proj_axis[0], z_proj_axis[0]],
-        "yend": [x_proj_axis[1], y_proj_axis[1], z_proj_axis[1]],
+        "x": [ox, ox, ox],
+        "y": [oy, oy, oy],
+        "xend": [ax_x, ay_x, az_x],
+        "yend": [ax_y, ay_y, az_y],
         "axis": ["X", "Y", "Z"],
     }
 )
@@ -119,20 +102,18 @@ axes_df = pd.DataFrame(
 # Create the plot
 plot = (
     ggplot()
-    # Add axis lines first (behind points)
     + geom_segment(
         data=axes_df, mapping=aes(x="x", y="y", xend="xend", yend="yend"), color="#888888", size=1.5, alpha=0.7
     )
-    # Add scatter points with color encoding z-value
     + geom_point(
         data=df,
-        mapping=aes(x="x_proj", y="y_proj", color="z", size="size"),
-        alpha=0.8,
-        tooltips=layer_tooltips().line("Z Value|@z").line("Depth|@depth"),
+        mapping=aes(x="x_proj", y="y_proj", color="altitude", size="size"),
+        alpha=0.75,
+        tooltips=layer_tooltips().line("Altitude|@altitude").line("Depth|@depth"),
     )
-    + scale_color_viridis(name="Z Value", option="viridis")
+    + scale_color_viridis(name="Altitude (m)", option="viridis")
     + scale_size_identity()
-    + labs(x="X-Y Projection", y="Z Projection", title="scatter-3d · letsplot · pyplots.ai")
+    + labs(x="Horizontal Position (m)", y="Vertical Position (m)", title="scatter-3d · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(
         axis_title=element_text(size=22),

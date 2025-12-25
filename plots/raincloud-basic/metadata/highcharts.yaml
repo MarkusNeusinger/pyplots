@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: raincloud-basic
 created: '2025-12-25T07:14:56Z'
-updated: '2025-12-25T07:17:23Z'
+updated: '2025-12-25T07:23:13Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20500987365
 issue: 0
@@ -10,20 +10,20 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/highcharts/plot.html
-quality_score: 58
+quality_score: 68
 review:
   strengths:
-  - Excellent data generation showing bimodal distribution in Treatment B and varying
-    spreads across groups
-  - Colorblind-safe palette with good color differentiation
-  - Clean code structure with inline KDE computation
-  - Good use of Highcharts polygon series for custom half-violin shapes
-  - Proper boxplot statistics calculation with quartiles and whiskers
-  - Realistic experimental scenario (reaction times)
+  - Correct raincloud layout with cloud on right, rain on left, boxplot centered (matches
+    vertical orientation spec)
+  - Colorblind-safe palette (blue, yellow, purple, cyan) with good visual distinction
+  - Bimodal distribution in Treatment B clearly visible in density cloud
+  - Title format correct with spec-id · library · pyplots.ai
+  - Appropriate jitter amount (0.08) for scatter points
+  - Inline KDE calculation creates smooth density curves
   weaknesses:
-  - 'CRITICAL: The cloud/rain orientation violates the spec - clouds should be on
-    the right (or top), rain on the left (or below) for vertical orientation, but
-    the implementation has cloud LEFT and rain RIGHT - this is the opposite of rain
-    falling from cloud'
-  - Legend is not visible within the plot area
-  - Marker size could be larger for better visibility at 4800x2700 resolution
+  - Box plots lack visual prominence - median line barely visible against colored
+    fill, quartile boundaries hard to distinguish
+  - No grid lines present - adding subtle grid would improve y-axis value readability
+  - Legend icon for Box Plot does not match actual colored box plot appearance
+  - Box plot fill colors are fully opaque and same as density colors, making the box
+    plot boundaries hard to see against the density polygons

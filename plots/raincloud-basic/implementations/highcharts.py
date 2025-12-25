@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
-Library: highcharts unknown | Python 3.13.11
-Quality: 78/100 | Created: 2025-12-25
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-25
 """
 
 import json
@@ -19,8 +19,8 @@ from selenium.webdriver.chrome.options import Options
 np.random.seed(42)
 categories = ["Control", "Treatment A", "Treatment B", "Treatment C"]
 colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF"]
-# Fill colors for box plots with good visibility (increased opacity)
-box_fill_colors = ["rgba(48,105,152,0.7)", "rgba(255,212,59,0.7)", "rgba(148,103,189,0.7)", "rgba(23,190,207,0.7)"]
+# Box fill colors with increased opacity for better visibility
+box_fill_colors = ["rgba(48,105,152,0.85)", "rgba(255,212,59,0.85)", "rgba(148,103,189,0.85)", "rgba(23,190,207,0.85)"]
 
 # Generate realistic reaction time data with different distributions
 control = np.random.normal(450, 60, 80)  # Normal distribution
@@ -62,7 +62,7 @@ for i, data in enumerate(all_data):
         # Rain on LEFT side (negative offset from category center)
         scatter_data.append({"x": i - 0.25 + jitter, "y": float(val), "color": colors[i]})
 
-# Box plot series data with semi-transparent fill and dark borders
+# Box plot series data with visible fill and dark borders
 box_series_data = []
 for i, box in enumerate(box_data):
     box_series_data.append(
@@ -164,9 +164,9 @@ Highcharts.chart('container', {{
         labels: {{
             style: {{ fontSize: '36px' }}
         }},
-        gridLineWidth: 2,
-        gridLineColor: 'rgba(0, 0, 0, 0.35)',
-        gridLineDashStyle: 'Solid',
+        gridLineWidth: 1,
+        gridLineColor: 'rgba(0, 0, 0, 0.15)',
+        gridLineDashStyle: 'Dash',
         tickInterval: 50,
         min: 250,
         max: 650
@@ -182,7 +182,10 @@ Highcharts.chart('container', {{
         backgroundColor: 'rgba(255, 255, 255, 0.9)',
         borderWidth: 1,
         borderColor: '#cccccc',
-        padding: 20
+        padding: 20,
+        symbolWidth: 40,
+        symbolHeight: 24,
+        symbolRadius: 0
     }},
     plotOptions: {{
         boxplot: {{
@@ -211,12 +214,11 @@ Highcharts.chart('container', {{
     series: [
         {",".join(polygon_series_js)},
         {{
-            name: 'Box Plot (Q1-Q3)',
+            name: 'Box Plot',
             type: 'boxplot',
             data: {json.dumps(box_series_data)},
             colorByPoint: true,
             showInLegend: true,
-            legendSymbol: 'rectangle',
             color: '#1a1a1a',
             tooltip: {{
                 headerFormat: '<b>{{point.key}}</b><br/>',

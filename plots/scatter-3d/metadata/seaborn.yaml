@@ -10,7 +10,9 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 35
+quality_score: 0
+not_feasible: true
+not_feasible_reason: "AR-06: Seaborn is fundamentally a 2D statistical visualization library and has no native 3D scatter plot capability. Any 3D implementation requires matplotlib's mplot3d, with seaborn only providing styling (set_theme, set_context, color_palette), which violates AR-05 (library must use plot functions, not just styling)."
 review:
   strengths:
   - Clean code structure with well-organized data generation for 3 distinct clusters

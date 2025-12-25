@@ -1,0 +1,29 @@
+library: bokeh
+specification_id: donut-nested
+created: '2025-12-25T20:03:11Z'
+updated: '2025-12-25T20:05:43Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20510190018
+issue: 2015
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-nested/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-nested/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/donut-nested/bokeh/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent hierarchical color scheme using consistent color families per department
+    (blues for Engineering, yellows for Marketing, greens for Sales, purples for Operations)
+  - 'Smart labeling strategy: labels only larger segments (>0.25 radians) to avoid
+    clutter'
+  - Center text showing total budget provides valuable context
+  - Good use of Bokeh annular_wedge for creating proper donut rings with gap between
+    inner/outer
+  - White line separators create clear visual distinction between segments
+  - Appropriate square format (3600x3600) for circular chart type
+  weaknesses:
+  - Figure dimensions differ from library guide recommendation (4800x2700), though
+    square is appropriate for donut
+  - Missing HoverTool which would enhance interactivity in the HTML output
+  - Inner ring label font size could be slightly larger given the segment sizes

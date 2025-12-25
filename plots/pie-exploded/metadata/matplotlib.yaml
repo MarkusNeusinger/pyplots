@@ -1,0 +1,26 @@
+library: matplotlib
+specification_id: pie-exploded
+created: '2025-12-25T20:05:38Z'
+updated: '2025-12-25T20:08:22Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20510238826
+issue: 2013
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Clean, professional visualization with excellent color choices using Python Blue
+    as primary
+  - Proper use of matplotlib pie chart API with explode feature
+  - Good text sizing and positioning - all labels and percentages highly readable
+  - Realistic market share data that demonstrates the exploded pie concept well
+  - White edge separators between slices improve visual clarity
+  - Legend properly positioned with title
+  weaknesses:
+  - Could demonstrate exploding multiple slices (e.g., 2 slices) to better showcase
+    the feature flexibility
+  - Minor layout imbalance with legend placement causing slight asymmetry

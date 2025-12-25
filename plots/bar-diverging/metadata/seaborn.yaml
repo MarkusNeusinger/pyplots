@@ -1,0 +1,28 @@
+library: seaborn
+specification_id: bar-diverging
+created: '2025-12-25T22:47:47Z'
+updated: '2025-12-25T22:49:53Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20511948571
+issue: 2009
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-diverging/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-diverging/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 93
+review:
+  strengths:
+  - Excellent implementation of diverging bar chart with clear visual distinction
+    between positive and negative values
+  - Proper use of horizontal orientation for readable department labels
+  - Well-implemented value labels at end of each bar with correct positioning and
+    sign formatting
+  - Good sorting of bars by value for easy comparison
+  - Modern seaborn API usage with hue parameter to avoid deprecation warnings
+  - Clean zero baseline with solid black line provides clear reference point
+  weaknesses:
+  - Legend slightly overlaps with the Sales bar visual area - could be placed in upper
+    left instead
+  - Data scenario is somewhat generic - could use more specific real-world context
+    (e.g., specific industry or year)

@@ -1,0 +1,27 @@
+library: altair
+specification_id: box-grouped
+created: '2025-12-25T19:54:30Z'
+updated: '2025-12-25T19:56:36Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20510142966
+issue: 2017
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/box-grouped/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-grouped/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/box-grouped/altair/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Altair's xOffset encoding for clean side-by-side grouping
+  - Well-chosen colorblind-safe palette (blue/yellow/teal) with good contrast
+  - Comprehensive data generation showing realistic performance distributions with
+    varied means, standard deviations, and intentional outliers
+  - Proper customization of boxplot mark with white median lines and appropriately
+    sized outliers
+  - Clean declarative code structure following Altair best practices
+  weaknesses:
+  - Legend positioned with default orient=right places it somewhat isolated from the
+    plot area
+  - Grid styling uses gridDash which works but default subtle grid might be cleaner
+  - Could add tooltips for interactivity since Altair excels at this

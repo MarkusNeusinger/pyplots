@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-24
+Library: matplotlib | Python 3.13
+Quality: pending | Created: 2025-12-25
 """
 
 import matplotlib.pyplot as plt
@@ -15,8 +15,13 @@ np.random.seed(42)
 # Control group: Normal distribution centered around 350ms
 control = np.random.normal(350, 50, 80)
 
-# Treatment A: Faster responses, slightly bimodal
-treatment_a = np.concatenate([np.random.normal(280, 30, 50), np.random.normal(320, 20, 30)])
+# Treatment A: Faster responses, clearly bimodal with distinct modes
+treatment_a = np.concatenate(
+    [
+        np.random.normal(250, 25, 45),  # Fast responders - more separation
+        np.random.normal(340, 25, 35),  # Slower subgroup
+    ]
+)
 
 # Treatment B: Mixed results with some outliers
 treatment_b = np.concatenate(
@@ -34,9 +39,11 @@ colors = ["#306998", "#FFD43B", "#4CAF50"]
 # Create figure
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Offset parameters
-box_width = 0.12
-jitter_offset = 0.2
+# Layout: Cloud (violin) on TOP, boxplot in MIDDLE, rain (points) BELOW
+# Using horizontal orientation with categories on y-axis
+cloud_offset = 0.2  # Offset for cloud (positive = top)
+rain_offset = -0.25  # Offset for rain (negative = below)
+box_width = 0.1
 
 for i, (d, color) in enumerate(zip(data, colors, strict=True)):
     pos = i + 1
@@ -46,23 +53,31 @@ for i, (d, color) in enumerate(zip(data, colors, strict=True)):
     std = np.std(d)
     bw = 1.06 * std * n ** (-1 / 5)
 
-    y_min, y_max = d.min() - 30, d.max() + 30
-    y_vals = np.linspace(y_min, y_max, 200)
+    x_min, x_max = d.min() - 30, d.max() + 30
+    x_vals = np.linspace(x_min, x_max, 200)
 
     # Gaussian kernel density estimation
-    kde_vals = np.zeros_like(y_vals)
+    kde_vals = np.zeros_like(x_vals)
     for point in d:
-        kde_vals += np.exp(-0.5 * ((y_vals - point) / bw) ** 2) / (bw * np.sqrt(2 * np.pi))
+        kde_vals += np.exp(-0.5 * ((x_vals - point) / bw) ** 2) / (bw * np.sqrt(2 * np.pi))
     kde_vals /= n
 
-    # Normalize and scale violin width
-    kde_scaled = kde_vals / kde_vals.max() * 0.35
+    # Normalize and scale violin width (height in horizontal orientation)
+    kde_scaled = kde_vals / kde_vals.max() * 0.3
 
-    # Draw half-violin (cloud) on the left side
-    ax.fill_betweenx(y_vals, pos - kde_scaled, pos, alpha=0.7, color=color, edgecolor="white", linewidth=1.5)
+    # Draw half-violin (cloud) on TOP (above the boxplot)
+    ax.fill_between(
+        x_vals,
+        pos + cloud_offset,
+        pos + cloud_offset + kde_scaled,
+        alpha=0.7,
+        color=color,
+        edgecolor="white",
+        linewidth=1.5,
+    )
 
-    # Draw box plot in the middle (narrow)
-    bp = ax.boxplot([d], positions=[pos], widths=box_width, vert=True, patch_artist=True, showfliers=False, zorder=3)
+    # Draw horizontal box plot in the middle
+    bp = ax.boxplot([d], positions=[pos], widths=box_width, vert=False, patch_artist=True, showfliers=False, zorder=3)
 
     # Style box plot
     bp["boxes"][0].set_facecolor("white")
@@ -70,43 +85,50 @@ for i, (d, color) in enumerate(zip(data, colors, strict=True)):
     bp["boxes"][0].set_linewidth(2)
     bp["medians"][0].set_color("#333333")
     bp["medians"][0].set_linewidth(2.5)
-    bp["whiskers"][0].set_color("#333333")
-    bp["whiskers"][0].set_linewidth(1.5)
-    bp["whiskers"][1].set_color("#333333")
-    bp["whiskers"][1].set_linewidth(1.5)
-    bp["caps"][0].set_color("#333333")
-    bp["caps"][0].set_linewidth(1.5)
-    bp["caps"][1].set_color("#333333")
-    bp["caps"][1].set_linewidth(1.5)
+    for whisker in bp["whiskers"]:
+        whisker.set_color("#333333")
+        whisker.set_linewidth(1.5)
+    for cap in bp["caps"]:
+        cap.set_color("#333333")
+        cap.set_linewidth(1.5)
 
-    # Draw jittered points (rain) on the right side
-    jitter = np.random.uniform(-0.05, 0.05, len(d))
+    # Draw jittered points (rain) BELOW the boxplot
+    jitter = np.random.uniform(-0.06, 0.06, len(d))
     ax.scatter(
-        pos + jitter_offset + jitter, d, s=80, alpha=0.6, color=color, edgecolor="white", linewidth=0.5, zorder=2
+        d,
+        pos + rain_offset + jitter,
+        s=110,  # Increased from 80 for better visibility
+        alpha=0.6,
+        color=color,
+        edgecolor="white",
+        linewidth=0.5,
+        zorder=2,
     )
 
 # Styling
-ax.set_xticks([1, 2, 3])
-ax.set_xticklabels(categories, fontsize=18)
-ax.set_ylabel("Reaction Time (ms)", fontsize=20)
-ax.set_xlabel("Experimental Condition", fontsize=20)
+ax.set_yticks([1, 2, 3])
+ax.set_yticklabels(categories, fontsize=18)
+ax.set_xlabel("Reaction Time (ms)", fontsize=20)
+ax.set_ylabel("Experimental Condition", fontsize=20)
 ax.set_title("raincloud-basic · matplotlib · pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
 
-# Set y-axis range with padding
+# Set axis ranges with padding
 all_data = np.concatenate(data)
-ax.set_ylim(all_data.min() - 40, all_data.max() + 40)
-ax.set_xlim(0.3, 3.7)
+ax.set_xlim(all_data.min() - 50, all_data.max() + 50)
+ax.set_ylim(0.4, 3.8)
 
-# Subtle grid on y-axis only
-ax.yaxis.grid(True, alpha=0.3, linestyle="--")
+# Subtle grid on x-axis only
+ax.xaxis.grid(True, alpha=0.3, linestyle="--")
 ax.set_axisbelow(True)
 
-# Custom legend
+# Custom legend - positioned outside plot area
 legend_elements = [
     Patch(facecolor=c, edgecolor="white", alpha=0.7, label=cat) for c, cat in zip(colors, categories, strict=True)
 ]
-ax.legend(handles=legend_elements, fontsize=16, loc="upper right", framealpha=0.9, edgecolor="none")
+ax.legend(
+    handles=legend_elements, fontsize=16, loc="upper left", bbox_to_anchor=(1.02, 1), framealpha=0.9, edgecolor="none"
+)
 
 # Clean up spines
 ax.spines["top"].set_visible(False)

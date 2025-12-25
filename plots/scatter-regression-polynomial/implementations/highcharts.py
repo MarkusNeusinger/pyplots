@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-regression-polynomial: Scatter Plot with Polynomial Regression
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2025-12-25
+Library: highcharts unknown | Python 3.13.11
+Quality: 93/100 | Created: 2025-12-25
 """
 
 import tempfile

@@ -1,6 +1,6 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-clustered: Clustered Heatmap
-Library: pygal 3.1.0 | Python 3.13
+Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-25
 """
 

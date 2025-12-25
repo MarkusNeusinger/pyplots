@@ -50,12 +50,12 @@ for i, (condition, values) in enumerate(data.items()):
     mean_val = np.mean(values)
     std_val = np.std(values)
 
-    # Half-violin (cloud) - positioned on top (positive side)
+    # Half-violin (cloud) - positioned on top (positive side) - HORIZONTAL orientation
     fig.add_trace(
         go.Violin(
-            y=values,
-            x=[condition] * len(values),
-            side="positive",
+            x=values,  # Values on x-axis
+            y=[condition] * len(values),  # Categories on y-axis
+            side="positive",  # Cloud on top
             width=violin_width,
             line_color=color,
             fillcolor=color,
@@ -66,16 +66,17 @@ for i, (condition, values) in enumerate(data.items()):
             name=f"{condition} (Cloud)",
             legendgroup=condition,
             showlegend=True,
-            hoverinfo="y+name",
+            hoverinfo="x+name",
             hoveron="violins",
+            orientation="h",  # Horizontal orientation
         )
     )
 
     # Box plot - in the middle with custom hover
     fig.add_trace(
         go.Box(
-            y=values,
-            x=[condition] * len(values),
+            x=values,  # Values on x-axis
+            y=[condition] * len(values),  # Categories on y-axis
             width=box_width,
             marker_color=color,
             line_color="#333333",
@@ -84,6 +85,7 @@ for i, (condition, values) in enumerate(data.items()):
             name=f"{condition} (Stats)",
             legendgroup=condition,
             showlegend=False,
+            orientation="h",  # Horizontal orientation
             hovertemplate=(
                 f"<b>{condition}</b><br>"
                 f"Median: {median_val:.0f} ms<br>"
@@ -97,9 +99,9 @@ for i, (condition, values) in enumerate(data.items()):
     # Jittered strip points (rain) - on the bottom (negative side)
     fig.add_trace(
         go.Violin(
-            y=values,
-            x=[condition] * len(values),
-            side="negative",
+            x=values,  # Values on x-axis
+            y=[condition] * len(values),  # Categories on y-axis
+            side="negative",  # Rain below
             width=0,
             points="all",
             pointpos=-0.4,
@@ -110,23 +112,24 @@ for i, (condition, values) in enumerate(data.items()):
             name=f"{condition} (Rain)",
             legendgroup=condition,
             showlegend=False,
-            hovertemplate=f"<b>{condition}</b><br>Value: %{{y:.0f}} ms<extra></extra>",
+            orientation="h",  # Horizontal orientation
+            hovertemplate=f"<b>{condition}</b><br>Value: %{{x:.0f}} ms<extra></extra>",
         )
     )
 
-# Update layout for 4800x2700 output
+# Update layout for 4800x2700 output - HORIZONTAL orientation
 fig.update_layout(
     title=dict(
         text="raincloud-basic · plotly · pyplots.ai", font=dict(size=32, color="#333333"), x=0.5, xanchor="center"
     ),
-    xaxis=dict(
+    yaxis=dict(  # Categories on y-axis
         title=dict(text="Experimental Condition", font=dict(size=24)),
         tickfont=dict(size=20),
         categoryorder="array",
         categoryarray=conditions,
         showgrid=False,
     ),
-    yaxis=dict(
+    xaxis=dict(  # Values on x-axis
         title=dict(text="Reaction Time (ms)", font=dict(size=24)),
         tickfont=dict(size=20),
         gridcolor="rgba(0,0,0,0.1)",
@@ -136,7 +139,7 @@ fig.update_layout(
     template="plotly_white",
     plot_bgcolor="white",
     paper_bgcolor="white",
-    margin=dict(l=100, r=180, t=100, b=100),
+    margin=dict(l=180, r=180, t=100, b=100),
     violingap=0,
     violinmode="overlay",
     legend=dict(

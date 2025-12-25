@@ -1,0 +1,24 @@
+library: plotnine
+specification_id: bar-horizontal
+created: '2025-12-25T08:36:09Z'
+updated: '2025-12-25T08:42:57Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20502054038
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-horizontal/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-horizontal/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 97
+review:
+  strengths:
+  - Excellent use of plotnine grammar of graphics with proper layering (geom_bar +
+    geom_text + coord_flip)
+  - Data is properly sorted ascending so largest values appear at top after coord_flip
+  - Value labels positioned cleanly at bar ends with appropriate nudge
+  - Professional minimal theme with well-scaled text sizes for high-resolution output
+  - Realistic, relatable data context (programming language popularity)
+  weaknesses:
+  - Grid styling uses element_text instead of element_line for panel_grid_major_x
+    and panel_grid_minor (should be element_line(color=...))

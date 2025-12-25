@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-25
@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
+    coord_flip,
     element_blank,
     element_line,
     element_text,
@@ -19,7 +20,7 @@ from plotnine import (
     position_nudge,
     scale_color_manual,
     scale_fill_manual,
-    scale_x_discrete,
+    scale_x_continuous,
     theme,
     theme_minimal,
 )
@@ -37,7 +38,7 @@ treatment_a = np.random.normal(380, 50, 80)
 # Treatment B: bimodal distribution (some fast responders, some slow)
 treatment_b = np.concatenate([np.random.normal(350, 40, 50), np.random.normal(500, 45, 30)])
 
-# Build dataframe
+# Build dataframe with numeric x positions
 df = pd.DataFrame(
     {
         "condition": ["Control"] * len(control)
@@ -47,40 +48,40 @@ df = pd.DataFrame(
     }
 )
 
-# Set category order
-df["condition"] = pd.Categorical(df["condition"], categories=["Control", "Treatment A", "Treatment B"], ordered=True)
+# Map conditions to numeric positions (for coord_flip: higher = top)
+condition_map = {"Control": 2, "Treatment A": 1, "Treatment B": 0}
+df["x_pos"] = df["condition"].map(condition_map).astype(float)
 
-# Create numeric x positions with jitter for rain points
-np.random.seed(123)  # Different seed for jitter
-condition_map = {"Control": 0, "Treatment A": 1, "Treatment B": 2}
-df["x_numeric"] = df["condition"].map(condition_map).astype(float)
-# Add jitter and nudge left (-0.2)
-df["x_jittered"] = df["x_numeric"] + np.random.uniform(-0.08, 0.08, len(df)) - 0.2
+# Add jitter for rain points (below center)
+np.random.seed(123)
+df["x_rain"] = df["x_pos"] - 0.2 + np.random.uniform(-0.05, 0.05, len(df))
 
-# Colors
-colors = ["#306998", "#FFD43B", "#5BA85B"]
+# Colors - dictionary mapping for condition names
+colors = {"Control": "#306998", "Treatment A": "#FFD43B", "Treatment B": "#5BA85B"}
 
-# Create raincloud plot
-# Layout: violin (cloud) on right side, boxplot centered, jittered points (rain) on left
+# Create raincloud plot with horizontal orientation (coord_flip)
+# After flip: Cloud (violin) on TOP, boxplot centered, rain points BELOW
 plot = (
-    ggplot(df, aes(x="condition", y="reaction_time", fill="condition"))
-    # Half-violin (cloud) - nudged to the right
-    + geom_violin(position=position_nudge(x=0.2), width=0.5, trim=True, size=0.8, alpha=0.7, show_legend=False)
-    # Box plot - centered, narrow
+    ggplot(df, aes(x="x_pos", y="reaction_time", fill="condition", color="condition"))
+    # Half-violin (cloud) - nudged upward (becomes top after flip)
+    + geom_violin(position=position_nudge(x=0.2), width=0.45, trim=True, size=0.6, alpha=0.85, show_legend=False)
+    # Box plot - centered, narrow, white fill, grouped by condition
     + geom_boxplot(
-        width=0.12,
-        outlier_shape="",  # Hide outliers (shown in scatter)
+        aes(group="condition"),
+        width=0.1,
+        outlier_shape="",
         fill="white",
         color="#333333",
-        size=0.8,
+        size=0.6,
         alpha=0.95,
         show_legend=False,
     )
-    # Jittered points (rain) - using pre-computed positions on the left
-    + geom_point(aes(x="x_jittered", color="condition"), size=2.5, alpha=0.5, show_legend=False)
+    # Jittered points (rain) - using pre-computed positions below
+    + geom_point(aes(x="x_rain"), size=2, alpha=0.6, show_legend=False)
     + scale_fill_manual(values=colors)
     + scale_color_manual(values=colors)
-    + scale_x_discrete(limits=["Control", "Treatment A", "Treatment B"])
+    + scale_x_continuous(breaks=[0, 1, 2], labels=["Treatment B", "Treatment A", "Control"])
+    + coord_flip()
     + labs(x="Experimental Condition", y="Reaction Time (ms)", title="raincloud-basic · plotnine · pyplots.ai")
     + theme_minimal()
     + theme(
@@ -89,9 +90,9 @@ plot = (
         axis_title=element_text(size=20),
         axis_text=element_text(size=16),
         plot_title=element_text(size=24),
-        panel_grid_major_x=element_blank(),
+        panel_grid_major_y=element_blank(),
         panel_grid_minor=element_blank(),
-        panel_grid_major_y=element_line(color="#cccccc", size=0.5),
+        panel_grid_major_x=element_line(color="#cccccc", size=0.5),
         legend_position="none",
     )
 )

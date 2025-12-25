@@ -1,0 +1,24 @@
+library: letsplot
+specification_id: bar-horizontal
+created: '2025-12-25T08:36:18Z'
+updated: '2025-12-25T08:42:56Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20502056183
+issue: 0
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-horizontal/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-horizontal/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-horizontal/letsplot/plot.html
+quality_score: 98
+review:
+  strengths:
+  - Excellent use of lets-plot ggplot2 grammar with coord_flip for horizontal bars
+  - Clean professional appearance with theme_minimal and customized theme elements
+  - Real-world programming language survey data with realistic values
+  - Proper sorting (ascending) so largest bars appear at top when displayed
+  - Correct high-resolution export with scale=3 for 4800x2700 px output
+  - Good use of pd.Categorical to preserve sort order
+  weaknesses:
+  - Grid customization could be slightly more refined with lower alpha for vertical
+    grid lines

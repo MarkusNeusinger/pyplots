@@ -1,0 +1,25 @@
+library: plotly
+specification_id: bar-diverging
+created: '2025-12-25T22:47:36Z'
+updated: '2025-12-25T22:49:39Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20511948554
+issue: 2009
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-diverging/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-diverging/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-diverging/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent visual clarity with well-sized fonts and appropriate bar spacing
+  - Perfect implementation of diverging bar concept with clear zero baseline
+  - Data sorted by value enhances pattern recognition as recommended in spec
+  - Horizontal orientation ideal for displaying category labels
+  - Both PNG and HTML outputs for static and interactive viewing
+  - Blue/yellow color scheme is colorblind-accessible and visually appealing
+  weaknesses:
+  - Missing legend to explain color coding (blue=satisfied, yellow=dissatisfied)
+  - X-axis label could include units like Satisfaction Score (NPS-style -100 to +100)
+  - Data values could include more extreme scores closer to ±100 for fuller demonstration

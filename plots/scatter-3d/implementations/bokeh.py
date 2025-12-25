@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-3d: 3D Scatter Plot
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-25
@@ -80,20 +80,27 @@ source = ColumnDataSource(
     data={"x": x_proj_sorted, "y": z_proj_sorted, "size": sizes, "color": colors, "z_value": z_sorted}
 )
 
-# Create Bokeh figure
-p = figure(width=4800, height=2700, title="scatter-3d · bokeh · pyplots.ai", toolbar_location=None, tools="")
+# Create Bokeh figure with interactive tools (Bokeh strength)
+p = figure(
+    width=4800,
+    height=2700,
+    title="scatter-3d · bokeh · pyplots.ai",
+    toolbar_location="right",
+    tools="pan,wheel_zoom,box_zoom,reset,save",
+)
 
 # Draw scatter points with size variation for depth perception
 p.scatter(x="x", y="y", size="size", color="color", alpha=0.8, line_color="#306998", line_width=1, source=source)
 
-# Set appropriate ranges with padding
+# Set appropriate ranges with padding - balanced layout
 x_min, x_max = x_proj.min(), x_proj.max()
 y_min, y_max = z_proj.min(), z_proj.max()
-x_pad = (x_max - x_min) * 0.18
-y_pad = (y_max - y_min) * 0.18
+x_pad = (x_max - x_min) * 0.15
+y_pad = (y_max - y_min) * 0.15
 
-p.x_range = Range1d(x_min - x_pad, x_max + x_pad * 1.5)  # Extra padding on right for colorbar
-p.y_range = Range1d(y_min - y_pad * 1.3, y_max + y_pad)
+# Center the data in the plot area with balanced padding
+p.x_range = Range1d(x_min - x_pad * 1.8, x_max + x_pad * 1.2)
+p.y_range = Range1d(y_min - y_pad * 1.5, y_max + y_pad)
 
 # Hide default axes for cleaner 3D projection look
 p.xaxis.visible = False
@@ -193,22 +200,22 @@ p.patch(
     line_color=axis_color,
 )
 
-# Add axis labels using Label annotations
+# Add descriptive axis labels using Label annotations
 x_label = Label(
     x=x_axis_end_x + 0.35,
     y=x_axis_end_y - 0.15,
-    text="X",
-    text_font_size="56pt",
+    text="X (Feature 1)",
+    text_font_size="48pt",
     text_color="#333333",
     text_font_style="bold",
 )
 p.add_layout(x_label)
 
 y_label = Label(
-    x=y_axis_end_x - 0.6,
-    y=y_axis_end_y + 0.1,
-    text="Y",
-    text_font_size="56pt",
+    x=y_axis_end_x - 0.4,
+    y=y_axis_end_y - 0.4,
+    text="Y (Feature 2)",
+    text_font_size="48pt",
     text_color="#333333",
     text_font_style="bold",
 )
@@ -217,8 +224,8 @@ p.add_layout(y_label)
 z_label = Label(
     x=z_axis_end_x + 0.25,
     y=z_axis_end_y + 0.15,
-    text="Z",
-    text_font_size="56pt",
+    text="Z (Feature 3)",
+    text_font_size="48pt",
     text_color="#333333",
     text_font_style="bold",
 )
@@ -229,7 +236,7 @@ color_bar = ColorBar(
     color_mapper=color_mapper,
     width=60,
     location=(0, 0),
-    title="Z Value",
+    title="Z (Feature 3)",
     title_text_font_size="32pt",
     major_label_text_font_size="24pt",
     title_standoff=20,

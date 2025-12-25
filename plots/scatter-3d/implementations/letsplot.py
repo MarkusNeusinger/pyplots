@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-3d: 3D Scatter Plot
 Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 85/100 | Created: 2025-12-25
+Quality: 91/100 | Created: 2025-12-25
 """
 
 import numpy as np

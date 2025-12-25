@@ -1,0 +1,27 @@
+library: altair
+specification_id: bland-altman-basic
+created: '2025-12-25T13:17:25Z'
+updated: '2025-12-25T13:20:02Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20505628356
+issue: 2032
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bland-altman-basic/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bland-altman-basic/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bland-altman-basic/altair/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent implementation of all required Bland-Altman components (mean bias line,
+    limits of agreement, annotations)
+  - Clean declarative Altair code using proper layering of chart elements
+  - Good use of tooltips for interactive exploration of data points
+  - Realistic medical device validation scenario with appropriate blood pressure data
+  - Color scheme provides good contrast between data points (blue) and limit lines
+    (yellow)
+  - Annotations are well-positioned and clearly formatted with values
+  weaknesses:
+  - Grid configuration uses gridOpacity=0.3 which is acceptable but could have legend
+    explaining the reference lines for publication quality
+  - No formal legend element present, though annotations compensate for this

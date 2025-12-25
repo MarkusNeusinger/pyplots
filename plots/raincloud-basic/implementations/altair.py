@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-24
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-25
 """
 
 import altair as alt
@@ -29,31 +29,31 @@ data = pd.DataFrame(
     }
 )
 
-# Create jittered y positions for strip plot
+# Create jittered y positions for strip plot (rain below the cloud)
 np.random.seed(42)
-data["jitter"] = np.random.uniform(-0.15, 0.05, len(data))
+data["jitter"] = np.random.uniform(-0.25, -0.05, len(data))
 
 # Map conditions to numeric positions for layering
 condition_map = {"Control": 0, "Treatment A": 1, "Treatment B": 2}
 data["condition_num"] = data["condition"].map(condition_map)
-data["jitter_pos"] = data["condition_num"] + data["jitter"] + 0.25
+data["jitter_pos"] = data["condition_num"] + data["jitter"]
 
-# Half-violin (density estimate) - positioned to one side
+# Half-violin (cloud) - positioned to the RIGHT side (positive offset)
 violin = (
     alt.Chart(data)
     .transform_density(
         "reaction_time", as_=["reaction_time", "density"], groupby=["condition", "condition_num"], extent=[200, 600]
     )
     .transform_calculate(
-        # Scale density and offset to create half-violin on left side
+        # Scale density and offset to create half-violin on RIGHT side (cloud above)
         violin_width="datum.density * 150",
-        violin_pos="datum.condition_num - datum.density * 150",
+        violin_pos="datum.condition_num + datum.density * 150",
     )
     .mark_area(orient="horizontal", opacity=0.7)
     .encode(
         y=alt.Y("reaction_time:Q"),
-        x=alt.X("violin_pos:Q", axis=None),
-        x2="condition_num:Q",
+        x=alt.X("condition_num:Q", axis=None),
+        x2="violin_pos:Q",
         color=alt.Color(
             "condition:N",
             scale=alt.Scale(range=["#306998", "#FFD43B", "#4CAF50"]),
@@ -78,7 +78,7 @@ boxplot = (
     )
 )
 
-# Jittered strip plot (rain) - positioned to the right
+# Jittered strip plot (rain) - positioned to the LEFT (below the cloud)
 strip = (
     alt.Chart(data)
     .mark_circle(size=80, opacity=0.6)
@@ -89,9 +89,20 @@ strip = (
     )
 )
 
+# Create X-axis labels for categories at the bottom
+x_axis_labels = (
+    alt.Chart(pd.DataFrame({"condition": ["Control", "Treatment A", "Treatment B"], "condition_num": [0, 1, 2]}))
+    .mark_text(fontSize=20, fontWeight="bold", baseline="top")
+    .encode(
+        x=alt.X("condition_num:Q"),
+        y=alt.value(920),  # Position below the chart
+        text="condition:N",
+    )
+)
+
 # Combine all layers
 chart = (
-    alt.layer(violin, boxplot, strip)
+    alt.layer(violin, boxplot, strip, x_axis_labels)
     .properties(
         width=1600, height=900, title=alt.Title("raincloud-basic · altair · pyplots.ai", fontSize=28, anchor="middle")
     )

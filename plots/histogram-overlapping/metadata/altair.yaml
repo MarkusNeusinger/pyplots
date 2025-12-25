@@ -1,0 +1,23 @@
+library: altair
+specification_id: histogram-overlapping
+created: '2025-12-25T21:47:46Z'
+updated: '2025-12-25T21:50:06Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20511324965
+issue: 2010
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-overlapping/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-overlapping/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-overlapping/altair/plot.html
+quality_score: 97
+review:
+  strengths:
+  - Excellent use of Altair declarative grammar with proper encoding types (:Q, :N)
+  - Semi-transparent bars (opacity=0.5) allow clear visualization of overlapping regions
+  - Colorblind-friendly palette with good contrast between blue/yellow/green
+  - Clean KISS structure with reproducible random seed
+  - Tooltips enhance interactivity when viewed as HTML
+  - Proper use of stack=None to achieve true overlapping rather than stacked bars
+  - Grid styling is subtle and non-distracting with dashed lines
+  weaknesses: []

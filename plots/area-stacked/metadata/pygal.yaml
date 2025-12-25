@@ -1,0 +1,27 @@
+library: pygal
+specification_id: area-stacked
+created: '2025-12-25T17:38:22Z'
+updated: '2025-12-25T17:40:36Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20508665925
+issue: 2022
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stacked/pygal/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent stacked area visualization with clear separation of all four product
+    categories
+  - Realistic retail revenue data with convincing seasonal patterns (December peaks)
+  - Proper use of pygal StackedLine with fill=True for stacked areas
+  - Clean, well-structured code following KISS principles
+  - Good color palette with sufficient contrast between adjacent series
+  - Appropriate font sizing for 4800x2700 canvas
+  weaknesses:
+  - Legend placement in top-left corner overlaps with the plot area; legend_at_bottom=True
+    would be cleaner
+  - Grid lines could be more subtle (current y_guides are acceptable but could use
+    lower opacity)

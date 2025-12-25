@@ -1,0 +1,27 @@
+library: altair
+specification_id: residual-basic
+created: '2025-12-25T14:55:41Z'
+updated: '2025-12-25T14:57:55Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20506834462
+issue: 2030
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-basic/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-basic/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/residual-basic/altair/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Altair's transform_loess for the LOESS smoothed trend line -
+    a distinctive library feature
+  - Proper layering architecture with alt.layer combining zero line, scatter points,
+    and trend line
+  - Symmetric y-axis range (-6 to 6) around zero as recommended in spec
+  - Good heteroscedasticity pattern in data with intentional outliers for realistic
+    diagnostics
+  - Clean, readable code following KISS principles with proper data generation
+  weaknesses:
+  - Axis labels lack units (though for residuals this is often acceptable)
+  - Data scenario is generic rather than tied to a specific real-world regression
+    context

@@ -1,7 +1,7 @@
 """ pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 78/100 | Created: 2025-12-25
+Quality: 91/100 | Created: 2025-12-25
 """
 
 import numpy as np
@@ -26,13 +26,14 @@ data["Treatment B"] = np.append(data["Treatment B"], [480, 180])
 group_colors = ["#306998", "#FFD43B", "#4CAF50"]
 
 # Custom style for 4800x2700 px canvas - scaled up for visibility
+# Using very subtle grid lines (low alpha via lighter color)
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#999999",
-    guide_stroke_color="#cccccc",
+    guide_stroke_color="#e8e8e8",  # Very light guide lines for subtle grid
     colors=tuple(group_colors * 3) + ("#222222",) * 30,
     title_font_size=96,
     label_font_size=60,
@@ -55,6 +56,8 @@ chart = pygal.XY(
     x_title="Treatment Group",
     y_title="Reaction Time (ms)",
     show_legend=False,
+    legend_at_bottom=False,
+    legend_box_size=0,
     stroke=True,
     fill=True,
     dots_size=0,
@@ -124,13 +127,13 @@ for i, (category, values) in enumerate(data.items()):
     whisker_high = float(min(values.max(), q3 + 1.5 * iqr))
     box_data.append((center_x, median, q1, q3, whisker_low, whisker_high, group_colors[i]))
 
-# Add clouds (half-violins) - no labels since y-axis labels already show groups
+# Add clouds (half-violins) - using empty string for label to suppress legend
 for _category, cloud_points, _color in cloud_data:
-    chart.add(None, cloud_points, stroke=True, fill=True)
+    chart.add("", cloud_points, stroke=True, fill=True)
 
-# Add rain points - increased dots_size for visibility on 4800x2700 canvas
+# Add rain points - increased dots_size for better visibility on 4800x2700 canvas
 for _category, rain_points, _color in rain_data:
-    chart.add(None, rain_points, stroke=False, fill=False, dots_size=24)
+    chart.add("", rain_points, stroke=False, fill=False, dots_size=32)
 
 # Add box plots - vertical boxes centered at each group
 # Significantly increased line weights for 4800x2700 canvas
@@ -146,23 +149,23 @@ for center_x, median, q1, q3, whisker_low, whisker_high, _color in box_data:
         (center_x + box_width, q1),
         (center_x - box_width, q1),
     ]
-    chart.add(None, quartile_box, stroke=True, fill=False, show_dots=False, stroke_style={"width": 20})
+    chart.add("", quartile_box, stroke=True, fill=False, show_dots=False, stroke_style={"width": 20})
 
     # Median line (horizontal line within box) - thickest for emphasis
     median_line = [(center_x - box_width * 1.3, median), (center_x + box_width * 1.3, median)]
-    chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 28})
+    chart.add("", median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 28})
 
     # Whiskers (vertical lines from box to caps)
     whisker_bottom = [(center_x, whisker_low), (center_x, q1)]
     whisker_top = [(center_x, q3), (center_x, whisker_high)]
-    chart.add(None, whisker_bottom, stroke=True, fill=False, show_dots=False, stroke_style={"width": 14})
-    chart.add(None, whisker_top, stroke=True, fill=False, show_dots=False, stroke_style={"width": 14})
+    chart.add("", whisker_bottom, stroke=True, fill=False, show_dots=False, stroke_style={"width": 14})
+    chart.add("", whisker_top, stroke=True, fill=False, show_dots=False, stroke_style={"width": 14})
 
     # Whisker caps (horizontal lines at ends)
     cap_bottom = [(center_x - cap_width, whisker_low), (center_x + cap_width, whisker_low)]
     cap_top = [(center_x - cap_width, whisker_high), (center_x + cap_width, whisker_high)]
-    chart.add(None, cap_bottom, stroke=True, fill=False, show_dots=False, stroke_style={"width": 14})
-    chart.add(None, cap_top, stroke=True, fill=False, show_dots=False, stroke_style={"width": 14})
+    chart.add("", cap_bottom, stroke=True, fill=False, show_dots=False, stroke_style={"width": 14})
+    chart.add("", cap_top, stroke=True, fill=False, show_dots=False, stroke_style={"width": 14})
 
 # X-axis labels for treatment groups
 chart.x_labels = [

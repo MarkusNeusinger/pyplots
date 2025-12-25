@@ -1,0 +1,26 @@
+library: altair
+specification_id: count-basic
+created: '2025-12-25T12:41:48Z'
+updated: '2025-12-25T12:43:55Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20505207179
+issue: 2033
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/count-basic/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/count-basic/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/count-basic/altair/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent visual presentation with clear, readable text at all sizes
+  - Proper use of sorted bars (descending by frequency) as recommended in spec
+  - Count labels above bars enhance readability
+  - Good use of Altair declarative syntax for styling (cornerRadius, configure_axis)
+  - Clean, KISS-compliant code structure
+  - Appropriate color choice and grid styling
+  weaknesses:
+  - Pre-aggregates data manually instead of using Altair native count() aggregation
+    - the implementation creates a bar chart from pre-computed values rather than
+    demonstrating Altair automatic counting capability
+  - Y-axis tick marks are too granular (every 2 units) creating visual clutter

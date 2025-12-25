@@ -1,0 +1,27 @@
+library: plotly
+specification_id: box-notched
+created: '2025-12-25T19:52:57Z'
+updated: '2025-12-25T19:55:08Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20510123466
+issue: 2019
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/box-notched/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-notched/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/box-notched/plotly/plot.html
+quality_score: 93
+review:
+  strengths:
+  - Excellent visual clarity with properly sized text elements and well-chosen font
+    sizes
+  - Clear notch visualization that enables statistical comparison between groups
+  - Good data variety showing different distribution shapes, spreads, and outliers
+    across departments
+  - Realistic salary data context that demonstrates practical application
+  - Clean, well-structured code following KISS principles
+  weaknesses:
+  - Legend is disabled (showlegend=False) - while x-axis labels work, an explicit
+    legend would improve accessibility
+  - Could leverage Plotly interactive features more (custom hovertemplate showing
+    statistics)

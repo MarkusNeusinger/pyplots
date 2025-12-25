@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bland-altman-basic: Bland-Altman Agreement Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-25
@@ -33,11 +33,12 @@ custom_style = Style(
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
+    foreground_subtle="#999999",  # More visible grid lines (alpha ~0.4 equivalent)
+    guide_stroke_color="#666666",  # Grid line color with good visibility
     colors=("#306998", "#E74C3C", "#27AE60", "#8E44AD"),
     title_font_size=48,
-    label_font_size=36,
-    major_label_font_size=32,
+    label_font_size=40,  # Increased for better readability
+    major_label_font_size=38,  # Larger tick labels for 4800x2700 canvas
     legend_font_size=32,
     value_font_size=28,
     tooltip_font_size=24,
@@ -64,6 +65,7 @@ chart = pygal.XY(
     x_label_rotation=0,
     truncate_legend=-1,
     range=(lower_loa - 10, upper_loa + 10),
+    y_labels=[round(lower_loa, 1), -10, round(mean_diff, 1), 0, 10, round(upper_loa, 1)],
 )
 
 # Prepare scatter data points

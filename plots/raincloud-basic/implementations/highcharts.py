@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 raincloud-basic: Basic Raincloud Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 58/100 | Created: 2025-12-25
@@ -54,12 +54,13 @@ for data in all_data:
         }
     )
 
-# Create jittered scatter data (the "rain" - falls below the cloud)
+# Create jittered scatter data (the "rain" - falls LEFT of the cloud for vertical orientation)
 scatter_data = []
 for i, data in enumerate(all_data):
     for val in data:
         jitter = np.random.uniform(-0.08, 0.08)
-        scatter_data.append({"x": i + 0.25 + jitter, "y": float(val), "color": colors[i]})
+        # Rain on LEFT side (negative offset from category center)
+        scatter_data.append({"x": i - 0.25 + jitter, "y": float(val), "color": colors[i]})
 
 # Box plot series data with simplified fill colors
 box_series_data = []
@@ -77,6 +78,7 @@ for i, box in enumerate(box_data):
     )
 
 # Create polygon data for half-violin (the "cloud") - inline KDE
+# Cloud on RIGHT side for vertical orientation (rain falls from cloud, so cloud is RIGHT/TOP)
 violin_polygons = []
 for i, data in enumerate(all_data):
     # Inline KDE computation (Gaussian kernel)
@@ -92,13 +94,14 @@ for i, data in enumerate(all_data):
     density = density / (n * bandwidth * np.sqrt(2 * np.pi))
     density = density / density.max() * 0.35
 
-    # Create polygon points for filled half-violin (close the polygon)
+    # Create polygon points for filled half-violin on RIGHT side (close the polygon)
     polygon_points = []
+    # Right side: baseline at category, extend RIGHT (positive direction)
     for y, d in zip(y_range, density, strict=True):
-        polygon_points.append([float(i - d - 0.05), float(y)])
+        polygon_points.append([float(i + d + 0.05), float(y)])
     # Close polygon by going back along the baseline
     for y in reversed(y_range):
-        polygon_points.append([float(i - 0.05), float(y)])
+        polygon_points.append([float(i + 0.05), float(y)])
     # Close the polygon
     polygon_points.append(polygon_points[0])
     violin_polygons.append({"points": polygon_points, "color": colors[i]})
@@ -167,11 +170,16 @@ Highcharts.chart('container', {{
     }},
     legend: {{
         enabled: true,
-        itemStyle: {{ fontSize: '32px' }},
-        align: 'center',
-        verticalAlign: 'bottom',
-        layout: 'horizontal',
-        y: 40
+        itemStyle: {{ fontSize: '36px' }},
+        align: 'right',
+        verticalAlign: 'top',
+        layout: 'vertical',
+        x: -50,
+        y: 100,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        borderWidth: 1,
+        borderColor: '#cccccc',
+        padding: 20
     }},
     plotOptions: {{
         boxplot: {{
@@ -186,7 +194,7 @@ Highcharts.chart('container', {{
         }},
         scatter: {{
             marker: {{
-                radius: 14,
+                radius: 18,
                 symbol: 'circle'
             }}
         }},
@@ -212,7 +220,7 @@ Highcharts.chart('container', {{
             type: 'scatter',
             data: {json.dumps(scatter_data)},
             marker: {{
-                radius: 12,
+                radius: 16,
                 lineWidth: 2,
                 lineColor: 'rgba(0,0,0,0.4)'
             }},

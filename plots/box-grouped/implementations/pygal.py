@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 box-grouped: Grouped Box Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-25
@@ -43,7 +43,7 @@ subcategory_colors = ("#306998", "#E69F00", "#009E73")
 # Build full color tuple: repeat pattern for each department group
 all_colors = subcategory_colors * len(departments)
 
-# Custom style for large canvas
+# Custom style for large canvas with increased font sizes
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -51,45 +51,46 @@ custom_style = Style(
     foreground_strong="#333333",
     foreground_subtle="#666666",
     colors=all_colors,
-    title_font_size=64,
-    label_font_size=36,
-    major_label_font_size=32,
-    legend_font_size=40,
-    value_font_size=28,
+    title_font_size=72,
+    label_font_size=44,
+    major_label_font_size=40,
+    legend_font_size=48,
+    value_font_size=32,
     opacity=0.85,
     opacity_hover=1.0,
 )
 
-# Create box chart - legend disabled since pygal can't show only 3 of 9 series
-# The x-axis labels and color pattern clearly show the grouping structure
+# Create box chart with legend at bottom showing 3 subcategories
+# Use legend_at_bottom_columns=3 so each row shows Jr, Sr, Ld pattern
 chart = pygal.Box(
     width=4800,
     height=2700,
     style=custom_style,
     title="box-grouped · pygal · pyplots.ai",
-    x_title="Department (Junior | Senior | Lead)",
+    x_title="Department",
     y_title="Performance Score",
-    show_legend=False,
+    show_legend=True,
+    legend_at_bottom=True,
+    legend_at_bottom_columns=9,
+    legend_box_size=36,
+    truncate_legend=-1,
     show_y_guides=True,
     show_x_guides=False,
-    margin=60,
+    margin=80,
     box_mode="tukey",
     x_label_rotation=0,
 )
 
-# Add boxes ordered by department then experience level
-# Colors cycle: Junior=blue, Senior=orange, Lead=teal for each department
+# Add boxes in order: for each department, add Junior, Senior, Lead
+# Name series by experience level only - colors cycle with the pattern
 for dept in departments:
     for level in experience_levels:
         values = data[(dept, level)].tolist()
-        chart.add(f"{dept} - {level}", values)
+        chart.add(level, values)
 
-# X-axis labels: show department with experience level pattern
-# Pattern repeats: Jr, Sr, Ld for each department
-x_labels = []
-for dept in departments:
-    short = {"Engineering": "Eng", "Marketing": "Mkt", "Sales": "Sales"}[dept]
-    x_labels.extend([f"{short}-Jr", f"{short}-Sr", f"{short}-Ld"])
+# X-axis labels: show department name in center of each group
+# Use empty strings for non-center positions
+x_labels = ["", "Engineering", "", "", "Marketing", "", "", "Sales", ""]
 chart.x_labels = x_labels
 
 # Save outputs

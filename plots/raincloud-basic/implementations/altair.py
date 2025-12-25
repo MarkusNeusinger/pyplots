@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 raincloud-basic: Basic Raincloud Plot
-Library: altair | Python 3.13
-Quality: pending | Created: 2025-12-25
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 90/100 | Created: 2025-12-25
 """
 
 import altair as alt

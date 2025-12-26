@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 silhouette-basic: Silhouette Plot
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 85/100 | Created: 2025-12-26
+Quality: 88/100 | Created: 2025-12-26
 """
 
 import numpy as np

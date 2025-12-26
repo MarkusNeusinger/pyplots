@@ -1,26 +1,25 @@
 library: altair
 specification_id: bar-stacked
-created: '2025-12-25T08:35:46Z'
-updated: '2025-12-25T08:40:27Z'
+created: '2025-12-26T10:04:02Z'
+updated: '2025-12-26T10:08:45Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20502054311
-issue: 0
+workflow_run: 20520476835
+issue: 1947
 python_version: 3.13.11
 library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/altair/plot.html
-quality_score: 92
+quality_score: 93
 review:
   strengths:
   - Excellent use of Altair declarative grammar with proper encoding types (O, Q,
     N)
-  - Clean stacking implementation using Order encoding with custom sort
-  - White stroke separators enhance segment visibility
-  - Tooltips provide interactive data exploration
-  - Well-configured axis and legend font sizes for readability
-  - Realistic quarterly sales data with meaningful variation
+  - Colorblind-safe palette with good visual distinction between segments
+  - Total value labels above stacks as recommended in spec
+  - Clean white stroke separators between bar segments improve readability
+  - Tooltips add interactivity for HTML output
+  - Proper stacking order (largest category at bottom) using Order encoding
   weaknesses:
-  - Missing total value labels above each stack (mentioned in spec as consideration)
-  - Could use a more colorblind-optimized palette
-  - Legend configuration could be refined
+  - Legend positioned slightly far from the chart area, creating visual separation
+  - Could use Altair selection features for interactive highlighting

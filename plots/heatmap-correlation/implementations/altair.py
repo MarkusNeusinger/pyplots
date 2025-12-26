@@ -1,7 +1,7 @@
 """ pyplots.ai
 heatmap-correlation: Correlation Matrix Heatmap
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-25
+Quality: 92/100 | Created: 2025-12-26
 """
 
 import altair as alt
@@ -41,9 +41,9 @@ base = alt.Chart(df).encode(
         "Variable 1:N",
         title=None,
         sort=variables,
-        axis=alt.Axis(labelAngle=-45, labelFontSize=16, labelFontWeight="bold"),
+        axis=alt.Axis(labelAngle=0, labelFontSize=15, labelFontWeight="bold"),
     ),
-    y=alt.Y("Variable 2:N", title=None, sort=variables, axis=alt.Axis(labelFontSize=16, labelFontWeight="bold")),
+    y=alt.Y("Variable 2:N", title=None, sort=variables, axis=alt.Axis(labelFontSize=15, labelFontWeight="bold")),
 )
 
 # Heatmap rectangles
@@ -52,7 +52,7 @@ heatmap = base.mark_rect(stroke="white", strokeWidth=2).encode(
         "Correlation:Q",
         scale=alt.Scale(scheme="redblue", domain=[-1, 1], reverse=True),
         legend=alt.Legend(
-            title="Correlation", titleFontSize=18, labelFontSize=14, gradientLength=400, gradientThickness=25
+            title="Correlation", titleFontSize=20, labelFontSize=16, gradientLength=500, gradientThickness=30
         ),
     )
 )
@@ -77,7 +77,7 @@ chart = (
     .configure_axis(domain=False, ticks=False)
 )
 
-# Save as PNG (700 * 3 = 2100, plus padding for labels/title ≈ 3600x3600)
+# Save as PNG (square format ~3600x3600)
 chart.save("plot.png", scale_factor=5.0)
 
 # Save as HTML for interactivity

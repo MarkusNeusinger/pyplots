@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 silhouette-basic: Silhouette Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 86/100 | Created: 2025-12-26
@@ -28,8 +28,9 @@ cluster_0 = np.clip(np.random.beta(5, 2, 50) * 0.8 + 0.2, -1, 1)
 # Cluster 1: Moderate separation (mix of high and medium values)
 cluster_1 = np.clip(np.random.beta(4, 3, 50) * 0.9 + 0.05, -1, 1)
 
-# Cluster 2: Some overlap (wider distribution, a few negative values)
-cluster_2 = np.clip(np.random.beta(3, 2, 50) * 1.1 - 0.1, -1, 1)
+# Cluster 2: Some overlap (wider distribution, includes negative values for misclassified samples)
+cluster_2_base = np.random.beta(3, 2, 50) * 1.1 - 0.3  # Shift down to get negatives
+cluster_2 = np.clip(cluster_2_base, -1, 1)
 
 all_silhouette_vals = np.concatenate([cluster_0, cluster_1, cluster_2])
 avg_silhouette = float(np.mean(all_silhouette_vals))
@@ -52,6 +53,7 @@ chart.options.chart = {
     "backgroundColor": "#ffffff",
     "marginLeft": 180,
     "marginRight": 150,
+    "marginBottom": 120,
 }
 
 # Title
@@ -118,9 +120,9 @@ chart.options.x_axis = {
 
 # Y-axis (horizontal in bar chart - this is the silhouette score axis)
 chart.options.y_axis = {
-    "title": {"text": "Silhouette Coefficient", "style": {"fontSize": "28px"}},
+    "title": {"text": "Silhouette Coefficient", "style": {"fontSize": "28px"}, "margin": 20},
     "labels": {"style": {"fontSize": "22px"}},
-    "min": -0.2,
+    "min": -0.3,
     "max": 1.0,
     "gridLineWidth": 1,
     "gridLineColor": "rgba(0, 0, 0, 0.1)",
@@ -133,8 +135,10 @@ chart.options.y_axis = {
             "label": {
                 "text": f"Average: {avg_silhouette:.3f}",
                 "style": {"fontSize": "24px", "fontWeight": "bold", "color": "#E74C3C"},
-                "align": "right",
-                "x": -10,
+                "align": "left",
+                "rotation": 0,
+                "y": -10,
+                "x": 5,
             },
             "zIndex": 5,
         },
@@ -142,10 +146,21 @@ chart.options.y_axis = {
     ],
 }
 
+# Tooltip for interactive features
+chart.options.tooltip = {
+    "enabled": True,
+    "headerFormat": "",
+    "pointFormat": '<span style="color:{point.color}">\u25cf</span> <b>{series.name}</b><br/>Silhouette Score: <b>{point.y:.3f}</b>',
+    "style": {"fontSize": "20px"},
+}
+
 # Plot options
 chart.options.plot_options = {
     "bar": {"stacking": None, "groupPadding": 0, "pointPadding": 0, "borderWidth": 0},
-    "series": {"animation": False},
+    "series": {
+        "animation": False,
+        "states": {"hover": {"enabled": True, "brightness": 0.15}, "inactive": {"opacity": 0.5}},
+    },
 }
 
 # Legend

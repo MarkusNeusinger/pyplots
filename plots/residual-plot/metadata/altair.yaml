@@ -1,0 +1,29 @@
+library: altair
+specification_id: residual-plot
+created: '2025-12-26T19:35:59Z'
+updated: '2025-12-26T19:41:11Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20528204950
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-plot/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-plot/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/residual-plot/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of all specification requirements including zero reference
+    line, LOESS smoothing, ±2σ bands, and outlier highlighting
+  - Clear demonstration of non-linear residual pattern through LOESS line - educationally
+    valuable
+  - Strong colorblind-safe palette with Python logo colors (blue/yellow)
+  - Good use of Altair declarative layering for combining multiple visual elements
+  - Realistic housing price scenario makes the plot immediately comprehensible
+  - Proper title format and descriptive axis labels with units
+  weaknesses:
+  - Legend placement is slightly isolated from the main chart area - could be positioned
+    closer
+  - Points use outlined circles which can be slightly less visible than filled circles
+    at smaller sizes
+  - The grid lines behind the ±2σ dashed lines create slight visual noise

@@ -1,10 +1,8 @@
-""" pyplots.ai
+"""pyplots.ai
 alluvial-basic: Basic Alluvial Diagram
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Library: pygal | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
-
-import re
 
 import cairosvg
 import numpy as np
@@ -98,63 +96,44 @@ flows = [
     },
 ]
 
-# Custom style
+# Custom style for text elements
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=tuple(party_colors.values()),
     title_font_size=72,
-    label_font_size=48,
-    major_label_font_size=44,
-    legend_font_size=44,
-    value_font_size=36,
-    opacity=0.85,
 )
 
-# Create base XY chart for layout
+# Create minimal chart just for title rendering
 chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
     title="alluvial-basic · pygal · pyplots.ai",
-    show_legend=True,
+    show_legend=False,  # Remove redundant legend - party labels on sides are clearer
     show_x_guides=False,
     show_y_guides=False,
     show_x_labels=False,
     show_y_labels=False,
-    x_title="",
-    y_title="",
     dots_size=0,
     stroke=False,
-    legend_at_bottom=True,
-    legend_at_bottom_columns=4,
-    legend_box_size=28,
-    range=(0, 110),
+    range=(0, 100),
     xrange=(0, 100),
-    truncate_legend=-1,
 )
 
-# Add legend entries for each party (invisible points, just for legend)
-# Use coordinates outside the visible area to hide the "No data" message
-for party in parties:
-    chart.add(party, [(-10, -10)])
+# Add empty data to avoid "No data" message
+chart.add("", [(50, 50)])
 
 # Render base SVG
-chart.render_to_file("plot.svg")
-
-# Read SVG and add alluvial diagram elements
-with open("plot.svg", "r") as f:
-    svg_content = f.read()
+base_svg = chart.render().decode("utf-8")
 
 # SVG coordinate mapping
-# Pygal chart area is approximately 300-4500 in x, 300-2200 in y
 margin_left = 600
 margin_right = 600
 margin_top = 400
-margin_bottom = 500
+margin_bottom = 350
 chart_width = 4800 - margin_left - margin_right
 chart_height = 2700 - margin_top - margin_bottom
 
@@ -168,7 +147,7 @@ total_height = chart_height
 node_positions = {}  # {(year_idx, party): (y_top, y_bottom)}
 
 # Build SVG elements for nodes and flows
-alluvial_svg = ""
+alluvial_svg = '<g id="alluvial-diagram">'
 
 # Calculate node positions and draw bars
 for year_idx, year in enumerate(years):
@@ -185,34 +164,34 @@ for year_idx, year in enumerate(years):
 
         # Draw rectangle for this party at this year
         alluvial_svg += f'''
-  <rect x="{x - bar_width / 2:.0f}" y="{y_top:.0f}" width="{bar_width:.0f}" height="{height:.0f}"
-        fill="{party_colors[party]}" stroke="white" stroke-width="3"/>'''
+    <rect x="{x - bar_width / 2:.0f}" y="{y_top:.0f}" width="{bar_width:.0f}" height="{height:.0f}"
+          fill="{party_colors[party]}" stroke="white" stroke-width="3"/>'''
 
         y_top = y_bottom
 
     # Add year label at bottom
     alluvial_svg += f'''
-  <text x="{x:.0f}" y="{margin_top + total_height + 80:.0f}" text-anchor="middle"
-        font-size="52" font-weight="bold" font-family="DejaVu Sans, sans-serif"
-        fill="#333333">{year}</text>'''
+    <text x="{x:.0f}" y="{margin_top + total_height + 80:.0f}" text-anchor="middle"
+          font-size="52" font-weight="bold" font-family="DejaVu Sans, sans-serif"
+          fill="#333333">{year}</text>'''
 
-# Add party labels on left side
+# Add party labels on left side (primary labels - no legend needed)
 for party in parties:
     y_top, y_bottom = node_positions[(0, party)]
     y_center = (y_top + y_bottom) / 2
     alluvial_svg += f'''
-  <text x="{x_positions[0] - bar_width / 2 - 25:.0f}" y="{y_center:.0f}" text-anchor="end"
-        font-size="42" font-weight="bold" font-family="DejaVu Sans, sans-serif"
-        fill="{party_colors[party]}" dominant-baseline="middle">{party}</text>'''
+    <text x="{x_positions[0] - bar_width / 2 - 30:.0f}" y="{y_center:.0f}" text-anchor="end"
+          font-size="44" font-weight="bold" font-family="DejaVu Sans, sans-serif"
+          fill="{party_colors[party]}" dominant-baseline="middle">{party}</text>'''
 
 # Add party labels on right side
 for party in parties:
     y_top, y_bottom = node_positions[(n_years - 1, party)]
     y_center = (y_top + y_bottom) / 2
     alluvial_svg += f'''
-  <text x="{x_positions[-1] + bar_width / 2 + 25:.0f}" y="{y_center:.0f}" text-anchor="start"
-        font-size="42" font-weight="bold" font-family="DejaVu Sans, sans-serif"
-        fill="{party_colors[party]}" dominant-baseline="middle">{party}</text>'''
+    <text x="{x_positions[-1] + bar_width / 2 + 30:.0f}" y="{y_center:.0f}" text-anchor="start"
+          font-size="44" font-weight="bold" font-family="DejaVu Sans, sans-serif"
+          fill="{party_colors[party]}" dominant-baseline="middle">{party}</text>'''
 
 # Draw flows between consecutive time points
 for flow_idx, flow_dict in enumerate(flows):
@@ -258,27 +237,25 @@ for flow_idx, flow_dict in enumerate(flows):
         )
 
         alluvial_svg += f'''
-  <path d="{path_d}" fill="{party_colors[source_party]}" fill-opacity="0.35" stroke="none"/>'''
+    <path d="{path_d}" fill="{party_colors[source_party]}" fill-opacity="0.35" stroke="none"/>'''
 
         # Update offsets
         source_offsets[source_party] = y0_bottom
         target_offsets[target_party] = y1_bottom
 
-# Add subtitle
-subtitle_y = margin_top + total_height + 160
+# Add subtitle explaining the visualization
+subtitle_y = margin_top + total_height + 150
 alluvial_svg += f'''
-  <text x="2400" y="{subtitle_y:.0f}" text-anchor="middle"
-        font-size="36" font-style="italic" font-family="DejaVu Sans, sans-serif"
-        fill="#666666">Flow width represents proportion of voters transitioning between parties</text>'''
+    <text x="2400" y="{subtitle_y:.0f}" text-anchor="middle"
+          font-size="36" font-style="italic" font-family="DejaVu Sans, sans-serif"
+          fill="#666666">Voter Migration Between Political Parties (Millions of Voters)</text>'''
 
-# Remove "No data" text from SVG
-svg_content = re.sub(r"<text[^>]*>No data</text>", "", svg_content)
+alluvial_svg += "\n</g>"
 
-# Insert alluvial elements before the legend (find the title group and insert after plot area)
-# Insert before closing </svg> tag
-svg_with_alluvial = svg_content.replace("</svg>", f"{alluvial_svg}\n</svg>")
+# Insert alluvial elements before closing </svg> tag
+svg_with_alluvial = base_svg.replace("</svg>", f"{alluvial_svg}\n</svg>")
 
-# Save modified SVG
+# Save SVG
 with open("plot.svg", "w") as f:
     f.write(svg_with_alluvial)
 

@@ -1,0 +1,25 @@
+library: plotly
+specification_id: line-confidence
+created: '2025-12-26T16:13:30Z'
+updated: '2025-12-26T16:16:18Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20525432844
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-confidence/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-confidence/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-confidence/plotly/plot.html
+quality_score: 93
+review:
+  strengths:
+  - Excellent visual clarity with well-sized fonts and clear color contrast
+  - Realistic temperature forecast scenario that demonstrates the plot type perfectly
+  - Widening confidence interval over time shows thoughtful data modeling
+  - Clean implementation following KISS principles
+  - Proper use of toself fill for creating the confidence band polygon
+  - Good use of semi-transparent fill (alpha 0.25) as recommended in spec
+  weaknesses:
+  - Legend in upper-left overlaps slightly with the confidence band at its peak
+  - Could leverage Plotly-specific features like custom hover templates to show exact
+    values on mouseover

@@ -1,0 +1,30 @@
+library: seaborn
+specification_id: calibration-curve
+created: '2025-12-26T19:38:38Z'
+updated: '2025-12-26T19:46:07Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20528202060
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent implementation of calibration curves comparing three different classifiers
+    with distinct calibration behaviors
+  - Proper use of seaborn lineplot and histplot functions with the whitegrid theme
+  - 'Includes all spec requirements: diagonal reference line, 10 bins, Brier scores,
+    histogram subplot, and multi-model comparison'
+  - Good color choices with Python Blue and Yellow plus a distinguishable brown
+  - Well-sized markers and line widths make the curves easy to follow
+  - Title follows the exact required format
+  weaknesses:
+  - Histogram legend in the right panel overlaps slightly with the histogram bars
+    at the top
+  - The brown color for underconfident model could be more distinct from the yellow
+    overconfident model
+  - Could use seaborn built-in statistical features more extensively such as confidence
+    bands

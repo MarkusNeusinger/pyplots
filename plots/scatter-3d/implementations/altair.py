@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-3d: 3D Scatter Plot
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 90/100 | Created: 2025-12-25
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import altair as alt
@@ -31,7 +31,7 @@ for i, (cx, cy, cz) in enumerate(centers):
 
 df = pd.concat(clusters, ignore_index=True)
 
-# 3D to 2D projection (elevation=25, azimuth=35) for better depth perception
+# 3D to 2D isometric projection (elevation=25°, azimuth=35°)
 elev_rad = np.radians(25)
 azim_rad = np.radians(35)
 
@@ -56,22 +56,12 @@ scatter = (
     alt.Chart(df)
     .mark_circle(size=280, strokeWidth=1.5, stroke="white")
     .encode(
-        x=alt.X("x_proj:Q", axis=alt.Axis(title="X-axis (isometric projection)", labelFontSize=18, titleFontSize=22)),
-        y=alt.Y(
-            "z_proj:Q", axis=alt.Axis(title="Z-axis (Y encodes depth via opacity)", labelFontSize=18, titleFontSize=22)
-        ),
+        x=alt.X("x_proj:Q", axis=alt.Axis(title="Projected X", labelFontSize=18, titleFontSize=22)),
+        y=alt.Y("z_proj:Q", axis=alt.Axis(title="Projected Z", labelFontSize=18, titleFontSize=22)),
         color=alt.Color(
             "cluster:N",
             scale=alt.Scale(domain=["Cluster 1", "Cluster 2", "Cluster 3"], range=["#306998", "#FFD43B", "#E07B39"]),
-            legend=alt.Legend(
-                title="Cluster",
-                titleFontSize=20,
-                labelFontSize=16,
-                orient="none",
-                legendX=1300,
-                legendY=100,
-                direction="vertical",
-            ),
+            legend=alt.Legend(title="Cluster", titleFontSize=20, labelFontSize=16, orient="right"),
         ),
         opacity=alt.Opacity("opacity:Q", legend=None),
         order=alt.Order("depth:Q", sort="ascending"),
@@ -95,7 +85,7 @@ chart = (
         height=900,
         title=alt.Title(
             text="scatter-3d · altair · pyplots.ai",
-            subtitle="Isometric 3D projection: X/Z shown on axes, Y mapped to depth (opacity)",
+            subtitle="Isometric projection with depth-based opacity",
             fontSize=28,
             subtitleFontSize=18,
             subtitleColor="#666666",

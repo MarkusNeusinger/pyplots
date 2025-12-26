@@ -1,7 +1,7 @@
 """ pyplots.ai
 violin-split: Split Violin Plot
 Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-25
+Quality: 92/100 | Created: 2025-12-26
 """
 
 import numpy as np
@@ -107,9 +107,11 @@ plot = (
     )
     # Color scale: Python Blue for Before, Python Yellow for After
     + scale_fill_manual(values=["#FFD43B", "#306998"], name="Period")  # noqa: F405
+    # Set y-axis limits to match data range (satisfaction scores 0-100)
+    + scale_y_continuous(limits=[15, 105])  # noqa: F405
     # Labels
     + labs(  # noqa: F405
-        x="Department", y="Satisfaction Score (0-100)", title="violin-split \u00b7 letsplot \u00b7 pyplots.ai"
+        x="Department", y="Satisfaction Score (0-100)", title="violin-split · letsplot · pyplots.ai"
     )
     # Theme
     + theme_minimal()  # noqa: F405
@@ -124,7 +126,7 @@ plot = (
         legend_position="right",
         panel_grid_major_x=element_blank(),  # noqa: F405
         panel_grid_minor=element_blank(),  # noqa: F405
-        panel_grid_major_y=element_line(color="rgba(0, 0, 0, 0.15)", size=0.5),  # noqa: F405
+        panel_grid_major_y=element_line(color="rgba(0, 0, 0, 0.3)", size=0.5),  # noqa: F405
     )
     + ggsize(1600, 900)  # noqa: F405
 )

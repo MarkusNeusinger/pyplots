@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 alluvial-basic: Basic Alluvial Diagram
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-24
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import plotly.graph_objects as go
@@ -79,6 +79,7 @@ sources = []
 targets = []
 values = []
 link_colors = []
+link_customdata = []
 
 for src_time, src_cat, tgt_time, tgt_cat, value in flows_data:
     src_idx = src_time * 4 + src_cat
@@ -86,6 +87,10 @@ for src_time, src_cat, tgt_time, tgt_cat, value in flows_data:
     sources.append(src_idx)
     targets.append(tgt_idx)
     values.append(value)
+    # Custom data for hover template
+    link_customdata.append(
+        [categories[src_cat], time_points[src_time], categories[tgt_cat], time_points[tgt_time], value]
+    )
     # Use source category color with transparency for links
     base_color = category_colors[categories[src_cat]]
     # Convert hex to rgba with transparency
@@ -107,8 +112,18 @@ fig = go.Figure(
                 color=node_colors,
                 x=x_positions,
                 y=y_positions,
+                hovertemplate="<b>%{label}</b><br>Voters: %{value:,}<extra></extra>",
             ),
-            link=dict(source=sources, target=targets, value=values, color=link_colors),
+            link=dict(
+                source=sources,
+                target=targets,
+                value=values,
+                color=link_colors,
+                customdata=link_customdata,
+                hovertemplate="<b>%{customdata[0]}</b> (%{customdata[1]})<br>"
+                + "→ <b>%{customdata[2]}</b> (%{customdata[3]})<br>"
+                + "Voters: <b>%{value:,}</b><extra></extra>",
+            ),
         )
     ]
 )
@@ -117,6 +132,19 @@ fig = go.Figure(
 for i, year in enumerate(time_points):
     fig.add_annotation(
         x=i / 3, y=1.08, text=f"<b>{year}</b>", showarrow=False, font=dict(size=26, color="#333333"), xanchor="center"
+    )
+
+# Add legend using invisible scatter traces
+for cat, color in category_colors.items():
+    fig.add_trace(
+        go.Scatter(
+            x=[None],
+            y=[None],
+            mode="markers",
+            marker=dict(size=18, color=color, symbol="square"),
+            name=cat,
+            showlegend=True,
+        )
     )
 
 # Update layout
@@ -130,9 +158,14 @@ fig.update_layout(
     ),
     font=dict(size=18, color="#333333"),
     template="plotly_white",
-    margin=dict(l=80, r=80, t=120, b=60),
+    margin=dict(l=40, r=40, t=120, b=80),
     paper_bgcolor="white",
     plot_bgcolor="white",
+    legend=dict(
+        orientation="h", yanchor="bottom", y=-0.06, xanchor="center", x=0.5, font=dict(size=18), itemsizing="constant"
+    ),
+    xaxis=dict(visible=False),
+    yaxis=dict(visible=False),
 )
 
 # Save as PNG

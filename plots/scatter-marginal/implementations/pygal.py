@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-marginal: Scatter Plot with Marginal Distributions
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-26
@@ -18,21 +18,31 @@ n_points = 150
 x = np.random.randn(n_points) * 15 + 50
 y = x * 0.6 + np.random.randn(n_points) * 12 + 20
 
-# Calculate histogram data for marginals
-n_bins = 15
+# Calculate correlation for annotation
+correlation = np.corrcoef(x, y)[0, 1]
+
+# Calculate histogram data for marginals with better bin alignment
+n_bins = 12  # Fewer bins for cleaner display
 x_hist, x_edges = np.histogram(x, bins=n_bins)
 y_hist, y_edges = np.histogram(y, bins=n_bins)
 
-# Dimensions for layout
+# Dimensions for layout - optimized spacing
 total_width = 4800
 total_height = 2700
-margin_plot_size = 500
-title_height = 120
-gap = 20
+margin_plot_size = 450  # Slightly smaller marginals
+title_height = 100
+gap = 15
+corner_size = margin_plot_size  # Size for corner annotation
 
 # Calculate main scatter dimensions
 scatter_width = total_width - margin_plot_size - gap * 3
 scatter_height = total_height - margin_plot_size - title_height - gap * 3
+
+# Shared margins for alignment
+left_margin = 100
+bottom_margin = 80
+top_margin = 20
+right_margin = 20
 
 # Custom style for main scatter
 scatter_style = Style(
@@ -53,7 +63,7 @@ scatter_style = Style(
     major_guide_stroke_color="#cccccc",
 )
 
-# Custom style for marginal histograms
+# Custom style for marginal histograms - larger fonts for readability
 marginal_style = Style(
     background="#ffffff",
     plot_background="#f8f8f8",
@@ -62,9 +72,9 @@ marginal_style = Style(
     foreground_subtle="#666666",
     colors=("#306998",),
     title_font_size=32,
-    label_font_size=28,
-    major_label_font_size=26,
-    legend_font_size=26,
+    label_font_size=32,
+    major_label_font_size=30,
+    legend_font_size=28,
     opacity=0.75,
     guide_stroke_color="#e0e0e0",
 )
@@ -84,10 +94,10 @@ scatter = pygal.XY(
     x_label_rotation=0,
     truncate_label=-1,
     explicit_size=True,
-    margin_top=30,
-    margin_right=30,
-    margin_bottom=80,
-    margin_left=100,
+    margin_top=top_margin,
+    margin_right=right_margin,
+    margin_bottom=bottom_margin,
+    margin_left=left_margin,
 )
 
 # Add scatter data
@@ -95,6 +105,7 @@ scatter_points = [(float(xi), float(yi)) for xi, yi in zip(x, y, strict=True)]
 scatter.add("Data", scatter_points)
 
 # Create top marginal histogram (X distribution)
+# Use fewer Y-labels to reduce density
 x_margin = pygal.Bar(
     width=scatter_width,
     height=margin_plot_size,
@@ -104,12 +115,14 @@ x_margin = pygal.Bar(
     show_y_labels=True,
     show_y_guides=True,
     show_x_guides=False,
-    margin_top=30,
-    margin_right=30,
-    margin_bottom=30,
-    margin_left=100,
+    margin_top=top_margin,
+    margin_right=right_margin,
+    margin_bottom=20,
+    margin_left=left_margin,
     explicit_size=True,
-    spacing=4,
+    spacing=3,
+    y_labels_major_count=4,  # Show only 4 major Y labels to reduce density
+    show_minor_y_labels=False,  # Hide minor labels
 )
 x_margin.add("X Distribution", [float(h) for h in x_hist])
 
@@ -123,12 +136,12 @@ y_margin = pygal.HorizontalBar(
     show_y_labels=False,
     show_y_guides=False,
     show_x_guides=False,
-    margin_top=30,
-    margin_right=40,
-    margin_bottom=80,
+    margin_top=top_margin,
+    margin_right=30,
+    margin_bottom=bottom_margin,
     margin_left=10,
     explicit_size=True,
-    spacing=4,
+    spacing=3,
 )
 # Reverse order to match scatter Y axis orientation (pygal HorizontalBar goes top-to-bottom)
 y_margin.add("Y Distribution", [float(h) for h in y_hist[::-1]])
@@ -146,7 +159,7 @@ y_margin_img = Image.open(io.BytesIO(y_margin_png))
 # Create final composite image
 final_img = Image.new("RGB", (total_width, total_height), "white")
 
-# Calculate positions
+# Calculate positions - aligned for better visual coherence
 scatter_x = gap
 scatter_y = title_height + margin_plot_size + gap
 x_margin_x = gap
@@ -159,20 +172,44 @@ final_img.paste(x_margin_img, (x_margin_x, x_margin_y))
 final_img.paste(y_margin_img, (y_margin_x, y_margin_y))
 final_img.paste(scatter_img, (scatter_x, scatter_y))
 
-# Add title
+# Add title and corner annotation
 draw = ImageDraw.Draw(final_img)
 title_text = "scatter-marginal · pygal · pyplots.ai"
 try:
-    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 60)
+    title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 60)
+    stats_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 36)
+    stats_font_bold = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 42)
 except OSError:
-    font = ImageFont.load_default()
+    title_font = ImageFont.load_default()
+    stats_font = ImageFont.load_default()
+    stats_font_bold = ImageFont.load_default()
 
-# Get text bounding box for centering
-bbox = draw.textbbox((0, 0), title_text, font=font)
+# Get text bounding box for centering title
+bbox = draw.textbbox((0, 0), title_text, font=title_font)
 text_width = bbox[2] - bbox[0]
 text_x = (total_width - text_width) // 2
-text_y = 40
-draw.text((text_x, text_y), title_text, fill="#333333", font=font)
+text_y = 30
+draw.text((text_x, text_y), title_text, fill="#333333", font=title_font)
+
+# Add statistics in the corner space (top-right where marginal charts don't overlap)
+corner_x = y_margin_x + 30
+corner_y = title_height + 40
+corner_width = margin_plot_size - 60
+corner_height = margin_plot_size - 60
+
+# Draw subtle background for stats box
+stats_box = [(corner_x, corner_y), (corner_x + corner_width, corner_y + corner_height)]
+draw.rounded_rectangle(stats_box, radius=15, fill="#f5f5f5", outline="#e0e0e0", width=2)
+
+# Add statistics text
+stats_title = "Statistics"
+draw.text((corner_x + 40, corner_y + 30), stats_title, fill="#333333", font=stats_font_bold)
+
+stats_lines = [f"n = {n_points}", f"r = {correlation:.3f}", f"X mean: {np.mean(x):.1f}", f"Y mean: {np.mean(y):.1f}"]
+line_y = corner_y + 100
+for line in stats_lines:
+    draw.text((corner_x + 40, line_y), line, fill="#555555", font=stats_font)
+    line_y += 55
 
 # Save final image
 final_img.save("plot.png", "PNG")

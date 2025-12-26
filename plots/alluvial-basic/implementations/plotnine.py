@@ -1,7 +1,7 @@
 """ pyplots.ai
 alluvial-basic: Basic Alluvial Diagram
 Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Quality: 91/100 | Created: 2025-12-26
 """
 
 import sys
@@ -158,7 +158,10 @@ for (t, party), pos in node_positions.items():
 nodes_df = pd.DataFrame(node_data)
 
 # Build flow polygons between adjacent time points
+# Filter out very small transitions (< 3 voters) to improve clarity
 flow_polygons = []
+min_voters_for_flow = 3
+
 for _, row in transitions.iterrows():
     from_t = row["from_time"]
     to_t = row["to_time"]
@@ -166,7 +169,21 @@ for _, row in transitions.iterrows():
     to_party = row["to_party"]
     voters = row["voters"]
 
-    if voters == 0:
+    if voters < min_voters_for_flow:
+        # Still accumulate offset for small flows but don't draw them
+        src_pos = node_positions[(from_t, from_party)]
+        tgt_pos = node_positions[(to_t, to_party)]
+
+        total_src = sum(
+            transitions[(transitions["from_time"] == from_t) & (transitions["from_party"] == from_party)]["voters"]
+        )
+        flow_height_src = (voters / total_src) * src_pos["height"] if total_src > 0 else 0
+
+        total_tgt = sum(transitions[(transitions["to_time"] == to_t) & (transitions["to_party"] == to_party)]["voters"])
+        flow_height_tgt = (voters / total_tgt) * tgt_pos["height"] if total_tgt > 0 else 0
+
+        src_pos["flow_offset"] += flow_height_src
+        tgt_pos["flow_offset"] += flow_height_tgt
         continue
 
     # Get source and target positions
@@ -255,6 +272,38 @@ plot = (
 for t, label in zip(time_points, time_labels, strict=True):
     plot = plot + annotate(
         "text", x=x_positions[t], y=0.02, label=label, size=18, color="#333333", fontweight="bold", ha="center"
+    )
+
+# Add party name labels on the left side of first column nodes
+for party in parties:
+    pos = node_positions[(0, party)]
+    label_y = (pos["y_top"] + pos["y_bottom"]) / 2
+    plot = plot + annotate(
+        "text",
+        x=x_positions[0] - node_width / 2 - 0.015,
+        y=label_y,
+        label=party,
+        size=11,
+        color="#333333",
+        fontweight="bold",
+        ha="right",
+        va="center",
+    )
+
+# Add party name labels on the right side of last column nodes
+for party in parties:
+    pos = node_positions[(3, party)]
+    label_y = (pos["y_top"] + pos["y_bottom"]) / 2
+    plot = plot + annotate(
+        "text",
+        x=x_positions[3] + node_width / 2 + 0.015,
+        y=label_y,
+        label=party,
+        size=11,
+        color="#333333",
+        fontweight="bold",
+        ha="left",
+        va="center",
     )
 
 plot.save("plot.png", dpi=300, verbose=False)

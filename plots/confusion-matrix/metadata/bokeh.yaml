@@ -1,0 +1,27 @@
+library: bokeh
+specification_id: confusion-matrix
+created: '2025-12-26T17:37:19Z'
+updated: '2025-12-26T17:44:11Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20526592377
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/bokeh/plot.html
+quality_score: 96
+review:
+  strengths:
+  - 'Excellent use of Bokeh-specific features: ColumnDataSource for data management,
+    LinearColorMapper with transform() for color encoding, LabelSet for cell annotations'
+  - Smart dynamic text color calculation (white on dark cells, dark blue on light
+    cells) ensures all annotations are readable
+  - Square 3600x3600 format is ideal for confusion matrix visualization
+  - Realistic sentiment analysis scenario with plausible confusion patterns (adjacent
+    classes more likely to be confused)
+  - Clean code structure following KISS principles with good comments explaining choices
+  weaknesses:
+  - 'Minor: X-axis labels have slight rotation (0.4 rad) which is not strictly necessary
+    for 4 short class names'
+  - 'VQ-07: Could add slightly more styling to the colorbar or include summary statistics'

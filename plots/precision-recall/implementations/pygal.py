@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 precision-recall: Precision-Recall Curve
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-26
@@ -79,7 +79,7 @@ chart = pygal.XY(
     stroke_style={"width": 5},
     show_x_guides=True,
     show_y_guides=True,
-    legend_at_bottom=False,
+    legend_at_bottom=True,
     legend_box_size=30,
     truncate_legend=-1,
     range=(0, 1),  # Y-axis range
@@ -90,35 +90,39 @@ chart = pygal.XY(
     y_labels_major_every=2,
 )
 
+# Downsample curves for cleaner visualization (inline, no helper function)
+n_points = 100
+lr_indices = np.linspace(0, len(lr_recall) - 1, n_points, dtype=int)
+lr_recall_ds = lr_recall[lr_indices]
+lr_precision_ds = lr_precision[lr_indices]
 
-# Downsample points for cleaner stepped appearance (pygal doesn't have native step)
-# Take every nth point to create a cleaner curve
-def downsample_curve(recall, precision, n_points=100):
-    """Downsample curve to n_points for cleaner visualization."""
-    indices = np.linspace(0, len(recall) - 1, n_points, dtype=int)
-    return recall[indices], precision[indices]
+rf_indices = np.linspace(0, len(rf_recall) - 1, n_points, dtype=int)
+rf_recall_ds = rf_recall[rf_indices]
+rf_precision_ds = rf_precision[rf_indices]
 
+# Create stepped data points for threshold-based visualization
+# For each point, add horizontal segment first, then drop vertically
+lr_stepped_points = []
+for i in range(len(lr_recall_ds)):
+    if i > 0:
+        # Horizontal step: keep previous precision, move to current recall
+        lr_stepped_points.append((lr_recall_ds[i], lr_precision_ds[i - 1]))
+    # Vertical step: drop to current precision at current recall
+    lr_stepped_points.append((lr_recall_ds[i], lr_precision_ds[i]))
 
-# Create stepped data points (to approximate stepped appearance)
-def create_stepped_data(recall, precision):
-    """Create stepped appearance by adding intermediate points."""
-    points = []
-    for i in range(len(recall)):
-        points.append((recall[i], precision[i]))
-    return points
-
-
-# Downsample for cleaner curves
-lr_recall_ds, lr_precision_ds = downsample_curve(lr_recall, lr_precision)
-rf_recall_ds, rf_precision_ds = downsample_curve(rf_recall, rf_precision)
+rf_stepped_points = []
+for i in range(len(rf_recall_ds)):
+    if i > 0:
+        # Horizontal step: keep previous precision, move to current recall
+        rf_stepped_points.append((rf_recall_ds[i], rf_precision_ds[i - 1]))
+    # Vertical step: drop to current precision at current recall
+    rf_stepped_points.append((rf_recall_ds[i], rf_precision_ds[i]))
 
 # Add Logistic Regression curve
-lr_points = create_stepped_data(lr_recall_ds, lr_precision_ds)
-chart.add(f"Logistic Regression (AP={lr_ap:.3f})", lr_points)
+chart.add(f"Logistic Regression (AP={lr_ap:.3f})", lr_stepped_points)
 
 # Add Random Forest curve
-rf_points = create_stepped_data(rf_recall_ds, rf_precision_ds)
-chart.add(f"Random Forest (AP={rf_ap:.3f})", rf_points)
+chart.add(f"Random Forest (AP={rf_ap:.3f})", rf_stepped_points)
 
 # Add baseline (random classifier) - horizontal line
 baseline_points = [(0, baseline), (1, baseline)]

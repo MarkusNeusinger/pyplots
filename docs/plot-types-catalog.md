@@ -11,7 +11,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### scatter-basic ✅
 **Description:** A fundamental 2D scatter plot that displays the relationship between two numeric variables by plotting points on a Cartesian coordinate system.
 
-### scatter-color-mapped 📋
+### scatter-color-mapped ✅
 **Description:** Scatter plot with a third variable encoded as color using a colormap. Includes colorbar for reference.
 
 ### scatter-size-mapped 📋
@@ -23,13 +23,13 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### scatter-regression-linear ✅
 **Description:** A scatter plot showing the relationship between two variables with a fitted linear regression line and confidence interval band.
 
-### scatter-marginal 📋
+### scatter-marginal ✅
 **Description:** Scatter plot with marginal histograms or KDE on axes showing distributions.
 
-### scatter-3d 📋
+### scatter-3d ✅
 **Description:** Three-dimensional scatter plot with rotation capability for exploring 3D relationships.
 
-### scatter-matrix 📋
+### scatter-matrix ✅
 **Description:** Grid of scatter plots for all variable pairs in a dataset with histograms on diagonal.
 
 ---
@@ -48,7 +48,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### line-markers 📋
 **Description:** Line plot with visible markers at data points, helpful for sparse data.
 
-### line-timeseries 📋
+### line-timeseries ✅
 **Description:** Line plot with datetime x-axis and proper date formatting.
 
 ### line-stepwise 📋
@@ -60,7 +60,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### line-filled 📋
 **Description:** Line plot with area filled to baseline, semi-transparent.
 
-### line-confidence 📋
+### line-confidence ✅
 **Description:** Line plot with confidence interval band around the mean.
 
 ### line-interactive 📋
@@ -73,16 +73,16 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### bar-basic ✅
 **Description:** A vertical bar chart that displays categorical data with rectangular bars whose heights are proportional to the values they represent.
 
-### bar-horizontal 📋
+### bar-horizontal ✅
 **Description:** Horizontal bars, useful for long category names.
 
 ### bar-grouped ✅
 **Description:** A grouped bar chart with side-by-side bars for comparing values across multiple groups within each category.
 
-### bar-stacked 📋
+### bar-stacked ✅
 **Description:** Bars stacked on top of each other showing composition.
 
-### bar-stacked-percent 📋
+### bar-stacked-percent ✅
 **Description:** Stacked bars normalized to 100% showing proportions.
 
 ### bar-error 📋
@@ -94,7 +94,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### bar-categorical 📋
 **Description:** Bar chart showing count of observations per category.
 
-### bar-diverging 📋
+### bar-diverging ✅
 **Description:** Bars extending from center, positive/negative values with different colors.
 
 ### lollipop-basic ✅
@@ -113,7 +113,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### histogram-normalized 📋
 **Description:** Histogram normalized to show density instead of count.
 
-### histogram-overlapping 📋
+### histogram-overlapping ✅
 **Description:** Multiple overlapping histograms for comparison.
 
 ### histogram-stacked 📋
@@ -128,7 +128,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### density-basic ✅
 **Description:** A density plot (Kernel Density Estimation) visualizes the distribution of a continuous variable by smoothing the data into a continuous probability density curve.
 
-### histogram-2d 📋
+### histogram-2d ✅
 **Description:** Two-dimensional histogram as heatmap.
 
 ### histogram-cumulative 📋
@@ -141,13 +141,13 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### pie-basic ✅
 **Description:** A pie chart showing proportions of categorical data as slices of a circle. Each slice represents a category's contribution to the whole.
 
-### pie-exploded 📋
+### pie-exploded ✅
 **Description:** Pie chart with one or more slices pulled out to highlight.
 
 ### donut-basic ✅
 **Description:** A donut chart (ring chart) showing proportions of categorical data as segments of a ring, with a hollow center.
 
-### donut-nested 📋
+### donut-nested ✅
 **Description:** Multiple concentric donut rings showing hierarchical data.
 
 ### sunburst-basic ✅
@@ -160,19 +160,19 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### box-basic ✅
 **Description:** A box plot (box-and-whisker plot) showing the distribution of numerical data through quartiles. Displays the median, first and third quartiles as a box, with whiskers extending to show the data range.
 
-### box-grouped 📋
+### box-grouped ✅
 **Description:** Multiple box plots grouped by category.
 
 ### box-horizontal 📋
 **Description:** Horizontal box plot orientation.
 
-### box-notched 📋
+### box-notched ✅
 **Description:** Box plot with notches indicating median confidence.
 
 ### violin-basic ✅
 **Description:** A violin plot combining a box plot with a kernel density estimation on each side, showing the distribution shape of numerical data.
 
-### violin-split 📋
+### violin-split ✅
 **Description:** Half-violins comparing two groups.
 
 ### violin-box 📋
@@ -206,10 +206,10 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### heatmap-annotated ✅
 **Description:** A heatmap with numeric values displayed inside each cell, essential for correlation matrices and confusion matrices.
 
-### heatmap-correlation 📋
+### heatmap-correlation ✅
 **Description:** Correlation matrix visualization with diverging colormap.
 
-### heatmap-clustered 📋
+### heatmap-clustered ✅
 **Description:** Heatmap with hierarchical clustering dendrograms.
 
 ### heatmap-calendar ✅
@@ -225,7 +225,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### area-basic ✅
 **Description:** An area chart showing quantitative data over a continuous axis with the area below the line filled.
 
-### area-stacked 📋
+### area-stacked ✅
 **Description:** Multiple areas stacked showing cumulative total.
 
 ### area-stacked-percent 📋
@@ -244,7 +244,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### polar-basic ✅
 **Description:** A polar chart displays data points on a circular coordinate system where position is determined by angle (theta) and distance from center (radius).
 
-### polar-scatter 📋
+### polar-scatter ✅
 **Description:** Scatter plot in polar coordinates.
 
 ### polar-line 📋
@@ -259,7 +259,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### radar-basic ✅
 **Description:** A radar chart (spider/web chart) displays multivariate data on axes starting from a common center point, with values connected to form a polygon.
 
-### radar-multi 📋
+### radar-multi ✅
 **Description:** Multiple overlapping radar polygons for comparison.
 
 ### windrose-basic ✅
@@ -272,19 +272,19 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### regression-linear 📋
 **Description:** Scatter with linear regression fit and confidence band.
 
-### regression-polynomial 📋
+### regression-polynomial ✅
 **Description:** Non-linear regression curve fit.
 
 ### regression-lowess 📋
 **Description:** Locally weighted regression smoothing.
 
-### residual-basic 📋
+### residual-basic ✅
 **Description:** Residual plot for regression diagnostics.
 
 ### qq-basic ✅
 **Description:** A Q-Q (Quantile-Quantile) plot compares the distribution of a dataset against a theoretical distribution. Points along a diagonal reference line indicate perfect distribution match.
 
-### bland-altman 📋
+### bland-altman ✅
 **Description:** Agreement plot between two measurements with limits of agreement.
 
 ### errorbar-basic ✅
@@ -297,7 +297,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ## 11. Categorical Plots
 
-### count-basic 📋
+### count-basic ✅
 **Description:** Bar chart of category counts.
 
 ### point-basic 📋
@@ -834,8 +834,8 @@ Druckbare Vorlagen und spielerische Visualisierungen.
 ## Statistics
 
 - **Total Plot Types:** 220+
-- **Implemented:** 69 ✅
-- **Planned:** 150+ 📋
+- **Implemented:** 95 ✅
+- **Planned:** 125+ 📋
 - **Categories:** 30
 
 ---

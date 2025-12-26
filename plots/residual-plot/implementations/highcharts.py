@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 residual-plot: Residual Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-26
@@ -81,18 +81,19 @@ chart.options.x_axis = {
     "tickInterval": 50000,
 }
 
-# Y-axis (Residuals) - symmetric range tightly around data with small buffer
+# Y-axis (Residuals) - use actual data extent with small buffer, keeping zero visible
 y_min = float(min(residuals))
 y_max = float(max(residuals))
-y_range = max(abs(y_min), abs(y_max)) * 1.05  # Tight symmetric range with 5% buffer
+y_axis_min = y_min * 1.1  # 10% buffer below min
+y_axis_max = y_max * 1.1  # 10% buffer above max
 chart.options.y_axis = {
     "title": {"text": "Residuals ($)", "style": {"fontSize": "42px", "fontWeight": "bold"}},
     "labels": {"style": {"fontSize": "32px"}, "x": -10},
     "gridLineWidth": 1,
     "gridLineColor": "rgba(0, 0, 0, 0.15)",
-    "min": -y_range,
-    "max": y_range,
-    "tickInterval": 25000,
+    "min": y_axis_min,
+    "max": y_axis_max,
+    "tickInterval": 20000,
     "endOnTick": False,
     "startOnTick": False,
     "plotLines": [
@@ -103,9 +104,9 @@ chart.options.y_axis = {
             "zIndex": 5,
             "label": {
                 "text": "Zero Line (Perfect Fit)",
-                "align": "left",
-                "x": 15,
-                "style": {"fontSize": "32px", "color": "#306998", "fontWeight": "bold"},
+                "align": "right",
+                "x": -15,
+                "style": {"fontSize": "36px", "color": "#306998", "fontWeight": "bold"},
             },
         },
         {
@@ -115,10 +116,10 @@ chart.options.y_axis = {
             "dashStyle": "Dash",
             "zIndex": 4,
             "label": {
-                "text": "+2σ Threshold",
-                "align": "left",
-                "x": 15,
-                "style": {"fontSize": "32px", "color": "#E67E22", "fontWeight": "bold"},
+                "text": "+2\u03c3 Threshold",
+                "align": "right",
+                "x": -15,
+                "style": {"fontSize": "36px", "color": "#E67E22", "fontWeight": "bold"},
             },
         },
         {
@@ -128,10 +129,10 @@ chart.options.y_axis = {
             "dashStyle": "Dash",
             "zIndex": 4,
             "label": {
-                "text": "-2σ Threshold",
-                "align": "left",
-                "x": 15,
-                "style": {"fontSize": "32px", "color": "#E67E22", "fontWeight": "bold"},
+                "text": "-2\u03c3 Threshold",
+                "align": "right",
+                "x": -15,
+                "style": {"fontSize": "36px", "color": "#E67E22", "fontWeight": "bold"},
             },
         },
     ],

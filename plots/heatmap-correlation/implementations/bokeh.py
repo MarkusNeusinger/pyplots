@@ -1,23 +1,23 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-correlation: Correlation Matrix Heatmap
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-25
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import numpy as np
 from bokeh.io import export_png, save
-from bokeh.models import BasicTicker, ColorBar, ColumnDataSource, LabelSet, LinearColorMapper
+from bokeh.models import BasicTicker, ColorBar, ColumnDataSource, HoverTool, LabelSet, LinearColorMapper
 from bokeh.palettes import RdBu11
 from bokeh.plotting import figure
 from bokeh.resources import CDN
 
 
-# Data - realistic financial/economic variables
+# Data - realistic financial/economic indicators
 np.random.seed(42)
 variables = ["GDP", "Unemployment", "Inflation", "Interest Rate", "Stock Index", "Consumer Conf.", "Housing", "Exports"]
 n_vars = len(variables)
 
-# Generate realistic correlation matrix with known relationships
+# Generate realistic correlation matrix with known economic relationships
 base_corr = np.array(
     [
         [1.00, -0.72, 0.35, 0.28, 0.85, 0.78, 0.65, 0.72],  # GDP
@@ -31,7 +31,7 @@ base_corr = np.array(
     ]
 )
 
-# Create mask for lower triangle (including diagonal kept)
+# Create mask for lower triangle (including diagonal)
 mask = np.triu(np.ones_like(base_corr, dtype=bool), k=1)
 corr_matrix = np.where(mask, np.nan, base_corr)
 
@@ -65,14 +65,15 @@ p = figure(
     y_range=list(reversed(variables)),
     x_axis_location="below",
     title="heatmap-correlation · bokeh · pyplots.ai",
-    toolbar_location=None,
+    toolbar_location="right",
+    tools="",
 )
 
 # Diverging color mapper centered at zero
 mapper = LinearColorMapper(palette=list(reversed(RdBu11)), low=-1, high=1, nan_color="white")
 
 # Draw rectangles for heatmap
-p.rect(
+rects = p.rect(
     x="x",
     y="y",
     width=0.95,
@@ -82,6 +83,10 @@ p.rect(
     line_color="white",
     line_width=2,
 )
+
+# Add HoverTool for interactivity
+hover = HoverTool(renderers=[rects], tooltips=[("Row", "@y"), ("Column", "@x"), ("Correlation", "@text")])
+p.add_tools(hover)
 
 # Add text annotations with dynamic color based on background
 labels = LabelSet(
@@ -115,8 +120,9 @@ p.add_layout(color_bar, "right")
 p.title.text_font_size = "32pt"
 p.title.align = "center"
 
-p.xaxis.axis_label = "Variables"
-p.yaxis.axis_label = "Variables"
+# Domain-specific axis labels
+p.xaxis.axis_label = "Economic Indicators"
+p.yaxis.axis_label = "Economic Indicators"
 p.xaxis.axis_label_text_font_size = "24pt"
 p.yaxis.axis_label_text_font_size = "24pt"
 p.xaxis.major_label_text_font_size = "18pt"

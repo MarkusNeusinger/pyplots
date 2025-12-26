@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-clustered: Clustered Heatmap
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-26
@@ -101,11 +101,13 @@ col_labels_ordered = [sample_labels[i] for i in col_order]
 row_dendro = dendrogram(row_linkage, no_plot=True)
 col_dendro = dendrogram(col_linkage, no_plot=True)
 
-# Layout dimensions - increased for better label visibility
-heatmap_width = 3200
-heatmap_height = 2000
-dendro_size = 350
-label_space = 400  # Extra space for labels
+# Layout dimensions - target 4800x2700 total
+# Width: dendro_size + heatmap_width + label_space = 4800
+# Height: 100 (title) + dendro_size + heatmap_height + label_space = 2700
+heatmap_width = 4000
+heatmap_height = 1800
+dendro_size = 400
+label_space = 400
 
 # Color mapper - diverging colormap centered at 0
 mapper = LinearColorMapper(palette="RdBu11", low=-3, high=3)
@@ -126,8 +128,8 @@ heatmap_source = ColumnDataSource(data={"x": x_data, "y": y_data, "value": value
 heatmap = figure(
     width=heatmap_width + label_space,
     height=heatmap_height + label_space,
-    x_range=(-0.5, n_samples + 3),  # Extra space for gene labels on right
-    y_range=(-4, n_genes - 0.5),  # Extra space for sample labels at bottom
+    x_range=(-0.5, n_samples + 5),  # Extra space for gene labels and axis label on right
+    y_range=(-5, n_genes - 0.5),  # Extra space for sample labels and axis label at bottom
     toolbar_location=None,
     tools="",
 )
@@ -151,7 +153,7 @@ for j, label in enumerate(col_labels_ordered):
             x=j,
             y=-1.0,
             text=label,
-            text_font_size="14pt",
+            text_font_size="18pt",
             text_align="right",
             angle=0.785,  # 45 degrees
             angle_units="rad",
@@ -165,7 +167,7 @@ for i, label in enumerate(row_labels_ordered):
             x=n_samples + 0.2,
             y=n_genes - 1 - i,
             text=label,
-            text_font_size="14pt",
+            text_font_size="18pt",
             text_align="left",
             text_baseline="middle",
         )
@@ -175,21 +177,45 @@ for i, label in enumerate(row_labels_ordered):
 heatmap.axis.visible = False
 heatmap.grid.grid_line_color = None
 heatmap.outline_line_color = None
-heatmap.xaxis.axis_label = "Samples"
-heatmap.yaxis.axis_label = "Genes"
+
+# Add axis labels as text (since axis is hidden)
+heatmap.add_layout(
+    Label(
+        x=(n_samples - 1) / 2,
+        y=-3.5,
+        text="Samples",
+        text_font_size="22pt",
+        text_align="center",
+        text_baseline="top",
+        text_font_style="bold",
+    )
+)
+heatmap.add_layout(
+    Label(
+        x=n_samples + 3,
+        y=(n_genes - 1) / 2,
+        text="Genes",
+        text_font_size="22pt",
+        text_align="center",
+        text_baseline="middle",
+        angle=1.5708,  # 90 degrees in radians
+        angle_units="rad",
+        text_font_style="bold",
+    )
+)
 
 # Add color bar
 color_bar = ColorBar(
     color_mapper=mapper,
     ticker=BasicTicker(desired_num_ticks=7),
     formatter=PrintfTickFormatter(format="%.1f"),
-    label_standoff=15,
+    label_standoff=20,
     border_line_color=None,
     location=(0, 0),
     title="Expression (z-score)",
-    title_text_font_size="16pt",
-    major_label_text_font_size="14pt",
-    width=25,
+    title_text_font_size="18pt",
+    major_label_text_font_size="16pt",
+    width=30,
 )
 heatmap.add_layout(color_bar, "right")
 

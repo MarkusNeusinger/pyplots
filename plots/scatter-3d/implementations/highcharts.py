@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-3d: 3D Scatter Plot
-Library: highcharts unknown | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-25
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import json
@@ -64,21 +64,21 @@ series_data = [
         "name": "Cluster A",
         "data": cluster1_data,
         "color": "#306998",  # Python Blue
-        "marker": {"radius": 12, "symbol": "circle"},
+        "marker": {"radius": 14, "symbol": "circle"},
     },
     {
         "type": "scatter3d",
         "name": "Cluster B",
         "data": cluster2_data,
         "color": "#FFD43B",  # Python Yellow
-        "marker": {"radius": 12, "symbol": "circle"},
+        "marker": {"radius": 14, "symbol": "circle"},
     },
     {
         "type": "scatter3d",
         "name": "Cluster C",
         "data": cluster3_data,
         "color": "#17BECF",  # Teal
-        "marker": {"radius": 12, "symbol": "circle"},
+        "marker": {"radius": 14, "symbol": "circle"},
     },
 ]
 
@@ -109,7 +109,7 @@ Highcharts.chart('container', {{
         marginTop: 180,
         marginBottom: 200,
         marginLeft: 150,
-        marginRight: 200
+        marginRight: 220
     }},
     title: {{
         text: 'scatter-3d · highcharts · pyplots.ai',
@@ -131,7 +131,7 @@ Highcharts.chart('container', {{
             margin: 50
         }},
         labels: {{
-            style: {{ fontSize: '40px' }},
+            style: {{ fontSize: '48px' }},
             format: '{{value}}'
         }},
         gridLineWidth: 2,
@@ -147,7 +147,7 @@ Highcharts.chart('container', {{
             margin: 50
         }},
         labels: {{
-            style: {{ fontSize: '40px' }},
+            style: {{ fontSize: '48px' }},
             format: '{{value}}'
         }},
         gridLineWidth: 2,
@@ -163,7 +163,7 @@ Highcharts.chart('container', {{
             margin: 50
         }},
         labels: {{
-            style: {{ fontSize: '40px' }},
+            style: {{ fontSize: '48px' }},
             format: '{{value}}'
         }},
         gridLineWidth: 2,
@@ -174,16 +174,16 @@ Highcharts.chart('container', {{
         layout: 'vertical',
         align: 'right',
         verticalAlign: 'middle',
-        x: -50,
+        x: -40,
         y: 0,
         itemStyle: {{
-            fontSize: '44px',
+            fontSize: '48px',
             fontWeight: 'normal'
         }},
-        symbolRadius: 8,
-        symbolHeight: 24,
-        symbolWidth: 24,
-        itemMarginBottom: 20
+        symbolRadius: 12,
+        symbolHeight: 32,
+        symbolWidth: 32,
+        itemMarginBottom: 25
     }},
     credits: {{
         enabled: false
@@ -197,14 +197,14 @@ Highcharts.chart('container', {{
     plotOptions: {{
         scatter3d: {{
             marker: {{
-                radius: 12,
+                radius: 14,
                 opacity: 0.8
             }},
             states: {{
                 hover: {{
                     enabled: true,
                     marker: {{
-                        radius: 16
+                        radius: 18
                     }}
                 }},
                 inactive: {{

@@ -5,7 +5,7 @@ import Alert from '@mui/material/Alert';
 
 import type { PlotImage, LibraryInfo, SpecInfo, FilterCategory, ActiveFilters, FilterCounts } from './types';
 import { FILTER_CATEGORIES } from './types';
-import { API_URL, BATCH_SIZE, IMAGE_SIZES, type ImageSize } from './constants';
+import { API_URL, BATCH_SIZE, type ImageSize } from './constants';
 import { useInfiniteScroll, useAnalytics } from './hooks';
 import { Header, Footer, FilterBar, ImagesGrid, FullscreenModal } from './components';
 
@@ -82,7 +82,7 @@ function App() {
   const [randomAnimation, setRandomAnimation] = useState<{ index: number; phase: 'out' | 'in'; oldLabel?: string } | null>(null);
   const [imageSize, setImageSize] = useState<ImageSize>(() => {
     const stored = localStorage.getItem('imageSize');
-    return (stored && stored in IMAGE_SIZES) ? stored as ImageSize : 'L';
+    return (stored === 'normal' || stored === 'compact') ? stored : 'normal';
   });
 
   // Persist imageSize to localStorage

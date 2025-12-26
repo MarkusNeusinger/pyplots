@@ -479,9 +479,8 @@ export function FilterBar({
           },
         }}
       >
-        <ToggleButton value="S">S</ToggleButton>
-        <ToggleButton value="M">M</ToggleButton>
-        <ToggleButton value="L">L</ToggleButton>
+        <ToggleButton value="compact">compact</ToggleButton>
+        <ToggleButton value="normal">normal</ToggleButton>
       </ToggleButtonGroup>
       </Box>
 

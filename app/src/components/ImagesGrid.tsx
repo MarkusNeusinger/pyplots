@@ -1,9 +1,10 @@
 import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import Alert from '@mui/material/Alert';
 import { ImageCard } from './ImageCard';
 import { LoaderSpinner } from './LoaderSpinner';
 import type { PlotImage, LibraryInfo, SpecInfo } from '../types';
-import { IMAGE_SIZES, type ImageSize } from '../constants';
+import type { ImageSize } from '../constants';
 
 interface ImagesGridProps {
   images: PlotImage[];
@@ -41,9 +42,11 @@ export function ImagesGrid({
   onTrackEvent,
 }: ImagesGridProps) {
   void _selectedLibrary; // Preserved for API compatibility
-  const { minWidth, maxWidth, containerMax } = IMAGE_SIZES[imageSize];
-  // Always show content - the old condition was breaking the "show all" default view
-  // viewMode is now just for display purposes (spec name vs library name on cards)
+
+  // Grid columns based on size: normal = fewer larger cards, compact = more smaller cards
+  const gridColumns = imageSize === 'compact'
+    ? { xs: 6, sm: 4, md: 3, lg: 2, xl: 2 }  // More columns, smaller cards
+    : { xs: 12, sm: 6, md: 4, lg: 3, xl: 3 }; // Fewer columns, larger cards
 
   // Show loading spinner on initial load
   if (loading && !isTransitioning && images.length === 0) {
@@ -85,22 +88,18 @@ export function ImagesGrid({
             No images found for this spec.
           </Alert>
         ) : (
-          <Box
+          <Grid
+            container
+            spacing={3}
             sx={{
-              display: 'grid',
-              gridTemplateColumns: `repeat(auto-fill, minmax(${minWidth}px, ${maxWidth}px))`,
-              justifyContent: 'center',
-              gap: 3,
-              maxWidth: containerMax,
-              mx: 'auto',
               opacity: isTransitioning ? 0 : 1,
               transition: 'opacity 0.15s ease-in-out',
             }}
           >
             {images.map((image, index) => (
-              <Box
+              <Grid
                 key={image.spec_id ? `${image.spec_id}-${image.library}` : image.library}
-                sx={{ width: '100%', maxWidth, mx: 'auto' }}
+                size={gridColumns}
               >
                 <ImageCard
                   image={image}
@@ -114,9 +113,9 @@ export function ImagesGrid({
                   onClick={() => onCardClick(image)}
                   onTrackEvent={onTrackEvent}
                 />
-              </Box>
+              </Grid>
             ))}
-          </Box>
+          </Grid>
         )}
         {/* Load more indicator */}
         {hasMore && (

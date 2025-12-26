@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-stacked: Stacked Bar Chart
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-25
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import plotly.graph_objects as go
@@ -94,7 +94,15 @@ fig.update_layout(
     barmode="stack",
     bargap=0.3,
     template="plotly_white",
-    legend={"orientation": "h", "yanchor": "bottom", "y": 1.02, "xanchor": "center", "x": 0.5, "font": {"size": 20}},
+    legend={
+        "orientation": "h",
+        "yanchor": "bottom",
+        "y": 1.02,
+        "xanchor": "center",
+        "x": 0.5,
+        "font": {"size": 20},
+        "traceorder": "normal",
+    },
     margin={"l": 100, "r": 60, "t": 120, "b": 80},
 )
 

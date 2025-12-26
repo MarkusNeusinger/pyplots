@@ -9,6 +9,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import type { PlotImage, LibraryInfo, SpecInfo } from '../types';
+import type { ImageSize } from '../constants';
 
 interface ImageCardProps {
   image: PlotImage;
@@ -18,6 +19,7 @@ interface ImageCardProps {
   librariesData: LibraryInfo[];
   specsData: SpecInfo[];
   openTooltip: string | null;
+  imageSize: ImageSize;
   onTooltipToggle: (id: string | null) => void;
   onClick: () => void;
   onTrackEvent?: (name: string, props?: Record<string, string | undefined>) => void;
@@ -31,11 +33,13 @@ export function ImageCard({
   librariesData,
   specsData,
   openTooltip,
+  imageSize,
   onTooltipToggle,
   onClick,
   onTrackEvent,
 }: ImageCardProps) {
   const [copied, setCopied] = useState(false);
+  const labelFontSize = imageSize === 'compact' ? '0.65rem' : '0.8rem';
 
   const cardId = `${image.spec_id}-${image.library}`;
   const specTooltipId = `spec-${cardId}`;
@@ -164,7 +168,7 @@ export function ImageCard({
               sx: {
                 maxWidth: { xs: '80vw', sm: 400 },
                 fontFamily: '"JetBrains Mono", monospace',
-                fontSize: '0.8rem',
+                fontSize: labelFontSize,
               },
             },
           }}
@@ -194,7 +198,7 @@ export function ImageCard({
           </Typography>
         </Tooltip>
 
-        <Typography sx={{ color: '#d1d5db', fontSize: '0.8rem' }}>·</Typography>
+        <Typography sx={{ color: '#d1d5db', fontSize: labelFontSize }}>·</Typography>
 
         {/* Clickable Library */}
         <Tooltip
@@ -234,7 +238,7 @@ export function ImageCard({
               sx: {
                 maxWidth: { xs: '80vw', sm: 400 },
                 fontFamily: '"JetBrains Mono", monospace',
-                fontSize: '0.8rem',
+                fontSize: labelFontSize,
               },
             },
           }}

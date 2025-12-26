@@ -15,7 +15,7 @@ interface HeaderProps {
 
 export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [pinned, setPinned] = useState(false);  // true = opened via click, stays open
   const tooltipText = stats
@@ -50,9 +50,9 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
         sx={{
           fontWeight: 700,
           fontFamily: '"JetBrains Mono", monospace',
-          mb: { xs: 2, sm: 3 },
+          mb: { xs: 2, md: 3 },
           letterSpacing: '-0.02em',
-          fontSize: { xs: '2rem', sm: '3rem', md: '3.75rem' },
+          fontSize: { xs: '2rem', md: '3.75rem' },
         }}
       >
         <Link
@@ -116,7 +116,7 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
           lineHeight: 1.8,
           fontFamily: '"JetBrains Mono", monospace',
           color: '#6b7280',
-          fontSize: { xs: '0.875rem', sm: '1rem' },
+          fontSize: { xs: '0.875rem', md: '1rem' },
         }}
       >
         {isMobile ? 'ai-powered python plots' : 'library-agnostic, ai-powered python plotting examples.'}
@@ -126,11 +126,11 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
         sx={{
           maxWidth: 560,
           mx: 'auto',
-          mt: { xs: 1, sm: 1.5 },
+          mt: { xs: 1, md: 1.5 },
           lineHeight: 1.8,
           fontFamily: '"JetBrains Mono", monospace',
           color: '#374151',
-          fontSize: { xs: '0.925rem', sm: '1.05rem' },
+          fontSize: { xs: '0.925rem', md: '1.05rem' },
           fontWeight: 500,
         }}
       >

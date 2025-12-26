@@ -45,8 +45,8 @@ export function ImagesGrid({
 
   // Grid columns: normal = max 3 cols, compact = max 6 cols
   const gridColumns = imageSize === 'compact'
-    ? { xs: 6, sm: 4, md: 3, lg: 2, xl: 2 }  // 2→3→4→6→6 cols
-    : { xs: 12, sm: 6, md: 4, lg: 4, xl: 4 }; // 1→2→3→3→3 cols
+    ? { xs: 6, sm: 6, md: 3, lg: 3, xl: 2 }  // 2→2→4→4→6 cols
+    : { xs: 12, sm: 12, md: 6, lg: 6, xl: 4 }; // 1→1→2→2→3 cols
 
   // Show loading spinner on initial load
   if (loading && !isTransitioning && images.length === 0) {
@@ -109,6 +109,7 @@ export function ImagesGrid({
                   librariesData={librariesData}
                   specsData={specsData}
                   openTooltip={openTooltip}
+                  imageSize={imageSize}
                   onTooltipToggle={onTooltipToggle}
                   onClick={() => onCardClick(image)}
                   onTrackEvent={onTrackEvent}

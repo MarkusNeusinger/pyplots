@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-matrix: Scatter Plot Matrix
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-26
@@ -33,7 +33,7 @@ variables = {
 var_names = list(variables.keys())
 n_vars = len(var_names)
 
-# Style configuration
+# Style configuration with improved transparency for overlapping points
 custom_style = Style(
     background="white",
     plot_background="#f8f8f8",
@@ -46,8 +46,8 @@ custom_style = Style(
     major_label_font_size=16,
     legend_font_size=16,
     value_font_size=14,
-    opacity=0.7,
-    opacity_hover=0.9,
+    opacity=0.55,
+    opacity_hover=0.85,
 )
 
 # Canvas dimensions
@@ -55,7 +55,7 @@ total_width = 3600
 total_height = 3600
 margin_top = 120
 margin_bottom = 120
-margin_left = 110
+margin_left = 120
 margin_right = 50
 plot_area_width = total_width - margin_left - margin_right
 plot_area_height = total_height - margin_top - margin_bottom
@@ -87,11 +87,12 @@ for i in range(n_vars):
                 x_label_rotation=0,
                 show_minor_x_labels=False,
                 show_minor_y_labels=False,
-                margin_top=5,
-                margin_right=5,
-                margin_bottom=35 if i == n_vars - 1 else 5,
-                margin_left=50 if j == 0 else 5,
+                margin_top=8,
+                margin_right=8,
+                margin_bottom=40 if i == n_vars - 1 else 8,
+                margin_left=70 if j == 0 else 8,
                 spacing=0,
+                truncate_label=-1,
             )
 
             # Create histogram data
@@ -100,7 +101,7 @@ for i in range(n_vars):
             hist_data = [(float(bin_edges[k]), float(bin_edges[k + 1]), float(hist[k])) for k in range(len(hist))]
             chart.add(var_x, hist_data)
         else:
-            # Off-diagonal: Scatter plot
+            # Off-diagonal: Scatter plot with smaller dots and better transparency
             chart = pygal.XY(
                 width=inner_size,
                 height=inner_size,
@@ -111,12 +112,13 @@ for i in range(n_vars):
                 x_label_rotation=0,
                 show_minor_x_labels=False,
                 show_minor_y_labels=False,
-                margin_top=5,
-                margin_right=5,
-                margin_bottom=35 if i == n_vars - 1 else 5,
-                margin_left=50 if j == 0 else 5,
-                dots_size=10,
+                margin_top=8,
+                margin_right=8,
+                margin_bottom=40 if i == n_vars - 1 else 8,
+                margin_left=70 if j == 0 else 8,
+                dots_size=7,
                 stroke=False,
+                truncate_label=-1,
             )
 
             # Scatter data as (x, y) tuples
@@ -175,34 +177,5 @@ for idx, var_name in enumerate(var_names):
     paste_y = y_label_pos - text_height // 2
     composite.paste(txt_rotated, (x_label_pos, paste_y), txt_rotated)
 
-# Save outputs
+# Save output
 composite.save("plot.png", "PNG", dpi=(300, 300))
-
-# Create HTML with embedded SVG for interactive viewing
-# Render a single combined chart showing the concept
-overview_chart = pygal.XY(
-    width=800, height=600, style=custom_style, title="Scatter Matrix Overview - See plot.png for full matrix"
-)
-overview_chart.add("Sepal L vs Petal L", [(float(sepal_length[k]), float(petal_length[k])) for k in range(n_samples)])
-html_content = """<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>scatter-matrix · pygal · pyplots.ai</title>
-    <style>
-        body { margin: 20px; font-family: Arial, sans-serif; background: #f0f0f0; }
-        h1 { text-align: center; color: #333; }
-        .container { display: flex; justify-content: center; }
-        img { max-width: 100%; border: 1px solid #ccc; }
-    </style>
-</head>
-<body>
-    <h1>scatter-matrix · pygal · pyplots.ai</h1>
-    <div class="container">
-        <img src="plot.png" alt="Scatter Matrix">
-    </div>
-</body>
-</html>
-"""
-with open("plot.html", "w") as f:
-    f.write(html_content)

@@ -1,12 +1,12 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-split: Split Violin Plot
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-25
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import Legend, LegendItem
+from bokeh.models import HoverTool, Legend, LegendItem
 from bokeh.plotting import figure
 
 
@@ -44,8 +44,8 @@ for cat in categories:
 
 
 # Gaussian kernel density estimation using numpy only
-def gaussian_kde_numpy(values, n_points=100):
-    """Compute kernel density estimate using Gaussian kernels."""
+def gaussian_kde_numpy(values, n_points=100, y_min=1.0, y_max=10.0):
+    """Compute kernel density estimate using Gaussian kernels with bounded domain."""
     values = np.array(values)
     n = len(values)
 
@@ -53,8 +53,7 @@ def gaussian_kde_numpy(values, n_points=100):
     std = np.std(values, ddof=1)
     bandwidth = 1.06 * std * n ** (-1 / 5)
 
-    # Grid for evaluation
-    y_min, y_max = values.min() - 0.5, values.max() + 0.5
+    # Grid for evaluation - bounded to data scale
     y_grid = np.linspace(y_min, y_max, n_points)
 
     # Compute KDE at each grid point
@@ -70,7 +69,7 @@ def gaussian_kde_numpy(values, n_points=100):
 color_before = "#306998"  # Python Blue
 color_after = "#FFD43B"  # Python Yellow
 
-# Create figure
+# Create figure with HoverTool enabled
 p = figure(
     width=4800,
     height=2700,
@@ -78,6 +77,8 @@ p = figure(
     x_axis_label="Department",
     y_axis_label="Satisfaction Score (1-10)",
     x_range=categories,
+    y_range=(0.5, 10.5),
+    tools="pan,wheel_zoom,box_zoom,reset,save",
 )
 
 # Width of each violin half
@@ -87,13 +88,17 @@ violin_width = 0.35
 before_patch = None
 after_patch = None
 
+# Store statistics for hover tooltips
+stats_data = {"x": [], "y": [], "group": [], "median": [], "q1": [], "q3": [], "n": []}
+
 # Draw split violins for each category
 for i, cat in enumerate(categories):
     cat_x = i
 
     for sg in split_groups:
         values = values_by_cat_group[cat][sg]
-        y_grid, density = gaussian_kde_numpy(values)
+        # Use bounded KDE to keep distribution within 1-10 scale
+        y_grid, density = gaussian_kde_numpy(values, y_min=1.0, y_max=10.0)
 
         # Normalize density to fit within violin width
         max_density = max(density)
@@ -143,17 +148,43 @@ for i, cat in enumerate(categories):
             x0=[line_start], y0=[q3], x1=[line_end], y1=[q3], line_color="white", line_width=2, line_dash="dashed"
         )
 
-# Add legend
+        # Store hover data for this violin
+        hover_x = cat_x - violin_width / 2 if sg == "Before Training" else cat_x + violin_width / 2
+        stats_data["x"].append(hover_x)
+        stats_data["y"].append(median)
+        stats_data["group"].append(f"{cat} - {sg}")
+        stats_data["median"].append(f"{median:.2f}")
+        stats_data["q1"].append(f"{q1:.2f}")
+        stats_data["q3"].append(f"{q3:.2f}")
+        stats_data["n"].append(str(len(values)))
+
+# Add invisible scatter points for hover tooltips
+hover_circles = p.scatter(x=stats_data["x"], y=stats_data["y"], size=30, fill_alpha=0, line_alpha=0)
+
+# Configure HoverTool with statistics
+hover = HoverTool(
+    renderers=[hover_circles],
+    tooltips=[("Group", "@group"), ("Median", "@median"), ("Q1", "@q1"), ("Q3", "@q3"), ("Sample Size", "@n")],
+)
+hover_circles.data_source.data.update(stats_data)
+p.add_tools(hover)
+
+# Add legend with larger glyphs, positioned inside plot area
 legend = Legend(
     items=[
         LegendItem(label="Before Training", renderers=[before_patch]),
         LegendItem(label="After Training", renderers=[after_patch]),
     ],
-    location="top_right",
+    location="top_left",
 )
-legend.label_text_font_size = "18pt"
-legend.glyph_width = 40
+legend.label_text_font_size = "24pt"
+legend.glyph_width = 60
 legend.glyph_height = 40
+legend.spacing = 15
+legend.padding = 20
+legend.background_fill_alpha = 0.85
+legend.border_line_color = "#cccccc"
+legend.border_line_width = 2
 p.add_layout(legend)
 
 # Style - large text for 4800x2700 canvas

@@ -1,0 +1,25 @@
+library: plotnine
+specification_id: calibration-curve
+created: '2025-12-26T19:36:31Z'
+updated: '2025-12-26T19:42:12Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20528203448
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of plotnine grammar of graphics with proper layering of geometric
+    elements
+  - Clean implementation of calibration curve with ECE metric displayed in title
+  - Square aspect ratio via coord_fixed is perfect for calibration curves
+  - Point sizes scaled by bin counts adds useful information density
+  - Attractive color scheme with Python blue and gold
+  - Proper 10-bin calculation with edge case handling
+  weaknesses:
+  - Missing optional histogram subplot showing prediction distribution
+  - Axis labels could be more explicit with units or clarification

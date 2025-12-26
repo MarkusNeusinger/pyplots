@@ -1,7 +1,7 @@
 """ pyplots.ai
 alluvial-basic: Basic Alluvial Diagram
 Library: highcharts unknown | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Quality: 91/100 | Created: 2025-12-26
 """
 
 import tempfile
@@ -47,7 +47,7 @@ flows = [
 party_colors = {
     "Conservative": "#306998",  # Python Blue
     "Moderate": "#9467BD",  # Purple
-    "Progressive": "#FFD43B",  # Python Yellow (darker for contrast)
+    "Progressive": "#FFD43B",  # Python Yellow
 }
 
 # Column positions for time ordering (key for alluvial structure)
@@ -105,7 +105,7 @@ chart.options.tooltip = {
     "pointFormat": "{point.fromNode.name} → {point.toNode.name}: {point.weight:,.0f}K voters",
 }
 
-# Alluvial/Sankey series configuration
+# Alluvial/Sankey series configuration with larger node labels
 series_config = {
     "type": "sankey",
     "name": "Voter Flow",
@@ -114,7 +114,7 @@ series_config = {
     "data": links_data,
     "dataLabels": {
         "enabled": True,
-        "style": {"fontSize": "42px", "fontWeight": "bold", "color": "#333333", "textOutline": "3px #ffffff"},
+        "style": {"fontSize": "52px", "fontWeight": "bold", "color": "#333333", "textOutline": "4px #ffffff"},
         "nodeFormat": "{point.name}",
     },
     "nodeWidth": 60,
@@ -157,8 +157,28 @@ chart.options.annotations = [
     }
 ]
 
-# Disable legend (nodes are labeled and color-coded)
-chart.options.legend = {"enabled": False}
+# Enable legend for quick color reference
+chart.options.legend = {
+    "enabled": True,
+    "layout": "horizontal",
+    "align": "center",
+    "verticalAlign": "bottom",
+    "floating": False,
+    "backgroundColor": "#ffffff",
+    "borderWidth": 0,
+    "itemStyle": {"fontSize": "36px", "fontWeight": "normal", "color": "#333333"},
+    "symbolRadius": 0,
+    "symbolWidth": 40,
+    "symbolHeight": 30,
+    "itemMarginTop": 10,
+    "itemMarginBottom": 10,
+    "y": 50,
+}
+
+# Add custom legend items via a dummy series for each party
+# Since sankey doesn't generate legend items by default, we use colorAxis legend simulation
+# Instead, we'll add the legend data through plotOptions
+chart.options.plot_options = {"sankey": {"showInLegend": True}}
 
 # Disable credits
 chart.options.credits = {"enabled": False}
@@ -179,6 +199,26 @@ with urllib.request.urlopen(annotations_url, timeout=30) as response:
 
 # Generate HTML with inline scripts
 html_str = chart.to_js_literal()
+
+# Create custom legend HTML since sankey doesn't support native legends well
+legend_html = """
+<div id="custom-legend" style="position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%);
+     display: flex; gap: 60px; font-family: Arial, sans-serif; font-size: 36px; color: #333;">
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="width: 40px; height: 30px; background-color: #306998;"></div>
+        <span>Conservative</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="width: 40px; height: 30px; background-color: #9467BD;"></div>
+        <span>Moderate</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="width: 40px; height: 30px; background-color: #FFD43B;"></div>
+        <span>Progressive</span>
+    </div>
+</div>
+"""
+
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -187,8 +227,9 @@ html_content = f"""<!DOCTYPE html>
     <script>{sankey_js}</script>
     <script>{annotations_js}</script>
 </head>
-<body style="margin:0;">
+<body style="margin:0; position: relative;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
+    {legend_html}
     <script>{html_str}</script>
 </body>
 </html>"""
@@ -202,8 +243,9 @@ standalone_html = f"""<!DOCTYPE html>
     <script src="https://code.highcharts.com/modules/sankey.js"></script>
     <script src="https://code.highcharts.com/modules/annotations.js"></script>
 </head>
-<body style="margin:0; overflow:auto;">
+<body style="margin:0; overflow:auto; position: relative;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
+    {legend_html}
     <script>{html_str}</script>
 </body>
 </html>"""

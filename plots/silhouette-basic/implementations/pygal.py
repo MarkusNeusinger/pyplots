@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 silhouette-basic: Silhouette Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-26
@@ -36,18 +36,19 @@ n_clusters = 3
 # Colors for each cluster (Python Blue, Python Yellow, Complementary Red)
 cluster_colors = ["#306998", "#FFD43B", "#E74C3C"]
 
-# Custom style for pyplots with more visible grid
+# Custom style for pyplots with prominent grid and reference lines
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
-    foreground_strong="#333333",
-    foreground_subtle="#888888",  # More visible grid lines
-    guide_stroke_color="#CCCCCC",  # Explicit grid color for visibility
+    foreground_strong="#000000",  # Bold black for major labels (avg reference)
+    foreground_subtle="#666666",  # More visible grid lines
+    guide_stroke_color="#999999",  # Darker grid color for visibility
+    major_guide_stroke_dasharray="8,4",  # More prominent dashed pattern for avg line
     colors=tuple(cluster_colors),
     title_font_size=48,
     label_font_size=32,
-    major_label_font_size=32,  # Larger major labels for avg reference
+    major_label_font_size=36,  # Larger major labels for avg reference line
     legend_font_size=28,
     value_font_size=24,
     stroke_width=0,
@@ -78,18 +79,23 @@ for i in range(n_clusters):
 
 total_samples = sample_idx
 
-# Build all bars list for chart data
+# Build all bars list for chart data with separator gaps between clusters
 all_bars = []
+separator_count = 3  # Number of empty bars between clusters for visual separation
 for i in range(n_clusters):
     for val in cluster_data[i]["values"]:
         all_bars.append((i, val))
+    # Add separator gaps after each cluster except the last
+    if i < n_clusters - 1:
+        for _ in range(separator_count):
+            all_bars.append((-1, None))  # -1 indicates separator
 
 chart = pygal.HorizontalBar(
     width=4800,
     height=2700,
     style=custom_style,
-    title=f"silhouette-basic · pygal · pyplots.ai\nOverall Average: {avg_silhouette:.3f} | Reference line at avg",
-    x_title="Silhouette Coefficient",
+    title="silhouette-basic · pygal · pyplots.ai",
+    x_title=f"Silhouette Coefficient (avg: {avg_silhouette:.3f})",
     y_title="Samples (grouped by cluster)",
     show_legend=True,
     legend_at_bottom=True,
@@ -98,22 +104,29 @@ chart = pygal.HorizontalBar(
     show_x_guides=True,
     print_values=False,
     range=(-0.2, 1.0),
-    spacing=3,  # Increased spacing between bars
+    spacing=4,  # Increased spacing between bars
     margin=50,
     margin_bottom=150,
     show_y_labels=False,
     x_labels=[-0.2, 0.0, 0.2, round(avg_silhouette, 2), 0.4, 0.6, 0.8, 1.0],
-    x_labels_major=[round(avg_silhouette, 2)],  # Highlight average silhouette value
-    major_guide_stroke_dasharray="5,3",  # Dashed line for average reference
+    x_labels_major=[round(avg_silhouette, 2)],  # Highlight average silhouette value as major
 )
 
 # Build data series for each cluster
-# Add cluster average annotations within the cluster section
+# Track positions for cluster midpoints (excluding separators)
+cluster_positions = {}
+pos = 0
+for i in range(n_clusters):
+    cluster_positions[i] = {"start": pos, "size": cluster_data[i]["size"]}
+    pos += cluster_data[i]["size"]
+    if i < n_clusters - 1:
+        pos += separator_count
+
 for cluster_idx in range(n_clusters):
     cluster_avg = cluster_data[cluster_idx]["avg"]
-    cluster_size = cluster_data[cluster_idx]["size"]
-    start_idx = cluster_data[cluster_idx]["start_idx"]
-    mid_point = start_idx + cluster_size // 2
+    cluster_size = cluster_positions[cluster_idx]["size"]
+    start_pos = cluster_positions[cluster_idx]["start"]
+    mid_point = start_pos + cluster_size // 2
 
     series_data = []
     for bar_idx, (c, val) in enumerate(all_bars):

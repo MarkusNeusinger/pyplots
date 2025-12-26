@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 silhouette-basic: Silhouette Plot
 Library: highcharts unknown | Python 3.13.11
-Quality: 86/100 | Created: 2025-12-26
+Quality: 90/100 | Created: 2025-12-26
 """
 
 import tempfile

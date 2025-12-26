@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-matrix: Scatter Plot Matrix
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 65/100 | Created: 2025-12-26
+Quality: 82/100 | Created: 2025-12-26
 """
 
 import altair as alt

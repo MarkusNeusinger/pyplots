@@ -9,7 +9,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import type { PlotImage, LibraryInfo, SpecInfo } from '../types';
-import type { ImageSize } from '../constants';
+import { BATCH_SIZE, type ImageSize } from '../constants';
 
 interface ImageCardProps {
   image: PlotImage;
@@ -23,6 +23,7 @@ interface ImageCardProps {
   onTooltipToggle: (id: string | null) => void;
   onClick: () => void;
   onTrackEvent?: (name: string, props?: Record<string, string | undefined>) => void;
+  onImageLoad?: () => void;
 }
 
 export function ImageCard({
@@ -37,6 +38,7 @@ export function ImageCard({
   onTooltipToggle,
   onClick,
   onTrackEvent,
+  onImageLoad,
 }: ImageCardProps) {
   const [copied, setCopied] = useState(false);
   const labelFontSize = imageSize === 'compact' ? '0.65rem' : '0.8rem';
@@ -60,17 +62,20 @@ export function ImageCard({
     }
   }, [image.code, image.library, image.spec_id, selectedSpec, onTrackEvent]);
 
+  // Animate first batch only (initial load), subsequent batches appear instantly
+  const isFirstBatch = index < BATCH_SIZE;
+
   return (
     <Box
-      sx={{
-        animation: 'fadeIn 0.6s ease-out',
-        animationDelay: `${index * 0.1}s`,
+      sx={isFirstBatch ? {
+        animation: 'fadeIn 0.4s ease-out',
+        animationDelay: `${index * 0.03}s`,
         animationFillMode: 'backwards',
         '@keyframes fadeIn': {
-          from: { opacity: 0, transform: 'translateY(20px)' },
+          from: { opacity: 0, transform: 'translateY(10px)' },
           to: { opacity: 1, transform: 'translateY(0)' },
         },
-      }}
+      } : undefined}
     >
       <Card
         elevation={0}
@@ -146,9 +151,11 @@ export function ImageCard({
             objectFit: 'contain',
             bgcolor: '#fff',
           }}
+          onLoad={onImageLoad}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.style.display = 'none';
+            onImageLoad?.(); // Count errors as loaded too
           }}
         />
       </Card>

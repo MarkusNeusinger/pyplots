@@ -73,6 +73,8 @@ function App() {
   const [allImages, setAllImages] = useState<PlotImage[]>([]);
   const [displayedImages, setDisplayedImages] = useState<PlotImage[]>([]);
   const [hasMore, setHasMore] = useState(false);
+  const [loadedImageCount, setLoadedImageCount] = useState(0);
+  const [showLoadingIndicator, setShowLoadingIndicator] = useState(false);
 
   // UI state
   const [loading, setLoading] = useState(true);
@@ -89,6 +91,19 @@ function App() {
   useEffect(() => {
     localStorage.setItem('imageSize', imageSize);
   }, [imageSize]);
+
+  // Loading indicator logic: show immediately when loading, hide with short delay after loaded
+  useEffect(() => {
+    const stillLoading = loadedImageCount < displayedImages.length;
+
+    if (stillLoading) {
+      setShowLoadingIndicator(true);
+    } else {
+      // Short delay for browser to finish rendering
+      const timer = setTimeout(() => setShowLoadingIndicator(false), 150);
+      return () => clearTimeout(timer);
+    }
+  }, [loadedImageCount, displayedImages.length]);
 
   // Refs
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -320,6 +335,7 @@ function App() {
         setAllImages(shuffled);
         setDisplayedImages(shuffled.slice(0, BATCH_SIZE));
         setHasMore(shuffled.length > BATCH_SIZE);
+        setLoadedImageCount(0);
       } catch (err) {
         if (abortController.signal.aborted) return;
         setError(`Error loading images: ${err}`);
@@ -375,6 +391,7 @@ function App() {
           selectedLibrary={selectedLibrary}
           loading={loading}
           hasMore={hasMore}
+          isLoadingMore={showLoadingIndicator}
           isTransitioning={false}
           librariesData={librariesData}
           specsData={specsData}
@@ -384,6 +401,7 @@ function App() {
           onTooltipToggle={setOpenImageTooltip}
           onCardClick={handleCardClick}
           onTrackEvent={trackEvent}
+          onImageLoad={() => setLoadedImageCount(c => c + 1)}
         />
 
         {!loading && allImages.length === 0 && !isFiltersEmpty(activeFilters) && (

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-marginal: Scatter Plot with Marginal Distributions
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-26
@@ -24,38 +24,55 @@ df = pd.DataFrame({"x": x, "y": y})
 x_min, x_max = df["x"].min() - 0.5, df["x"].max() + 0.5
 y_min, y_max = df["y"].min() - 0.5, df["y"].max() + 0.5
 
-# Main scatter plot
+# Main scatter plot with integrated title
 main_scatter = (
     ggplot(df, aes(x="x", y="y"))  # noqa: F405
     + geom_point(color="#306998", size=4, alpha=0.65)  # noqa: F405
-    + labs(x="X Value", y="Y Value")  # noqa: F405
+    + labs(  # noqa: F405
+        x="X Value", y="Y Value", title="scatter-marginal · letsplot · pyplots.ai"
+    )
     + scale_x_continuous(limits=[x_min, x_max])  # noqa: F405
     + scale_y_continuous(limits=[y_min, y_max])  # noqa: F405
     + theme_minimal()  # noqa: F405
     + theme(  # noqa: F405
+        plot_title=element_text(size=24),  # noqa: F405
         axis_title=element_text(size=20),  # noqa: F405
         axis_text=element_text(size=16),  # noqa: F405
     )
 )
 
-# Top marginal histogram
+# Top marginal histogram with KDE overlay
 top_hist = (
     ggplot(df, aes(x="x"))  # noqa: F405
-    + geom_histogram(fill="#306998", color="white", alpha=0.7, bins=25)  # noqa: F405
+    + geom_histogram(  # noqa: F405
+        aes(y="..density.."),  # noqa: F405
+        fill="#306998",
+        color="white",
+        alpha=0.6,
+        bins=25,
+    )
+    + geom_density(color="#DC2626", size=1.5, alpha=0.8)  # noqa: F405
     + scale_x_continuous(limits=[x_min, x_max])  # noqa: F405
     + theme_minimal()  # noqa: F405
     + theme(  # noqa: F405
         axis_title=element_blank(),  # noqa: F405
         axis_text_x=element_blank(),  # noqa: F405
         axis_ticks_x=element_blank(),  # noqa: F405
-        axis_text_y=element_text(size=14),  # noqa: F405
+        axis_text_y=element_text(size=16),  # noqa: F405
     )
 )
 
-# Right marginal histogram
+# Right marginal histogram with KDE overlay
 right_hist = (
     ggplot(df, aes(x="y"))  # noqa: F405
-    + geom_histogram(fill="#306998", color="white", alpha=0.7, bins=25)  # noqa: F405
+    + geom_histogram(  # noqa: F405
+        aes(y="..density.."),  # noqa: F405
+        fill="#306998",
+        color="white",
+        alpha=0.6,
+        bins=25,
+    )
+    + geom_density(color="#DC2626", size=1.5, alpha=0.8)  # noqa: F405
     + coord_flip()  # noqa: F405
     + scale_x_continuous(limits=[y_min, y_max])  # noqa: F405
     + theme_minimal()  # noqa: F405
@@ -63,29 +80,20 @@ right_hist = (
         axis_title=element_blank(),  # noqa: F405
         axis_text_y=element_blank(),  # noqa: F405
         axis_ticks_y=element_blank(),  # noqa: F405
-        axis_text_x=element_text(size=14),  # noqa: F405
+        axis_text_x=element_text(size=16),  # noqa: F405
+        plot_margin=[0, 15, 0, 0],  # noqa: F405
     )
 )
 
-# Title plot (text-only)
-title_plot = (
-    ggplot()  # noqa: F405
-    + geom_blank()  # noqa: F405
-    + ggtitle("scatter-marginal · letsplot · pyplots.ai")  # noqa: F405
-    + theme_void()  # noqa: F405
-    + theme(plot_title=element_text(size=24, hjust=0.5))  # noqa: F405
-)
-
-# Combine using ggbunch (new API)
+# Combine using ggbunch
 # Regions: (x, y, width, height) - relative coordinates
 combined = (
     ggbunch(  # noqa: F405
-        [title_plot, top_hist, main_scatter, right_hist],
+        [top_hist, main_scatter, right_hist],
         [
-            (0, 0, 1.0, 0.08),  # Title at top
-            (0, 0.08, 0.8, 0.2),  # Top histogram
-            (0, 0.28, 0.8, 0.72),  # Main scatter plot
-            (0.8, 0.28, 0.2, 0.72),  # Right histogram
+            (0, 0.08, 0.76, 0.20),  # Top histogram (below title space)
+            (0, 0.28, 0.76, 0.72),  # Main scatter plot (with title at top)
+            (0.76, 0.28, 0.24, 0.72),  # Right histogram (wider for tick labels)
         ],
     )
     + ggsize(1600, 900)  # noqa: F405

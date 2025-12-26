@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 alluvial-basic: Basic Alluvial Diagram
-Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import pandas as pd
@@ -28,8 +28,6 @@ from lets_plot.export import ggsave
 LetsPlot.setup_html()
 
 # Voter migration data across three election cycles
-# Each row: (time_point, from_party, to_party, value)
-# For first time point, from_party == to_party (initial distribution)
 elections = ["2016", "2020", "2024"]
 parties = ["Democrats", "Republicans", "Independents", "Non-Voters"]
 
@@ -94,6 +92,22 @@ node_width = 0.03
 node_gap = 0.02
 total_flow = sum(totals_2016.values())
 
+# Colors for parties - used for both nodes and flows
+party_colors = {"Democrats": "#306998", "Republicans": "#DC2626", "Independents": "#FFD43B", "Non-Voters": "#9CA3AF"}
+
+# Blended colors for transitions (source -> destination)
+# Create color mapping for each flow combination
+blend_colors = {}
+for src in parties:
+    for dst in parties:
+        if src == dst:
+            # Same party - use solid color
+            blend_colors[f"{src}_{dst}"] = party_colors[src]
+        else:
+            # Different parties - use destination color with lower saturation
+            # to indicate the transition direction
+            blend_colors[f"{src}_{dst}"] = party_colors[dst]
+
 
 # Calculate node positions at each time point
 def calculate_node_positions(totals, x_pos):
@@ -152,9 +166,20 @@ def add_flows(flows, time_idx, src_positions, tgt_positions, x_left, x_right):
         x_polygon = x_vals_top + x_vals_bottom[::-1]
         y_polygon = y_vals_top + y_vals_bottom[::-1]
 
+        # Use destination party for coloring to show where voters went
         flow_id = f"t{time_idx}_{from_party}_{to_party}"
+        flow_color_key = f"{from_party}_{to_party}"
         for x, y in zip(x_polygon, y_polygon, strict=False):
-            flow_data.append({"x": x, "y": y, "flow_id": flow_id, "from_party": from_party, "to_party": to_party})
+            flow_data.append(
+                {
+                    "x": x,
+                    "y": y,
+                    "flow_id": flow_id,
+                    "flow_color": flow_color_key,
+                    "from_party": from_party,
+                    "to_party": to_party,
+                }
+            )
 
 
 # Add flows for 2016->2020
@@ -233,14 +258,11 @@ for party in parties:
 
 df_labels = pd.DataFrame(labels)
 
-# Colors for parties
-party_colors = {"Democrats": "#306998", "Republicans": "#DC2626", "Independents": "#FFD43B", "Non-Voters": "#9CA3AF"}
-
-# Create the plot
+# Create the plot - flows colored by destination to show where voters went
 plot = (
     ggplot()
     + geom_polygon(
-        aes(x="x", y="y", group="flow_id", fill="from_party"), data=df_flows, alpha=0.55, color="white", size=0.1
+        aes(x="x", y="y", group="flow_id", fill="to_party"), data=df_flows, alpha=0.55, color="white", size=0.1
     )
     + geom_rect(
         aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="party"), data=df_nodes, color="#1A1A1A", size=1
@@ -262,7 +284,7 @@ plot = (
             "Non-Voters": party_colors["Non-Voters"],
         }
     )
-    + labs(title="Voter Migration · alluvial-basic · letsplot · pyplots.ai")
+    + labs(title="alluvial-basic · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(
         plot_title=element_text(size=28, face="bold"),

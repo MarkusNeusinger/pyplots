@@ -1,0 +1,25 @@
+library: altair
+specification_id: confusion-matrix
+created: '2025-12-26T17:37:13Z'
+updated: '2025-12-26T17:41:34Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20526592033
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/altair/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent text contrast logic using alt.condition to switch between white and
+    dark text based on cell value
+  - Clean declarative Altair style with proper encoding types (:N, :Q)
+  - Well-structured long-form DataFrame transformation for Altair grammar
+  - Good use of layered composition (heatmap + text)
+  - Square aspect ratio appropriate for confusion matrix
+  - White cell borders enhance visual clarity
+  weaknesses:
+  - Missing interactive tooltips which are a distinctive Altair feature
+  - Legend positioning could be optimized to be closer to the plot

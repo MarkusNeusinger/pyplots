@@ -1,7 +1,7 @@
 """ pyplots.ai
 violin-split: Split Violin Plot
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-25
+Quality: 93/100 | Created: 2025-12-26
 """
 
 import matplotlib.pyplot as plt
@@ -94,15 +94,21 @@ for i, dept in enumerate(departments):
         body.set_linewidth(1.5)
         body.set_alpha(0.8)
 
-    # Add quartile lines for males (left side)
+    # Add consistent quartile markers with contrasting outlines
     q1_m, med_m, q3_m = np.percentile(male_vals, [25, 50, 75])
-    ax.hlines(med_m, i - 0.25, i, colors="white", linewidth=3, zorder=3)
-    ax.hlines([q1_m, q3_m], i - 0.15, i, colors="white", linewidth=1.5, zorder=3)
-
-    # Add quartile lines for females (right side)
     q1_f, med_f, q3_f = np.percentile(female_vals, [25, 50, 75])
-    ax.hlines(med_f, i, i + 0.25, colors="black", linewidth=3, zorder=3)
-    ax.hlines([q1_f, q3_f], i, i + 0.15, colors="black", linewidth=1.5, zorder=3)
+
+    # Male side (left) - white lines with dark edge for visibility
+    ax.hlines(med_m, i - 0.28, i - 0.02, colors="white", linewidth=4, zorder=3)
+    ax.hlines(med_m, i - 0.28, i - 0.02, colors="#1a1a1a", linewidth=1, zorder=4)
+    ax.hlines([q1_m, q3_m], i - 0.18, i - 0.02, colors="white", linewidth=2.5, zorder=3)
+    ax.hlines([q1_m, q3_m], i - 0.18, i - 0.02, colors="#1a1a1a", linewidth=0.8, zorder=4)
+
+    # Female side (right) - same style for consistency
+    ax.hlines(med_f, i + 0.02, i + 0.28, colors="white", linewidth=4, zorder=3)
+    ax.hlines(med_f, i + 0.02, i + 0.28, colors="#1a1a1a", linewidth=1, zorder=4)
+    ax.hlines([q1_f, q3_f], i + 0.02, i + 0.18, colors="white", linewidth=2.5, zorder=3)
+    ax.hlines([q1_f, q3_f], i + 0.02, i + 0.18, colors="#1a1a1a", linewidth=0.8, zorder=4)
 
 # Styling
 ax.set_xticks(positions)
@@ -115,12 +121,12 @@ ax.tick_params(axis="both", labelsize=16)
 # Format y-axis with dollar amounts
 ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f"${x / 1000:.0f}K"))
 
-# Add legend
+# Add legend - positioned outside plot area to avoid overlap with violins
 legend_elements = [
     Patch(facecolor=color_male, edgecolor="black", alpha=0.8, label="Male"),
     Patch(facecolor=color_female, edgecolor="black", alpha=0.8, label="Female"),
 ]
-ax.legend(handles=legend_elements, fontsize=16, loc="upper right")
+ax.legend(handles=legend_elements, fontsize=16, loc="upper left", bbox_to_anchor=(0.01, 0.99), framealpha=0.9)
 
 # Grid
 ax.grid(True, alpha=0.3, linestyle="--", axis="y")

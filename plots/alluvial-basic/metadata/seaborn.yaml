@@ -1,10 +1,10 @@
 library: seaborn
 specification_id: alluvial-basic
-created: '2025-12-24T22:18:59Z'
-updated: '2025-12-24T22:36:50Z'
+created: '2025-12-26T10:38:20Z'
+updated: '2025-12-26T10:47:19Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20494683116
-issue: 0
+workflow_run: 20520941799
+issue: 1878
 python_version: 3.13.11
 library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/seaborn/plot.png
@@ -13,14 +13,14 @@ preview_html: null
 quality_score: 91
 review:
   strengths:
-  - Excellent visual clarity with well-chosen colorblind-safe palette
-  - Smooth Bezier curves for flow bands create professional appearance
-  - Proper use of transparency (alpha=0.35) allows overlapping flows to remain readable
-  - Labels on both left and right sides improve readability without a separate legend
-  - Title follows exact spec format
-  - Realistic election data scenario that clearly demonstrates voter migration patterns
-  - Clean white background with no distracting grid elements
+  - Excellent use of colorblind-safe palette from seaborn
+  - Clear visual hierarchy with party labels on both left and right edges including
+    voter counts
+  - Smooth curved Bezier flow bands with appropriate transparency
+  - Good data narrative showing voter migration patterns across election cycles
+  - Adaptive alpha for smaller flows improves visibility
+  - Clean white background and proper title format
   weaknesses:
-  - Seaborn used only for styling (set_style, set_context) rather than core plotting
-    functions - acceptable since seaborn has no native alluvial support
-  - No units or scale information displayed on the diagram
+  - No formal legend box (inline labels work but a legend would be cleaner)
+  - Limited use of seaborn core plotting functions since alluvial diagrams require
+    custom matplotlib patches

@@ -1,7 +1,7 @@
 """ pyplots.ai
 alluvial-basic: Basic Alluvial Diagram
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Quality: 91/100 | Created: 2025-12-26
 """
 
 import matplotlib.patches as mpatches
@@ -22,12 +22,13 @@ np.random.seed(42)
 years = ["2012", "2016", "2020", "2024"]
 parties = ["Democratic", "Republican", "Independent", "Other"]
 
-# Colors for each party - using colorblind-safe palette
+# Colors for each party - using seaborn's colorblind-safe palette
+palette = sns.color_palette("colorblind", n_colors=8)
 party_colors = {
-    "Democratic": "#306998",  # Python Blue
-    "Republican": "#D64541",  # Red (distinct from blue)
-    "Independent": "#FFD43B",  # Python Yellow
-    "Other": "#7F8C8D",  # Gray
+    "Democratic": palette[0],  # Blue
+    "Republican": palette[3],  # Red
+    "Independent": palette[2],  # Green
+    "Other": palette[7],  # Gray
 }
 
 # Voter counts (millions) at each time point
@@ -140,15 +141,20 @@ for year_idx, year in enumerate(years):
         )
         ax.add_patch(rect)
 
-        # Add party labels on both first and last columns for balance
+        # Add party labels with voter counts on both first and last columns
+        vote_millions = voter_counts[party_idx, year_idx]
+        # Use compact format: "Party (XM)" on single line
+        label_text = f"{party} ({vote_millions:.0f}M)"
+        font_size = 13
+
         if year_idx == 0:
             ax.text(
                 x - bar_width / 2 - 0.15,
                 (y_bottom + y_top) / 2,
-                party,
+                label_text,
                 ha="right",
                 va="center",
-                fontsize=16,
+                fontsize=font_size,
                 fontweight="bold",
                 color=party_colors[party],
             )
@@ -156,18 +162,27 @@ for year_idx, year in enumerate(years):
             ax.text(
                 x + bar_width / 2 + 0.15,
                 (y_bottom + y_top) / 2,
-                party,
+                label_text,
                 ha="left",
                 va="center",
-                fontsize=16,
+                fontsize=font_size,
                 fontweight="bold",
                 color=party_colors[party],
             )
 
         y_bottom = y_top
 
-    # Add year labels at top
-    ax.text(x, total_height + 3, year, ha="center", va="bottom", fontsize=20, fontweight="bold")
+    # Add year labels with total voters at top
+    year_total_display = voter_counts[:, year_idx].sum()
+    ax.text(
+        x,
+        total_height + 3,
+        f"{year}\n({year_total_display:.1f}M total)",
+        ha="center",
+        va="bottom",
+        fontsize=18,
+        fontweight="bold",
+    )
 
 # Draw flows between consecutive time points
 for flow_idx, flow_dict in enumerate(flows):
@@ -226,7 +241,12 @@ for flow_idx, flow_dict in enumerate(flows):
             Path.CLOSEPOLY,
         ]
         path = Path(verts, codes)
-        patch = mpatches.PathPatch(path, facecolor=party_colors[source_party], edgecolor="none", alpha=0.35)
+        # Increase alpha for smaller flows to improve visibility
+        min_height = min(source_height, target_height)
+        alpha = 0.55 if min_height < 3 else 0.40
+        patch = mpatches.PathPatch(
+            path, facecolor=party_colors[source_party], edgecolor=party_colors[source_party], linewidth=0.5, alpha=alpha
+        )
         ax.add_patch(patch)
 
         # Update offsets
@@ -234,8 +254,8 @@ for flow_idx, flow_dict in enumerate(flows):
         target_offsets[target_party] = y1_top
 
 # Styling
-ax.set_xlim(-2.5, 13.0)
-ax.set_ylim(-5, 115)
+ax.set_xlim(-2.8, 13.3)
+ax.set_ylim(-8, 120)
 ax.set_aspect("auto")
 
 # Remove axes
@@ -249,21 +269,19 @@ ax.set_facecolor("white")
 fig.patch.set_facecolor("white")
 
 # Title (strictly following spec-id · library · pyplots.ai format)
-ax.set_title("alluvial-basic \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24, fontweight="bold", pad=20)
+ax.set_title("alluvial-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=25)
 
-# Add subtitle
+# Add subtitle with data context and scale information
 ax.text(
     5,
-    -3,
-    "Flow width represents proportion of voters transitioning between parties",
+    -5,
+    "US Voter Migration 2012-2024 | Values in millions | Flow width proportional to transitions",
     ha="center",
     va="top",
     fontsize=14,
     color="#666666",
     style="italic",
 )
-
-# Legend not needed - party labels are shown on both left and right sides
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")

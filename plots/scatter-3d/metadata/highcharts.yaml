@@ -1,10 +1,10 @@
 library: highcharts
 specification_id: scatter-3d
-created: '2025-12-25T08:42:11Z'
-updated: '2025-12-25T08:48:42Z'
+created: '2025-12-26T10:30:53Z'
+updated: '2025-12-26T10:33:09Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20502098016
-issue: 0
+workflow_run: 20520860082
+issue: 1945
 python_version: 3.13.11
 library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/highcharts/plot.png
@@ -13,13 +13,19 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/hig
 quality_score: 91
 review:
   strengths:
-  - Excellent 3D visualization with clear spatial separation of three distinct clusters
-  - Proper use of Highcharts 3D module with scatter3d chart type and appropriate 3D
-    frame styling
-  - Colorblind-safe palette (Python Blue, Python Yellow, Teal) with good visual distinction
-  - 'Title follows exact spec format: scatter-3d · highcharts · pyplots.ai'
-  - Clean KISS structure with reproducible seed (42) and appropriate data generation
+  - Excellent title format following the required pattern with clear subtitle
+  - Three clearly distinguishable clusters using colorblind-safe palette (blue, yellow,
+    teal)
+  - Proper 3D visualization with subtle frame planes providing depth cues
+  - All axis labels include units as recommended in the spec
+  - Good marker sizing and opacity (radius 14, opacity 0.8) for 150 data points
+  - Code is reproducible with np.random.seed(42)
+  - Generates both PNG screenshot and interactive HTML output
+  - Clean 3D perspective with appropriate alpha/beta angles
   weaknesses:
-  - Axis labels with units are good but tick label font size appears slightly small
-    relative to the large canvas
-  - Legend markers could be slightly larger for better visibility at full resolution
+  - Legend positioning could be improved; currently isolated with significant empty
+    space between chart and legend
+  - Missing explicit drag-to-rotate interactivity which is a signature Highcharts
+    3D feature mentioned in the spec
+  - Uses raw JavaScript config rather than highcharts-core Python library, making
+    it less maintainable

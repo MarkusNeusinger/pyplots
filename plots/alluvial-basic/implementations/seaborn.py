@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 alluvial-basic: Basic Alluvial Diagram
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-26
@@ -22,12 +22,13 @@ np.random.seed(42)
 years = ["2012", "2016", "2020", "2024"]
 parties = ["Democratic", "Republican", "Independent", "Other"]
 
-# Colors for each party - using colorblind-safe palette
+# Colors for each party - using seaborn's colorblind-safe palette
+palette = sns.color_palette("colorblind", n_colors=8)
 party_colors = {
-    "Democratic": "#306998",  # Python Blue
-    "Republican": "#D64541",  # Red (distinct from blue)
-    "Independent": "#FFD43B",  # Python Yellow
-    "Other": "#7F8C8D",  # Gray
+    "Democratic": palette[0],  # Blue
+    "Republican": palette[3],  # Red
+    "Independent": palette[2],  # Green
+    "Other": palette[7],  # Gray
 }
 
 # Voter counts (millions) at each time point
@@ -240,7 +241,12 @@ for flow_idx, flow_dict in enumerate(flows):
             Path.CLOSEPOLY,
         ]
         path = Path(verts, codes)
-        patch = mpatches.PathPatch(path, facecolor=party_colors[source_party], edgecolor="none", alpha=0.35)
+        # Increase alpha for smaller flows to improve visibility
+        min_height = min(source_height, target_height)
+        alpha = 0.55 if min_height < 3 else 0.40
+        patch = mpatches.PathPatch(
+            path, facecolor=party_colors[source_party], edgecolor=party_colors[source_party], linewidth=0.5, alpha=alpha
+        )
         ax.add_patch(patch)
 
         # Update offsets
@@ -263,13 +269,13 @@ ax.set_facecolor("white")
 fig.patch.set_facecolor("white")
 
 # Title (strictly following spec-id · library · pyplots.ai format)
-ax.set_title("US Voter Migration · alluvial-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=25)
+ax.set_title("alluvial-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=25)
 
-# Add subtitle with scale information
+# Add subtitle with data context and scale information
 ax.text(
     5,
     -5,
-    "Values in millions of voters | Flow width proportional to voter transitions",
+    "US Voter Migration 2012-2024 | Values in millions | Flow width proportional to transitions",
     ha="center",
     va="top",
     fontsize=14,

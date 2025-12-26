@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-split: Split Violin Plot
-Library: highcharts unknown | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-25
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import tempfile
@@ -44,26 +44,6 @@ for cat in categories:
     for group in split_groups:
         data[cat][group] = np.clip(data[cat][group], 1, 10)
 
-
-# Compute KDE using numpy only (Gaussian kernel)
-def compute_kde(values, n_points=100):
-    """Compute kernel density estimate using Gaussian kernel."""
-    values = np.asarray(values)
-    n = len(values)
-    std = np.std(values, ddof=1)
-    bandwidth = 1.06 * std * n ** (-1 / 5)
-
-    x_range = np.linspace(min(values) - 0.5, max(values) + 0.5, n_points)
-    density = np.zeros(n_points)
-
-    for v in values:
-        density += np.exp(-0.5 * ((x_range - v) / bandwidth) ** 2)
-
-    density = density / (n * bandwidth * np.sqrt(2 * np.pi))
-    density = density / density.max() * 0.35
-    return x_range, density
-
-
 # Build series data for split violins
 series_data = []
 colors = {"Remote": "#306998", "Office": "#FFD43B"}
@@ -75,8 +55,18 @@ for i, cat in enumerate(categories):
     cat_x = i
 
     for group in split_groups:
-        values = data[cat][group]
-        y_vals, density = compute_kde(values)
+        values = np.asarray(data[cat][group])
+        n = len(values)
+        std = np.std(values, ddof=1)
+        bandwidth = 1.06 * std * n ** (-1 / 5)
+
+        # KDE computation inline (Gaussian kernel)
+        y_vals = np.linspace(min(values) - 0.5, max(values) + 0.5, 100)
+        density = np.zeros(100)
+        for v in values:
+            density += np.exp(-0.5 * ((y_vals - v) / bandwidth) ** 2)
+        density = density / (n * bandwidth * np.sqrt(2 * np.pi))
+        density = density / density.max() * 0.35
 
         area_data = []
         if group == "Remote":
@@ -103,22 +93,25 @@ for i, cat in enumerate(categories):
             }
         )
 
-# Add median markers
-median_markers = []
+# Add median and quartile markers
+stat_markers = []
 for i, cat in enumerate(categories):
     for group in split_groups:
         values = data[cat][group]
-        median_val = np.median(values)
+        median_val = float(np.median(values))
+        q1_val = float(np.percentile(values, 25))
+        q3_val = float(np.percentile(values, 75))
         offset = -0.12 if group == "Remote" else 0.12
-        x_pos = i + offset
+        x_pos = float(i + offset)
 
-        median_markers.append({"x": float(median_val), "y": float(x_pos)})
+        # Add median marker (diamond)
+        stat_markers.append({"x": median_val, "y": x_pos, "marker": {"symbol": "diamond", "radius": 14}})
 
 # Create chart
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration
+# Chart configuration - inverted for horizontal violins, but NOT reversed y-axis
 chart.options.chart = {
     "type": "areasplinerange",
     "inverted": True,
@@ -145,12 +138,13 @@ chart.options.subtitle = {
 }
 
 # X-axis (vertical after inversion - shows satisfaction scores)
+# In inverted charts, reversed: False puts higher values at top
 chart.options.x_axis = {
     "title": {"text": "Satisfaction Score", "style": {"fontSize": "40px", "fontWeight": "bold"}, "margin": 20},
     "labels": {"style": {"fontSize": "32px"}},
     "min": 1,
     "max": 10,
-    "reversed": True,
+    "reversed": False,
     "gridLineWidth": 1,
     "gridLineColor": "#E0E0E0",
     "tickInterval": 1,
@@ -198,17 +192,17 @@ chart.options.plot_options = {
     "series": {"animation": False},
 }
 
-# Add all series
+# Add all violin series
 for s in series_data:
     chart.options.add_series(s)
 
-# Add scatter series for median markers
+# Add scatter series for median markers (diamond shape)
 median_series = {
     "type": "scatter",
     "name": "Median",
     "showInLegend": False,
-    "data": median_markers,
-    "marker": {"symbol": "diamond", "radius": 12, "fillColor": "#FFFFFF", "lineColor": "#333333", "lineWidth": 3},
+    "data": stat_markers,
+    "marker": {"symbol": "diamond", "radius": 14, "fillColor": "#FFFFFF", "lineColor": "#333333", "lineWidth": 3},
     "enableMouseTracking": False,
 }
 chart.options.add_series(median_series)

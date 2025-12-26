@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 residual-plot: Residual Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-26
@@ -40,15 +40,17 @@ custom_style = Style(
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
-    colors=("#306998", "#E74C3C", "#2C3E50", "#7F8C8D", "#7F8C8D"),
-    title_font_size=28,
-    label_font_size=18,
-    major_label_font_size=16,
-    legend_font_size=16,
-    value_font_size=14,
-    tooltip_font_size=14,
+    foreground_subtle="#999999",
+    colors=("#306998", "#E74C3C", "#2C3E50", "#AAAAAA", "#AAAAAA"),
+    title_font_size=32,
+    label_font_size=22,
+    major_label_font_size=20,
+    legend_font_size=24,
+    value_font_size=16,
+    tooltip_font_size=16,
     stroke_width=3,
+    guide_stroke_color="#DDDDDD",
+    guide_stroke_dasharray="3, 3",
 )
 
 # Create XY scatter chart for residual plot

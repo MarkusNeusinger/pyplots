@@ -1,0 +1,24 @@
+library: pygal
+specification_id: calibration-curve
+created: '2025-12-26T19:36:53Z'
+updated: '2025-12-26T20:03:31Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20528205173
+issue: 0
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/pygal/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of pygal interactive tooltip system with descriptive labels for
+    each data point
+  - High-contrast color scheme (dark green, dark red, gray) ensures accessibility
+  - Brier scores displayed in legend provide quantitative calibration metrics
+  - Correct title format following pyplots.ai convention
+  - Both PNG and HTML outputs leverage pygal dual static/interactive capability
+  - Clean KISS-style code structure with inline calibration computation
+  weaknesses:
+  - None significant - previous issues have been addressed

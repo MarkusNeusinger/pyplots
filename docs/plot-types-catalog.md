@@ -753,8 +753,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### feature-importance ✅
 **Description:** Horizontal bar chart showing feature importances from machine learning models, sorted by importance value.
 
-### calibration-curve 📋
-**Description:** Calibration plot comparing predicted probabilities to observed frequencies for probability calibration.
+### calibration-curve ✅
+**Description:** Calibration curve (reliability diagram) visualizing how well predicted probabilities match actual outcomes for probability calibration.
 
 ### lift-curve 📋
 **Description:** Lift chart showing model performance compared to random baseline for marketing/churn prediction.
@@ -771,11 +771,14 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### permutation-importance 📋
 **Description:** Permutation feature importance showing decrease in model score when feature is shuffled.
 
-### elbow-curve 📋
-**Description:** Elbow curve for determining optimal number of clusters in k-means clustering.
+### elbow-curve ✅
+**Description:** Elbow curve showing within-cluster sum of squares vs number of clusters for optimal k selection in k-means.
 
-### silhouette-plot 📋
-**Description:** Silhouette plot showing cluster quality and separation for clustering evaluation.
+### silhouette-basic ✅
+**Description:** Silhouette plot showing cluster cohesion and separation quality with per-sample silhouette coefficients.
+
+### residual-plot ✅
+**Description:** Residual plot displaying difference between observed and predicted values for regression model diagnostics.
 
 ### decision-boundary 📋
 **Description:** Decision boundary visualization showing classifier regions in 2D feature space.
@@ -883,7 +886,7 @@ Druckbare Vorlagen und spielerische Visualisierungen.
 ## Statistics
 
 - **Total Plot Types:** 235+
-- **Implemented:** 100 ✅
+- **Implemented:** 104 ✅
 - **Planned:** 135+ 📋
 - **Categories:** 31
 

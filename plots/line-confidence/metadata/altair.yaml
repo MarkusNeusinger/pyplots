@@ -1,7 +1,7 @@
 library: altair
 specification_id: line-confidence
 created: '2025-12-26T16:14:06Z'
-updated: '2025-12-26T16:16:50Z'
+updated: '2025-12-26T16:26:52Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20525434309
 issue: 0
@@ -10,18 +10,22 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-confidence/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-confidence/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-confidence/altair/plot.html
-quality_score: 86
+quality_score: 84
 review:
   strengths:
-  - Clean declarative composition using alt.layer() to combine band and line
-  - Confidence interval appropriately widens over time, demonstrating realistic forecast
-    uncertainty
-  - Both PNG and interactive HTML outputs with tooltips
-  - Excellent code structure with clear comments explaining the data generation
-  - Proper use of Altair encoding types (Q for quantitative)
+  - Clean declarative code structure using Altair layered chart approach
+  - Excellent visualization of widening confidence interval over time (realistic forecast
+    behavior)
+  - Good use of semi-transparent band with appropriate opacity (0.3)
+  - Correct title format following pyplots.ai conventions
+  - Interactive HTML version with tooltips demonstrates Altair interactivity features
+  - Colorblind-safe color scheme with good contrast between line and band
   weaknesses:
-  - Missing legend to identify the central line and confidence band (spec explicitly
-    requires this)
-  - Y-axis scale starts at 0 which creates unnecessary whitespace; data ranges from
-    ~95-180 but axis goes 0-200
-  - No point markers on the line to show actual data points (would enhance clarity)
+  - Legend is completely missing from the plot output despite code attempting to create
+    one via Fill/Color legend configuration - the legend is not rendering in the saved
+    PNG
+  - Y-axis includes excessive whitespace starting from 0 when data ranges from ~95-180;
+    the y_domain calculation exists in code but is not being applied correctly to
+    the final plot
+  - Point markers on the line could be slightly larger for better visibility at full
+    resolution

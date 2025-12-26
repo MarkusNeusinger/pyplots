@@ -1,0 +1,28 @@
+library: seaborn
+specification_id: scatter-color-mapped
+created: '2025-12-26T09:46:07Z'
+updated: '2025-12-26T09:48:20Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20520225313
+issue: 2004
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent visual clarity with proper font sizes and colorblind-safe viridis palette
+  - Well-chosen realistic scenario (temperature across geographic grid) that demonstrates
+    the color-mapping concept effectively
+  - Clean KISS code structure with proper reproducibility (seed=42)
+  - Colorbar is well-positioned with clear label including units
+  - Good use of alpha=0.8 for transparency to handle overlapping points
+  weaknesses:
+  - Size encoding duplicates the color encoding (both map to temperature) without
+    adding informational value
+  - Grid legend comment says disabled legend but size variation without legend may
+    confuse viewers
+  - Could leverage seaborn native hue legend capabilities instead of manually creating
+    ScalarMappable

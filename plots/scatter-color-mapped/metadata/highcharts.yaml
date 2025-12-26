@@ -1,0 +1,24 @@
+library: highcharts
+specification_id: scatter-color-mapped
+created: '2025-12-26T09:48:48Z'
+updated: '2025-12-26T09:51:06Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20520225388
+issue: 2004
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent viridis colormap implementation that is colorblind-safe
+  - Custom colorbar with gradient rendering demonstrates advanced Highcharts usage
+  - Clean tooltip showing all three data dimensions (X, Y, Temperature)
+  - Appropriate marker sizing with subtle outlines for point visibility
+  - Good use of Highcharts renderer API for the colorbar
+  weaknesses:
+  - Code contains a helper function (interpolate_color) instead of pure sequential
+    KISS structure
+  - Axis labels could include units (e.g., X Position (km) for the geographic scenario)

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-3d: 3D Scatter Plot
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-26
+Quality: 90/100 | Created: 2025-12-26
 """
 
 import altair as alt

@@ -1,0 +1,27 @@
+library: letsplot
+specification_id: line-confidence
+created: '2025-12-26T16:14:16Z'
+updated: '2025-12-26T16:16:45Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20525435953
+issue: 0
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-confidence/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-confidence/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-confidence/letsplot/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of ggplot2 grammar with geom_ribbon for confidence band
+  - Widening confidence interval effectively demonstrates forecast uncertainty growth
+    over time
+  - Good color scheme with contrasting yellow points on blue line
+  - Clean, KISS-compliant code structure with proper seed for reproducibility
+  - Appropriate text sizing for high-resolution output (scale=3)
+  - Realistic monthly sales forecast scenario
+  weaknesses:
+  - Missing legend to identify the central line and confidence band (spec explicitly
+    requires this)
+  - Grid lines render with dark outline on the confidence band edge rather than being
+    purely subtle

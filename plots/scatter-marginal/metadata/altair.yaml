@@ -1,7 +1,7 @@
 library: altair
 specification_id: scatter-marginal
 created: '2025-12-26T14:59:05Z'
-updated: '2025-12-26T15:01:29Z'
+updated: '2025-12-26T15:07:42Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20524417512
 issue: 0
@@ -10,19 +10,21 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-marginal/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-marginal/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-marginal/altair/plot.html
-quality_score: 88
+quality_score: 91
 review:
   strengths:
-  - Clean declarative syntax using Altair composition operators (& for vertical, |
-    for horizontal concatenation)
-  - Proper use of tooltips for interactivity
-  - Consistent color scheme across all chart components
-  - Well-configured font sizes via configure_axis and configure_title
-  - Saves both PNG and HTML outputs as appropriate for Altair
+  - Excellent compositional layout using vconcat/hconcat for proper marginal plot
+    arrangement
+  - Good use of shared axis domains ensuring perfect alignment between scatter and
+    marginals
+  - Interactive brush selection on scatter points with tooltips enhance user experience
+  - Clean, readable code following KISS principles
+  - Appropriate marker size and opacity for 150 data points
+  - Consistent color scheme throughout all plot elements
   weaknesses:
-  - Marginal histogram axes do not share scales with the main scatter plot - X-axis
-    ranges differ visually
-  - Should use Altair resolve_scale() to ensure shared axis domains between marginal
-    and scatter plots
-  - Does not leverage Altair distinctive features like selections, conditional encodings,
-    or interactivity beyond tooltips
+  - Missing subtle grid on the main scatter plot (spec mentions revealing density
+    patterns)
+  - Brush selection is decorative - does not filter/update marginal histograms (missed
+    opportunity for linked interactivity)
+  - Right marginal histogram shows Y-axis tick labels which creates slight visual
+    redundancy

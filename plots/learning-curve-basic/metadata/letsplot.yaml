@@ -1,0 +1,25 @@
+library: letsplot
+specification_id: learning-curve-basic
+created: '2025-12-26T19:13:26Z'
+updated: '2025-12-26T19:15:41Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20527872881
+issue: 0
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/learning-curve-basic/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/learning-curve-basic/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/learning-curve-basic/letsplot/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent visual clarity with well-chosen blue/yellow color scheme that provides
+    high contrast
+  - Perfect implementation of learning curve concept showing classic overfitting pattern
+  - Clean ggplot2 grammar usage with geom_ribbon for confidence bands
+  - Well-structured code following KISS principles
+  - Proper title format and legend placement
+  weaknesses:
+  - Y-axis label could include units/scale indicator (e.g., Accuracy Score 0-1)
+  - Could demonstrate more lets-plot specific features like tooltips or interactive
+    elements

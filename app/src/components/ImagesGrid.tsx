@@ -43,10 +43,10 @@ export function ImagesGrid({
 }: ImagesGridProps) {
   void _selectedLibrary; // Preserved for API compatibility
 
-  // Grid columns based on size: normal = fewer larger cards, compact = more smaller cards
+  // Grid columns: normal = max 3 cols, compact = max 6 cols
   const gridColumns = imageSize === 'compact'
-    ? { xs: 6, sm: 4, md: 3, lg: 2, xl: 2 }  // More columns, smaller cards
-    : { xs: 12, sm: 6, md: 4, lg: 3, xl: 3 }; // Fewer columns, larger cards
+    ? { xs: 6, sm: 4, md: 3, lg: 2, xl: 2 }  // 2→3→4→6→6 cols
+    : { xs: 12, sm: 6, md: 4, lg: 4, xl: 4 }; // 1→2→3→3→3 cols
 
   // Show loading spinner on initial load
   if (loading && !isTransitioning && images.length === 0) {

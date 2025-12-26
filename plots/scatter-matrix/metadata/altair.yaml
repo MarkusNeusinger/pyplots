@@ -1,7 +1,7 @@
 library: altair
 specification_id: scatter-matrix
 created: '2025-12-26T16:13:43Z'
-updated: '2025-12-26T16:31:42Z'
+updated: '2025-12-26T16:37:44Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20525446227
 issue: 0
@@ -10,22 +10,16 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-matrix/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-matrix/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-matrix/altair/plot.html
-quality_score: 82
+quality_score: 85
 review:
   strengths:
-  - Correct implementation of scatter matrix with histograms on diagonal and scatter
-    plots off-diagonal
-  - Excellent colorblind-safe color palette (blue, orange, green)
-  - Good use of transparency (opacity=0.6 for histograms, 0.7 for scatter) to handle
-    overlapping
-  - Appropriate use of the classic Iris dataset as realistic multivariate data
-  - Proper title formatting following the spec-id · library · pyplots.ai convention
-  - Interactive HTML output alongside PNG
-  - Tooltips enabled for interactivity
+  - Excellent use of Altair's declarative repeat() pattern for idiomatic SPLOM construction
+  - Colorblind-safe palette (blue/orange/green) provides clear species distinction
+  - Clean data generation with realistic Iris-like measurements and proper random
+    seed
+  - All axis labels include units (cm) for clarity
+  - Interactive tooltips enhance usability in HTML version
   weaknesses:
-  - Legend is too small and disconnected from the main matrix - should be larger and
-    better integrated
-  - Does not leverage Altair native repeat() or facet() functionality for creating
-    scatter matrices
-  - Font sizes could be slightly larger for better readability at full resolution
-  - Manual loop-based construction is less elegant than Altair declarative approach
+  - Diagonal cells show scatter (x=y lines) instead of required histograms/KDE for
+    univariate distributions as specified
+  - Legend could be larger or more prominently positioned for better visual balance

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 learning-curve-basic: Model Learning Curve
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-26
@@ -6,7 +6,7 @@ Quality: 85/100 | Created: 2025-12-26
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import Band, ColumnDataSource, Legend, LegendItem
+from bokeh.models import Band, ColumnDataSource, HoverTool, Legend, LegendItem
 from bokeh.plotting import figure
 
 
@@ -51,6 +51,7 @@ p = figure(
     title="learning-curve-basic · bokeh · pyplots.ai",
     x_axis_label="Training Set Size (samples)",
     y_axis_label="Accuracy Score",
+    tools="pan,wheel_zoom,box_zoom,reset,save",
 )
 
 # Add confidence bands for training scores (Python Blue)
@@ -83,39 +84,68 @@ p.add_layout(val_band)
 train_line = p.line(x="x", y="y", source=train_source, line_color="#306998", line_width=4, line_alpha=0.9)
 
 # Plot training score markers
-train_scatter = p.scatter(x="x", y="y", source=train_source, color="#306998", size=18, alpha=0.9)
+train_scatter = p.scatter(x="x", y="y", source=train_source, color="#306998", size=22, alpha=0.9)
 
 # Plot validation score line
 val_line = p.line(x="x", y="y", source=val_source, line_color="#E6A800", line_width=4, line_alpha=0.9)
 
 # Plot validation score markers
-val_scatter = p.scatter(x="x", y="y", source=val_source, color="#E6A800", size=18, alpha=0.9)
+val_scatter = p.scatter(x="x", y="y", source=val_source, color="#E6A800", size=22, alpha=0.9)
 
-# Create legend
+# Add hover tool for interactivity (Bokeh distinctive feature)
+hover_train = HoverTool(
+    renderers=[train_scatter],
+    tooltips=[
+        ("Type", "Training Score"),
+        ("Samples", "@x{0}"),
+        ("Accuracy", "@y{0.000}"),
+        ("Std Range", "@lower{0.000} - @upper{0.000}"),
+    ],
+    mode="mouse",
+)
+p.add_tools(hover_train)
+
+hover_val = HoverTool(
+    renderers=[val_scatter],
+    tooltips=[
+        ("Type", "Validation Score"),
+        ("Samples", "@x{0}"),
+        ("Accuracy", "@y{0.000}"),
+        ("Std Range", "@lower{0.000} - @upper{0.000}"),
+    ],
+    mode="mouse",
+)
+p.add_tools(hover_val)
+
+# Create legend - positioned inside plot area, top-left for better visibility
 legend = Legend(
     items=[
         LegendItem(label="Training Score", renderers=[train_line, train_scatter]),
         LegendItem(label="Validation Score", renderers=[val_line, val_scatter]),
     ],
-    location="bottom_right",
+    location="top_left",
 )
 
-p.add_layout(legend)
+p.add_layout(legend, "center")
 
-# Styling
-p.title.text_font_size = "32pt"
+# Styling - increased sizes for better readability on 4800x2700 canvas
+p.title.text_font_size = "36pt"
 p.title.text_font_style = "bold"
-p.xaxis.axis_label_text_font_size = "24pt"
-p.yaxis.axis_label_text_font_size = "24pt"
-p.xaxis.major_label_text_font_size = "18pt"
-p.yaxis.major_label_text_font_size = "18pt"
+p.xaxis.axis_label_text_font_size = "28pt"
+p.yaxis.axis_label_text_font_size = "28pt"
+p.xaxis.major_label_text_font_size = "22pt"
+p.yaxis.major_label_text_font_size = "22pt"
 
-# Legend styling
-p.legend.label_text_font_size = "20pt"
-p.legend.background_fill_alpha = 0.8
-p.legend.border_line_color = "#cccccc"
-p.legend.padding = 15
-p.legend.spacing = 10
+# Legend styling - larger and more prominent
+p.legend.label_text_font_size = "26pt"
+p.legend.background_fill_alpha = 0.9
+p.legend.background_fill_color = "#ffffff"
+p.legend.border_line_color = "#888888"
+p.legend.border_line_width = 2
+p.legend.padding = 20
+p.legend.spacing = 15
+p.legend.glyph_width = 40
+p.legend.glyph_height = 30
 
 # Grid styling
 p.grid.grid_line_alpha = 0.3

@@ -1,7 +1,7 @@
 """ pyplots.ai
 heatmap-correlation: Correlation Matrix Heatmap
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-25
+Quality: 94/100 | Created: 2025-12-26
 """
 
 import matplotlib.pyplot as plt
@@ -26,31 +26,32 @@ variables = [
 n_vars = len(variables)
 
 # Create a realistic correlation matrix with varied relationships
-# Start with identity and add realistic correlations
+# Including strong negative correlations to demonstrate full colormap range
 correlation_matrix = np.eye(n_vars)
 
 # Define realistic correlations between economic indicators
+# Includes extreme negative correlations (-0.85 to -0.95 range)
 correlations = {
     (0, 4): 0.72,  # GDP Growth - Stock Index (positive)
     (0, 5): 0.68,  # GDP Growth - Consumer Confidence (positive)
     (0, 6): 0.81,  # GDP Growth - Industrial Production (strong positive)
-    (0, 2): -0.65,  # GDP Growth - Unemployment (negative)
+    (0, 2): -0.89,  # GDP Growth - Unemployment (strong negative - Okun's Law)
     (1, 3): 0.58,  # Inflation - Interest Rate (positive)
     (1, 4): -0.42,  # Inflation - Stock Index (negative)
-    (2, 5): -0.73,  # Unemployment - Consumer Confidence (negative)
-    (2, 6): -0.55,  # Unemployment - Industrial Production (negative)
+    (2, 5): -0.91,  # Unemployment - Consumer Confidence (strong negative)
+    (2, 6): -0.85,  # Unemployment - Industrial Production (strong negative)
     (3, 4): -0.38,  # Interest Rate - Stock Index (negative)
     (4, 5): 0.62,  # Stock Index - Consumer Confidence (positive)
     (4, 6): 0.54,  # Stock Index - Industrial Production (positive)
-    (5, 6): 0.47,  # Consumer Confidence - Industrial Production (positive)
+    (5, 6): 0.77,  # Consumer Confidence - Industrial Production (positive)
     (0, 7): 0.35,  # GDP Growth - Trade Balance (weak positive)
     (1, 7): -0.28,  # Inflation - Trade Balance (weak negative)
     (6, 7): 0.41,  # Industrial Production - Trade Balance (positive)
     (0, 1): -0.22,  # GDP Growth - Inflation (weak negative)
     (0, 3): 0.15,  # GDP Growth - Interest Rate (weak positive)
-    (1, 2): 0.12,  # Inflation - Unemployment (weak positive)
+    (1, 2): 0.32,  # Inflation - Unemployment (Phillips curve inverse)
     (2, 3): 0.25,  # Unemployment - Interest Rate (weak positive)
-    (2, 4): -0.48,  # Unemployment - Stock Index (negative)
+    (2, 4): -0.78,  # Unemployment - Stock Index (strong negative)
     (3, 5): -0.31,  # Interest Rate - Consumer Confidence (negative)
     (3, 6): -0.19,  # Interest Rate - Industrial Production (weak negative)
     (5, 7): 0.23,  # Consumer Confidence - Trade Balance (weak positive)
@@ -88,6 +89,10 @@ ax.set_xticks(np.arange(n_vars))
 ax.set_yticks(np.arange(n_vars))
 ax.set_xticklabels(variables, fontsize=16, rotation=45, ha="right", rotation_mode="anchor")
 ax.set_yticklabels(variables, fontsize=16)
+
+# Add axis labels for explicit context
+ax.set_xlabel("Economic Indicators", fontsize=20, labelpad=15)
+ax.set_ylabel("Economic Indicators", fontsize=20, labelpad=15)
 
 # Annotate cells with correlation values
 for i in range(n_vars):

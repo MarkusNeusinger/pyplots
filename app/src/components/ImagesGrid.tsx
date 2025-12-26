@@ -88,9 +88,10 @@ export function ImagesGrid({
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: `repeat(auto-fit, minmax(${minWidth}px, ${maxWidth}px))`,
+              gridTemplateColumns: `repeat(auto-fill, minmax(${minWidth}px, ${maxWidth}px))`,
               justifyContent: 'center',
               gap: 3,
+              maxWidth: containerMax,
               mx: 'auto',
               opacity: isTransitioning ? 0 : 1,
               transition: 'opacity 0.15s ease-in-out',

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-color-mapped: Color-Mapped Scatter Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-26
@@ -63,7 +63,7 @@ chart = pygal.XY(
     x_title="Grid X Position (meters)",
     y_title="Grid Y Position (meters)",
     show_dots=True,
-    dots_size=12,
+    dots_size=16,
     stroke=False,  # No lines connecting points
     show_x_guides=True,
     show_y_guides=True,
@@ -73,12 +73,16 @@ chart = pygal.XY(
 )
 
 # Add data as separate series for each color bin (creates color-mapped effect)
+# Legend acts as colorbar reference scale with Temperature label
 for i in range(n_bins):
     mask = bin_indices == i
     if mask.sum() > 0:
         points = [(float(x[j]), float(y[j])) for j in range(n_points) if mask[j]]
-        # Label shows temperature range for this bin
-        label = f"{bin_edges[i]:.0f}-{bin_edges[i + 1]:.0f}°C"
+        # First bin includes variable name as colorbar title
+        if i == 0:
+            label = f"Temperature: {bin_edges[i]:.0f}-{bin_edges[i + 1]:.0f}°C"
+        else:
+            label = f"{bin_edges[i]:.0f}-{bin_edges[i + 1]:.0f}°C"
         chart.add(label, points)
 
 # Save outputs

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-matrix: Scatter Plot Matrix
-Library: pygal | Python 3.13
-Quality: pending | Created: 2025-12-26
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 85/100 | Created: 2025-12-26
 """
 
 from io import BytesIO

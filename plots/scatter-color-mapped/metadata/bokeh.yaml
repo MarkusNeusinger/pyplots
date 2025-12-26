@@ -1,0 +1,26 @@
+library: bokeh
+specification_id: scatter-color-mapped
+created: '2025-12-26T09:45:17Z'
+updated: '2025-12-26T09:47:30Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20520225349
+issue: 2004
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of Bokeh ColumnDataSource and color mapping system with LinearColorMapper
+  - Clean well-structured code following KISS principles
+  - Appropriate font sizes scaled for the 4800x2700 canvas
+  - Good use of Viridis colormap for accessibility
+  - Proper colorbar with title and well-configured label sizes
+  - Subtle grid styling with dashed lines and low alpha
+  - Both PNG and HTML outputs generated correctly
+  weaknesses:
+  - Axis labels are generic (X Value, Y Value) rather than descriptive with units
+  - Could add HoverTool for interactive tooltips in HTML output
+  - Points could be slightly larger (size=35-40) given the data density

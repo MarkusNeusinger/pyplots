@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-3d: 3D Scatter Plot
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-25
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import numpy as np
@@ -200,22 +200,22 @@ p.patch(
     line_color=axis_color,
 )
 
-# Add descriptive axis labels using Label annotations
+# Add descriptive axis labels with units
 x_label = Label(
-    x=x_axis_end_x + 0.35,
-    y=x_axis_end_y - 0.15,
-    text="X (Feature 1)",
-    text_font_size="48pt",
+    x=x_axis_end_x + 0.3,
+    y=x_axis_end_y - 0.2,
+    text="X-Axis (units)",
+    text_font_size="44pt",
     text_color="#333333",
     text_font_style="bold",
 )
 p.add_layout(x_label)
 
 y_label = Label(
-    x=y_axis_end_x - 0.4,
-    y=y_axis_end_y - 0.4,
-    text="Y (Feature 2)",
-    text_font_size="48pt",
+    x=y_axis_end_x - 0.5,
+    y=y_axis_end_y - 0.5,
+    text="Y-Axis (units)",
+    text_font_size="44pt",
     text_color="#333333",
     text_font_style="bold",
 )
@@ -224,19 +224,19 @@ p.add_layout(y_label)
 z_label = Label(
     x=z_axis_end_x + 0.25,
     y=z_axis_end_y + 0.15,
-    text="Z (Feature 3)",
-    text_font_size="48pt",
+    text="Z-Axis (units)",
+    text_font_size="44pt",
     text_color="#333333",
     text_font_style="bold",
 )
 p.add_layout(z_label)
 
-# Add color bar for z-value scale (representing 4th dimension)
+# Add color bar for elevation scale (distinct from Z-axis label)
 color_bar = ColorBar(
     color_mapper=color_mapper,
     width=60,
     location=(0, 0),
-    title="Z (Feature 3)",
+    title="Color: Elevation",
     title_text_font_size="32pt",
     major_label_text_font_size="24pt",
     title_standoff=20,

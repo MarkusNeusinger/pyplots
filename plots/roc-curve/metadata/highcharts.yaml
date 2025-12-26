@@ -1,0 +1,28 @@
+library: highcharts
+specification_id: roc-curve
+created: '2025-12-26T17:41:05Z'
+updated: '2025-12-26T17:52:23Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20526595882
+issue: 0
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/roc-curve/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/roc-curve/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/roc-curve/highcharts/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of AreaSeries with gradient fill to visually represent the AUC area
+    under the ROC curve
+  - Clean implementation following the library rules for Highcharts with inline JS
+    embedding
+  - Proper manual ROC curve calculation demonstrating the algorithm
+  - Good colorblind-safe color choices (Python Blue and olive yellow)
+  - Correctly formatted title following pyplots.ai convention
+  weaknesses:
+  - Legend position causes slight overlap with the x-axis 1 tick label
+  - Could leverage Highcharts tooltip feature to show threshold values at each point
+    on the curve
+  - Example data shows only one high-performing classifier; could include comparison
+    with a second model to better demonstrate ROC curve usage

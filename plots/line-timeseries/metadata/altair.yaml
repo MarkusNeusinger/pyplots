@@ -1,0 +1,30 @@
+library: altair
+specification_id: line-timeseries
+created: '2025-12-26T08:29:57Z'
+updated: '2025-12-26T08:32:13Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20519152412
+issue: 2006
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-timeseries/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-timeseries/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-timeseries/altair/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent text legibility with properly sized fonts (28pt title, 22pt axis titles,
+    18pt tick labels)
+  - Smart date formatting with %b %Y format adapts well to yearly time span
+  - Rotated x-axis labels at -45° effectively prevent overlap
+  - Realistic stock price data with 252 trading days accurately represents one year
+    of market data
+  - Interactive features (zoom/pan and tooltips) enhance user experience
+  - Clean, minimal code following KISS principles
+  weaknesses:
+  - Grid lines only appear on y-axis; x-axis grid would improve temporal data readability
+    as noted in spec
+  - Could leverage more Altair-specific features like selections, layered views, or
+    conditional formatting
+  - Starting price of exactly 100 feels artificial; a more realistic starting value
+    would improve authenticity

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-correlation: Correlation Matrix Heatmap
-Library: highcharts unknown | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-25
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import tempfile
@@ -62,7 +62,7 @@ chart.options.chart = {
 
 # Title
 chart.options.title = {
-    "text": "heatmap-correlation \u00b7 highcharts \u00b7 pyplots.ai",
+    "text": "heatmap-correlation · highcharts · pyplots.ai",
     "style": {"fontSize": "48px", "fontWeight": "bold"},
 }
 
@@ -87,14 +87,14 @@ chart.options.y_axis = {
     "reversed": False,
 }
 
-# Color axis - using blue-white-red (coolwarm) as spec suggests
+# Color axis - using colorblind-friendly blue-white-orange diverging palette
 chart.options.color_axis = {
     "min": -1,
     "max": 1,
     "stops": [
-        [0, "#3B4CC0"],  # Blue for negative correlations
+        [0, "#306998"],  # Python Blue for negative correlations
         [0.5, "#FFFFFF"],  # White for zero
-        [1, "#B40426"],  # Red for positive correlations
+        [1, "#E07020"],  # Orange for positive correlations (colorblind-friendly)
     ],
     "labels": {"style": {"fontSize": "24px"}},
     "tickInterval": 0.5,
@@ -124,14 +124,14 @@ chart.options.tooltip = {
 series = HeatmapSeries()
 series.name = "Correlation"
 series.data = heatmap_data
-series.border_width = 1  # Reduced from 3px for cleaner appearance
+series.border_width = 1
 series.border_color = "#ffffff"
 series.data_labels = {
     "enabled": True,
     "formatter": """function() {
         return Highcharts.numberFormat(this.point.value, 2);
     }""",
-    "style": {"fontSize": "26px", "fontWeight": "bold", "textOutline": "2px white"},
+    "style": {"fontSize": "32px", "fontWeight": "bold", "textOutline": "2px white"},
 }
 
 chart.add_series(series)

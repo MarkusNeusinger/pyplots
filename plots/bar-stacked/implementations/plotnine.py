@@ -1,19 +1,20 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-stacked: Stacked Bar Chart
-Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-25
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import pandas as pd
 from plotnine import (
     aes,
+    element_line,
     element_text,
     geom_bar,
     geom_text,
     ggplot,
     labs,
     position_stack,
-    scale_fill_manual,
+    scale_fill_brewer,
     theme,
     theme_minimal,
 )
@@ -50,18 +51,15 @@ data = {
 df = pd.DataFrame(data)
 
 # Order categories for consistent stacking (largest at bottom)
-category_order = ["Electronics", "Clothing", "Home", "Sports"]
+category_order = ["Sports", "Home", "Clothing", "Electronics"]
 df["Category"] = pd.Categorical(df["Category"], categories=category_order, ordered=True)
-
-# Colors - Python Blue, Python Yellow, plus colorblind-safe additions
-colors = {"Electronics": "#306998", "Clothing": "#FFD43B", "Home": "#7B68EE", "Sports": "#20B2AA"}
 
 # Plot
 plot = (
     ggplot(df, aes(x="Quarter", y="Sales", fill="Category"))
     + geom_bar(stat="identity", position="stack", width=0.7)
     + geom_text(aes(label="Sales"), position=position_stack(vjust=0.5), size=12, color="white", fontweight="bold")
-    + scale_fill_manual(values=colors)
+    + scale_fill_brewer(type="qual", palette="Set2")
     + labs(title="bar-stacked · plotnine · pyplots.ai", x="Quarter", y="Sales (thousands USD)", fill="Product Category")
     + theme_minimal()
     + theme(
@@ -72,6 +70,8 @@ plot = (
         legend_title=element_text(size=18),
         legend_text=element_text(size=16),
         legend_position="right",
+        panel_grid_major=element_line(color="#CCCCCC", alpha=0.3),
+        panel_grid_minor=element_line(color="#CCCCCC", alpha=0.15),
     )
 )
 

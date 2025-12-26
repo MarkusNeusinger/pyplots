@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 residual-plot: Residual Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-26
@@ -49,16 +49,17 @@ outlier_data = [[float(y_pred[i]), float(residuals[i])] for i in range(n_points)
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration
+# Chart configuration - increased margins for better label visibility
 chart.options.chart = {
     "type": "scatter",
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "marginBottom": 180,
-    "marginLeft": 220,
-    "marginTop": 120,
-    "marginRight": 180,
+    "marginBottom": 280,
+    "marginLeft": 280,
+    "marginTop": 150,
+    "marginRight": 220,
+    "spacingBottom": 50,
 }
 
 # Title
@@ -71,84 +72,88 @@ chart.options.title = {
 x_min = float(min(y_pred))
 x_max = float(max(y_pred))
 chart.options.x_axis = {
-    "title": {"text": "Fitted Values ($)", "style": {"fontSize": "36px"}, "margin": 20},
-    "labels": {"style": {"fontSize": "24px"}, "rotation": 0},
+    "title": {"text": "Fitted Values ($)", "style": {"fontSize": "42px", "fontWeight": "bold"}, "margin": 40},
+    "labels": {"style": {"fontSize": "32px"}, "rotation": 0, "y": 35},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.1)",
+    "gridLineColor": "rgba(0, 0, 0, 0.15)",
     "min": x_min - 10000,
     "max": x_max + 10000,
     "tickInterval": 50000,
 }
 
-# Y-axis (Residuals) - symmetric range around zero
+# Y-axis (Residuals) - symmetric range tightly around data with small buffer
 y_min = float(min(residuals))
 y_max = float(max(residuals))
-y_range = max(abs(y_min), abs(y_max)) * 1.05
+y_range = max(abs(y_min), abs(y_max)) * 1.05  # Tight symmetric range with 5% buffer
 chart.options.y_axis = {
-    "title": {"text": "Residuals ($)", "style": {"fontSize": "36px"}},
-    "labels": {"style": {"fontSize": "24px"}},
+    "title": {"text": "Residuals ($)", "style": {"fontSize": "42px", "fontWeight": "bold"}},
+    "labels": {"style": {"fontSize": "32px"}, "x": -10},
     "gridLineWidth": 1,
-    "gridLineColor": "rgba(0, 0, 0, 0.1)",
+    "gridLineColor": "rgba(0, 0, 0, 0.15)",
     "min": -y_range,
     "max": y_range,
+    "tickInterval": 25000,
+    "endOnTick": False,
+    "startOnTick": False,
     "plotLines": [
         {
             "value": 0,
             "color": "#306998",
-            "width": 4,
+            "width": 5,
             "zIndex": 5,
             "label": {
                 "text": "Zero Line (Perfect Fit)",
                 "align": "left",
-                "x": 10,
-                "style": {"fontSize": "26px", "color": "#306998", "fontWeight": "bold"},
+                "x": 15,
+                "style": {"fontSize": "32px", "color": "#306998", "fontWeight": "bold"},
             },
         },
         {
             "value": float(outlier_threshold),
             "color": "#E67E22",
-            "width": 3,
+            "width": 4,
             "dashStyle": "Dash",
             "zIndex": 4,
             "label": {
                 "text": "+2σ Threshold",
                 "align": "left",
-                "x": 10,
-                "style": {"fontSize": "24px", "color": "#E67E22"},
+                "x": 15,
+                "style": {"fontSize": "32px", "color": "#E67E22", "fontWeight": "bold"},
             },
         },
         {
             "value": float(-outlier_threshold),
             "color": "#E67E22",
-            "width": 3,
+            "width": 4,
             "dashStyle": "Dash",
             "zIndex": 4,
             "label": {
                 "text": "-2σ Threshold",
                 "align": "left",
-                "x": 10,
-                "style": {"fontSize": "24px", "color": "#E67E22"},
+                "x": 15,
+                "style": {"fontSize": "32px", "color": "#E67E22", "fontWeight": "bold"},
             },
         },
     ],
 }
 
-# Legend - position at top right
+# Legend - position at top right with larger, more readable text
 chart.options.legend = {
     "enabled": True,
     "align": "right",
     "verticalAlign": "top",
     "layout": "vertical",
-    "x": -50,
-    "y": 80,
-    "itemStyle": {"fontSize": "28px"},
-    "symbolRadius": 6,
-    "symbolWidth": 24,
-    "symbolHeight": 24,
-    "backgroundColor": "rgba(255, 255, 255, 0.9)",
-    "borderWidth": 1,
-    "borderColor": "#e0e0e0",
-    "padding": 15,
+    "x": -60,
+    "y": 100,
+    "itemStyle": {"fontSize": "36px", "fontWeight": "normal"},
+    "symbolRadius": 8,
+    "symbolWidth": 32,
+    "symbolHeight": 32,
+    "itemMarginBottom": 12,
+    "backgroundColor": "rgba(255, 255, 255, 0.95)",
+    "borderWidth": 2,
+    "borderColor": "#cccccc",
+    "padding": 20,
 }
 
 # Plot options

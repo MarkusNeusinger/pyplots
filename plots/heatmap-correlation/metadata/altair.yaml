@@ -1,10 +1,10 @@
 library: altair
 specification_id: heatmap-correlation
-created: '2025-12-25T08:37:00Z'
-updated: '2025-12-25T08:44:21Z'
+created: '2025-12-26T10:03:02Z'
+updated: '2025-12-26T10:06:56Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20502055364
-issue: 0
+workflow_run: 20520464727
+issue: 1948
 python_version: 3.13.11
 library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-correlation/altair/plot.png
@@ -13,16 +13,15 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-correl
 quality_score: 92
 review:
   strengths:
-  - Excellent diverging color scheme (red-blue) centered at zero for intuitive correlation
-    interpretation
-  - All correlation values clearly annotated with 2 decimal places and smart text
-    color contrast (white on dark, black on light)
-  - Good use of realistic financial metrics data that shows varied correlation patterns
-    (positive, negative, near-zero)
-  - Clean square layout with well-sized cells and proper variable ordering on both
-    axes
-  - 'Title follows required format exactly: heatmap-correlation · altair · pyplots.ai'
+  - Excellent diverging color scheme (redblue) properly centered at zero with domain
+    [-1, 1]
+  - Smart conditional text coloring (white on dark backgrounds, black on light) improves
+    readability
+  - Clean data generation approach creating valid symmetric correlation matrix
+  - Good use of Altair's layered composition (heatmap + text)
+  - Professional styling with white cell borders and bold fonts
   weaknesses:
-  - X-axis labels are rotated at -45 degrees which works but could be slightly harder
-    to read than horizontal or vertical
-  - Colorbar could be slightly larger for better visibility
+  - Missing axis titles (could add "Variables" or similar descriptive label)
+  - Triangle masking not implemented (spec mentions "consider masking upper or lower
+    triangle")
+  - Could add tooltips for interactivity since HTML is also saved

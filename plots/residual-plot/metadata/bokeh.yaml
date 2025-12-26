@@ -1,0 +1,25 @@
+library: bokeh
+specification_id: residual-plot
+created: '2025-12-26T19:36:43Z'
+updated: '2025-12-26T19:42:56Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20528204767
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-plot/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-plot/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/residual-plot/bokeh/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Bokeh-specific features (Band, Span, Label, ColumnDataSource)
+  - Clear differentiation between normal residuals and outliers using distinct colors
+  - Well-designed ±2 SD reference bands with proper labeling
+  - Realistic housing price prediction context with appropriate data scale
+  - Clean KISS code structure with proper reproducibility (seed=42)
+  weaknesses:
+  - The +2 SD and -2 SD labels are quite small and positioned very close to the band
+    edges, making them hard to read
+  - Legend text size could be slightly larger for better visibility at the 4800x2700
+    resolution

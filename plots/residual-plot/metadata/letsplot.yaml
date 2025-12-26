@@ -1,0 +1,28 @@
+library: letsplot
+specification_id: residual-plot
+created: '2025-12-26T19:38:27Z'
+updated: '2025-12-26T19:44:03Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20528206816
+issue: 0
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-plot/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-plot/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/residual-plot/letsplot/plot.html
+quality_score: 93
+review:
+  strengths:
+  - Excellent implementation of all spec requirements including y=0 reference line,
+    LOWESS smoothing, ±2σ outlier bands, and outlier coloring
+  - Clear U-shaped LOWESS curve effectively demonstrates non-linearity detection in
+    residuals
+  - Good data generation with deliberate heteroscedasticity and non-linear term to
+    showcase residual analysis
+  - Clean ggplot2-style grammar with proper lets-plot idioms
+  - Proper sizing (1600x900 base with scale=3) for 4800x2700 output
+  - Both PNG and HTML outputs generated correctly
+  weaknesses:
+  - Grid alpha at 0.5 is slightly too prominent; recommended 0.2-0.4 for subtler appearance
+  - Wildcard import pattern, while necessary for lets-plot, could be more explicit
+  - Could leverage lets-plot interactive tooltips in HTML output for enhanced exploration

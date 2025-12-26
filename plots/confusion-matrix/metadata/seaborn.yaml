@@ -1,0 +1,25 @@
+library: seaborn
+specification_id: confusion-matrix
+created: '2025-12-26T17:36:54Z'
+updated: '2025-12-26T17:40:13Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20526590019
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent visual clarity with well-sized annotations and contrasting text colors
+    on cells
+  - Properly follows specification with True/Predicted axis labels and Blues colormap
+  - Realistic sentiment analysis scenario with believable confusion patterns showing
+    systematic errors
+  - Clean, readable code following KISS principles
+  - Square format appropriate for symmetric confusion matrix
+  weaknesses:
+  - Minor colorbar label duplication (label set both in cbar_kws and manually)
+  - Data is deterministic but no explicit np.random.seed() for documentation purposes

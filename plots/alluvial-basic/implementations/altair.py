@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 alluvial-basic: Basic Alluvial Diagram
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-25
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import altair as alt
@@ -80,8 +80,8 @@ for src_t, src_cat_idx, tgt_cat_idx, val in flows_data:
 # Margins for layout
 top_margin = 130
 bottom_margin = 50
-left_margin = 80
-right_margin = 80
+left_margin = 100
+right_margin = 100
 available_height = height - top_margin - bottom_margin
 available_width = width - left_margin - right_margin
 
@@ -135,6 +135,8 @@ for t in range(len(time_points)):
                     "y2": pos["y"] + pos["height"],
                     "color": category_colors[cat],
                     "total": pos["total"],
+                    "label_x": pos["x"] + node_width / 2,
+                    "label_y": pos["y"] + pos["height"] / 2,
                 }
             )
 
@@ -229,11 +231,12 @@ links_chart = (
             scale=alt.Scale(domain=list(category_colors.keys()), range=list(category_colors.values())),
             legend=alt.Legend(
                 title="Party",
-                titleFontSize=18,
-                labelFontSize=16,
+                titleFontSize=22,
+                labelFontSize=20,
                 orient="right",
                 titleColor="#333333",
                 labelColor="#333333",
+                symbolSize=300,
             ),
         ),
         detail="flow_id:N",
@@ -259,6 +262,20 @@ nodes_chart = (
     )
 )
 
+# Create node labels (directly on nodes) - abbreviate for readability
+label_abbrev = {"Conservative": "Con", "Liberal": "Lib", "Progressive": "Prog", "Independent": "Ind"}
+nodes_df["label"] = nodes_df["name"].map(label_abbrev)
+
+node_labels = (
+    alt.Chart(nodes_df)
+    .mark_text(fontSize=14, fontWeight="bold", color="#FFFFFF", baseline="middle", align="center")
+    .encode(
+        x=alt.X("label_x:Q", scale=alt.Scale(domain=[0, width])),
+        y=alt.Y("label_y:Q", scale=alt.Scale(domain=[0, height])),
+        text="label:N",
+    )
+)
+
 # Create time point labels (column headers)
 time_labels_data = []
 for t, tp in enumerate(time_points):
@@ -275,22 +292,19 @@ time_labels = (
     )
 )
 
-# Combine all layers
+# Combine all layers with interactivity
 chart = (
-    alt.layer(links_chart, nodes_chart, time_labels)
+    alt.layer(links_chart, nodes_chart, node_labels, time_labels)
     .properties(
         width=width,
         height=height,
         title=alt.Title(
-            text="Voter Migration · alluvial-basic · altair · pyplots.ai",
-            fontSize=28,
-            anchor="middle",
-            color="#333333",
-            offset=20,
+            text="alluvial-basic · altair · pyplots.ai", fontSize=28, anchor="middle", color="#333333", offset=20
         ),
     )
     .configure_view(strokeWidth=0)
     .configure_legend(padding=15, cornerRadius=5, fillColor="#FFFFFF", strokeColor="#DDDDDD")
+    .interactive()
 )
 
 # Save as PNG and HTML

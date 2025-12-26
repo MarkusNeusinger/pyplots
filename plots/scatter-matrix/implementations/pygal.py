@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-matrix: Scatter Plot Matrix
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-26
@@ -17,10 +17,10 @@ from pygal.style import Style
 np.random.seed(42)
 n_samples = 100
 
-# Create correlated multivariate data
+# Create correlated multivariate data with both positive and negative correlations
 base = np.random.randn(n_samples)
 sepal_length = 5.8 + base * 0.8 + np.random.randn(n_samples) * 0.3
-sepal_width = 3.0 + base * 0.3 + np.random.randn(n_samples) * 0.3
+sepal_width = 3.0 - base * 0.4 + np.random.randn(n_samples) * 0.25  # Negative correlation with sepal_length
 petal_length = 3.8 + base * 1.5 + np.random.randn(n_samples) * 0.4
 petal_width = 1.2 + base * 0.6 + np.random.randn(n_samples) * 0.2
 
@@ -55,7 +55,7 @@ total_width = 3600
 total_height = 3600
 margin_top = 120
 margin_bottom = 120
-margin_left = 140
+margin_left = 110
 margin_right = 50
 plot_area_width = total_width - margin_left - margin_right
 plot_area_height = total_height - margin_top - margin_bottom
@@ -115,7 +115,7 @@ for i in range(n_vars):
                 margin_right=5,
                 margin_bottom=35 if i == n_vars - 1 else 5,
                 margin_left=50 if j == 0 else 5,
-                dots_size=6,
+                dots_size=10,
                 stroke=False,
             )
 
@@ -159,8 +159,8 @@ for idx, var_name in enumerate(var_names):
     text_width = bbox[2] - bbox[0]
     draw.text((x_label_pos - text_width // 2, y_label_pos), var_name, fill="#333", font=label_font)
 
-    # Left labels (rotated - we'll draw text vertically)
-    x_label_pos = 25
+    # Left labels (rotated - draw text vertically, positioned closer to plots)
+    x_label_pos = 15
     y_label_pos = margin_top + idx * cell_size + cell_size // 2
 
     # Create rotated text image

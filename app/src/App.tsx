@@ -284,6 +284,8 @@ function App() {
 
   // Load filtered images when filters change
   useEffect(() => {
+    const abortController = new AbortController();
+
     const fetchFilteredImages = async () => {
       setLoading(true);
       setOpenImageTooltip(null);
@@ -300,10 +302,13 @@ function App() {
         const queryString = params.toString();
         const url = `${API_URL}/plots/filter${queryString ? `?${queryString}` : ''}`;
 
-        const response = await fetch(url);
+        const response = await fetch(url, { signal: abortController.signal });
         if (!response.ok) throw new Error('Failed to fetch filtered plots');
 
         const data = await response.json();
+
+        // Don't update state if aborted
+        if (abortController.signal.aborted) return;
 
         // Update filter counts
         setFilterCounts(data.counts);  // Contextual for AND additions
@@ -316,13 +321,18 @@ function App() {
         setDisplayedImages(shuffled.slice(0, BATCH_SIZE));
         setHasMore(shuffled.length > BATCH_SIZE);
       } catch (err) {
+        if (abortController.signal.aborted) return;
         setError(`Error loading images: ${err}`);
       } finally {
-        setLoading(false);
+        if (!abortController.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchFilteredImages();
+
+    return () => abortController.abort();
   }, [activeFilters]);
 
   // Get selected spec/library for compatibility with existing components

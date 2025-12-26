@@ -1,7 +1,7 @@
 library: altair
 specification_id: line-confidence
 created: '2025-12-26T16:14:06Z'
-updated: '2025-12-26T16:26:52Z'
+updated: '2025-12-26T16:33:33Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20525434309
 issue: 0
@@ -10,22 +10,19 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/line-confidence/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-confidence/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-confidence/altair/plot.html
-quality_score: 84
+quality_score: 78
 review:
   strengths:
-  - Clean declarative code structure using Altair layered chart approach
-  - Excellent visualization of widening confidence interval over time (realistic forecast
-    behavior)
-  - Good use of semi-transparent band with appropriate opacity (0.3)
-  - Correct title format following pyplots.ai conventions
-  - Interactive HTML version with tooltips demonstrates Altair interactivity features
-  - Colorblind-safe color scheme with good contrast between line and band
+  - Clean code structure following KISS principles with clear data generation logic
+  - Confidence band appropriately widens over time showing realistic forecast uncertainty
+    behavior
+  - Uses Altair layered chart composition effectively (band + line + points)
+  - Interactive HTML export includes useful tooltips for exploration
+  - Consistent color scheme with good contrast between line and band
   weaknesses:
-  - Legend is completely missing from the plot output despite code attempting to create
-    one via Fill/Color legend configuration - the legend is not rendering in the saved
-    PNG
-  - Y-axis includes excessive whitespace starting from 0 when data ranges from ~95-180;
-    the y_domain calculation exists in code but is not being applied correctly to
-    the final plot
-  - Point markers on the line could be slightly larger for better visibility at full
-    resolution
+  - Legend is not visible in the rendered PNG despite code attempting to create one
+    using resolve_legend - this violates spec requirement for legend that clearly
+    identifies both the central line and confidence band
+  - Y-axis starts at 0 but data ranges ~90-180, wasting nearly half the vertical canvas
+    space (the code calculates y_domain but Altair appears to ignore it or it is not
+    applied correctly to all layers)

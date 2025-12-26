@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-matrix: Scatter Plot Matrix
 Library: highcharts unknown | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-26
@@ -98,19 +98,19 @@ for row in range(n_vars):
                     "type": "column",
                     "backgroundColor": "#ffffff",
                     "marginTop": 80 if row == 0 else 15,
-                    "marginBottom": 80 if row == n_vars - 1 else 15,
-                    "marginLeft": 120 if col == 0 else 15,
+                    "marginBottom": 100 if row == n_vars - 1 else 15,
+                    "marginLeft": 140 if col == 0 else 15,
                     "marginRight": 15,
                 },
-                "title": {"text": variables[row] if row == 0 else "", "style": {"fontSize": "28px"}},
+                "title": {"text": variables[row] if row == 0 else "", "style": {"fontSize": "32px"}},
                 "xAxis": {
-                    "categories": categories[::3] if len(categories) > 5 else categories,
-                    "labels": {"enabled": row == n_vars - 1, "style": {"fontSize": "20px"}, "rotation": -45},
+                    "categories": categories,
+                    "labels": {"enabled": row == n_vars - 1, "style": {"fontSize": "18px"}, "rotation": -45, "step": 2},
                     "title": {"text": ""},
                 },
                 "yAxis": {
-                    "title": {"text": variables[row] if col == 0 else "", "style": {"fontSize": "22px"}},
-                    "labels": {"enabled": col == 0, "style": {"fontSize": "18px"}},
+                    "title": {"text": variables[row] if col == 0 else "", "style": {"fontSize": "26px"}},
+                    "labels": {"enabled": col == 0, "style": {"fontSize": "22px"}},
                     "gridLineWidth": 1,
                     "gridLineColor": "#e0e0e0",
                 },
@@ -148,20 +148,20 @@ for row in range(n_vars):
                     "type": "scatter",
                     "backgroundColor": "#ffffff",
                     "marginTop": 80 if row == 0 else 15,
-                    "marginBottom": 80 if row == n_vars - 1 else 15,
-                    "marginLeft": 120 if col == 0 else 15,
+                    "marginBottom": 100 if row == n_vars - 1 else 15,
+                    "marginLeft": 140 if col == 0 else 15,
                     "marginRight": 15,
                 },
-                "title": {"text": variables[col] if row == 0 else "", "style": {"fontSize": "28px"}},
+                "title": {"text": variables[col] if row == 0 else "", "style": {"fontSize": "32px"}},
                 "xAxis": {
-                    "labels": {"enabled": row == n_vars - 1, "style": {"fontSize": "18px"}},
+                    "labels": {"enabled": row == n_vars - 1, "style": {"fontSize": "20px"}},
                     "title": {"text": ""},
                     "gridLineWidth": 1,
                     "gridLineColor": "#e0e0e0",
                 },
                 "yAxis": {
-                    "title": {"text": variables[row] if col == 0 else "", "style": {"fontSize": "22px"}},
-                    "labels": {"enabled": col == 0, "style": {"fontSize": "18px"}},
+                    "title": {"text": variables[row] if col == 0 else "", "style": {"fontSize": "26px"}},
+                    "labels": {"enabled": col == 0, "style": {"fontSize": "22px"}},
                     "gridLineWidth": 1,
                     "gridLineColor": "#e0e0e0",
                 },
@@ -175,18 +175,18 @@ for row in range(n_vars):
         config_js = json.dumps(chart_config)
         charts_js += f"Highcharts.chart('{container_id}', {config_js});\n"
 
-# Create legend HTML with much larger text for readability
+# Create legend HTML positioned closer to matrix with larger text
 legend_html = """
-<div style="position:absolute; left:50%; transform:translateX(-50%); bottom:30px; display:flex; gap:80px; font-size:48px; font-family:Arial,sans-serif; font-weight:500;">
+<div style="position:absolute; left:50%; transform:translateX(-50%); bottom:60px; display:flex; gap:100px; font-size:52px; font-family:Arial,sans-serif; font-weight:500;">
 """
 for i, name in enumerate(species_names):
-    legend_html += f'<div style="display:flex; align-items:center; gap:20px;"><div style="width:40px; height:40px; background:{colors[i]}; border-radius:50%;"></div><span>{name}</span></div>'
+    legend_html += f'<div style="display:flex; align-items:center; gap:24px;"><div style="width:44px; height:44px; background:{colors[i]}; border-radius:50%;"></div><span>{name}</span></div>'
 legend_html += "</div>"
 
-# Title with larger font
-title_html = '<div style="position:absolute; top:15px; left:50%; transform:translateX(-50%); font-size:48px; font-family:Arial,sans-serif; font-weight:bold;">scatter-matrix · highcharts · pyplots.ai</div>'
+# Title with larger font for 3600x3600 canvas
+title_html = '<div style="position:absolute; top:15px; left:50%; transform:translateX(-50%); font-size:60px; font-family:Arial,sans-serif; font-weight:bold;">scatter-matrix · highcharts · pyplots.ai</div>'
 
-# Full HTML
+# Full HTML - with title at top, matrix in middle, legend close to matrix
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -195,7 +195,7 @@ html_content = f"""<!DOCTYPE html>
 </head>
 <body style="margin:0; background:#ffffff;">
     {title_html}
-    <div style="position:relative; width:{canvas_size}px; height:{canvas_size}px; margin-top:50px;">
+    <div style="position:relative; width:{canvas_size}px; height:{canvas_size}px; margin-top:90px;">
         {charts_html}
     </div>
     {legend_html}

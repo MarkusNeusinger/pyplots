@@ -1,0 +1,29 @@
+library: letsplot
+specification_id: calibration-curve
+created: '2025-12-26T19:37:18Z'
+updated: '2025-12-26T19:43:58Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20528205405
+issue: 0
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/letsplot/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of all spec requirements including diagonal reference
+    line, 10 bins, both Brier score and ECE metrics
+  - Clean integration of histogram showing prediction distribution at the bottom without
+    requiring a separate subplot
+  - Good color scheme with blue calibration curve, gray reference diagonal, and yellow
+    histogram bars
+  - Proper title format following pyplots.ai conventions
+  - Well-structured code following KISS principles with good reproducibility
+  weaknesses:
+  - The calibration curve is quite extreme - fraction of positives jumps from near
+    0 to near 1 very sharply around the 0.3-0.6 probability range, making the miscalibration
+    pattern less gradual than typical real-world examples
+  - Histogram bars extend quite high (normalized to max) which visually competes with
+    the calibration curve; could use smaller scale factor

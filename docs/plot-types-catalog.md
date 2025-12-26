@@ -736,7 +736,56 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ---
 
-## 29. Scientific & Domain-Specific
+## 29. Machine Learning & Data Science
+
+### confusion-matrix ✅
+**Description:** Confusion matrix heatmap for classification model evaluation, showing true vs predicted labels with color-coded counts.
+
+### roc-curve ✅
+**Description:** ROC (Receiver Operating Characteristic) curve plotting true positive rate vs false positive rate with AUC score.
+
+### precision-recall ✅
+**Description:** Precision-Recall curve for evaluating classification models, especially useful for imbalanced datasets.
+
+### learning-curve ✅
+**Description:** Learning curve showing model performance (training and validation scores) vs training set size for bias-variance diagnosis.
+
+### feature-importance ✅
+**Description:** Horizontal bar chart showing feature importances from machine learning models, sorted by importance value.
+
+### calibration-curve 📋
+**Description:** Calibration plot comparing predicted probabilities to observed frequencies for probability calibration.
+
+### lift-curve 📋
+**Description:** Lift chart showing model performance compared to random baseline for marketing/churn prediction.
+
+### gain-curve 📋
+**Description:** Cumulative gains chart for evaluating classification model effectiveness.
+
+### shap-summary 📋
+**Description:** SHAP (SHapley Additive exPlanations) summary plot showing feature impact on model predictions.
+
+### partial-dependence 📋
+**Description:** Partial dependence plot showing marginal effect of features on predicted outcome.
+
+### permutation-importance 📋
+**Description:** Permutation feature importance showing decrease in model score when feature is shuffled.
+
+### elbow-curve 📋
+**Description:** Elbow curve for determining optimal number of clusters in k-means clustering.
+
+### silhouette-plot 📋
+**Description:** Silhouette plot showing cluster quality and separation for clustering evaluation.
+
+### decision-boundary 📋
+**Description:** Decision boundary visualization showing classifier regions in 2D feature space.
+
+### loss-curve 📋
+**Description:** Training and validation loss curves over epochs for neural network training monitoring.
+
+---
+
+## 30. Scientific & Domain-Specific
 
 ### spectrum-plot 📋
 **Description:** Frequency spectrum visualization.
@@ -791,7 +840,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ---
 
-## 30. Printable & Fun
+## 31. Printable & Fun
 
 Druckbare Vorlagen und spielerische Visualisierungen.
 
@@ -833,10 +882,10 @@ Druckbare Vorlagen und spielerische Visualisierungen.
 
 ## Statistics
 
-- **Total Plot Types:** 220+
-- **Implemented:** 95 ✅
-- **Planned:** 125+ 📋
-- **Categories:** 30
+- **Total Plot Types:** 235+
+- **Implemented:** 100 ✅
+- **Planned:** 135+ 📋
+- **Categories:** 31
 
 ---
 

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 residual-plot: Residual Plot
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 78/100 | Created: 2025-12-26
+Quality: 85/100 | Created: 2025-12-26
 """
 
 import numpy as np

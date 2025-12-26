@@ -1,0 +1,28 @@
+library: highcharts
+specification_id: learning-curve-basic
+created: '2025-12-26T19:13:41Z'
+updated: '2025-12-26T19:16:01Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20527871964
+issue: 0
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/learning-curve-basic/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/learning-curve-basic/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/learning-curve-basic/highcharts/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Highcharts arearange series for confidence bands with proper
+    layering (bands behind lines)
+  - Colorblind-safe palette using blue (#306998) and yellow (#FFD43B)
+  - Professional appearance with appropriate font sizes for 4800x2700 canvas
+  - Realistic learning curve data showing typical ML training behavior (overfitting
+    gap that decreases with more data)
+  - Proper title format following spec-id · library · pyplots.ai convention
+  - Clean separation of training and validation curves with distinct markers (squares
+    vs triangles)
+  weaknesses:
+  - Legend does not include entries for the confidence bands (±1 std) - only shows
+    the line series
+  - Y-axis could start at 0.65 instead of 0.60 to reduce empty space at the bottom

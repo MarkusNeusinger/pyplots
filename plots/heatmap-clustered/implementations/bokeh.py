@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-clustered: Clustered Heatmap
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-26
+Quality: 91/100 | Created: 2025-12-26
 """
 
 import numpy as np

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-3d: 3D Scatter Plot
-Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-25
+Library: letsplot | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import numpy as np
@@ -192,7 +192,7 @@ plot = (
     + theme(
         axis_title=element_text(size=22),
         axis_text=element_text(size=18),
-        plot_title=element_text(size=28),
+        plot_title=element_text(size=32),  # Fixed: increased from 28 to 32 for optimal visibility
         legend_text=element_text(size=16),
         legend_title=element_text(size=18),
         panel_grid=element_blank(),

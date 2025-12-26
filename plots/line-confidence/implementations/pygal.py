@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-confidence: Line Plot with Confidence Interval
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 55/100 | Created: 2025-12-26
@@ -28,6 +28,7 @@ y_lower = y_center - uncertainty
 y_upper = y_center + uncertainty
 
 # Custom style for 4800x2700 canvas
+# Note: pygal doesn't support per-series opacity, so we use colors with alpha
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -35,9 +36,13 @@ custom_style = Style(
     foreground_strong="#333333",
     foreground_subtle="#666666",
     guide_stroke_color="#888888",
-    colors=("#306998", "#FFD43B"),  # Blue for confidence band, Yellow for center line
-    opacity=".5",  # Semi-transparent band per spec (alpha 0.2-0.4)
-    opacity_hover=".6",
+    colors=(
+        "rgba(48, 105, 152, 0.3)",  # Light blue with transparency for upper fill
+        "white",  # White to mask lower portion
+        "#306998",  # Solid blue for center line
+    ),
+    opacity="1",  # Full opacity - transparency handled in colors
+    opacity_hover="1",
     stroke_width=5,
     title_font_size=60,
     label_font_size=42,
@@ -46,7 +51,7 @@ custom_style = Style(
     value_font_size=36,
 )
 
-# Create XY chart for precise coordinate control
+# Create XY chart with fill enabled for layered band effect
 chart = pygal.XY(
     style=custom_style,
     width=4800,
@@ -58,26 +63,24 @@ chart = pygal.XY(
     show_x_guides=True,
     show_y_guides=True,
     fill=True,
-    stroke=True,
+    stroke=False,
     legend_at_bottom=True,
     truncate_legend=-1,
 )
 
-# Create confidence band as a closed polygon: upper boundary forward, then lower backward
-band_polygon = []
-# Upper boundary (forward)
-for xi, yi in zip(x, y_upper, strict=True):
-    band_polygon.append((float(xi), float(yi)))
-# Lower boundary (backward to close the polygon smoothly)
-for xi, yi in zip(reversed(x), reversed(y_lower), strict=True):
-    band_polygon.append((float(xi), float(yi)))
-
-# Add confidence band (fill only, no stroke for clean appearance)
-chart.add("95% Confidence Interval", band_polygon, stroke=False)
-
-# Add central trend line (solid line, no fill)
+# Prepare data as XY tuples
+upper_data = [(float(xi), float(yi)) for xi, yi in zip(x, y_upper, strict=True)]
+lower_data = [(float(xi), float(yi)) for xi, yi in zip(x, y_lower, strict=True)]
 center_data = [(float(xi), float(yi)) for xi, yi in zip(x, y_center, strict=True)]
-chart.add("Predicted Mean", center_data, fill=False, stroke=True, dots_size=0, stroke_style={"width": 6})
+
+# Layer 1: Upper bound filled down to baseline (creates top of band)
+chart.add("95% Confidence Interval", upper_data, show_dots=False)
+
+# Layer 2: Lower bound filled with white to mask everything below lower bound
+chart.add(None, lower_data, show_dots=False)  # None = no legend entry
+
+# Layer 3: Center line with solid stroke on top
+chart.add("Predicted Mean", center_data, fill=False, stroke=True, show_dots=False, stroke_style={"width": 6})
 
 # Save outputs
 chart.render_to_png("plot.png")

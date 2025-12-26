@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-marginal: Scatter Plot with Marginal Distributions
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-26
@@ -63,19 +63,19 @@ scatter_style = Style(
     major_guide_stroke_color="#cccccc",
 )
 
-# Custom style for marginal histograms - larger fonts for readability
+# Custom style for marginal histograms - subtle color to not distract from main scatter
 marginal_style = Style(
     background="#ffffff",
     plot_background="#f8f8f8",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998",),
+    colors=("#a8c5db",),  # Subtle, lighter blue for marginals
     title_font_size=32,
     label_font_size=32,
     major_label_font_size=30,
     legend_font_size=28,
-    opacity=0.75,
+    opacity=0.6,  # More transparency for subtle appearance
     guide_stroke_color="#e0e0e0",
 )
 
@@ -105,7 +105,11 @@ scatter_points = [(float(xi), float(yi)) for xi, yi in zip(x, y, strict=True)]
 scatter.add("Data", scatter_points)
 
 # Create top marginal histogram (X distribution)
-# Use fewer Y-labels to reduce density
+# Manually set Y labels to reduce clutter (4-5 major labels only)
+max_x_hist = int(np.max(x_hist))
+y_label_step = max(1, max_x_hist // 4)  # Divide into ~4 steps
+x_margin_y_labels = list(range(0, max_x_hist + y_label_step, y_label_step))
+
 x_margin = pygal.Bar(
     width=scatter_width,
     height=margin_plot_size,
@@ -121,8 +125,7 @@ x_margin = pygal.Bar(
     margin_left=left_margin,
     explicit_size=True,
     spacing=3,
-    y_labels_major_count=4,  # Show only 4 major Y labels to reduce density
-    show_minor_y_labels=False,  # Hide minor labels
+    y_labels=x_margin_y_labels,  # Explicit Y labels for clean display
 )
 x_margin.add("X Distribution", [float(h) for h in x_hist])
 
@@ -191,25 +194,26 @@ text_x = (total_width - text_width) // 2
 text_y = 30
 draw.text((text_x, text_y), title_text, fill="#333333", font=title_font)
 
-# Add statistics in the corner space (top-right where marginal charts don't overlap)
-corner_x = y_margin_x + 30
-corner_y = title_height + 40
-corner_width = margin_plot_size - 60
+# Add statistics in the corner space (top-right empty area)
+# This corner is at: x = right of top marginal, y = below title and above right marginal
+corner_x = y_margin_x + 20  # Right side where y_margin is
+corner_y = title_height + 20  # Just below title area
+corner_width = margin_plot_size - 40
 corner_height = margin_plot_size - 60
 
 # Draw subtle background for stats box
 stats_box = [(corner_x, corner_y), (corner_x + corner_width, corner_y + corner_height)]
-draw.rounded_rectangle(stats_box, radius=15, fill="#f5f5f5", outline="#e0e0e0", width=2)
+draw.rounded_rectangle(stats_box, radius=15, fill="#f8f8f8", outline="#d0d0d0", width=2)
 
-# Add statistics text
+# Add statistics text - centered in box
 stats_title = "Statistics"
-draw.text((corner_x + 40, corner_y + 30), stats_title, fill="#333333", font=stats_font_bold)
+draw.text((corner_x + 30, corner_y + 25), stats_title, fill="#333333", font=stats_font_bold)
 
-stats_lines = [f"n = {n_points}", f"r = {correlation:.3f}", f"X mean: {np.mean(x):.1f}", f"Y mean: {np.mean(y):.1f}"]
-line_y = corner_y + 100
+stats_lines = [f"n = {n_points}", f"r = {correlation:.3f}", f"X̄ = {np.mean(x):.1f}", f"Ȳ = {np.mean(y):.1f}"]
+line_y = corner_y + 85
 for line in stats_lines:
-    draw.text((corner_x + 40, line_y), line, fill="#555555", font=stats_font)
-    line_y += 55
+    draw.text((corner_x + 30, line_y), line, fill="#555555", font=stats_font)
+    line_y += 50
 
 # Save final image
 final_img.save("plot.png", "PNG")

@@ -1,7 +1,7 @@
 """ pyplots.ai
 violin-split: Split Violin Plot
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-25
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import numpy as np
@@ -36,6 +36,10 @@ for dept in departments:
         after = np.random.normal(75, 14, n_per_group)
     else:  # Operations
         after = np.random.normal(68, 9, n_per_group)
+
+    # Clamp scores to valid 0-100 range
+    before = np.clip(before, 0, 100)
+    after = np.clip(after, 0, 100)
 
     for val in before:
         data.append({"Department": dept, "Score": val, "Period": "Before Training"})
@@ -76,10 +80,11 @@ fig.update_layout(
     title=dict(text="violin-split · plotly · pyplots.ai", font=dict(size=32, color="#333333"), x=0.5, xanchor="center"),
     xaxis=dict(title=dict(text="Department", font=dict(size=24)), tickfont=dict(size=20)),
     yaxis=dict(
-        title=dict(text="Performance Score", font=dict(size=24)),
+        title=dict(text="Performance Score (0-100 points)", font=dict(size=24)),
         tickfont=dict(size=20),
         gridcolor="rgba(0,0,0,0.1)",
         gridwidth=1,
+        range=[0, 100],
     ),
     template="plotly_white",
     legend=dict(

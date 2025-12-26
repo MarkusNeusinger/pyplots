@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 calibration-curve: Calibration Curve
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2025-12-26
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-26
 """
 
 import tempfile

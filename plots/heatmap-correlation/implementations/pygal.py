@@ -1,7 +1,7 @@
 """ pyplots.ai
 heatmap-correlation: Correlation Matrix Heatmap
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-25
+Quality: 91/100 | Created: 2025-12-26
 """
 
 import sys
@@ -30,6 +30,8 @@ class CorrelationHeatmap(Graph):
         self.labels = kwargs.pop("labels", [])
         self.colormap = kwargs.pop("colormap", [])
         self.show_values = kwargs.pop("show_values", True)
+        self.x_axis_title = kwargs.pop("x_axis_title", "")
+        self.y_axis_title = kwargs.pop("y_axis_title", "")
         super().__init__(*args, **kwargs)
 
     def _interpolate_color(self, value):
@@ -75,11 +77,11 @@ class CorrelationHeatmap(Graph):
         plot_width = self.view.width
         plot_height = self.view.height
 
-        # Calculate cell size - leave space for labels
-        label_margin_left = 420  # Space for row labels
-        label_margin_bottom = 240  # Space for column labels (rotated)
+        # Calculate cell size - leave space for labels and axis titles
+        label_margin_left = 480  # Space for row labels + y-axis title
+        label_margin_bottom = 280  # Space for column labels (rotated) + x-axis title
         label_margin_top = 60
-        label_margin_right = 300  # Space for colorbar
+        label_margin_right = 320  # Space for colorbar
 
         available_width = plot_width - label_margin_left - label_margin_right
         available_height = plot_height - label_margin_bottom - label_margin_top
@@ -97,8 +99,20 @@ class CorrelationHeatmap(Graph):
         plot_node = self.nodes["plot"]
         heatmap_group = self.svg.node(plot_node, class_="correlation-heatmap")
 
-        # Draw row labels on the left
-        row_font_size = min(48, int(cell_size * 0.5))
+        # Draw y-axis title (rotated, on the far left)
+        if self.y_axis_title:
+            y_title_size = 52
+            y_title_x = x_offset - 430
+            y_title_y = y_offset + grid_size / 2
+            text_node = self.svg.node(heatmap_group, "text", x=y_title_x, y=y_title_y)
+            text_node.set("text-anchor", "middle")
+            text_node.set("fill", "#333333")
+            text_node.set("style", f"font-size:{y_title_size}px;font-weight:bold;font-family:sans-serif")
+            text_node.set("transform", f"rotate(-90, {y_title_x}, {y_title_y})")
+            text_node.text = self.y_axis_title
+
+        # Draw row labels on the left (increased font size)
+        row_font_size = min(54, int(cell_size * 0.55))
         for i, label in enumerate(self.labels):
             y = y_offset + i * (cell_size + gap) + cell_size / 2
             text_node = self.svg.node(heatmap_group, "text", x=x_offset - 25, y=y + row_font_size * 0.35)
@@ -107,8 +121,8 @@ class CorrelationHeatmap(Graph):
             text_node.set("style", f"font-size:{row_font_size}px;font-weight:600;font-family:sans-serif")
             text_node.text = label
 
-        # Draw column labels at the bottom (rotated for better fit)
-        col_font_size = min(48, int(cell_size * 0.5))
+        # Draw column labels at the bottom (rotated, increased font size)
+        col_font_size = min(54, int(cell_size * 0.55))
         for j, label in enumerate(self.labels):
             x = x_offset + j * (cell_size + gap) + cell_size / 2
             y = y_offset + n * (cell_size + gap) + 25
@@ -119,8 +133,19 @@ class CorrelationHeatmap(Graph):
             text_node.set("transform", f"rotate(45, {x}, {y})")
             text_node.text = label
 
+        # Draw x-axis title (at the bottom)
+        if self.x_axis_title:
+            x_title_size = 52
+            x_title_x = x_offset + grid_size / 2
+            x_title_y = y_offset + n * (cell_size + gap) + 240
+            text_node = self.svg.node(heatmap_group, "text", x=x_title_x, y=x_title_y)
+            text_node.set("text-anchor", "middle")
+            text_node.set("fill", "#333333")
+            text_node.set("style", f"font-size:{x_title_size}px;font-weight:bold;font-family:sans-serif")
+            text_node.text = self.x_axis_title
+
         # Draw cells with correlation values
-        value_font_size = min(44, int(cell_size * 0.35))
+        value_font_size = min(46, int(cell_size * 0.38))
         for i in range(n):
             for j in range(n):
                 value = self.matrix_data[i][j]
@@ -185,7 +210,7 @@ class CorrelationHeatmap(Graph):
         )
 
         # Colorbar labels (fixed -1, 0, 1)
-        cb_label_size = 40
+        cb_label_size = 42
         # Top: +1
         text_node = self.svg.node(
             heatmap_group, "text", x=colorbar_x + colorbar_width + 18, y=colorbar_y + cb_label_size * 0.35
@@ -215,7 +240,7 @@ class CorrelationHeatmap(Graph):
         text_node.text = "-1.00"
 
         # Colorbar title
-        cb_title_size = 44
+        cb_title_size = 46
         cb_title_x = colorbar_x + colorbar_width / 2
         cb_title_y = colorbar_y - 40
         text_node = self.svg.node(heatmap_group, "text", x=cb_title_x, y=cb_title_y)
@@ -237,16 +262,7 @@ class CorrelationHeatmap(Graph):
 np.random.seed(42)
 
 # Variable names for correlation analysis (8 variables for good visibility)
-variables = [
-    "Revenue",
-    "Profit",
-    "Customers",
-    "Marketing",
-    "R&D Spend",
-    "Employee Count",
-    "Market Share",
-    "Stock Price",
-]
+variables = ["Revenue", "Profit", "Customers", "Marketing", "R&D Spend", "Employees", "Market Share", "Stock Price"]
 n = len(variables)
 
 # Create a realistic correlation matrix with varied relationships
@@ -260,7 +276,7 @@ correlation_matrix = np.array(
         [0.75, 0.58, 1.00, 0.52, 0.18, 0.48, 0.55, 0.45],  # Customers
         [0.45, -0.15, 0.52, 1.00, 0.32, 0.38, 0.42, 0.12],  # Marketing
         [0.28, -0.22, 0.18, 0.32, 1.00, 0.25, 0.15, -0.08],  # R&D Spend
-        [0.55, 0.35, 0.48, 0.38, 0.25, 1.00, 0.32, 0.28],  # Employee Count
+        [0.55, 0.35, 0.48, 0.38, 0.25, 1.00, 0.32, 0.28],  # Employees
         [0.68, 0.62, 0.55, 0.42, 0.15, 0.32, 1.00, 0.58],  # Market Share
         [0.72, 0.85, 0.45, 0.12, -0.08, 0.28, 0.58, 1.00],  # Stock Price
     ]
@@ -279,8 +295,8 @@ custom_style = Style(
     colors=("#306998",),
     title_font_size=72,
     legend_font_size=48,
-    label_font_size=46,
-    value_font_size=40,
+    label_font_size=50,
+    value_font_size=44,
     font_family="sans-serif",
 )
 
@@ -314,6 +330,8 @@ chart = CorrelationHeatmap(
     margin_bottom=100,
     show_x_labels=False,
     show_y_labels=False,
+    x_axis_title="Business Metrics",
+    y_axis_title="Business Metrics",
 )
 
 # Add a dummy series to trigger _plot (pygal requires at least one series)

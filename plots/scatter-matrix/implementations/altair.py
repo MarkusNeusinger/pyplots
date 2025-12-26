@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-matrix: Scatter Plot Matrix
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 80/100 | Created: 2025-12-26
@@ -61,34 +61,60 @@ variables = ["Sepal Length (cm)", "Sepal Width (cm)", "Petal Length (cm)", "Peta
 # Color scheme - Python Blue based palette that's colorblind-safe
 color_scale = alt.Scale(domain=["Setosa", "Versicolor", "Virginica"], range=["#306998", "#FFD43B", "#4B8BBE"])
 
-# Create scatter matrix using repeat
-scatter = (
-    alt.Chart(df)
-    .mark_circle(size=80, opacity=0.7)
-    .encode(
-        alt.X(alt.repeat("column"), type="quantitative"),
-        alt.Y(alt.repeat("row"), type="quantitative"),
-        color=alt.Color(
-            "Species:N",
-            scale=color_scale,
-            legend=alt.Legend(titleFontSize=20, labelFontSize=18, symbolSize=200, orient="right"),
-        ),
-        tooltip=["Species:N"] + [f"{v}:Q" for v in variables],
-    )
-    .properties(width=350, height=350)
+# Build the scatter matrix with histograms on diagonal manually
+# Each cell is 350x350, with 4x4 grid = 1400x1400 base
+cell_size = 350
+charts = []
+
+for i, row_var in enumerate(variables):
+    row_charts = []
+    for j, col_var in enumerate(variables):
+        if i == j:
+            # Diagonal: histogram showing distribution by species
+            hist = (
+                alt.Chart(df)
+                .mark_bar(opacity=0.7)
+                .encode(
+                    alt.X(f"{col_var}:Q", bin=alt.Bin(maxbins=15), title=col_var if i == len(variables) - 1 else ""),
+                    alt.Y("count():Q", stack=None, title=row_var if j == 0 else ""),
+                    alt.Color(
+                        "Species:N",
+                        scale=color_scale,
+                        legend=alt.Legend(
+                            titleFontSize=24, labelFontSize=22, symbolSize=300, orient="right", title="Species"
+                        )
+                        if i == 0 and j == 0
+                        else None,
+                    ),
+                    tooltip=["Species:N", alt.Tooltip("count():Q", title="Count")],
+                )
+                .properties(width=cell_size, height=cell_size)
+            )
+            row_charts.append(hist)
+        else:
+            # Off-diagonal: scatter plot
+            scatter = (
+                alt.Chart(df)
+                .mark_circle(size=80, opacity=0.7)
+                .encode(
+                    alt.X(f"{col_var}:Q", title=col_var if i == len(variables) - 1 else ""),
+                    alt.Y(f"{row_var}:Q", title=row_var if j == 0 else ""),
+                    alt.Color("Species:N", scale=color_scale, legend=None),
+                    tooltip=["Species:N", f"{col_var}:Q", f"{row_var}:Q"],
+                )
+                .properties(width=cell_size, height=cell_size)
+            )
+            row_charts.append(scatter)
+    charts.append(alt.hconcat(*row_charts, spacing=5))
+
+# Combine all rows vertically
+matrix = alt.vconcat(*charts, spacing=5).properties(
+    title=alt.Title(text="Iris Dataset · scatter-matrix · altair · pyplots.ai", fontSize=32, anchor="middle", offset=20)
 )
 
-# Create the matrix by repeating across rows and columns
-chart = (
-    scatter.repeat(row=variables, column=variables)
-    .properties(
-        title=alt.Title(
-            text="Iris Dataset · scatter-matrix · altair · pyplots.ai", fontSize=32, anchor="middle", offset=20
-        )
-    )
-    .configure_axis(labelFontSize=14, titleFontSize=18, gridOpacity=0.3)
-    .configure_view(strokeWidth=1, stroke="#ccc")
-    .configure_title(fontSize=32)
+# Apply configuration for consistent styling
+chart = matrix.configure_axis(labelFontSize=14, titleFontSize=18, gridOpacity=0.3).configure_view(
+    strokeWidth=1, stroke="#ccc"
 )
 
 # Save as PNG (scale_factor=3 gives us ~4200x4200 for 4 variables at 350px each)

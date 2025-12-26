@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-marginal: Scatter Plot with Marginal Distributions
 Library: highcharts unknown | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-26
@@ -54,7 +54,7 @@ scatter_y_max = y_max + y_padding
 main_width = 3400
 main_height = 2200
 top_height = 400
-right_width = 400
+right_width = 500
 margin_left = 140
 margin_bottom = 140
 margin_top = 60
@@ -111,7 +111,7 @@ main_chart.options.exporting = {"enabled": False}
 
 main_chart.options.plot_options = {
     "scatter": {
-        "marker": {"radius": 12, "fillColor": "rgba(48, 105, 152, 0.6)", "lineWidth": 1, "lineColor": "#306998"}
+        "marker": {"radius": 12, "fillColor": "rgba(48, 105, 152, 0.45)", "lineWidth": 1, "lineColor": "#306998"}
     }
 }
 
@@ -201,7 +201,7 @@ right_chart.options.chart = {
     "height": main_height,
     "backgroundColor": "#ffffff",
     "marginTop": margin_top,
-    "marginRight": 80,
+    "marginRight": 120,
     "marginBottom": margin_bottom,
     "marginLeft": 0,
     "spacing": [0, 0, 0, 0],
@@ -229,7 +229,8 @@ right_chart.options.y_axis = {
     "gridLineWidth": 1,
     "gridLineColor": "#e0e0e0",
     "gridLineDashStyle": "Dash",
-    "opposite": False,
+    "opposite": True,
+    "reversed": False,
     "min": 0,
 }
 

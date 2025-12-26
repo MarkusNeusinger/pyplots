@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-stacked: Stacked Bar Chart
-Library: highcharts unknown | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-25
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import tempfile
@@ -16,13 +16,14 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data: Quarterly revenue by product category (in thousands)
-categories = ["Q1", "Q2", "Q3", "Q4"]
+# Data: Monthly energy consumption by source (in MWh)
+# Shows varied trajectories: Solar grows, Coal declines, Natural Gas fluctuates, Nuclear steady
+categories = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
 components = {
-    "Software": [320, 380, 420, 480],
-    "Hardware": [180, 200, 190, 220],
-    "Services": [150, 180, 210, 250],
-    "Licensing": [90, 110, 130, 160],
+    "Solar": [120, 150, 210, 280, 350, 420],  # Strong growth (renewable adoption)
+    "Natural Gas": [380, 320, 290, 340, 280, 310],  # Fluctuating (seasonal demand)
+    "Nuclear": [450, 445, 455, 448, 452, 447],  # Steady baseline (consistent output)
+    "Coal": [350, 310, 270, 220, 180, 140],  # Declining (phase-out)
 }
 
 # Colors: Python Blue, Python Yellow, then colorblind-safe additions
@@ -32,7 +33,7 @@ colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF"]
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration
+# Chart configuration with improved margins for Y-axis title
 chart.options.chart = {
     "type": "column",
     "width": 4800,
@@ -40,42 +41,50 @@ chart.options.chart = {
     "backgroundColor": "#ffffff",
     "marginBottom": 200,
     "marginTop": 120,
+    "marginLeft": 200,  # More space for Y-axis title
     "spacingBottom": 50,
 }
 
 # Title
 chart.options.title = {
-    "text": "bar-stacked \u00b7 highcharts \u00b7 pyplots.ai",
+    "text": "bar-stacked · highcharts · pyplots.ai",
     "style": {"fontSize": "48px", "fontWeight": "bold"},
 }
 
 # Subtitle
-chart.options.subtitle = {"text": "Quarterly Revenue by Product Category", "style": {"fontSize": "32px"}}
+chart.options.subtitle = {"text": "Monthly Energy Consumption by Source", "style": {"fontSize": "32px"}}
 
 # X-axis (categories)
 chart.options.x_axis = {
     "categories": categories,
-    "title": {"text": "Quarter", "style": {"fontSize": "32px"}},
+    "title": {"text": "Month", "style": {"fontSize": "32px"}},
     "labels": {"style": {"fontSize": "28px"}},
 }
 
-# Y-axis
+# Y-axis with improved title spacing
 chart.options.y_axis = {
-    "title": {"text": "Revenue ($ thousands)", "style": {"fontSize": "32px"}},
+    "title": {
+        "text": "Energy (MWh)",
+        "style": {"fontSize": "32px"},
+        "margin": 30,  # More space between title and labels
+    },
     "labels": {"style": {"fontSize": "28px"}},
     "gridLineWidth": 1,
     "gridLineColor": "#cccccc",
     "stackLabels": {"enabled": True, "style": {"fontSize": "24px", "fontWeight": "bold", "color": "#333333"}},
 }
 
-# Legend
+# Legend with larger text
 chart.options.legend = {
     "enabled": True,
-    "itemStyle": {"fontSize": "28px"},
+    "itemStyle": {"fontSize": "36px", "fontWeight": "normal"},  # Increased from 28px
     "layout": "horizontal",
     "align": "center",
     "verticalAlign": "bottom",
     "y": -30,
+    "symbolRadius": 0,
+    "symbolHeight": 24,
+    "symbolWidth": 32,
 }
 
 # Plot options for stacking
@@ -96,7 +105,7 @@ chart.options.plot_options = {
 chart.options.tooltip = {
     "style": {"fontSize": "24px"},
     "headerFormat": "<b>{point.x}</b><br/>",
-    "pointFormat": "{series.name}: ${point.y}k<br/>Total: ${point.stackTotal}k",
+    "pointFormat": "{series.name}: {point.y} MWh<br/>Total: {point.stackTotal} MWh",
 }
 
 # Add series for each component

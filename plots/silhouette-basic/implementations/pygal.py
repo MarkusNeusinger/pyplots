@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 silhouette-basic: Silhouette Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-26
@@ -36,36 +36,45 @@ n_clusters = 3
 # Colors for each cluster (Python Blue, Python Yellow, Complementary Red)
 cluster_colors = ["#306998", "#FFD43B", "#E74C3C"]
 
-# Custom style for pyplots
+# Custom style for pyplots with more visible grid
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
+    foreground_subtle="#888888",  # More visible grid lines
+    guide_stroke_color="#CCCCCC",  # Explicit grid color for visibility
     colors=tuple(cluster_colors),
     title_font_size=48,
     label_font_size=32,
-    major_label_font_size=28,
+    major_label_font_size=32,  # Larger major labels for avg reference
     legend_font_size=28,
     value_font_size=24,
     stroke_width=0,
 )
 
 # Process and sort silhouette values within each cluster
+# Store original averages before any sample reduction
+original_cluster_avgs = {}
+for i in range(n_clusters):
+    cluster_silhouette_vals = silhouette_vals[cluster_labels == i]
+    original_cluster_avgs[i] = np.mean(cluster_silhouette_vals)
+
+# Build cluster data with sorted values (descending for visual appeal)
 cluster_data = {}
 sample_idx = 0
-
 for i in range(n_clusters):
     cluster_silhouette_vals = silhouette_vals[cluster_labels == i]
     cluster_silhouette_vals = np.sort(cluster_silhouette_vals)[::-1]  # Descending
+    # Subsample for thicker bars while maintaining pattern
+    reduced_vals = cluster_silhouette_vals[::2] if len(cluster_silhouette_vals) > 30 else cluster_silhouette_vals
     cluster_data[i] = {
-        "values": cluster_silhouette_vals,
-        "avg": np.mean(cluster_silhouette_vals),
+        "values": reduced_vals,
+        "avg": original_cluster_avgs[i],  # Use original average
         "start_idx": sample_idx,
-        "size": len(cluster_silhouette_vals),
+        "size": len(reduced_vals),
     }
-    sample_idx += len(cluster_silhouette_vals)
+    sample_idx += len(reduced_vals)
 
 total_samples = sample_idx
 
@@ -75,13 +84,11 @@ for i in range(n_clusters):
     for val in cluster_data[i]["values"]:
         all_bars.append((i, val))
 
-# Create horizontal bar chart for silhouette plot
-# Use x_labels to show the average reference line position
 chart = pygal.HorizontalBar(
     width=4800,
     height=2700,
     style=custom_style,
-    title=f"silhouette-basic · pygal · pyplots.ai\nOverall Average: {avg_silhouette:.3f} (vertical guide)",
+    title=f"silhouette-basic · pygal · pyplots.ai\nOverall Average: {avg_silhouette:.3f} | Reference line at avg",
     x_title="Silhouette Coefficient",
     y_title="Samples (grouped by cluster)",
     show_legend=True,
@@ -91,13 +98,13 @@ chart = pygal.HorizontalBar(
     show_x_guides=True,
     print_values=False,
     range=(-0.2, 1.0),
-    spacing=1,
+    spacing=3,  # Increased spacing between bars
     margin=50,
     margin_bottom=150,
     show_y_labels=False,
-    secondary_range=(0, 1),
-    x_labels=[-0.2, 0.0, round(avg_silhouette, 2), 0.4, 0.6, 0.8, 1.0],
-    x_labels_major=[round(avg_silhouette, 2)],
+    x_labels=[-0.2, 0.0, 0.2, round(avg_silhouette, 2), 0.4, 0.6, 0.8, 1.0],
+    x_labels_major=[round(avg_silhouette, 2)],  # Highlight average silhouette value
+    major_guide_stroke_dasharray="5,3",  # Dashed line for average reference
 )
 
 # Build data series for each cluster

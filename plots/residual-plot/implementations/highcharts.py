@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 residual-plot: Residual Plot
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2025-12-26
+Library: highcharts unknown | Python 3.13.11
+Quality: 72/100 | Created: 2025-12-26
 """
 
 import tempfile

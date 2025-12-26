@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 alluvial-basic: Basic Alluvial Diagram
-Library: plotly | Python 3.13
-Quality: pending | Created: 2025-12-26
+Library: plotly 6.5.0 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-26
 """
 
 import plotly.graph_objects as go

@@ -1,15 +1,16 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-split: Split Violin Plot
-Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-25
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
-    element_blank,
+    element_line,
     element_text,
+    geom_boxplot,
     geom_violin,
     ggplot,
     labs,
@@ -51,9 +52,11 @@ df = pd.DataFrame(data)
 df["value"] = df["value"].clip(0, 100)
 
 # Plot - True split violin with left-right style for side-by-side halves
+# Added inner boxplots and visible grid lines as per review feedback
 plot = (
     ggplot(df, aes(x="category", y="value", fill="split_group"))
     + geom_violin(style="left-right", alpha=0.8, size=0.8, scale="width", trim=True)
+    + geom_boxplot(width=0.15, alpha=0.9, outlier_alpha=0.5, outlier_size=2, size=0.6, position="identity")
     + scale_fill_manual(values=["#306998", "#FFD43B"])
     + labs(x="Department", y="Satisfaction Score (0-100)", fill="Period", title="violin-split · plotnine · pyplots.ai")
     + theme_minimal()
@@ -67,7 +70,8 @@ plot = (
         legend_title=element_text(size=18),
         legend_text=element_text(size=16),
         legend_position="right",
-        panel_grid_minor=element_blank(),
+        panel_grid_major_y=element_line(color="#cccccc", alpha=0.3, linetype="dashed"),
+        panel_grid_major_x=element_line(color="#cccccc", alpha=0.2),
     )
 )
 

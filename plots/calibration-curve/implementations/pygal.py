@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 calibration-curve: Calibration Curve
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-26
@@ -54,25 +54,26 @@ for i in range(n_bins):
 brier1 = np.mean((y_prob_model1 - y_true) ** 2)
 brier2 = np.mean((y_prob_model2 - y_true) ** 2)
 
-# Custom style for 4800 x 2700 canvas
+# Custom style for 4800 x 2700 canvas with high-contrast colors
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#888888", "#306998", "#D62728"),
+    colors=("#888888", "#2E7D32", "#C62828"),  # Gray, dark green (high contrast), dark red
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
     legend_font_size=42,
     value_font_size=36,
+    tooltip_font_size=36,
     stroke_width=6,
     opacity=0.9,
     opacity_hover=1.0,
 )
 
-# Create XY chart for calibration curve
+# Create XY chart for calibration curve with legend at bottom
 chart = pygal.XY(
     style=custom_style,
     width=4800,
@@ -89,23 +90,43 @@ chart = pygal.XY(
     range=(0, 1),
     xrange=(0, 1),
     legend_at_bottom=True,
-    legend_box_size=24,
+    legend_at_bottom_columns=3,  # Display legend items horizontally at bottom
+    legend_box_size=28,
     truncate_legend=-1,
     margin=50,
-    margin_bottom=150,
+    margin_top=80,
+    margin_bottom=200,  # Extra space for bottom legend
 )
 
 # Perfect calibration line (diagonal reference) - first in gray, dashed, no dots
-perfect_calibration = [(0, 0), (0.25, 0.25), (0.5, 0.5), (0.75, 0.75), (1.0, 1.0)]
+# Using dict format with 'value' key for pygal's tooltip system
+perfect_calibration = [
+    {"value": (0, 0), "label": "Perfect calibration reference"},
+    {"value": (0.25, 0.25), "label": "Predicted = Observed"},
+    {"value": (0.5, 0.5), "label": "Ideal: 50% predicted → 50% positive"},
+    {"value": (0.75, 0.75), "label": "Predicted = Observed"},
+    {"value": (1.0, 1.0), "label": "Perfect calibration reference"},
+]
 chart.add("Perfect Calibration", perfect_calibration, stroke_dasharray="15,8", dots_size=0, stroke_style={"width": 4})
 
-# Model 1 calibration curve - well-calibrated (blue)
-model1_points = list(zip(mean_pred1, frac_pos1, strict=False))
+# Model 1 calibration curve - well-calibrated (dark green for high contrast)
+# Add interactive tooltips with calibration details using pygal's dict format
+model1_points = [
+    {"value": (pred, obs), "label": f"Bin: {pred:.2f} pred → {obs:.2f} actual ({int(obs * 100)}% positive)"}
+    for pred, obs in zip(mean_pred1, frac_pos1, strict=False)
+]
 chart.add(f"Logistic Regression (Brier: {brier1:.3f})", model1_points)
 
-# Model 2 calibration curve - overconfident (red for contrast)
-model2_points = list(zip(mean_pred2, frac_pos2, strict=False))
+# Model 2 calibration curve - overconfident (dark red for contrast)
+# Shows characteristic sigmoid pattern of overconfident models
+model2_points = [
+    {"value": (pred, obs), "label": f"Bin: {pred:.2f} pred → {obs:.2f} actual (overconfident: Δ={pred - obs:+.2f})"}
+    for pred, obs in zip(mean_pred2, frac_pos2, strict=False)
+]
 chart.add(f"Overconfident Model (Brier: {brier2:.3f})", model2_points)
 
-# Save as PNG only
+# Save as PNG for static preview
 chart.render_to_png("plot.png")
+
+# Save as HTML for interactive tooltips (pygal's distinctive feature)
+chart.render_to_file("plot.html")

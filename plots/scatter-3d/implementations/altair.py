@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-3d: 3D Scatter Plot
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-26
@@ -14,19 +14,19 @@ np.random.seed(42)
 
 n_points = 150
 
-# Create three distinct clusters in 3D space (well-separated for clear visualization)
+# Create three distinct clusters in 3D space (positioned for better canvas coverage)
 clusters = []
 centers = [
-    (3, 1, 3),  # Cluster 1 - front-right, high
-    (-3, 2, 2),  # Cluster 2 - back-left, mid-high
-    (0, -2, -2),  # Cluster 3 - front, low
+    (2.5, 2.5, 2.5),  # Cluster 1 - upper-right quadrant
+    (-2.5, -1.5, 1.0),  # Cluster 2 - left-center area
+    (0.5, 0.0, -2.5),  # Cluster 3 - lower-center area
 ]
 
 for i, (cx, cy, cz) in enumerate(centers):
     n_cluster = n_points // 3
-    x = np.random.randn(n_cluster) * 0.7 + cx
-    y = np.random.randn(n_cluster) * 0.7 + cy
-    z = np.random.randn(n_cluster) * 0.7 + cz
+    x = np.random.randn(n_cluster) * 0.8 + cx
+    y = np.random.randn(n_cluster) * 0.8 + cy
+    z = np.random.randn(n_cluster) * 0.8 + cz
     clusters.append(pd.DataFrame({"x": x, "y": y, "z": z, "cluster": f"Cluster {i + 1}"}))
 
 df = pd.concat(clusters, ignore_index=True)
@@ -56,12 +56,12 @@ scatter = (
     alt.Chart(df)
     .mark_circle(size=280, strokeWidth=1.5, stroke="white")
     .encode(
-        x=alt.X("x_proj:Q", axis=alt.Axis(title="Projected X", labelFontSize=18, titleFontSize=22)),
-        y=alt.Y("z_proj:Q", axis=alt.Axis(title="Projected Z", labelFontSize=18, titleFontSize=22)),
+        x=alt.X("x_proj:Q", axis=alt.Axis(title="X-Y Plane (Horizontal)", labelFontSize=18, titleFontSize=22)),
+        y=alt.Y("z_proj:Q", axis=alt.Axis(title="Z Axis (Vertical)", labelFontSize=18, titleFontSize=22)),
         color=alt.Color(
             "cluster:N",
             scale=alt.Scale(domain=["Cluster 1", "Cluster 2", "Cluster 3"], range=["#306998", "#FFD43B", "#E07B39"]),
-            legend=alt.Legend(title="Cluster", titleFontSize=20, labelFontSize=16, orient="right"),
+            legend=alt.Legend(title="Cluster", titleFontSize=20, labelFontSize=16, orient="top-right", offset=10),
         ),
         opacity=alt.Opacity("opacity:Q", legend=None),
         order=alt.Order("depth:Q", sort="ascending"),

@@ -1,0 +1,27 @@
+library: bokeh
+specification_id: precision-recall
+created: '2025-12-26T17:40:49Z'
+updated: '2025-12-26T17:51:43Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20526596746
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/precision-recall/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/precision-recall/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/precision-recall/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of stepped line style (mode="after") which accurately represents
+    threshold-based PR curves
+  - Clean comparison of two classifiers with distinct, colorblind-safe colors
+  - Proper inclusion of baseline reference line showing random classifier performance
+  - Average Precision scores displayed prominently in legend
+  - Good font sizing scaled appropriately for 4800x2700 resolution
+  - Well-structured code following KISS principles with proper reproducibility
+  weaknesses:
+  - Missing optional iso-F1 curves mentioned in specification notes (would enhance
+    the visualization)
+  - Could add hover tooltips to show precision/recall values at specific points (Bokeh
+    strength)

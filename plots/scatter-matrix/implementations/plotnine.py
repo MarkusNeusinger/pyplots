@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-matrix: Scatter Plot Matrix
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-26
@@ -54,6 +54,7 @@ df = pd.DataFrame(data)
 variables = ["Sepal Length (cm)", "Sepal Width (cm)", "Petal Length (cm)", "Petal Width (cm)"]
 
 # Create long-form data for faceted scatter matrix
+# Use consistent ordering for both rows and columns
 scatter_data = []
 for var_y in variables:
     for var_x in variables:
@@ -70,6 +71,11 @@ for var_y in variables:
             )
 
 plot_df = pd.DataFrame(scatter_data)
+
+# Set categorical type with explicit order for consistent row/column ordering
+plot_df["var_x"] = pd.Categorical(plot_df["var_x"], categories=variables, ordered=True)
+plot_df["var_y"] = pd.Categorical(plot_df["var_y"], categories=variables, ordered=True)
+
 scatter_df = plot_df[~plot_df["is_diag"]]
 diag_df = plot_df[plot_df["is_diag"]]
 
@@ -79,7 +85,7 @@ colors = ["#306998", "#FFD43B", "#E07A5F"]
 # Create scatter matrix using facet_grid
 plot = (
     ggplot(scatter_df, aes(x="x", y="y", color="Species"))
-    + geom_point(size=2.5, alpha=0.7)
+    + geom_point(size=3.5, alpha=0.7)
     + geom_density(aes(x="x", fill="Species", color="Species"), data=diag_df, alpha=0.4)
     + facet_grid("var_y ~ var_x", scales="free", labeller="label_value")
     + scale_color_manual(values=colors)
@@ -91,12 +97,12 @@ plot = (
         plot_title=element_text(size=22, face="bold", ha="center"),
         strip_text_x=element_text(size=13, face="bold"),
         strip_text_y=element_text(size=13, face="bold", angle=0),
-        axis_text=element_text(size=11),
-        axis_text_x=element_text(angle=45, ha="right"),
+        axis_text=element_text(size=10),
+        axis_text_x=element_text(size=9),
         legend_title=element_text(size=14),
         legend_text=element_text(size=13),
         legend_position="right",
-        panel_spacing=0.08,
+        panel_spacing=0.12,
         axis_title_x=element_blank(),
         axis_title_y=element_blank(),
     )

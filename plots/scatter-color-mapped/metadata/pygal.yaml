@@ -1,0 +1,26 @@
+library: pygal
+specification_id: scatter-color-mapped
+created: '2025-12-26T09:44:16Z'
+updated: '2025-12-26T09:51:11Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20520225362
+issue: 2004
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/pygal/plot.html
+quality_score: 90
+review:
+  strengths:
+  - Effective workaround for pygal lack of continuous colormap by using discrete temperature
+    bins
+  - Viridis-inspired colorblind-safe palette with smooth gradient progression
+  - Clean KISS code structure with clear comments explaining the approach
+  - Realistic temperature sensor grid scenario with plausible radial temperature pattern
+  - Good use of custom Style for appropriate font sizes at high resolution
+  weaknesses:
+  - 'Legend first bin label includes Temperature: prefix while others do not, creating
+    inconsistency'
+  - Layout could utilize more canvas space; legend at bottom takes significant real
+    estate

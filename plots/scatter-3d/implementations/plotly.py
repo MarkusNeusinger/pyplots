@@ -1,7 +1,7 @@
 """ pyplots.ai
 scatter-3d: 3D Scatter Plot
 Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-25
+Quality: 92/100 | Created: 2025-12-26
 """
 
 import numpy as np
@@ -45,10 +45,12 @@ fig = go.Figure(
                 "colorscale": "Viridis",
                 "opacity": 0.8,
                 "colorbar": {
-                    "title": {"text": "Z Value", "font": {"size": 20}},
-                    "tickfont": {"size": 16},
-                    "thickness": 30,
-                    "len": 0.7,
+                    "title": {"text": "Z Value (units)", "font": {"size": 18}},
+                    "tickfont": {"size": 14},
+                    "thickness": 20,
+                    "len": 0.6,
+                    "x": 0.95,
+                    "xpad": 10,
                 },
             },
         )
@@ -60,17 +62,17 @@ fig.update_layout(
     title={"text": "scatter-3d · plotly · pyplots.ai", "font": {"size": 32}, "x": 0.5, "xanchor": "center"},
     scene={
         "xaxis": {
-            "title": {"text": "X Coordinate", "font": {"size": 20}},
+            "title": {"text": "X Coordinate (units)", "font": {"size": 18}},
             "tickfont": {"size": 14},
             "gridcolor": "rgba(128, 128, 128, 0.3)",
         },
         "yaxis": {
-            "title": {"text": "Y Coordinate", "font": {"size": 20}},
+            "title": {"text": "Y Coordinate (units)", "font": {"size": 18}},
             "tickfont": {"size": 14},
             "gridcolor": "rgba(128, 128, 128, 0.3)",
         },
         "zaxis": {
-            "title": {"text": "Z Coordinate", "font": {"size": 20}},
+            "title": {"text": "Z Coordinate (units)", "font": {"size": 18}},
             "tickfont": {"size": 14},
             "gridcolor": "rgba(128, 128, 128, 0.3)",
         },
@@ -78,7 +80,7 @@ fig.update_layout(
         "bgcolor": "white",
     },
     template="plotly_white",
-    margin={"l": 50, "r": 50, "t": 100, "b": 50},
+    margin={"l": 50, "r": 80, "t": 100, "b": 50},
 )
 
 # Save as PNG (4800 x 2700 px)

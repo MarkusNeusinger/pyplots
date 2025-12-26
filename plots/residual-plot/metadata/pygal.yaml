@@ -1,0 +1,27 @@
+library: pygal
+specification_id: residual-plot
+created: '2025-12-26T19:35:50Z'
+updated: '2025-12-26T19:59:17Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20528206404
+issue: 0
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-plot/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-plot/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/residual-plot/pygal/plot.html
+quality_score: 88
+review:
+  strengths:
+  - Excellent implementation of all spec requirements including zero reference line,
+    ±2σ threshold bands, and outlier highlighting
+  - Clean separation of normal points (blue) and outliers (red) using color differentiation
+  - Realistic house price prediction scenario with appropriate heteroscedasticity
+    pattern
+  - Good use of pygal XY chart with custom styling and stroke patterns for reference
+    lines
+  - Correct title format and descriptive axis labels with units
+  weaknesses:
+  - Legend text at bottom is too small to read clearly at the rendered size
+  - Axis tick label font size could be larger for better readability on the 4800x2700
+    canvas

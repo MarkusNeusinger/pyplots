@@ -1,0 +1,25 @@
+library: matplotlib
+specification_id: silhouette-basic
+created: '2025-12-26T19:35:55Z'
+updated: '2025-12-26T19:40:48Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20528201302
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/silhouette-basic/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/silhouette-basic/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of matplotlib fill_betweenx for creating characteristic silhouette
+    bar shapes
+  - Uses real iris dataset as specified, providing meaningful clustering context
+  - Clear visual separation between clusters with gaps and distinct colors
+  - Proper cluster annotations showing average silhouette scores for each group
+  - Well-positioned reference line with legend explaining overall average score
+  weaknesses:
+  - Y-axis label could be simplified since individual sample indices are not meaningful
+  - All silhouette values are positive; showing some negative values would better
+    demonstrate full range

@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-correlation: Correlation Matrix Heatmap
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-25
+Library: plotly | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import numpy as np
@@ -33,7 +33,7 @@ correlation_matrix = np.corrcoef(base.T)
 mask = np.triu(np.ones_like(correlation_matrix, dtype=bool), k=1)
 masked_corr = np.where(mask, np.nan, correlation_matrix)
 
-# Create annotation text (2 decimal places)
+# Create annotation text (2 decimal places) with dynamic text color
 annotations = []
 for i in range(n_vars):
     for j in range(n_vars):
@@ -49,6 +49,30 @@ for i in range(n_vars):
                 }
             )
 
+# Create custom hover text for rich interactive experience
+hover_text = []
+for i in range(n_vars):
+    row = []
+    for j in range(n_vars):
+        if mask[i, j]:
+            row.append("")
+        else:
+            r = correlation_matrix[i, j]
+            # Interpret correlation strength
+            if abs(r) >= 0.7:
+                strength = "Strong"
+            elif abs(r) >= 0.4:
+                strength = "Moderate"
+            else:
+                strength = "Weak"
+            direction = "positive" if r > 0 else "negative" if r < 0 else "none"
+            row.append(
+                f"<b>{variables[i]}</b> vs <b>{variables[j]}</b><br>"
+                f"Correlation: <b>{r:.3f}</b><br>"
+                f"Strength: {strength} {direction}"
+            )
+    hover_text.append(row)
+
 # Create heatmap
 fig = go.Figure(
     data=go.Heatmap(
@@ -59,13 +83,15 @@ fig = go.Figure(
         zmin=-1,
         zmax=1,
         colorbar={
-            "title": {"text": "Correlation", "font": {"size": 20}},
+            "title": {"text": "Pearson<br>Correlation", "font": {"size": 20}},
             "tickfont": {"size": 16},
             "thickness": 25,
             "len": 0.8,
             "tickvals": [-1, -0.5, 0, 0.5, 1],
         },
         hoverongaps=False,
+        hovertemplate="%{customdata}<extra></extra>",
+        customdata=hover_text,
     )
 )
 
@@ -73,19 +99,19 @@ fig = go.Figure(
 fig.update_layout(
     title={"text": "heatmap-correlation · plotly · pyplots.ai", "font": {"size": 32}, "x": 0.5, "xanchor": "center"},
     xaxis={
-        "title": {"text": "Variables", "font": {"size": 24}},
+        "title": {"text": "Financial Metrics", "font": {"size": 24}},
         "tickfont": {"size": 18},
         "side": "bottom",
         "tickangle": 45,
     },
     yaxis={
-        "title": {"text": "Variables", "font": {"size": 24}},
+        "title": {"text": "Financial Metrics", "font": {"size": 24}},
         "tickfont": {"size": 18},
         "autorange": "reversed",  # Match matrix orientation
     },
     annotations=annotations,
     template="plotly_white",
-    margin={"l": 120, "r": 100, "t": 100, "b": 150},
+    margin={"l": 140, "r": 100, "t": 100, "b": 150},
     width=1600,
     height=900,
 )

@@ -1,11 +1,11 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-stacked: Stacked Bar Chart
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-25
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 from bokeh.io import export_png
-from bokeh.models import ColumnDataSource, Legend, LegendItem
+from bokeh.models import ColumnDataSource, HoverTool, Legend, LegendItem
 from bokeh.plotting import figure, output_file, save
 
 
@@ -40,7 +40,7 @@ p = figure(
     toolbar_location=None,
 )
 
-# Create stacked bars
+# Create stacked bars with hover data
 legend_items = []
 for comp, color in zip(components, colors, strict=True):
     source = ColumnDataSource(
@@ -48,6 +48,8 @@ for comp, color in zip(components, colors, strict=True):
             "x": categories,
             "top": [b + v for b, v in zip(bottoms[comp], data[comp], strict=True)],
             "bottom": bottoms[comp],
+            "value": data[comp],
+            "component": [comp] * len(categories),
         }
     )
     renderer = p.vbar(
@@ -55,18 +57,25 @@ for comp, color in zip(components, colors, strict=True):
     )
     legend_items.append(LegendItem(label=comp, renderers=[renderer]))
 
-# Add legend
+    # Add hover tool for each component
+    hover = HoverTool(
+        renderers=[renderer],
+        tooltips=[("Category", "@component"), ("Quarter", "@x"), ("Sales", "@value{0,0} thousand USD")],
+    )
+    p.add_tools(hover)
+
+# Add legend inside plot area for better balance
 legend = Legend(
     items=legend_items,
     location="top_left",
-    label_text_font_size="28pt",
-    spacing=20,
-    padding=25,
-    background_fill_alpha=0.8,
-    glyph_height=40,
-    glyph_width=40,
+    label_text_font_size="24pt",
+    spacing=15,
+    padding=20,
+    background_fill_alpha=0.85,
+    glyph_height=35,
+    glyph_width=35,
 )
-p.add_layout(legend, "right")
+p.add_layout(legend)
 
 # Style the plot for large canvas
 p.title.text_font_size = "36pt"

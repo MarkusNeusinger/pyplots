@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 alluvial-basic: Basic Alluvial Diagram
-Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Library: seaborn | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import matplotlib.patches as mpatches
@@ -140,15 +140,20 @@ for year_idx, year in enumerate(years):
         )
         ax.add_patch(rect)
 
-        # Add party labels on both first and last columns for balance
+        # Add party labels with voter counts on both first and last columns
+        vote_millions = voter_counts[party_idx, year_idx]
+        # Use compact format: "Party (XM)" on single line
+        label_text = f"{party} ({vote_millions:.0f}M)"
+        font_size = 13
+
         if year_idx == 0:
             ax.text(
                 x - bar_width / 2 - 0.15,
                 (y_bottom + y_top) / 2,
-                party,
+                label_text,
                 ha="right",
                 va="center",
-                fontsize=16,
+                fontsize=font_size,
                 fontweight="bold",
                 color=party_colors[party],
             )
@@ -156,18 +161,27 @@ for year_idx, year in enumerate(years):
             ax.text(
                 x + bar_width / 2 + 0.15,
                 (y_bottom + y_top) / 2,
-                party,
+                label_text,
                 ha="left",
                 va="center",
-                fontsize=16,
+                fontsize=font_size,
                 fontweight="bold",
                 color=party_colors[party],
             )
 
         y_bottom = y_top
 
-    # Add year labels at top
-    ax.text(x, total_height + 3, year, ha="center", va="bottom", fontsize=20, fontweight="bold")
+    # Add year labels with total voters at top
+    year_total_display = voter_counts[:, year_idx].sum()
+    ax.text(
+        x,
+        total_height + 3,
+        f"{year}\n({year_total_display:.1f}M total)",
+        ha="center",
+        va="bottom",
+        fontsize=18,
+        fontweight="bold",
+    )
 
 # Draw flows between consecutive time points
 for flow_idx, flow_dict in enumerate(flows):
@@ -234,8 +248,8 @@ for flow_idx, flow_dict in enumerate(flows):
         target_offsets[target_party] = y1_top
 
 # Styling
-ax.set_xlim(-2.5, 13.0)
-ax.set_ylim(-5, 115)
+ax.set_xlim(-2.8, 13.3)
+ax.set_ylim(-8, 120)
 ax.set_aspect("auto")
 
 # Remove axes
@@ -249,21 +263,19 @@ ax.set_facecolor("white")
 fig.patch.set_facecolor("white")
 
 # Title (strictly following spec-id · library · pyplots.ai format)
-ax.set_title("alluvial-basic \u00b7 seaborn \u00b7 pyplots.ai", fontsize=24, fontweight="bold", pad=20)
+ax.set_title("US Voter Migration · alluvial-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=25)
 
-# Add subtitle
+# Add subtitle with scale information
 ax.text(
     5,
-    -3,
-    "Flow width represents proportion of voters transitioning between parties",
+    -5,
+    "Values in millions of voters | Flow width proportional to voter transitions",
     ha="center",
     va="top",
     fontsize=14,
     color="#666666",
     style="italic",
 )
-
-# Legend not needed - party labels are shown on both left and right sides
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")

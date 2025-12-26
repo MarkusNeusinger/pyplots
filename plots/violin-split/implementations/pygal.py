@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-split: Split Violin Plot
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-25
+Library: pygal | Python 3.13
+Quality: pending | Created: 2025-12-26
 """
 
 import numpy as np
@@ -64,11 +64,12 @@ chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
-    title="Patient Recovery · violin-split · pygal · pyplots.ai",
+    title="violin-split · pygal · pyplots.ai",
     x_title="Clinic",
     y_title="Recovery Score",
     show_legend=True,
     legend_at_bottom=True,
+    legend_at_bottom_columns=2,
     stroke=True,
     fill=True,
     dots_size=0,
@@ -143,32 +144,32 @@ for i, category in enumerate(categories):
 
 # Add all "Before" violins first (blue, with legend entry for first one only)
 for i, violin in enumerate(before_violins):
-    label = "Before" if i == 0 else ""
-    chart.add(label, violin)
+    label = "Before" if i == 0 else None
+    chart.add(label, violin, show_dots=False)
 
 # Add all "After" violins (yellow, with legend entry for first one only)
 for i, violin in enumerate(after_violins):
-    label = "After" if i == 0 else ""
-    chart.add(label, violin)
+    label = "After" if i == 0 else None
+    chart.add(label, violin, show_dots=False)
 
-# Add quartile markers for "Before" group
+# Add quartile markers for "Before" group (no legend entries)
 marker_width = 0.04
 for center_x, median, q1, q3, offset in before_markers:
     # IQR line (thin vertical line)
     iqr_line = [(center_x + offset, q1), (center_x + offset, q3)]
-    chart.add("", iqr_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 8})
+    chart.add(None, iqr_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 8})
     # Median marker (small horizontal line)
     median_line = [(center_x + offset - marker_width, median), (center_x + offset + marker_width, median)]
-    chart.add("", median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 12})
+    chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 12})
 
-# Add quartile markers for "After" group
+# Add quartile markers for "After" group (no legend entries)
 for center_x, median, q1, q3, offset in after_markers:
     # IQR line
     iqr_line = [(center_x + offset, q1), (center_x + offset, q3)]
-    chart.add("", iqr_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 8})
+    chart.add(None, iqr_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 8})
     # Median marker
     median_line = [(center_x + offset - marker_width, median), (center_x + offset + marker_width, median)]
-    chart.add("", median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 12})
+    chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 12})
 
 # X-axis labels for categories
 chart.x_labels = [

@@ -1,0 +1,28 @@
+library: seaborn
+specification_id: scatter-matrix
+created: '2025-12-26T16:14:34Z'
+updated: '2025-12-26T16:18:36Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20525444108
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-matrix/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-matrix/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of seaborn pairplot function, which is specifically designed for
+    scatter matrices
+  - Iris-like data is a perfect, realistic example that demonstrates species clustering
+    and correlations
+  - Clean implementation with appropriate sizing and transparency for the data density
+  - KDE plots on diagonal with fill provide good visual distribution representation
+  - Title format and axis labels with units are correct
+  weaknesses:
+  - Color palette uses two similar blues (Setosa and Virginica) which could be confusing;
+    consider using three more distinct colors
+  - Accessing private attribute g._legend is not ideal; consider using legend_data
+    parameter or seaborn move_legend function
+  - Marker size (s=80) could be slightly smaller given the data density in some cells

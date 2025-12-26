@@ -42,7 +42,7 @@ export function useInfiniteScroll({
       },
       {
         threshold: 0.1,
-        rootMargin: '1200px 0px' // Trigger 1200px before visible (preload ~4 rows ahead)
+        rootMargin: '2400px 0px' // Trigger 2400px before visible (preload ~8 rows ahead)
       }
     );
 

@@ -7,11 +7,11 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import Divider from '@mui/material/Divider';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
+import ViewAgendaIcon from '@mui/icons-material/ViewAgenda';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
 
 import type { FilterCategory, ActiveFilters, FilterCounts } from '../types';
 import { FILTER_LABELS, FILTER_CATEGORIES } from '../types';
@@ -311,8 +311,31 @@ export function FilterBar({
           gap: 1,
           justifyContent: 'center',
           alignItems: 'center',
+          position: 'relative',
         }}
       >
+        {/* Grid size toggle - absolute right */}
+        <Box
+          onClick={() => onImageSizeChange(imageSize === 'normal' ? 'compact' : 'normal')}
+          sx={{
+            position: 'absolute',
+            right: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 32,
+            height: 32,
+            cursor: 'pointer',
+            color: '#9ca3af',
+            '&:hover': { color: '#3776AB' },
+          }}
+        >
+          {imageSize === 'normal' ? (
+            <ViewModuleIcon sx={{ fontSize: '1.25rem' }} />
+          ) : (
+            <ViewAgendaIcon sx={{ fontSize: '1.25rem' }} />
+          )}
+        </Box>
         {/* Active filter chips */}
       {activeFilters.map((group, index) => {
         const isAnimating = randomAnimation?.index === index;
@@ -452,36 +475,6 @@ export function FilterBar({
           )}
         </Box>
       )}
-
-      {/* Size toggle */}
-      <ToggleButtonGroup
-        size="small"
-        value={imageSize}
-        exclusive
-        onChange={(_, newSize) => newSize && onImageSizeChange(newSize)}
-        sx={{
-          ml: 'auto',
-          height: 28,
-          '& .MuiToggleButton-root': {
-            fontFamily: '"JetBrains Mono", monospace',
-            fontSize: '0.75rem',
-            px: 1,
-            py: 0,
-            color: '#9ca3af',
-            borderColor: '#e5e7eb',
-            '&.Mui-selected': {
-              bgcolor: '#f3f4f6',
-              color: '#3776AB',
-              borderColor: '#3776AB',
-              '&:hover': { bgcolor: '#e5e7eb' },
-            },
-            '&:hover': { bgcolor: '#f9fafb' },
-          },
-        }}
-      >
-        <ToggleButton value="compact">compact</ToggleButton>
-        <ToggleButton value="normal">normal</ToggleButton>
-      </ToggleButtonGroup>
       </Box>
 
       {/* Dropdown menu */}

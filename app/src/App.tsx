@@ -332,7 +332,7 @@ function App() {
   const selectedLibrary = libFilter?.values[0] || '';
 
   return (
-    <Box onClick={handleContainerClick} sx={{ minHeight: '100vh', bgcolor: '#fafafa', py: 5 }}>
+    <Box onClick={handleContainerClick} sx={{ minHeight: '100vh', bgcolor: '#fafafa', py: 5, position: 'relative' }}>
       <Container maxWidth={false} sx={{ px: { xs: 4, sm: 8, lg: 12 } }}>
         <Header stats={stats} onRandom={handleRandom} />
 

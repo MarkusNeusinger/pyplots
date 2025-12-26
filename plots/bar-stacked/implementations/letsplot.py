@@ -1,7 +1,7 @@
 """ pyplots.ai
 bar-stacked: Stacked Bar Chart
 Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-25
+Quality: 93/100 | Created: 2025-12-26
 """
 
 import pandas as pd
@@ -35,13 +35,35 @@ data = {
 }
 df = pd.DataFrame(data)
 
-# Define custom colors (Python Blue first, then complementary colors)
-colors = ["#306998", "#FFD43B", "#DC2626", "#10B981"]
+# Calculate totals for each quarter (for labels)
+totals = df.groupby("quarter")["sales"].sum().reset_index()
+totals.columns = ["quarter", "total"]
+totals["label"] = totals["total"].astype(str)
+# Add y position for labels (slightly above total)
+totals["y_pos"] = totals["total"] + 15
 
-# Create stacked bar chart
+# Colorblind-safe palette (Python Blue first, then accessible colors)
+colors = ["#306998", "#FFD43B", "#8B5CF6", "#F59E0B"]
+
+# Create stacked bar chart with tooltips
 plot = (
     ggplot(df, aes(x="quarter", y="sales", fill="product"))
-    + geom_bar(stat="identity", position="stack", width=0.7, alpha=0.9)
+    + geom_bar(
+        stat="identity",
+        position="stack",
+        width=0.7,
+        alpha=0.9,
+        tooltips=layer_tooltips().title("@product").line("@|@sales K$").format("sales", ".0f"),
+    )
+    # Add total labels above each stack
+    + geom_text(
+        data=totals,
+        mapping=aes(x="quarter", y="y_pos", label="label"),
+        size=16,
+        fontface="bold",
+        color="#333333",
+        inherit_aes=False,
+    )
     + scale_fill_manual(values=colors)
     + labs(title="bar-stacked · letsplot · pyplots.ai", x="Quarter", y="Sales (Thousands $)", fill="Product Category")
     + theme_minimal()
@@ -52,6 +74,7 @@ plot = (
         legend_title=element_text(size=20),
         legend_text=element_text(size=18),
         legend_position="right",
+        legend_background=element_rect(fill="#F8F9FA", color="#E5E7EB", size=1),
         panel_grid_major_x=element_blank(),
         panel_grid_minor=element_blank(),
     )

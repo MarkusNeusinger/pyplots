@@ -1,0 +1,30 @@
+library: plotly
+specification_id: residual-plot
+created: '2025-12-26T19:37:08Z'
+updated: '2025-12-26T19:43:44Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20528203388
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-plot/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-plot/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/residual-plot/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - 'Excellent implementation of all key residual plot features: zero reference line,
+    ±2 SD bands, outlier highlighting, and smoothing trend line'
+  - Good color scheme with distinct visual encoding for normal residuals (blue circles),
+    outliers (yellow diamonds), and trend (red line)
+  - Interactive hover templates provide useful diagnostic information (fitted value
+    and residual)
+  - Data generation creates interesting non-linear pattern that demonstrates the diagnostic
+    purpose of residual plots
+  - Clean code structure following KISS principles
+  weaknesses:
+  - Legend shows +2 SD and -2 SD as separate entries; could be combined into single
+    ±2 SD Bounds entry
+  - Axis labels lack units (though residuals are unitless, y-axis label is verbose)
+  - Moving average smoothing could benefit from using a more sophisticated LOWESS
+    approach for smoother trend detection

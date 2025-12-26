@@ -1,0 +1,23 @@
+library: matplotlib
+specification_id: line-confidence
+created: '2025-12-26T16:13:23Z'
+updated: '2025-12-26T16:15:56Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20525432952
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-confidence/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-confidence/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Clean KISS structure with no functions or classes
+  - Excellent use of fill_between for confidence band with appropriate alpha transparency
+  - Realistic temperature forecast scenario with widening uncertainty over time
+  - Well-formatted title following the required spec-id · library · pyplots.ai format
+  - Good legend placement and clear labeling of both central line and confidence interval
+  weaknesses:
+  - Could use contrasting colors for line vs band as suggested in spec (e.g., dark
+    blue line with lighter blue band - currently same color)

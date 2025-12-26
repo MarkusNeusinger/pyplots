@@ -1,0 +1,30 @@
+library: altair
+specification_id: polar-scatter
+created: '2025-12-26T16:15:41Z'
+updated: '2025-12-26T16:20:03Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20525461849
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of polar coordinates in Altair despite lack of native
+    polar support
+  - Clean manual construction of polar gridlines (circles and spokes) as separate
+    chart layers
+  - Colorblind-safe color palette with good visual distinction between categories
+  - Realistic wind data with meaningful prevailing directions and appropriate speed
+    distributions
+  - Well-formatted direction labels with both cardinal names and degree values
+  weaknesses:
+  - Missing traditional axis labels - while direction/radius labels exist, could add
+    descriptive text like Wind Speed (m/s) near radius labels
+  - Does not leverage Altair interactive features (zoom, pan, brush selection) which
+    are a key library strength
+  - Some point overlap in dense clusters could be improved with slightly smaller markers
+    or stronger alpha

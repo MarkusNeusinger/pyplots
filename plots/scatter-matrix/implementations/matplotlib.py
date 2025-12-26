@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-matrix: Scatter Plot Matrix
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 85/100 | Created: 2025-12-26
+Quality: 91/100 | Created: 2025-12-26
 """
 
 import matplotlib.pyplot as plt

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-marginal: Scatter Plot with Marginal Distributions
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-26
@@ -12,19 +12,23 @@ from PIL import Image, ImageDraw, ImageFont
 from pygal.style import Style
 
 
-# Data - correlated bivariate data
+# Data - correlated bivariate data with realistic measurement context
 np.random.seed(42)
 n_points = 150
-x = np.random.randn(n_points) * 15 + 50
-y = x * 0.6 + np.random.randn(n_points) * 12 + 20
+x = np.random.randn(n_points) * 15 + 50  # Measurement A in range ~10-90
+y = x * 0.6 + np.random.randn(n_points) * 12 + 20  # Measurement B correlated
 
 # Calculate correlation for annotation
 correlation = np.corrcoef(x, y)[0, 1]
 
-# Calculate histogram data for marginals with better bin alignment
-n_bins = 12  # Fewer bins for cleaner display
-x_hist, x_edges = np.histogram(x, bins=n_bins)
-y_hist, y_edges = np.histogram(y, bins=n_bins)
+# Calculate histogram data for marginals
+# Use same number of bins and explicit ranges for better alignment
+n_bins = 10
+x_min, x_max = np.floor(x.min() / 5) * 5, np.ceil(x.max() / 5) * 5
+y_min, y_max = np.floor(y.min() / 5) * 5, np.ceil(y.max() / 5) * 5
+
+x_hist, x_edges = np.histogram(x, bins=n_bins, range=(x_min, x_max))
+y_hist, y_edges = np.histogram(y, bins=n_bins, range=(y_min, y_max))
 
 # Dimensions for layout - optimized spacing
 total_width = 4800
@@ -79,13 +83,13 @@ marginal_style = Style(
     guide_stroke_color="#e0e0e0",
 )
 
-# Create main scatter plot
+# Create main scatter plot with explicit axis ranges matching marginal histograms
 scatter = pygal.XY(
     width=scatter_width,
     height=scatter_height,
     style=scatter_style,
-    x_title="X Value",
-    y_title="Y Value",
+    x_title="Measurement A (units)",
+    y_title="Measurement B (units)",
     show_legend=False,
     stroke=False,
     dots_size=10,
@@ -98,6 +102,8 @@ scatter = pygal.XY(
     margin_right=right_margin,
     margin_bottom=bottom_margin,
     margin_left=left_margin,
+    range=(y_min - 5, y_max + 5),  # Y range with slight padding
+    xrange=(x_min - 5, x_max + 5),  # X range with slight padding
 )
 
 # Add scatter data
@@ -105,17 +111,13 @@ scatter_points = [(float(xi), float(yi)) for xi, yi in zip(x, y, strict=True)]
 scatter.add("Data", scatter_points)
 
 # Create top marginal histogram (X distribution)
-# Manually set Y labels to reduce clutter (4-5 major labels only)
-max_x_hist = int(np.max(x_hist))
-y_label_step = max(1, max_x_hist // 4)  # Divide into ~4 steps
-x_margin_y_labels = list(range(0, max_x_hist + y_label_step, y_label_step))
-
+# Use bar chart with x_labels matching scatter X range bins
 x_margin = pygal.Bar(
     width=scatter_width,
     height=margin_plot_size,
     style=marginal_style,
     show_legend=False,
-    show_x_labels=False,
+    show_x_labels=False,  # Hide to avoid clutter
     show_y_labels=True,
     show_y_guides=True,
     show_x_guides=False,
@@ -124,12 +126,12 @@ x_margin = pygal.Bar(
     margin_bottom=20,
     margin_left=left_margin,
     explicit_size=True,
-    spacing=3,
-    y_labels=x_margin_y_labels,  # Explicit Y labels for clean display
+    spacing=2,  # Tighter spacing for better visual continuity
 )
 x_margin.add("X Distribution", [float(h) for h in x_hist])
 
 # Create right marginal histogram (Y distribution) - horizontal bars
+# Use same margin settings as scatter for better alignment
 y_margin = pygal.HorizontalBar(
     width=margin_plot_size,
     height=scatter_height,
@@ -141,10 +143,10 @@ y_margin = pygal.HorizontalBar(
     show_x_guides=False,
     margin_top=top_margin,
     margin_right=30,
-    margin_bottom=bottom_margin,
+    margin_bottom=bottom_margin,  # Match scatter bottom margin
     margin_left=10,
     explicit_size=True,
-    spacing=3,
+    spacing=2,  # Tighter spacing matching X marginal
 )
 # Reverse order to match scatter Y axis orientation (pygal HorizontalBar goes top-to-bottom)
 y_margin.add("Y Distribution", [float(h) for h in y_hist[::-1]])
@@ -196,23 +198,23 @@ draw.text((text_x, text_y), title_text, fill="#333333", font=title_font)
 
 # Add statistics in the corner space (top-right empty area)
 # This corner is at: x = right of top marginal, y = below title and above right marginal
-corner_x = y_margin_x + 20  # Right side where y_margin is
-corner_y = title_height + 20  # Just below title area
-corner_width = margin_plot_size - 40
-corner_height = margin_plot_size - 60
+corner_x = y_margin_x + 30  # Right side where y_margin is
+corner_y = title_height + 30  # Just below title area
+corner_width = margin_plot_size - 60
+corner_height = margin_plot_size - 80
 
 # Draw subtle background for stats box
 stats_box = [(corner_x, corner_y), (corner_x + corner_width, corner_y + corner_height)]
-draw.rounded_rectangle(stats_box, radius=15, fill="#f8f8f8", outline="#d0d0d0", width=2)
+draw.rounded_rectangle(stats_box, radius=15, fill="#f5f5f5", outline="#c0c0c0", width=2)
 
 # Add statistics text - centered in box
-stats_title = "Statistics"
-draw.text((corner_x + 30, corner_y + 25), stats_title, fill="#333333", font=stats_font_bold)
+stats_title = "Summary"
+draw.text((corner_x + 35, corner_y + 25), stats_title, fill="#333333", font=stats_font_bold)
 
-stats_lines = [f"n = {n_points}", f"r = {correlation:.3f}", f"X̄ = {np.mean(x):.1f}", f"Ȳ = {np.mean(y):.1f}"]
+stats_lines = [f"n = {n_points}", f"r = {correlation:.3f}", f"A̅ = {np.mean(x):.1f}", f"B̅ = {np.mean(y):.1f}"]
 line_y = corner_y + 85
 for line in stats_lines:
-    draw.text((corner_x + 30, line_y), line, fill="#555555", font=stats_font)
+    draw.text((corner_x + 35, line_y), line, fill="#555555", font=stats_font)
     line_y += 50
 
 # Save final image

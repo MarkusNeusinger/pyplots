@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-confidence: Line Plot with Confidence Interval
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 52/100 | Created: 2025-12-26
@@ -36,9 +36,8 @@ custom_style = Style(
     foreground_subtle="#666666",
     guide_stroke_color="#cccccc",
     colors=(
-        "rgba(48, 105, 152, 0.3)",  # Light blue for upper bound fill
-        "white",  # White for lower bound (masks the fill below)
-        "#306998",  # Solid dark blue for predicted mean
+        "rgba(48, 105, 152, 0.25)",  # Semi-transparent blue for confidence band
+        "#306998",  # Solid dark blue for predicted mean line
     ),
     opacity="1",
     opacity_hover="1",
@@ -66,18 +65,26 @@ chart = pygal.XY(
     range=(float(y_lower.min() - 50), float(y_upper.max() + 50)),
 )
 
-# Prepare data as XY tuples
-upper_data = [(float(xi), float(yi)) for xi, yi in zip(x, y_upper, strict=True)]
-lower_data = [(float(xi), float(yi)) for xi, yi in zip(x, y_lower, strict=True)]
+# Create confidence band as a closed polygon:
+# Trace upper bound left-to-right, then lower bound right-to-left
+# This forms a closed shape that pygal can fill
+confidence_band = []
+
+# Forward pass: upper bound (left to right)
+for xi, yi in zip(x, y_upper, strict=True):
+    confidence_band.append((float(xi), float(yi)))
+
+# Backward pass: lower bound (right to left) - closes the polygon
+for xi, yi in zip(reversed(x), reversed(y_lower), strict=True):
+    confidence_band.append((float(xi), float(yi)))
+
+# Center line data
 center_data = [(float(xi), float(yi)) for xi, yi in zip(x, y_center, strict=True)]
 
-# Layer 1: Upper bound - fills from line down to y_min (creates shaded region above lower)
-chart.add("95% Confidence Interval", upper_data, show_dots=False, stroke=False)
+# Add confidence band (filled polygon)
+chart.add("95% Confidence Interval", confidence_band, show_dots=False, stroke=False)
 
-# Layer 2: Lower bound with white fill - masks everything below the lower bound line
-chart.add(None, lower_data, show_dots=False, stroke=False)
-
-# Layer 3: Center line (no fill, solid stroke)
+# Add center line (solid stroke, no fill)
 chart.add("Predicted Mean", center_data, fill=False, stroke=True, show_dots=False, stroke_style={"width": 6})
 
 # Save outputs

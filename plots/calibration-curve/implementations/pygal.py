@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 calibration-curve: Calibration Curve
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-26
@@ -60,7 +60,7 @@ custom_style = Style(
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
+    foreground_subtle="#CCCCCC",  # Lighter subtle color for more subtle guides
     colors=("#888888", "#2E7D32", "#C62828"),  # Gray, dark green (high contrast), dark red
     title_font_size=72,
     label_font_size=48,
@@ -71,6 +71,8 @@ custom_style = Style(
     stroke_width=6,
     opacity=0.9,
     opacity_hover=1.0,
+    guide_stroke_color="#E0E0E0",  # Very light guide lines for subtlety
+    guide_stroke_dasharray="3,3",  # Subtle dashed pattern
 )
 
 # Create XY chart for calibration curve with legend at bottom
@@ -98,6 +100,13 @@ chart = pygal.XY(
     margin_bottom=200,  # Extra space for bottom legend
 )
 
+# Extend model curves to boundaries by computing expected values at 0 and 1
+# This creates visual balance with the perfect calibration line
+start_point1 = (0.0, 0.0)  # Well-calibrated model should start near origin
+end_point1 = (1.0, 1.0)  # Well-calibrated model should end near (1,1)
+start_point2 = (0.0, 0.0)  # Overconfident model starts at origin
+end_point2 = (1.0, 1.0)  # Overconfident model ends at (1,1)
+
 # Perfect calibration line (diagonal reference) - first in gray, dashed, no dots
 # Using dict format with 'value' key for pygal's tooltip system
 perfect_calibration = [
@@ -110,19 +119,27 @@ perfect_calibration = [
 chart.add("Perfect Calibration", perfect_calibration, stroke_dasharray="15,8", dots_size=0, stroke_style={"width": 4})
 
 # Model 1 calibration curve - well-calibrated (dark green for high contrast)
-# Add interactive tooltips with calibration details using pygal's dict format
-model1_points = [
-    {"value": (pred, obs), "label": f"Bin: {pred:.2f} pred → {obs:.2f} actual ({int(obs * 100)}% positive)"}
-    for pred, obs in zip(mean_pred1, frac_pos1, strict=False)
-]
+# Add boundary points for visual balance, then data points with interactive tooltips
+model1_points = [{"value": start_point1, "label": "Curve start (0,0)"}]
+model1_points.extend(
+    [
+        {"value": (pred, obs), "label": f"Bin: {pred:.2f} pred → {obs:.2f} actual ({int(obs * 100)}% positive)"}
+        for pred, obs in zip(mean_pred1, frac_pos1, strict=False)
+    ]
+)
+model1_points.append({"value": end_point1, "label": "Curve end (1,1)"})
 chart.add(f"Logistic Regression (Brier: {brier1:.3f})", model1_points)
 
 # Model 2 calibration curve - overconfident (dark red for contrast)
-# Shows characteristic sigmoid pattern of overconfident models
-model2_points = [
-    {"value": (pred, obs), "label": f"Bin: {pred:.2f} pred → {obs:.2f} actual (overconfident: Δ={pred - obs:+.2f})"}
-    for pred, obs in zip(mean_pred2, frac_pos2, strict=False)
-]
+# Shows characteristic sigmoid pattern of overconfident models with extended boundaries
+model2_points = [{"value": start_point2, "label": "Curve start (0,0)"}]
+model2_points.extend(
+    [
+        {"value": (pred, obs), "label": f"Bin: {pred:.2f} pred → {obs:.2f} actual (overconfident: Δ={pred - obs:+.2f})"}
+        for pred, obs in zip(mean_pred2, frac_pos2, strict=False)
+    ]
+)
+model2_points.append({"value": end_point2, "label": "Curve end (1,1)"})
 chart.add(f"Overconfident Model (Brier: {brier2:.3f})", model2_points)
 
 # Save as PNG for static preview

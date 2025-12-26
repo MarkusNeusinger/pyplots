@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 learning-curve-basic: Model Learning Curve
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-26
@@ -137,15 +137,15 @@ p.xaxis.major_label_text_font_size = "22pt"
 p.yaxis.major_label_text_font_size = "22pt"
 
 # Legend styling - larger and more prominent
-p.legend.label_text_font_size = "26pt"
+p.legend.label_text_font_size = "34pt"
 p.legend.background_fill_alpha = 0.9
 p.legend.background_fill_color = "#ffffff"
 p.legend.border_line_color = "#888888"
 p.legend.border_line_width = 2
-p.legend.padding = 20
-p.legend.spacing = 15
-p.legend.glyph_width = 40
-p.legend.glyph_height = 30
+p.legend.padding = 25
+p.legend.spacing = 20
+p.legend.glyph_width = 50
+p.legend.glyph_height = 40
 
 # Grid styling
 p.grid.grid_line_alpha = 0.3

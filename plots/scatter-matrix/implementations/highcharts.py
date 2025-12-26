@@ -1,9 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-matrix: Scatter Plot Matrix
 Library: highcharts unknown | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-26
 """
 
+import json
 import tempfile
 import time
 import urllib.request
@@ -96,27 +97,27 @@ for row in range(n_vars):
                 "chart": {
                     "type": "column",
                     "backgroundColor": "#ffffff",
-                    "marginTop": 60 if row == 0 else 10,
-                    "marginBottom": 60 if row == n_vars - 1 else 10,
-                    "marginLeft": 90 if col == 0 else 10,
-                    "marginRight": 10,
+                    "marginTop": 80 if row == 0 else 15,
+                    "marginBottom": 80 if row == n_vars - 1 else 15,
+                    "marginLeft": 120 if col == 0 else 15,
+                    "marginRight": 15,
                 },
-                "title": {"text": variables[row] if row == 0 else "", "style": {"fontSize": "20px"}},
+                "title": {"text": variables[row] if row == 0 else "", "style": {"fontSize": "28px"}},
                 "xAxis": {
                     "categories": categories[::3] if len(categories) > 5 else categories,
-                    "labels": {"enabled": row == n_vars - 1, "style": {"fontSize": "14px"}, "rotation": -45},
+                    "labels": {"enabled": row == n_vars - 1, "style": {"fontSize": "20px"}, "rotation": -45},
                     "title": {"text": ""},
                 },
                 "yAxis": {
-                    "title": {"text": variables[row] if col == 0 else "", "style": {"fontSize": "16px"}},
-                    "labels": {"enabled": col == 0, "style": {"fontSize": "14px"}},
+                    "title": {"text": variables[row] if col == 0 else "", "style": {"fontSize": "22px"}},
+                    "labels": {"enabled": col == 0, "style": {"fontSize": "18px"}},
                     "gridLineWidth": 1,
                     "gridLineColor": "#e0e0e0",
                 },
                 "legend": {"enabled": False},
                 "credits": {"enabled": False},
                 "plotOptions": {
-                    "column": {"stacking": "normal", "borderWidth": 0, "pointPadding": 0, "groupPadding": 0.05}
+                    "column": {"grouping": True, "borderWidth": 0, "pointPadding": 0.05, "groupPadding": 0.1}
                 },
                 "series": [
                     {"name": species_names[i], "data": hist_series_data[i], "color": colors[i]} for i in range(3)
@@ -146,46 +147,44 @@ for row in range(n_vars):
                 "chart": {
                     "type": "scatter",
                     "backgroundColor": "#ffffff",
-                    "marginTop": 60 if row == 0 else 10,
-                    "marginBottom": 60 if row == n_vars - 1 else 10,
-                    "marginLeft": 90 if col == 0 else 10,
-                    "marginRight": 10,
+                    "marginTop": 80 if row == 0 else 15,
+                    "marginBottom": 80 if row == n_vars - 1 else 15,
+                    "marginLeft": 120 if col == 0 else 15,
+                    "marginRight": 15,
                 },
-                "title": {"text": variables[col] if row == 0 else "", "style": {"fontSize": "20px"}},
+                "title": {"text": variables[col] if row == 0 else "", "style": {"fontSize": "28px"}},
                 "xAxis": {
-                    "labels": {"enabled": row == n_vars - 1, "style": {"fontSize": "14px"}},
+                    "labels": {"enabled": row == n_vars - 1, "style": {"fontSize": "18px"}},
                     "title": {"text": ""},
                     "gridLineWidth": 1,
                     "gridLineColor": "#e0e0e0",
                 },
                 "yAxis": {
-                    "title": {"text": variables[row] if col == 0 else "", "style": {"fontSize": "16px"}},
-                    "labels": {"enabled": col == 0, "style": {"fontSize": "14px"}},
+                    "title": {"text": variables[row] if col == 0 else "", "style": {"fontSize": "22px"}},
+                    "labels": {"enabled": col == 0, "style": {"fontSize": "18px"}},
                     "gridLineWidth": 1,
                     "gridLineColor": "#e0e0e0",
                 },
                 "legend": {"enabled": False},
                 "credits": {"enabled": False},
-                "plotOptions": {"scatter": {"marker": {"radius": 8}, "states": {"hover": {"lineWidthPlus": 0}}}},
+                "plotOptions": {"scatter": {"marker": {"radius": 10}, "states": {"hover": {"lineWidthPlus": 0}}}},
                 "series": scatter_series,
             }
 
         # Convert config to JS
-        import json
-
         config_js = json.dumps(chart_config)
         charts_js += f"Highcharts.chart('{container_id}', {config_js});\n"
 
-# Create legend HTML
+# Create legend HTML with much larger text for readability
 legend_html = """
-<div style="position:absolute; left:50%; transform:translateX(-50%); bottom:20px; display:flex; gap:40px; font-size:24px; font-family:Arial,sans-serif;">
+<div style="position:absolute; left:50%; transform:translateX(-50%); bottom:30px; display:flex; gap:80px; font-size:48px; font-family:Arial,sans-serif; font-weight:500;">
 """
 for i, name in enumerate(species_names):
-    legend_html += f'<div style="display:flex; align-items:center; gap:10px;"><div style="width:20px; height:20px; background:{colors[i]}; border-radius:50%;"></div><span>{name}</span></div>'
+    legend_html += f'<div style="display:flex; align-items:center; gap:20px;"><div style="width:40px; height:40px; background:{colors[i]}; border-radius:50%;"></div><span>{name}</span></div>'
 legend_html += "</div>"
 
-# Title
-title_html = '<div style="position:absolute; top:10px; left:50%; transform:translateX(-50%); font-size:32px; font-family:Arial,sans-serif; font-weight:bold;">Iris Dataset · scatter-matrix · highcharts · pyplots.ai</div>'
+# Title with larger font
+title_html = '<div style="position:absolute; top:15px; left:50%; transform:translateX(-50%); font-size:48px; font-family:Arial,sans-serif; font-weight:bold;">scatter-matrix · highcharts · pyplots.ai</div>'
 
 # Full HTML
 html_content = f"""<!DOCTYPE html>
@@ -221,7 +220,7 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=3600,3750")  # Extra height for title and legend
+chrome_options.add_argument("--window-size=3600,3850")  # Extra height for title and legend
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")

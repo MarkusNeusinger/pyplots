@@ -1,0 +1,24 @@
+library: altair
+specification_id: learning-curve-basic
+created: '2025-12-26T17:39:34Z'
+updated: '2025-12-26T17:49:39Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20526602211
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/learning-curve-basic/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/learning-curve-basic/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/learning-curve-basic/altair/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent visual clarity with well-chosen font sizes and line thickness
+  - Perfect colorblind-safe color palette (Python blue and gold)
+  - Proper confidence bands using mark_area with appropriate opacity
+  - Clean, declarative Altair code following library idioms
+  - Realistic simulated data showing classic learning curve behavior
+  weaknesses:
+  - Legend configuration uses resolve_legend which creates duplicate legend behavior
+  - Missing interactive features (tooltips, hover) for exploring exact values
+  - Y-axis scale could be tighter to better show validation curve detail

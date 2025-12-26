@@ -1,0 +1,27 @@
+library: letsplot
+specification_id: scatter-color-mapped
+created: '2025-12-26T09:45:48Z'
+updated: '2025-12-26T09:48:07Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20520225379
+issue: 2004
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/letsplot/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of viridis colormap which is perceptually uniform and colorblind-accessible
+  - Well-implemented interactive tooltips showing X, Y coordinates and temperature
+    on hover
+  - Clean data generation with realistic spatial clustering pattern that demonstrates
+    correlation between position and temperature
+  - Proper text sizing for high-resolution output (4800x2700 px)
+  - Good use of theme_minimal with customized grid styling
+  weaknesses:
+  - Point size (size=5) could be slightly larger (size=6-7) for 150 data points to
+    improve visibility
+  - Grid styling uses dashed lines which appear somewhat busy; solid subtle lines
+    might be cleaner

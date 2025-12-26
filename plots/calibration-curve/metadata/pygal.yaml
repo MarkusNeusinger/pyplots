@@ -1,7 +1,7 @@
 library: pygal
 specification_id: calibration-curve
 created: '2025-12-26T19:36:53Z'
-updated: '2025-12-26T19:43:32Z'
+updated: '2025-12-26T19:51:03Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20528205173
 issue: 0
@@ -10,23 +10,17 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/pygal/plot.html
-quality_score: 78
+quality_score: 85
 review:
   strengths:
-  - Proper use of pygal.XY chart type for calibration curve with correct data structure
-  - 'Good color scheme using pyplots brand colors (#306998, #FFD43B)'
-  - Includes Brier scores in legend labels providing quantitative calibration metric
-  - Diagonal reference line correctly implemented with dashed style
-  - Custom Style properly configured for 4800x2700 canvas with appropriate font sizes
-  - X and Y axis formatting with sensible ranges (0-1) for probability data
+  - Clean comparison of well-calibrated vs overconfident model demonstrating key calibration
+    concepts
+  - Brier scores integrated into legend labels for quantitative assessment
+  - Perfect calibration diagonal reference line properly implemented with dashing
+  - Appropriate font sizes for 4800x2700 canvas
+  - Good use of color coding to distinguish models
   weaknesses:
-  - Code uses helper functions (compute_calibration, brier_score) violating KISS principle
-    - should be inline calculations
-  - Legend positioned in top-left corner outside plot area looks awkward; would benefit
-    from legend_box=True or repositioning
-  - The overconfident model miscalibration pattern is subtle and could be more visually
-    distinct
-  - Uses strict=True parameter which is Python 3.10+ specific
-  - Dual output (plot.png and plot.html) when only plot.png is expected
-  - Perfect calibration line should have more distinctive styling to stand out from
-    model curves
+  - Legend positioned at top-left rather than bottom as configured (legend_at_bottom=True
+    not taking effect)
+  - Yellow color for well-calibrated model has lower contrast on white background
+  - Does not leverage pygal's distinctive SVG/interactive features like tooltips

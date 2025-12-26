@@ -1,0 +1,31 @@
+library: plotnine
+specification_id: polar-scatter
+created: '2025-12-26T16:15:54Z'
+updated: '2025-12-26T16:20:07Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20525461292
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent creative implementation using Cartesian coordinates to simulate polar
+    projection (plotnine lacks native polar coordinates)
+  - Clean grammar of graphics approach with multiple geom layers for gridlines, spokes,
+    data points, and labels
+  - Realistic wind data with prevailing directions (SW and NE clusters) that demonstrate
+    real-world wind patterns
+  - Good use of alpha transparency to handle point overlap in dense regions
+  - Proper compass orientation with 0° at North and clockwise angles
+  - Clear visual hierarchy with bold compass labels and subtle gridlines
+  weaknesses:
+  - Title format should be exactly "{spec-id} · {library} · pyplots.ai" not "Wind
+    Direction and Speed · polar-scatter · plotnine · pyplots.ai"
+  - Figure size is 12x12 (square) at 300 DPI = 3600x3600 which is valid, but the recommended
+    16:9 landscape might provide better label spacing
+  - Legend could be positioned closer to the plot area to reduce whitespace on the
+    right

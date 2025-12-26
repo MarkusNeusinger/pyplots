@@ -1,0 +1,26 @@
+library: seaborn
+specification_id: line-confidence
+created: '2025-12-26T16:12:46Z'
+updated: '2025-12-26T16:14:59Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20525432896
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-confidence/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-confidence/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent visual clarity with properly sized text elements (24/20/16pt)
+  - 'Perfect spec compliance: shows central line with shaded confidence band exactly
+    as specified'
+  - Realistic data scenario (monthly sales forecast) with growing uncertainty over
+    time
+  - Clean, readable code following KISS principles
+  - Good use of contrasting but related colors (dark blue line, light blue band)
+  weaknesses:
+  - Uses matplotlib fill_between instead of seaborn native confidence interval features
+    (sns.lineplot can compute CI automatically from raw data)
+  - Legend position slightly overlaps with early confidence band data

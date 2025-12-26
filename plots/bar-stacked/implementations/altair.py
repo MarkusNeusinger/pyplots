@@ -1,7 +1,7 @@
 """ pyplots.ai
 bar-stacked: Stacked Bar Chart
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-25
+Quality: 93/100 | Created: 2025-12-26
 """
 
 import altair as alt
@@ -9,7 +9,6 @@ import pandas as pd
 
 
 # Data: Quarterly sales by product category
-# Order from largest to smallest (Electronics > Clothing > Home & Garden > Sports)
 data = pd.DataFrame(
     {
         "Quarter": ["Q1", "Q1", "Q1", "Q1", "Q2", "Q2", "Q2", "Q2", "Q3", "Q3", "Q3", "Q3", "Q4", "Q4", "Q4", "Q4"],
@@ -35,16 +34,21 @@ data = pd.DataFrame(
     }
 )
 
-# Define category order (largest at bottom) and colors
+# Define category order (largest at bottom) and colorblind-safe palette
 category_order = ["Electronics", "Clothing", "Home & Garden", "Sports"]
-colors = ["#306998", "#FFD43B", "#E07A3A", "#7FB069"]
+# Using colorblind-safe palette: blue, orange, teal, gold
+colors = ["#306998", "#E69F00", "#009E73", "#F0E442"]
 
 # Add order column for stacking (largest at bottom = lower order number)
 order_map = {cat: i for i, cat in enumerate(category_order)}
 data["color_order"] = data["Product"].map(order_map)
 
+# Calculate totals for each quarter (for labels above stacks)
+totals = data.groupby("Quarter")["Sales"].sum().reset_index()
+totals.columns = ["Quarter", "Total"]
+
 # Create stacked bar chart
-chart = (
+bars = (
     alt.Chart(data)
     .mark_bar(stroke="white", strokeWidth=1.5)
     .encode(
@@ -54,11 +58,25 @@ chart = (
             "Product:N",
             title="Product Category",
             scale=alt.Scale(domain=category_order, range=colors),
-            legend=alt.Legend(titleFontSize=20, labelFontSize=18, symbolSize=300, orient="right"),
+            legend=alt.Legend(
+                titleFontSize=20, labelFontSize=18, symbolSize=400, orient="right", titlePadding=10, labelLimit=200
+            ),
         ),
         order=alt.Order("color_order:Q", sort="ascending"),
-        tooltip=["Quarter:O", "Product:N", "Sales:Q"],
+        tooltip=["Quarter:O", "Product:N", alt.Tooltip("Sales:Q", title="Sales (K USD)")],
     )
+)
+
+# Add total value labels above each stack
+text = (
+    alt.Chart(totals)
+    .mark_text(fontSize=18, fontWeight="bold", dy=-12, color="#333333")
+    .encode(x=alt.X("Quarter:O"), y=alt.Y("Total:Q"), text=alt.Text("Total:Q", format=".0f"))
+)
+
+# Combine bars and labels
+chart = (
+    (bars + text)
     .properties(
         width=1400, height=850, title=alt.Title("bar-stacked · altair · pyplots.ai", fontSize=28, anchor="middle")
     )

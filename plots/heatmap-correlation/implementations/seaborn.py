@@ -1,7 +1,7 @@
 """ pyplots.ai
 heatmap-correlation: Correlation Matrix Heatmap
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-25
+Quality: 93/100 | Created: 2025-12-26
 """
 
 import matplotlib.pyplot as plt
@@ -25,18 +25,18 @@ lot_size = sqft * 2 + np.random.normal(0, 1000, n_samples)
 distance_downtown = np.random.exponential(10, n_samples).clip(1, 40)
 crime_rate = distance_downtown * 0.3 + np.random.normal(5, 2, n_samples)
 
-# Create DataFrame
+# Create DataFrame with descriptive column names including units
 df = pd.DataFrame(
     {
-        "Price": price,
-        "Sq Ft": sqft,
+        "Price ($K)": price / 1000,
+        "Area (sq ft)": sqft,
         "Bedrooms": bedrooms,
         "Bathrooms": bathrooms,
-        "Age": age,
-        "Garage": garage,
-        "Lot Size": lot_size,
-        "Distance": distance_downtown,
-        "Crime Rate": crime_rate,
+        "Age (years)": age,
+        "Garage Spots": garage,
+        "Lot (sq ft)": lot_size,
+        "Distance (mi)": distance_downtown,
+        "Crime Index": crime_rate,
     }
 )
 

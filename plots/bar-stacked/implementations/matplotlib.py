@@ -1,12 +1,15 @@
 """ pyplots.ai
 bar-stacked: Stacked Bar Chart
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-25
+Quality: 94/100 | Created: 2025-12-26
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
 
+
+# Seed for reproducibility (data is deterministic but seed documents intent)
+np.random.seed(42)
 
 # Data: Quarterly revenue by product category (in millions USD)
 categories = ["Q1", "Q2", "Q3", "Q4"]
@@ -30,10 +33,8 @@ bar_width = 0.6
 
 # Create stacked bars
 bottom = np.zeros(len(categories))
-bars_list = []
 for i, (product, values) in enumerate(zip(products, [software, hardware, services, support], strict=True)):
-    bars = ax.bar(x, values, bar_width, label=product, bottom=bottom, color=colors[i], edgecolor="white", linewidth=1.5)
-    bars_list.append(bars)
+    ax.bar(x, values, bar_width, label=product, bottom=bottom, color=colors[i], edgecolor="white", linewidth=1.5)
     bottom += values
 
 # Add total labels above each stacked bar
@@ -49,8 +50,8 @@ ax.set_xticks(x)
 ax.set_xticklabels(categories)
 ax.tick_params(axis="both", labelsize=16)
 
-# Legend (outside plot to avoid overlap)
-ax.legend(fontsize=16, loc="upper left", framealpha=0.95)
+# Legend (outside plot area to avoid overlap with data)
+ax.legend(fontsize=16, loc="upper left", bbox_to_anchor=(1.02, 1), framealpha=0.95)
 
 # Grid (subtle, horizontal only for bar charts)
 ax.yaxis.grid(True, alpha=0.3, linestyle="--")

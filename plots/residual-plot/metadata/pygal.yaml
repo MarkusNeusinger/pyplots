@@ -1,7 +1,7 @@
 library: pygal
 specification_id: residual-plot
 created: '2025-12-26T19:35:50Z'
-updated: '2025-12-26T19:40:27Z'
+updated: '2025-12-26T19:46:28Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20528206404
 issue: 0
@@ -10,18 +10,19 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-plot/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-plot/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/residual-plot/pygal/plot.html
-quality_score: 88
+quality_score: 78
 review:
   strengths:
-  - Excellent implementation of outlier detection and visualization with distinct
-    coloring
-  - Clean separation of normal residuals vs outliers using mask
-  - Zero reference line implemented with dashed stroke style
-  - Demonstrates heteroscedasticity pattern effectively
-  - Font sizes appropriately scaled for 4800x2700 canvas
-  - Proper use of pygal XY chart for scatter data
+  - Proper separation of normal residuals and outliers with distinct colors
+  - Correct title format following pyplots.ai conventions
+  - Good use of custom Style for canvas sizing and fonts
+  - Realistic house price prediction scenario with heteroscedasticity
+  - Clean KISS code structure with proper reproducibility (seed=42)
+  - Good dot sizing for the data density (100 points)
   weaknesses:
-  - Missing ±2σ horizontal bands which would enhance diagnostic value
-  - Axis labels lack units (generic Fitted Values and Residuals)
-  - Legend entry for Zero Reference shows colored square instead of line representation
-  - Font sizes in Style deviate from library guide recommendations
+  - 'X-axis values render incorrectly: code specifies fitted values 150-500 but plot
+    shows 10-100 (pygal may be using index positions)'
+  - Axis labels lose their units in rendering (should show $1000s suffix)
+  - The ±2σ threshold dashed lines are not visible in the rendered output despite
+    being added to the chart
+  - 'Legend label mismatch: Zero Reference rendered vs y = 0 (Perfect Fit) in code'

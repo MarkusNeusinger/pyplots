@@ -1,0 +1,29 @@
+library: plotly
+specification_id: roc-curve
+created: '2025-12-26T17:38:40Z'
+updated: '2025-12-26T17:47:45Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20526592327
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/roc-curve/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/roc-curve/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/roc-curve/plotly/plot.html
+quality_score: 91
+review:
+  strengths:
+  - 'Excellent visual clarity with well-chosen colors (blue #306998 and yellow #FFD43B)
+    that are colorblind-safe'
+  - Proper use of plotly scaleanchor and scaleratio for equal aspect ratio as recommended
+    in spec
+  - AUC values displayed in legend following spec requirements
+  - Clean fill effect under the primary ROC curve adds visual appeal
+  - Interactive HTML output generated alongside PNG, leveraging plotly interactivity
+    strength
+  - Well-configured legend with background and border for readability
+  weaknesses:
+  - Code contains helper functions (calculate_roc, calculate_auc) instead of inline
+    computation - violates KISS principle requiring no functions/classes
+  - Legend position overlaps slightly with the plot area; could be positioned outside
+    or with more careful placement

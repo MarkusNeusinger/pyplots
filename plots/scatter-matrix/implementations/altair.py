@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-matrix: Scatter Plot Matrix
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 65/100 | Created: 2025-12-26
@@ -14,7 +14,6 @@ np.random.seed(42)
 
 # Generate realistic iris-like data with 4 variables and 3 species
 n_per_species = 50
-species = ["Setosa", "Versicolor", "Virginica"]
 
 data = []
 # Setosa - smaller flowers
@@ -58,10 +57,10 @@ df = pd.DataFrame(data)
 # Variables for the scatter matrix
 variables = ["Sepal Length (cm)", "Sepal Width (cm)", "Petal Length (cm)", "Petal Width (cm)"]
 
-# Color scheme - Python Blue based palette that's colorblind-safe
-color_scale = alt.Scale(domain=["Setosa", "Versicolor", "Virginica"], range=["#306998", "#FFD43B", "#4B8BBE"])
+# Color scheme - Distinct colorblind-safe palette (blue, orange, green)
+color_scale = alt.Scale(domain=["Setosa", "Versicolor", "Virginica"], range=["#306998", "#E69F00", "#009E73"])
 
-# Build the scatter matrix with histograms on diagonal manually
+# Build the scatter matrix with histograms on diagonal
 # Each cell is 350x350, with 4x4 grid = 1400x1400 base
 cell_size = 350
 charts = []
@@ -70,26 +69,33 @@ for i, row_var in enumerate(variables):
     row_charts = []
     for j, col_var in enumerate(variables):
         if i == j:
-            # Diagonal: histogram showing distribution by species
-            hist = (
-                alt.Chart(df)
-                .mark_bar(opacity=0.7)
-                .encode(
-                    alt.X(f"{col_var}:Q", bin=alt.Bin(maxbins=15), title=col_var if i == len(variables) - 1 else ""),
-                    alt.Y("count():Q", stack=None, title=row_var if j == 0 else ""),
-                    alt.Color(
-                        "Species:N",
-                        scale=color_scale,
-                        legend=alt.Legend(
-                            titleFontSize=24, labelFontSize=22, symbolSize=300, orient="right", title="Species"
-                        )
-                        if i == 0 and j == 0
-                        else None,
-                    ),
-                    tooltip=["Species:N", alt.Tooltip("count():Q", title="Count")],
+            # Diagonal: layered histograms showing distribution by species
+            # Create separate histograms for each species and layer them
+            hist_layers = []
+            for species_name in ["Setosa", "Versicolor", "Virginica"]:
+                species_df = df[df["Species"] == species_name]
+                hist_layer = (
+                    alt.Chart(species_df)
+                    .mark_bar(opacity=0.6)
+                    .encode(
+                        alt.X(
+                            f"{col_var}:Q",
+                            bin=alt.Bin(maxbins=12),
+                            title=col_var if i == len(variables) - 1 else "",
+                            axis=alt.Axis(labelFontSize=16, titleFontSize=20),
+                        ),
+                        alt.Y(
+                            "count():Q",
+                            title="Count" if j == 0 else "",
+                            axis=alt.Axis(labelFontSize=16, titleFontSize=20),
+                        ),
+                        color=alt.value(color_scale.range[["Setosa", "Versicolor", "Virginica"].index(species_name)]),
+                        tooltip=[alt.Tooltip("count():Q", title="Count")],
+                    )
+                    .properties(width=cell_size, height=cell_size)
                 )
-                .properties(width=cell_size, height=cell_size)
-            )
+                hist_layers.append(hist_layer)
+            hist = alt.layer(*hist_layers)
             row_charts.append(hist)
         else:
             # Off-diagonal: scatter plot
@@ -97,8 +103,16 @@ for i, row_var in enumerate(variables):
                 alt.Chart(df)
                 .mark_circle(size=80, opacity=0.7)
                 .encode(
-                    alt.X(f"{col_var}:Q", title=col_var if i == len(variables) - 1 else ""),
-                    alt.Y(f"{row_var}:Q", title=row_var if j == 0 else ""),
+                    alt.X(
+                        f"{col_var}:Q",
+                        title=col_var if i == len(variables) - 1 else "",
+                        axis=alt.Axis(labelFontSize=16, titleFontSize=20),
+                    ),
+                    alt.Y(
+                        f"{row_var}:Q",
+                        title=row_var if j == 0 else "",
+                        axis=alt.Axis(labelFontSize=16, titleFontSize=20),
+                    ),
                     alt.Color("Species:N", scale=color_scale, legend=None),
                     tooltip=["Species:N", f"{col_var}:Q", f"{row_var}:Q"],
                 )
@@ -107,15 +121,28 @@ for i, row_var in enumerate(variables):
             row_charts.append(scatter)
     charts.append(alt.hconcat(*row_charts, spacing=5))
 
-# Combine all rows vertically
-matrix = alt.vconcat(*charts, spacing=5).properties(
-    title=alt.Title(text="Iris Dataset · scatter-matrix · altair · pyplots.ai", fontSize=32, anchor="middle", offset=20)
+# Create a legend chart to display alongside the matrix
+legend_data = pd.DataFrame({"Species": ["Setosa", "Versicolor", "Virginica"]})
+legend_chart = (
+    alt.Chart(legend_data)
+    .mark_point(size=400, filled=True)
+    .encode(
+        alt.Y("Species:N", axis=alt.Axis(orient="right", labelFontSize=26, titleFontSize=28, title=None)),
+        alt.Color("Species:N", scale=color_scale, legend=None),
+    )
+    .properties(width=50, height=200, title=alt.Title(text="Species", fontSize=28, anchor="middle"))
 )
 
-# Apply configuration for consistent styling
-chart = matrix.configure_axis(labelFontSize=14, titleFontSize=18, gridOpacity=0.3).configure_view(
-    strokeWidth=1, stroke="#ccc"
+# Combine all rows vertically
+matrix = alt.vconcat(*charts, spacing=5).properties(
+    title=alt.Title(text="scatter-matrix · altair · pyplots.ai", fontSize=36, anchor="middle", offset=20)
 )
+
+# Combine matrix with legend
+combined = alt.hconcat(matrix, legend_chart, spacing=30)
+
+# Apply configuration for consistent styling
+chart = combined.configure_axis(gridOpacity=0.3).configure_view(strokeWidth=0)
 
 # Save as PNG (scale_factor=3 gives us ~4200x4200 for 4 variables at 350px each)
 chart.save("plot.png", scale_factor=3.0)

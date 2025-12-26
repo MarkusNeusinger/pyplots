@@ -1,15 +1,30 @@
 """ pyplots.ai
 heatmap-correlation: Correlation Matrix Heatmap
 Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-25
+Quality: 93/100 | Created: 2025-12-26
 """
 
 import numpy as np
 import pandas as pd
-from lets_plot import *  # noqa: F403
+from lets_plot import (
+    LetsPlot,
+    aes,
+    coord_fixed,
+    element_blank,
+    element_text,
+    geom_text,
+    geom_tile,
+    ggplot,
+    ggsave,
+    ggsize,
+    labs,
+    scale_fill_gradient2,
+    theme,
+    theme_minimal,
+)
 
 
-LetsPlot.setup_html()  # noqa: F405
+LetsPlot.setup_html()
 
 # Data - Create realistic dataset with meaningful correlations
 np.random.seed(42)
@@ -43,17 +58,13 @@ df = pd.DataFrame(
 corr_matrix = df.corr()
 variables = corr_matrix.columns.tolist()
 
-# Prepare data for geom_tile (long format)
+# Prepare data for geom_tile (long format) with tooltips
 corr_data = []
 for var1 in variables:
     for var2 in variables:
+        corr_val = corr_matrix.loc[var1, var2]
         corr_data.append(
-            {
-                "x": var1,
-                "y": var2,
-                "correlation": corr_matrix.loc[var1, var2],
-                "label": f"{corr_matrix.loc[var1, var2]:.2f}",
-            }
+            {"x": var1, "y": var2, "correlation": corr_val, "label": f"{corr_val:.2f}", "var_x": var1, "var_y": var2}
         )
 
 corr_df = pd.DataFrame(corr_data)
@@ -62,11 +73,21 @@ corr_df = pd.DataFrame(corr_data)
 corr_df["x"] = pd.Categorical(corr_df["x"], categories=variables, ordered=True)
 corr_df["y"] = pd.Categorical(corr_df["y"], categories=variables[::-1], ordered=True)
 
-# Plot - Correlation heatmap with annotations
+# Plot - Correlation heatmap with annotations and interactive tooltips
 plot = (
     ggplot(corr_df, aes(x="x", y="y", fill="correlation"))
-    + geom_tile(color="white", size=0.5)
-    + geom_text(aes(label="label"), size=14, color="black", fontface="bold")
+    + geom_tile(
+        color="white",
+        size=0.5,
+        tooltips="none",  # Disable tile tooltips, use text tooltips instead
+    )
+    + geom_text(
+        aes(label="label"),
+        size=14,
+        color="black",
+        fontface="bold",
+        tooltips={"lines": ["@var_x vs @var_y", "Correlation: @correlation"]},
+    )
     + scale_fill_gradient2(
         low="#2166AC",  # Blue for negative
         mid="white",  # White for zero
@@ -75,7 +96,7 @@ plot = (
         limits=[-1, 1],
         name="Correlation",
     )
-    + labs(x="Variable", y="Variable", title="heatmap-correlation · letsplot · pyplots.ai")
+    + labs(x="Financial Metric", y="Financial Metric", title="heatmap-correlation · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(
         plot_title=element_text(size=28, face="bold"),
@@ -93,5 +114,5 @@ plot = (
 # Save as PNG (scale 3x for 3600x3600 px)
 ggsave(plot, "plot.png", path=".", scale=3)
 
-# Save interactive HTML
+# Save interactive HTML with tooltips
 ggsave(plot, "plot.html", path=".")

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-size-mapped: Bubble Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-27
@@ -39,7 +39,7 @@ life_expectancy = np.clip(life_expectancy, 50, 85)
 # Population (log scale, 1M - 1.4B)
 population = 10 ** np.random.uniform(6, 9.2, n_countries)
 
-# Create custom style
+# Create custom style with larger font sizes for better rendering
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -47,21 +47,24 @@ custom_style = Style(
     foreground_strong="#333333",
     foreground_subtle="#666666",
     colors=("#306998", "#FFD43B", "#E74C3C", "#27AE60", "#9B59B6"),
-    title_font_size=72,
-    label_font_size=48,
-    major_label_font_size=40,
-    legend_font_size=40,
-    value_font_size=36,
+    title_font_size=84,
+    label_font_size=56,
+    major_label_font_size=48,
+    legend_font_size=44,
+    value_font_size=40,
     opacity=0.6,
     opacity_hover=0.8,
 )
+
+# Title with size legend information
+title = "scatter-size-mapped · pygal · pyplots.ai\nBubble Size = Population (1M to 1B+)"
 
 # Create XY chart for scatter plot
 chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
-    title="scatter-size-mapped · pygal · pyplots.ai",
+    title=title,
     x_title="GDP per Capita (USD)",
     y_title="Life Expectancy (years)",
     show_legend=True,
@@ -82,8 +85,9 @@ for region in regions:
     points = []
     for i in np.where(mask)[0]:
         # Scale population to reasonable dot size (log scale)
-        # Population ranges from 1M to 1.4B, scale to 5-60 for visibility
-        size = 5 + 55 * (np.log10(population[i]) - 6) / 3.2
+        # Population ranges from 1M to 1.4B, scale to 12-70 for better visibility
+        # Increased minimum size from 5 to 12 so smaller bubbles are visible
+        size = 12 + 58 * (np.log10(population[i]) - 6) / 3.2
         points.append({"value": (float(gdp_per_capita[i]), float(life_expectancy[i])), "node": {"r": size}})
     chart.add(region, points)
 

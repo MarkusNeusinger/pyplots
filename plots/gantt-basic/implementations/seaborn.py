@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 gantt-basic: Basic Gantt Chart
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-27
@@ -80,8 +80,16 @@ df["duration"] = (df["end"] - df["start"]).dt.days
 # Sort by start date for logical ordering
 df = df.sort_values("start").reset_index(drop=True)
 
-# Category colors using Python Blue as primary
-category_colors = {
+# Calculate numeric start position for seaborn barplot
+df["start_num"] = mdates.date2num(df["start"])
+
+# Set seaborn style BEFORE creating figure
+sns.set_style("whitegrid")
+sns.set_context("talk", font_scale=1.0)
+
+# Category palette using colorblind-friendly colors
+category_order = ["Planning", "Design", "Development", "Testing", "Documentation", "Deployment"]
+category_palette = {
     "Planning": "#306998",
     "Design": "#FFD43B",
     "Development": "#4B8BBE",
@@ -89,41 +97,42 @@ category_colors = {
     "Documentation": "#8B4513",
     "Deployment": "#2E8B57",
 }
-df["color"] = df["category"].map(category_colors)
 
 # Create plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Create horizontal bars with seaborn styling
-sns.set_style("whitegrid")
+# Use seaborn barplot with hue for category coloring
+sns.barplot(
+    data=df,
+    y="task",
+    x="duration",
+    hue="category",
+    hue_order=category_order,
+    palette=category_palette,
+    orient="h",
+    dodge=False,
+    ax=ax,
+    edgecolor="white",
+    linewidth=1.5,
+    alpha=0.9,
+    legend=False,
+)
 
-for i, (_idx, row) in enumerate(df.iterrows()):
-    ax.barh(
-        y=i,
-        width=row["duration"],
-        left=mdates.date2num(row["start"]),
-        height=0.6,
-        color=row["color"],
-        edgecolor="white",
-        linewidth=1.5,
-        alpha=0.9,
-    )
+# Get current bar positions and shift by start date
+for bar, start_num in zip(ax.patches, df["start_num"], strict=True):
+    bar.set_x(start_num)
 
 # Format x-axis as dates
 ax.xaxis_date()
-ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %d"))
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %d, %Y"))
 ax.xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=0, interval=2))
-
-# Set y-axis labels
-ax.set_yticks(range(len(df)))
-ax.set_yticklabels(df["task"], fontsize=16)
 
 # Add current date indicator (vertical line)
 today = datetime(2025, 2, 15)
 ax.axvline(x=mdates.date2num(today), color="#E74C3C", linestyle="--", linewidth=2.5, label="Today", alpha=0.8)
 
-# Styling
-ax.set_xlabel("Timeline", fontsize=20)
+# Styling with year context in x-axis label
+ax.set_xlabel("Timeline (2025)", fontsize=20)
 ax.set_ylabel("Tasks", fontsize=20)
 ax.set_title("gantt-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
 ax.tick_params(axis="x", labelsize=14, rotation=45)
@@ -133,12 +142,13 @@ ax.tick_params(axis="y", labelsize=16)
 ax.grid(axis="x", alpha=0.3, linestyle="--")
 ax.grid(axis="y", alpha=0.15)
 
-# Create legend for categories
+# Create legend for categories - position at lower right to avoid overlap
 legend_elements = [
-    plt.Rectangle((0, 0), 1, 1, facecolor=color, edgecolor="white", label=cat) for cat, color in category_colors.items()
+    plt.Rectangle((0, 0), 1, 1, facecolor=color, edgecolor="white", label=cat)
+    for cat, color in category_palette.items()
 ]
 legend_elements.append(plt.Line2D([0], [0], color="#E74C3C", linestyle="--", linewidth=2.5, label="Today"))
-ax.legend(handles=legend_elements, loc="upper right", fontsize=14, framealpha=0.95)
+ax.legend(handles=legend_elements, loc="lower right", fontsize=14, framealpha=0.95)
 
 # Invert y-axis to have first task at top
 ax.invert_yaxis()

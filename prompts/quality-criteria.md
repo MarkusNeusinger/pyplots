@@ -50,7 +50,7 @@ Implementation must use **plot functions** from the library, not just styling.
 
 | Library | Must use | NOT sufficient |
 |---------|----------|----------------|
-| seaborn | `sns.scatterplot`, `sns.barplot`, `sns.heatmap`, etc. | Only `sns.set_style()` |
+| seaborn | `sns.scatterplot`, `sns.barplot`, `sns.heatmap`, etc. | Only `sns.set_style()` or `sns.load_dataset()` |
 | plotly | `px.*` or `go.*` plot functions | Only `update_layout()` |
 | bokeh | `figure.scatter()`, `figure.line()`, etc. | Only styling |
 | altair | `alt.Chart().mark_*()` | Only `configure_*()` |
@@ -58,6 +58,8 @@ Implementation must use **plot functions** from the library, not just styling.
 | pygal | Chart classes with data | Only config |
 | highcharts | Chart with series | Only options |
 | letsplot | `ggplot() + geom_*()` | Only `ggsize()` |
+
+**Note:** Using data loading utilities (e.g., `sns.load_dataset()`, `sklearn.datasets`) from other libraries is allowed and does not count as library usage. This check only evaluates whether the implementation uses the library's **plotting functions**.
 
 ### AR-06: Not Feasible
 
@@ -279,7 +281,7 @@ Example data must show ALL features of the plot type.
 |----|-----------|--------|-------------|
 | CQ-01 | KISS Structure | 3 | Imports → Data → Plot → Save (no functions/classes) |
 | CQ-02 | Reproducibility | 3 | `np.random.seed(42)` or deterministic data |
-| CQ-03 | Clean Imports | 2 | Only used imports |
+| CQ-03 | Clean Imports | 2 | Only used imports (including data utilities like `sns.load_dataset()`) |
 | CQ-04 | No Deprecated API | 1 | No outdated functions |
 | CQ-05 | Output Correct | 1 | Saves as `plot.png` |
 

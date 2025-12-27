@@ -245,9 +245,16 @@ Must pass criteria from `prompts/quality-criteria.md`:
 - Functions or classes
 - `if __name__ == '__main__':`
 - Type hints or docstrings (keep it simple)
-- Cross-library workarounds (e.g., matplotlib inside plotnine)
+- Cross-library workarounds **for plotting** (e.g., using matplotlib plotting functions inside plotnine)
 
-> If a library cannot implement a plot type natively, **do not** fall back to another library (e.g., don't use matplotlib inside plotnine). The implementation should **fail** rather than use workarounds. Each library should demonstrate only its own native capabilities.
+> If a library cannot implement a plot type natively, **do not** fall back to another library's **plotting functions** (e.g., don't use `plt.scatter()` inside plotnine). The implementation should **fail** rather than use workarounds. Each library should demonstrate only its own native plotting capabilities.
+
+**Allowed cross-library usage:**
+- ✅ Using `sns.load_dataset()` for test data in any library (highcharts, plotly, etc.)
+- ✅ Using `sklearn.datasets` for ML data in any library
+- ✅ Using scipy/numpy functions for data preparation
+- ❌ Using matplotlib plotting functions in non-matplotlib libraries
+- ❌ Using seaborn plotting functions in non-seaborn libraries
 ## Visual Quality
 
 Must pass criteria from `prompts/quality-criteria.md`.

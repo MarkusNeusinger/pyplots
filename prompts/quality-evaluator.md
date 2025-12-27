@@ -165,9 +165,11 @@ You evaluate implementations that passed Stage 1. Focus purely on **quality**.
 |----|-----------|-----|--------------|
 | CQ-01 | KISS Structure | 3 | No functions/classes? |
 | CQ-02 | Reproducibility | 3 | Fixed seed or deterministic? |
-| CQ-03 | Clean Imports | 2 | Only used imports? |
+| CQ-03 | Clean Imports | 2 | Only used imports? (data utilities like `sns.load_dataset()` count as used) |
 | CQ-04 | No Deprecated API | 1 | Current functions only? |
 | CQ-05 | Output Correct | 1 | Saves as `plot.png`? |
+
+**Note on cross-library usage:** Using data utilities from other libraries (e.g., `sns.load_dataset()` in a highcharts plot, `sklearn.datasets` in plotly) is allowed and should NOT be penalized. Only using other libraries' **plotting functions** is forbidden.
 
 ### Step 5: Library Features (5 pts)
 

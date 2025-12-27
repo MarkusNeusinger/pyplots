@@ -1,0 +1,26 @@
+library: plotnine
+specification_id: gantt-basic
+created: '2025-12-27T19:21:04Z'
+updated: '2025-12-27T19:27:04Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20543282858
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of geom_segment with appropriate sizing for Gantt bars
+  - Clean implementation of the current date marker with dashed red line
+  - Well-organized categorical color palette matching project phases
+  - Proper task ordering by start date with reversed y-axis for logical top-to-bottom
+    flow
+  - Perfect title format and comprehensive theme customization
+  weaknesses:
+  - Yellow (#FFD43B) and light blue (#4B8BBE) colors may be difficult to distinguish
+    for some colorblind users; consider using a colorblind-safe palette
+  - The lineend="butt" parameter in geom_segment may cause deprecation warnings in
+    newer plotnine versions

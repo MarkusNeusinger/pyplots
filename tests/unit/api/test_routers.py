@@ -1,0 +1,498 @@
+"""
+Tests for api/routers/ endpoints.
+
+Tests the modular router endpoints.
+"""
+
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
+from fastapi.testclient import TestClient
+
+from api.main import app
+from api.routers.plots import (
+    _calculate_contextual_counts,
+    _calculate_global_counts,
+    _calculate_or_counts,
+    _image_matches_groups,
+)
+
+
+@pytest.fixture
+def client() -> TestClient:
+    """Create a test client for the FastAPI app."""
+    return TestClient(app)
+
+
+@pytest.fixture
+def mock_spec():
+    """Create a mock spec with implementation."""
+    mock_impl = MagicMock()
+    mock_impl.library_id = "matplotlib"
+    mock_impl.library = MagicMock()
+    mock_impl.library.name = "Matplotlib"
+    mock_impl.preview_url = "https://example.com/plot.png"
+    mock_impl.preview_thumb = "https://example.com/thumb.png"
+    mock_impl.preview_html = None
+    mock_impl.quality_score = 92.5
+    mock_impl.code = "import matplotlib.pyplot as plt"
+    mock_impl.generated_at = None
+    mock_impl.generated_by = "claude"
+    mock_impl.python_version = "3.13"
+    mock_impl.library_version = "3.10.0"
+
+    mock_spec = MagicMock()
+    mock_spec.id = "scatter-basic"
+    mock_spec.title = "Basic Scatter Plot"
+    mock_spec.description = "A basic scatter plot"
+    mock_spec.applications = ["data visualization"]
+    mock_spec.data = ["numeric"]
+    mock_spec.notes = ["Use for 2D data"]
+    mock_spec.tags = {
+        "plot_type": ["scatter"],
+        "domain": ["statistics"],
+        "data_type": ["numeric"],
+        "features": ["basic"],
+    }
+    mock_spec.issue = 42
+    mock_spec.suggested = "contributor"
+    mock_spec.impls = [mock_impl]
+
+    return mock_spec
+
+
+@pytest.fixture
+def mock_lib():
+    """Create a mock library."""
+    mock_lib = MagicMock()
+    mock_lib.id = "matplotlib"
+    mock_lib.name = "Matplotlib"
+    mock_lib.version = "3.10.0"
+    mock_lib.documentation_url = "https://matplotlib.org"
+    mock_lib.description = "Comprehensive library for visualizations"
+    return mock_lib
+
+
+class TestStatsRouter:
+    """Tests for stats router."""
+
+    def test_stats_without_db(self, client: TestClient) -> None:
+        """Stats should return zeros when DB not configured."""
+        with patch("api.routers.stats.is_db_configured", return_value=False):
+            response = client.get("/stats")
+            assert response.status_code == 200
+            data = response.json()
+            assert data["specs"] == 0
+            assert data["plots"] == 0
+            assert "libraries" in data
+
+    def test_stats_with_db(self, client: TestClient, mock_spec, mock_lib) -> None:
+        """Stats should return counts when DB is configured."""
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
+
+        mock_lib_repo = MagicMock()
+        mock_lib_repo.get_all = AsyncMock(return_value=[mock_lib])
+
+        with (
+            patch("api.routers.stats.is_db_configured", return_value=True),
+            patch("api.routers.stats.get_cached", return_value=None),
+            patch("api.routers.stats.set_cached"),
+            patch("api.routers.stats.SpecRepository", return_value=mock_spec_repo),
+            patch("api.routers.stats.LibraryRepository", return_value=mock_lib_repo),
+        ):
+            response = client.get("/stats")
+            assert response.status_code == 200
+            data = response.json()
+            assert data["specs"] == 1
+            assert data["plots"] == 1
+            assert data["libraries"] == 1
+
+    def test_stats_cached(self, client: TestClient) -> None:
+        """Stats should return cached response when available."""
+        cached_response = {"specs": 5, "plots": 10, "libraries": 9}
+
+        with (
+            patch("api.routers.stats.is_db_configured", return_value=True),
+            patch("api.routers.stats.get_cached", return_value=cached_response),
+        ):
+            response = client.get("/stats")
+            assert response.status_code == 200
+            data = response.json()
+            assert data["specs"] == 5
+            assert data["plots"] == 10
+
+
+class TestLibrariesRouter:
+    """Tests for libraries router."""
+
+    def test_libraries_without_db(self, client: TestClient) -> None:
+        """Libraries should return seed data when DB not configured."""
+        with patch("api.routers.libraries.is_db_configured", return_value=False):
+            response = client.get("/libraries")
+            assert response.status_code == 200
+            data = response.json()
+            assert "libraries" in data
+            assert len(data["libraries"]) > 0
+
+    def test_library_images_without_db(self, client: TestClient) -> None:
+        """Library images should return 503 when DB not configured."""
+        with patch("api.routers.libraries.is_db_configured", return_value=False):
+            response = client.get("/libraries/matplotlib/images")
+            assert response.status_code == 503
+
+    def test_library_images_invalid_library(self, client: TestClient) -> None:
+        """Library images should return 404 for invalid library."""
+        with patch("api.routers.libraries.is_db_configured", return_value=True):
+            response = client.get("/libraries/invalid_lib/images")
+            assert response.status_code == 404
+
+    def test_libraries_with_db(self, client: TestClient, mock_lib) -> None:
+        """Libraries should return data from DB when configured."""
+        mock_lib_repo = MagicMock()
+        mock_lib_repo.get_all = AsyncMock(return_value=[mock_lib])
+
+        with (
+            patch("api.routers.libraries.is_db_configured", return_value=True),
+            patch("api.routers.libraries.get_cached", return_value=None),
+            patch("api.routers.libraries.set_cached"),
+            patch("api.routers.libraries.LibraryRepository", return_value=mock_lib_repo),
+        ):
+            response = client.get("/libraries")
+            assert response.status_code == 200
+            data = response.json()
+            assert "libraries" in data
+            assert len(data["libraries"]) == 1
+            assert data["libraries"][0]["id"] == "matplotlib"
+
+
+class TestSpecsRouter:
+    """Tests for specs router."""
+
+    def test_specs_without_db(self, client: TestClient) -> None:
+        """Specs should return 503 when DB not configured."""
+        with patch("api.routers.specs.is_db_configured", return_value=False):
+            response = client.get("/specs")
+            assert response.status_code == 503
+
+    def test_spec_detail_without_db(self, client: TestClient) -> None:
+        """Spec detail should return 503 when DB not configured."""
+        with patch("api.routers.specs.is_db_configured", return_value=False):
+            response = client.get("/specs/scatter-basic")
+            assert response.status_code == 503
+
+    def test_spec_images_without_db(self, client: TestClient) -> None:
+        """Spec images should return 503 when DB not configured."""
+        with patch("api.routers.specs.is_db_configured", return_value=False):
+            response = client.get("/specs/scatter-basic/images")
+            assert response.status_code == 503
+
+    def test_specs_with_db(self, client: TestClient, mock_spec) -> None:
+        """Specs should return data from DB when configured."""
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
+
+        with (
+            patch("api.routers.specs.is_db_configured", return_value=True),
+            patch("api.routers.specs.get_cached", return_value=None),
+            patch("api.routers.specs.set_cached"),
+            patch("api.routers.specs.SpecRepository", return_value=mock_spec_repo),
+        ):
+            response = client.get("/specs")
+            assert response.status_code == 200
+            data = response.json()
+            assert isinstance(data, list)
+            assert len(data) == 1
+            assert data[0]["id"] == "scatter-basic"
+
+    def test_spec_detail_with_db(self, client: TestClient, mock_spec) -> None:
+        """Spec detail should return spec from DB."""
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
+
+        with (
+            patch("api.routers.specs.is_db_configured", return_value=True),
+            patch("api.routers.specs.get_cached", return_value=None),
+            patch("api.routers.specs.set_cached"),
+            patch("api.routers.specs.SpecRepository", return_value=mock_spec_repo),
+        ):
+            response = client.get("/specs/scatter-basic")
+            assert response.status_code == 200
+            data = response.json()
+            assert data["id"] == "scatter-basic"
+
+    def test_spec_detail_not_found(self, client: TestClient) -> None:
+        """Spec detail should return 404 when not found."""
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_by_id = AsyncMock(return_value=None)
+
+        with (
+            patch("api.routers.specs.is_db_configured", return_value=True),
+            patch("api.routers.specs.get_cached", return_value=None),
+            patch("api.routers.specs.SpecRepository", return_value=mock_spec_repo),
+        ):
+            response = client.get("/specs/nonexistent")
+            assert response.status_code == 404
+
+
+class TestDownloadRouter:
+    """Tests for download router."""
+
+    def test_download_without_db(self, client: TestClient) -> None:
+        """Download should return 503 when DB not configured."""
+        with patch("api.routers.download.is_db_configured", return_value=False):
+            response = client.get("/download/scatter-basic/matplotlib")
+            assert response.status_code == 503
+
+    def test_download_spec_not_found(self, client: TestClient) -> None:
+        """Download should return 404 when spec not found."""
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_by_id = AsyncMock(return_value=None)
+
+        with (
+            patch("api.routers.download.is_db_configured", return_value=True),
+            patch("api.routers.download.SpecRepository", return_value=mock_spec_repo),
+        ):
+            response = client.get("/download/nonexistent/matplotlib")
+            assert response.status_code == 404
+
+    def test_download_impl_not_found(self, client: TestClient, mock_spec) -> None:
+        """Download should return 404 when implementation not found."""
+        mock_spec.impls = []
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
+
+        with (
+            patch("api.routers.download.is_db_configured", return_value=True),
+            patch("api.routers.download.SpecRepository", return_value=mock_spec_repo),
+        ):
+            response = client.get("/download/scatter-basic/seaborn")
+            assert response.status_code == 404
+
+
+class TestSeoRouter:
+    """Tests for SEO router."""
+
+    def test_sitemap_structure(self, client: TestClient) -> None:
+        """Sitemap should return valid XML structure."""
+        with patch("api.routers.seo.is_db_configured", return_value=False):
+            response = client.get("/sitemap.xml")
+            assert response.status_code == 200
+            assert response.headers["content-type"] == "application/xml"
+            content = response.text
+            assert '<?xml version="1.0"' in content
+            assert "<urlset" in content
+            # Check for homepage URL as proper XML element
+            assert "<loc>https://pyplots.ai/</loc>" in content
+
+    def test_sitemap_with_db(self, client: TestClient, mock_spec) -> None:
+        """Sitemap should include specs from DB."""
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
+
+        with (
+            patch("api.routers.seo.is_db_configured", return_value=True),
+            patch("api.routers.seo.get_cached", return_value=None),
+            patch("api.routers.seo.set_cached"),
+            patch("api.routers.seo.SpecRepository", return_value=mock_spec_repo),
+        ):
+            response = client.get("/sitemap.xml")
+            assert response.status_code == 200
+            assert "spec=scatter-basic" in response.text
+
+
+class TestPlotsRouter:
+    """Tests for plots filter router."""
+
+    def test_filter_without_db(self, client: TestClient) -> None:
+        """Filter should return 503 when DB not configured."""
+        with patch("api.routers.plots.is_db_configured", return_value=False):
+            response = client.get("/plots/filter")
+            assert response.status_code == 503
+
+    def test_filter_with_params_without_db(self, client: TestClient) -> None:
+        """Filter with params should return 503 when DB not configured."""
+        with patch("api.routers.plots.is_db_configured", return_value=False):
+            response = client.get("/plots/filter?lib=matplotlib")
+            assert response.status_code == 503
+
+    def test_filter_with_db(self, client: TestClient, mock_spec) -> None:
+        """Filter should return images from DB."""
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
+
+        with (
+            patch("api.routers.plots.is_db_configured", return_value=True),
+            patch("api.routers.plots.get_cached", return_value=None),
+            patch("api.routers.plots.set_cached"),
+            patch("api.routers.plots.SpecRepository", return_value=mock_spec_repo),
+        ):
+            response = client.get("/plots/filter")
+            assert response.status_code == 200
+            data = response.json()
+            assert "images" in data
+            assert "counts" in data
+            assert data["total"] == 1
+
+    def test_filter_with_lib_param(self, client: TestClient, mock_spec) -> None:
+        """Filter with lib param should filter by library."""
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
+
+        with (
+            patch("api.routers.plots.is_db_configured", return_value=True),
+            patch("api.routers.plots.get_cached", return_value=None),
+            patch("api.routers.plots.set_cached"),
+            patch("api.routers.plots.SpecRepository", return_value=mock_spec_repo),
+        ):
+            response = client.get("/plots/filter?lib=matplotlib")
+            assert response.status_code == 200
+            data = response.json()
+            assert data["total"] == 1
+
+    def test_filter_cached(self, client: TestClient) -> None:
+        """Filter should return cached response when available."""
+        cached_response = MagicMock()
+        cached_response.total = 5
+        cached_response.images = []
+        cached_response.counts = {}
+        cached_response.globalCounts = {}
+        cached_response.orCounts = []
+
+        with (
+            patch("api.routers.plots.is_db_configured", return_value=True),
+            patch("api.routers.plots.get_cached", return_value=cached_response),
+        ):
+            response = client.get("/plots/filter")
+            assert response.status_code == 200
+
+
+class TestPlotsHelperFunctions:
+    """Tests for plots.py helper functions."""
+
+    def test_image_matches_groups_empty(self) -> None:
+        """Empty groups should match any image."""
+        spec_lookup = {"scatter-basic": {"tags": {"plot_type": ["scatter"]}}}
+        assert _image_matches_groups("scatter-basic", "matplotlib", [], spec_lookup) is True
+
+    def test_image_matches_groups_lib_match(self) -> None:
+        """Library filter should match correct library."""
+        spec_lookup = {"scatter-basic": {"tags": {}}}
+        groups = [{"category": "lib", "values": ["matplotlib"]}]
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup) is True
+
+    def test_image_matches_groups_lib_no_match(self) -> None:
+        """Library filter should not match wrong library."""
+        spec_lookup = {"scatter-basic": {"tags": {}}}
+        groups = [{"category": "lib", "values": ["seaborn"]}]
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup) is False
+
+    def test_image_matches_groups_spec_match(self) -> None:
+        """Spec filter should match correct spec."""
+        spec_lookup = {"scatter-basic": {"tags": {}}}
+        groups = [{"category": "spec", "values": ["scatter-basic"]}]
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup) is True
+
+    def test_image_matches_groups_plot_type_match(self) -> None:
+        """Plot type filter should match correct tag."""
+        spec_lookup = {"scatter-basic": {"tags": {"plot_type": ["scatter"]}}}
+        groups = [{"category": "plot", "values": ["scatter"]}]
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup) is True
+
+    def test_image_matches_groups_data_type_match(self) -> None:
+        """Data type filter should match correct tag."""
+        spec_lookup = {"scatter-basic": {"tags": {"data_type": ["numeric"]}}}
+        groups = [{"category": "data", "values": ["numeric"]}]
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup) is True
+
+    def test_image_matches_groups_domain_match(self) -> None:
+        """Domain filter should match correct tag."""
+        spec_lookup = {"scatter-basic": {"tags": {"domain": ["statistics"]}}}
+        groups = [{"category": "dom", "values": ["statistics"]}]
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup) is True
+
+    def test_image_matches_groups_features_match(self) -> None:
+        """Features filter should match correct tag."""
+        spec_lookup = {"scatter-basic": {"tags": {"features": ["basic"]}}}
+        groups = [{"category": "feat", "values": ["basic"]}]
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup) is True
+
+    def test_image_matches_groups_spec_not_in_lookup(self) -> None:
+        """Spec not in lookup should not match."""
+        spec_lookup = {}
+        assert _image_matches_groups("unknown", "matplotlib", [], spec_lookup) is False
+
+    def test_calculate_global_counts(self) -> None:
+        """Global counts should tally all implementations."""
+        mock_impl = MagicMock()
+        mock_impl.library_id = "matplotlib"
+        mock_impl.preview_url = "https://example.com/plot.png"
+
+        mock_spec = MagicMock()
+        mock_spec.id = "scatter-basic"
+        mock_spec.tags = {"plot_type": ["scatter"], "domain": ["statistics"]}
+        mock_spec.impls = [mock_impl]
+
+        counts = _calculate_global_counts([mock_spec])
+        assert counts["lib"]["matplotlib"] == 1
+        assert counts["spec"]["scatter-basic"] == 1
+        assert counts["plot"]["scatter"] == 1
+        assert counts["dom"]["statistics"] == 1
+
+    def test_calculate_global_counts_no_impls(self) -> None:
+        """Spec without impls should not be counted."""
+        mock_spec = MagicMock()
+        mock_spec.id = "scatter-basic"
+        mock_spec.impls = []
+
+        counts = _calculate_global_counts([mock_spec])
+        assert counts["lib"] == {}
+
+    def test_calculate_global_counts_no_preview(self) -> None:
+        """Impl without preview_url should not be counted."""
+        mock_impl = MagicMock()
+        mock_impl.library_id = "matplotlib"
+        mock_impl.preview_url = None
+
+        mock_spec = MagicMock()
+        mock_spec.id = "scatter-basic"
+        mock_spec.tags = {}
+        mock_spec.impls = [mock_impl]
+
+        counts = _calculate_global_counts([mock_spec])
+        assert counts["lib"] == {}
+
+    def test_calculate_contextual_counts(self) -> None:
+        """Contextual counts should tally filtered images."""
+        images = [
+            {"spec_id": "scatter-basic", "library": "matplotlib"},
+            {"spec_id": "scatter-basic", "library": "seaborn"},
+        ]
+        spec_tags = {"scatter-basic": {"plot_type": ["scatter"]}}
+
+        counts = _calculate_contextual_counts(images, spec_tags)
+        assert counts["lib"]["matplotlib"] == 1
+        assert counts["lib"]["seaborn"] == 1
+        assert counts["spec"]["scatter-basic"] == 2
+        assert counts["plot"]["scatter"] == 2
+
+    def test_calculate_or_counts_empty_groups(self) -> None:
+        """Empty groups should return empty or_counts."""
+        counts = _calculate_or_counts([], [], {}, {})
+        assert counts == []
+
+    def test_calculate_or_counts_single_group(self) -> None:
+        """Single group should count all matching images."""
+        groups = [{"category": "lib", "values": ["matplotlib"]}]
+        images = [
+            {"spec_id": "scatter-basic", "library": "matplotlib"},
+            {"spec_id": "scatter-basic", "library": "seaborn"},
+        ]
+        spec_lookup = {"scatter-basic": {"tags": {}}}
+        spec_tags = {"scatter-basic": {}}
+
+        counts = _calculate_or_counts(groups, images, spec_tags, spec_lookup)
+        assert len(counts) == 1
+        # Each library appears once across all images
+        assert counts[0]["matplotlib"] == 1
+        assert counts[0]["seaborn"] == 1

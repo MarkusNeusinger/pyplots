@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
@@ -9,6 +9,8 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import type { PlotImage, LibraryInfo, SpecInfo } from '../types';
+import { BATCH_SIZE, type ImageSize } from '../constants';
+import { useCopyCode } from '../hooks';
 
 interface ImageCardProps {
   image: PlotImage;
@@ -18,9 +20,11 @@ interface ImageCardProps {
   librariesData: LibraryInfo[];
   specsData: SpecInfo[];
   openTooltip: string | null;
+  imageSize: ImageSize;
   onTooltipToggle: (id: string | null) => void;
   onClick: () => void;
   onTrackEvent?: (name: string, props?: Record<string, string | undefined>) => void;
+  onImageLoad?: () => void;
 }
 
 export function ImageCard({
@@ -31,11 +35,16 @@ export function ImageCard({
   librariesData,
   specsData,
   openTooltip,
+  imageSize,
   onTooltipToggle,
   onClick,
   onTrackEvent,
+  onImageLoad,
 }: ImageCardProps) {
-  const [copied, setCopied] = useState(false);
+  const { copied, copyToClipboard } = useCopyCode({
+    onCopy: () => onTrackEvent?.('copy_code', { spec: image.spec_id || selectedSpec, library: image.library, method: 'card' }),
+  });
+  const labelFontSize = imageSize === 'compact' ? '0.65rem' : '0.8rem';
 
   const cardId = `${image.spec_id}-${image.library}`;
   const specTooltipId = `spec-${cardId}`;
@@ -49,24 +58,24 @@ export function ImageCard({
   const handleCopyCode = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     if (image.code) {
-      navigator.clipboard.writeText(image.code);
-      setCopied(true);
-      onTrackEvent?.('copy_code', { spec: image.spec_id || selectedSpec, library: image.library, method: 'card' });
-      setTimeout(() => setCopied(false), 2000);
+      copyToClipboard(image.code);
     }
-  }, [image.code, image.library, image.spec_id, selectedSpec, onTrackEvent]);
+  }, [image.code, copyToClipboard]);
+
+  // Animate first batch only (initial load), subsequent batches appear instantly
+  const isFirstBatch = index < BATCH_SIZE;
 
   return (
     <Box
-      sx={{
-        animation: 'fadeIn 0.6s ease-out',
-        animationDelay: `${index * 0.1}s`,
+      sx={isFirstBatch ? {
+        animation: 'fadeIn 0.4s ease-out',
+        animationDelay: `${index * 0.03}s`,
         animationFillMode: 'backwards',
         '@keyframes fadeIn': {
-          from: { opacity: 0, transform: 'translateY(20px)' },
+          from: { opacity: 0, transform: 'translateY(10px)' },
           to: { opacity: 1, transform: 'translateY(0)' },
         },
-      }}
+      } : undefined}
     >
       <Card
         elevation={0}
@@ -142,9 +151,11 @@ export function ImageCard({
             objectFit: 'contain',
             bgcolor: '#fff',
           }}
+          onLoad={onImageLoad}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.style.display = 'none';
+            onImageLoad?.(); // Count errors as loaded too
           }}
         />
       </Card>
@@ -164,7 +175,7 @@ export function ImageCard({
               sx: {
                 maxWidth: { xs: '80vw', sm: 400 },
                 fontFamily: '"JetBrains Mono", monospace',
-                fontSize: '0.8rem',
+                fontSize: labelFontSize,
               },
             },
           }}
@@ -194,7 +205,7 @@ export function ImageCard({
           </Typography>
         </Tooltip>
 
-        <Typography sx={{ color: '#d1d5db', fontSize: '0.8rem' }}>·</Typography>
+        <Typography sx={{ color: '#d1d5db', fontSize: labelFontSize }}>·</Typography>
 
         {/* Clickable Library */}
         <Tooltip
@@ -234,7 +245,7 @@ export function ImageCard({
               sx: {
                 maxWidth: { xs: '80vw', sm: 400 },
                 fontFamily: '"JetBrains Mono", monospace',
-                fontSize: '0.8rem',
+                fontSize: labelFontSize,
               },
             },
           }}

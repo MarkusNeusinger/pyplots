@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 forest-basic: Meta-Analysis Forest Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-27
@@ -76,29 +76,38 @@ chart.options.x_axis = {
     "plotLines": [
         {
             "value": 0,
-            "color": "#666666",
+            "color": "#555555",
             "width": 3,
             "dashStyle": "Dash",
             "zIndex": 3,
-            "label": {"text": "No Effect", "style": {"fontSize": "22px", "color": "#666666"}, "rotation": 0, "y": -15},
+            "label": {
+                "text": "No Effect",
+                "style": {"fontSize": "36px", "fontWeight": "bold", "color": "#333333"},
+                "rotation": 0,
+                "align": "center",
+                "verticalAlign": "top",
+                "y": 25,  # Small offset from top
+                "x": 0,
+            },
         }
     ],
     "min": -1.2,
     "max": 0.8,
     "gridLineWidth": 1,
-    "gridLineColor": "#e0e0e0",
+    "gridLineColor": "#f0f0f0",  # Lighter grid lines for cleaner appearance
+    "gridLineDashStyle": "Dot",  # Dotted style is less prominent
     "tickInterval": 0.2,
 }
 
-# Y-axis (studies) - tight layout to minimize whitespace
+# Y-axis (studies) - tight layout to minimize whitespace below pooled estimate
 chart.options.y_axis = {
     "title": {"text": None},
     "categories": all_labels,
     "reversed": False,
     "labels": {"style": {"fontSize": "26px"}, "x": -10},
     "gridLineWidth": 0,
-    "min": -0.3,  # Tighter min to reduce bottom whitespace
-    "max": len(all_labels) - 0.7,  # Tighter max to reduce top whitespace
+    "min": -0.15,  # Tighter min to reduce bottom gap below pooled estimate
+    "max": len(all_labels) - 0.5,  # Slightly tighter top
     "tickPositions": list(range(len(all_labels))),
     "startOnTick": False,
     "endOnTick": False,

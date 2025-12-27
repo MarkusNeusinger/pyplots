@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 forest-basic: Meta-Analysis Forest Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 58/100 | Created: 2025-12-27
@@ -35,7 +35,13 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998", "#306998", "#FFD43B", "#FFD43B", "#666666"),
+    colors=(
+        "#306998",  # Study markers (Python Blue)
+        "#306998",  # CI lines
+        "#4A4A4A",  # Null line
+        "#CC6600",  # Pooled diamond (distinct orange)
+        "#CC6600",  # Pooled CI
+    ),
     title_font_size=56,
     label_font_size=32,
     major_label_font_size=28,
@@ -45,6 +51,18 @@ custom_style = Style(
     stroke_width=4,
     font_family="Arial",
 )
+
+# Normalize weights to dot sizes (range 12-28 for visibility)
+min_weight = min(w for _, _, _, _, w in studies)
+max_weight = max(w for _, _, _, _, w in studies)
+weight_range = max_weight - min_weight if max_weight > min_weight else 1
+
+
+def get_dot_size(weight):
+    """Scale weight to marker size between 12 and 28."""
+    normalized = (weight - min_weight) / weight_range
+    return int(12 + normalized * 16)
+
 
 # Create XY chart for forest plot
 chart = pygal.XY(
@@ -56,7 +74,7 @@ chart = pygal.XY(
     show_legend=True,
     legend_at_bottom=True,
     legend_box_size=20,
-    dots_size=18,
+    dots_size=16,
     stroke=False,
     show_y_guides=False,
     show_x_guides=True,
@@ -66,28 +84,25 @@ chart = pygal.XY(
     truncate_legend=-1,
 )
 
-# Build data for each study
-study_points = []
-ci_lines = []
-for i, (_study, effect, ci_low, ci_high, _weight) in enumerate(studies):
+# Add each study as separate series for weight-based sizing
+for i, (study, effect, _ci_low, _ci_high, weight) in enumerate(studies):
     y_pos = len(studies) - i  # Position from top (10 down to 1)
-    study_points.append((effect, y_pos))
-    # CI line segment with None break
-    ci_lines.append((ci_low, y_pos))
-    ci_lines.append((ci_high, y_pos))
-    ci_lines.append((None, None))
+    dot_size = get_dot_size(weight)
 
-# Add study effect points (Python Blue)
-chart.add("Effect Size", study_points)
+    # Add study point with weight-proportional size
+    chart.add(study, [(effect, y_pos)], dots_size=dot_size, stroke=False, show_legend=False)
 
-# Add CI lines (horizontal whiskers for each study)
-chart.add("95% CI", ci_lines, stroke=True, show_dots=False, stroke_style={"width": 4})
-
-# Add pooled estimate with its CI (Python Yellow for prominence)
-chart.add("Pooled", [(pooled_effect, 0)], dots_size=28)
-chart.add(
-    "Pooled CI", [(pooled_ci_lower, 0), (pooled_ci_upper, 0)], stroke=True, show_dots=False, stroke_style={"width": 6}
-)
+# Add CI whiskers as individual line segments (one series per study)
+for i, (_study, _effect, ci_low, ci_high, _weight) in enumerate(studies):
+    y_pos = len(studies) - i
+    chart.add(
+        None,  # No legend entry
+        [(ci_low, y_pos), (ci_high, y_pos)],
+        stroke=True,
+        show_dots=False,
+        stroke_style={"width": 4},
+        show_legend=False,
+    )
 
 # Add vertical reference line at x=0 (null effect)
 chart.add(
@@ -96,6 +111,34 @@ chart.add(
     stroke=True,
     show_dots=False,
     stroke_style={"width": 3, "dasharray": "12, 6"},
+)
+
+# Add pooled estimate as a diamond shape using 4 points
+# Diamond vertices: top, right, bottom, left
+diamond_height = 0.4
+diamond_width = 0.06
+chart.add(
+    "Pooled Estimate",
+    [
+        (pooled_effect, 0 + diamond_height / 2),  # Top
+        (pooled_effect + diamond_width, 0),  # Right
+        (pooled_effect, 0 - diamond_height / 2),  # Bottom
+        (pooled_effect - diamond_width, 0),  # Left
+        (pooled_effect, 0 + diamond_height / 2),  # Close diamond
+    ],
+    stroke=True,
+    fill=True,
+    show_dots=False,
+    stroke_style={"width": 3},
+)
+
+# Add pooled CI whiskers
+chart.add(
+    "Pooled 95% CI",
+    [(pooled_ci_lower, 0), (pooled_ci_upper, 0)],
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": 5},
 )
 
 # Y-axis labels with study names and CIs

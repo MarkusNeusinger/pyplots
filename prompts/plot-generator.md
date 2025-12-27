@@ -34,7 +34,9 @@ All plot implementations have access to these standard data science packages:
 
 **Machine Learning:**
 - `scikit-learn` - Clustering, classification, regression, metrics, datasets
-  - `sklearn.datasets` - Example datasets (load_iris, make_classification, etc.)
+  - `sklearn.datasets` - Built-in datasets and generators
+    - Real datasets: `load_iris()`, `load_wine()`, `load_breast_cancer()`, `load_digits()`
+    - Synthetic generators: `make_classification()`, `make_regression()`, `make_blobs()`
   - `sklearn.cluster` - Clustering algorithms (KMeans, DBSCAN, etc.)
   - `sklearn.metrics` - ML metrics (silhouette_score, precision_recall_curve, etc.)
   - `sklearn.preprocessing` - Data scaling, normalization
@@ -46,9 +48,20 @@ All plot implementations have access to these standard data science packages:
   - `statsmodels.tsa` - Time series analysis (ARIMA, seasonal decomposition)
   - `statsmodels.stats` - Statistical tests
 
+**Real-World Datasets (optional):**
+- Seaborn includes curated datasets via `sns.load_dataset(name)`:
+  - `'tips'` - Restaurant tipping data
+  - `'titanic'` - Titanic passenger survival
+  - `'iris'` - Iris flower measurements
+  - `'flights'` - Monthly flight passenger counts
+  - `'planets'` - Exoplanet discoveries
+  - `'penguins'` - Palmer Archipelago penguin data
+- Use when spec requires realistic domain data instead of synthetic
+
 **Usage Guidelines:**
 - Use these packages freely for data preparation, transformations, and statistical computations
-- Always use `np.random.seed(42)` for reproducibility
+- Always use `np.random.seed(42)` for reproducibility when using synthetic data
+- Prefer built-in datasets (sklearn.datasets, seaborn) over synthetic when showing real patterns
 - Prefer built-in functionality over writing custom implementations
 - Keep code simple - import only what you need
 - Use realistic data with proper domain context (salaries, test scores, measurements, etc.)

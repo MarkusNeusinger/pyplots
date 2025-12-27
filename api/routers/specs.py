@@ -1,0 +1,138 @@
+"""Spec endpoints."""
+
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from api.cache import cache_key, get_cached, set_cached
+from api.schemas import ImplementationResponse, SpecDetailResponse, SpecListItem
+from core.database import SpecRepository, get_db, is_db_configured
+
+
+router = APIRouter(tags=["specs"])
+
+
+@router.get("/specs", response_model=list[SpecListItem])
+async def get_specs(db: AsyncSession = Depends(get_db)):
+    """
+    Get list of all specs with metadata.
+
+    Returns only specs that have at least one implementation.
+    """
+    if not is_db_configured():
+        raise HTTPException(status_code=503, detail="Database not configured")
+
+    key = cache_key("specs_list")
+    cached = get_cached(key)
+    if cached:
+        return cached
+
+    repo = SpecRepository(db)
+    specs = await repo.get_all()
+
+    # Only return specs with at least one implementation
+    result = [
+        SpecListItem(
+            id=spec.id, title=spec.title, description=spec.description, tags=spec.tags, library_count=len(spec.impls)
+        )
+        for spec in specs
+        if spec.impls  # Filter: only specs with implementations
+    ]
+    set_cached(key, result)
+    return result
+
+
+@router.get("/specs/{spec_id}", response_model=SpecDetailResponse)
+async def get_spec(spec_id: str, db: AsyncSession = Depends(get_db)):
+    """
+    Get detailed spec information including all implementations.
+
+    Args:
+        spec_id: The specification ID (e.g., 'scatter-basic')
+
+    Returns:
+        Full spec details with all library implementations and preview URLs
+    """
+    if not is_db_configured():
+        raise HTTPException(status_code=503, detail="Database not configured")
+
+    key = cache_key("spec", spec_id)
+    cached = get_cached(key)
+    if cached:
+        return cached
+
+    repo = SpecRepository(db)
+    spec = await repo.get_by_id(spec_id)
+
+    if not spec:
+        raise HTTPException(status_code=404, detail=f"Spec '{spec_id}' not found")
+
+    # Only return spec if it has implementations
+    if not spec.impls:
+        raise HTTPException(status_code=404, detail=f"Spec '{spec_id}' has no implementations")
+
+    impls = [
+        ImplementationResponse(
+            library_id=impl.library_id,
+            library_name=impl.library.name if impl.library else impl.library_id,
+            preview_url=impl.preview_url,
+            preview_thumb=impl.preview_thumb,
+            preview_html=impl.preview_html,
+            quality_score=impl.quality_score,
+            code=impl.code,
+            generated_at=impl.generated_at.isoformat() if impl.generated_at else None,
+            generated_by=impl.generated_by,
+            python_version=impl.python_version,
+            library_version=impl.library_version,
+        )
+        for impl in spec.impls
+    ]
+
+    result = SpecDetailResponse(
+        id=spec.id,
+        title=spec.title,
+        description=spec.description,
+        applications=spec.applications or [],
+        data=spec.data or [],
+        notes=spec.notes or [],
+        tags=spec.tags,
+        issue=spec.issue,
+        suggested=spec.suggested,
+        implementations=impls,
+    )
+    set_cached(key, result)
+    return result
+
+
+@router.get("/specs/{spec_id}/images")
+async def get_spec_images(spec_id: str, db: AsyncSession = Depends(get_db)):
+    """
+    Get plot images for a specification across all libraries.
+
+    Returns preview_url, preview_thumb, and preview_html from database.
+    """
+    if not is_db_configured():
+        raise HTTPException(status_code=503, detail="Database not configured")
+
+    key = cache_key("spec_images", spec_id)
+    cached = get_cached(key)
+    if cached:
+        return cached
+
+    repo = SpecRepository(db)
+    spec = await repo.get_by_id(spec_id)
+
+    if not spec:
+        raise HTTPException(status_code=404, detail=f"Spec '{spec_id}' not found")
+
+    if not spec.impls:
+        raise HTTPException(status_code=404, detail=f"Spec '{spec_id}' has no implementations")
+
+    images = [
+        {"library": impl.library_id, "url": impl.preview_url, "thumb": impl.preview_thumb, "html": impl.preview_html}
+        for impl in spec.impls
+        if impl.preview_url  # Only include if there's a preview
+    ]
+
+    result = {"spec_id": spec_id, "images": images}
+    set_cached(key, result)
+    return result

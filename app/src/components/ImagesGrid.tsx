@@ -13,6 +13,7 @@ interface ImagesGridProps {
   selectedLibrary: string;
   loading: boolean;
   hasMore: boolean;
+  isLoadingMore: boolean;
   isTransitioning: boolean;
   librariesData: LibraryInfo[];
   specsData: SpecInfo[];
@@ -22,6 +23,7 @@ interface ImagesGridProps {
   onTooltipToggle: (id: string | null) => void;
   onCardClick: (image: PlotImage) => void;
   onTrackEvent?: (name: string, props?: Record<string, string | undefined>) => void;
+  onImageLoad?: () => void;
 }
 
 export function ImagesGrid({
@@ -31,6 +33,7 @@ export function ImagesGrid({
   selectedLibrary: _selectedLibrary,
   loading,
   hasMore,
+  isLoadingMore,
   isTransitioning,
   librariesData,
   specsData,
@@ -40,13 +43,14 @@ export function ImagesGrid({
   onTooltipToggle,
   onCardClick,
   onTrackEvent,
+  onImageLoad,
 }: ImagesGridProps) {
   void _selectedLibrary; // Preserved for API compatibility
 
   // Grid columns: normal = max 3 cols, compact = max 6 cols
   const gridColumns = imageSize === 'compact'
-    ? { xs: 6, sm: 4, md: 3, lg: 2, xl: 2 }  // 2→3→4→6→6 cols
-    : { xs: 12, sm: 6, md: 4, lg: 4, xl: 4 }; // 1→2→3→3→3 cols
+    ? { xs: 6, sm: 6, md: 3, lg: 3, xl: 2 }  // 2→2→4→4→6 cols
+    : { xs: 12, sm: 12, md: 6, lg: 6, xl: 4 }; // 1→1→2→2→3 cols
 
   // Show loading spinner on initial load
   if (loading && !isTransitioning && images.length === 0) {
@@ -109,20 +113,40 @@ export function ImagesGrid({
                   librariesData={librariesData}
                   specsData={specsData}
                   openTooltip={openTooltip}
+                  imageSize={imageSize}
                   onTooltipToggle={onTooltipToggle}
                   onClick={() => onCardClick(image)}
                   onTrackEvent={onTrackEvent}
+                  onImageLoad={onImageLoad}
                 />
               </Grid>
             ))}
           </Grid>
         )}
-        {/* Load more indicator */}
+        {/* Load more trigger (invisible) */}
         {hasMore && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-            <div ref={loadMoreRef}>
-              <LoaderSpinner size="small" />
-            </div>
+          <Box ref={loadMoreRef} sx={{ height: 1 }} />
+        )}
+        {/* Fixed loading indicator at bottom - only when actively loading */}
+        {isLoadingMore && hasMore && (
+          <Box
+            sx={{
+              position: 'fixed',
+              bottom: 24,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 50,
+              bgcolor: 'rgba(255,255,255,0.9)',
+              borderRadius: 3,
+              px: 3,
+              py: 1.5,
+              boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.5,
+            }}
+          >
+            <LoaderSpinner size="small" />
           </Box>
         )}
       </Box>

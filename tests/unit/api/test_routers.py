@@ -282,7 +282,8 @@ class TestSeoRouter:
             content = response.text
             assert '<?xml version="1.0"' in content
             assert "<urlset" in content
-            assert "https://pyplots.ai/" in content
+            # Check for homepage URL as proper XML element
+            assert "<loc>https://pyplots.ai/</loc>" in content
 
     def test_sitemap_with_db(self, client: TestClient, mock_spec) -> None:
         """Sitemap should include specs from DB."""

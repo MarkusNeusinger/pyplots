@@ -1,0 +1,27 @@
+library: bokeh
+specification_id: gantt-basic
+created: '2025-12-27T19:24:09Z'
+updated: '2025-12-27T19:33:32Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20543282696
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/bokeh/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent visual clarity with well-sized task labels and bars
+  - Perfect color coding by category with Python-themed blue/yellow for first two
+    categories
+  - Professional layout with proper canvas utilization at 4800x2700
+  - Realistic software development project data showing overlapping and sequential
+    tasks
+  - Clean datetime handling with proper x-axis formatting
+  - Good use of Bokeh ColumnDataSource pattern
+  weaknesses:
+  - Missing HoverTool for task details on hover (Bokeh key interactive feature)
+  - Generates both PNG and HTML but only PNG is required
+  - Axis label Timeline could be more descriptive

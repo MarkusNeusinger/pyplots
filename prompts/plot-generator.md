@@ -16,6 +16,43 @@ Create a Python script for the specified plot type and library. The code should 
 4. **Previous Metadata** (if regenerating): `plots/{spec-id}/metadata/{library}.yaml`
 5. **Previous Code** (if regenerating): `plots/{spec-id}/implementations/{library}.py`
 
+## Available Standard Packages
+
+All plot implementations have access to these standard data science packages:
+
+**Core Data & Arrays:**
+- `numpy` - Array operations, random data generation, linear algebra
+- `pandas` - DataFrames, Series, time series operations
+
+**Scientific Computing:**
+- `scipy` - Statistics, clustering, signal processing, optimization, interpolation
+  - `scipy.stats` - Statistical distributions, tests, density estimation (gaussian_kde)
+  - `scipy.cluster.hierarchy` - Hierarchical clustering (linkage, dendrogram)
+  - `scipy.signal` - Signal processing, filtering
+  - `scipy.interpolate` - Interpolation methods
+  - `scipy.optimize` - Optimization algorithms
+
+**Machine Learning:**
+- `scikit-learn` - Clustering, classification, regression, metrics, datasets
+  - `sklearn.datasets` - Example datasets (load_iris, make_classification, etc.)
+  - `sklearn.cluster` - Clustering algorithms (KMeans, DBSCAN, etc.)
+  - `sklearn.metrics` - ML metrics (silhouette_score, precision_recall_curve, etc.)
+  - `sklearn.preprocessing` - Data scaling, normalization
+  - `sklearn.model_selection` - Train/test splits, cross-validation
+
+**Statistical Modeling:**
+- `statsmodels` - Statistical models, time series analysis, regression
+  - `statsmodels.api` - Statistical models (OLS, GLM, etc.)
+  - `statsmodels.tsa` - Time series analysis (ARIMA, seasonal decomposition)
+  - `statsmodels.stats` - Statistical tests
+
+**Usage Guidelines:**
+- Use these packages freely for data preparation, transformations, and statistical computations
+- Always use `np.random.seed(42)` for reproducibility
+- Prefer built-in functionality over writing custom implementations
+- Keep code simple - import only what you need
+- Use realistic data with proper domain context (salaries, test scores, measurements, etc.)
+
 ## Regeneration: Learn from Previous Review
 
 When regenerating an existing implementation, read the metadata file for review feedback:

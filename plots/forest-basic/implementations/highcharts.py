@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 forest-basic: Meta-Analysis Forest Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-27
@@ -45,7 +45,7 @@ pooled_ci_upper = -0.14
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration
+# Chart configuration - adjust margins to fix x-axis title visibility and reduce bottom whitespace
 chart.options.chart = {
     "type": "scatter",
     "width": 4800,
@@ -53,8 +53,8 @@ chart.options.chart = {
     "backgroundColor": "#ffffff",
     "marginLeft": 350,
     "marginRight": 150,
-    "marginBottom": 150,
-    "marginTop": 120,
+    "marginBottom": 250,  # Increased for x-axis title visibility
+    "marginTop": 150,
 }
 
 # Title
@@ -69,10 +69,10 @@ chart.options.subtitle = {"text": "Meta-Analysis of Treatment Effect on Primary 
 all_labels = ["Pooled Estimate", ""] + list(reversed(studies))
 n_studies = len(studies)
 
-# X-axis (effect size)
+# X-axis (effect size) - increase title visibility and ensure proper rendering
 chart.options.x_axis = {
-    "title": {"text": "Mean Difference (95% CI)", "style": {"fontSize": "32px"}},
-    "labels": {"style": {"fontSize": "24px"}},
+    "title": {"text": "Mean Difference (95% CI)", "style": {"fontSize": "36px", "fontWeight": "bold"}, "margin": 25},
+    "labels": {"style": {"fontSize": "26px"}, "y": 35},
     "plotLines": [
         {
             "value": 0,
@@ -80,25 +80,28 @@ chart.options.x_axis = {
             "width": 3,
             "dashStyle": "Dash",
             "zIndex": 3,
-            "label": {"text": "No Effect", "style": {"fontSize": "20px", "color": "#666666"}, "rotation": 0, "y": -10},
+            "label": {"text": "No Effect", "style": {"fontSize": "22px", "color": "#666666"}, "rotation": 0, "y": -15},
         }
     ],
     "min": -1.2,
     "max": 0.8,
     "gridLineWidth": 1,
     "gridLineColor": "#e0e0e0",
+    "tickInterval": 0.2,
 }
 
-# Y-axis (studies)
+# Y-axis (studies) - tight layout to minimize whitespace
 chart.options.y_axis = {
     "title": {"text": None},
     "categories": all_labels,
     "reversed": False,
-    "labels": {"style": {"fontSize": "26px"}},
+    "labels": {"style": {"fontSize": "26px"}, "x": -10},
     "gridLineWidth": 0,
-    "min": 0,
-    "max": len(all_labels) - 1,
+    "min": -0.3,  # Tighter min to reduce bottom whitespace
+    "max": len(all_labels) - 0.7,  # Tighter max to reduce top whitespace
     "tickPositions": list(range(len(all_labels))),
+    "startOnTick": False,
+    "endOnTick": False,
 }
 
 # Disable legend (we use labels)
@@ -106,11 +109,19 @@ chart.options.legend = {"enabled": False}
 
 # Create series for study points (map indices: study 0 -> y = n_studies+1, study 1 -> y = n_studies, etc.)
 study_points_data = []
-for i, (es, w) in enumerate(zip(effect_sizes, weights)):
+for i, (es, w, lower, upper) in enumerate(zip(effect_sizes, weights, ci_lower, ci_upper, strict=True)):
     # Marker radius proportional to weight (scaled for visibility)
     radius = 8 + (w / max(weights)) * 16
     y_pos = n_studies + 1 - i  # First study at top (y = n_studies+1), last at y = 2
-    study_points_data.append({"x": es, "y": y_pos, "marker": {"radius": radius, "symbol": "square"}})
+    study_points_data.append(
+        {
+            "x": es,
+            "y": y_pos,
+            "marker": {"radius": radius, "symbol": "square"},
+            "name": studies[i],
+            "custom": {"weight": w, "ciLower": lower, "ciUpper": upper},
+        }
+    )
 
 study_series = ScatterSeries()
 study_series.data = study_points_data
@@ -121,7 +132,7 @@ study_series.marker = {"symbol": "square", "lineWidth": 2, "lineColor": "#306998
 chart.add_series(study_series)
 
 # Create series for confidence interval lines
-for i, (lower, upper) in enumerate(zip(ci_lower, ci_upper)):
+for i, (lower, upper) in enumerate(zip(ci_lower, ci_upper, strict=True)):
     y_pos = n_studies + 1 - i
     ci_series = ScatterSeries()
     ci_series.data = [{"x": lower, "y": y_pos}, {"x": upper, "y": y_pos}]
@@ -137,9 +148,16 @@ for i, (lower, upper) in enumerate(zip(ci_lower, ci_upper)):
 # Pooled estimate (diamond) - at y = 0
 pooled_y = 0
 
-# Create diamond shape for pooled estimate
+# Create diamond shape for pooled estimate with enhanced tooltip data
 diamond_series = ScatterSeries()
-diamond_series.data = [{"x": pooled_effect, "y": pooled_y}]
+diamond_series.data = [
+    {
+        "x": pooled_effect,
+        "y": pooled_y,
+        "name": "Pooled Estimate",
+        "custom": {"ciLower": pooled_ci_lower, "ciUpper": pooled_ci_upper, "weight": 100},
+    }
+]
 diamond_series.name = "Pooled Estimate"
 diamond_series.color = "#FFD43B"
 diamond_series.marker = {
@@ -165,11 +183,19 @@ pooled_ci_series.show_in_legend = False
 
 chart.add_series(pooled_ci_series)
 
-# Tooltip
+# Enhanced tooltip showing exact values, CI, and weight
 chart.options.tooltip = {
     "headerFormat": "",
-    "pointFormat": "<b>{point.name}</b><br/>Effect: {point.x:.2f}",
-    "style": {"fontSize": "20px"},
+    "pointFormat": (
+        "<b>{point.name}</b><br/>"
+        "Effect Size: {point.x:.2f}<br/>"
+        "95% CI: [{point.custom.ciLower:.2f}, {point.custom.ciUpper:.2f}]<br/>"
+        "Weight: {point.custom.weight:.1f}%"
+    ),
+    "style": {"fontSize": "24px"},
+    "backgroundColor": "rgba(255, 255, 255, 0.95)",
+    "borderWidth": 2,
+    "borderColor": "#306998",
 }
 
 # Credits
@@ -208,12 +234,15 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2700")
+chrome_options.add_argument("--window-size=4900,2800")  # Slightly larger to ensure full chart capture
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
 time.sleep(5)  # Wait for chart to render
-driver.save_screenshot("plot.png")
+
+# Get the container element and take screenshot of just that element for exact dimensions
+container = driver.find_element("id", "container")
+container.screenshot("plot.png")
 driver.quit()
 
 Path(temp_path).unlink()  # Clean up temp file

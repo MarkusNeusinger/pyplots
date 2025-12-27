@@ -1,0 +1,25 @@
+library: matplotlib
+specification_id: bar-diverging
+created: '2025-12-25T22:47:35Z'
+updated: '2025-12-25T22:49:49Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20511948506
+issue: 2009
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-diverging/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-diverging/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 97
+review:
+  strengths:
+  - 'Excellent implementation of all spec requirements: horizontal orientation, contrasting
+    colors, zero baseline indicator, and sorted bars'
+  - Clean code structure following KISS principles with good commenting
+  - Value labels at bar ends enhance readability and make the chart immediately informative
+  - Proper use of matplotlib-specific features (spines removal, axvline, Patch-based
+    legend)
+  - Realistic product satisfaction survey scenario with meaningful category names
+  weaknesses:
+  - X-axis label could include context (e.g., Net Satisfaction Score (%)) to clarify
+    the measurement scale

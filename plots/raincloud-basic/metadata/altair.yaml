@@ -1,0 +1,27 @@
+library: altair
+specification_id: raincloud-basic
+created: '2025-12-25T08:23:10Z'
+updated: '2025-12-25T08:25:15Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20501865366
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/altair/plot.html
+quality_score: 90
+review:
+  strengths:
+  - Excellent raincloud visualization with all three components (half-violin, boxplot,
+    jittered points) correctly positioned
+  - 'Outstanding data quality: includes bimodal distribution (Treatment B) that demonstrates
+    the key advantage of raincloud plots over simple boxplots'
+  - Colorblind-safe color palette (blue, yellow, green)
+  - Correct title format following the specification
+  - Clean, reproducible code with proper random seed
+  - Interactive features enabled for HTML output
+  - Realistic reaction time data that tells a coherent scientific story
+  weaknesses:
+  - Grid lines are quite subtle (alpha 0.3) making them barely visible
+  - Jittered points could be slightly larger for better visibility at full resolution

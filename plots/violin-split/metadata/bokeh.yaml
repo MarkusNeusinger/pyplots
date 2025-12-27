@@ -1,0 +1,30 @@
+library: bokeh
+specification_id: violin-split
+created: '2025-12-26T10:02:47Z'
+updated: '2025-12-26T10:05:32Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20520452188
+issue: 1949
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-split/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-split/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-split/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent split violin implementation with halves meeting cleanly at the center
+    line
+  - White quartile markers (median solid, Q1/Q3 dashed) provide clear statistical
+    reference within each violin
+  - HoverTool integration provides interactive statistics (median, Q1, Q3, sample
+    size) for each violin half
+  - Blue/yellow color scheme is visually appealing and highly accessible for colorblind
+    users
+  - Realistic employee training satisfaction scenario makes the visualization immediately
+    understandable
+  weaknesses:
+  - Y-axis label text appears slightly smaller relative to x-axis label at display
+    resolution
+  - Bokeh toolbar icons visible on right edge slightly detract from clean presentation
+  - Legend glyph boxes are relatively small compared to the large canvas size

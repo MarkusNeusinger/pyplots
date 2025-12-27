@@ -1,0 +1,28 @@
+library: seaborn
+specification_id: bland-altman-basic
+created: '2025-12-25T13:16:16Z'
+updated: '2025-12-25T13:18:22Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20505628285
+issue: 2032
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bland-altman-basic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bland-altman-basic/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 93
+review:
+  strengths:
+  - Excellent implementation of Bland-Altman statistics with correct mean difference
+    and LoA calculations
+  - Clear visual hierarchy with distinct colors for bias line (yellow) vs limits of
+    agreement (red)
+  - Appropriate use of transparency and marker sizing for 80 data points
+  - Annotations on the right side provide quick reference to exact values
+  - Realistic blood pressure measurement scenario with appropriate units throughout
+  - Zero reference line helps contextualize whether differences are clinically significant
+  weaknesses:
+  - 'Grid and legend styling could be refined (VQ-07: grid alpha could be lower, legend
+    framealpha competes with data region)'
+  - 'Library features (LF-01): Could leverage more seaborn-specific features like
+    rugplot for marginal distributions or confidence intervals'

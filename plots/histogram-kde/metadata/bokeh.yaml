@@ -1,0 +1,28 @@
+library: bokeh
+specification_id: histogram-kde
+created: '2025-12-24T21:30:19Z'
+updated: '2025-12-24T21:37:54Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494138649
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of KDE from scratch using Gaussian kernel with Scott's
+    rule bandwidth
+  - Realistic financial data scenario with fat-tail events demonstrating the KDE's
+    smoothing advantage
+  - Proper density normalization so histogram and KDE are on comparable scales
+  - Good use of semi-transparent histogram bars (alpha=0.5) allowing KDE visibility
+    as specified
+  - Clean, well-structured code following KISS principles
+  - Both PNG and HTML output for static and interactive viewing
+  weaknesses:
+  - Legend is too small and positioned far from the main data area
+  - Missing Bokeh-specific interactive features like HoverTool to show density values
+    on hover

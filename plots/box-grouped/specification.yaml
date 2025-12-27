@@ -1,0 +1,29 @@
+# Specification-level metadata for box-grouped
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: box-grouped
+title: Grouped Box Plot
+
+# Specification tracking
+created: 2025-12-25T09:00:52Z
+updated: null
+issue: 2017
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - box
+    - distribution
+  data_type:
+    - numeric
+    - categorical
+  domain:
+    - general
+    - statistics
+    - research
+  features:
+    - grouped
+    - comparison
+    - multi

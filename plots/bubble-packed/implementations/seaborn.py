@@ -1,228 +1,206 @@
 """ pyplots.ai
 bubble-packed: Basic Packed Bubble Chart
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-16
+Quality: 90/100 | Created: 2025-12-23
 """
 
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 
 
-# Data - synthetic category values representing budget allocation
+# Data - Company market values by sector (billions USD)
 np.random.seed(42)
-categories = [
-    "Engineering",
-    "Marketing",
-    "Sales",
-    "Operations",
-    "HR",
-    "Finance",
-    "R&D",
-    "IT",
-    "Legal",
-    "Customer Support",
-    "Product",
-    "Design",
-    "Quality",
-    "Logistics",
-    "Admin",
-]
-values = [85, 62, 58, 45, 32, 28, 72, 38, 22, 35, 55, 42, 18, 25, 15]
+data = {
+    "Technology": [("Apple", 180), ("Microsoft", 160), ("Google", 120), ("NVIDIA", 95), ("Meta", 75)],
+    "Finance": [("JPMorgan", 85), ("Visa", 70), ("Mastercard", 55), ("Goldman Sachs", 45)],
+    "Healthcare": [("UnitedHealth", 90), ("J&J", 65), ("Merck", 50), ("Pfizer", 40)],
+    "Retail": [("Amazon", 140), ("Walmart", 60), ("Costco", 45), ("Target", 30)],
+}
 
-# Scale values to reasonable radii (area proportional to value)
-values_arr = np.array(values, dtype=float)
-# Normalize radii based on sqrt of values for proper area scaling
-radii = np.sqrt(values_arr / values_arr.max())
-# Scale to reasonable size
-radii = radii * 0.18 + 0.04  # Range from ~0.04 to ~0.22
+# Prepare circles sorted by size (largest first for better packing)
+all_circles = []
+for group, items in data.items():
+    for name, value in items:
+        radius = np.sqrt(value) * 4  # Scale by area
+        all_circles.append({"name": name, "radius": radius, "group": group, "value": value})
 
-n_circles = len(categories)
+all_circles.sort(key=lambda x: -x["radius"])
 
+# Circle packing - place circles one by one without overlap (inline, no functions)
+placed_circles = []
+cx, cy = 0, 0
 
-def pack_circles_front_chain(radii):
-    """
-    Circle packing using a front-chain algorithm.
-    Places circles one by one, each touching at least one previous circle.
-    """
-    n = len(radii)
-    # Sort by radius descending for better packing
-    order = np.argsort(radii)[::-1]
-    radii_sorted = radii[order]
+for circle in all_circles:
+    new_radius = circle["radius"]
 
-    positions = np.zeros((n, 2))
-
-    # Place first circle at origin
-    positions[0] = [0, 0]
-
-    if n > 1:
-        # Place second circle to the right of first
-        positions[1] = [radii_sorted[0] + radii_sorted[1], 0]
-
-    if n > 2:
-        # Place third circle tangent to first two
-        r0, r1, r2 = radii_sorted[0], radii_sorted[1], radii_sorted[2]
-        d01 = r0 + r1  # distance between centers of circles 0 and 1
-        d02 = r0 + r2  # required distance from circle 0
-        d12 = r1 + r2  # required distance from circle 1
-
-        # Find position using circle intersection
-        x2 = (d02**2 - d12**2 + d01**2) / (2 * d01)
-        y2_sq = d02**2 - x2**2
-        y2 = np.sqrt(max(0, y2_sq))
-        positions[2] = [x2, y2]
-
-    # Place remaining circles
-    for i in range(3, n):
-        r_new = radii_sorted[i]
+    if not placed_circles:
+        # First circle at origin
+        best_x, best_y = cx, cy
+    else:
+        # Try positions around existing circles, find closest to center
         best_pos = None
         best_dist = float("inf")
 
-        # Try placing tangent to each pair of existing circles
-        for j in range(i):
-            for k in range(j + 1, i):
-                r_j, r_k = radii_sorted[j], radii_sorted[k]
-                p_j, p_k = positions[j], positions[k]
+        for p in placed_circles:
+            for angle in np.linspace(0, 2 * np.pi, 72, endpoint=False):
+                dist = p["radius"] + new_radius + 2
+                test_x = p["x"] + dist * np.cos(angle)
+                test_y = p["y"] + dist * np.sin(angle)
 
-                # Find positions tangent to both circles j and k
-                d_jk = np.sqrt((p_k[0] - p_j[0]) ** 2 + (p_k[1] - p_j[1]) ** 2)
-                d_j_new = r_j + r_new
-                d_k_new = r_k + r_new
+                # Check overlap with all placed circles
+                valid = True
+                for other in placed_circles:
+                    d = np.sqrt((test_x - other["x"]) ** 2 + (test_y - other["y"]) ** 2)
+                    if d < other["radius"] + new_radius + 1:
+                        valid = False
+                        break
 
-                # Check if tangent placement is possible
-                if d_jk > d_j_new + d_k_new or d_jk < abs(d_j_new - d_k_new):
-                    continue
+                if valid:
+                    center_dist = np.sqrt((test_x - cx) ** 2 + (test_y - cy) ** 2)
+                    if center_dist < best_dist:
+                        best_dist = center_dist
+                        best_pos = (test_x, test_y)
 
-                # Calculate intersection points of two circles centered at j and k
-                a = (d_j_new**2 - d_k_new**2 + d_jk**2) / (2 * d_jk)
-                h_sq = d_j_new**2 - a**2
-                if h_sq < 0:
-                    continue
-                h = np.sqrt(h_sq)
+        best_x, best_y = best_pos if best_pos else (cx, cy)
 
-                # Unit vector from j to k
-                ux = (p_k[0] - p_j[0]) / d_jk
-                uy = (p_k[1] - p_j[1]) / d_jk
+    placed_circles.append(
+        {
+            "x": best_x,
+            "y": best_y,
+            "radius": new_radius,
+            "name": circle["name"],
+            "group": circle["group"],
+            "value": circle["value"],
+        }
+    )
 
-                # Two possible positions
-                for sign in [1, -1]:
-                    px = p_j[0] + a * ux + sign * h * (-uy)
-                    py = p_j[1] + a * uy + sign * h * ux
-                    pos_candidate = np.array([px, py])
+# Calculate bounds and recenter
+all_x = [c["x"] for c in placed_circles]
+all_y = [c["y"] for c in placed_circles]
+all_r = [c["radius"] for c in placed_circles]
 
-                    # Check for overlaps with all existing circles
-                    valid = True
-                    for m in range(i):
-                        dist_m = np.sqrt(
-                            (pos_candidate[0] - positions[m, 0]) ** 2 + (pos_candidate[1] - positions[m, 1]) ** 2
-                        )
-                        if dist_m < radii_sorted[m] + r_new - 0.001:
-                            valid = False
-                            break
+min_x = min(x - r for x, r in zip(all_x, all_r, strict=True))
+max_x = max(x + r for x, r in zip(all_x, all_r, strict=True))
+min_y = min(y - r for y, r in zip(all_y, all_r, strict=True))
+max_y = max(y + r for y, r in zip(all_y, all_r, strict=True))
 
-                    if valid:
-                        # Prefer positions closer to center
-                        dist_center = np.sqrt(px**2 + py**2)
-                        if dist_center < best_dist:
-                            best_dist = dist_center
-                            best_pos = pos_candidate
+# Offset to center in plot area
+padding = 20
+offset_x = -min_x + padding
+offset_y = -min_y + padding
 
-        if best_pos is not None:
-            positions[i] = best_pos
-        else:
-            # Fallback: place on outer edge
-            angle = 2 * np.pi * i / n
-            max_r = np.max(radii_sorted[:i]) + r_new
-            positions[i] = [max_r * np.cos(angle), max_r * np.sin(angle)]
+for c in placed_circles:
+    c["x"] += offset_x
+    c["y"] += offset_y
 
-    # Restore original order
-    final_positions = np.zeros((n, 2))
-    for i, orig_idx in enumerate(order):
-        final_positions[orig_idx] = positions[i]
+plot_width = max_x - min_x + 2 * padding
+plot_height = max_y - min_y + 2 * padding
 
-    return final_positions
+# Create DataFrame for seaborn
+df = pd.DataFrame(placed_circles)
+# Scale marker size for scatterplot (s parameter uses area in points^2)
+df["marker_size"] = (df["radius"] * 2) ** 2 * 3.14  # Convert radius to area for proper sizing
 
-
-# Pack circles
-positions = pack_circles_front_chain(radii)
-
-# Center and scale positions to fit in plot
-x_min, x_max = positions[:, 0].min(), positions[:, 0].max()
-y_min, y_max = positions[:, 1].min(), positions[:, 1].max()
-r_max = radii.max()
-
-# Calculate bounding box including radii
-bbox_x_min = x_min - r_max
-bbox_x_max = x_max + r_max
-bbox_y_min = y_min - r_max
-bbox_y_max = y_max + r_max
-
-# Scale to fit in [0.1, 0.9] range
-width = bbox_x_max - bbox_x_min
-height = bbox_y_max - bbox_y_min
-scale = 0.8 / max(width, height)
-
-positions = (positions - np.array([x_min + x_max, y_min + y_max]) / 2) * scale + 0.5
-radii = radii * scale
-
-# Assign colors using a seaborn palette
-colors = sns.color_palette("Set2", n_colors=n_circles)
+# Set seaborn style
+sns.set_style("white")
+palette = sns.color_palette("Set2", n_colors=len(data))
+group_colors = {group: palette[i] for i, group in enumerate(data.keys())}
 
 # Create figure
 fig, ax = plt.subplots(figsize=(16, 9))
-ax.set_facecolor("#f8f9fa")
 
-# Draw circles
-for i in range(n_circles):
-    circle = mpatches.Circle(
-        (positions[i, 0], positions[i, 1]), radii[i], facecolor=colors[i], edgecolor="white", linewidth=3, alpha=0.9
-    )
-    ax.add_patch(circle)
+# Use seaborn scatterplot for the bubbles
+sns.scatterplot(
+    data=df,
+    x="x",
+    y="y",
+    hue="group",
+    size="marker_size",
+    sizes=(df["marker_size"].min(), df["marker_size"].max()),
+    palette="Set2",
+    alpha=0.9,
+    edgecolor="white",
+    linewidth=3,
+    legend=False,
+    ax=ax,
+)
 
-    # Add labels inside circles
-    # Calculate font size based on radius
-    fontsize_label = max(8, int(radii[i] * 180))
-    fontsize_value = max(6, int(radii[i] * 140))
+# Add labels for all circles using annotations
+# Sort by x position to manage external annotation placement
+df_sorted = df.sort_values("x")
+used_y_positions = []  # Track y positions for external labels to avoid overlap
 
-    # Only show text if it will fit
-    if radii[i] > 0.04:
-        # Truncate long labels
-        label = categories[i] if len(categories[i]) <= 10 else categories[i][:8] + ".."
-        ax.text(
-            positions[i, 0],
-            positions[i, 1] + radii[i] * 0.15,
-            label,
-            ha="center",
-            va="center",
-            fontsize=fontsize_label,
+for _, row in df_sorted.iterrows():
+    name = row["name"]
+    # Abbreviate long names for internal labels
+    short_name = name if len(name) <= 10 else name[:9] + "."
+
+    if row["radius"] > 38:
+        # Large circles - full name with large font
+        ax.text(row["x"], row["y"], short_name, ha="center", va="center", fontsize=18, fontweight="bold", color="white")
+    elif row["radius"] > 32:
+        # Medium-large circles
+        ax.text(row["x"], row["y"], short_name, ha="center", va="center", fontsize=14, fontweight="bold", color="white")
+    elif row["radius"] > 26:
+        # Medium circles - smaller font
+        ax.text(row["x"], row["y"], short_name, ha="center", va="center", fontsize=11, fontweight="bold", color="white")
+    else:
+        # Small circles - external annotation with arrow
+        # Determine label position (alternate left/right based on position)
+        if row["x"] < plot_width / 2:
+            # Left side - annotate to the left
+            offset_x = -row["radius"] - 20
+            ha = "right"
+        else:
+            # Right side - annotate to the right
+            offset_x = row["radius"] + 20
+            ha = "left"
+
+        # Adjust y to avoid overlapping labels
+        target_y = row["y"]
+        for used_y in used_y_positions:
+            if abs(target_y - used_y) < 25:
+                target_y = used_y + 25 if target_y >= used_y else used_y - 25
+        used_y_positions.append(target_y)
+
+        ax.annotate(
+            name,
+            xy=(row["x"], row["y"]),
+            xytext=(row["x"] + offset_x, target_y),
+            fontsize=11,
             fontweight="bold",
-            color="white",
-        )
-        ax.text(
-            positions[i, 0],
-            positions[i, 1] - radii[i] * 0.25,
-            f"${values[i]}K",
-            ha="center",
+            color="#444444",
+            arrowprops={"arrowstyle": "->", "color": "#888888", "lw": 1.5, "connectionstyle": "arc3,rad=0.1"},
+            ha=ha,
             va="center",
-            fontsize=fontsize_value,
-            color="white",
-            alpha=0.95,
         )
 
 # Configure axes
-ax.set_xlim(0.05, 0.95)
-ax.set_ylim(0.05, 0.95)
+ax.set_xlim(0, plot_width)
+ax.set_ylim(0, plot_height)
 ax.set_aspect("equal")
 ax.axis("off")
 
 # Title
-ax.set_title(
-    "Department Budget Allocation\nbubble-packed \u00b7 seaborn \u00b7 pyplots.ai",
-    fontsize=24,
-    fontweight="bold",
-    pad=20,
-    color="#333333",
+ax.set_title("bubble-packed · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
+
+# Create legend - position below the plot to avoid any overlap with data
+legend_elements = [
+    mpatches.Patch(facecolor=group_colors[group], edgecolor="white", linewidth=2, label=group) for group in data.keys()
+]
+ax.legend(
+    handles=legend_elements,
+    loc="upper center",
+    bbox_to_anchor=(0.5, -0.02),
+    ncol=4,
+    fontsize=14,
+    framealpha=0.95,
+    title="Sector",
+    title_fontsize=16,
+    edgecolor="gray",
 )
 
 plt.tight_layout()

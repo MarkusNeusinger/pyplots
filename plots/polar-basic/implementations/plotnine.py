@@ -1,58 +1,124 @@
 """ pyplots.ai
 polar-basic: Basic Polar Chart
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-14
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
-import matplotlib.pyplot as plt
+import math
+
 import numpy as np
 import pandas as pd
+from plotnine import (
+    aes,
+    coord_fixed,
+    element_blank,
+    element_text,
+    geom_path,
+    geom_point,
+    geom_segment,
+    geom_text,
+    ggplot,
+    labs,
+    scale_x_continuous,
+    scale_y_continuous,
+    theme,
+)
 
 
-# Data - hourly activity pattern (24-hour cycle)
+# Data - Hourly activity levels throughout the day (cyclical pattern)
 np.random.seed(42)
 hours = np.arange(0, 24)
-# Simulate activity with peaks in morning and evening
-activity = 30 + 25 * np.sin((hours - 6) * np.pi / 12) + np.random.randn(24) * 5
+# Activity pattern: low at night, peak in morning and evening
+base_activity = 20 + 40 * np.sin((hours - 6) * np.pi / 12) ** 2
+activity = base_activity + np.random.uniform(-8, 8, 24)
 activity = np.clip(activity, 5, 100)
 
-df = pd.DataFrame({"hour": hours, "activity": activity})
+# Convert hours to angles (0 hours = top, clockwise)
+# Offset by -90 degrees to start at top
+theta = hours * 2 * math.pi / 24 - math.pi / 2
 
-# Convert hours to radians (full circle = 24 hours)
-theta = (df["hour"] / 24) * 2 * np.pi
-radius = df["activity"]
+# Convert polar to Cartesian coordinates
+x = activity * np.cos(theta)
+y = activity * np.sin(theta)
 
-# Close the loop by appending first point at the end
-theta_closed = np.append(theta, theta.iloc[0])
-radius_closed = np.append(radius, radius.iloc[0])
+# Create main dataframe
+df = pd.DataFrame({"hour": hours, "activity": activity, "theta": theta, "x": x, "y": y})
 
-# Create polar plot with plotnine-style sizing
-fig, ax = plt.subplots(figsize=(16, 9), subplot_kw={"polar": True})
+# Close the loop by adding first point at end
+df_closed = pd.concat([df, df.iloc[[0]]], ignore_index=True)
 
-# Start at top (12 o'clock position) and go clockwise
-ax.set_theta_offset(np.pi / 2)
-ax.set_theta_direction(-1)
+# Create circular gridlines (at 25, 50, 75, 100 radius)
+grid_rows = []
+grid_angles = np.linspace(0, 2 * np.pi, 101)
+for radius in [25, 50, 75, 100]:
+    for angle in grid_angles:
+        grid_rows.append({"x": radius * np.cos(angle), "y": radius * np.sin(angle), "radius": radius})
 
-# Draw line and points with Python Blue
-ax.plot(theta_closed, radius_closed, color="#306998", linewidth=3, alpha=0.8)
-ax.scatter(theta, radius, color="#306998", s=200, alpha=0.9, zorder=5)
+grid_df = pd.DataFrame(grid_rows)
 
-# Set angular labels (24-hour clock, starting at top)
-hour_labels = ["12am", "3am", "6am", "9am", "12pm", "3pm", "6pm", "9pm"]
-hour_positions = np.array([0, 3, 6, 9, 12, 15, 18, 21]) / 24 * 2 * np.pi
-ax.set_xticks(hour_positions)
-ax.set_xticklabels(hour_labels, fontsize=18)
+# Create radial spokes (every 3 hours = 8 spokes)
+spoke_rows = []
+spoke_hours = [0, 3, 6, 9, 12, 15, 18, 21]
+for h in spoke_hours:
+    angle = h * 2 * math.pi / 24 - math.pi / 2
+    spoke_rows.append({"x1": 0, "y1": 0, "x2": 105 * np.cos(angle), "y2": 105 * np.sin(angle)})
 
-# Set radial gridlines and labels
-ax.set_ylim(0, 100)
-ax.set_yticks([25, 50, 75])
-ax.set_yticklabels(["25", "50", "75"], fontsize=14, color="gray")
+spoke_df = pd.DataFrame(spoke_rows)
 
-# Grid styling - subtle, not dominant
-ax.grid(True, linestyle="--", alpha=0.4, linewidth=1.5)
+# Create hour labels (positioned outside the chart)
+label_rows = []
+for h in spoke_hours:
+    angle = h * 2 * math.pi / 24 - math.pi / 2
+    label_text = f"{h:02d}:00"
+    label_rows.append({"label": label_text, "x": 120 * np.cos(angle), "y": 120 * np.sin(angle)})
 
-# Title in pyplots format
-ax.set_title("polar-basic · plotnine · pyplots.ai", fontsize=24, pad=30)
+label_df = pd.DataFrame(label_rows)
 
-plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight")
+# Create radius labels (on the right side, angle=0)
+radius_labels = []
+for r in [25, 50, 75, 100]:
+    radius_labels.append({"label": str(r), "x": r + 5, "y": 5})
+
+radius_label_df = pd.DataFrame(radius_labels)
+
+# Plot
+plot = (
+    ggplot()
+    # Circular gridlines
+    + geom_path(
+        aes(x="x", y="y", group="radius"), data=grid_df, color="#CCCCCC", size=0.5, alpha=0.6, linetype="dashed"
+    )
+    # Radial spokes
+    + geom_segment(aes(x="x1", y="y1", xend="x2", yend="y2"), data=spoke_df, color="#CCCCCC", size=0.5, alpha=0.6)
+    # Data line (connecting all points)
+    + geom_path(aes(x="x", y="y"), data=df_closed, color="#306998", size=1.5, alpha=0.9)
+    # Data points
+    + geom_point(aes(x="x", y="y"), data=df, color="#306998", fill="#FFD43B", size=4, stroke=1.5)
+    # Hour labels
+    + geom_text(aes(x="x", y="y", label="label"), data=label_df, size=14, color="#333333")
+    # Radius value labels
+    + geom_text(aes(x="x", y="y", label="label"), data=radius_label_df, size=10, color="#666666", ha="left")
+    # Equal coordinate system for proper circle
+    + coord_fixed(ratio=1)
+    # Axis scaling with padding
+    + scale_x_continuous(limits=(-140, 140))
+    + scale_y_continuous(limits=(-140, 140))
+    # Title
+    + labs(title="Hourly Activity Levels · polar-basic · plotnine · pyplots.ai")
+    # Clean polar-style theme
+    + theme(
+        figure_size=(12, 12),
+        plot_title=element_text(size=24, ha="center"),
+        axis_title=element_blank(),
+        axis_text=element_blank(),
+        axis_ticks=element_blank(),
+        axis_line=element_blank(),
+        panel_grid_major=element_blank(),
+        panel_grid_minor=element_blank(),
+        panel_background=element_blank(),
+        plot_background=element_blank(),
+    )
+)
+
+# Save
+plot.save("plot.png", dpi=300)

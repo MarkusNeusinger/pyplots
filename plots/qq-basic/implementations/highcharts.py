@@ -1,10 +1,9 @@
 """ pyplots.ai
 qq-basic: Basic Q-Q Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Library: highcharts unknown | Python 3.13.11
+Quality: 90/100 | Created: 2025-12-23
 """
 
-import math
 import tempfile
 import time
 import urllib.request
@@ -15,22 +14,9 @@ from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
 from highcharts_core.options.series.area import LineSeries
 from highcharts_core.options.series.scatter import ScatterSeries
+from scipy.stats import norm
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-
-
-# Inverse standard normal CDF approximation (Abramowitz & Stegun)
-def norm_ppf(p):
-    """Approximate inverse of standard normal CDF."""
-    if p <= 0 or p >= 1:
-        return float("inf") if p >= 1 else float("-inf")
-    # Rational approximation for central region
-    if p < 0.5:
-        return -norm_ppf(1 - p)
-    t = math.sqrt(-2 * math.log(1 - p))
-    c0, c1, c2 = 2.515517, 0.802853, 0.010328
-    d1, d2, d3 = 1.432788, 0.189269, 0.001308
-    return t - (c0 + c1 * t + c2 * t * t) / (1 + d1 * t + d2 * t * t + d3 * t * t * t)
 
 
 # Data - generate sample with mix of normal + slight skewness to show Q-Q characteristics
@@ -47,9 +33,8 @@ np.random.shuffle(sample)
 
 # Calculate Q-Q values
 sample_sorted = np.sort(sample)
-# Theoretical quantiles from standard normal, scaled to match sample
 n_points = len(sample_sorted)
-theoretical_quantiles = np.array([norm_ppf((i + 0.5) / n_points) for i in range(n_points)])
+theoretical_quantiles = norm.ppf((np.arange(n_points) + 0.5) / n_points)
 # Scale theoretical quantiles to sample scale
 sample_mean = np.mean(sample)
 sample_std = np.std(sample)
@@ -69,7 +54,8 @@ chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "marginBottom": 150,
+    "marginBottom": 200,
+    "spacingBottom": 30,
 }
 
 # Title (required format: spec-id · library · pyplots.ai)
@@ -125,7 +111,7 @@ chart.add_series(line_series)
 # Q-Q scatter points
 scatter_series = ScatterSeries()
 scatter_series.data = [[float(t), float(s)] for t, s in zip(theoretical_scaled, sample_sorted, strict=True)]
-scatter_series.name = "Sample Data"
+scatter_series.name = "Sample Quantiles (N=100)"
 scatter_series.color = "rgba(48, 105, 152, 0.7)"  # Python Blue with alpha
 scatter_series.marker = {"radius": 18, "symbol": "circle"}
 

@@ -1,0 +1,27 @@
+# bar-stacked: Stacked Bar Chart
+
+## Description
+
+A stacked bar chart that displays multiple data series stacked on top of each other within each category, showing both individual component values and their cumulative totals. This visualization excels at revealing part-to-whole relationships while maintaining the ability to compare totals across categories. Stacked bar charts are particularly effective for composition analysis, where understanding how different components contribute to a whole is as important as comparing totals.
+
+## Applications
+
+- Analyzing budget allocations across departments showing expense categories as stacked components
+- Visualizing revenue composition over time with different product lines or regions stacked
+- Displaying survey responses where multiple answer options are stacked to show total respondents per question
+
+## Data
+
+- `category` (categorical) - Labels for each bar on the x-axis (e.g., months, regions, products)
+- `component` (categorical) - The different series being stacked (creates the segments within each bar)
+- `value` (numeric) - Size of each segment representing the measured quantity
+- Size: 3-10 categories with 2-6 stacked components recommended for readability
+- Example: Monthly sales by product category, expense breakdown by department, energy consumption by source
+
+## Notes
+
+- Use distinct, harmonious colors for each stacked component with a clear legend
+- Consider adding total value labels above each complete stack
+- Order components consistently across all bars (largest at bottom or by logical grouping)
+- Ensure adequate spacing between bars for visual clarity
+- For precise segment comparisons, consider using a grouped bar chart instead

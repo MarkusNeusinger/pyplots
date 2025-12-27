@@ -1,7 +1,7 @@
 """ pyplots.ai
 histogram-basic: Basic Histogram
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-13
+Quality: 94/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -20,8 +20,8 @@ fig, ax = plt.subplots(figsize=(16, 9))
 sns.histplot(values, bins=25, color="#306998", edgecolor="white", linewidth=1.5, alpha=0.85, ax=ax)
 
 # Labels and styling (scaled for 4800x2700)
-ax.set_xlabel("Test Score", fontsize=20)
-ax.set_ylabel("Frequency", fontsize=20)
+ax.set_xlabel("Test Score (points)", fontsize=20)
+ax.set_ylabel("Frequency (count)", fontsize=20)
 ax.set_title("histogram-basic · seaborn · pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
 ax.grid(True, alpha=0.3, linestyle="--", axis="y")

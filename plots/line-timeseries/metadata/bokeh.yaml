@@ -1,0 +1,25 @@
+library: bokeh
+specification_id: line-timeseries
+created: '2025-12-26T08:30:44Z'
+updated: '2025-12-26T08:33:00Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20519152409
+issue: 2006
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-timeseries/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-timeseries/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-timeseries/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent text sizing for 4800x2700 canvas - all text is highly readable
+  - Smart date formatting with automatic month labels and rotation prevents overlap
+  - Realistic stock price simulation with trend, seasonality, and noise components
+  - Uses Bokeh-specific ColumnDataSource pattern correctly
+  - Generates both static PNG and interactive HTML output
+  - Clean, well-organized code structure following KISS principles
+  - Good use of grid styling with dashed lines and appropriate alpha
+  weaknesses:
+  - Legend text size (28pt) appears small relative to other text elements on the canvas
+  - HoverTool adds code complexity but provides no benefit in the static PNG output

@@ -1,0 +1,29 @@
+# Specification-level metadata for box-notched
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: box-notched
+title: Notched Box Plot
+
+# Specification tracking
+created: 2025-12-25T09:01:18Z
+updated: null
+issue: 2019
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - box
+    - distribution
+  data_type:
+    - numeric
+    - categorical
+  domain:
+    - general
+    - statistics
+    - research
+  features:
+    - notched
+    - comparison
+    - confidence-interval

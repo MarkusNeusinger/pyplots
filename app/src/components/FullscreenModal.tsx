@@ -13,6 +13,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import type { PlotImage } from '../types';
 import { API_URL } from '../constants';
+import { useCopyCode } from '../hooks';
 
 interface FullscreenModalProps {
   image: PlotImage | null;
@@ -24,17 +25,23 @@ interface FullscreenModalProps {
 export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: FullscreenModalProps) {
   const [showCode, setShowCode] = useState(false);
   const [blinkCodeButton, setBlinkCodeButton] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
+
+  const { copied, copyToClipboard, reset: resetCopied } = useCopyCode({
+    onCopy: () => {
+      const specId = selectedSpec || image?.spec_id;
+      onTrackEvent?.('copy_code', { spec: specId, library: image?.library, method: 'modal' });
+    },
+  });
 
   // Reset state when modal opens
   const handleOpen = useCallback(() => {
     setShowCode(false);
     setBlinkCodeButton(true);
-    setCopied(false);
+    resetCopied();
     setDownloaded(false);
     setTimeout(() => setBlinkCodeButton(false), 1000);
-  }, []);
+  }, [resetCopied]);
 
   // Memoize syntax-highlighted code to avoid expensive re-renders
   const highlightedCode = useMemo(() => {
@@ -56,20 +63,22 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
   }, [image?.code]);
 
   // Copy code to clipboard
-  const copyCodeToClipboard = useCallback(() => {
+  const handleCopyCode = useCallback(() => {
     if (image?.code) {
-      navigator.clipboard.writeText(image.code);
-      setCopied(true);
-      const specId = selectedSpec || image.spec_id;
-      onTrackEvent?.('copy_code', { spec: specId, library: image.library, method: 'button' });
-      setTimeout(() => setCopied(false), 2000);
+      copyToClipboard(image.code);
     }
-  }, [image?.code, image?.library, image?.spec_id, onTrackEvent, selectedSpec]);
+  }, [image?.code, copyToClipboard]);
 
-  // Track native copy events (Ctrl+C, Cmd+C, right-click copy)
+  // Track native copy events (Ctrl+C, Cmd+C)
   const handleNativeCopy = useCallback(() => {
     const specId = selectedSpec || image?.spec_id;
     onTrackEvent?.('copy_code', { spec: specId, library: image?.library, method: 'native' });
+  }, [onTrackEvent, selectedSpec, image?.library, image?.spec_id]);
+
+  // Track contextmenu (right-click) - user may copy from context menu
+  const handleContextMenu = useCallback(() => {
+    const specId = selectedSpec || image?.spec_id;
+    onTrackEvent?.('copy_code', { spec: specId, library: image?.library, method: 'contextmenu' });
   }, [onTrackEvent, selectedSpec, image?.library, image?.spec_id]);
 
   // Download image via backend proxy
@@ -190,7 +199,7 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
                     plot
                   </Box>
                   <Box
-                    onClick={copyCodeToClipboard}
+                    onClick={handleCopyCode}
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
@@ -209,6 +218,7 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
                 </Box>
                 <Box
                   onCopy={handleNativeCopy}
+                  onContextMenu={handleContextMenu}
                   sx={{
                     height: '100%',
                     overflow: 'auto',

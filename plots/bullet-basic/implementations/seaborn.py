@@ -1,92 +1,109 @@
 """ pyplots.ai
 bullet-basic: Basic Bullet Chart
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-16
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 
 
-# Set seaborn style for clean aesthetics
-sns.set_style("whitegrid")
+# Data - Multiple KPIs with actual values, targets, and qualitative ranges
+np.random.seed(42)
 
-# Data - Q3 Sales KPIs with actuals, targets, and qualitative ranges (normalized 0-100)
-# Each metric shows performance against goals with poor/satisfactory/good bands
-metrics = [
-    {"label": "Revenue", "actual": 92, "target": 100, "ranges": [50, 75, 100]},
-    {"label": "Profit Margin", "actual": 68, "target": 80, "ranges": [50, 75, 100]},
-    {"label": "Customer Acquisition", "actual": 85, "target": 90, "ranges": [50, 75, 100]},
-    {"label": "Satisfaction Score", "actual": 78, "target": 85, "ranges": [50, 75, 100]},
-    {"label": "Order Fulfillment", "actual": 95, "target": 90, "ranges": [50, 75, 100]},
+metrics = ["Revenue", "Customer\nSatisfaction", "Efficiency", "Quality\nScore"]
+actuals = [78, 85, 62, 91]
+targets = [90, 80, 75, 85]
+# Ranges define thresholds for qualitative bands (poor/satisfactory/good)
+ranges_list = [
+    [50, 75, 100],  # Revenue
+    [60, 80, 100],  # Customer Satisfaction
+    [40, 60, 100],  # Efficiency
+    [70, 85, 100],  # Quality Score
 ]
-
-# Colors for qualitative ranges (grayscale from dark to light)
-range_colors = ["#c0c0c0", "#d9d9d9", "#ececec"]
 
 # Create figure
 fig, ax = plt.subplots(figsize=(16, 9))
+sns.set_style("whitegrid")
 
-# Bar heights and spacing
-bar_height = 0.5
-gap = 1.2
-y_positions = np.arange(len(metrics)) * gap
+# Qualitative range colors (grayscale as per specification - dark to light for poor to good)
+range_colors = ["#e0e0e0", "#bdbdbd", "#8c8c8c"]
 
-for i, metric in enumerate(metrics):
-    y = y_positions[i]
-    ranges = metric["ranges"]
-    actual = metric["actual"]
-    target = metric["target"]
+# Bar dimensions
+range_height = 0.7
+actual_height = 0.35
+n_metrics = len(metrics)
+y_positions = np.arange(n_metrics)
 
-    # Draw qualitative range bands (from largest to smallest so they layer correctly)
-    for end, color in zip(reversed(ranges), range_colors, strict=False):
-        ax.barh(y, end, height=bar_height * 1.6, color=color, edgecolor="none", zorder=1)
+# Draw qualitative ranges as background bands for each metric
+for y_pos, ranges in zip(y_positions, ranges_list, strict=True):
+    prev = 0
+    for end, color in zip(ranges, range_colors, strict=True):
+        width = end - prev
+        ax.barh(y_pos, width, left=prev, height=range_height, color=color, edgecolor="none", zorder=1)
+        prev = end
 
-    # Draw actual value bar (primary measure)
-    ax.barh(y, actual, height=bar_height * 0.6, color="#306998", edgecolor="none", zorder=2)
+# Create DataFrame for seaborn barplot
+df = pd.DataFrame({"Metric": metrics, "Actual": actuals})
 
-    # Draw target marker (vertical line)
-    ax.plot([target, target], [y - bar_height * 0.5, y + bar_height * 0.5], color="#1a1a1a", linewidth=4, zorder=3)
+# Draw actual value bars using seaborn
+sns.barplot(
+    data=df,
+    x="Actual",
+    y="Metric",
+    color="#306998",  # Python Blue
+    width=actual_height,
+    ax=ax,
+    zorder=3,
+    edgecolor="#1e4d6b",
+    linewidth=1.5,
+)
 
-    # Add actual value as text label
-    ax.text(
-        actual + 2, y, f"{actual}%", va="center", ha="left", fontsize=16, fontweight="bold", color="#306998", zorder=4
+# Draw target markers as vertical lines
+for i, target in enumerate(targets):
+    ax.plot(
+        [target, target],
+        [i - range_height / 2 + 0.02, i + range_height / 2 - 0.02],
+        color="#1a1a1a",
+        linewidth=5,
+        zorder=4,
+        solid_capstyle="butt",
     )
 
-# Set y-axis labels (metric names)
-ax.set_yticks(y_positions)
-ax.set_yticklabels([m["label"] for m in metrics], fontsize=18)
+# Add actual value labels at end of bars
+for i, (actual, target) in enumerate(zip(actuals, targets, strict=True)):
+    label_x = max(actual, target) + 2
+    ax.text(label_x, i, f"{actual}%", va="center", ha="left", fontsize=18, fontweight="bold", color="#306998")
 
-# Configure axes
-ax.set_xlabel("Performance (% of Goal)", fontsize=20)
+# Styling
+ax.set_xlim(0, 115)
+ax.set_xlabel("Performance (%)", fontsize=20)
 ax.set_ylabel("")
-ax.tick_params(axis="x", labelsize=16)
-ax.set_xlim(0, 110)
+ax.set_title("bullet-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
+ax.tick_params(axis="both", labelsize=16)
+ax.tick_params(axis="y", length=0)
 
-# Invert y-axis so first metric appears at top
-ax.invert_yaxis()
-
-# Title
-ax.set_title("Q3 Sales KPIs · bullet-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
+# Customize grid - subtle vertical lines only
+ax.xaxis.grid(True, alpha=0.3, linestyle="--", zorder=0)
+ax.yaxis.grid(False)
 
 # Create legend
 legend_elements = [
-    mpatches.Patch(facecolor="#306998", label="Actual"),
-    mpatches.Patch(facecolor="none", edgecolor="#1a1a1a", linewidth=3, label="Target"),
-    mpatches.Patch(facecolor="#ececec", label="Good (75-100%)"),
-    mpatches.Patch(facecolor="#d9d9d9", label="Satisfactory (50-75%)"),
-    mpatches.Patch(facecolor="#c0c0c0", label="Poor (0-50%)"),
+    mpatches.Patch(facecolor=range_colors[0], label="Poor"),
+    mpatches.Patch(facecolor=range_colors[1], label="Satisfactory"),
+    mpatches.Patch(facecolor=range_colors[2], label="Good"),
+    mpatches.Patch(facecolor="#306998", edgecolor="#1e4d6b", linewidth=1.5, label="Actual"),
+    plt.Line2D([0], [0], color="#1a1a1a", linewidth=5, label="Target"),
 ]
-ax.legend(handles=legend_elements, loc="lower right", fontsize=14, framealpha=0.9, edgecolor="none")
-
-# Subtle grid (only x-axis)
-ax.grid(axis="x", alpha=0.3, linestyle="--")
-ax.grid(axis="y", visible=False)
+ax.legend(handles=legend_elements, loc="upper right", fontsize=14, framealpha=0.95)
 
 # Remove spines for cleaner look
-sns.despine(left=True, bottom=False)
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.spines["left"].set_visible(False)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

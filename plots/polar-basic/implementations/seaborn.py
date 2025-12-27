@@ -1,7 +1,7 @@
 """ pyplots.ai
 polar-basic: Basic Polar Chart
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-14
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -9,58 +9,66 @@ import numpy as np
 import seaborn as sns
 
 
-# Set seaborn style for aesthetics
+# Set seaborn style for consistent aesthetics
 sns.set_theme(style="whitegrid")
+sns.set_context("talk", font_scale=1.2)
 
-# Data: Hourly activity pattern (24-hour cycle)
+# Data: Hourly website traffic pattern (24-hour cycle)
 np.random.seed(42)
+hours = np.arange(0, 24)
+theta = hours * (2 * np.pi / 24)  # Convert hours to radians
 
-# Generate hourly data points (activity levels throughout the day)
-hours = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23])
+# Realistic website traffic pattern: peaks in morning (9-11) and evening (19-21)
+base_traffic = 100
+morning_peak = 80 * np.exp(-0.5 * ((hours - 10) / 2) ** 2)
+evening_peak = 100 * np.exp(-0.5 * ((hours - 20) / 2.5) ** 2)
+noise = np.random.normal(0, 10, 24)
+traffic = base_traffic + morning_peak + evening_peak + noise
+traffic = np.clip(traffic, 20, None)  # Ensure positive values
 
-# Activity levels with realistic daily pattern (low at night, peak in afternoon)
-activity = np.array([15, 10, 8, 5, 5, 8, 25, 55, 75, 80, 70, 65, 60, 70, 85, 90, 88, 80, 70, 55, 45, 35, 25, 18])
+# Create polar plot (square format for radial symmetry)
+fig, ax = plt.subplots(figsize=(12, 12), subplot_kw={"projection": "polar"})
 
-# Add some variation with additional data points
-n_extra = 24
-extra_hours = np.random.uniform(0, 24, n_extra)
-extra_activity = 40 + 30 * np.sin((extra_hours - 6) * np.pi / 12) + np.random.randn(n_extra) * 15
-extra_activity = np.clip(extra_activity, 5, 100)
+# Create color palette using seaborn
+colors = sns.color_palette("viridis", n_colors=24)
 
-# Combine all data
-all_hours = np.concatenate([hours, extra_hours])
-all_activity = np.concatenate([activity, extra_activity])
+# Use seaborn's scatterplot on polar axis
+# Plot each point with color gradient based on traffic value
+scatter = ax.scatter(
+    theta, traffic, c=traffic, cmap="viridis", s=300, alpha=0.8, edgecolors="#306998", linewidths=2, zorder=5
+)
 
-# Convert hours to radians (clock-like: 0h at top, clockwise)
-theta = (all_hours / 24) * 2 * np.pi
+# Connect points with a line for continuity
+ax.plot(np.append(theta, theta[0]), np.append(traffic, traffic[0]), color="#306998", linewidth=2.5, alpha=0.7, zorder=4)
 
-# Create polar plot (figsize 16x9 at dpi=300 gives 4800x2700)
-fig = plt.figure(figsize=(16, 9))
-ax = fig.add_subplot(111, polar=True)
+# Fill area under the curve with seaborn blue
+ax.fill(np.append(theta, theta[0]), np.append(traffic, traffic[0]), color="#306998", alpha=0.15, zorder=3)
 
-# Set clock-like orientation: 0 at top, clockwise
-ax.set_theta_zero_location("N")
-ax.set_theta_direction(-1)
+# Styling
+ax.set_title("Website Traffic by Hour · polar-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
 
-# Plot data points using scatter with seaborn styling
-ax.scatter(theta, all_activity, c="#306998", s=200, alpha=0.7, edgecolors="white", linewidths=1.5)
+# Set theta labels (hours of day)
+ax.set_xticks(np.linspace(0, 2 * np.pi, 24, endpoint=False))
+hour_labels = [f"{h:02d}:00" for h in range(24)]
+ax.set_xticklabels(hour_labels, fontsize=14)
 
-# Configure angular axis (hours) at standard clock positions
-hour_labels = ["0h", "3h", "6h", "9h", "12h", "15h", "18h", "21h"]
-hour_angles = [(h / 24) * 2 * np.pi for h in [0, 3, 6, 9, 12, 15, 18, 21]]
-ax.set_xticks(hour_angles)
-ax.set_xticklabels(hour_labels, fontsize=18)
+# Set radial ticks and label
+ax.set_ylim(0, max(traffic) * 1.15)
+ax.set_ylabel("Visitors", fontsize=18, labelpad=35)
+ax.yaxis.set_label_position("right")
+ax.tick_params(axis="y", labelsize=14)
 
-# Configure radial axis (activity level)
-ax.set_ylim(0, 110)
-ax.set_yticks([25, 50, 75, 100])
-ax.set_yticklabels(["25", "50", "75", "100"], fontsize=14, color="gray")
-
-# Subtle gridlines
+# Configure grid with seaborn-appropriate styling
 ax.grid(True, alpha=0.3, linestyle="--")
 
-# Title
-ax.set_title("polar-basic · seaborn · pyplots.ai", fontsize=24, pad=20)
+# Add colorbar for traffic intensity
+cbar = plt.colorbar(scatter, ax=ax, pad=0.12, shrink=0.8)
+cbar.set_label("Traffic Volume", fontsize=16)
+cbar.ax.tick_params(labelsize=14)
+
+# Start at top (12 o'clock position for time-based data)
+ax.set_theta_offset(np.pi / 2)
+ax.set_theta_direction(-1)  # Clockwise
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300)
+plt.savefig("plot.png", dpi=300, bbox_inches="tight")

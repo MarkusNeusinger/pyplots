@@ -1,0 +1,25 @@
+library: highcharts
+specification_id: bar-stacked-percent
+created: '2025-12-25T22:59:12Z'
+updated: '2025-12-25T23:01:24Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20511964980
+issue: 2008
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/highcharts/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent colorblind-safe color palette with good contrast between segments
+  - Clear percentage labels within each segment making exact values readable
+  - Professional title format and informative subtitle
+  - Well-structured legend placement at bottom
+  - Realistic market share scenario that clearly demonstrates the 100% stacking concept
+  - Good use of Highcharts native percent stacking feature
+  weaknesses:
+  - Y-axis has too many tick marks (every 2%) creating visual clutter; consider using
+    10% or 20% intervals
+  - Grid could be more subtle with wider spacing for cleaner appearance

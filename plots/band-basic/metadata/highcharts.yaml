@@ -1,17 +1,29 @@
 library: highcharts
 specification_id: band-basic
-created: 2025-12-17 02:25:47+00:00
-updated: 2025-12-17 02:25:47+00:00
+created: '2025-12-23T09:09:27Z'
+updated: '2025-12-23T09:11:45Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20289429644
-issue: 979
+workflow_run: 20456388074
+issue: 0
 python_version: 3.13.11
-library_version: 1.10.3
+library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/band-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/band-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/band-basic/highcharts/plot.html
-quality_score: 94
+quality_score: 92
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent use of Highcharts arearange series for band visualization with proper
+    upper/lower bounds
+  - Very clear visual hierarchy with contrasting band (blue, 0.3 alpha) and center
+    line (yellow, solid)
+  - Heteroscedastic uncertainty pattern demonstrates the value of band plots effectively
+  - Proper zIndex layering ensures center line renders on top of band
+  - Large, readable text sizes throughout (64px title, 48px axis labels, 36px tick
+    labels)
+  - Clean Selenium-based PNG export with proper image cropping
+  weaknesses:
+  - Axis labels lack units (e.g., "Time (s)" or "Value (units)" would be more informative)
+  - Uses raw dictionary configuration instead of highcharts-core Python library classes
+    as shown in library rules
+  - Legend could be slightly larger for the 4800x2700 canvas size

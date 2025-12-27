@@ -1,40 +1,48 @@
 """ pyplots.ai
 stem-basic: Basic Stem Plot
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-16
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 
 
-# Set seaborn style for aesthetics
-sns.set_theme(style="whitegrid")
-
-# Data - Discrete signal samples (simulating a damped oscillation)
+# Data - Discrete signal samples (damped sinusoidal impulse response)
 np.random.seed(42)
-x = np.arange(0, 30)
-y = np.exp(-x / 10) * np.cos(x * 0.8) + np.random.randn(30) * 0.05
+n_samples = 30
+x = np.arange(n_samples)
+y = np.exp(-0.1 * x) * np.sin(0.5 * x) * 2.5
 
-# Create plot (4800x2700 px)
+# Create DataFrame for seaborn
+df = pd.DataFrame({"Sample Index": x, "Amplitude": y})
+
+# Plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Stem plot - seaborn uses matplotlib for stem plots
-# Style stems with Python Blue color scheme
-markerline, stemlines, baseline = ax.stem(x, y, basefmt="k-")
-plt.setp(stemlines, linewidth=2, color="#306998", alpha=0.8)
-plt.setp(markerline, markersize=12, color="#306998", markeredgecolor="white", markeredgewidth=2)
-plt.setp(baseline, linewidth=2, color="#333333")
+# Draw stems (thin vertical lines from baseline y=0 to data values)
+ax.vlines(x=df["Sample Index"], ymin=0, ymax=df["Amplitude"], color="#306998", linewidth=2.5, alpha=0.8)
 
-# Labels and styling (scaled font sizes for 4800x2700)
-ax.set_xlabel("Sample Index", fontsize=20)
+# Draw markers at top of stems using seaborn
+sns.scatterplot(
+    data=df, x="Sample Index", y="Amplitude", s=300, color="#FFD43B", edgecolor="#306998", linewidth=2, ax=ax, zorder=3
+)
+
+# Draw baseline at y=0
+ax.axhline(y=0, color="#306998", linewidth=1.5, alpha=0.5)
+
+# Styling
+ax.set_xlabel("Sample Index (n)", fontsize=20)
 ax.set_ylabel("Amplitude", fontsize=20)
 ax.set_title("stem-basic · seaborn · pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
-
-# Customize grid to be more subtle
 ax.grid(True, alpha=0.3, linestyle="--")
+
+# Remove top and right spines for cleaner look
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

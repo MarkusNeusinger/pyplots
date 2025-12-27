@@ -1,0 +1,29 @@
+library: plotly
+specification_id: scatter-regression-polynomial
+created: '2025-12-25T17:13:20Z'
+updated: '2025-12-25T17:15:34Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20508355467
+issue: 2028
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-polynomial/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-polynomial/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-polynomial/plotly/plot.html
+quality_score: 93
+review:
+  strengths:
+  - Excellent real-world example of diminishing returns in advertising economics
+  - R² value and polynomial equation prominently displayed with clean annotation styling
+  - Professional color scheme with good contrast between scatter points and regression
+    curve
+  - Proper use of plotly_white template for clean, publication-quality appearance
+  - Outputs both static PNG and interactive HTML for maximum utility
+  - All text elements are appropriately sized and readable
+  weaknesses:
+  - Marker size (14) is slightly small for 80 data points - could be increased to
+    18-20 for better visibility
+  - Does not use plotly native trendline functionality (px.scatter with trendline
+    parameter)
+  - No confidence band around the regression curve (optional per spec but would enhance
+    visualization)

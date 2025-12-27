@@ -1,0 +1,28 @@
+library: seaborn
+specification_id: area-stacked
+created: '2025-12-25T17:39:22Z'
+updated: '2025-12-25T17:41:36Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20508665867
+issue: 2022
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent visual design with harmonious color palette including Python blue as
+    primary color
+  - Clean, readable code following KISS principles with good data generation
+  - Proper title format and comprehensive axis labeling with units
+  - Realistic business scenario with seasonal patterns and growth trend
+  - Good use of date formatting with rotated labels to prevent overlap
+  weaknesses:
+  - Does not use distinctive seaborn plot functions - stackplot is a matplotlib function,
+    only seaborn styling is applied
+  - Legend position overlaps with data area - could be moved outside or use upper
+    right
+  - Data series all follow similar sinusoidal patterns - more variety in trends would
+    better demonstrate stacked area features

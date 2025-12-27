@@ -1,0 +1,33 @@
+# Specification-level metadata for precision-recall
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: precision-recall
+title: Precision-Recall Curve
+
+# Specification tracking
+created: 2025-12-26T17:28:06Z
+updated: null
+issue: 2274
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - line
+    - curve
+    - evaluation
+  data_type:
+    - numeric
+    - binary
+    - probability
+  domain:
+    - machine-learning
+    - statistics
+    - healthcare
+    - information-retrieval
+  features:
+    - basic
+    - classification
+    - model-evaluation
+    - imbalanced-data

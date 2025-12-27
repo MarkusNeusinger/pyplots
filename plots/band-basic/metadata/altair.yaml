@@ -1,17 +1,27 @@
 library: altair
 specification_id: band-basic
-created: 2025-12-17 02:25:20+00:00
-updated: 2025-12-17 02:25:20+00:00
+created: '2025-12-23T09:10:02Z'
+updated: '2025-12-23T09:12:07Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20289429561
-issue: 979
+workflow_run: 20456385370
+issue: 0
 python_version: 3.13.11
 library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/band-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/band-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/band-basic/altair/plot.html
-quality_score: 95
+quality_score: 92
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent use of Altair declarative grammar with mark_area and y/y2 encoding for
+    the band
+  - Clean layered composition combining band and line charts
+  - Realistic uncertainty growth pattern (band widens over time) demonstrates practical
+    use case
+  - Proper 95% confidence interval calculation using 1.96 * uncertainty
+  - Good visual hierarchy with semi-transparent band (opacity=0.3) and prominent center
+    line (strokeWidth=4)
+  - Correct output format with both PNG and HTML for Altair
+  weaknesses:
+  - Y-axis label Signal Amplitude lacks units (should include units like mV)
+  - No legend or annotation explaining what the band represents (e.g. 95% CI)

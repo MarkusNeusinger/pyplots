@@ -1,0 +1,28 @@
+library: highcharts
+specification_id: calibration-curve
+created: '2025-12-26T19:37:55Z'
+updated: '2025-12-26T19:45:04Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20528204647
+issue: 0
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of calibration curve with all required elements (diagonal
+    reference, 10 bins, metrics)
+  - Both Brier Score and ECE metrics are calculated correctly and displayed prominently
+    in subtitle
+  - Clean S-curve visualization clearly demonstrates classifier overconfidence behavior
+  - Proper use of colorblind-safe Python Blue (#306998) color scheme
+  - Well-structured code with clear separation of data generation, calculation, and
+    visualization
+  weaknesses:
+  - Legend positioning creates slight visual imbalance with empty space on right side
+    of plot
+  - Interactive HTML version does not leverage Highcharts tooltips to show bin counts
+    or additional information on hover

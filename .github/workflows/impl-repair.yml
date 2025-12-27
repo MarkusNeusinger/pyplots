@@ -79,7 +79,7 @@ jobs:
         run: |
           uv venv .venv
           source .venv/bin/activate
-          uv pip install ${{ steps.deps.outputs.deps }} pandas>=2.2.0 ruff
+          uv pip install ${{ steps.deps.outputs.deps }} pandas>=2.2.0 ruff Pillow>=10.0.0
 
       - name: Setup Chrome for Highcharts
         if: inputs.library == 'highcharts'
@@ -122,7 +122,11 @@ jobs:
             This is **repair attempt ${{ inputs.attempt }}/3**. The previous implementation was rejected.
 
             ### Step 1: Read the AI review feedback
-            Read `/tmp/ai_feedback.md` to understand what needs to be fixed.
+            Read both sources to understand what needs to be fixed:
+            1. `/tmp/ai_feedback.md` - Full review from PR comments
+            2. `plots/${{ inputs.specification_id }}/metadata/${{ inputs.library }}.yaml` - Look at:
+               - `review.strengths` (keep these aspects!)
+               - `review.weaknesses` (fix these problems - decide HOW yourself)
 
             ### Step 2: Read reference files
             1. `prompts/library/${{ inputs.library }}.md` - Library-specific rules
@@ -183,7 +187,11 @@ jobs:
             This is **repair attempt ${{ inputs.attempt }}/3**. The previous implementation was rejected.
 
             ### Step 1: Read the AI review feedback
-            Read `/tmp/ai_feedback.md` to understand what needs to be fixed.
+            Read both sources to understand what needs to be fixed:
+            1. `/tmp/ai_feedback.md` - Full review from PR comments
+            2. `plots/${{ inputs.specification_id }}/metadata/${{ inputs.library }}.yaml` - Look at:
+               - `review.strengths` (keep these aspects!)
+               - `review.weaknesses` (fix these problems - decide HOW yourself)
 
             ### Step 2: Read reference files
             1. `prompts/library/${{ inputs.library }}.md` - Library-specific rules
@@ -230,6 +238,30 @@ jobs:
             ### Report result
             Print: `REPAIR_SUCCESS` or `REPAIR_FAILED: <reason>`
 
+      - name: Process repaired image
+        if: success()
+        env:
+          SPEC_ID: ${{ inputs.specification_id }}
+          LIBRARY: ${{ inputs.library }}
+        run: |
+          IMPL_DIR="plots/${SPEC_ID}/implementations"
+
+          if [ ! -f "$IMPL_DIR/plot.png" ]; then
+            echo "::warning::No plot.png found after repair"
+            exit 0
+          fi
+
+          source .venv/bin/activate
+
+          # Process PNG: optimize and create thumbnail
+          python -m core.images process \
+            "$IMPL_DIR/plot.png" \
+            "$IMPL_DIR/plot.png" \
+            "$IMPL_DIR/plot_thumb.png"
+
+          echo "::notice::Processed images: optimized + thumbnail created"
+          ls -la "$IMPL_DIR/"
+
       - name: Upload repaired plot to GCS staging
         if: success()
         env:
@@ -251,6 +283,11 @@ jobs:
           if [ -f "$IMPL_DIR/plot.png" ]; then
             gsutil cp "$IMPL_DIR/plot.png" "${STAGING_PATH}/plot.png"
             gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot.png" 2>/dev/null || true
+          fi
+
+          if [ -f "$IMPL_DIR/plot_thumb.png" ]; then
+            gsutil cp "$IMPL_DIR/plot_thumb.png" "${STAGING_PATH}/plot_thumb.png"
+            gsutil acl ch -u AllUsers:R "${STAGING_PATH}/plot_thumb.png" 2>/dev/null || true
           fi
 
           if [ -f "$IMPL_DIR/plot.html" ]; then
@@ -276,6 +313,10 @@ jobs:
       - name: Re-trigger review
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUM: ${{ inputs.pr_number }}
         run: |
-          gh workflow run impl-review.yml -f pr_number="${{ inputs.pr_number }}"
-          echo "::notice::Triggered impl-review.yml for PR #${{ inputs.pr_number }}"
+          # Use repository_dispatch as workaround for workflow_dispatch caching issue
+          gh api repos/${{ github.repository }}/dispatches \
+            -f event_type=review-pr \
+            -f "client_payload[pr_number]=$PR_NUM"
+          echo "::notice::Triggered impl-review.yml via repository_dispatch for PR #$PR_NUM"

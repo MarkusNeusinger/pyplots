@@ -1,0 +1,26 @@
+library: bokeh
+specification_id: heatmap-clustered
+created: '2025-12-26T15:43:08Z'
+updated: '2025-12-26T15:53:17Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20524969738
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of hierarchical clustering with dendrograms on both axes
+  - Clean dendrogram rendering with proper coordinate transformation
+  - Realistic gene expression dataset with biologically meaningful patterns (tumor
+    vs normal)
+  - Good use of Bokeh layout system to compose multiple figures
+  - Proper diverging colormap (RdBu11) centered at zero for expression data
+  - Clear visual separation between sample clusters matches biological expectations
+  weaknesses:
+  - Missing hover tooltips showing gene name, sample name, and exact value (key Bokeh
+    interactive feature)
+  - Colorbar title is rotated 90 degrees making it harder to read

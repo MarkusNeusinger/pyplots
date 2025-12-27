@@ -1,7 +1,7 @@
 """ pyplots.ai
 sudoku-basic: Basic Sudoku Grid
-Library: matplotlib unknown | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-22
+Library: matplotlib 3.10.8 | Python 3.13.11
+Quality: 94/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -24,17 +24,17 @@ grid = np.array(
     ]
 )
 
-# Create figure (4800x2700 px at 300 dpi)
-fig, ax = plt.subplots(figsize=(16, 9))
+# Create figure (square format for symmetric grid, 3600x3600 px at 300 dpi)
+fig, ax = plt.subplots(figsize=(12, 12))
 
 # Set equal aspect ratio for square cells
 ax.set_aspect("equal")
 
-# Set axis limits with padding for the grid
-ax.set_xlim(-0.5, 9.5)
-ax.set_ylim(-0.5, 9.5)
+# Set axis limits
+ax.set_xlim(0, 9)
+ax.set_ylim(0, 9)
 
-# Draw cell backgrounds (white)
+# Draw white background for all cells
 for i in range(9):
     for j in range(9):
         rect = plt.Rectangle((j, 8 - i), 1, 1, facecolor="white", edgecolor="none")
@@ -62,7 +62,7 @@ for i in range(9):
                 j + 0.5,
                 8 - i + 0.5,
                 str(value),
-                fontsize=36,
+                fontsize=42,
                 fontweight="bold",
                 color="black",
                 ha="center",
@@ -79,7 +79,7 @@ ax.spines["bottom"].set_visible(False)
 ax.spines["left"].set_visible(False)
 
 # Add title
-ax.set_title("sudoku-basic · matplotlib · pyplots.ai", fontsize=28, fontweight="bold", color="black", pad=20)
+ax.set_title("sudoku-basic · matplotlib · pyplots.ai", fontsize=32, fontweight="bold", color="black", pad=30)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")

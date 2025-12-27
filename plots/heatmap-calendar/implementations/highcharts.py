@@ -1,7 +1,7 @@
 """ pyplots.ai
 heatmap-calendar: Basic Calendar Heatmap
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Library: highcharts unknown | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import tempfile
@@ -34,7 +34,7 @@ for d in dates:
         base = np.random.choice(
             [0, 1, 2, 3, 4, 5, 6, 8, 10, 15], p=[0.1, 0.15, 0.2, 0.15, 0.1, 0.1, 0.08, 0.07, 0.03, 0.02]
         )
-    # Add some seasonal variation (more active in spring/fall)
+    # Add seasonal variation (more active in spring/fall)
     month = d.month
     if month in [3, 4, 5, 9, 10, 11]:
         base = int(base * 1.3)
@@ -42,13 +42,9 @@ for d in dates:
 
 # Create data grouped by week for calendar heatmap
 # Highcharts heatmap: x = week number (0-52), y = day of week (0-6)
-# This creates a GitHub-style contribution graph
-
-# Calculate week offset for the first day of the year
 first_day_weekday = start_date.weekday()  # Monday = 0, Sunday = 6
 
 heatmap_data = []
-week_labels = []
 month_markers = []
 
 for d, v in zip(dates, values, strict=True):

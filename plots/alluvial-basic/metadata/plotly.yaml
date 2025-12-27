@@ -1,0 +1,29 @@
+library: plotly
+specification_id: alluvial-basic
+created: '2025-12-26T10:37:52Z'
+updated: '2025-12-26T10:40:11Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20520941774
+issue: 1878
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent alluvial/Sankey diagram implementation using Plotly go.Sankey
+  - Clear visualization of voter migration patterns across 4 election cycles (2012-2024)
+  - Consistent category colors across all time points with good transparency on flow
+    links
+  - Well-implemented custom hover templates showing detailed flow information
+  - Proper title format following spec-id · library · pyplots.ai convention
+  - Good use of annotations for year labels at top of each column
+  - Horizontal legend at bottom is clean and non-intrusive
+  - Realistic voter migration data with plausible transition patterns
+  weaknesses:
+  - Node labels on the bars are slightly small relative to the large canvas size -
+    could be increased for better readability
+  - The y-position ordering places Conservative at top but the visual shows it with
+    largest bar - consider if ordering by size would improve readability

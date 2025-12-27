@@ -1,17 +1,25 @@
 library: altair
 specification_id: bump-basic
-created: 2025-12-17 03:20:32+00:00
-updated: 2025-12-17 03:20:32+00:00
+created: '2025-12-23T09:18:27Z'
+updated: '2025-12-23T09:23:38Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20290405441
-issue: 982
+workflow_run: 20456609780
+issue: 0
 python_version: 3.13.11
 library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bump-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bump-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bump-basic/altair/plot.html
-quality_score: 95
+quality_score: 92
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent choice of Premier League standings as realistic bump chart scenario
+  - Proper Y-axis inversion (rank 1 at top) as specified
+  - Good use of layered charts combining lines and points for clarity
+  - Python Blue (#306998) used as primary color per pyplots convention
+  - Interactive HTML version with tooltips exported alongside PNG
+  - Clean declarative Altair syntax with proper encoding types (O, Q, N)
+  weaknesses:
+  - Brown and light gray colors for Man United and Tottenham could be more distinguishable
+    for accessibility
+  - Missing explicit reproducibility comment (data is deterministic but not annotated)

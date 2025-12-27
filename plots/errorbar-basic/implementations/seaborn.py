@@ -1,54 +1,60 @@
 """ pyplots.ai
 errorbar-basic: Basic Error Bar Plot
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 
 
-# Set seaborn style
-sns.set_theme(style="whitegrid")
-
-# Data - experimental measurements with associated uncertainties
+# Data - experimental measurements with error ranges
 np.random.seed(42)
 categories = ["Control", "Treatment A", "Treatment B", "Treatment C", "Treatment D", "Treatment E"]
-x = np.arange(len(categories))
-y = np.array([25.3, 38.7, 42.1, 35.8, 48.2, 31.5])  # Mean values
+means = [45.2, 52.8, 61.3, 48.7, 57.4, 43.1]
+errors = [4.5, 6.2, 5.8, 7.1, 4.9, 5.5]
 
-# Asymmetric errors: Treatment C and D have notably different lower/upper bounds
-asymmetric_lower = np.array([2.1, 3.5, 2.8, 6.5, 4.8, 2.5])
-asymmetric_upper = np.array([2.1, 3.5, 2.8, 2.8, 2.2, 2.5])
+df = pd.DataFrame({"Treatment": categories, "Response": means, "Error": errors})
 
-# Plot
+# Create plot
 fig, ax = plt.subplots(figsize=(16, 9))
+sns.set_style("whitegrid")
 
-ax.errorbar(
-    x,
-    y,
-    yerr=[asymmetric_lower, asymmetric_upper],
-    fmt="o",
-    markersize=15,
-    color="#306998",
-    ecolor="#306998",
-    elinewidth=3,
-    capsize=10,
-    capthick=3,
-    alpha=0.9,
+# Plot using seaborn pointplot with custom error bars via matplotlib
+# Seaborn's barplot/pointplot can handle error bars; using pointplot for clarity
+colors = ["#306998", "#FFD43B", "#306998", "#FFD43B", "#306998", "#FFD43B"]
+
+# Use seaborn's barplot with error bars
+bars = sns.barplot(
+    data=df,
+    x="Treatment",
+    y="Response",
+    hue="Treatment",
+    palette=colors,
+    legend=False,
+    ax=ax,
+    edgecolor="black",
+    linewidth=1.5,
 )
 
-# Styling
-ax.set_xlabel("Experimental Group", fontsize=20)
+# Add error bars manually for control over appearance
+x_positions = range(len(categories))
+ax.errorbar(
+    x_positions, means, yerr=errors, fmt="none", color="black", capsize=8, capthick=2.5, elinewidth=2.5, zorder=5
+)
+
+# Labels and styling
+ax.set_xlabel("Treatment Group", fontsize=20)
 ax.set_ylabel("Response Value (units)", fontsize=20)
 ax.set_title("errorbar-basic · seaborn · pyplots.ai", fontsize=24)
-ax.set_xticks(x)
-ax.set_xticklabels(categories, fontsize=16)
-ax.tick_params(axis="y", labelsize=16)
+ax.tick_params(axis="both", labelsize=16)
+ax.grid(True, alpha=0.3, linestyle="--", axis="y")
+ax.set_axisbelow(True)
 
-# Add some vertical padding
-ax.set_ylim(0, max(y + asymmetric_upper) * 1.15)
+# Adjust y-axis to give room for error bars
+ax.set_ylim(0, max([m + e for m, e in zip(means, errors, strict=True)]) * 1.15)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

@@ -1,0 +1,25 @@
+library: plotly
+specification_id: violin-split
+created: '2025-12-26T10:02:58Z'
+updated: '2025-12-26T10:06:08Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20520452180
+issue: 1949
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-split/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-split/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-split/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Plotly's native split violin capability with side="negative"/"positive"
+  - Clean, professional color scheme with Python-themed blue and yellow
+  - Mean lines provide useful statistical reference within each distribution
+  - 'Good data storytelling: training program effectiveness clearly visible across
+    all departments'
+  - Proper output of both PNG and interactive HTML formats
+  weaknesses:
+  - Grid lines could be slightly more visible (alpha 0.1 is quite faint)
+  - Distribution shapes are all unimodal normal; could benefit from more variety to
+    showcase violin plot capabilities

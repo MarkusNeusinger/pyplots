@@ -1,17 +1,25 @@
 library: seaborn
 specification_id: candlestick-basic
-created: 2025-12-14 18:24:51+00:00
-updated: 2025-12-14 18:24:51+00:00
+created: '2025-12-23T10:00:56Z'
+updated: '2025-12-23T10:22:22Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20212203628
-issue: 812
+workflow_run: 20457529450
+issue: 0
 python_version: 3.13.11
 library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/candlestick-basic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/candlestick-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 98
+quality_score: 90
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent visual clarity with properly sized candlesticks and readable text
+  - Correct OHLC data representation with distinct bodies and wicks
+  - Good data generation showing realistic stock price movement with trend
+  - Proper title format and descriptive axis labels with units
+  - Well-positioned legend that does not obscure data
+  - Subtle y-axis grid aids price level reading
+  weaknesses:
+  - Code specifies colorblind-safe blue/orange colors but plot renders green/red (color
+    variable assignment mismatch)
+  - Structure uses for loops and functions rather than pure KISS linear style

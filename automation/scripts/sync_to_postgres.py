@@ -281,10 +281,9 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
                     "workflow_run": current.get("workflow_run") or impl_meta.get("workflow_run"),
                     "issue": current.get("issue") or impl_meta.get("issue"),
                     "quality_score": current.get("quality_score") or impl_meta.get("quality_score"),
-                    # Review feedback (new structure)
+                    # Review feedback
                     "review_strengths": review.get("strengths") or [],
                     "review_weaknesses": review.get("weaknesses") or [],
-                    "review_improvements": review.get("improvements") or [],
                 }
             )
 
@@ -369,7 +368,6 @@ def sync_to_database(session: Session, plots: list[dict]) -> dict:
             # Review feedback arrays (always set, even if empty)
             update_set["review_strengths"] = impl.get("review_strengths") or []
             update_set["review_weaknesses"] = impl.get("review_weaknesses") or []
-            update_set["review_improvements"] = impl.get("review_improvements") or []
 
             stmt = insert(Impl).values(**impl).on_conflict_do_update(constraint="uq_impl", set_=update_set)
             session.execute(stmt)

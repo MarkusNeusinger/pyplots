@@ -1,7 +1,7 @@
 """ pyplots.ai
 quiver-basic: Basic Quiver Plot
-Library: plotnine 0.15.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-16
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -25,7 +25,7 @@ v = x
 # Calculate magnitude for color encoding
 magnitude = np.sqrt(u**2 + v**2)
 
-# Scale arrows for visibility (normalize length while preserving direction)
+# Scale arrows for visibility (normalize while preserving direction proportionally)
 scale = 0.25
 u_scaled = u / (magnitude + 0.1) * scale * magnitude
 v_scaled = v / (magnitude + 0.1) * scale * magnitude

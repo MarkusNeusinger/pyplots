@@ -1,7 +1,7 @@
 """ pyplots.ai
 network-basic: Basic Network Graph
 Library: plotly 6.5.0 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -119,7 +119,7 @@ for src, tgt in edges:
     degrees[src] += 1
     degrees[tgt] += 1
 
-# Colors for groups
+# Colors for groups (Python Blue first, then Yellow, then colorblind-safe)
 group_colors = ["#306998", "#FFD43B", "#4CAF50", "#FF7043"]
 group_names = ["Group A", "Group B", "Group C", "Group D"]
 
@@ -133,7 +133,7 @@ for src, tgt in edges:
     edge_y.extend([y0, y1, None])
 
 edge_trace = go.Scatter(
-    x=edge_x, y=edge_y, mode="lines", line={"width": 2, "color": "#888888"}, hoverinfo="none", showlegend=False
+    x=edge_x, y=edge_y, mode="lines", line={"width": 2.5, "color": "#888888"}, hoverinfo="none", showlegend=False
 )
 
 # Create node traces (one per group for legend)
@@ -142,7 +142,7 @@ for group_id, (color, name) in enumerate(zip(group_colors, group_names, strict=T
     group_nodes = [node for node in nodes if node["group"] == group_id]
     node_x = [pos[node["id"]][0] for node in group_nodes]
     node_y = [pos[node["id"]][1] for node in group_nodes]
-    node_sizes = [20 + degrees[node["id"]] * 5 for node in group_nodes]
+    node_sizes = [22 + degrees[node["id"]] * 6 for node in group_nodes]
     node_labels = [node["label"] for node in group_nodes]
     hover_text = [f"{node['label']}<br>Connections: {degrees[node['id']]}" for node in group_nodes]
 
@@ -153,7 +153,7 @@ for group_id, (color, name) in enumerate(zip(group_colors, group_names, strict=T
         marker={"size": node_sizes, "color": color, "line": {"width": 2, "color": "#333333"}},
         text=node_labels,
         textposition="middle center",
-        textfont={"size": 12, "color": "#222222", "family": "Arial Black"},
+        textfont={"size": 14, "color": "#222222", "family": "Arial Black"},
         hovertext=hover_text,
         hoverinfo="text",
         name=name,
@@ -175,7 +175,7 @@ fig.update_layout(
     showlegend=True,
     legend={
         "title": {"text": "Communities", "font": {"size": 20}},
-        "font": {"size": 16},
+        "font": {"size": 18},
         "bgcolor": "rgba(255, 255, 255, 0.9)",
         "bordercolor": "#333333",
         "borderwidth": 1,

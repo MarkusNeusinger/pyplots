@@ -1,7 +1,7 @@
 """ pyplots.ai
 qq-basic: Basic Q-Q Plot
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-17
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -17,14 +17,16 @@ np.random.seed(42)
 sample = np.concatenate(
     [
         np.random.normal(loc=50, scale=10, size=80),  # Main bulk of data
-        np.random.normal(loc=75, scale=5, size=20),  # Slight right tail for asymmetry
+        np.random.normal(loc=75, scale=5, size=20),  # Right tail for asymmetry
     ]
 )
 
-# Sort sample and calculate positions for quantiles
+# Calculate Q-Q plot values
 sample_sorted = np.sort(sample)
 n = len(sample_sorted)
-probabilities = (np.arange(1, n + 1) - 0.5) / n
+
+# Plotting positions (Blom formula)
+probabilities = (np.arange(1, n + 1) - 0.375) / (n + 0.25)
 
 # Inverse normal CDF (Abramowitz & Stegun approximation) for theoretical quantiles
 a = [
@@ -69,11 +71,12 @@ theoretical_quantiles[mask_mid] = (
 # High region
 mask_high = probabilities > p_high
 q = np.sqrt(-2 * np.log(1 - probabilities[mask_high]))
-theoretical_quantiles[mask_high] = -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / (
-    (((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1
+theoretical_quantiles[mask_high] = -(
+    (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5])
+    / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1)
 )
 
-# Standardize sample quantiles for comparison
+# Standardize sample values
 sample_mean = np.mean(sample_sorted)
 sample_std = np.std(sample_sorted, ddof=1)
 sample_quantiles = (sample_sorted - sample_mean) / sample_std
@@ -81,18 +84,32 @@ sample_quantiles = (sample_sorted - sample_mean) / sample_std
 # Create dataframe for plotting
 df = pd.DataFrame({"theoretical": theoretical_quantiles, "sample": sample_quantiles})
 
-# Reference line data (y = x)
-line_min = min(theoretical_quantiles.min(), sample_quantiles.min())
-line_max = max(theoretical_quantiles.max(), sample_quantiles.max())
-line_df = pd.DataFrame({"x": [line_min, line_max], "y": [line_min, line_max]})
+# Reference line data (y = x for perfect normal distribution)
+line_range = max(
+    abs(theoretical_quantiles.min()),
+    abs(theoretical_quantiles.max()),
+    abs(sample_quantiles.min()),
+    abs(sample_quantiles.max()),
+)
+line_margin = line_range * 0.1
+line_df = pd.DataFrame(
+    {
+        "x": [-line_range - line_margin, line_range + line_margin],
+        "y": [-line_range - line_margin, line_range + line_margin],
+    }
+)
 
 # Plot
 plot = (
     ggplot()  # noqa: F405
-    + geom_line(data=line_df, mapping=aes(x="x", y="y"), color="#FFD43B", size=2, linetype="dashed")  # noqa: F405
-    + geom_point(data=df, mapping=aes(x="theoretical", y="sample"), color="#306998", size=5, alpha=0.7)  # noqa: F405
+    + geom_line(  # noqa: F405
+        data=line_df, mapping=aes(x="x", y="y"), color="#FFD43B", size=2.5, linetype="dashed"  # noqa: F405
+    )
+    + geom_point(  # noqa: F405
+        data=df, mapping=aes(x="theoretical", y="sample"), color="#306998", size=6, alpha=0.75  # noqa: F405
+    )
     + labs(  # noqa: F405
-        x="Theoretical Quantiles", y="Sample Quantiles", title="qq-basic · lets-plot · pyplots.ai"
+        x="Theoretical Quantiles", y="Sample Quantiles", title="qq-basic · letsplot · pyplots.ai"
     )
     + ggsize(1600, 900)  # noqa: F405
     + theme_minimal()  # noqa: F405

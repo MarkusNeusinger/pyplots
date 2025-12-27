@@ -1,7 +1,7 @@
 """ pyplots.ai
 network-basic: Basic Network Graph
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-17
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -96,12 +96,23 @@ edges = [
     (13, 16),
 ]
 
-# Calculate spring layout (force-directed algorithm)
+# Initialize positions with group clustering for better layout
 n = len(nodes)
-positions = np.random.rand(n, 2) * 2 - 1
-k = 0.4  # Optimal distance parameter
+group_centers = {
+    0: np.array([-0.6, 0.6]),  # Top-left
+    1: np.array([0.6, 0.6]),  # Top-right
+    2: np.array([-0.6, -0.6]),  # Bottom-left
+    3: np.array([0.6, -0.6]),  # Bottom-right
+}
+positions = np.zeros((n, 2))
+for i, node in enumerate(nodes):
+    center = group_centers[node["group"]]
+    positions[i] = center + np.random.randn(2) * 0.2
 
-for iteration in range(150):
+k = 0.5  # Optimal distance parameter
+
+# Force-directed layout iterations
+for iteration in range(200):
     displacement = np.zeros((n, 2))
 
     # Repulsive forces between all node pairs
@@ -122,11 +133,11 @@ for iteration in range(150):
         displacement[tgt] += force
 
     # Apply displacement with cooling
-    cooling = 1 - iteration / 150
+    cooling = 1 - iteration / 200
     for i in range(n):
         disp_norm = np.linalg.norm(displacement[i])
         if disp_norm > 0:
-            positions[i] += (displacement[i] / disp_norm) * min(disp_norm, 0.1 * cooling)
+            positions[i] += (displacement[i] / disp_norm) * min(disp_norm, 0.08 * cooling)
 
 # Normalize positions to [0.1, 0.9] range
 pos_min = positions.min(axis=0)
@@ -140,9 +151,9 @@ for src, tgt in edges:
     degrees[src] += 1
     degrees[tgt] += 1
 
-# Group colors and names
-group_colors = ["#306998", "#FFD43B", "#4CAF50", "#FF7043"]
-group_names = ["Group A", "Group B", "Group C", "Group D"]
+# Group colors and names (Python Blue first, then Yellow, then additional accessible colors)
+group_colors = ["#306998", "#FFD43B", "#2CA02C", "#E64A19"]
+group_names = ["Research", "Marketing", "Engineering", "Design"]
 
 # Create edges dataframe
 edge_data = []
@@ -153,7 +164,7 @@ for src, tgt in edges:
 
 df_edges = pd.DataFrame(edge_data)
 
-# Create nodes dataframe
+# Create nodes dataframe with label offset to reduce overlap
 node_data = []
 for node in nodes:
     x, y = pos[node["id"]]
@@ -164,7 +175,8 @@ for node in nodes:
             "y": y,
             "label": node["label"],
             "group": group_names[node["group"]],
-            "size": 6 + degree * 1.5,  # Scale size by degree
+            "size": 8 + degree * 2,  # Scale size by degree
+            "label_y": y + 0.04,  # Offset label above node
         }
     )
 
@@ -174,17 +186,17 @@ df_nodes = pd.DataFrame(node_data)
 plot = (
     ggplot()
     # Draw edges first (behind nodes)
-    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend"), data=df_edges, color="#888888", size=1.5, alpha=0.5)
+    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend"), data=df_edges, color="#888888", size=1.2, alpha=0.4)
     # Draw nodes colored by group
-    + geom_point(aes(x="x", y="y", color="group", size="size"), data=df_nodes, stroke=2, alpha=0.9)
-    # Add node labels
-    + geom_text(aes(x="x", y="y", label="label"), data=df_nodes, size=10, color="#222222", fontface="bold")
-    + scale_color_manual(values=group_colors, name="Communities")
+    + geom_point(aes(x="x", y="y", color="group", size="size"), data=df_nodes, stroke=1.5, alpha=0.95)
+    # Add node labels above nodes
+    + geom_text(aes(x="x", y="label_y", label="label"), data=df_nodes, size=9, color="#333333", fontface="bold")
+    + scale_color_manual(values=group_colors, name="Departments")
     + scale_size_identity()
     + coord_fixed(ratio=1)
     + scale_x_continuous(limits=(-0.05, 1.05))
-    + scale_y_continuous(limits=(-0.05, 1.05))
-    + labs(title="Social Network · network-basic · letsplot · pyplots.ai")
+    + scale_y_continuous(limits=(-0.05, 1.1))  # Extra space for labels
+    + labs(title="Office Social Network · network-basic · letsplot · pyplots.ai")
     + ggsize(1600, 900)
     + theme(
         plot_title=element_text(size=28, face="bold"),
@@ -194,8 +206,8 @@ plot = (
         axis_line=element_blank(),
         panel_grid=element_blank(),
         legend_text=element_text(size=14),
-        legend_title=element_text(size=16),
-        legend_position="left",
+        legend_title=element_text(size=16, face="bold"),
+        legend_position="right",
     )
 )
 

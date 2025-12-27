@@ -1,0 +1,26 @@
+library: pygal
+specification_id: windrose-basic
+created: '2025-12-24T22:22:28Z'
+updated: '2025-12-24T22:53:52Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494687485
+issue: 0
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/pygal/plot.html
+quality_score: 78
+review:
+  strengths:
+  - Effective cumulative stacking approach creates proper wind rose visual representation
+  - Cool-to-warm color progression follows meteorological convention for wind speeds
+  - Realistic wind data generation with Weibull distribution and prevailing SW/W winds
+  - Correct 8-direction sector binning with proper angular calculations including
+    North wraparound
+  - Clean, readable code structure with helpful comments
+  weaknesses:
+  - Legend is too small and positioned too far from chart, reducing readability
+  - Innermost calm wind layer (0-3 m/s) is barely visible in most directions
+  - Direction labels around the perimeter could be larger for better readability
+  - Chart not centered well on canvas - noticeable empty space on left side

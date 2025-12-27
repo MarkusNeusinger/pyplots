@@ -1,0 +1,29 @@
+library: seaborn
+specification_id: bar-error
+created: '2025-12-27T19:21:22Z'
+updated: '2025-12-27T19:29:06Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20543280392
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-error/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-error/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent text sizing following the 24/20/16pt guideline for large canvas
+  - Clean alternating color scheme that is colorblind-accessible
+  - Proper use of asymmetric error bars for percentage data as spec suggests
+  - Good annotation explaining what error bars represent (95% CI)
+  - Modern seaborn API usage with hue parameter to avoid deprecation warnings
+  - Y-axis correctly starts at 0 for proper bar comparison
+  - Realistic A/B testing scenario with plausible conversion rate values
+  weaknesses:
+  - Error bars added via matplotlib errorbar() rather than exploring seaborn native
+    statistical capabilities
+  - The annotation box could be positioned closer to the data area rather than isolated
+    in the corner
+  - Feature coverage could show more variation (e.g., one notably different group
+    or wider CI range)

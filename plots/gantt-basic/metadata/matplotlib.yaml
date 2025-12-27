@@ -1,0 +1,27 @@
+library: matplotlib
+specification_id: gantt-basic
+created: '2025-12-27T19:20:43Z'
+updated: '2025-12-27T19:25:33Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20543281362
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 95
+review:
+  strengths:
+  - Excellent color scheme using Python-branded colors with good accessibility
+  - Clean implementation with proper date handling using matplotlib.dates
+  - Logical task ordering by start date (reversed for top-to-bottom reading)
+  - Today marker with dashed red line adds practical utility
+  - Proper bar spacing and sizing for clear readability
+  - Complete legend including all categories and the Today marker
+  - Subtle x-axis grid without overwhelming the visualization
+  - Good use of tight_layout and bbox_inches for clean output
+  weaknesses:
+  - Axis labels are generic (Timeline, Tasks) - could be more descriptive like Project
+    Timeline (2025) and Project Tasks
+  - Could leverage more matplotlib features like annotations for key milestones

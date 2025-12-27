@@ -1,0 +1,11 @@
+spec_id: scatter-size-mapped
+title: Bubble Chart
+created: 2025-12-27T19:20:00Z
+updated: 2025-12-27T19:20:00Z
+issue: 2375
+suggested: null
+tags:
+  plot_type: [scatter, bubble, size-mapped]
+  domain: [economics, business, general]
+  features: [multivariate, 2d, size-encoding]
+  data_type: [numeric, continuous]

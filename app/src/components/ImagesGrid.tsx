@@ -1,3 +1,4 @@
+import { useMemo, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Alert from '@mui/material/Alert';
@@ -43,14 +44,33 @@ export function ImagesGrid({
   onTooltipToggle,
   onCardClick,
   onTrackEvent,
-  onImageLoad,
+  onImageLoad: _onImageLoad,
 }: ImagesGridProps) {
   void _selectedLibrary; // Preserved for API compatibility
+  void _onImageLoad; // Removed for performance - was causing re-renders per image load
 
   // Grid columns: normal = max 3 cols, compact = max 6 cols
   const gridColumns = imageSize === 'compact'
     ? { xs: 6, sm: 6, md: 3, lg: 3, xl: 2 }  // 2→2→4→4→6 cols
     : { xs: 12, sm: 12, md: 6, lg: 6, xl: 4 }; // 1→1→2→2→3 cols
+
+  // Create O(1) lookup Maps from arrays
+  const libraryMap = useMemo(() => {
+    const map = new Map<string, LibraryInfo>();
+    librariesData.forEach(lib => map.set(lib.id, lib));
+    return map;
+  }, [librariesData]);
+
+  const specMap = useMemo(() => {
+    const map = new Map<string, SpecInfo>();
+    specsData.forEach(spec => map.set(spec.id, spec));
+    return map;
+  }, [specsData]);
+
+  // Stable callback for card clicks
+  const handleCardClick = useCallback((image: PlotImage) => {
+    onCardClick(image);
+  }, [onCardClick]);
 
   // Show loading spinner on initial load
   if (loading && !isTransitioning && images.length === 0) {
@@ -100,27 +120,31 @@ export function ImagesGrid({
               transition: 'opacity 0.15s ease-in-out',
             }}
           >
-            {images.map((image, index) => (
-              <Grid
-                key={image.spec_id ? `${image.spec_id}-${image.library}` : image.library}
-                size={gridColumns}
-              >
-                <ImageCard
-                  image={image}
-                  index={index}
-                  viewMode={viewMode}
-                  selectedSpec={selectedSpec}
-                  librariesData={librariesData}
-                  specsData={specsData}
-                  openTooltip={openTooltip}
-                  imageSize={imageSize}
-                  onTooltipToggle={onTooltipToggle}
-                  onClick={() => onCardClick(image)}
-                  onTrackEvent={onTrackEvent}
-                  onImageLoad={onImageLoad}
-                />
-              </Grid>
-            ))}
+            {images.map((image, index) => {
+              const lib = libraryMap.get(image.library);
+              const spec = specMap.get(image.spec_id || '');
+              return (
+                <Grid
+                  key={image.spec_id ? `${image.spec_id}-${image.library}` : image.library}
+                  size={gridColumns}
+                >
+                  <ImageCard
+                    image={image}
+                    index={index}
+                    viewMode={viewMode}
+                    selectedSpec={selectedSpec}
+                    libraryDescription={lib?.description}
+                    libraryDocUrl={lib?.documentation_url}
+                    specDescription={spec?.description}
+                    openTooltip={openTooltip}
+                    imageSize={imageSize}
+                    onTooltipToggle={onTooltipToggle}
+                    onClick={() => handleCardClick(image)}
+                    onTrackEvent={onTrackEvent}
+                  />
+                </Grid>
+              );
+            })}
           </Grid>
         )}
         {/* Load more trigger (invisible) */}

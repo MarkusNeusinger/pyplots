@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
@@ -8,7 +8,7 @@ import Link from '@mui/material/Link';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
-import type { PlotImage, LibraryInfo, SpecInfo } from '../types';
+import type { PlotImage } from '../types';
 import { BATCH_SIZE, type ImageSize } from '../constants';
 import { useCopyCode } from '../hooks';
 
@@ -17,29 +17,29 @@ interface ImageCardProps {
   index: number;
   viewMode: 'spec' | 'library';
   selectedSpec: string;
-  librariesData: LibraryInfo[];
-  specsData: SpecInfo[];
+  libraryDescription?: string;
+  libraryDocUrl?: string;
+  specDescription?: string;
   openTooltip: string | null;
   imageSize: ImageSize;
   onTooltipToggle: (id: string | null) => void;
   onClick: () => void;
   onTrackEvent?: (name: string, props?: Record<string, string | undefined>) => void;
-  onImageLoad?: () => void;
 }
 
-export function ImageCard({
+export const ImageCard = memo(function ImageCard({
   image,
   index,
   viewMode,
   selectedSpec,
-  librariesData,
-  specsData,
+  libraryDescription,
+  libraryDocUrl,
+  specDescription,
   openTooltip,
   imageSize,
   onTooltipToggle,
   onClick,
   onTrackEvent,
-  onImageLoad,
 }: ImageCardProps) {
   const { copied, copyToClipboard } = useCopyCode({
     onCopy: () => onTrackEvent?.('copy_code', { spec: image.spec_id || selectedSpec, library: image.library, method: 'card' }),
@@ -51,9 +51,6 @@ export function ImageCard({
   const libTooltipId = `lib-${cardId}`;
   const isSpecTooltipOpen = openTooltip === specTooltipId;
   const isLibTooltipOpen = openTooltip === libTooltipId;
-
-  const libraryInfo = librariesData.find(l => l.id === image.library);
-  const specInfo = specsData.find(s => s.id === image.spec_id);
 
   const handleCopyCode = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -151,11 +148,9 @@ export function ImageCard({
             objectFit: 'contain',
             bgcolor: '#fff',
           }}
-          onLoad={onImageLoad}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.style.display = 'none';
-            onImageLoad?.(); // Count errors as loaded too
           }}
         />
       </Card>
@@ -163,7 +158,7 @@ export function ImageCard({
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 1.5, gap: 0.5 }}>
         {/* Clickable Spec ID */}
         <Tooltip
-          title={specInfo?.description || 'No description available'}
+          title={specDescription || 'No description available'}
           arrow
           placement="bottom"
           open={isSpecTooltipOpen}
@@ -212,11 +207,11 @@ export function ImageCard({
           title={
             <Box>
               <Typography sx={{ fontSize: '0.8rem', mb: 1 }}>
-                {libraryInfo?.description || 'No description available'}
+                {libraryDescription || 'No description available'}
               </Typography>
-              {libraryInfo?.documentation_url && (
+              {libraryDocUrl && (
                 <Link
-                  href={libraryInfo.documentation_url}
+                  href={libraryDocUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   sx={{
@@ -229,7 +224,7 @@ export function ImageCard({
                     '&:hover': { color: '#fff' },
                   }}
                 >
-                  {libraryInfo.documentation_url.replace(/^https?:\/\//, '')} <OpenInNewIcon sx={{ fontSize: 12 }} />
+                  {libraryDocUrl.replace(/^https?:\/\//, '')} <OpenInNewIcon sx={{ fontSize: 12 }} />
                 </Link>
               )}
             </Box>
@@ -277,4 +272,4 @@ export function ImageCard({
       </Box>
     </Box>
   );
-}
+});

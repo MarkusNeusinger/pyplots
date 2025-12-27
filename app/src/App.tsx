@@ -46,8 +46,6 @@ function App() {
   const [specsData, setSpecsData] = useState<SpecInfo[]>([]);
   const [librariesData, setLibrariesData] = useState<LibraryInfo[]>([]);
   const [stats, setStats] = useState<{ specs: number; plots: number; libraries: number } | null>(null);
-  const [loadedImageCount, setLoadedImageCount] = useState(0);
-  const [showLoadingIndicator, setShowLoadingIndicator] = useState(false);
 
   // UI state
   const [modalImage, setModalImage] = useState<PlotImage | null>(null);
@@ -64,23 +62,6 @@ function App() {
   useEffect(() => {
     localStorage.setItem('imageSize', imageSize);
   }, [imageSize]);
-
-  // Loading indicator logic
-  useEffect(() => {
-    const stillLoading = loadedImageCount < displayedImages.length;
-
-    if (stillLoading) {
-      setShowLoadingIndicator(true);
-    } else {
-      const timer = setTimeout(() => setShowLoadingIndicator(false), 150);
-      return () => clearTimeout(timer);
-    }
-  }, [loadedImageCount, displayedImages.length]);
-
-  // Reset loaded count when displayed images change
-  useEffect(() => {
-    setLoadedImageCount(0);
-  }, [allImages]);
 
   // Handle card click - open modal
   const handleCardClick = useCallback(
@@ -198,7 +179,7 @@ function App() {
           selectedLibrary={selectedLibrary}
           loading={loading}
           hasMore={hasMore}
-          isLoadingMore={showLoadingIndicator}
+          isLoadingMore={false}
           isTransitioning={false}
           librariesData={librariesData}
           specsData={specsData}
@@ -208,7 +189,6 @@ function App() {
           onTooltipToggle={setOpenImageTooltip}
           onCardClick={handleCardClick}
           onTrackEvent={trackEvent}
-          onImageLoad={() => setLoadedImageCount((c) => c + 1)}
         />
 
         {!loading && allImages.length === 0 && !isFiltersEmpty(activeFilters) && (

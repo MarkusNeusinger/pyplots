@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Menu from '@mui/material/Menu';
@@ -171,8 +171,11 @@ export function FilterBar({
     [activeGroupIndex, activeFilters, onAddValueToGroup, onTrackEvent]
   );
 
-  // Use utility functions with component state
-  const searchResults = getSearchResults(filterCounts, activeFilters, searchQuery, selectedCategory);
+  // Memoize search results to avoid recalculating on every render
+  const searchResults = useMemo(
+    () => getSearchResults(filterCounts, activeFilters, searchQuery, selectedCategory),
+    [filterCounts, activeFilters, searchQuery, selectedCategory]
+  );
   // Only open if anchor is valid and in document
   const isDropdownOpen = Boolean(dropdownAnchor) && document.body.contains(dropdownAnchor);
   const hasQuery = searchQuery.trim().length > 0;

@@ -1,0 +1,30 @@
+# Specification-level metadata for forest-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: forest-basic
+title: Meta-Analysis Forest Plot
+
+# Specification tracking
+created: 2025-12-27T19:13:20Z
+updated: 2025-12-27T19:13:20Z
+issue: 2378
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - forest
+    - errorbar
+  data_type:
+    - numeric
+    - categorical
+  domain:
+    - healthcare
+    - research
+    - statistics
+  features:
+    - basic
+    - confidence-interval
+    - comparison
+    - meta-analysis

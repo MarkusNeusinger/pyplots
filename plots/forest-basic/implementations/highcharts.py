@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 forest-basic: Meta-Analysis Forest Plot
 Library: highcharts unknown | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-27
+Quality: 91/100 | Created: 2025-12-27
 """
 
 import tempfile

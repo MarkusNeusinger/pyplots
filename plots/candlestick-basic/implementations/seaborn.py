@@ -1,92 +1,111 @@
 """ pyplots.ai
 candlestick-basic: Basic Candlestick Chart
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 98/100 | Created: 2025-12-14
+Quality: 90/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
+from matplotlib.patches import Patch
 
 
-# Data - simulated 30 trading days of stock prices
+# Set seaborn style
+sns.set_theme(style="whitegrid")
+sns.set_context("talk", font_scale=1.2)
+
+# Data - 30 days of simulated stock OHLC data
 np.random.seed(42)
 n_days = 30
+dates = pd.date_range("2024-01-02", periods=n_days, freq="B")  # Business days
 
 # Generate realistic OHLC data
-dates = pd.date_range(start="2024-01-02", periods=n_days, freq="B")  # Business days
-base_price = 150.0
-returns = np.random.randn(n_days) * 0.02  # Daily returns ~2% std
+price = 150.0
+opens, highs, lows, closes = [], [], [], []
 
-# Build price series
-close_prices = [base_price]
-for r in returns[:-1]:
-    close_prices.append(close_prices[-1] * (1 + r))
-close_prices = np.array(close_prices)
+for _ in range(n_days):
+    # Daily volatility
+    change = np.random.randn() * 3
+    daily_range = abs(np.random.randn()) * 2 + 1
 
-# Generate OHLC from close prices
-opens = np.roll(close_prices, 1)
-opens[0] = base_price * 0.998
+    open_price = price
+    close_price = price + change
 
-# High is max of open/close plus some random wick
-highs = np.maximum(opens, close_prices) + np.abs(np.random.randn(n_days)) * 1.5
+    # High and low include the open/close range plus some extra
+    high_price = max(open_price, close_price) + abs(np.random.randn()) * daily_range
+    low_price = min(open_price, close_price) - abs(np.random.randn()) * daily_range
 
-# Low is min of open/close minus some random wick
-lows = np.minimum(opens, close_prices) - np.abs(np.random.randn(n_days)) * 1.5
+    opens.append(open_price)
+    highs.append(high_price)
+    lows.append(low_price)
+    closes.append(close_price)
 
-df = pd.DataFrame({"date": dates, "open": opens, "high": highs, "low": lows, "close": close_prices})
+    price = close_price
 
-# Create figure
+df = pd.DataFrame({"date": dates, "open": opens, "high": highs, "low": lows, "close": closes})
+
+# Determine bullish (up) vs bearish (down) days - use colorblind-safe colors
+df["bullish"] = df["close"] >= df["open"]
+# Colorblind-safe: blue for up, orange for down
+color_up = "#1f77b4"  # Blue for bullish
+color_down = "#ff7f0e"  # Orange for bearish
+df["color"] = df["bullish"].map({True: color_up, False: color_down})
+df["x"] = range(len(df))
+
+# Create plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Candlestick colors
-up_color = "#22c55e"  # Green for bullish
-down_color = "#ef4444"  # Red for bearish
-
-# Width for candle bodies
+# Draw candlesticks manually with seaborn styling applied
 body_width = 0.6
-wick_width = 2
 
-# Draw each candlestick
-for i, (_idx, row) in enumerate(df.iterrows()):
-    is_up = row["close"] >= row["open"]
-    color = up_color if is_up else down_color
+for _, row in df.iterrows():
+    x = row["x"]
+    color = row["color"]
 
-    # Draw wick (high-low line)
-    ax.plot([i, i], [row["low"], row["high"]], color=color, linewidth=wick_width, solid_capstyle="round")
+    # Draw wick (high-low line) using seaborn's lineplot via dataframe
+    wick_data = pd.DataFrame({"x": [x, x], "price": [row["low"], row["high"]]})
+    sns.lineplot(data=wick_data, x="x", y="price", ax=ax, color=color, linewidth=2, legend=False)
 
-    # Draw body (open-close rectangle)
+    # Draw candle body using matplotlib Rectangle for precise control
     body_bottom = min(row["open"], row["close"])
     body_height = abs(row["close"] - row["open"])
-
-    # Use a minimum height for doji candles
-    if body_height < 0.1:
-        body_height = 0.1
-        body_bottom = (row["open"] + row["close"]) / 2 - 0.05
+    # Ensure minimum body height for doji candles
+    if body_height < 0.2:
+        body_height = 0.2
+        body_bottom = (row["open"] + row["close"]) / 2 - 0.1
 
     rect = plt.Rectangle(
-        (i - body_width / 2, body_bottom), body_width, body_height, facecolor=color, edgecolor=color, linewidth=1
+        (x - body_width / 2, body_bottom), body_width, body_height, facecolor=color, edgecolor=color, linewidth=1
     )
     ax.add_patch(rect)
 
-# Format x-axis with dates
-tick_positions = np.arange(0, len(df), 5)  # Every 5 days
+# Set x-axis to show dates
+tick_positions = range(0, n_days, 5)  # Show every 5th date
+tick_labels = [df["date"].iloc[i].strftime("%b %d") for i in tick_positions]
 ax.set_xticks(tick_positions)
-ax.set_xticklabels([df["date"].iloc[i].strftime("%b %d") for i in tick_positions], fontsize=16)
+ax.set_xticklabels(tick_labels, rotation=0)
 
-# Set axis limits with padding
-ax.set_xlim(-1, len(df))
-ax.set_ylim(df["low"].min() - 2, df["high"].max() + 2)
-
-# Labels and title
+# Style the plot
 ax.set_xlabel("Date", fontsize=20)
 ax.set_ylabel("Price ($)", fontsize=20)
 ax.set_title("candlestick-basic · seaborn · pyplots.ai", fontsize=24)
-ax.tick_params(axis="y", labelsize=16)
+ax.tick_params(axis="both", labelsize=16)
 
-# Subtle grid for price levels
+# Add legend with colorblind-safe colors - positioned outside data area
+legend_elements = [Patch(facecolor=color_up, label="Bullish (Up)"), Patch(facecolor=color_down, label="Bearish (Down)")]
+ax.legend(handles=legend_elements, fontsize=14, loc="upper right", bbox_to_anchor=(0.99, 0.99))
+
+# Subtle grid
 ax.grid(True, alpha=0.3, linestyle="--", axis="y")
 ax.set_axisbelow(True)
+
+# Set axis limits
+ax.set_xlim(-0.5, n_days - 0.5)
+y_min = df["low"].min()
+y_max = df["high"].max()
+y_padding = (y_max - y_min) * 0.1
+ax.set_ylim(y_min - y_padding, y_max + y_padding)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

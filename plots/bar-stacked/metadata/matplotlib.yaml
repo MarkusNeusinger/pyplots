@@ -1,0 +1,28 @@
+library: matplotlib
+specification_id: bar-stacked
+created: '2025-12-26T10:04:33Z'
+updated: '2025-12-26T10:08:46Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20520476793
+issue: 1947
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 94
+review:
+  strengths:
+  - Excellent text legibility with appropriate font sizes throughout
+  - Clean, professional appearance with subtle grid and removed spines
+  - Total value labels above each bar enhance readability and match spec recommendation
+  - Colorblind-safe color palette with good visual contrast
+  - Realistic business scenario with plausible revenue values
+  - White edge lines between segments improve segment distinction
+  weaknesses:
+  - Legend placement outside plot area works but creates slight visual separation
+    from data
+  - Data could show more diverse trends (e.g., one component declining while others
+    grow) to better demonstrate stacked bar utility for composition analysis
+  - Could leverage matplotlib hatching patterns to further distinguish segments for
+    accessibility

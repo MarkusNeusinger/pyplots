@@ -1,0 +1,26 @@
+library: plotnine
+specification_id: raincloud-basic
+created: '2025-12-25T07:17:07Z'
+updated: '2025-12-25T07:34:53Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20500986130
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Correct raincloud layout with cloud on top, boxplot centered, and rain points
+    below
+  - Excellent bimodal distribution in Treatment B demonstrating the power of raincloud
+    plots over simple boxplots
+  - Clean colorblind-safe color palette with good contrast
+  - Professional appearance with well-sized text elements
+  - Creative plotnine solution using geom_ribbon for half-violins
+  weaknesses:
+  - No legend showing color-to-condition mapping (relies solely on y-axis labels)
+  - Uses scipy for KDE instead of native plotnine density geoms (geom_violin with
+    half-violin trimming would be more idiomatic)

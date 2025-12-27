@@ -1,0 +1,26 @@
+library: highcharts
+specification_id: bar-stacked
+created: '2025-12-26T10:05:20Z'
+updated: '2025-12-26T10:09:12Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20520476952
+issue: 1947
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/highcharts/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent data storytelling showing energy transition narrative (solar growth,
+    coal decline)
+  - Clean colorblind-safe palette following Python branding guidelines
+  - Stack totals displayed above each bar as recommended in specification
+  - Data labels within segments aid precise value reading
+  - Proper use of Highcharts stacking configuration with white borders between segments
+  - Well-configured tooltips showing both individual and total values
+  weaknesses:
+  - Legend placement conflicts with X-axis title - they visually overlap
+  - Data labels within segments could be slightly larger for better readability at
+    full resolution

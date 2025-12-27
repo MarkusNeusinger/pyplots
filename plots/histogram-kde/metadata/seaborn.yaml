@@ -1,0 +1,24 @@
+library: seaborn
+specification_id: histogram-kde
+created: '2025-12-24T21:45:08Z'
+updated: '2025-12-24T21:47:18Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494308599
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of seaborn histplot and kdeplot functions separately for fine-grained
+    control over colors
+  - Realistic stock returns scenario with mixture of normal, volatile, and bullish
+    periods
+  - Perfect color contrast between blue histogram and yellow KDE curve
+  - Proper density scaling so histogram and KDE are on comparable scales
+  - Clean visual design with removed top/right spines
+  weaknesses:
+  - No legend to explicitly identify the histogram bars vs KDE curve

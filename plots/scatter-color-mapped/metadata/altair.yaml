@@ -1,0 +1,26 @@
+library: altair
+specification_id: scatter-color-mapped
+created: '2025-12-26T09:45:18Z'
+updated: '2025-12-26T09:47:34Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20520225345
+issue: 2004
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/altair/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of viridis colormap for perceptual uniformity and colorblind accessibility
+  - Clean declarative Altair syntax with proper encoding types (Q for quantitative)
+  - Well-configured legend with appropriate font sizes and gradient dimensions
+  - Interactive tooltips enhance data exploration
+  - Dual output (PNG + HTML) leverages Altair interactive capabilities
+  - Good marker styling with stroke for point definition
+  weaknesses:
+  - Colorbar/legend title Intensity lacks units - should indicate the measurement
+    scale
+  - Grid styling could benefit from slightly lower opacity (0.2 instead of 0.3) for
+    subtler appearance

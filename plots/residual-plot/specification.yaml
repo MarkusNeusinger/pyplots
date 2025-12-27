@@ -1,0 +1,32 @@
+# Specification-level metadata for residual-plot
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: residual-plot
+title: Residual Plot
+
+# Specification tracking
+created: 2025-12-26T19:35:00Z
+updated: null
+issue: 2332
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - scatter
+    - residual
+    - diagnostic
+  data_type:
+    - numeric
+    - continuous
+    - regression
+  domain:
+    - statistics
+    - machine-learning
+    - econometrics
+  features:
+    - basic
+    - model-evaluation
+    - reference-line
+    - diagnostics

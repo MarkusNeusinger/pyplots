@@ -1,7 +1,7 @@
 """ pyplots.ai
 funnel-basic: Basic Funnel Chart
-Library: letsplot 4.8.1 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-14
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import pandas as pd
@@ -53,7 +53,8 @@ df_poly = pd.DataFrame(polygons)
 labels = []
 y_pos = 0.5
 for stage, value in zip(stages, values, strict=True):
-    labels.append({"stage": stage, "x": 0, "y": y_pos, "label": f"{stage}\n{value:,} ({value / max_value * 100:.0f}%)"})
+    pct = value / max_value * 100
+    labels.append({"stage": stage, "x": 0, "y": y_pos, "label": f"{stage}\n{value:,} ({pct:.0f}%)"})
     y_pos += stage_height
 
 df_labels = pd.DataFrame(labels)

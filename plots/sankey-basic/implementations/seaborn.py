@@ -1,209 +1,215 @@
 """ pyplots.ai
 sankey-basic: Basic Sankey Diagram
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-14
+Quality: 78/100 | Created: 2025-12-23
 """
 
-import matplotlib.patches as mpatches
+import matplotlib.patches as patches
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import seaborn as sns
-from matplotlib.path import Path
 
 
-# Apply seaborn styling for consistent aesthetics
-sns.set_theme(style="white")
+# Set seed for reproducibility
+np.random.seed(42)
 
-# Data: Energy flow from sources to end uses (in TWh)
-flows = [
-    ("Coal", "Residential", 5),
-    ("Coal", "Commercial", 8),
-    ("Coal", "Industrial", 35),
-    ("Coal", "Transport", 2),
-    ("Natural Gas", "Residential", 25),
-    ("Natural Gas", "Commercial", 18),
-    ("Natural Gas", "Industrial", 20),
-    ("Natural Gas", "Transport", 5),
-    ("Nuclear", "Residential", 12),
-    ("Nuclear", "Commercial", 10),
-    ("Nuclear", "Industrial", 8),
-    ("Nuclear", "Transport", 0),
-    ("Renewables", "Residential", 8),
-    ("Renewables", "Commercial", 6),
-    ("Renewables", "Industrial", 5),
-    ("Renewables", "Transport", 3),
-]
+# Apply seaborn styling
+sns.set_theme(style="white", context="talk", font_scale=1.2)
 
-# Filter out zero flows
-flows = [(s, t, v) for s, t, v in flows if v > 0]
+# Data - Energy flow from sources to sectors (in TWh)
+flows_data = {
+    "source": ["Coal", "Coal", "Coal", "Gas", "Gas", "Gas", "Nuclear", "Nuclear", "Nuclear"],
+    "target": [
+        "Residential",
+        "Commercial",
+        "Industrial",
+        "Residential",
+        "Commercial",
+        "Industrial",
+        "Residential",
+        "Commercial",
+        "Industrial",
+    ],
+    "value": [15, 12, 33, 20, 18, 22, 15, 15, 15],
+}
+df = pd.DataFrame(flows_data)
 
-# Get unique sources and targets
-sources = ["Coal", "Natural Gas", "Nuclear", "Renewables"]
-targets = ["Residential", "Commercial", "Industrial", "Transport"]
-
-# Calculate totals for node heights
-source_totals = {s: sum(v for src, _, v in flows if src == s) for s in sources}
-target_totals = {t: sum(v for _, tgt, v in flows if tgt == t) for t in targets}
-
-# Colors using seaborn color palette
-source_colors = sns.color_palette("husl", len(sources))
-source_color_map = dict(zip(sources, source_colors, strict=True))
-
-# Create figure
+# Create figure with seaborn styling
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Layout parameters
-left_x = 0.1
-right_x = 0.9
-node_width = 0.03
-gap = 0.02
+# Use seaborn color palettes - distinct colors for sources and targets
+source_names = df["source"].unique()
+target_names = df["target"].unique()
+source_palette = sns.color_palette("husl", n_colors=len(source_names))
+target_palette = sns.color_palette("Set2", n_colors=len(target_names))
+source_colors = dict(zip(source_names, source_palette, strict=True))
+target_colors = dict(zip(target_names, target_palette, strict=True))
 
-# Calculate total height and scale
-total_flow = sum(v for _, _, v in flows)
-plot_height = 0.75
-scale = plot_height / max(sum(source_totals.values()), sum(target_totals.values()))
+# Calculate node totals
+sources = df.groupby("source")["value"].sum().sort_values(ascending=False)
+targets = df.groupby("target")["value"].sum().sort_values(ascending=False)
 
-# Position source nodes (left side)
+# Node dimensions and positions
+node_width = 0.06
+x_source = 0.12
+x_target = 0.88
+gap = 0.025
+total_height = 0.60  # Reduced to leave room for legends at bottom
+
+# Calculate source node positions (left side)
+total_source = sources.sum()
 source_positions = {}
-current_y = 0.9
-for source in sources:
-    height = source_totals[source] * scale
-    source_positions[source] = {
-        "x": left_x,
-        "y_top": current_y,
-        "y_bottom": current_y - height,
-        "height": height,
-        "flow_y": current_y,  # Track where next flow starts
-    }
-    current_y -= height + gap
+y_pos = 0.92
+for source, value in sources.items():
+    height = (value / total_source) * total_height
+    source_positions[source] = {"y": y_pos - height, "height": height}
+    y_pos -= height + gap
 
-# Position target nodes (right side)
+# Calculate target node positions (right side)
+total_target = targets.sum()
 target_positions = {}
-current_y = 0.9
-for target in targets:
-    height = target_totals[target] * scale
-    target_positions[target] = {
-        "x": right_x,
-        "y_top": current_y,
-        "y_bottom": current_y - height,
-        "height": height,
-        "flow_y": current_y,  # Track where next flow starts
-    }
-    current_y -= height + gap
+y_pos = 0.92
+for target, value in targets.items():
+    height = (value / total_target) * total_height
+    target_positions[target] = {"y": y_pos - height, "height": height}
+    y_pos -= height + gap
 
+# Track current position for stacking flows at each node
+source_current_y = {s: source_positions[s]["y"] + source_positions[s]["height"] for s in sources.index}
+target_current_y = {t: target_positions[t]["y"] + target_positions[t]["height"] for t in targets.index}
 
-def draw_flow(ax, x0, y0_top, y0_bottom, x1, y1_top, y1_bottom, color, alpha=0.5):
-    """Draw a curved flow between two vertical segments using Bezier curves."""
-    # Control points for smooth curves
-    mid_x = (x0 + x1) / 2
+# Bezier curve parameters
+n_points = 100
+t = np.linspace(0, 1, n_points)
 
-    # Create path for the flow band
-    verts = [
-        (x0, y0_top),  # Start top-left
-        (mid_x, y0_top),  # Control point 1
-        (mid_x, y1_top),  # Control point 2
-        (x1, y1_top),  # End top-right
-        (x1, y1_bottom),  # End bottom-right
-        (mid_x, y1_bottom),  # Control point 3
-        (mid_x, y0_bottom),  # Control point 4
-        (x0, y0_bottom),  # End bottom-left
-        (x0, y0_top),  # Close path
-    ]
+# Sort flows by source then by value for consistent stacking
+df_sorted = df.sort_values(["source", "value"], ascending=[True, False])
 
-    codes = [
-        Path.MOVETO,
-        Path.CURVE4,
-        Path.CURVE4,
-        Path.CURVE4,
-        Path.LINETO,
-        Path.CURVE4,
-        Path.CURVE4,
-        Path.CURVE4,
-        Path.CLOSEPOLY,
-    ]
+# Draw flows with widths proportional to values
+for _, row in df_sorted.iterrows():
+    source = row["source"]
+    target = row["target"]
+    value = row["value"]
+    color = source_colors[source]
 
-    path = Path(verts, codes)
-    patch = mpatches.PathPatch(path, facecolor=color, edgecolor="none", alpha=alpha)
-    ax.add_patch(patch)
+    # Calculate band height proportional to flow value
+    source_band_height = (value / sources[source]) * source_positions[source]["height"]
+    target_band_height = (value / targets[target]) * target_positions[target]["height"]
 
+    # Source side coordinates
+    y0_top = source_current_y[source]
+    y0_bot = y0_top - source_band_height
+    source_current_y[source] = y0_bot
 
-# Draw flows
-for source, target, value in flows:
-    flow_height = value * scale
-    color = source_color_map[source]
+    # Target side coordinates
+    y1_top = target_current_y[target]
+    y1_bot = y1_top - target_band_height
+    target_current_y[target] = y1_bot
 
-    # Get current flow positions
-    src = source_positions[source]
-    tgt = target_positions[target]
+    # Draw the flow band using cubic bezier curves
+    x0 = x_source + node_width
+    x1 = x_target
+    cx0 = x0 + (x1 - x0) * 0.35
+    cx1 = x0 + (x1 - x0) * 0.65
 
-    # Calculate flow band positions
-    src_y_top = src["flow_y"]
-    src_y_bottom = src_y_top - flow_height
-    tgt_y_top = tgt["flow_y"]
-    tgt_y_bottom = tgt_y_top - flow_height
+    # Generate bezier curve points for top and bottom edges
+    top_x = (1 - t) ** 3 * x0 + 3 * (1 - t) ** 2 * t * cx0 + 3 * (1 - t) * t**2 * cx1 + t**3 * x1
+    top_y = (1 - t) ** 3 * y0_top + 3 * (1 - t) ** 2 * t * y0_top + 3 * (1 - t) * t**2 * y1_top + t**3 * y1_top
+    bot_y = (1 - t) ** 3 * y0_bot + 3 * (1 - t) ** 2 * t * y0_bot + 3 * (1 - t) * t**2 * y1_bot + t**3 * y1_bot
 
-    # Draw the flow
-    draw_flow(ax, src["x"] + node_width, src_y_top, src_y_bottom, tgt["x"], tgt_y_top, tgt_y_bottom, color, alpha=0.6)
+    # Draw flow band
+    ax.fill_between(top_x, bot_y, top_y, color=color, alpha=0.65, linewidth=0, edgecolor="none")
 
-    # Update flow tracking
-    source_positions[source]["flow_y"] = src_y_bottom
-    target_positions[target]["flow_y"] = tgt_y_bottom
-
-# Draw source nodes (rectangles on left)
-for source in sources:
+# Draw source nodes (left) with seaborn colors
+for source in sources.index:
     pos = source_positions[source]
-    rect = mpatches.Rectangle(
-        (pos["x"], pos["y_bottom"]),
+    rect = patches.FancyBboxPatch(
+        (x_source, pos["y"]),
         node_width,
         pos["height"],
-        facecolor=source_color_map[source],
+        boxstyle="round,pad=0.005,rounding_size=0.015",
+        facecolor=source_colors[source],
         edgecolor="white",
-        linewidth=2,
+        linewidth=2.5,
     )
     ax.add_patch(rect)
-
-    # Add label
     ax.text(
-        pos["x"] - 0.02,
-        (pos["y_top"] + pos["y_bottom"]) / 2,
-        f"{source}\n({source_totals[source]} TWh)",
+        x_source - 0.015,
+        pos["y"] + pos["height"] / 2,
+        f"{source}\n{sources[source]:.0f} TWh",
         ha="right",
         va="center",
-        fontsize=14,
+        fontsize=18,
         fontweight="bold",
+        color="#2d2d2d",
     )
 
-# Draw target nodes (rectangles on right)
-for target in targets:
+# Draw target nodes (right) with distinct colors from Set2 palette
+for target in targets.index:
     pos = target_positions[target]
-    # Use a neutral color for targets
-    rect = mpatches.Rectangle(
-        (pos["x"], pos["y_bottom"]), node_width, pos["height"], facecolor="#306998", edgecolor="white", linewidth=2
+    rect = patches.FancyBboxPatch(
+        (x_target, pos["y"]),
+        node_width,
+        pos["height"],
+        boxstyle="round,pad=0.005,rounding_size=0.015",
+        facecolor=target_colors[target],
+        edgecolor="white",
+        linewidth=2.5,
     )
     ax.add_patch(rect)
-
-    # Add label
     ax.text(
-        pos["x"] + node_width + 0.02,
-        (pos["y_top"] + pos["y_bottom"]) / 2,
-        f"{target}\n({target_totals[target]} TWh)",
+        x_target + node_width + 0.015,
+        pos["y"] + pos["height"] / 2,
+        f"{target}\n{targets[target]:.0f} TWh",
         ha="left",
         va="center",
-        fontsize=14,
+        fontsize=18,
         fontweight="bold",
+        color="#2d2d2d",
     )
 
-# Style the plot
-ax.set_xlim(-0.05, 1.05)
+# Create legend using simple patches for sources and targets
+source_handles = [
+    patches.Patch(facecolor=source_colors[s], edgecolor="white", linewidth=1.5, label=s) for s in source_names
+]
+target_handles = [
+    patches.Patch(facecolor=target_colors[t], edgecolor="white", linewidth=1.5, label=t) for t in target_names
+]
+
+# Add source legend on the left
+source_legend = ax.legend(
+    handles=source_handles,
+    title="Energy Sources",
+    loc="lower left",
+    bbox_to_anchor=(0.02, 0.02),
+    fontsize=14,
+    title_fontsize=16,
+    frameon=True,
+    fancybox=True,
+    edgecolor="#cccccc",
+)
+
+# Add target legend on the right
+ax.add_artist(source_legend)
+ax.legend(
+    handles=target_handles,
+    title="Sectors",
+    loc="lower right",
+    bbox_to_anchor=(0.98, 0.02),
+    fontsize=14,
+    title_fontsize=16,
+    frameon=True,
+    fancybox=True,
+    edgecolor="#cccccc",
+)
+
+# Set title using the required format
+ax.set_title("sankey-basic · seaborn · pyplots.ai", fontsize=26, fontweight="bold", pad=25)
+
+# Set axis limits and remove decorations
+ax.set_xlim(0, 1)
 ax.set_ylim(0, 1)
-ax.set_aspect("equal")
 ax.axis("off")
 
-# Title
-ax.set_title("Energy Flow Distribution · sankey-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
-
-# Add legend for source colors
-legend_handles = [mpatches.Patch(color=source_color_map[s], label=s, alpha=0.8) for s in sources]
-ax.legend(handles=legend_handles, loc="lower center", ncol=4, fontsize=12, frameon=False, bbox_to_anchor=(0.5, -0.02))
-
-plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")

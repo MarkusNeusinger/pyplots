@@ -1,0 +1,26 @@
+library: highcharts
+specification_id: raincloud-basic
+created: '2025-12-25T08:22:11Z'
+updated: '2025-12-25T08:31:38Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20501867092
+issue: 0
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent raincloud metaphor with cloud (KDE) clearly on right, boxplot centered,
+    rain (points) on left - matching the spec layout requirement
+  - Bimodal distribution in Treatment B is clearly visible in the KDE curve, demonstrating
+    the advantage of raincloud plots
+  - Clean colorblind-safe palette with distinct colors for each condition
+  - Proper inline KDE computation with Gaussian kernel for the half-violin clouds
+  - High-resolution output (4800x2700) with appropriately scaled text elements
+  weaknesses:
+  - Legend is overly cluttered with 9 entries (Cloud, Box Plot, and Points for each
+    category) - could consolidate to show just the 4 condition names
+  - Grid line styling could be more subtle to reduce visual noise

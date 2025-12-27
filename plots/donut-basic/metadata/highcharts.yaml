@@ -1,17 +1,24 @@
 library: highcharts
 specification_id: donut-basic
-created: 2025-12-14 10:13:32+00:00
-updated: 2025-12-14 10:13:32+00:00
+created: '2025-12-23T00:51:02Z'
+updated: '2025-12-23T01:22:13Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20206401194
-issue: 733
+workflow_run: 20448001420
+issue: 0
 python_version: 3.13.11
-library_version: 1.10.3
+library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/donut-basic/highcharts/plot.html
-quality_score: 95
+quality_score: 91
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent use of colorblind-safe color palette matching library guidelines
+  - Clean center annotation showing total budget with proper formatting
+  - Well-sized data labels with percentage formatting
+  - Professional appearance with good ring thickness (55% inner size)
+  - Proper Highcharts implementation with correct container setup
+  - Interactive HTML version also generated
+  weaknesses:
+  - Legend text appears slightly small relative to the chart size on the right side
+  - 'Center text could be better vertically centered (currently offset with y: 60)'

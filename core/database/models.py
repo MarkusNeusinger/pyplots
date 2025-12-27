@@ -96,7 +96,6 @@ class Impl(Base):
     # Review feedback (structured arrays from impl-review)
     review_strengths: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)  # What's good
     review_weaknesses: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)  # What needs work
-    review_improvements: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)  # Suggestions
 
     # System
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())

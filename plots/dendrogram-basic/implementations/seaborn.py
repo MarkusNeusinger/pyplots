@@ -1,97 +1,81 @@
 """ pyplots.ai
 dendrogram-basic: Basic Dendrogram
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 from scipy.cluster.hierarchy import dendrogram, linkage
+from sklearn.datasets import load_iris
 
 
-# Set seaborn style for enhanced aesthetics
+# Set seaborn style for better aesthetics
 sns.set_theme(style="whitegrid")
+sns.set_context("talk", font_scale=1.2)
 
-# Data - Iris flower measurements (4 features for 15 samples)
+# Load iris dataset - use subset for readability (spec recommends 10-50 items)
 np.random.seed(42)
+iris = load_iris()
+species_names = ["Setosa", "Versicolor", "Virginica"]
 
-# Simulate iris-like measurements: sepal length, sepal width, petal length, petal width
-# Three species with distinct characteristics
-samples_per_species = 5
+# Select 10 samples from each species (30 total) for clearer visualization
+indices = np.concatenate([np.random.choice(np.where(iris.target == i)[0], 10, replace=False) for i in range(3)])
 
-labels = []
-data = []
+X = iris.data[indices]
 
-# Setosa: shorter petals, wider sepals
-for i in range(samples_per_species):
-    labels.append(f"Setosa-{i + 1}")
-    data.append(
-        [
-            5.0 + np.random.randn() * 0.3,  # sepal length
-            3.4 + np.random.randn() * 0.3,  # sepal width
-            1.5 + np.random.randn() * 0.2,  # petal length
-            0.3 + np.random.randn() * 0.1,  # petal width
-        ]
-    )
+# Create clear labels: Species-Number format using vectorized approach
+species_ids = iris.target[indices]
+labels = [f"{species_names[sid]}-{np.sum(species_ids[: i + 1] == sid)}" for i, sid in enumerate(species_ids)]
 
-# Versicolor: medium measurements
-for i in range(samples_per_species):
-    labels.append(f"Versicolor-{i + 1}")
-    data.append(
-        [
-            5.9 + np.random.randn() * 0.4,  # sepal length
-            2.8 + np.random.randn() * 0.3,  # sepal width
-            4.3 + np.random.randn() * 0.4,  # petal length
-            1.3 + np.random.randn() * 0.2,  # petal width
-        ]
-    )
+# Compute linkage matrix using Ward's method
+linkage_matrix = linkage(X, method="ward")
 
-# Virginica: longer petals and sepals
-for i in range(samples_per_species):
-    labels.append(f"Virginica-{i + 1}")
-    data.append(
-        [
-            6.6 + np.random.randn() * 0.5,  # sepal length
-            3.0 + np.random.randn() * 0.3,  # sepal width
-            5.5 + np.random.randn() * 0.5,  # petal length
-            2.0 + np.random.randn() * 0.3,  # petal width
-        ]
-    )
-
-data = np.array(data)
-
-# Compute hierarchical clustering using Ward's method
-linkage_matrix = linkage(data, method="ward")
-
-# Plot
+# Create figure
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Create dendrogram with Python Blue as primary color
+# Define custom colors using seaborn colorblind palette for species
+palette = sns.color_palette("colorblind", n_colors=3)
+species_color_map = dict(zip(species_names, palette, strict=True))
+
+# Create dendrogram
 dendrogram(
     linkage_matrix,
     labels=labels,
-    ax=ax,
     leaf_rotation=45,
     leaf_font_size=14,
-    above_threshold_color="#306998",  # Python Blue for main branches
-    color_threshold=0.7 * max(linkage_matrix[:, 2]),  # Color threshold for clusters
+    ax=ax,
+    above_threshold_color="#888888",
+    color_threshold=0.7 * max(linkage_matrix[:, 2]),
 )
 
-# Style
-ax.set_xlabel("Sample", fontsize=20)
-ax.set_ylabel("Distance (Ward)", fontsize=20)
+# Color the x-axis labels by species using exact palette colors
+for lbl in ax.get_xticklabels():
+    text = lbl.get_text()
+    species = text.rsplit("-", 1)[0]
+    if species in species_color_map:
+        lbl.set_color(species_color_map[species])
+        lbl.set_fontweight("bold")
+
+# Style the plot with seaborn-compatible settings
+ax.set_xlabel("Iris Samples (by Species)", fontsize=20)
+ax.set_ylabel("Distance (Ward Linkage)", fontsize=20)
 ax.set_title("dendrogram-basic · seaborn · pyplots.ai", fontsize=24)
-ax.tick_params(axis="both", labelsize=16)
-ax.tick_params(axis="x", labelsize=14, rotation=45)
+ax.tick_params(axis="y", labelsize=16)
+ax.tick_params(axis="x", labelsize=14)
+
+# Make grid subtle
+ax.grid(True, alpha=0.3, linestyle="--", axis="y")
+ax.set_axisbelow(True)
+
+# Add legend using scatter plot handles for exact color matching
+for i, species in enumerate(species_names):
+    ax.scatter([], [], c=[palette[i]], s=150, label=species, marker="s")
+ax.legend(title="Species", loc="upper right", fontsize=14, title_fontsize=16, framealpha=0.9)
 
 # Remove top and right spines for cleaner look
 sns.despine(ax=ax)
-
-# Adjust grid - only y-axis, subtle
-ax.yaxis.grid(True, alpha=0.3, linestyle="--")
-ax.xaxis.grid(False)
-ax.set_axisbelow(True)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

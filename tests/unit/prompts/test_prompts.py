@@ -100,8 +100,8 @@ class TestPromptStructure:
 
     def test_quality_criteria_has_scoring_section(self, quality_criteria_content: str) -> None:
         """Quality criteria should have scoring information."""
-        assert "## Scoring" in quality_criteria_content
-        assert "85" in quality_criteria_content, "Pass threshold (85) not mentioned"
+        assert "## Stage 2: Quality Scoring" in quality_criteria_content
+        assert "90" in quality_criteria_content, "Pass threshold (90) not mentioned"
 
     def test_quality_criteria_has_visual_and_code_quality(self, quality_criteria_content: str) -> None:
         """Quality criteria should cover both visual and code quality."""

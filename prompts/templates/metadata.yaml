@@ -25,8 +25,7 @@ preview_html: null     # Interactive HTML (plotly, bokeh, altair, etc.)
 # Quality score (0-100, filled by impl-review)
 quality_score: null
 
-# Review feedback (filled by impl-review, read by impl-generate for improvements)
+# Review feedback (filled by impl-review, read by impl-generate for regeneration)
 review:
   strengths: []        # What's good about this implementation
-  weaknesses: []       # What needs improvement
-  improvements: []     # Specific suggestions for next generation
+  weaknesses: []       # What needs improvement (AI decides HOW to fix)

@@ -1,0 +1,31 @@
+library: highcharts
+specification_id: heatmap-clustered
+created: '2025-12-25T19:26:52Z'
+updated: '2025-12-25T19:29:18Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20509770793
+issue: 2021
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of hierarchical clustering with Ward's method and Euclidean
+    distance as specified
+  - Both row and column dendrograms properly displayed and aligned with the heatmap
+  - Diverging blue-white-red colormap perfectly centered around zero for expression
+    data
+  - Realistic gene expression context with meaningful cluster structure (drug-specific
+    responses)
+  - Clean integration of dendrograms via SVG overlay technique
+  - Good use of square 1:1 aspect ratio appropriate for clustered heatmaps
+  - Properly saves both PNG and interactive HTML versions
+  weaknesses:
+  - The helper function get_dendro_paths() breaks the KISS principle (imports → data
+    → plot → save)
+  - Row dendrogram lines could be slightly thicker for better visibility at the rendered
+    size
+  - Minor excess whitespace at bottom of the chart

@@ -1,0 +1,30 @@
+library: letsplot
+specification_id: heatmap-clustered
+created: '2025-12-25T19:24:08Z'
+updated: '2025-12-25T19:26:18Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20509770819
+issue: 2021
+python_version: 3.13.11
+library_version: 4.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/letsplot/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of composite plot using ggbunch to combine dendrograms
+    with heatmap
+  - Creative solution using scipy for hierarchical clustering since lets-plot lacks
+    native clustermap
+  - Proper diverging colormap (blue-white-red) centered at zero for expression data
+  - Good visual separation between cluster groups reveals biological patterns
+  - Dendrograms properly aligned with heatmap through careful coordinate transformation
+  - Realistic gene expression scenario perfect for demonstrating clustered heatmaps
+  weaknesses:
+  - Contains a helper function get_dendrogram_segments() which violates the KISS no-functions
+    principle
+  - Gene labels on y-axis are slightly small (size=10) for optimal readability at
+    full resolution
+  - Legend is positioned somewhat far from the main heatmap due to ggbunch layout
+    constraints

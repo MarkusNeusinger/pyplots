@@ -1,8 +1,9 @@
 name: "Impl: Review"
-run-name: "Review: PR #${{ inputs.pr_number }}"
+run-name: "Review: PR #${{ inputs.pr_number || github.event.client_payload.pr_number }}"
 
 # AI quality review for implementation PRs
 # Triggered by impl-generate.yml after PR creation
+# Last updated: 2025-12-23
 
 on:
   workflow_dispatch:
@@ -11,6 +12,8 @@ on:
         description: 'PR number to review'
         required: true
         type: string
+  repository_dispatch:
+    types: [review-pr]
 
 jobs:
   review:
@@ -32,7 +35,7 @@ jobs:
         id: pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ inputs.pr_number }}
+          PR_NUMBER: ${{ inputs.pr_number || github.event.client_payload.pr_number }}
         run: |
           PR_DATA=$(gh pr view "$PR_NUMBER" --json headRefName,headRefOid,body)
           HEAD_REF=$(echo "$PR_DATA" | jq -r '.headRefName')
@@ -113,7 +116,6 @@ jobs:
           echo "::notice::Found plot.png for review"
 
       - name: React with eyes emoji
-        if: steps.attempts.outputs.count != '3'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
@@ -122,7 +124,6 @@ jobs:
 
       - name: Run AI Quality Review
         id: review
-        if: steps.attempts.outputs.count != '3'
         continue-on-error: true
         timeout-minutes: 30
         uses: anthropics/claude-code-action@v1
@@ -163,35 +164,37 @@ jobs:
             ### Quality Score: XX/100
 
             ### Criteria Checklist
-            **Spec Compliance (35 pts)**
-            - [ ] SC-01: Correct plot type
-            - [ ] SC-02: Data mapped correctly
-            - [ ] SC-03: Required features present
+            **Visual Quality (40 pts)**
+            - [ ] VQ-01: Text Legibility (10) - all text readable at full size
+            - [ ] VQ-02: No Overlap (8) - no overlapping text
+            - [ ] VQ-03: Element Visibility (8) - markers/lines sized for data density
+            - [ ] VQ-04: Color Accessibility (5) - colorblind-safe
+            - [ ] VQ-05: Layout Balance (5) - good proportions
 
-            **Visual Quality (35 pts)**
-            - [ ] VQ-01: Meaningful axis labels
-            - [ ] VQ-02: No overlapping text
-            - [ ] VQ-04: Clear data elements
+            **Spec Compliance (25 pts)**
+            - [ ] SC-01: Plot Type (8) - correct chart type
+            - [ ] SC-02: Data Mapping (5) - X/Y correctly assigned
+            - [ ] SC-03: Required Features (5) - all spec features present
+            - [ ] SC-06: Title Format (2) - uses {spec-id} · {library} · pyplots.ai
 
-            **Data Quality (15 pts)**
-            - [ ] DQ-01: Feature coverage (shows ALL aspects of plot type)
-            - [ ] DQ-02: Realistic context (plausible scenario)
-            - [ ] DQ-03: Appropriate scale (sensible values)
+            **Data Quality (20 pts)**
+            - [ ] DQ-01: Feature Coverage (8) - shows ALL aspects of plot type
+            - [ ] DQ-02: Realistic Context (7) - plausible scenario
+            - [ ] DQ-03: Appropriate Scale (5) - sensible values
 
-            **Code Quality (15 pts)**
-            - [ ] CQ-01: KISS structure
-            - [ ] CQ-02: Reproducible
+            **Code Quality (10 pts)**
+            - [ ] CQ-01: KISS Structure (3) - no functions/classes
+            - [ ] CQ-02: Reproducibility (3) - fixed seed
+
+            **Library Features (5 pts)**
+            - [ ] LF-01: Uses distinctive library features
 
             ### Strengths
-            - Strength 1
+            - Strength 1 (keep these aspects)
             - Strength 2
 
             ### Weaknesses
-            - Weakness 1
-
-            ### Improvements
-            - Improvement 1
-            - Improvement 2
+            - Weakness 1 (AI will fix these - let it decide HOW)
 
             ### Verdict: APPROVED / REJECTED
             ```
@@ -203,17 +206,16 @@ jobs:
                # Save structured feedback as JSON (one array per file)
                echo '["Strength 1", "Strength 2"]' > review_strengths.json
                echo '["Weakness 1"]' > review_weaknesses.json
-               echo '["Improvement 1", "Improvement 2"]' > review_improvements.json
                ```
 
             8. **DO NOT add ai-approved or ai-rejected labels** - the workflow will add them after updating metadata.
 
             **IMPORTANT**: Your review MUST include the "Image Description" section. A review without an image description will be considered invalid.
-            **IMPORTANT**: The Strengths/Weaknesses/Improvements sections are saved to the metadata for future regeneration. Be specific!
+            **IMPORTANT**: The Strengths/Weaknesses sections are saved to the metadata for future regeneration. Be specific!
 
       - name: Extract quality score
         id: score
-        if: steps.attempts.outputs.count != '3' && steps.review.conclusion == 'success'
+        if: steps.review.conclusion == 'success'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUM: ${{ steps.pr.outputs.pr_number }}
@@ -233,7 +235,7 @@ jobs:
           echo "score=$SCORE" >> $GITHUB_OUTPUT
 
       - name: Add quality score label
-        if: steps.attempts.outputs.count != '3' && steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
+        if: steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUM: ${{ steps.pr.outputs.pr_number }}
@@ -244,11 +246,11 @@ jobs:
           gh pr edit "$PR_NUM" --add-label "$LABEL"
 
       - name: Install Python dependencies for metadata update
-        if: steps.attempts.outputs.count != '3' && steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
+        if: steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
         run: pip install pyyaml
 
       - name: Update metadata and implementation header
-        if: steps.attempts.outputs.count != '3' && steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
+        if: steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SPEC_ID: ${{ steps.pr.outputs.specification_id }}
@@ -267,7 +269,6 @@ jobs:
           # Read review feedback from JSON files (created by Claude)
           STRENGTHS="[]"
           WEAKNESSES="[]"
-          IMPROVEMENTS="[]"
 
           if [ -f "review_strengths.json" ]; then
             STRENGTHS=$(cat review_strengths.json)
@@ -275,56 +276,65 @@ jobs:
           if [ -f "review_weaknesses.json" ]; then
             WEAKNESSES=$(cat review_weaknesses.json)
           fi
-          if [ -f "review_improvements.json" ]; then
-            IMPROVEMENTS=$(cat review_improvements.json)
-          fi
 
-          # Update metadata file with quality score and review feedback
+          # Update metadata file with quality score, timestamp, and review feedback
           if [ -f "$METADATA_FILE" ]; then
-            # Update quality_score
-            sed -i "s/quality_score: null.*/quality_score: ${SCORE}/" "$METADATA_FILE"
-            sed -i "s/quality_score: [0-9]\+.*/quality_score: ${SCORE}/" "$METADATA_FILE"
-
-            # Update updated timestamp
+            # Update all metadata using Python for proper YAML handling
+            # Pass JSON via files to avoid shell escaping issues with quotes
             TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-            sed -i "s/^updated: .*/updated: ${TIMESTAMP}/" "$METADATA_FILE"
 
-            # Update review section using Python for proper YAML handling
-            python3 -c "
+            # Write Python script to temp file to avoid YAML/shell escaping issues
+            cat > /tmp/update_metadata.py << 'EOF'
           import yaml
           import json
           import sys
+          from pathlib import Path
 
-          metadata_file = '$METADATA_FILE'
-          strengths = '$STRENGTHS'
-          weaknesses = '$WEAKNESSES'
-          improvements = '$IMPROVEMENTS'
+          metadata_file = sys.argv[1]
+          score = int(sys.argv[2])
+          timestamp = sys.argv[3]
+
+          strengths = []
+          weaknesses = []
+
+          if Path('review_strengths.json').exists():
+              try:
+                  with open('review_strengths.json') as f:
+                      strengths = json.load(f)
+              except:
+                  pass
+
+          if Path('review_weaknesses.json').exists():
+              try:
+                  with open('review_weaknesses.json') as f:
+                      weaknesses = json.load(f)
+              except:
+                  pass
 
           with open(metadata_file, 'r') as f:
               data = yaml.safe_load(f)
 
+          data['quality_score'] = score
+          data['updated'] = timestamp
+
           if 'review' not in data:
               data['review'] = {}
 
-          try:
-              data['review']['strengths'] = json.loads(strengths)
-          except:
-              data['review']['strengths'] = []
+          data['review']['strengths'] = strengths
+          data['review']['weaknesses'] = weaknesses
 
-          try:
-              data['review']['weaknesses'] = json.loads(weaknesses)
-          except:
-              data['review']['weaknesses'] = []
+          def str_representer(dumper, data):
+              if isinstance(data, str) and data.endswith('Z') and 'T' in data:
+                  return dumper.represent_scalar('tag:yaml.org,2002:str', data, style="'")
+              return dumper.represent_scalar('tag:yaml.org,2002:str', data)
 
-          try:
-              data['review']['improvements'] = json.loads(improvements)
-          except:
-              data['review']['improvements'] = []
+          yaml.add_representer(str, str_representer)
 
           with open(metadata_file, 'w') as f:
               yaml.dump(data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
-          "
+          EOF
 
+            python3 /tmp/update_metadata.py "$METADATA_FILE" "$SCORE" "$TIMESTAMP"
             echo "::notice::Updated metadata with quality score ${SCORE} and review feedback"
           fi
 
@@ -400,7 +410,7 @@ jobs:
           :robot: *[impl-review](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
 
       - name: Add verdict label and take action
-        if: steps.attempts.outputs.count != '3' && steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
+        if: steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUM: ${{ steps.pr.outputs.pr_number }}
@@ -408,60 +418,104 @@ jobs:
           LIBRARY: ${{ steps.pr.outputs.library }}
           SCORE: ${{ steps.score.outputs.score }}
           ATTEMPT: ${{ steps.attempts.outputs.display }}
+          ATTEMPT_COUNT: ${{ steps.attempts.outputs.count }}
+          ISSUE_NUMBER: ${{ steps.pr.outputs.issue_number }}
         run: |
-          # Add ai-approved or ai-rejected label based on score
+          # Score thresholds:
+          # >= 90: Excellent (approved, merge immediately)
+          # < 90: Rejected (repair loop, up to 3 attempts)
+          # After 3 attempts: >= 50 = merge, < 50 = close PR
+
           if [ "$SCORE" -ge 90 ]; then
+            # Approved - merge immediately
             gh pr edit "$PR_NUM" --add-label "ai-approved"
             echo "::notice::Added ai-approved label (score $SCORE >= 90)"
-          else
-            gh pr edit "$PR_NUM" --add-label "ai-rejected"
-            echo "::notice::Added ai-rejected label (score $SCORE < 90)"
-          fi
-
-          # Now check labels and take action
-          HAS_APPROVED=$(gh pr view "$PR_NUM" --json labels -q '[.labels[].name] | any(. == "ai-approved")' || echo "false")
-          HAS_REJECTED=$(gh pr view "$PR_NUM" --json labels -q '[.labels[].name] | any(. == "ai-rejected")' || echo "false")
-
-          if [[ "$HAS_APPROVED" == "true" ]]; then
             echo "Triggering impl-merge.yml for approved PR"
             gh workflow run impl-merge.yml -f pr_number="$PR_NUM"
-            echo "::notice::PR approved. Triggered impl-merge.yml"
 
-          elif [[ "$HAS_REJECTED" == "true" ]]; then
-            echo "Triggering impl-repair.yml for rejected PR"
+          elif [ "$ATTEMPT_COUNT" -eq 3 ]; then
+            # This is the 4th review (after 3 repair attempts)
+            if [ "$SCORE" -ge 50 ]; then
+              # Score 50-89 after 3 attempts: acceptable, merge to repo
+              gh pr edit "$PR_NUM" --add-label "ai-approved"
+
+              gh pr comment "$PR_NUM" --body "## AI Review - Final Status
+
+          ### Score: ${SCORE}/100 (Acceptable)
+
+          After **3 repair attempts**, ${LIBRARY} reached ${SCORE}/100.
+
+          Score ≥ 50 is acceptable for the repository. Merging.
+
+          ---
+          :robot: *[impl-review](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+              echo "Triggering impl-merge.yml for acceptable PR"
+              gh workflow run impl-merge.yml -f pr_number="$PR_NUM"
+
+            else
+              # Score < 50 after 3 attempts: not acceptable, close PR
+              gh pr edit "$PR_NUM" --add-label "quality-poor"
+
+              gh pr comment "$PR_NUM" --body "## AI Review - Final Status
+
+          ### Score: ${SCORE}/100 (Poor Quality)
+
+          After **3 repair attempts**, the score is still below 50. This is not acceptable for the repository.
+
+          **This is treated like an auto-reject.** The PR will be closed and any old implementation will be removed from main.
+
+          **Options:**
+          1. Regenerate from scratch with \`generate:${LIBRARY}\` label
+          2. Manual complete rewrite
+
+          ---
+          :robot: *[impl-review](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+              gh pr close "$PR_NUM"
+
+              # Remove old implementation from main if it exists
+              IMPL_FILE="plots/${SPEC_ID}/implementations/${LIBRARY}.py"
+              META_FILE="plots/${SPEC_ID}/metadata/${LIBRARY}.yaml"
+
+              git fetch origin main
+              if git show origin/main:"$IMPL_FILE" &>/dev/null; then
+                echo "::notice::Removing old implementation from main: $IMPL_FILE"
+                git checkout main
+                git pull origin main
+
+                # Delete implementation and metadata
+                rm -f "$IMPL_FILE" "$META_FILE"
+
+                # Commit and push
+                git add -A
+                git commit -m "chore(${LIBRARY}): remove ${SPEC_ID} impl (score ${SCORE} < 50 after 3 attempts)"
+                git push origin main
+                echo "::notice::Old implementation removed from main"
+              else
+                echo "::notice::No old implementation found on main to remove"
+              fi
+
+              if [ -n "$ISSUE_NUMBER" ]; then
+                gh issue edit "$ISSUE_NUMBER" --add-label "impl:${LIBRARY}:failed" 2>/dev/null || true
+                gh issue comment "$ISSUE_NUMBER" --body "**${LIBRARY}** implementation: score ${SCORE}/100 after 3 attempts (< 50 = rejected). PR #${PR_NUM} closed. Old implementation removed from repository."
+              fi
+            fi
+
+          else
+            # Score < 90, still have repair attempts left
+            gh pr edit "$PR_NUM" --add-label "ai-rejected"
+            if [ "$SCORE" -lt 50 ]; then
+              gh pr edit "$PR_NUM" --add-label "quality-poor"
+              echo "::notice::Added ai-rejected + quality-poor labels (score $SCORE < 50)"
+            else
+              echo "::notice::Added ai-rejected label (score $SCORE: 50-89)"
+            fi
+            echo "Triggering impl-repair.yml for rejected PR (attempt $ATTEMPT)"
             gh pr edit "$PR_NUM" --add-label "ai-attempt-${ATTEMPT}" 2>/dev/null || true
             gh workflow run impl-repair.yml \
               -f pr_number="$PR_NUM" \
               -f specification_id="$SPEC_ID" \
               -f library="$LIBRARY" \
               -f attempt="$ATTEMPT"
-          fi
-
-      - name: Mark as not-feasible after 3 attempts
-        if: steps.attempts.outputs.count == '3'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUM: ${{ steps.pr.outputs.pr_number }}
-          LIBRARY: ${{ steps.pr.outputs.library }}
-          SPEC_ID: ${{ steps.pr.outputs.specification_id }}
-          ISSUE_NUMBER: ${{ steps.pr.outputs.issue_number }}
-        run: |
-          gh pr edit "$PR_NUM" --add-label "not-feasible"
-
-          gh pr comment "$PR_NUM" --body "## AI Review - Final Status
-
-          ### Status: Not Feasible
-
-          AI Review failed after **3 attempts**. This ${LIBRARY} implementation could not meet quality standards.
-
-          **Options:**
-          1. Manual review and fix
-          2. Mark this library as unsupported for this plot type
-
-          ---
-          :robot: *[impl-review](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
-
-          if [ -n "$ISSUE_NUMBER" ]; then
-            gh issue edit "$ISSUE_NUMBER" --add-label "impl:${LIBRARY}:failed" 2>/dev/null || true
-            gh issue comment "$ISSUE_NUMBER" --body "**${LIBRARY}** implementation failed after 3 AI review attempts. See PR #${PR_NUM}."
           fi

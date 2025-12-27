@@ -1,85 +1,83 @@
 """ pyplots.ai
 waffle-basic: Basic Waffle Chart
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-16
+Quality: 91/100 | Created: 2025-12-24
 """
 
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
+from matplotlib.colors import ListedColormap
 
 
-# Data - Budget allocation percentages (sum to 100)
-categories = ["Housing", "Food", "Transport", "Entertainment", "Savings"]
-values = [35, 25, 20, 12, 8]  # Percentages
+# Data - Budget allocation example
+categories = ["Housing", "Food", "Transportation", "Utilities", "Entertainment"]
+values = [35, 25, 20, 12, 8]  # Percentages, sum to 100
 
-# Colors - Python Blue and Yellow first, then colorblind-safe colors
-colors = ["#306998", "#FFD43B", "#8FBC8F", "#CD853F", "#9370DB"]
+# Colors - Python Blue first, then additional colors
+colors = ["#306998", "#FFD43B", "#4CAF50", "#FF7043", "#9C27B0"]
 
-# Create 10x10 grid (100 squares)
+# Grid dimensions (10x10 = 100 squares for percentage representation)
 grid_size = 10
 total_squares = grid_size * grid_size
 
-# Build waffle grid - fill row by row from bottom-left
-waffle = np.zeros((grid_size, grid_size), dtype=int)
-current_square = 0
+# Create grid data
+grid = np.zeros((grid_size, grid_size), dtype=int)
+square_idx = 0
 
-for idx, value in enumerate(values):
-    num_squares = int(round(value))
-    for _ in range(num_squares):
-        if current_square < total_squares:
-            row = current_square // grid_size
-            col = current_square % grid_size
-            waffle[row, col] = idx
-            current_square += 1
+for cat_idx, value in enumerate(values):
+    for _ in range(value):
+        if square_idx < total_squares:
+            row = square_idx // grid_size
+            col = square_idx % grid_size
+            grid[row, col] = cat_idx
+            square_idx += 1
 
-# Create figure
-fig, ax = plt.subplots(figsize=(16, 9))
+# Create DataFrame for seaborn heatmap
+rows, cols = np.meshgrid(range(grid_size), range(grid_size), indexing="ij")
+df = pd.DataFrame({"row": rows.flatten(), "col": cols.flatten(), "category": grid.flatten()})
 
-# Draw squares using seaborn-style approach with matplotlib patches
-square_size = 0.9  # Size of each square (with gap)
-gap = 0.1
+# Create plot (square format better for waffle chart)
+fig, ax = plt.subplots(figsize=(12, 12))
 
-for i in range(grid_size):
-    for j in range(grid_size):
-        category_idx = int(waffle[i, j])
-        rect = plt.Rectangle(
-            (j + gap / 2, i + gap / 2),
-            square_size,
-            square_size,
-            facecolor=colors[category_idx],
-            edgecolor="white",
-            linewidth=2,
-        )
-        ax.add_patch(rect)
+# Use seaborn to create the visualization
+# Create a pivot table for the heatmap-style display
+pivot_data = df.pivot(index="row", columns="col", values="category")
 
-# Set axis limits and remove ticks
-ax.set_xlim(0, grid_size)
-ax.set_ylim(0, grid_size)
-ax.set_aspect("equal")
-ax.axis("off")
+# Create custom colormap from our colors
+cmap = ListedColormap(colors)
 
-# Create legend with category names and percentages
-legend_patches = [
-    mpatches.Patch(color=colors[i], label=f"{categories[i]}: {values[i]}%") for i in range(len(categories))
-]
-ax.legend(
-    handles=legend_patches,
-    loc="center left",
-    bbox_to_anchor=(1.02, 0.5),
-    fontsize=18,
-    frameon=True,
-    fancybox=True,
-    shadow=True,
+# Plot using seaborn heatmap
+sns.heatmap(
+    pivot_data,
+    cmap=cmap,
+    vmin=0,
+    vmax=len(categories) - 1,
+    cbar=False,
+    linewidths=2,
+    linecolor="white",
+    square=True,
+    ax=ax,
 )
 
-# Title
-ax.set_title("Monthly Budget Allocation · waffle-basic · seaborn · pyplots.ai", fontsize=24, pad=20)
+# Y-axis naturally fills from bottom-left going up (like filling a glass)
 
-# Apply seaborn style
-sns.set_style("whitegrid")
-sns.despine(left=True, bottom=True)
+# Remove axis labels and ticks
+ax.set_xlabel("")
+ax.set_ylabel("")
+ax.set_xticks([])
+ax.set_yticks([])
+
+# Title
+ax.set_title("waffle-basic · seaborn · pyplots.ai", fontsize=28, fontweight="bold", pad=20)
+
+# Create legend with category names and percentages
+legend_handles = [
+    mpatches.Patch(color=colors[i], label=f"{categories[i]} ({values[i]}%)") for i in range(len(categories))
+]
+ax.legend(handles=legend_handles, loc="upper center", bbox_to_anchor=(0.5, -0.05), ncol=3, fontsize=18, frameon=False)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

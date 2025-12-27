@@ -1,16 +1,16 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Link from '@mui/material/Link';
-import SubjectIcon from '@mui/icons-material/Subject';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import type { PlotImage, LibraryInfo, SpecInfo } from '../types';
+import { BATCH_SIZE, type ImageSize } from '../constants';
+import { useCopyCode } from '../hooks';
 
 interface ImageCardProps {
   image: PlotImage;
@@ -20,9 +20,11 @@ interface ImageCardProps {
   librariesData: LibraryInfo[];
   specsData: SpecInfo[];
   openTooltip: string | null;
+  imageSize: ImageSize;
   onTooltipToggle: (id: string | null) => void;
   onClick: () => void;
   onTrackEvent?: (name: string, props?: Record<string, string | undefined>) => void;
+  onImageLoad?: () => void;
 }
 
 export function ImageCard({
@@ -33,15 +35,22 @@ export function ImageCard({
   librariesData,
   specsData,
   openTooltip,
+  imageSize,
   onTooltipToggle,
   onClick,
   onTrackEvent,
+  onImageLoad,
 }: ImageCardProps) {
-  const [copied, setCopied] = useState(false);
+  const { copied, copyToClipboard } = useCopyCode({
+    onCopy: () => onTrackEvent?.('copy_code', { spec: image.spec_id || selectedSpec, library: image.library, method: 'card' }),
+  });
+  const labelFontSize = imageSize === 'compact' ? '0.65rem' : '0.8rem';
 
-  const label = viewMode === 'library' ? image.spec_id : image.library;
-  const tooltipId = viewMode === 'spec' ? image.library : (image.spec_id || '');
-  const isTooltipOpen = openTooltip === tooltipId;
+  const cardId = `${image.spec_id}-${image.library}`;
+  const specTooltipId = `spec-${cardId}`;
+  const libTooltipId = `lib-${cardId}`;
+  const isSpecTooltipOpen = openTooltip === specTooltipId;
+  const isLibTooltipOpen = openTooltip === libTooltipId;
 
   const libraryInfo = librariesData.find(l => l.id === image.library);
   const specInfo = specsData.find(s => s.id === image.spec_id);
@@ -49,24 +58,24 @@ export function ImageCard({
   const handleCopyCode = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     if (image.code) {
-      navigator.clipboard.writeText(image.code);
-      setCopied(true);
-      onTrackEvent?.('copy_code', { spec: image.spec_id || selectedSpec, library: image.library, method: 'card' });
-      setTimeout(() => setCopied(false), 2000);
+      copyToClipboard(image.code);
     }
-  }, [image.code, image.library, image.spec_id, selectedSpec, onTrackEvent]);
+  }, [image.code, copyToClipboard]);
+
+  // Animate first batch only (initial load), subsequent batches appear instantly
+  const isFirstBatch = index < BATCH_SIZE;
 
   return (
     <Box
-      sx={{
-        animation: 'fadeIn 0.6s ease-out',
-        animationDelay: `${index * 0.1}s`,
+      sx={isFirstBatch ? {
+        animation: 'fadeIn 0.4s ease-out',
+        animationDelay: `${index * 0.03}s`,
         animationFillMode: 'backwards',
         '@keyframes fadeIn': {
-          from: { opacity: 0, transform: 'translateY(20px)' },
+          from: { opacity: 0, transform: 'translateY(10px)' },
           to: { opacity: 1, transform: 'translateY(0)' },
         },
-      }}
+      } : undefined}
     >
       <Card
         elevation={0}
@@ -142,132 +151,129 @@ export function ImageCard({
             objectFit: 'contain',
             bgcolor: '#fff',
           }}
+          onLoad={onImageLoad}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.style.display = 'none';
+            onImageLoad?.(); // Count errors as loaded too
           }}
         />
       </Card>
-      {/* Label below card: library name in spec mode, spec_id in library mode + info button */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 1.5 }}>
-        <Typography
-          sx={{
-            textAlign: 'center',
-            fontSize: '0.8rem',
-            fontWeight: 600,
-            fontFamily: '"JetBrains Mono", monospace',
-            color: '#9ca3af',
-            textTransform: 'lowercase',
+      {/* Label below card: clickable spec-id · library */}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 1.5, gap: 0.5 }}>
+        {/* Clickable Spec ID */}
+        <Tooltip
+          title={specInfo?.description || 'No description available'}
+          arrow
+          placement="bottom"
+          open={isSpecTooltipOpen}
+          disableFocusListener
+          disableHoverListener
+          disableTouchListener
+          slotProps={{
+            tooltip: {
+              sx: {
+                maxWidth: { xs: '80vw', sm: 400 },
+                fontFamily: '"JetBrains Mono", monospace',
+                fontSize: labelFontSize,
+              },
+            },
           }}
         >
-          {label}
-        </Typography>
-        {/* Info button: shows library desc in spec mode, spec desc in library mode */}
-        {viewMode === 'spec' ? (
-          <Tooltip
-            title={
-              <Box>
-                <Typography sx={{ fontSize: '0.8rem', mb: 1 }}>
-                  {libraryInfo?.description || ''}
-                </Typography>
-                {libraryInfo?.documentation_url && (
-                  <Link
-                    href={libraryInfo.documentation_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    sx={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 0.5,
-                      fontSize: '0.75rem',
-                      color: '#90caf9',
-                      textDecoration: 'underline',
-                      '&:hover': { color: '#fff' },
-                    }}
-                  >
-                    {libraryInfo.documentation_url.replace(/^https?:\/\//, '')} <OpenInNewIcon sx={{ fontSize: 12 }} />
-                  </Link>
-                )}
-              </Box>
-            }
-            arrow
-            placement="bottom"
-            open={isTooltipOpen}
-            disableFocusListener
-            disableHoverListener
-            disableTouchListener
-            slotProps={{
-              tooltip: {
-                sx: {
-                  maxWidth: { xs: '80vw', sm: 400 },
-                  fontFamily: '"JetBrains Mono", monospace',
-                  fontSize: '0.8rem',
-                },
+          <Typography
+            data-description-btn
+            onClick={(e) => {
+              e.stopPropagation();
+              onTooltipToggle(isSpecTooltipOpen ? null : specTooltipId);
+              if (!isSpecTooltipOpen) {
+                onTrackEvent?.('description_spec', { spec: image.spec_id });
+              }
+            }}
+            sx={{
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              fontFamily: '"JetBrains Mono", monospace',
+              color: isSpecTooltipOpen ? '#3776AB' : '#9ca3af',
+              textTransform: 'lowercase',
+              cursor: 'pointer',
+              '&:hover': {
+                color: '#3776AB',
               },
             }}
           >
-            <IconButton
-              data-description-btn
-              size="small"
-              aria-label="Show library description"
-              onClick={(e) => {
-                e.stopPropagation();
-                onTooltipToggle(isTooltipOpen ? null : tooltipId);
-              }}
-              sx={{
-                ml: 0.25,
-                p: 0.25,
-                color: isTooltipOpen ? '#3776AB' : '#d1d5db',
-                '&:hover': {
-                  color: '#3776AB',
-                  bgcolor: 'transparent',
-                },
-              }}
-            >
-              <SubjectIcon sx={{ fontSize: 14 }} />
-            </IconButton>
-          </Tooltip>
-        ) : (
-          <Tooltip
-            title={specInfo?.description || ''}
-            arrow
-            placement="bottom"
-            open={isTooltipOpen}
-            disableFocusListener
-            disableHoverListener
-            disableTouchListener
-            slotProps={{
-              tooltip: {
-                sx: {
-                  maxWidth: { xs: '80vw', sm: 400 },
-                  fontFamily: '"JetBrains Mono", monospace',
-                  fontSize: '0.8rem',
-                },
+            {image.spec_id}
+          </Typography>
+        </Tooltip>
+
+        <Typography sx={{ color: '#d1d5db', fontSize: labelFontSize }}>·</Typography>
+
+        {/* Clickable Library */}
+        <Tooltip
+          title={
+            <Box>
+              <Typography sx={{ fontSize: '0.8rem', mb: 1 }}>
+                {libraryInfo?.description || 'No description available'}
+              </Typography>
+              {libraryInfo?.documentation_url && (
+                <Link
+                  href={libraryInfo.documentation_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                    fontSize: '0.75rem',
+                    color: '#90caf9',
+                    textDecoration: 'underline',
+                    '&:hover': { color: '#fff' },
+                  }}
+                >
+                  {libraryInfo.documentation_url.replace(/^https?:\/\//, '')} <OpenInNewIcon sx={{ fontSize: 12 }} />
+                </Link>
+              )}
+            </Box>
+          }
+          arrow
+          placement="bottom"
+          open={isLibTooltipOpen}
+          disableFocusListener
+          disableHoverListener
+          disableTouchListener
+          slotProps={{
+            tooltip: {
+              sx: {
+                maxWidth: { xs: '80vw', sm: 400 },
+                fontFamily: '"JetBrains Mono", monospace',
+                fontSize: labelFontSize,
+              },
+            },
+          }}
+        >
+          <Typography
+            data-description-btn
+            onClick={(e) => {
+              e.stopPropagation();
+              onTooltipToggle(isLibTooltipOpen ? null : libTooltipId);
+              if (!isLibTooltipOpen) {
+                onTrackEvent?.('description_lib', { library: image.library });
+              }
+            }}
+            sx={{
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              fontFamily: '"JetBrains Mono", monospace',
+              color: isLibTooltipOpen ? '#3776AB' : '#9ca3af',
+              textTransform: 'lowercase',
+              cursor: 'pointer',
+              '&:hover': {
+                color: '#3776AB',
               },
             }}
           >
-            <IconButton
-              data-description-btn
-              size="small"
-              aria-label="Show specification description"
-              onClick={(e) => {
-                e.stopPropagation();
-                onTooltipToggle(isTooltipOpen ? null : tooltipId);
-              }}
-              sx={{
-                ml: 0.25,
-                p: 0.25,
-                color: isTooltipOpen ? '#3776AB' : '#d1d5db',
-                '&:hover': {
-                  color: '#3776AB',
-                  bgcolor: 'transparent',
-                },
-              }}
-            >
-              <SubjectIcon sx={{ fontSize: 14 }} />
-            </IconButton>
-          </Tooltip>
-        )}
+            {image.library}
+          </Typography>
+        </Tooltip>
       </Box>
     </Box>
   );

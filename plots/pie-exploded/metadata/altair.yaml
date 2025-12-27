@@ -1,0 +1,26 @@
+library: altair
+specification_id: pie-exploded
+created: '2025-12-25T20:16:14Z'
+updated: '2025-12-25T20:41:29Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20510238868
+issue: 2013
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/altair/plot.html
+quality_score: 75
+review:
+  strengths:
+  - Clean code structure with clear comments explaining the explosion technique
+  - Good colorblind-safe palette starting with Python brand colors
+  - Realistic market share scenario with meaningful category emphasis
+  - Large, readable percentage labels on each slice
+  - Correct title format following pyplots.ai convention
+  weaknesses:
+  - Legend is not visible in the rendered output despite being configured in code
+    (may be cropped or off-canvas)
+  - Explosion effect renders as an outer ring/halo rather than traditional separation
+    where slices are pulled away from the center
+  - Pie chart appears off-center due to the missing/cropped legend space

@@ -1,108 +1,107 @@
 """ pyplots.ai
 ternary-basic: Basic Ternary Plot
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-17
+Quality: 91/100 | Created: 2025-12-24
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 
 
 # Set seaborn style
-sns.set_theme(style="whitegrid")
+sns.set_style("whitegrid")
+sns.set_context("talk", font_scale=1.2)
 
-# Data - soil composition samples (sand, silt, clay)
+# Data - Soil composition samples (Sand, Silt, Clay)
 np.random.seed(42)
 n_points = 50
 
 # Generate random compositions that sum to 100
 raw = np.random.dirichlet(alpha=[2, 2, 2], size=n_points) * 100
-sand = raw[:, 0]
-silt = raw[:, 1]
-clay = raw[:, 2]
+df = pd.DataFrame({"Sand": raw[:, 0], "Silt": raw[:, 1], "Clay": raw[:, 2]})
 
+# Ternary coordinates transformation (vectorized)
+# Convert (a, b, c) to Cartesian (x, y) where a + b + c = 100
+# Triangle vertices: Bottom-left (0,0)=Sand, Bottom-right (1,0)=Silt, Top (0.5, sqrt(3)/2)=Clay
+sqrt3_2 = np.sqrt(3) / 2
+sand_norm = df["Sand"].values / 100
+silt_norm = df["Silt"].values / 100
+clay_norm = df["Clay"].values / 100
+x = 0.5 * (2 * silt_norm + clay_norm)
+y = sqrt3_2 * clay_norm
 
-# Helper functions to convert ternary to Cartesian coordinates
-# In a ternary plot: A at top, B at bottom-left, C at bottom-right
-def ternary_to_cartesian(a, b, c):
-    """Convert ternary coordinates (a, b, c) to Cartesian (x, y)."""
-    total = a + b + c
-    a, b, c = a / total, b / total, c / total
-    x = 0.5 * (2 * c + a)
-    y = (np.sqrt(3) / 2) * a
-    return x, y
+# Create plot
+fig, ax = plt.subplots(figsize=(12, 12))
 
+# Draw triangle outline
+triangle = np.array([[0, 0], [1, 0], [0.5, sqrt3_2], [0, 0]])
+ax.plot(triangle[:, 0], triangle[:, 1], "k-", linewidth=2, zorder=5)
 
-# Create figure
-fig, ax = plt.subplots(figsize=(16, 9))
+# Draw grid lines at 10% intervals
+grid_color = "#888888"
+grid_alpha = 0.3
+grid_lw = 1
 
-# Draw triangle border
-triangle_x = [0.5, 0, 1, 0.5]
-triangle_y = [np.sqrt(3) / 2, 0, 0, np.sqrt(3) / 2]
-ax.plot(triangle_x, triangle_y, color="black", linewidth=2.5)
+for level in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
+    # Lines parallel to bottom (constant Clay)
+    x1, y1 = 0.5 * level, sqrt3_2 * level
+    x2, y2 = 1 - 0.5 * level, sqrt3_2 * level
+    ax.plot([x1, x2], [y1, y2], color=grid_color, alpha=grid_alpha, linewidth=grid_lw, zorder=1)
 
-# Draw grid lines at 20% intervals
-grid_color = "#cccccc"
-for i in range(1, 5):
-    frac = i / 5
-    # Lines parallel to each side
-    # Parallel to bottom (constant A)
-    x1, y1 = ternary_to_cartesian(frac * 100, (1 - frac) * 100, 0)
-    x2, y2 = ternary_to_cartesian(frac * 100, 0, (1 - frac) * 100)
-    ax.plot([x1, x2], [y1, y2], color=grid_color, linewidth=1, linestyle="--", alpha=0.7)
+    # Lines parallel to left edge (constant Silt)
+    x1, y1 = level, 0
+    x2, y2 = 0.5 + 0.5 * level, sqrt3_2 * (1 - level)
+    ax.plot([x1, x2], [y1, y2], color=grid_color, alpha=grid_alpha, linewidth=grid_lw, zorder=1)
 
-    # Parallel to left side (constant C)
-    x1, y1 = ternary_to_cartesian(0, frac * 100, (1 - frac) * 100)
-    x2, y2 = ternary_to_cartesian((1 - frac) * 100, frac * 100, 0)
-    ax.plot([x1, x2], [y1, y2], color=grid_color, linewidth=1, linestyle="--", alpha=0.7)
+    # Lines parallel to right edge (constant Sand)
+    x1, y1 = 0.5 * (1 - level), sqrt3_2 * (1 - level)
+    x2, y2 = 1 - level, 0
+    ax.plot([x1, x2], [y1, y2], color=grid_color, alpha=grid_alpha, linewidth=grid_lw, zorder=1)
 
-    # Parallel to right side (constant B)
-    x1, y1 = ternary_to_cartesian(0, (1 - frac) * 100, frac * 100)
-    x2, y2 = ternary_to_cartesian((1 - frac) * 100, 0, frac * 100)
-    ax.plot([x1, x2], [y1, y2], color=grid_color, linewidth=1, linestyle="--", alpha=0.7)
+# Add tick marks along edges (at 20% intervals)
+tick_length = 0.02
 
-# Add tick labels along edges
-tick_fontsize = 14
-offset = 0.04
-for i in range(0, 6):
-    frac = i / 5
-    label = f"{int(frac * 100)}"
+for level in [0.2, 0.4, 0.6, 0.8]:
+    # Bottom edge ticks (Silt percentage increasing left to right)
+    ax.plot([level, level], [-tick_length, 0], "k-", linewidth=1.5, zorder=5)
+    ax.text(level, -0.05, f"{int(level * 100)}%", ha="center", va="top", fontsize=14)
 
-    # Left edge (Sand %) - reading from bottom to top
-    x, y = ternary_to_cartesian(frac * 100, (1 - frac) * 100, 0)
-    ax.text(x - offset, y, label, fontsize=tick_fontsize, ha="right", va="center")
+    # Left edge ticks (Clay percentage)
+    x_tick = 0.5 * level
+    y_tick = sqrt3_2 * level
+    dx, dy = -tick_length * np.cos(np.pi / 6), -tick_length * np.sin(np.pi / 6)
+    ax.plot([x_tick, x_tick + dx], [y_tick, y_tick + dy], "k-", linewidth=1.5, zorder=5)
+    ax.text(x_tick + dx - 0.03, y_tick + dy + 0.01, f"{int(level * 100)}%", ha="right", va="center", fontsize=14)
 
-    # Right edge (Silt %)
-    x, y = ternary_to_cartesian(frac * 100, 0, (1 - frac) * 100)
-    ax.text(x + offset, y, label, fontsize=tick_fontsize, ha="left", va="center")
+    # Right edge ticks (Clay percentage from right side)
+    x_tick = 1 - 0.5 * level
+    y_tick = sqrt3_2 * level
+    dx, dy = tick_length * np.cos(np.pi / 6), -tick_length * np.sin(np.pi / 6)
+    ax.plot([x_tick, x_tick + dx], [y_tick, y_tick + dy], "k-", linewidth=1.5, zorder=5)
+    ax.text(x_tick + dx + 0.03, y_tick + dy + 0.01, f"{int(level * 100)}%", ha="left", va="center", fontsize=14)
 
-    # Bottom edge (Clay %)
-    x, y = ternary_to_cartesian(0, (1 - frac) * 100, frac * 100)
-    ax.text(x, y - offset, label, fontsize=tick_fontsize, ha="center", va="top")
+# Plot data points using seaborn
+scatter_df = pd.DataFrame({"x": x, "y": y})
+sns.scatterplot(
+    data=scatter_df, x="x", y="y", ax=ax, color="#306998", s=200, alpha=0.7, edgecolor="white", linewidth=1.5, zorder=10
+)
 
-# Convert data to Cartesian and plot
-x_data, y_data = ternary_to_cartesian(sand, silt, clay)
-ax.scatter(x_data, y_data, s=200, color="#306998", alpha=0.7, edgecolors="white", linewidth=1.5)
+# Vertex labels
+label_offset = 0.08
+ax.text(0, -label_offset, "Sand (100%)", ha="center", va="top", fontsize=20, fontweight="bold")
+ax.text(1, -label_offset, "Silt (100%)", ha="center", va="top", fontsize=20, fontweight="bold")
+ax.text(0.5, sqrt3_2 + label_offset, "Clay (100%)", ha="center", va="bottom", fontsize=20, fontweight="bold")
 
-# Add vertex labels
-label_offset = 0.06
-ax.text(0.5, np.sqrt(3) / 2 + label_offset, "Sand (%)", fontsize=20, ha="center", va="bottom", fontweight="bold")
-ax.text(-label_offset - 0.02, -label_offset, "Silt (%)", fontsize=20, ha="right", va="top", fontweight="bold")
-ax.text(1 + label_offset + 0.02, -label_offset, "Clay (%)", fontsize=20, ha="left", va="top", fontweight="bold")
-
-# Add axis labels for edge readings
-ax.text(-0.08, np.sqrt(3) / 4, "Sand →", fontsize=16, ha="center", va="center", rotation=60, color="#306998")
-ax.text(1.08, np.sqrt(3) / 4, "← Silt", fontsize=16, ha="center", va="center", rotation=-60, color="#306998")
-ax.text(0.5, -0.12, "← Clay →", fontsize=16, ha="center", va="top", color="#306998")
-
-# Title - placed with more padding to avoid overlap with vertex labels
-ax.set_title("Soil Composition · ternary-basic · seaborn · pyplots.ai", fontsize=24, pad=40)
+# Title
+ax.set_title("Soil Composition · ternary-basic · seaborn · pyplots.ai", fontsize=24, pad=20)
 
 # Clean up axes
+ax.set_xlim(-0.15, 1.15)
+ax.set_ylim(-0.18, 1.05)
 ax.set_aspect("equal")
 ax.axis("off")
 
-# Adjust layout
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight")
+plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")

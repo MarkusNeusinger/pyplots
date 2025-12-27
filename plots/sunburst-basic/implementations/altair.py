@@ -1,7 +1,7 @@
 """ pyplots.ai
 sunburst-basic: Basic Sunburst Chart
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 90/100 | Created: 2025-12-14
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import altair as alt
@@ -38,170 +38,104 @@ data = [
 
 df = pd.DataFrame(data)
 
-# Calculate totals for each level
-total_value = df["value"].sum()
+# Color palette - Python Blue as primary, with colorblind-safe colors
+level1_colors = {
+    "Engineering": "#306998",  # Python Blue
+    "Marketing": "#FFD43B",  # Python Yellow
+    "Operations": "#4ECDC4",  # Teal
+    "Sales": "#FF6B6B",  # Coral
+}
 
-# Level 1 (innermost ring): Department totals
-level1_totals = df.groupby("level_1")["value"].sum().reset_index()
-level1_totals.columns = ["name", "value"]
-level1_totals["level"] = 1
-level1_totals = level1_totals.sort_values("value", ascending=False).reset_index(drop=True)
+# Helper to lighten colors for child levels
+hex_to_lighter = {}
+for name, hex_color in level1_colors.items():
+    r, g, b = int(hex_color[1:3], 16), int(hex_color[3:5], 16), int(hex_color[5:7], 16)
+    # Level 2: 25% lighter
+    r2, g2, b2 = int(r + (255 - r) * 0.25), int(g + (255 - g) * 0.25), int(b + (255 - b) * 0.25)
+    # Level 3: 50% lighter
+    r3, g3, b3 = int(r + (255 - r) * 0.5), int(g + (255 - g) * 0.5), int(b + (255 - b) * 0.5)
+    hex_to_lighter[name] = {"l1": hex_color, "l2": f"#{r2:02x}{g2:02x}{b2:02x}", "l3": f"#{r3:02x}{g3:02x}{b3:02x}"}
 
-# Level 2 (middle ring): Team totals
-level2_totals = df.groupby(["level_1", "level_2"])["value"].sum().reset_index()
-level2_totals.columns = ["parent", "name", "value"]
-level2_totals["level"] = 2
+# Level 1: Department totals
+level1_df = df.groupby("level_1")["value"].sum().reset_index()
+level1_df.columns = ["name", "value"]
+level1_df = level1_df.sort_values("value", ascending=False).reset_index(drop=True)
+total_value = level1_df["value"].sum()
 
-# Level 3 (outer ring): Project values
-level3_totals = df.copy()
-level3_totals["parent_l1"] = level3_totals["level_1"]
-level3_totals["parent_l2"] = level3_totals["level_2"]
-level3_totals["name"] = level3_totals["level_3"]
-level3_totals["level"] = 3
+# Calculate level 1 angles (full circle distribution)
+level1_df["theta"] = 0.0
+level1_df["theta2"] = 0.0
+current_angle = 0
+for idx in level1_df.index:
+    fraction = level1_df.loc[idx, "value"] / total_value
+    level1_df.loc[idx, "theta"] = current_angle
+    level1_df.loc[idx, "theta2"] = current_angle + fraction * 2 * np.pi
+    current_angle = level1_df.loc[idx, "theta2"]
 
-# Color palette - use Python Blue as primary, with related colors for sub-categories
-level1_colors = {"Engineering": "#306998", "Marketing": "#FFD43B", "Operations": "#4ECDC4", "Sales": "#FF6B6B"}
+level1_df["color"] = level1_df["name"].map(level1_colors)
 
+# Level 2: Team totals
+level2_df = df.groupby(["level_1", "level_2"])["value"].sum().reset_index()
+level2_df.columns = ["parent", "name", "value"]
+level2_df = level2_df.sort_values(["parent", "value"], ascending=[True, False]).reset_index(drop=True)
 
-# Generate lighter shades for level 2 and 3
-def lighten_color(hex_color, factor=0.3):
-    """Lighten a hex color by mixing with white."""
-    hex_color = hex_color.lstrip("#")
-    r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
-    r = int(r + (255 - r) * factor)
-    g = int(g + (255 - g) * factor)
-    b = int(b + (255 - b) * factor)
-    return f"#{r:02x}{g:02x}{b:02x}"
+# Calculate level 2 angles (within parent's arc)
+level2_df["theta"] = 0.0
+level2_df["theta2"] = 0.0
+parent_cumulative = {row["name"]: row["theta"] for _, row in level1_df.iterrows()}
 
+for idx in level2_df.index:
+    parent = level2_df.loc[idx, "parent"]
+    parent_row = level1_df[level1_df["name"] == parent].iloc[0]
+    parent_start, parent_end = parent_row["theta"], parent_row["theta2"]
+    parent_total = parent_row["value"]
 
-# Calculate angular positions for each segment
-# Angles in Altair arc mark are in radians, starting from 12 o'clock going clockwise
-
-
-def calculate_angles(df_level, parent_angles=None, parent_col=None):
-    """Calculate start and end angles for each segment."""
-    if parent_angles is None:
-        # Root level - distribute across full circle
-        total = df_level["value"].sum()
-        angles = []
-        current_angle = 0
-        for _, row in df_level.iterrows():
-            fraction = row["value"] / total
-            start = current_angle
-            end = current_angle + fraction * 2 * np.pi
-            angles.append({"start": start, "end": end})
-            current_angle = end
-        return angles
-    else:
-        # Child level - distribute within parent's angular range
-        angles = []
-        for _, row in df_level.iterrows():
-            parent_name = row[parent_col]
-            parent_data = parent_angles[parent_name]
-            parent_start = parent_data["start"]
-            parent_end = parent_data["end"]
-            parent_total = parent_data["total"]
-
-            # Calculate this segment's fraction of parent
-            fraction = row["value"] / parent_total
-            segment_angle = (parent_end - parent_start) * fraction
-
-            # Find cumulative angle within parent
-            cumulative = parent_data.get("cumulative", parent_start)
-            start = cumulative
-            end = cumulative + segment_angle
-
-            parent_data["cumulative"] = end
-            angles.append({"start": start, "end": end})
-        return angles
-
-
-# Build level 1 angles
-level1_angles = calculate_angles(level1_totals)
-level1_totals["theta"] = [a["start"] for a in level1_angles]
-level1_totals["theta2"] = [a["end"] for a in level1_angles]
-
-# Create parent angle lookup for level 2
-parent_angles_l1 = {}
-for _, row in level1_totals.iterrows():
-    parent_angles_l1[row["name"]] = {
-        "start": row["theta"],
-        "end": row["theta2"],
-        "total": row["value"],
-        "cumulative": row["theta"],
-    }
-
-# Sort level2 by parent then by value for consistent ordering
-level2_totals = level2_totals.sort_values(["parent", "value"], ascending=[True, False]).reset_index(drop=True)
-
-# Build level 2 angles
-level2_angles_list = []
-for _, row in level2_totals.iterrows():
-    parent_name = row["parent"]
-    parent_data = parent_angles_l1[parent_name]
-    parent_start = parent_data["start"]
-    parent_end = parent_data["end"]
-    parent_total = parent_data["total"]
-
-    fraction = row["value"] / parent_total
+    fraction = level2_df.loc[idx, "value"] / parent_total
     segment_angle = (parent_end - parent_start) * fraction
-    cumulative = parent_data.get("cumulative", parent_start)
 
-    level2_angles_list.append({"start": cumulative, "end": cumulative + segment_angle})
-    parent_data["cumulative"] = cumulative + segment_angle
+    level2_df.loc[idx, "theta"] = parent_cumulative[parent]
+    level2_df.loc[idx, "theta2"] = parent_cumulative[parent] + segment_angle
+    parent_cumulative[parent] = level2_df.loc[idx, "theta2"]
 
-level2_totals["theta"] = [a["start"] for a in level2_angles_list]
-level2_totals["theta2"] = [a["end"] for a in level2_angles_list]
+# Assign lighter colors for level 2
+level2_df["color"] = level2_df["parent"].apply(lambda p: hex_to_lighter[p]["l2"])
 
-# Create parent angle lookup for level 3
-parent_angles_l2 = {}
-for _, row in level2_totals.iterrows():
+# Level 3: Project values
+level3_df = df.copy()
+level3_df["parent_l1"] = level3_df["level_1"]
+level3_df["parent_l2"] = level3_df["level_2"]
+level3_df["name"] = level3_df["level_3"]
+level3_df = level3_df.sort_values(["level_1", "level_2", "value"], ascending=[True, True, False]).reset_index(drop=True)
+
+# Calculate level 3 angles (within parent's arc in level 2)
+level3_df["theta"] = 0.0
+level3_df["theta2"] = 0.0
+l2_cumulative = {}
+for _, row in level2_df.iterrows():
     key = f"{row['parent']}|{row['name']}"
-    parent_angles_l2[key] = {
-        "start": row["theta"],
-        "end": row["theta2"],
-        "total": row["value"],
-        "cumulative": row["theta"],
-    }
+    l2_cumulative[key] = {"start": row["theta"], "current": row["theta"], "end": row["theta2"], "total": row["value"]}
 
-# Sort level3 for consistent ordering
-level3_totals = level3_totals.sort_values(["level_1", "level_2", "value"], ascending=[True, True, False]).reset_index(
-    drop=True
-)
+for idx in level3_df.index:
+    key = f"{level3_df.loc[idx, 'level_1']}|{level3_df.loc[idx, 'level_2']}"
+    l2_data = l2_cumulative[key]
+    fraction = level3_df.loc[idx, "value"] / l2_data["total"]
+    segment_angle = (l2_data["end"] - l2_data["start"]) * fraction
 
-# Build level 3 angles
-level3_angles_list = []
-for _, row in level3_totals.iterrows():
-    key = f"{row['level_1']}|{row['level_2']}"
-    parent_data = parent_angles_l2[key]
-    parent_start = parent_data["start"]
-    parent_end = parent_data["end"]
-    parent_total = parent_data["total"]
+    level3_df.loc[idx, "theta"] = l2_data["current"]
+    level3_df.loc[idx, "theta2"] = l2_data["current"] + segment_angle
+    l2_data["current"] = level3_df.loc[idx, "theta2"]
 
-    fraction = row["value"] / parent_total
-    segment_angle = (parent_end - parent_start) * fraction
-    cumulative = parent_data.get("cumulative", parent_start)
+# Assign lightest colors for level 3
+level3_df["color"] = level3_df["level_1"].apply(lambda p: hex_to_lighter[p]["l3"])
 
-    level3_angles_list.append({"start": cumulative, "end": cumulative + segment_angle})
-    parent_data["cumulative"] = cumulative + segment_angle
+# Ring radii (scaled for 1200x1200 canvas)
+inner_r1, outer_r1 = 100, 200  # Level 1 (innermost)
+inner_r2, outer_r2 = 210, 310  # Level 2 (middle)
+inner_r3, outer_r3 = 320, 420  # Level 3 (outermost)
 
-level3_totals["theta"] = [a["start"] for a in level3_angles_list]
-level3_totals["theta2"] = [a["end"] for a in level3_angles_list]
-
-# Assign colors based on parent
-level1_totals["color"] = level1_totals["name"].map(level1_colors)
-level2_totals["color"] = level2_totals["parent"].map(level1_colors).apply(lambda c: lighten_color(c, 0.25))
-level3_totals["color"] = level3_totals["level_1"].map(level1_colors).apply(lambda c: lighten_color(c, 0.5))
-
-# Ring radii
-inner_r1, outer_r1 = 80, 160  # Level 1 (innermost)
-inner_r2, outer_r2 = 165, 245  # Level 2 (middle)
-inner_r3, outer_r3 = 250, 330  # Level 3 (outermost)
-
-# Create arc charts for each level
 # Level 1 - innermost ring (Departments)
 chart_l1 = (
-    alt.Chart(level1_totals)
+    alt.Chart(level1_df)
     .mark_arc(innerRadius=inner_r1, outerRadius=outer_r1, stroke="#ffffff", strokeWidth=2)
     .encode(
         theta=alt.Theta("theta:Q", scale=alt.Scale(domain=[0, 2 * np.pi])),
@@ -213,7 +147,7 @@ chart_l1 = (
 
 # Level 2 - middle ring (Teams)
 chart_l2 = (
-    alt.Chart(level2_totals)
+    alt.Chart(level2_df)
     .mark_arc(innerRadius=inner_r2, outerRadius=outer_r2, stroke="#ffffff", strokeWidth=1.5)
     .encode(
         theta=alt.Theta("theta:Q", scale=alt.Scale(domain=[0, 2 * np.pi])),
@@ -229,7 +163,7 @@ chart_l2 = (
 
 # Level 3 - outer ring (Projects)
 chart_l3 = (
-    alt.Chart(level3_totals)
+    alt.Chart(level3_df)
     .mark_arc(innerRadius=inner_r3, outerRadius=outer_r3, stroke="#ffffff", strokeWidth=1)
     .encode(
         theta=alt.Theta("theta:Q", scale=alt.Scale(domain=[0, 2 * np.pi])),
@@ -244,44 +178,59 @@ chart_l3 = (
     )
 )
 
-# Add labels for level 1 segments (department names)
-# Calculate label positions at middle of each arc segment
-level1_totals["label_angle"] = (level1_totals["theta"] + level1_totals["theta2"]) / 2
-level1_totals["label_radius"] = (inner_r1 + outer_r1) / 2
-level1_totals["label_x"] = level1_totals["label_radius"] * np.sin(level1_totals["label_angle"])
-level1_totals["label_y"] = -level1_totals["label_radius"] * np.cos(level1_totals["label_angle"])
+# Add labels for level 1 segments (department names at arc center)
+level1_df["label_angle"] = (level1_df["theta"] + level1_df["theta2"]) / 2
+level1_df["label_radius"] = (inner_r1 + outer_r1) / 2
+level1_df["label_x"] = level1_df["label_radius"] * np.sin(level1_df["label_angle"])
+level1_df["label_y"] = -level1_df["label_radius"] * np.cos(level1_df["label_angle"])
 
 text_l1 = (
-    alt.Chart(level1_totals)
-    .mark_text(fontSize=16, fontWeight="bold", color="#ffffff")
+    alt.Chart(level1_df)
+    .mark_text(fontSize=18, fontWeight="bold", color="#ffffff")
     .encode(
-        x=alt.X("label_x:Q", scale=alt.Scale(domain=[-400, 400]), axis=None),
-        y=alt.Y("label_y:Q", scale=alt.Scale(domain=[-400, 400]), axis=None),
+        x=alt.X("label_x:Q", scale=alt.Scale(domain=[-500, 500]), axis=None),
+        y=alt.Y("label_y:Q", scale=alt.Scale(domain=[-500, 500]), axis=None),
         text="name:N",
     )
 )
 
-# Create a custom legend
-legend_data = pd.DataFrame(
-    [
-        {"label": "Engineering", "color": level1_colors["Engineering"], "order": 1},
-        {"label": "Marketing", "color": level1_colors["Marketing"], "order": 2},
-        {"label": "Operations", "color": level1_colors["Operations"], "order": 3},
-        {"label": "Sales", "color": level1_colors["Sales"], "order": 4},
-    ]
+# Add legend with department colors (sorted by value, matching level1_df order)
+legend_items = []
+for i, (_, row) in enumerate(level1_df.iterrows()):
+    legend_items.append({"dept": row["name"], "color": level1_colors[row["name"]], "x": 480, "y": -350 + i * 45})
+legend_df = pd.DataFrame(legend_items)
+
+legend_rects = (
+    alt.Chart(legend_df)
+    .mark_rect(width=20, height=20)
+    .encode(
+        x=alt.X("x:Q", scale=alt.Scale(domain=[-500, 500]), axis=None),
+        y=alt.Y("y:Q", scale=alt.Scale(domain=[-500, 500]), axis=None),
+        color=alt.Color("color:N", scale=None),
+    )
+)
+
+legend_text = (
+    alt.Chart(legend_df)
+    .mark_text(fontSize=16, align="left", dx=15)
+    .encode(
+        x=alt.X("x:Q", scale=alt.Scale(domain=[-500, 500]), axis=None),
+        y=alt.Y("y:Q", scale=alt.Scale(domain=[-500, 500]), axis=None),
+        text="dept:N",
+    )
 )
 
 # Combine all layers
 chart = (
-    alt.layer(chart_l1, chart_l2, chart_l3, text_l1)
+    alt.layer(chart_l1, chart_l2, chart_l3, text_l1, legend_rects, legend_text)
     .properties(
-        width=800,
-        height=800,
+        width=1200,
+        height=1200,
         title=alt.Title(text="sunburst-basic · altair · pyplots.ai", fontSize=28, anchor="middle"),
     )
     .configure_view(strokeWidth=0)
 )
 
-# Save outputs
+# Save outputs (3600x3600 px with scale_factor=3.0)
 chart.save("plot.png", scale_factor=3.0)
 chart.save("plot.html")

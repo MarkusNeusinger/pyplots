@@ -1,7 +1,7 @@
 """ pyplots.ai
 band-basic: Basic Band Plot
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-17
+Quality: 88/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -28,9 +28,11 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
+    guide_stroke_color="#888888",  # Darker grid lines for better visibility
     colors=("#306998", "#FFD43B"),  # Blue for band, Yellow for center line
-    opacity=".35",  # Semi-transparent for band
-    opacity_hover=".5",
+    opacity=".65",  # Higher opacity for clearly visible band
+    opacity_hover=".75",
+    stroke_width=5,  # Thicker lines for better visibility
     title_font_size=60,
     label_font_size=42,
     major_label_font_size=42,
@@ -55,23 +57,21 @@ chart = pygal.XY(
     truncate_legend=-1,
 )
 
-# Create band as a closed polygon: trace upper boundary forward, then lower boundary backward
-# This creates a filled region between the two boundaries
+# Create band as a closed polygon: upper boundary forward, then lower backward
+# Using fill only (no stroke) to avoid visual artifacts at polygon edges
 band_polygon = []
 # Upper boundary (forward)
 for xi, yi in zip(x, y_upper, strict=True):
     band_polygon.append((float(xi), float(yi)))
-# Lower boundary (backward to close the polygon)
+# Lower boundary (backward to close the polygon smoothly)
 for xi, yi in zip(reversed(x), reversed(y_lower), strict=True):
     band_polygon.append((float(xi), float(yi)))
-# Close polygon by returning to start
-band_polygon.append((float(x[0]), float(y_upper[0])))
 
 chart.add("Confidence Band", band_polygon, stroke=False)
 
-# Add center line (no fill, just stroke)
+# Add center line (no fill, just stroke) - using a contrasting color
 center_data = [(float(xi), float(yi)) for xi, yi in zip(x, y_center, strict=True)]
-chart.add("Central Trend", center_data, fill=False, stroke=True, dots_size=0)
+chart.add("Central Trend", center_data, fill=False, stroke=True, dots_size=0, stroke_style={"width": 6})
 
 # Save outputs
 chart.render_to_png("plot.png")

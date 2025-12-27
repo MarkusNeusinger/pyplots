@@ -26,7 +26,8 @@
     <meta name="twitter:image" content="https://pyplots.ai/og-image.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=block" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=block" rel="stylesheet">
 
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
@@ -54,10 +55,13 @@
     </script>
 
     <!-- Privacy-friendly analytics by Plausible (production only) -->
-    <script async src="/js/script.js"></script>
     <script>
       window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
       if (location.hostname === 'pyplots.ai') {
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = '/js/script.js';
+        document.head.appendChild(s);
         plausible.init({ autoCapturePageviews: false, endpoint: '/api/event' });
       }
     </script>

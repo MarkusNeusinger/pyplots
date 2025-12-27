@@ -1,7 +1,7 @@
 """ pyplots.ai
 qq-basic: Basic Q-Q Plot
 Library: plotly 6.5.0 | Python 3.13.11
-Quality: 94/100 | Created: 2025-12-17
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import numpy as np
@@ -23,7 +23,6 @@ n = len(sample)
 probabilities = (np.arange(1, n + 1) - 0.375) / (n + 0.25)
 
 # Approximate inverse normal CDF (Abramowitz & Stegun rational approximation)
-# Constants for the approximation
 a = np.array(
     [
         -3.969683028665376e01,
@@ -70,12 +69,12 @@ for i, p in enumerate(probabilities):
             (((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1
         )
 
-# Standardize sample for comparison
+# Standardize sample for comparison with standard normal
 sample_standardized = (sample - np.mean(sample)) / np.std(sample)
 
 # Reference line (y=x for standardized data)
-line_min = min(theoretical_quantiles.min(), sample_standardized.min())
-line_max = max(theoretical_quantiles.max(), sample_standardized.max())
+line_min = min(theoretical_quantiles.min(), sample_standardized.min()) - 0.2
+line_max = max(theoretical_quantiles.max(), sample_standardized.max()) + 0.2
 
 # Plot
 fig = go.Figure()

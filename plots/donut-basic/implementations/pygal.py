@@ -1,7 +1,7 @@
 """ pyplots.ai
 donut-basic: Basic Donut Chart
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 98/100 | Created: 2025-12-14
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import pygal
@@ -34,7 +34,7 @@ chart = pygal.Pie(
     height=2700,
     style=custom_style,
     inner_radius=0.6,  # Creates donut hole
-    title="donut-basic \u00b7 pygal \u00b7 pyplots.ai",
+    title="donut-basic · pygal · pyplots.ai",
     show_legend=True,
     legend_at_bottom=True,
     legend_box_size=36,

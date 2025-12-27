@@ -1,7 +1,7 @@
 """ pyplots.ai
 sankey-basic: Basic Sankey Diagram
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-14
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import tempfile
@@ -9,6 +9,7 @@ import time
 import urllib.request
 from pathlib import Path
 
+import numpy as np
 from highcharts_core.chart import Chart
 from highcharts_core.options import HighchartsOptions
 from PIL import Image
@@ -16,7 +17,10 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data - Energy flow from sources to sectors
+# Reproducibility
+np.random.seed(42)
+
+# Data - Energy flow from sources to sectors (values in TWh - Terawatt-hours)
 # Format: [source, target, value]
 flows = [
     # Coal flows
@@ -49,21 +53,21 @@ for source, target, _ in flows:
     nodes_set.add(target)
 nodes = list(nodes_set)
 
-# Colorblind-safe colors for nodes
+# Colorblind-safe colors for nodes - all dark enough for white text contrast
 node_colors = {
-    # Sources (energy sources)
-    "Coal": "#306998",  # Python Blue
-    "Natural Gas": "#FFD43B",  # Python Yellow
-    "Nuclear": "#9467BD",  # Purple
-    "Petroleum": "#17BECF",  # Cyan
-    "Renewable": "#2CA02C",  # Green
-    # Intermediate
-    "Electricity": "#8C564B",  # Brown
-    # End uses
-    "Residential": "#E377C2",  # Pink
-    "Commercial": "#7F7F7F",  # Gray
-    "Industrial": "#BCBD22",  # Olive
-    "Transportation": "#FF7F0E",  # Orange
+    # Sources (energy sources) - dark tones for white text readability
+    "Coal": "#1A3A5C",  # Dark Blue
+    "Natural Gas": "#6B4E12",  # Darker Goldenrod (darkened for contrast)
+    "Nuclear": "#5B2E8F",  # Dark Purple
+    "Petroleum": "#0A6B78",  # Dark Cyan
+    "Renewable": "#155415",  # Dark Green
+    # Intermediate - dark for contrast
+    "Electricity": "#4D2A22",  # Dark Brown
+    # End uses - darker shades for white text visibility
+    "Residential": "#8B3A6B",  # Dark Rose
+    "Commercial": "#3A3A3A",  # Darker Gray
+    "Industrial": "#5B5C0A",  # Dark Olive
+    "Transportation": "#994D00",  # Darker Orange
 }
 
 # Create nodes data with colors
@@ -76,20 +80,32 @@ links_data = [{"from": source, "to": target, "weight": value} for source, target
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration
-chart.options.chart = {"type": "sankey", "width": 4800, "height": 2700, "backgroundColor": "#ffffff"}
+# Chart configuration with margins to prevent label cutoff at edges
+chart.options.chart = {
+    "type": "sankey",
+    "width": 4800,
+    "height": 2700,
+    "backgroundColor": "#ffffff",
+    "marginLeft": 180,
+    "marginRight": 180,
+    "marginTop": 160,
+    "marginBottom": 80,
+}
 
 # Title
 chart.options.title = {
-    "text": "Energy Flow · sankey-basic · highcharts · pyplots.ai",
-    "style": {"fontSize": "64px", "fontWeight": "bold"},
+    "text": "sankey-basic · highcharts · pyplots.ai",
+    "style": {"fontSize": "64px", "fontWeight": "bold", "color": "#333333"},
 }
 
-# Tooltip
+# Subtitle with units info
+chart.options.subtitle = {"text": "U.S. Energy Flow (values in TWh)", "style": {"fontSize": "40px", "color": "#666666"}}
+
+# Tooltip with units
 chart.options.tooltip = {
     "style": {"fontSize": "36px"},
-    "nodeFormat": "{point.name}: {point.sum} units",
-    "pointFormat": "{point.fromNode.name} → {point.toNode.name}: {point.weight} units",
+    "nodeFormat": "{point.name}: {point.sum} TWh",
+    "pointFormat": "{point.fromNode.name} → {point.toNode.name}: {point.weight} TWh",
 }
 
 # Sankey series configuration
@@ -101,13 +117,15 @@ series_config = {
     "data": links_data,
     "dataLabels": {
         "enabled": True,
-        "style": {"fontSize": "32px", "fontWeight": "bold", "textOutline": "2px white"},
+        "style": {"fontSize": "36px", "fontWeight": "bold", "color": "#FFFFFF", "textOutline": "3px #333333"},
         "nodeFormat": "{point.name}",
     },
-    "nodeWidth": 40,
-    "nodePadding": 30,
+    "nodeWidth": 50,
+    "nodePadding": 35,
     "linkOpacity": 0.5,
     "curveFactor": 0.5,
+    "colorByPoint": True,
+    "linkColorMode": "from",
 }
 
 chart.options.series = [series_config]
@@ -143,7 +161,7 @@ html_content = f"""<!DOCTYPE html>
 </body>
 </html>"""
 
-# Save HTML for interactive version (use CDN for standalone)
+# Save HTML for interactive version (use CDN for standalone) - fixed dimensions like PNG
 standalone_html = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -151,8 +169,8 @@ standalone_html = f"""<!DOCTYPE html>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/sankey.js"></script>
 </head>
-<body style="margin:0;">
-    <div id="container" style="width: 100%; height: 100vh;"></div>
+<body style="margin:0; overflow:auto;">
+    <div id="container" style="width: 4800px; height: 2700px;"></div>
     <script>{html_str}</script>
 </body>
 </html>"""

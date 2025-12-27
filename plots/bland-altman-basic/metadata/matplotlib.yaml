@@ -1,0 +1,26 @@
+library: matplotlib
+specification_id: bland-altman-basic
+created: '2025-12-25T13:16:47Z'
+updated: '2025-12-25T13:18:51Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20505628286
+issue: 2032
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bland-altman-basic/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bland-altman-basic/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent implementation of the Bland-Altman statistical methodology with correct
+    calculations
+  - Clear annotations on both legend and right-side text showing exact bias and limits
+    of agreement values
+  - Realistic blood pressure measurement scenario with appropriate data ranges
+  - Clean, readable code following KISS principles
+  - Professional color scheme with good accessibility
+  weaknesses:
+  - Legend and right-side annotations show redundant information; consider removing
+    one or making them complementary
+  - Marker size (s=150) slightly below the recommended 100-200 range for 80 data points

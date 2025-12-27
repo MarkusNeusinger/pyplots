@@ -1,0 +1,27 @@
+library: plotly
+specification_id: pie-exploded
+created: '2025-12-25T20:05:45Z'
+updated: '2025-12-25T20:09:39Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20510238841
+issue: 2013
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/plotly/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of Plotly pull parameter to achieve exploded effect with per-slice
+    control
+  - Clean professional color palette with Python colors and colorblind-safe choices
+  - Well-formatted title following the required spec-id format
+  - Interactive hover template provides additional value on HTML output
+  - Outside labels with connectors keep the pie chart clean and readable
+  - Dual output (PNG + HTML) leverages Plotly interactive capabilities
+  weaknesses:
+  - Layout has unused whitespace at bottom of square canvas; pie could be vertically
+    centered better
+  - Market share values could show more dramatic contrast to better demonstrate the
+    exploded emphasis effect

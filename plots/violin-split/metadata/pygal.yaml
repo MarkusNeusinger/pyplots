@@ -1,0 +1,28 @@
+library: pygal
+specification_id: violin-split
+created: '2025-12-26T10:02:31Z'
+updated: '2025-12-26T10:04:50Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20520452216
+issue: 1949
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-split/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-split/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-split/pygal/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent creative implementation of split violins using pygal XY chart with filled
+    polygons
+  - Clear visual distinction between Before (blue) and After (yellow) groups
+  - Well-chosen realistic scenario (patient recovery scores) that makes the comparison
+    meaningful
+  - Proper use of KDE for smooth density estimation
+  - Quartile markers (IQR lines and median) add statistical information
+  - Clean legend placement at bottom with appropriate column layout
+  - Good canvas utilization and balanced proportions
+  weaknesses:
+  - Code contains a helper function (compute_kde) which violates KISS principle -
+    should inline the KDE computation or restructure
+  - Axis labels could include units (e.g., Recovery Score 0-100)

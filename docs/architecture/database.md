@@ -99,17 +99,15 @@ CREATE TABLE impls
     -- Quality & Generation
     quality_score   FLOAT,                      -- 0-100
     generated_at    TIMESTAMP,
+    updated         TIMESTAMP,                  -- Last update
     generated_by    VARCHAR,                    -- Model ID: "claude-opus-4-5-20251101"
     issue           INTEGER,                    -- GitHub Issue number
     workflow_run    BIGINT,                     -- GitHub Actions run ID
 
-    -- Evaluation details
-    evaluator_scores      JSONB,                -- Per-LLM scores
-    quality_feedback      TEXT,                 -- Evaluation feedback
-    improvements_suggested JSONB,               -- Suggested fixes
+    -- Review feedback (for regeneration)
+    review_strengths  VARCHAR[],                -- What's good about this implementation
+    review_weaknesses VARCHAR[],                -- What needs improvement
 
-    -- Version history
-    history         JSONB,
     updated_at      TIMESTAMP DEFAULT NOW(),
 
     UNIQUE (spec_id, library_id)

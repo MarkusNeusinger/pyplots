@@ -1,0 +1,28 @@
+library: plotnine
+specification_id: alluvial-basic
+created: '2025-12-26T10:36:55Z'
+updated: '2025-12-26T10:39:05Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20520941849
+issue: 1878
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of alluvial diagram using plotnine grammar of graphics
+    primitives
+  - Smooth cubic interpolation creates visually appealing curved flow bands
+  - Smart filtering of very small flows (<3 voters) improves clarity without losing
+    important transitions
+  - Colorblind-safe color palette with good contrast
+  - Proper use of transparency (alpha=0.5) for overlapping flows
+  - Clean layout with party labels on both sides for easy reading
+  - Good canvas utilization and balanced proportions
+  weaknesses:
+  - Data is deterministic so no seed needed, but explicit data definition could use
+    a comment explaining the voter transition matrix
+  - Small flows between 2016-2018 are less visible compared to later periods

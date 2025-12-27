@@ -1,84 +1,37 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Alert from '@mui/material/Alert';
 
 import type { PlotImage, LibraryInfo, SpecInfo } from './types';
-import { API_URL, LIBRARIES, BATCH_SIZE } from './constants';
-import { useNavigation, useTouchGestures, useKeyboardShortcuts, useInfiniteScroll, useAnalytics } from './hooks';
-import { Header, Footer, NavigationBar, SelectionMenu, ImagesGrid, FullscreenModal } from './components';
-
-// Fisher-Yates shuffle algorithm
-const shuffleArray = <T,>(array: T[]): T[] => {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-};
+import { API_URL, type ImageSize } from './constants';
+import { useInfiniteScroll, useAnalytics, useFilterState, isFiltersEmpty } from './hooks';
+import { Header, Footer, FilterBar, ImagesGrid, FullscreenModal } from './components';
 
 function App() {
-  // Core state
-  const [specs, setSpecs] = useState<string[]>([]);
-  const [selectedSpec, setSelectedSpec] = useState<string>('');
-  const [selectedLibrary, setSelectedLibrary] = useState<string>('');
-  const [viewMode, setViewMode] = useState<'spec' | 'library'>('spec');
-  const [specsLoaded, setSpecsLoaded] = useState(false);
-
-  // Data state
-  const [specsData, setSpecsData] = useState<SpecInfo[]>([]);
-  const [librariesData, setLibrariesData] = useState<LibraryInfo[]>([]);
-  const [stats, setStats] = useState<{ specs: number; plots: number; libraries: number } | null>(null);
-  const [allImages, setAllImages] = useState<PlotImage[]>([]);
-  const [displayedImages, setDisplayedImages] = useState<PlotImage[]>([]);
-  const [hasMore, setHasMore] = useState(false);
-
-  // UI state
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
-  const [modalImage, setModalImage] = useState<PlotImage | null>(null);
-  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
-  const [descriptionOpen, setDescriptionOpen] = useState(false);
-  const [isRolling, setIsRolling] = useState(false);
-  const [openImageTooltip, setOpenImageTooltip] = useState<string | null>(null);
-
-  // Description state
-  const [specDescription, setSpecDescription] = useState<string>('');
-  const [libraryDescription, setLibraryDescription] = useState<string>('');
-  const [libraryDocsUrl, setLibraryDocsUrl] = useState<string>('');
-
   // Custom hooks
   const { trackPageview, trackEvent } = useAnalytics();
 
-  const navigation = useNavigation({
-    specs,
-    selectedSpec,
-    selectedLibrary,
-    setSelectedSpec,
-    setSelectedLibrary,
-  });
-
-  const { handleTouchStart, handleTouchEnd } = useTouchGestures({
-    viewMode,
-    modalImage,
-    ...navigation,
+  const {
+    activeFilters,
+    filterCounts,
+    orCounts,
+    allImages,
+    displayedImages,
+    hasMore,
+    loading,
+    error,
+    setDisplayedImages,
+    setHasMore,
+    handleAddFilter,
+    handleAddValueToGroup,
+    handleRemoveFilter,
+    handleRemoveGroup,
+    handleRandom,
+    randomAnimation,
+  } = useFilterState({
+    onTrackPageview: trackPageview,
     onTrackEvent: trackEvent,
-    selectedSpec,
-    selectedLibrary,
-  });
-
-  useKeyboardShortcuts({
-    viewMode,
-    modalImage,
-    menuAnchor,
-    setModalImage,
-    setMenuAnchor,
-    setSearchFilter: () => {}, // No-op: SelectionMenu manages its own internal searchFilter state
-    ...navigation,
-    onTrackEvent: trackEvent,
-    selectedSpec,
-    selectedLibrary,
   });
 
   const { loadMoreRef } = useInfiniteScroll({
@@ -89,236 +42,131 @@ function App() {
     setHasMore,
   });
 
-  // Toggle between spec and library view with roll animation
-  const toggleViewMode = useCallback(() => {
-    const fromMode = viewMode;
-    const toMode = fromMode === 'spec' ? 'library' : 'spec';
-    trackEvent('toggle_view_mode', { from: fromMode, to: toMode, spec: selectedSpec, library: selectedLibrary });
+  // Data state
+  const [specsData, setSpecsData] = useState<SpecInfo[]>([]);
+  const [librariesData, setLibrariesData] = useState<LibraryInfo[]>([]);
+  const [stats, setStats] = useState<{ specs: number; plots: number; libraries: number } | null>(null);
+  const [loadedImageCount, setLoadedImageCount] = useState(0);
+  const [showLoadingIndicator, setShowLoadingIndicator] = useState(false);
 
-    setIsRolling(true);
-    setDescriptionOpen(false);
-    setAllImages([]);
-    setDisplayedImages([]);
-    setHasMore(false);
-    setLoading(true);
-    setTimeout(() => {
-      setViewMode((prev) => {
-        if (prev === 'spec') {
-          const randomLib = LIBRARIES[Math.floor(Math.random() * LIBRARIES.length)];
-          setSelectedLibrary(randomLib);
-          return 'library';
-        } else {
-          if (specs.length > 0) {
-            const randomSpec = specs[Math.floor(Math.random() * specs.length)];
-            setSelectedSpec(randomSpec);
-          }
-          return 'spec';
-        }
-      });
-      setIsRolling(false);
-    }, 300);
-  }, [specs, viewMode, trackEvent, selectedSpec, selectedLibrary]);
+  // UI state
+  const [modalImage, setModalImage] = useState<PlotImage | null>(null);
+  const [openImageTooltip, setOpenImageTooltip] = useState<string | null>(null);
+  const [imageSize, setImageSize] = useState<ImageSize>(() => {
+    const stored = localStorage.getItem('imageSize');
+    return stored === 'normal' || stored === 'compact' ? stored : 'normal';
+  });
+
+  // Refs
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Persist imageSize to localStorage
+  useEffect(() => {
+    localStorage.setItem('imageSize', imageSize);
+  }, [imageSize]);
+
+  // Loading indicator logic
+  useEffect(() => {
+    const stillLoading = loadedImageCount < displayedImages.length;
+
+    if (stillLoading) {
+      setShowLoadingIndicator(true);
+    } else {
+      const timer = setTimeout(() => setShowLoadingIndicator(false), 150);
+      return () => clearTimeout(timer);
+    }
+  }, [loadedImageCount, displayedImages.length]);
+
+  // Reset loaded count when displayed images change
+  useEffect(() => {
+    setLoadedImageCount(0);
+  }, [allImages]);
 
   // Handle card click - open modal
   const handleCardClick = useCallback(
     (img: PlotImage) => {
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
       setModalImage(img);
-      trackEvent('modal_open', { spec: selectedSpec, library: img.library });
+      trackEvent('modal_open', { spec: img.spec_id || '', library: img.library });
     },
-    [selectedSpec, trackEvent]
+    [trackEvent]
   );
 
-  // Close description when clicking anywhere
-  const handleContainerClick = useCallback((e: React.MouseEvent) => {
-    const target = e.target as HTMLElement;
-    if (target.closest('[data-description-btn]')) return;
-    if (descriptionOpen) setDescriptionOpen(false);
-    if (openImageTooltip) setOpenImageTooltip(null);
-  }, [descriptionOpen, openImageTooltip]);
+  // Close tooltip when clicking anywhere
+  const handleContainerClick = useCallback(
+    (e: React.MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('[data-description-btn]')) return;
+      if (openImageTooltip) setOpenImageTooltip(null);
+    },
+    [openImageTooltip]
+  );
 
-  // Load specs on mount
+  // Global keyboard shortcuts
   useEffect(() => {
-    const fetchSpecs = async () => {
-      try {
-        const response = await fetch(`${API_URL}/specs`);
-        if (!response.ok) throw new Error('Failed to fetch specs');
-        const data = await response.json();
-        const specsArray = Array.isArray(data) ? data : data.specs || [];
-        const specIds = specsArray.map((s: SpecInfo) => s.id);
-        setSpecs(specIds);
-        setSpecsData(specsArray);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || modalImage) return;
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const specFromUrl = urlParams.get('spec');
-        const libraryFromUrl = urlParams.get('library');
-
-        if (libraryFromUrl && LIBRARIES.includes(libraryFromUrl)) {
-          setViewMode('library');
-          setSelectedLibrary(libraryFromUrl);
-        } else if (specFromUrl && specIds.includes(specFromUrl)) {
-          setSelectedSpec(specFromUrl);
-        } else {
-          // Default: Start in library mode with random library for more variety
-          const randomLib = LIBRARIES[Math.floor(Math.random() * LIBRARIES.length)];
-          setViewMode('library');
-          setSelectedLibrary(randomLib);
-        }
-      } catch (err) {
-        setError(`Error loading specs: ${err}`);
-      } finally {
-        setSpecsLoaded(true);
+      if (e.key === ' ') {
+        e.preventDefault();
+        handleRandom('space');
+      } else if (e.key === 'Enter' && searchInputRef.current) {
+        e.preventDefault();
+        searchInputRef.current.focus();
+      } else if (e.key === 'Backspace' && activeFilters.length > 0) {
+        e.preventDefault();
+        handleRemoveGroup(activeFilters.length - 1);
       }
     };
-    fetchSpecs();
-  }, []);
 
-  // Load libraries data on mount
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleRandom, handleRemoveGroup, activeFilters.length, modalImage]);
+
+  // Load initial data on mount
   useEffect(() => {
-    const fetchLibraries = async () => {
+    const fetchInitialData = async () => {
       try {
-        const response = await fetch(`${API_URL}/libraries`);
-        if (!response.ok) throw new Error('Failed to fetch libraries');
-        const data = await response.json();
-        setLibrariesData(data.libraries || []);
-      } catch (err) {
-        console.error('Error loading libraries:', err);
-      }
-    };
-    fetchLibraries();
-  }, []);
-
-  // Load stats on mount
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const response = await fetch(`${API_URL}/stats`);
-        if (!response.ok) throw new Error('Failed to fetch stats');
-        const data = await response.json();
-        setStats(data);
-      } catch (err) {
-        console.error('Error loading stats:', err);
-      }
-    };
-    fetchStats();
-  }, []);
-
-  // Update library description when selected library changes
-  useEffect(() => {
-    if (viewMode === 'library' && selectedLibrary && librariesData.length > 0) {
-      const lib = librariesData.find((l) => l.id === selectedLibrary);
-      if (lib) {
-        setLibraryDescription(lib.description || '');
-        setLibraryDocsUrl(lib.documentation_url || '');
-      }
-      setDescriptionOpen(false);
-    }
-  }, [selectedLibrary, librariesData, viewMode]);
-
-  // Update URL and document title when spec/library changes
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    if (viewMode === 'spec' && selectedSpec && specsLoaded) {
-      url.searchParams.delete('library');
-      url.searchParams.set('spec', selectedSpec);
-      window.history.replaceState({}, '', url.toString());
-      document.title = `${selectedSpec} | pyplots.ai`;
-      setDescriptionOpen(false);
-      trackPageview(); // Reads automatically from window.location.search
-    } else if (viewMode === 'library' && selectedLibrary) {
-      url.searchParams.delete('spec');
-      url.searchParams.set('library', selectedLibrary);
-      window.history.replaceState({}, '', url.toString());
-      document.title = `${selectedLibrary} plots | pyplots.ai`;
-      trackPageview(); // Reads automatically from window.location.search
-    }
-  }, [selectedSpec, selectedLibrary, specsLoaded, viewMode, trackPageview]);
-
-  // Load images when spec changes (spec view mode)
-  useEffect(() => {
-    setOpenImageTooltip(null);
-
-    if (viewMode !== 'spec' || !selectedSpec) {
-      if (specsLoaded && viewMode === 'spec') setLoading(false);
-      return;
-    }
-
-    const fetchImages = async () => {
-      setLoading(true);
-      try {
-        const [imagesRes, specRes] = await Promise.all([
-          fetch(`${API_URL}/specs/${selectedSpec}/images`),
-          fetch(`${API_URL}/specs/${selectedSpec}`),
+        const [specsRes, libsRes, statsRes] = await Promise.all([
+          fetch(`${API_URL}/specs`),
+          fetch(`${API_URL}/libraries`),
+          fetch(`${API_URL}/stats`),
         ]);
 
-        if (!imagesRes.ok) throw new Error('Failed to fetch images');
-        const imagesData = await imagesRes.json();
-
-        let description = '';
-        const codeByLibrary: Record<string, string> = {};
-        if (specRes.ok) {
-          const specData = await specRes.json();
-          description = specData.description || '';
-          for (const impl of specData.implementations || []) {
-            if (impl.code) codeByLibrary[impl.library_id] = impl.code;
-          }
+        if (specsRes.ok) {
+          const data = await specsRes.json();
+          setSpecsData(Array.isArray(data) ? data : data.specs || []);
         }
-        setSpecDescription(description);
 
-        const imagesWithCode = (imagesData.images as PlotImage[]).map((img) => ({
-          ...img,
-          code: codeByLibrary[img.library] || undefined,
-        }));
-        const shuffled = shuffleArray<PlotImage>(imagesWithCode);
-        setAllImages(shuffled);
-        setDisplayedImages(shuffled.slice(0, BATCH_SIZE));
-        setHasMore(shuffled.length > BATCH_SIZE);
+        if (libsRes.ok) {
+          const data = await libsRes.json();
+          setLibrariesData(data.libraries || []);
+        }
+
+        if (statsRes.ok) {
+          const data = await statsRes.json();
+          setStats(data);
+        }
       } catch (err) {
-        setError(`Error loading images: ${err}`);
-      } finally {
-        setLoading(false);
-        navigation.resetTransition();
+        console.error('Error loading initial data:', err);
       }
     };
-    fetchImages();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedSpec, specsLoaded, viewMode]);
+    fetchInitialData();
+  }, []);
 
-  // Load images when library changes (library view mode)
-  useEffect(() => {
-    setOpenImageTooltip(null);
-
-    if (viewMode !== 'library' || !selectedLibrary) return;
-
-    const fetchLibraryImages = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(`${API_URL}/libraries/${selectedLibrary}/images`);
-        if (!res.ok) throw new Error('Failed to fetch library images');
-        const data = await res.json();
-        const shuffled = shuffleArray<PlotImage>(data.images || []);
-        setAllImages(shuffled);
-        setDisplayedImages(shuffled.slice(0, BATCH_SIZE));
-        setHasMore(shuffled.length > BATCH_SIZE);
-      } catch (err) {
-        setError(`Error loading library images: ${err}`);
-      } finally {
-        setLoading(false);
-        navigation.resetTransition();
-      }
-    };
-    fetchLibraryImages();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedLibrary, viewMode]);
+  // Get selected spec/library for compatibility with existing components
+  const specFilter = activeFilters.find((f) => f.category === 'spec');
+  const libFilter = activeFilters.find((f) => f.category === 'lib');
+  const selectedSpec = specFilter?.values[0] || '';
+  const selectedLibrary = libFilter?.values[0] || '';
 
   return (
-    <Box
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      onClick={handleContainerClick}
-      sx={{ minHeight: '100vh', bgcolor: '#fafafa', py: 5 }}
-    >
+    <Box onClick={handleContainerClick} sx={{ minHeight: '100vh', bgcolor: '#fafafa', py: 5, position: 'relative' }}>
       <Container maxWidth={false} sx={{ px: { xs: 4, sm: 8, lg: 12 } }}>
-        <Header stats={stats} />
+        <Header stats={stats} onRandom={handleRandom} />
 
         {error && (
           <Alert severity="error" sx={{ mb: 4, maxWidth: 500, mx: 'auto' }}>
@@ -326,65 +174,46 @@ function App() {
           </Alert>
         )}
 
-        {(selectedSpec || viewMode === 'library') && (
-          <>
-            <NavigationBar
-              viewMode={viewMode}
-              selectedSpec={selectedSpec}
-              selectedLibrary={selectedLibrary}
-              specDescription={specDescription}
-              libraryDescription={libraryDescription}
-              libraryDocsUrl={libraryDocsUrl}
-              descriptionOpen={descriptionOpen}
-              isRolling={isRolling}
-              isShuffling={navigation.isShuffling}
-              onToggleViewMode={toggleViewMode}
-              onMenuOpen={setMenuAnchor}
-              onDescriptionToggle={() => setDescriptionOpen(!descriptionOpen)}
-              shuffleSpec={navigation.shuffleSpec}
-              goToPrevSpec={navigation.goToPrevSpec}
-              goToNextSpec={navigation.goToNextSpec}
-              shuffleLibrary={navigation.shuffleLibrary}
-              goToPrevLibrary={navigation.goToPrevLibrary}
-              goToNextLibrary={navigation.goToNextLibrary}
-              onTrackEvent={trackEvent}
-            />
-
-            <SelectionMenu
-              anchorEl={menuAnchor}
-              open={Boolean(menuAnchor)}
-              onClose={() => setMenuAnchor(null)}
-              viewMode={viewMode}
-              sortedSpecs={navigation.sortedSpecs}
-              selectedSpec={selectedSpec}
-              selectedLibrary={selectedLibrary}
-              onSelectSpec={setSelectedSpec}
-              onSelectLibrary={setSelectedLibrary}
-              onTrackEvent={trackEvent}
-            />
-          </>
-        )}
+        <FilterBar
+          activeFilters={activeFilters}
+          filterCounts={filterCounts}
+          orCounts={orCounts}
+          currentTotal={allImages.length}
+          displayedCount={displayedImages.length}
+          randomAnimation={randomAnimation}
+          searchInputRef={searchInputRef}
+          imageSize={imageSize}
+          onImageSizeChange={setImageSize}
+          onAddFilter={handleAddFilter}
+          onAddValueToGroup={handleAddValueToGroup}
+          onRemoveFilter={handleRemoveFilter}
+          onRemoveGroup={handleRemoveGroup}
+          onTrackEvent={trackEvent}
+        />
 
         <ImagesGrid
           images={displayedImages}
-          viewMode={viewMode}
+          viewMode={isFiltersEmpty(activeFilters) ? 'library' : 'spec'}
           selectedSpec={selectedSpec}
           selectedLibrary={selectedLibrary}
           loading={loading}
           hasMore={hasMore}
-          isTransitioning={navigation.isTransitioning}
+          isLoadingMore={showLoadingIndicator}
+          isTransitioning={false}
           librariesData={librariesData}
           specsData={specsData}
           openTooltip={openImageTooltip}
           loadMoreRef={loadMoreRef}
+          imageSize={imageSize}
           onTooltipToggle={setOpenImageTooltip}
           onCardClick={handleCardClick}
           onTrackEvent={trackEvent}
+          onImageLoad={() => setLoadedImageCount((c) => c + 1)}
         />
 
-        {!loading && specsLoaded && specs.length === 0 && (
-          <Alert severity="warning" sx={{ maxWidth: 400, mx: 'auto' }}>
-            No specs found.
+        {!loading && allImages.length === 0 && !isFiltersEmpty(activeFilters) && (
+          <Alert severity="info" sx={{ maxWidth: 400, mx: 'auto' }}>
+            No plots match these filters.
           </Alert>
         )}
 
@@ -393,7 +222,7 @@ function App() {
 
       <FullscreenModal
         image={modalImage}
-        selectedSpec={selectedSpec}
+        selectedSpec={modalImage?.spec_id || selectedSpec}
         onClose={() => setModalImage(null)}
         onTrackEvent={trackEvent}
       />

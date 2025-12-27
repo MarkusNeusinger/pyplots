@@ -1,0 +1,27 @@
+library: matplotlib
+specification_id: polar-scatter
+created: '2025-12-26T16:15:40Z'
+updated: '2025-12-26T16:19:50Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20525458718
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of compass-style polar configuration (North at top, clockwise direction)
+    making the wind data intuitive to interpret
+  - Good color-coded time-of-day categorization with realistic clustering patterns
+    showing prevailing wind directions
+  - Clean, readable code following KISS principles with proper random seed for reproducibility
+  - Appropriate marker sizing and alpha for the data density (120 points)
+  - Proper axis labeling with units and correct title format
+  weaknesses:
+  - Legend positioned too far from plot (bbox_to_anchor=(1.05, 1.0)) creating unnecessary
+    whitespace; could be positioned closer or inside the plot
+  - Could use matplotlib distinctive features more (e.g., colorbar for continuous
+    third variable, custom tick formatters, or annotation capabilities)

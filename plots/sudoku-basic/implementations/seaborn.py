@@ -1,15 +1,16 @@
 """ pyplots.ai
 sudoku-basic: Basic Sudoku Grid
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-22
+Quality: 91/100 | Created: 2025-12-23
 """
 
+import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
 
-# Data - partially filled Sudoku puzzle
+# Sudoku puzzle data (0 = empty cell)
 grid = np.array(
     [
         [5, 3, 0, 0, 7, 0, 0, 0, 0],
@@ -24,55 +25,67 @@ grid = np.array(
     ]
 )
 
-# Create figure
-fig, ax = plt.subplots(figsize=(16, 9))
+# Set seaborn style for clean aesthetic
 sns.set_style("white")
+sns.set_context("talk", font_scale=1.5)
 
-# White background for the grid
-ax.set_facecolor("white")
-ax.set_xlim(-0.5, 8.5)
-ax.set_ylim(-0.5, 8.5)
-ax.set_aspect("equal")
+# Create square figure (3600x3600 px at 300 dpi = 12x12 inches)
+fig, ax = plt.subplots(figsize=(12, 12))
 
-# Draw thin lines for individual cells
-for i in range(10):
-    linewidth = 1.5
-    ax.axhline(y=i - 0.5, color="black", linewidth=linewidth)
-    ax.axvline(x=i - 0.5, color="black", linewidth=linewidth)
+# Create heatmap data for visual structure (all white for clean look)
+display_grid = np.ones((9, 9))
 
-# Draw thick lines for 3x3 box boundaries
-for i in range(0, 10, 3):
-    linewidth = 4
-    ax.axhline(y=i - 0.5, color="black", linewidth=linewidth)
-    ax.axvline(x=i - 0.5, color="black", linewidth=linewidth)
+# Use seaborn heatmap as the base grid structure
+sns.heatmap(
+    display_grid,
+    ax=ax,
+    cmap=["white"],
+    cbar=False,
+    linewidths=1,
+    linecolor="#CCCCCC",
+    square=True,
+    xticklabels=False,
+    yticklabels=False,
+    vmin=0,
+    vmax=1,
+)
 
-# Add numbers to cells (invert y for correct orientation: row 0 at top)
-for row in range(9):
-    for col in range(9):
-        value = grid[row, col]
-        if value != 0:
+# Add numbers to the grid
+for i in range(9):
+    for j in range(9):
+        if grid[i, j] != 0:
             ax.text(
-                col,
-                8 - row,  # Invert y-axis so row 0 is at top
-                str(value),
+                j + 0.5,
+                i + 0.5,
+                str(grid[i, j]),
                 ha="center",
                 va="center",
-                fontsize=36,
+                fontsize=32,
                 fontweight="bold",
-                color="black",
-                fontfamily="monospace",
+                color="#306998",
             )
 
-# Remove axis labels and ticks (clean sudoku grid)
-ax.set_xticks([])
-ax.set_yticks([])
-ax.spines["top"].set_visible(False)
-ax.spines["right"].set_visible(False)
-ax.spines["bottom"].set_visible(False)
-ax.spines["left"].set_visible(False)
+# Draw thick lines for 3x3 box boundaries
+for i in range(4):
+    # Horizontal thick lines
+    ax.axhline(y=i * 3, color="black", linewidth=4)
+    # Vertical thick lines
+    ax.axvline(x=i * 3, color="black", linewidth=4)
+
+# Add border rectangle for clean edges
+border = patches.Rectangle((0, 0), 9, 9, linewidth=4, edgecolor="black", facecolor="none")
+ax.add_patch(border)
 
 # Title
-ax.set_title("sudoku-basic · seaborn · pyplots.ai", fontsize=28, fontweight="bold", pad=20)
+ax.set_title("sudoku-basic · seaborn · pyplots.ai", fontsize=28, fontweight="bold", pad=20, color="#306998")
+
+# Remove axis ticks
+ax.set_xticks([])
+ax.set_yticks([])
+
+# Set axis limits
+ax.set_xlim(0, 9)
+ax.set_ylim(9, 0)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")

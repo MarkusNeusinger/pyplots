@@ -1,0 +1,27 @@
+library: bokeh
+specification_id: area-stacked
+created: '2025-12-25T17:40:16Z'
+updated: '2025-12-25T17:42:32Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20508665914
+issue: 2022
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stacked/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent stacking implementation using Bokeh varea with proper cumulative calculations
+  - Good use of ColumnDataSource pattern for each layer
+  - Well-styled legend with appropriate font sizes and spacing for high-resolution
+    output
+  - Realistic e-commerce revenue scenario with meaningful trends and seasonality
+  - Proper title format following pyplots.ai convention
+  - Good canvas utilization with 4800x2700 dimensions
+  weaknesses:
+  - Yellow color shades for Clothing and Sports are similar in luminance, making them
+    harder to distinguish
+  - Missing HoverTool which is a distinctive Bokeh feature for interactivity
+  - Series not strictly ordered by size (largest at bottom) as suggested in spec Notes

@@ -1,17 +1,26 @@
 library: bokeh
 specification_id: marimekko-basic
-created: 2025-12-16 19:39:46+00:00
-updated: 2025-12-16 19:39:46+00:00
+created: '2025-12-23T15:16:22Z'
+updated: '2025-12-23T15:24:20Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20280361038
-issue: 1002
+workflow_run: 20464356409
+issue: 0
 python_version: 3.13.11
 library_version: 3.8.1
 preview_url: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic/bokeh/plot.html
-quality_score: 92
+quality_score: 91
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent implementation of the Marimekko chart concept with proportional bar
+    widths
+  - Clean visual hierarchy with white segment borders providing clear separation
+  - Smart conditional labeling only on segments large enough to display values
+  - Professional color palette with Python blue as primary color
+  - Both PNG and HTML outputs with interactive hover tooltips in HTML version
+  - Region labels include total market size for context
+  weaknesses:
+  - Legend position overlaps slightly with the rightmost portion of the chart area
+  - No y-axis scale to indicate percentage proportions (0-100%)
+  - Hover tool is only useful in HTML output, not visible in PNG

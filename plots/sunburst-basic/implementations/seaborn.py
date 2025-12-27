@@ -1,178 +1,174 @@
 """ pyplots.ai
 sunburst-basic: Basic Sunburst Chart
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-14
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
-from matplotlib.patches import Wedge
 
 
-# Set seaborn style for clean aesthetics
-sns.set_style("whitegrid")
-
-# Hierarchical data - Company budget breakdown
-# Level 1: Main departments
-# Level 2: Sub-departments/teams
-# Level 3: Projects/activities
-hierarchy = {
+# Hierarchical data: Company budget breakdown (in $K)
+# Level 1: Departments, Level 2: Teams, Level 3: Projects
+data = {
     "Engineering": {
-        "Development": {"Frontend": 120, "Backend": 150, "Mobile": 80},
-        "QA": {"Testing": 60, "Automation": 40},
-        "DevOps": {"Infrastructure": 50, "Security": 30},
+        "Frontend": {"Web App": 150, "Mobile": 120},
+        "Backend": {"API": 180, "Database": 90},
+        "DevOps": {"Cloud": 100, "CI/CD": 60},
     },
-    "Marketing": {"Digital": {"Social Media": 70, "SEO": 50, "Paid Ads": 90}, "Content": {"Blog": 30, "Video": 45}},
-    "Sales": {"Direct": {"Enterprise": 100, "SMB": 60}, "Channel": {"Partners": 40, "Resellers": 35}},
-    "Operations": {"Support": {"Customer Service": 55, "Technical": 45}, "Admin": {"Facilities": 30, "HR": 40}},
+    "Sales": {"North": {"Enterprise": 200, "SMB": 80}, "South": {"Enterprise": 150, "SMB": 70}},
+    "Marketing": {"Digital": {"SEO": 60, "Ads": 140}, "Brand": {"Events": 80, "Content": 50}},
 }
 
-# Flatten hierarchy and calculate values for each level
-level1_labels = []
+# Apply seaborn styling
+sns.set_theme(style="white", context="poster", font_scale=1.1)
+
+# Build hierarchical structure for plotting
+level1_names = []
 level1_values = []
-level2_labels = []
+level2_names = []
 level2_values = []
 level2_parents = []
-level3_labels = []
+level3_names = []
 level3_values = []
 level3_parents = []
 
-for dept, teams in hierarchy.items():
-    dept_total = 0
-    for team, projects in teams.items():
+# Use seaborn color palette - Python Blue, Python Yellow, then colorblind-safe
+base_palette = sns.color_palette(["#306998", "#FFD43B", "#4B8BBE"])
+
+level1_colors = []
+level2_colors = []
+level3_colors = []
+
+# Build data structure and color scheme
+for i, (dept, teams) in enumerate(data.items()):
+    dept_total = sum(sum(projs.values()) for projs in teams.values())
+    level1_names.append(dept)
+    level1_values.append(dept_total)
+    base_color = base_palette[i % len(base_palette)]
+    level1_colors.append(base_color)
+
+    # Create lighter shades for child levels using seaborn's light_palette
+    dept_light_palette = sns.light_palette(base_color, n_colors=6, reverse=False)
+
+    team_count = len(teams)
+    for j, (team, projects) in enumerate(teams.items()):
         team_total = sum(projects.values())
-        dept_total += team_total
-        level2_labels.append(team)
+        level2_names.append(team)
         level2_values.append(team_total)
         level2_parents.append(dept)
-        for project, value in projects.items():
-            level3_labels.append(project)
+        # Use intermediate shade for level 2
+        level2_colors.append(dept_light_palette[3 + j % 2])
+
+        for k, (proj, value) in enumerate(projects.items()):
+            level3_names.append(proj)
             level3_values.append(value)
             level3_parents.append(team)
-    level1_labels.append(dept)
-    level1_values.append(dept_total)
+            # Use lighter shade for level 3
+            level3_colors.append(dept_light_palette[4 + k % 2])
 
-# Create color palette for each main department (level 1)
-dept_palette = {
-    "Engineering": "#306998",  # Python Blue
-    "Marketing": "#FFD43B",  # Python Yellow
-    "Sales": "#4ECDC4",  # Teal
-    "Operations": "#FF6B6B",  # Coral
-}
+# Create DataFrame for all levels (used for seaborn heatmap representation)
+df_full = pd.DataFrame({"Project": level3_names, "Team": level3_parents, "Budget": level3_values})
 
-# Build mapping from team to department
-parent_to_dept = {team: dept for dept, teams in hierarchy.items() for team in teams}
+# Create figure with two subplots: sunburst and summary bar chart
+fig = plt.figure(figsize=(16, 9))
+ax_sun = fig.add_axes([0.02, 0.05, 0.58, 0.85])  # Main sunburst
+ax_bar = fig.add_axes([0.65, 0.15, 0.32, 0.70])  # Summary bar chart
 
-# Create figure
-fig, ax = plt.subplots(figsize=(16, 9))
+# Ring parameters
+ring_width = 0.28
+inner_radius = 0.22
 
-# Ring 1 (innermost): Departments - radius 0.4, width 0.25
-level1_colors = [dept_palette[dept] for dept in level1_labels]
-total1 = sum(level1_values)
-angles1 = [v / total1 * 360 for v in level1_values]
-ring1_info = []
-start_angle = 90
-
-for angle, label, color in zip(angles1, level1_labels, level1_colors, strict=True):
-    wedge = Wedge(
-        (0, 0), 0.4, start_angle - angle, start_angle, width=0.25, facecolor=color, edgecolor="white", linewidth=2
-    )
-    ax.add_patch(wedge)
-    ring1_info.append((start_angle - angle / 2, 0.4 - 0.125, label, angle))
-    start_angle -= angle
-
-# Ring 2 (middle): Teams - radius 0.7, width 0.25
-level2_colors = []
-for parent in level2_parents:
-    base_color = dept_palette[parent]
-    rgb = plt.matplotlib.colors.to_rgb(base_color)
-    level2_colors.append(tuple(min(1, c * 1.2) for c in rgb))
-
-total2 = sum(level2_values)
-angles2 = [v / total2 * 360 for v in level2_values]
-ring2_info = []
-start_angle = 90
-
-for angle, label, color in zip(angles2, level2_labels, level2_colors, strict=True):
-    wedge = Wedge(
-        (0, 0), 0.7, start_angle - angle, start_angle, width=0.25, facecolor=color, edgecolor="white", linewidth=2
-    )
-    ax.add_patch(wedge)
-    ring2_info.append((start_angle - angle / 2, 0.7 - 0.125, label, angle))
-    start_angle -= angle
-
-# Ring 3 (outermost): Projects - radius 1.0, width 0.25
-level3_colors = []
-for parent in level3_parents:
-    dept = parent_to_dept[parent]
-    base_color = dept_palette[dept]
-    rgb = plt.matplotlib.colors.to_rgb(base_color)
-    level3_colors.append(tuple(min(1, c * 1.4) for c in rgb))
-
-total3 = sum(level3_values)
-angles3 = [v / total3 * 360 for v in level3_values]
-ring3_info = []
-start_angle = 90
-
-for angle, label, color in zip(angles3, level3_labels, level3_colors, strict=True):
-    wedge = Wedge(
-        (0, 0), 1.0, start_angle - angle, start_angle, width=0.25, facecolor=color, edgecolor="white", linewidth=2
-    )
-    ax.add_patch(wedge)
-    ring3_info.append((start_angle - angle / 2, 1.0 - 0.125, label, angle))
-    start_angle -= angle
-
-# Add labels for level 1 (innermost ring) - all labeled
-for angle, r, label, _span in ring1_info:
-    angle_rad = np.radians(angle)
-    x = r * np.cos(angle_rad) * 0.85
-    y = r * np.sin(angle_rad) * 0.85
-    ax.text(x, y, label, ha="center", va="center", fontsize=14, fontweight="bold", color="white")
-
-# Add labels for level 2 (middle ring) - only for larger segments
-for angle, r, label, span in ring2_info:
-    if span > 20:  # Only label segments > 20 degrees
-        angle_rad = np.radians(angle)
-        x = (r + 0.12) * np.cos(angle_rad)
-        y = (r + 0.12) * np.sin(angle_rad)
-        rotation = angle - 90 if -90 <= angle <= 90 else angle + 90
-        ax.text(x, y, label, ha="center", va="center", fontsize=11, rotation=rotation, color="#333333")
-
-# Add labels for level 3 (outer ring) - only for largest segments
-for angle, r, label, span in ring3_info:
-    if span > 15:  # Only label segments > 15 degrees
-        angle_rad = np.radians(angle)
-        x = (r + 0.12) * np.cos(angle_rad)
-        y = (r + 0.12) * np.sin(angle_rad)
-        rotation = angle - 90 if -90 <= angle <= 90 else angle + 90
-        ax.text(x, y, label, ha="center", va="center", fontsize=9, rotation=rotation, color="#555555")
-
-# Set equal aspect ratio and limits
-ax.set_aspect("equal")
-ax.set_xlim(-1.4, 1.4)
-ax.set_ylim(-1.2, 1.2)
-
-# Remove axes
-ax.axis("off")
-
-# Title
-ax.set_title("Company Budget · sunburst-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
-
-# Legend for main departments
-legend_handles = [
-    plt.Rectangle((0, 0), 1, 1, facecolor=dept_palette[dept], edgecolor="white", linewidth=2) for dept in level1_labels
-]
-ax.legend(
-    legend_handles,
-    [f"{dept}: ${val}K" for dept, val in zip(level1_labels, level1_values, strict=True)],
-    loc="center left",
-    bbox_to_anchor=(1.05, 0.5),
-    fontsize=14,
-    title="Departments",
-    title_fontsize=16,
-    framealpha=0.9,
+# Level 3 (outermost ring)
+wedges3, _ = ax_sun.pie(
+    level3_values,
+    radius=inner_radius + 3 * ring_width,
+    colors=level3_colors,
+    startangle=90,
+    counterclock=False,
+    wedgeprops={"width": ring_width, "edgecolor": "white", "linewidth": 2.5},
 )
 
-plt.tight_layout()
+# Level 2 (middle ring)
+wedges2, _ = ax_sun.pie(
+    level2_values,
+    radius=inner_radius + 2 * ring_width,
+    colors=level2_colors,
+    startangle=90,
+    counterclock=False,
+    wedgeprops={"width": ring_width, "edgecolor": "white", "linewidth": 2.5},
+)
+
+# Level 1 (innermost ring)
+wedges1, texts1 = ax_sun.pie(
+    level1_values,
+    radius=inner_radius + ring_width,
+    colors=level1_colors,
+    labels=level1_names,
+    labeldistance=0.55,
+    startangle=90,
+    counterclock=False,
+    wedgeprops={"width": ring_width, "edgecolor": "white", "linewidth": 2.5},
+    textprops={"fontsize": 18, "fontweight": "bold", "color": "white"},
+)
+
+# Add labels for level 2 segments (positioned within wedges)
+for i, wedge in enumerate(wedges2):
+    ang = (wedge.theta2 + wedge.theta1) / 2
+    r = inner_radius + 1.5 * ring_width
+    x = r * np.cos(np.radians(ang))
+    y = r * np.sin(np.radians(ang))
+    # Only label if segment is large enough
+    if (wedge.theta2 - wedge.theta1) > 15:
+        ax_sun.text(x, y, level2_names[i], ha="center", va="center", fontsize=14, fontweight="medium", color="#333333")
+
+# Add labels for level 3 segments (outermost)
+for i, wedge in enumerate(wedges3):
+    ang = (wedge.theta2 + wedge.theta1) / 2
+    r = inner_radius + 2.5 * ring_width
+    x = r * np.cos(np.radians(ang))
+    y = r * np.sin(np.radians(ang))
+    # Only label if segment is large enough
+    if (wedge.theta2 - wedge.theta1) > 12:
+        ax_sun.text(x, y, level3_names[i], ha="center", va="center", fontsize=12, color="#555555")
+
+# Add center text showing total
+total_budget = sum(level1_values)
+ax_sun.text(
+    0, 0, f"${total_budget:,}K\nTotal", ha="center", va="center", fontsize=22, fontweight="bold", color="#306998"
+)
+
+ax_sun.set_aspect("equal")
+
+# Create summary bar chart using seaborn barplot
+df_dept = pd.DataFrame({"Department": level1_names, "Budget ($K)": level1_values})
+sns.barplot(
+    data=df_dept,
+    y="Department",
+    x="Budget ($K)",
+    hue="Department",
+    palette=base_palette,
+    ax=ax_bar,
+    legend=False,
+    edgecolor="white",
+    linewidth=2,
+)
+
+ax_bar.set_xlabel("Budget ($K)", fontsize=18)
+ax_bar.set_ylabel("")
+ax_bar.tick_params(axis="both", labelsize=16)
+ax_bar.set_title("Department Totals", fontsize=20, fontweight="bold", pad=15)
+ax_bar.grid(True, axis="x", alpha=0.3, linestyle="--")
+ax_bar.spines["top"].set_visible(False)
+ax_bar.spines["right"].set_visible(False)
+
+# Add value labels on bars
+for i, v in enumerate(level1_values):
+    ax_bar.text(v + 15, i, f"${v}K", va="center", fontsize=14, fontweight="medium")
+
+# Main title
+fig.suptitle("Company Budget · sunburst-basic · seaborn · pyplots.ai", fontsize=26, fontweight="bold", y=0.98)
+
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

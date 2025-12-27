@@ -1,0 +1,29 @@
+library: plotly
+specification_id: heatmap-clustered
+created: '2025-12-26T15:25:12Z'
+updated: '2025-12-26T15:27:32Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20524719987
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/plotly/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of scipy hierarchical clustering with proper Ward's method and Euclidean
+    distance
+  - Dendrograms correctly rendered using manual Scatter traces to match heatmap alignment
+  - Biologically meaningful data with real gene names organized by pathway (cell cycle,
+    metabolism, immune, cancer)
+  - Clean tumor vs normal separation visible through clustering
+  - Diverging colormap correctly centered at zero
+  - Proper hover template for interactive exploration
+  - Outputs both PNG and HTML for static and interactive use
+  weaknesses:
+  - Missing axis labels (e.g., "Genes" for Y-axis, "Samples" for X-axis) - only tick
+    labels are present
+  - No row/column color bars for group annotations as suggested in spec Notes (could
+    annotate gene pathways or tumor/normal status)

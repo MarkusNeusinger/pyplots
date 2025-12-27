@@ -1,0 +1,29 @@
+library: bokeh
+specification_id: hive-basic
+created: '2025-12-24T22:18:42Z'
+updated: '2025-12-24T22:50:49Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20494684138
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/hive-basic/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hive-basic/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/hive-basic/bokeh/plot.html
+quality_score: 85
+review:
+  strengths:
+  - Excellent implementation of hive plot concept with 3 radial axes at 120° separation
+  - Software module dependency network is a perfect real-world use case for hive plots
+  - Good use of Bokeh ColumnDataSource for node data organization
+  - Bezier curves for edges create smooth, visually appealing connections
+  - Color-coded axes and edges by category (Core=blue, Utility=yellow, Interface=green)
+  - Node size encoding by degree is implemented in the code
+  - Both PNG and HTML outputs generated for static and interactive viewing
+  weaknesses:
+  - Node labels (main, data, config, etc.) are not visible in the rendered PNG despite
+    being in the code
+  - Size legend (showing degree scale) is not visible in the output despite code for
+    it
+  - Canvas utilization could be improved - significant empty space in corners
+  - Nodes appear relatively small for the 3600x3600 canvas size

@@ -1,17 +1,29 @@
 library: highcharts
 specification_id: treemap-basic
-created: 2025-12-14 11:22:31+00:00
-updated: 2025-12-14 11:22:31+00:00
+created: '2025-12-24T09:52:26Z'
+updated: '2025-12-24T10:02:53Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20207158150
-issue: 766
+workflow_run: 20483449455
+issue: 0
 python_version: 3.13.11
-library_version: 1.10.3
+library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/highcharts/plot.html
-quality_score: 95
+quality_score: 91
 review:
-  strengths: []
-  weaknesses: []
-  improvements: []
+  strengths:
+  - Excellent hierarchical data structure with clear parent-child relationships using
+    id/parent pattern
+  - Colorblind-safe palette with five distinct colors that do not conflict
+  - Good use of Highcharts multi-level treemap configuration with different styling
+    per level
+  - Clean code structure following KISS principles
+  - Proper title format matching spec requirements
+  - Realistic budget allocation scenario that demonstrates treemap utility
+  weaknesses:
+  - Subcategory labels in smaller rectangles could benefit from slightly larger font
+    or overflow handling
+  - Tooltip shows values but rectangles themselves do not display the dollar amounts
+  - Could add subtle hover effects or animation to showcase Highcharts interactivity
+    in HTML version

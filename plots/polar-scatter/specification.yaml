@@ -1,0 +1,11 @@
+spec_id: polar-scatter
+title: Polar Scatter Plot
+created: 2025-12-26T16:00:00Z
+updated: 2025-12-26T16:00:00Z
+issue: 2023
+suggested: null
+tags:
+  plot_type: [scatter, polar]
+  domain: [meteorology, physics, general]
+  features: [polar-coordinates, directional, 2d]
+  data_type: [numeric, angular]

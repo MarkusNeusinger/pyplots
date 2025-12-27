@@ -1,237 +1,225 @@
 """ pyplots.ai
 quiver-basic: Basic Quiver Plot
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-16
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-23
 """
 
-import math
 import tempfile
 import time
 import urllib.request
 from pathlib import Path
 
 import numpy as np
+from highcharts_core.chart import Chart
+from highcharts_core.options import HighchartsOptions
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-# Data - Create a 15x15 grid with circular rotation pattern (u = -y, v = x)
+# Data - create a 12x12 grid with circular rotation pattern (u = -y, v = x)
 np.random.seed(42)
-grid_size = 15
-x_range = np.linspace(-2, 2, grid_size)
-y_range = np.linspace(-2, 2, grid_size)
+grid_size = 12
+x_range = np.linspace(-3, 3, grid_size)
+y_range = np.linspace(-3, 3, grid_size)
 X, Y = np.meshgrid(x_range, y_range)
-
-# Circular rotation field: u = -y, v = x
-U = -Y
-V = X
-
-# Flatten for iteration
 x_flat = X.flatten()
 y_flat = Y.flatten()
-u_flat = U.flatten()
-v_flat = V.flatten()
 
-# Chart dimensions
-chart_width = 4800
-chart_height = 2700
+# Circular rotation field: u = -y, v = x (counterclockwise rotation)
+U = -y_flat
+V = x_flat
 
-# Compute plot area (accounting for margins)
-margin_left = 200
-margin_right = 100
-margin_top = 200
-margin_bottom = 150
-plot_width = chart_width - margin_left - margin_right
-plot_height = chart_height - margin_top - margin_bottom
+# Calculate magnitude for color encoding
+magnitude = np.sqrt(U**2 + V**2)
+max_mag = magnitude.max()
 
-# Data ranges
-x_min, x_max = -2.5, 2.5
-y_min, y_max = -2.5, 2.5
+# Normalize magnitude to 0-1 range
+norm_mag = magnitude / max_mag
 
-# Arrow scaling - scale arrows to be visible but not overlapping
-arrow_scale = 60  # Pixels per unit vector magnitude
+# Arrow scaling for visual clarity
+arrow_scale = 0.18
 
 
-def data_to_pixel(data_x, data_y):
-    """Convert data coordinates to pixel coordinates."""
-    px = margin_left + (data_x - x_min) / (x_max - x_min) * plot_width
-    # Y is inverted in pixel coordinates
-    py = margin_top + (y_max - data_y) / (y_max - y_min) * plot_height
-    return px, py
+# Color gradient for magnitude (cyan to yellow to orange to red - colorblind-friendly)
+def magnitude_to_color(norm_val):
+    """Map normalized magnitude (0-1) to colorblind-safe gradient."""
+    if norm_val < 0.25:
+        # Cyan to teal
+        return "#17BECF"
+    elif norm_val < 0.5:
+        # Teal to yellow-green
+        return "#2AA02A"
+    elif norm_val < 0.75:
+        # Yellow-green to orange
+        return "#FFD43B"
+    else:
+        # Orange to red-orange
+        return "#FF7F0E"
 
 
-def create_arrow_svg(x, y, u, v, color="#306998", head_size=15, line_width=4):
-    """Create SVG path for an arrow from (x,y) with direction (u,v)."""
-    # Convert to pixel coordinates
-    start_px, start_py = data_to_pixel(x, y)
+# Build arrow data as separate series by magnitude bins for legend
+num_bins = 4
+bin_labels = ["Low", "Medium", "High", "Very High"]
+bin_colors = ["#17BECF", "#2AA02A", "#FFD43B", "#FF7F0E"]
 
-    # Calculate magnitude for scaling
-    mag = math.sqrt(u**2 + v**2)
-    if mag < 0.01:
-        return ""  # Skip very small vectors
+# Collect arrow endpoints by magnitude bin
+arrow_data = {i: {"shafts": [], "heads": []} for i in range(num_bins)}
 
-    # Normalize and scale to pixel length
-    dx = (u / mag) * mag * arrow_scale
-    dy = -(v / mag) * mag * arrow_scale  # Negative because Y is inverted
+# Arrowhead parameters
+head_length_ratio = 0.35
+head_angle = 0.5  # radians
 
-    end_px = start_px + dx
-    end_py = start_py + dy
-
-    # Calculate arrow head
-    angle = math.atan2(dy, dx)
-    head_angle = math.pi / 6  # 30 degrees
-
-    # Arrow head points
-    head_x1 = end_px - head_size * math.cos(angle - head_angle)
-    head_y1 = end_py - head_size * math.sin(angle - head_angle)
-    head_x2 = end_px - head_size * math.cos(angle + head_angle)
-    head_y2 = end_py - head_size * math.sin(angle + head_angle)
-
-    # SVG path for line and arrow head
-    path = f'<path d="M{start_px},{start_py} L{end_px},{end_py}" stroke="{color}" stroke-width="{line_width}" fill="none"/>'
-    path += f'<polygon points="{end_px},{end_py} {head_x1},{head_y1} {head_x2},{head_y2}" fill="{color}"/>'
-
-    return path
-
-
-# Generate all arrow SVG elements
-arrows_svg = []
 for i in range(len(x_flat)):
-    arrow = create_arrow_svg(x_flat[i], y_flat[i], u_flat[i], v_flat[i])
-    if arrow:
-        arrows_svg.append(arrow)
+    # Skip very weak vectors (near center)
+    if magnitude[i] < 0.15:
+        continue
 
-arrows_svg_str = "\n".join(arrows_svg)
+    # Arrow base and tip
+    x1, y1 = float(x_flat[i]), float(y_flat[i])
+    u_scaled = U[i] * arrow_scale
+    v_scaled = V[i] * arrow_scale
+    x2, y2 = x1 + u_scaled, y1 + v_scaled
+
+    # Calculate arrowhead
+    arrow_len = np.sqrt(u_scaled**2 + v_scaled**2)
+    head_len = arrow_len * head_length_ratio
+    angle = np.arctan2(v_scaled, u_scaled)
+
+    # Arrowhead left and right points
+    x_left = x2 - head_len * np.cos(angle - head_angle)
+    y_left = y2 - head_len * np.sin(angle - head_angle)
+    x_right = x2 - head_len * np.cos(angle + head_angle)
+    y_right = y2 - head_len * np.sin(angle + head_angle)
+
+    # Determine bin index
+    bin_idx = min(int(norm_mag[i] * num_bins), num_bins - 1)
+
+    # Store shaft and arrowhead data
+    arrow_data[bin_idx]["shafts"].append([[x1, y1], [x2, y2]])
+    arrow_data[bin_idx]["heads"].append([[x_left, y_left], [x2, y2], [x_right, y_right]])
 
 
-# Create tick marks and labels for axes
-def create_axis_elements():
-    """Create SVG elements for axes, ticks, and labels."""
-    svg_parts = []
+# Create chart
+chart = Chart(container="container")
+chart.options = HighchartsOptions()
 
-    # X-axis line
-    svg_parts.append(
-        f'<line x1="{margin_left}" y1="{margin_top + plot_height}" '
-        f'x2="{margin_left + plot_width}" y2="{margin_top + plot_height}" '
-        f'stroke="#333" stroke-width="3"/>'
+# Chart configuration
+chart.options.chart = {
+    "type": "scatter",
+    "width": 4800,
+    "height": 2700,
+    "backgroundColor": "#ffffff",
+    "marginBottom": 300,
+    "marginLeft": 180,
+    "marginRight": 200,
+    "marginTop": 150,
+}
+
+# Title
+chart.options.title = {
+    "text": "Circular Wind Flow · quiver-basic · highcharts · pyplots.ai",
+    "style": {"fontSize": "72px", "fontWeight": "bold"},
+}
+
+# Axes
+chart.options.x_axis = {
+    "title": {"text": "X Position (grid units)", "style": {"fontSize": "48px"}},
+    "labels": {"style": {"fontSize": "36px"}},
+    "gridLineWidth": 1,
+    "gridLineColor": "rgba(0, 0, 0, 0.15)",
+    "gridLineDashStyle": "Dash",
+    "min": -4,
+    "max": 4,
+    "tickInterval": 1,
+}
+chart.options.y_axis = {
+    "title": {"text": "Y Position (grid units)", "style": {"fontSize": "48px"}},
+    "labels": {"style": {"fontSize": "36px"}},
+    "gridLineWidth": 1,
+    "gridLineColor": "rgba(0, 0, 0, 0.15)",
+    "gridLineDashStyle": "Dash",
+    "min": -4,
+    "max": 4,
+    "tickInterval": 1,
+}
+
+# Legend configuration
+chart.options.legend = {
+    "enabled": True,
+    "layout": "horizontal",
+    "align": "center",
+    "verticalAlign": "bottom",
+    "y": -30,
+    "itemStyle": {"fontSize": "40px"},
+    "title": {"text": "Vector Magnitude", "style": {"fontSize": "44px", "fontWeight": "bold"}},
+    "symbolWidth": 80,
+    "symbolHeight": 30,
+    "itemDistance": 60,
+}
+
+# Credits
+chart.options.credits = {"enabled": False}
+
+# Add arrow series for each magnitude bin using line type
+# We'll use the 'line' series type with lineWidth to draw arrows
+series_list = []
+
+for bin_idx in range(num_bins):
+    if not arrow_data[bin_idx]["shafts"]:
+        continue
+
+    color = bin_colors[bin_idx]
+    label = bin_labels[bin_idx]
+
+    # Create line data for this bin - each arrow is a separate segment
+    # Using scatter with lineWidth connection won't work, so we build path data
+    # Highcharts line series: each segment needs null separator
+
+    line_data = []
+    for shaft in arrow_data[bin_idx]["shafts"]:
+        line_data.append({"x": shaft[0][0], "y": shaft[0][1]})
+        line_data.append({"x": shaft[1][0], "y": shaft[1][1]})
+        line_data.append(None)  # Separator for line breaks
+
+    for head in arrow_data[bin_idx]["heads"]:
+        line_data.append({"x": head[0][0], "y": head[0][1]})
+        line_data.append({"x": head[1][0], "y": head[1][1]})
+        line_data.append(None)
+        line_data.append({"x": head[1][0], "y": head[1][1]})
+        line_data.append({"x": head[2][0], "y": head[2][1]})
+        line_data.append(None)
+
+    series_list.append(
+        {
+            "type": "line",
+            "name": label,
+            "data": line_data,
+            "color": color,
+            "lineWidth": 8,
+            "marker": {"enabled": False},
+            "enableMouseTracking": False,
+        }
     )
 
-    # Y-axis line
-    svg_parts.append(
-        f'<line x1="{margin_left}" y1="{margin_top}" '
-        f'x2="{margin_left}" y2="{margin_top + plot_height}" '
-        f'stroke="#333" stroke-width="3"/>'
-    )
+# Add series via options.series since we're using custom line series
+chart.options.series = series_list
 
-    # X-axis ticks and labels
-    x_ticks = np.arange(-2, 2.5, 1)
-    for tick in x_ticks:
-        px, py = data_to_pixel(tick, y_min)
-        svg_parts.append(
-            f'<line x1="{px}" y1="{margin_top + plot_height}" '
-            f'x2="{px}" y2="{margin_top + plot_height + 15}" stroke="#333" stroke-width="2"/>'
-        )
-        svg_parts.append(
-            f'<text x="{px}" y="{margin_top + plot_height + 55}" '
-            f'text-anchor="middle" font-size="36" fill="#333">{tick:.1f}</text>'
-        )
-
-    # Y-axis ticks and labels
-    y_ticks = np.arange(-2, 2.5, 1)
-    for tick in y_ticks:
-        px, py = data_to_pixel(x_min, tick)
-        svg_parts.append(
-            f'<line x1="{margin_left - 15}" y1="{py}" x2="{margin_left}" y2="{py}" stroke="#333" stroke-width="2"/>'
-        )
-        svg_parts.append(
-            f'<text x="{margin_left - 25}" y="{py + 12}" text-anchor="end" font-size="36" fill="#333">{tick:.1f}</text>'
-        )
-
-    # X-axis label
-    svg_parts.append(
-        f'<text x="{margin_left + plot_width / 2}" y="{chart_height - 40}" '
-        f'text-anchor="middle" font-size="48" font-weight="bold" fill="#333">X Position</text>'
-    )
-
-    # Y-axis label (rotated)
-    svg_parts.append(
-        f'<text x="60" y="{margin_top + plot_height / 2}" '
-        f'text-anchor="middle" font-size="48" font-weight="bold" fill="#333" '
-        f'transform="rotate(-90, 60, {margin_top + plot_height / 2})">Y Position</text>'
-    )
-
-    # Grid lines
-    for tick in x_ticks:
-        px, _ = data_to_pixel(tick, 0)
-        svg_parts.append(
-            f'<line x1="{px}" y1="{margin_top}" x2="{px}" y2="{margin_top + plot_height}" '
-            f'stroke="rgba(0,0,0,0.15)" stroke-width="1" stroke-dasharray="10,5"/>'
-        )
-
-    for tick in y_ticks:
-        _, py = data_to_pixel(0, tick)
-        svg_parts.append(
-            f'<line x1="{margin_left}" y1="{py}" x2="{margin_left + plot_width}" y2="{py}" '
-            f'stroke="rgba(0,0,0,0.15)" stroke-width="1" stroke-dasharray="10,5"/>'
-        )
-
-    return "\n".join(svg_parts)
-
-
-axis_svg = create_axis_elements()
-
-# Download Highcharts JS (for consistent styling with other implementations)
+# Download Highcharts JS
 highcharts_url = "https://code.highcharts.com/highcharts.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
 
-# Create full HTML/SVG content
-# Using pure SVG approach since Highcharts doesn't have native quiver support
+# Generate HTML with inline scripts
+html_str = chart.to_js_literal()
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
-    <style>
-        body {{ margin: 0; padding: 0; background: white; }}
-    </style>
+    <script>{highcharts_js}</script>
 </head>
-<body>
-    <div id="container" style="width: {chart_width}px; height: {chart_height}px;">
-        <svg width="{chart_width}" height="{chart_height}" xmlns="http://www.w3.org/2000/svg">
-            <!-- Background -->
-            <rect width="100%" height="100%" fill="white"/>
-
-            <!-- Title -->
-            <text x="{chart_width / 2}" y="80" text-anchor="middle"
-                  font-size="72" font-weight="bold" fill="#333">
-                quiver-basic · highcharts · pyplots.ai
-            </text>
-
-            <!-- Subtitle -->
-            <text x="{chart_width / 2}" y="140" text-anchor="middle"
-                  font-size="42" fill="#666">
-                Circular Rotation Vector Field
-            </text>
-
-            <!-- Plot area background -->
-            <rect x="{margin_left}" y="{margin_top}" width="{plot_width}" height="{plot_height}"
-                  fill="white" stroke="#ccc" stroke-width="1"/>
-
-            <!-- Axes and grid -->
-            {axis_svg}
-
-            <!-- Arrows -->
-            {arrows_svg_str}
-
-            <!-- Legend -->
-            <g transform="translate({chart_width - 350}, {margin_top + 50})">
-                <rect x="0" y="0" width="280" height="100" fill="white" stroke="#ccc" stroke-width="1" rx="5"/>
-                <path d="M20,50 L100,50" stroke="#306998" stroke-width="4" fill="none"/>
-                <polygon points="100,50 85,42 85,58" fill="#306998"/>
-                <text x="120" y="58" font-size="32" fill="#333">Velocity Vector</text>
-            </g>
-        </svg>
-    </div>
+<body style="margin:0;">
+    <div id="container" style="width: 4800px; height: 2700px;"></div>
+    <script>{html_str}</script>
 </body>
 </html>"""
 
@@ -245,19 +233,30 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=5000,3000")
+chrome_options.add_argument("--window-size=4800,2800")
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
-time.sleep(3)  # Wait for rendering
+time.sleep(5)
 
 # Take screenshot of just the chart container element
 container = driver.find_element("id", "container")
 container.screenshot("plot.png")
 driver.quit()
 
-Path(temp_path).unlink()  # Clean up temp file
+Path(temp_path).unlink()
 
-# Also save HTML for interactive version
+# Save HTML for interactive version
 with open("plot.html", "w", encoding="utf-8") as f:
-    f.write(html_content)
+    interactive_html = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+</head>
+<body style="margin:0;">
+    <div id="container" style="width: 100%; height: 100vh;"></div>
+    <script>{html_str}</script>
+</body>
+</html>"""
+    f.write(interactive_html)

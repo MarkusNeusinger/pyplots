@@ -1,0 +1,27 @@
+library: plotly
+specification_id: histogram-2d
+created: '2025-12-25T20:10:41Z'
+updated: '2025-12-25T20:19:42Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20510277976
+issue: 2012
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-2d/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-2d/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-2d/plotly/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of marginal histograms using make_subplots with shared_xaxes/shared_yaxes
+    for proper alignment
+  - Viridis colormap provides clear density visualization that is colorblind-accessible
+  - Realistic financial returns context with appropriate correlation structure (0.7)
+  - Good use of Plotly Histogram2d with proper bin configuration (40x40)
+  - Both PNG and interactive HTML outputs generated
+  - Clean code structure following KISS principles
+  - Proper font sizing for 4800x2700 output
+  weaknesses:
+  - Colorbar positioning creates slight visual imbalance with the marginal histogram
+    on the right
+  - No grid lines on marginal histograms

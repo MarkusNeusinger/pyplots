@@ -1,7 +1,7 @@
 """ pyplots.ai
 chord-basic: Basic Chord Diagram
-Library: highcharts 1.10.3 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-14
+Library: highcharts unknown | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-23
 """
 
 import tempfile
@@ -89,9 +89,12 @@ chart.options.chart = {"type": "dependencywheel", "width": 4800, "height": 2700,
 
 # Title
 chart.options.title = {
-    "text": "Migration Flows · chord-basic · highcharts · pyplots.ai",
+    "text": "chord-basic · highcharts · pyplots.ai",
     "style": {"fontSize": "64px", "fontWeight": "bold"},
 }
+
+# Subtitle for context
+chart.options.subtitle = {"text": "Migration Flows Between Continents (Millions)", "style": {"fontSize": "36px"}}
 
 # Tooltip
 chart.options.tooltip = {
@@ -110,8 +113,8 @@ series_config = {
     "dataLabels": {
         "enabled": True,
         "style": {"fontSize": "36px", "fontWeight": "bold", "textOutline": "3px white"},
-        "nodeFormat": "{point.name}",  # Only format node labels
-        "linkFormat": "",  # Empty format for links (hides them)
+        "nodeFormat": "{point.name}",
+        "linkFormat": "",
         "distance": 20,
     },
     "size": "90%",

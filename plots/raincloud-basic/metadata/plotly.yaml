@@ -1,0 +1,29 @@
+library: plotly
+specification_id: raincloud-basic
+created: '2025-12-25T08:25:05Z'
+updated: '2025-12-25T08:27:20Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20501864541
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/plotly/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent demonstration of bimodal distribution in Treatment B - clearly visible
+    in the half-violin shape
+  - Smart use of Plotly go.Violin with side=positive/negative to create the raincloud
+    effect
+  - Rich hover information showing detailed statistics (median, Q1-Q3, mean ± std)
+  - Clean color palette that is colorblind-friendly
+  - Proper use of transparency (opacity=0.6) for both cloud and rain points
+  - All three raincloud components (cloud, box, rain) are clearly distinguishable
+  - Realistic experimental data context with meaningful group differences
+  weaknesses:
+  - Legend header says Raincloud Components with generic labels but actual legend
+    items show condition-specific names like Control (Cloud) which is confusing
+  - Could leverage more Plotly-specific interactive features
+  - Implementation header has pre-filled quality score before actual review

@@ -1,7 +1,7 @@
 """ pyplots.ai
 qq-basic: Basic Q-Q Plot
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 95/100 | Created: 2025-12-17
+Quality: 91/100 | Created: 2025-12-23
 """
 
 import matplotlib.pyplot as plt
@@ -86,7 +86,7 @@ sample_quantiles = (sorted_sample - sample_mean) / sample_std
 # Create plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Q-Q scatter plot
+# Q-Q scatter plot using seaborn
 sns.scatterplot(
     x=theoretical_quantiles,
     y=sample_quantiles,

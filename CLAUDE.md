@@ -206,8 +206,6 @@ review:
     - "Good use of alpha for overlapping points"
   weaknesses:
     - "Grid could be more subtle"
-  improvements:
-    - "Consider colorblind-friendly palette"
 ```
 
 **3. Implementation headers:** `plots/{specification-id}/implementations/{library}.py`
@@ -588,9 +586,15 @@ bash .github/scripts/setup-labels.sh
 | Label | Meaning | Set by |
 |-------|---------|--------|
 | `approved` | Human approved specification for merge | Maintainer manually |
-| `ai-approved` | AI quality check passed (score >= 90) | Workflow automatically |
+| `ai-approved` | AI quality check passed (score >= 90, or >= 50 after 3 attempts) | Workflow automatically |
 | `rejected` | Human rejected | Maintainer manually |
-| `ai-rejected` | AI quality check failed (score < 90) | Workflow automatically |
+| `ai-rejected` | AI quality check failed (score < 90), triggers repair loop | Workflow automatically |
+| `quality-poor` | Score < 50, needs fundamental fixes | Workflow automatically |
+
+**Quality Workflow:**
+- **≥ 90**: ai-approved, merged immediately
+- **< 90**: ai-rejected, repair loop (up to 3 attempts)
+- **After 3 attempts**: ≥ 50 → ai-approved and merge, < 50 → close PR and regenerate
 
 ### Quality Score Labels
 

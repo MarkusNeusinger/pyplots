@@ -1,0 +1,24 @@
+library: plotly
+specification_id: scatter-3d
+created: '2025-12-26T10:30:19Z'
+updated: '2025-12-26T10:32:40Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20520860034
+issue: 1945
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Plotly's Scatter3d with proper colorscale and colorbar
+  - Clean code structure following KISS principles with reproducible seed
+  - Correct title format and comprehensive axis labeling with units
+  - Good camera angle providing clear 3D perspective
+  - Generates both PNG and interactive HTML output
+  weaknesses:
+  - Colorbar title font could be larger for better visibility at full resolution
+  - Data uses generic coordinate labels rather than a more compelling real-world scenario
+  - Could leverage Plotly's hover templates for richer interactivity

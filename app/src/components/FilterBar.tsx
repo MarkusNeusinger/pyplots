@@ -292,9 +292,9 @@ export function FilterBar({
           }}
         >
           {imageSize === 'normal' ? (
-            <ViewModuleIcon sx={{ fontSize: '1.25rem' }} />
-          ) : (
             <ViewAgendaIcon sx={{ fontSize: '1.25rem' }} />
+          ) : (
+            <ViewModuleIcon sx={{ fontSize: '1.25rem' }} />
           )}
         </Box>
         {/* Active filter chips */}

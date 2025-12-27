@@ -29,17 +29,30 @@ export function createTooltipId(
  *
  * @param id - Tooltip ID to parse
  * @returns Parsed components or null if invalid
+ *
+ * @example
+ * parseTooltipId('spec-scatter-basic-matplotlib')
+ * // Returns: { type: 'spec', specId: 'scatter-basic', library: 'matplotlib' }
  */
 export function parseTooltipId(
   id: string
 ): { type: TooltipType; specId: string; library: string } | null {
-  const match = id.match(/^(spec|lib)-(.+)-([^-]+)$/);
-  if (!match) return null;
+  const parts = id.split('-');
+  if (parts.length < 3) return null;
+
+  const typeRaw = parts[0];
+  if (typeRaw !== 'spec' && typeRaw !== 'lib') return null;
+
+  // Library is always the last part, specId is everything in between
+  const library = parts[parts.length - 1];
+  const specId = parts.slice(1, -1).join('-');
+
+  if (!specId || !library) return null;
 
   return {
-    type: match[1] as TooltipType,
-    specId: match[2],
-    library: match[3],
+    type: typeRaw,
+    specId,
+    library,
   };
 }
 

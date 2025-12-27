@@ -19,18 +19,41 @@ export function useInfiniteScroll({
 }: UseInfiniteScrollProps) {
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
+  // Use refs to avoid stale closures in scroll handler
+  const stateRef = useRef({ allImages, displayedImages, hasMore });
+  stateRef.current = { allImages, displayedImages, hasMore };
+
   // Load more images
   const loadMore = useCallback(() => {
-    if (!hasMore) return;
+    const { allImages: all, displayedImages: displayed, hasMore: more } = stateRef.current;
+    if (!more) return;
 
-    const currentLength = displayedImages.length;
-    const nextBatch = allImages.slice(currentLength, currentLength + BATCH_SIZE);
+    const currentLength = displayed.length;
+    const remaining = all.length - currentLength;
+    if (remaining <= 0) return;
+
+    const itemsToLoad = Math.min(BATCH_SIZE, remaining);
+    const nextBatch = all.slice(currentLength, currentLength + itemsToLoad);
 
     setDisplayedImages(prev => [...prev, ...nextBatch]);
-    setHasMore(currentLength + BATCH_SIZE < allImages.length);
-  }, [allImages, displayedImages.length, hasMore, setDisplayedImages, setHasMore]);
+    setHasMore(currentLength + itemsToLoad < all.length);
+  }, [setDisplayedImages, setHasMore]);
 
-  // Intersection Observer to trigger loadMore - with look-ahead (preload before reaching the end)
+  // Check if we need to load more based on scroll position
+  const checkAndLoad = useCallback(() => {
+    const { hasMore: more } = stateRef.current;
+    if (!more) return;
+
+    const scrollBottom = window.scrollY + window.innerHeight;
+    const docHeight = document.documentElement.scrollHeight;
+
+    // If within 2500px of bottom, load more
+    if (scrollBottom + 2500 > docHeight) {
+      loadMore();
+    }
+  }, [loadMore]);
+
+  // Intersection Observer for normal scrolling
   useEffect(() => {
     if (!hasMore) return;
 
@@ -42,7 +65,7 @@ export function useInfiniteScroll({
       },
       {
         threshold: 0.1,
-        rootMargin: '2400px 0px' // Trigger 2400px before visible (preload ~8 rows ahead)
+        rootMargin: '2400px 0px'
       }
     );
 
@@ -52,6 +75,35 @@ export function useInfiniteScroll({
 
     return () => observer.disconnect();
   }, [hasMore, loadMore]);
+
+  // Scroll event for fast scrolling - uses ref to always have fresh state
+  useEffect(() => {
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          checkAndLoad();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Also check on resize and initial mount
+    checkAndLoad();
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [checkAndLoad]);
+
+  // Re-check after images are added (in case we need more)
+  useEffect(() => {
+    // Small delay to let DOM update
+    const timer = setTimeout(checkAndLoad, 50);
+    return () => clearTimeout(timer);
+  }, [displayedImages.length, checkAndLoad]);
 
   return {
     loadMoreRef,

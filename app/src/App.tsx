@@ -373,6 +373,7 @@ function App() {
           filterCounts={filterCounts}
           orCounts={orCounts}
           currentTotal={allImages.length}
+          displayedCount={displayedImages.length}
           randomAnimation={randomAnimation}
           searchInputRef={searchInputRef}
           imageSize={imageSize}

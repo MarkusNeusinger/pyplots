@@ -21,7 +21,8 @@ interface FilterBarProps {
   activeFilters: ActiveFilters;
   filterCounts: FilterCounts | null;  // Contextual counts (for AND additions)
   orCounts: Record<string, number>[];  // Per-group counts for OR additions
-  currentTotal: number;  // Current number of displayed images
+  currentTotal: number;  // Total number of filtered images
+  displayedCount: number;  // Currently displayed images
   randomAnimation: { index: number; phase: 'out' | 'in'; oldLabel?: string } | null;
   searchInputRef?: React.RefObject<HTMLInputElement | null>;
   imageSize: ImageSize;
@@ -38,6 +39,7 @@ export function FilterBar({
   filterCounts,
   orCounts,
   currentTotal,
+  displayedCount,
   randomAnimation,
   searchInputRef,
   imageSize,
@@ -314,6 +316,21 @@ export function FilterBar({
           position: 'relative',
         }}
       >
+        {/* Progress counter - absolute left */}
+        {currentTotal > 0 && (
+          <Typography
+            sx={{
+              position: 'absolute',
+              left: 0,
+              fontFamily: '"JetBrains Mono", monospace',
+              fontSize: '0.75rem',
+              color: '#9ca3af',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {Math.min(displayedCount, currentTotal)} / {currentTotal}
+          </Typography>
+        )}
         {/* Grid size toggle - absolute right */}
         <Box
           onClick={() => onImageSizeChange(imageSize === 'normal' ? 'compact' : 'normal')}

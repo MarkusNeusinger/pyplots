@@ -752,7 +752,7 @@ async def get_sitemap(db: AsyncSession = Depends(get_db)):
     # Add library URLs (static list)
     for lib in LIBRARIES_SEED:
         lib_id = html.escape(lib["id"])
-        xml_lines.append(f"  <url><loc>https://pyplots.ai/?library={lib_id}</loc></url>")
+        xml_lines.append(f"  <url><loc>https://pyplots.ai/?lib={lib_id}</loc></url>")
 
     xml_lines.append("</urlset>")
     xml = "\n".join(xml_lines)

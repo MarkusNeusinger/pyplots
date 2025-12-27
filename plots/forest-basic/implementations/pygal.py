@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 forest-basic: Meta-Analysis Forest Plot
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 72/100 | Created: 2025-12-27
+Quality: 75/100 | Created: 2025-12-27
 """
 
 import pygal

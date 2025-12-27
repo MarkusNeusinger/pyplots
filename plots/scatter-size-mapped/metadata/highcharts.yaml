@@ -1,0 +1,30 @@
+library: highcharts
+specification_id: scatter-size-mapped
+created: '2025-12-27T19:38:59Z'
+updated: '2025-12-27T19:41:07Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20543383982
+issue: 0
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-size-mapped/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-size-mapped/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-size-mapped/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent colorblind-safe palette using the project standard colors (Python blue/yellow
+    plus complementary hues)
+  - Clear regional clustering visible in data - Africa lower-left, Europe upper-right,
+    demonstrating realistic economic patterns
+  - Proper use of semi-transparency (0.7 opacity) revealing overlapping bubbles
+  - Well-structured tooltip showing all three data dimensions with proper formatting
+  - Correct title format following pyplots.ai conventions
+  - Good bubble sizing with minSize/maxSize constraints preventing overwhelming markers
+  weaknesses:
+  - Legend text appears slightly truncated on the right edge - consider increasing
+    marginRight or adjusting legend position
+  - No explicit size legend showing what bubble sizes represent (spec requests this
+    feature)
+  - X-axis label GDP per Capita (USD) is not visible - only tick values shown in k
+    notation

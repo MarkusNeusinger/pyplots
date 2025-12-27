@@ -1,0 +1,27 @@
+library: highcharts
+specification_id: lift-curve
+created: '2025-12-27T19:24:09Z'
+updated: '2025-12-27T19:33:31Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20543283913
+issue: 0
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/lift-curve/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/lift-curve/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/lift-curve/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of Highcharts plotLines feature for the reference line with label
+  - Effective combination of LineSeries for the curve and ScatterSeries for key percentile
+    annotations
+  - Clean colorblind-safe palette (Python blue/yellow)
+  - Proper title format and informative subtitle with baseline rate
+  - Good data labels on key percentiles showing lift multipliers
+  weaknesses:
+  - The Random Selection (Lift = 1) label appears to be cut off at the right edge
+    of the plot
+  - Lift values at 10%, 20%, and 30% are identical (1.52x), which looks artificial;
+    the data generation could show more variation
+  - Code complexity with regex extraction of JS literal could be simplified

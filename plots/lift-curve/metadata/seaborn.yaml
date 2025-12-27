@@ -1,0 +1,28 @@
+library: seaborn
+specification_id: lift-curve
+created: '2025-12-27T19:20:51Z'
+updated: '2025-12-27T19:26:29Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20543281168
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/lift-curve/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/lift-curve/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent visual clarity with appropriate font sizes and line widths for high-resolution
+    output
+  - Proper lift curve calculation methodology with clear documentation in comments
+  - Good use of decile markers with lift value annotations to highlight key insights
+  - Reference baseline at y=1 clearly distinguishes model performance from random
+    selection
+  - Realistic marketing campaign scenario with appropriate 10% base response rate
+  - Clean, well-organized code following KISS principles
+  weaknesses:
+  - Seaborn is used minimally - only for sns.lineplot and theming; the core visualization
+    could be done entirely in matplotlib
+  - First decile annotation appears slightly cramped near the top of the curve
+  - Y-axis label could clarify that lift is a ratio

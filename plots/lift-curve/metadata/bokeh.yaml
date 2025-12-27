@@ -1,0 +1,28 @@
+library: bokeh
+specification_id: lift-curve
+created: '2025-12-27T19:22:28Z'
+updated: '2025-12-27T19:27:56Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20543282378
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/lift-curve/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/lift-curve/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/lift-curve/bokeh/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent text sizing with 42pt title, 32pt axis labels, 24pt tick labels - perfectly
+    readable at 4800x2700
+  - Clean implementation of lift curve with proper baseline reference line at y=1
+  - Decile markers with contrasting yellow fill and blue outline provide clear data
+    point emphasis
+  - Realistic marketing campaign scenario with 15% baseline response rate
+  - Proper use of ColumnDataSource for data management
+  - Both PNG and HTML outputs generated
+  weaknesses:
+  - Missing HoverTool for interactivity - would allow users to see exact lift values
+    at each percentage
+  - Y-axis label could be more descriptive (e.g., Cumulative Lift Model/Random)
+  - Legend text slightly small relative to other text elements on the large canvas

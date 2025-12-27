@@ -48,7 +48,12 @@ def mock_spec():
     mock_spec.applications = ["data visualization"]
     mock_spec.data = ["numeric"]
     mock_spec.notes = ["Use for 2D data"]
-    mock_spec.tags = {"plot_type": ["scatter"], "domain": ["statistics"], "data_type": ["numeric"], "features": ["basic"]}
+    mock_spec.tags = {
+        "plot_type": ["scatter"],
+        "domain": ["statistics"],
+        "data_type": ["numeric"],
+        "features": ["basic"],
+    }
     mock_spec.issue = 42
     mock_spec.suggested = "contributor"
     mock_spec.impls = [mock_impl]

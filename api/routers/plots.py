@@ -48,14 +48,7 @@ def _image_matches_groups(spec_id: str, library: str, groups: list[dict], spec_l
 
 def _calculate_global_counts(all_specs: list) -> dict:
     """Calculate global counts for all filter categories."""
-    global_counts: dict = {
-        "lib": {},
-        "spec": {},
-        "plot": {},
-        "data": {},
-        "dom": {},
-        "feat": {},
-    }
+    global_counts: dict = {"lib": {}, "spec": {}, "plot": {}, "data": {}, "dom": {}, "feat": {}}
 
     for spec_obj in all_specs:
         if not spec_obj.impls:
@@ -94,14 +87,7 @@ def _calculate_global_counts(all_specs: list) -> dict:
 
 def _calculate_contextual_counts(filtered_images: list[dict], spec_id_to_tags: dict) -> dict:
     """Calculate contextual counts from filtered images."""
-    counts: dict = {
-        "lib": {},
-        "spec": {},
-        "plot": {},
-        "data": {},
-        "dom": {},
-        "feat": {},
-    }
+    counts: dict = {"lib": {}, "spec": {}, "plot": {}, "data": {}, "dom": {}, "feat": {}}
 
     for img in filtered_images:
         spec_id = img["spec_id"]
@@ -135,10 +121,7 @@ def _calculate_contextual_counts(filtered_images: list[dict], spec_id_to_tags: d
 
 
 def _calculate_or_counts(
-    filter_groups: list[dict],
-    all_images: list[dict],
-    spec_id_to_tags: dict,
-    spec_lookup: dict,
+    filter_groups: list[dict], all_images: list[dict], spec_id_to_tags: dict, spec_lookup: dict
 ) -> list[dict]:
     """Calculate OR preview counts for each filter group."""
     or_counts: list[dict] = []
@@ -188,10 +171,7 @@ def _calculate_or_counts(
 
 
 @router.get("/plots/filter", response_model=FilteredPlotsResponse)
-async def get_filtered_plots(
-    request: Request,
-    db: AsyncSession = Depends(get_db),
-):
+async def get_filtered_plots(request: Request, db: AsyncSession = Depends(get_db)):
     """
     Get filtered plot images with counts for all filter categories.
 
@@ -240,10 +220,7 @@ async def get_filtered_plots(
     spec_lookup: dict = {}
     for spec_obj in all_specs:
         if spec_obj.impls:
-            spec_lookup[spec_obj.id] = {
-                "spec": spec_obj,
-                "tags": spec_obj.tags or {},
-            }
+            spec_lookup[spec_obj.id] = {"spec": spec_obj, "tags": spec_obj.tags or {}}
 
     # Build list of all images with metadata
     all_images: list[dict] = []
@@ -265,9 +242,7 @@ async def get_filtered_plots(
 
     # Filter images based on all groups
     filtered_images = [
-        img
-        for img in all_images
-        if _image_matches_groups(img["spec_id"], img["library"], filter_groups, spec_lookup)
+        img for img in all_images if _image_matches_groups(img["spec_id"], img["library"], filter_groups, spec_lookup)
     ]
 
     # Build spec_id -> tags lookup

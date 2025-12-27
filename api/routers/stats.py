@@ -37,10 +37,6 @@ async def get_stats(db: AsyncSession = Depends(get_db)):
     # Count total implementations
     total_impls = sum(len(s.impls) for s in specs)
 
-    result = StatsResponse(
-        specs=len(specs_with_impls),
-        plots=total_impls,
-        libraries=len(libraries),
-    )
+    result = StatsResponse(specs=len(specs_with_impls), plots=total_impls, libraries=len(libraries))
     set_cached(key, result)
     return result

@@ -2,7 +2,6 @@
 Tests for api/cache.py caching utilities.
 """
 
-
 from api.cache import cache_key, get_cached, set_cached
 
 
@@ -64,11 +63,7 @@ class TestCacheOperations:
     def test_cache_complex_types(self) -> None:
         """Cache should handle complex types."""
         test_key = "test_key_complex"
-        test_value = {
-            "list": [1, 2, 3],
-            "nested": {"a": 1, "b": 2},
-            "tuple": (1, 2, 3),
-        }
+        test_value = {"list": [1, 2, 3], "nested": {"a": 1, "b": 2}, "tuple": (1, 2, 3)}
 
         set_cached(test_key, test_value)
         result = get_cached(test_key)

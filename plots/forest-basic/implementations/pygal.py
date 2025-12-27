@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 forest-basic: Meta-Analysis Forest Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-27
@@ -50,7 +50,7 @@ custom_style = Style(
     legend_font_size=28,
     value_font_size=24,
     tooltip_font_size=28,
-    stroke_width=4,
+    stroke_width=6,
     font_family="Arial",
 )
 
@@ -80,10 +80,10 @@ chart.add(
     stroke_style={"width": 3, "dasharray": "12, 6"},
 )
 
-# Add CI whiskers first (behind study points)
+# Add CI whiskers (thicker lines for better visibility at this canvas size)
 for i, (_study, _effect, ci_low, ci_high, _weight) in enumerate(studies):
     y_pos = len(studies) - i
-    chart.add(None, [(ci_low, y_pos), (ci_high, y_pos)], stroke=True, show_dots=False, stroke_style={"width": 4})
+    chart.add(None, [(ci_low, y_pos), (ci_high, y_pos)], stroke=True, show_dots=False, stroke_style={"width": 6})
 
 # Add each study point with weight-proportional size (inline calculation)
 for i, (_study, effect, _ci_low, _ci_high, weight) in enumerate(studies):
@@ -91,26 +91,46 @@ for i, (_study, effect, _ci_low, _ci_high, weight) in enumerate(studies):
     dot_size = int(12 + ((weight - min_weight) / weight_range) * 16)
     chart.add(None, [(effect, y_pos)], dots_size=dot_size, stroke=False)
 
-# Add pooled CI whisker (behind diamond)
-chart.add(None, [(pooled_ci_lower, 0), (pooled_ci_upper, 0)], stroke=True, show_dots=False, stroke_style={"width": 5})
+# Add pooled CI whisker (thicker for emphasis)
+chart.add(None, [(pooled_ci_lower, 0), (pooled_ci_upper, 0)], stroke=True, show_dots=False, stroke_style={"width": 7})
 
-# Add pooled estimate as a diamond shape
-# Diamond spans the CI width horizontally and has fixed vertical extent
-diamond_half_height = 0.35
+# Add pooled estimate as a diamond shape using filled polygon
+# Draw diamond with 4 lines forming a closed shape (traditional forest plot diamond)
+diamond_half_height = 0.4
+# Top-left edge
 chart.add(
     None,
-    [
-        (pooled_effect, diamond_half_height),  # Top vertex
-        (pooled_ci_upper, 0),  # Right vertex (at CI upper bound)
-        (pooled_effect, -diamond_half_height),  # Bottom vertex
-        (pooled_ci_lower, 0),  # Left vertex (at CI lower bound)
-        (pooled_effect, diamond_half_height),  # Close the shape
-    ],
+    [(pooled_ci_lower, 0), (pooled_effect, diamond_half_height)],
     stroke=True,
-    fill=True,
     show_dots=False,
-    stroke_style={"width": 3},
+    stroke_style={"width": 4},
 )
+# Top-right edge
+chart.add(
+    None,
+    [(pooled_effect, diamond_half_height), (pooled_ci_upper, 0)],
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": 4},
+)
+# Bottom-right edge
+chart.add(
+    None,
+    [(pooled_ci_upper, 0), (pooled_effect, -diamond_half_height)],
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": 4},
+)
+# Bottom-left edge
+chart.add(
+    None,
+    [(pooled_effect, -diamond_half_height), (pooled_ci_lower, 0)],
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": 4},
+)
+# Add center point for the diamond (filled dot at center for visual emphasis)
+chart.add(None, [(pooled_effect, 0)], dots_size=28, stroke=False)
 
 # Y-axis labels with study names and CIs
 y_labels = []

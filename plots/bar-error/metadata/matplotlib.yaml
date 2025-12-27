@@ -1,0 +1,29 @@
+library: matplotlib
+specification_id: bar-error
+created: '2025-12-27T19:21:04Z'
+updated: '2025-12-27T19:26:22Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20543280641
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-error/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-error/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent text legibility with appropriate font sizes for all elements
+  - Clear, realistic A/B test scenario with plausible conversion rate data
+  - Error bar caps are clearly visible with good sizing (capsize=10, capthick=3)
+  - Clean annotation explaining what error bars represent (95% CI requirement from
+    spec)
+  - Good color choice with consistent dark blue theme
+  - KISS code structure following matplotlib best practices
+  weaknesses:
+  - Error bars are all symmetric; demonstrating asymmetric errors would better showcase
+    the plot type capabilities
+  - Annotation box placement in bottom-right corner floats in empty space rather than
+    being more integrated with the plot
+  - Basic library usage without leveraging advanced matplotlib features like bar_label()
+    for showing values

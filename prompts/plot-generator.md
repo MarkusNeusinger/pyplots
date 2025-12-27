@@ -16,6 +16,56 @@ Create a Python script for the specified plot type and library. The code should 
 4. **Previous Metadata** (if regenerating): `plots/{spec-id}/metadata/{library}.yaml`
 5. **Previous Code** (if regenerating): `plots/{spec-id}/implementations/{library}.py`
 
+## Available Standard Packages
+
+All plot implementations have access to these standard data science packages:
+
+**Core Data & Arrays:**
+- `numpy` - Array operations, random data generation, linear algebra
+- `pandas` - DataFrames, Series, time series operations
+
+**Scientific Computing:**
+- `scipy` - Statistics, clustering, signal processing, optimization, interpolation
+  - `scipy.stats` - Statistical distributions, tests, density estimation (gaussian_kde)
+  - `scipy.cluster.hierarchy` - Hierarchical clustering (linkage, dendrogram)
+  - `scipy.signal` - Signal processing, filtering
+  - `scipy.interpolate` - Interpolation methods
+  - `scipy.optimize` - Optimization algorithms
+
+**Machine Learning:**
+- `scikit-learn` - Clustering, classification, regression, metrics, datasets
+  - `sklearn.datasets` - Built-in datasets and generators
+    - Real datasets: `load_iris()`, `load_wine()`, `load_breast_cancer()`, `load_digits()`
+    - Synthetic generators: `make_classification()`, `make_regression()`, `make_blobs()`
+  - `sklearn.cluster` - Clustering algorithms (KMeans, DBSCAN, etc.)
+  - `sklearn.metrics` - ML metrics (silhouette_score, precision_recall_curve, etc.)
+  - `sklearn.preprocessing` - Data scaling, normalization
+  - `sklearn.model_selection` - Train/test splits, cross-validation
+
+**Statistical Modeling:**
+- `statsmodels` - Statistical models, time series analysis, regression
+  - `statsmodels.api` - Statistical models (OLS, GLM, etc.)
+  - `statsmodels.tsa` - Time series analysis (ARIMA, seasonal decomposition)
+  - `statsmodels.stats` - Statistical tests
+
+**Real-World Datasets (optional):**
+- Seaborn includes curated datasets via `sns.load_dataset(name)`:
+  - `'tips'` - Restaurant tipping data
+  - `'titanic'` - Titanic passenger survival
+  - `'iris'` - Iris flower measurements
+  - `'flights'` - Monthly flight passenger counts
+  - `'planets'` - Exoplanet discoveries
+  - `'penguins'` - Palmer Archipelago penguin data
+- Use when spec requires realistic domain data instead of synthetic
+
+**Usage Guidelines:**
+- Use these packages freely for data preparation, transformations, and statistical computations
+- Always use `np.random.seed(42)` for reproducibility when using synthetic data
+- Prefer built-in datasets (sklearn.datasets, seaborn) over synthetic when showing real patterns
+- Prefer built-in functionality over writing custom implementations
+- Keep code simple - import only what you need
+- Use realistic data with proper domain context (salaries, test scores, measurements, etc.)
+
 ## Regeneration: Learn from Previous Review
 
 When regenerating an existing implementation, read the metadata file for review feedback:
@@ -105,6 +155,97 @@ The middot (·) separator is required. No color or style requirements - the AI d
 5. **Style** - Labels, title, grid, etc.
 6. **Save** - Always save as `plot.png`
 
+### Data Generation Strategy
+
+Choose the appropriate data generation method based on the plot type:
+
+**1. Synthetic Data with NumPy (default for most plots):**
+```python
+np.random.seed(42)  # Always set seed when using random data for reproducibility!
+x = np.random.normal(loc=50000, scale=15000, size=500)  # Salaries
+y = np.random.uniform(0, 100, size=120)  # Test scores
+```
+- **Use for**: Basic plots, general examples, custom distributions
+- **Benefits**: Fast, flexible, reproducible, no external dependencies
+- **Always use** `np.random.seed(42)` when generating random data (not needed for deterministic datasets like sklearn)
+
+**2. Scikit-learn Datasets (for ML-related plots):**
+```python
+from sklearn.datasets import load_iris, make_classification
+iris = load_iris()
+X, y = iris.data, iris.target
+```
+- **Use for**: Classification plots, clustering, regression, ML metrics
+- **Available datasets**: `load_iris()`, `load_wine()`, `load_breast_cancer()`, `load_digits()`
+- **Generators**: `make_classification()`, `make_regression()`, `make_blobs()`
+
+**3. Seaborn Datasets (for realistic domain examples):**
+```python
+import seaborn as sns
+df = sns.load_dataset('tips')  # Restaurant tipping data
+```
+- **Use for**: When spec asks for realistic domain data or named datasets
+- **Available**: `'tips'`, `'titanic'`, `'iris'`, `'flights'`, `'planets'`, `'penguins'`
+- **Benefits**: Real-world patterns, clean data, good for demonstrations
+
+**4. Domain-specific synthetic (for specialized plots):**
+```python
+# Time series
+dates = pd.date_range('2024-01-01', periods=100, freq='D')
+values = np.cumsum(np.random.randn(100)) + 100
+
+# Correlation matrix
+np.random.seed(42)
+corr_matrix = np.random.rand(5, 5)
+corr_matrix = (corr_matrix + corr_matrix.T) / 2  # Symmetric
+np.fill_diagonal(corr_matrix, 1.0)  # Diagonal = 1
+```
+
+**Guidelines:**
+- **Prefer synthetic data** for flexibility and speed
+- **Use sklearn/seaborn datasets** when you need realistic patterns or the spec mentions them
+- **Always set** `np.random.seed(42)` when using random data
+- **Make data realistic**: Use meaningful variable names, realistic ranges, proper units
+- **No external files**: Never load CSV/JSON - generate everything in-memory
+
+### Data Content Guidelines (IMPORTANT)
+
+**AVOID controversial, divisive, or sensitive topics that could be misinterpreted:**
+
+❌ **Forbidden Topics:**
+- **Politics**: Elections, parties, politicians, voting data, government policies
+- **Religion**: Religious groups, beliefs, practices
+- **Race/Ethnicity**: Racial comparisons, ethnic stereotypes
+- **Gender/Sexuality**: Gender stereotypes, sexual content
+- **Violence/War**: Weapons, casualties, conflicts
+- **Sensitive Health**: Mental illness, stigmatized conditions
+- **Controversial Figures**: Historical or contemporary divisive personalities
+
+✅ **Safe & Neutral Topics:**
+- **Science**: Temperature, measurements, physics, chemistry data
+- **Business**: Sales figures, revenue, generic products (e.g., "Product A", "Product B")
+- **Nature**: Weather, plant growth, animal populations, environmental data
+- **Education**: Test scores, study hours, grades (without stereotyping or demographic comparisons)
+- **Sports**: Generic statistics (avoid politically-charged teams/leagues)
+- **Technology**: Performance metrics, user engagement, response times
+- **Food**: Restaurant data (tips dataset), recipes, nutrition
+- **Demographics**: Age, height, weight (without stereotypes or comparisons)
+
+**Examples of GOOD data contexts:**
+- "Monthly temperature readings for weather station"
+- "Sales performance by product category"
+- "Plant growth under different light conditions"
+- "CPU performance benchmarks"
+- "Restaurant tipping patterns" (seaborn tips dataset)
+
+**Examples of BAD data contexts:**
+- "Presidential election results by party" ❌
+- "Crime rates by ethnicity" ❌
+- "Salary differences by gender" ❌
+- "Religious group population changes" ❌
+
+**When in doubt**: Use generic labels like "Group A", "Group B", "Category 1", "Category 2" or scientific/technical contexts.
+
 ### Docstring Format (filled by workflow after review)
 
 ```python
@@ -142,9 +283,16 @@ Must pass criteria from `prompts/quality-criteria.md`:
 - Functions or classes
 - `if __name__ == '__main__':`
 - Type hints or docstrings (keep it simple)
-- Cross-library workarounds (e.g., matplotlib inside plotnine)
+- Cross-library workarounds **for plotting** (e.g., using matplotlib plotting functions inside plotnine)
 
-> If a library cannot implement a plot type natively, **do not** fall back to another library (e.g., don't use matplotlib inside plotnine). The implementation should **fail** rather than use workarounds. Each library should demonstrate only its own native capabilities.
+> If a library cannot implement a plot type natively, **do not** fall back to another library's **plotting functions** (e.g., don't use `plt.scatter()` inside plotnine). The implementation should **fail** rather than use workarounds. Each library should demonstrate only its own native plotting capabilities.
+
+**Allowed cross-library usage:**
+- ✅ Using `sns.load_dataset()` for test data in any library (highcharts, plotly, etc.)
+- ✅ Using `sklearn.datasets` for ML data in any library
+- ✅ Using scipy/numpy functions for data preparation
+- ❌ Using matplotlib plotting functions in non-matplotlib libraries
+- ❌ Using seaborn plotting functions in non-seaborn libraries
 ## Visual Quality
 
 Must pass criteria from `prompts/quality-criteria.md`.

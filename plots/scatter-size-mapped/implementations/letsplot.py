@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-size-mapped: Bubble Chart
-Library: lets-plot | Python 3.13
-Quality: pending | Created: 2025-12-27
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-27
 """
 
 import numpy as np

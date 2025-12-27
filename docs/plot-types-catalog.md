@@ -14,9 +14,6 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### scatter-color-mapped ✅
 **Description:** Scatter plot with a third variable encoded as color using a colormap. Includes colorbar for reference.
 
-### scatter-size-mapped ✅
-**Description:** Bubble chart where marker size represents a third variable. Semi-transparent markers reveal overlapping points.
-
 ### scatter-categorical 📋
 **Description:** Scatter plot with points colored by category. Distinct colors for each group with legend.
 
@@ -886,7 +883,7 @@ Druckbare Vorlagen und spielerische Visualisierungen.
 ## Statistics
 
 - **Total Plot Types:** 235+
-- **Implemented:** 109 ✅
+- **Implemented:** 108 ✅
 - **Planned:** 130+ 📋
 - **Categories:** 31
 

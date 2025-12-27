@@ -208,6 +208,44 @@ np.fill_diagonal(corr_matrix, 1.0)  # Diagonal = 1
 - **Make data realistic**: Use meaningful variable names, realistic ranges, proper units
 - **No external files**: Never load CSV/JSON - generate everything in-memory
 
+### Data Content Guidelines (IMPORTANT)
+
+**AVOID controversial, divisive, or sensitive topics that could be misinterpreted:**
+
+❌ **Forbidden Topics:**
+- **Politics**: Elections, parties, politicians, voting data, government policies
+- **Religion**: Religious groups, beliefs, practices
+- **Race/Ethnicity**: Racial comparisons, ethnic stereotypes
+- **Gender/Sexuality**: Gender stereotypes, sexual content
+- **Violence/War**: Weapons, casualties, conflicts
+- **Sensitive Health**: Mental illness, stigmatized conditions
+- **Controversial Figures**: Historical or contemporary divisive personalities
+
+✅ **Safe & Neutral Topics:**
+- **Science**: Temperature, measurements, physics, chemistry data
+- **Business**: Sales figures, revenue, generic products (e.g., "Product A", "Product B")
+- **Nature**: Weather, plant growth, animal populations, environmental data
+- **Education**: Test scores, study hours, grades (generic, non-comparative)
+- **Sports**: Generic statistics (avoid politically-charged teams/leagues)
+- **Technology**: Performance metrics, user engagement, response times
+- **Food**: Restaurant data (tips dataset), recipes, nutrition
+- **Demographics**: Age, height, weight (without stereotypes or comparisons)
+
+**Examples of GOOD data contexts:**
+- "Monthly temperature readings for weather station"
+- "Sales performance by product category"
+- "Plant growth under different light conditions"
+- "CPU performance benchmarks"
+- "Restaurant tipping patterns" (seaborn tips dataset)
+
+**Examples of BAD data contexts:**
+- "Presidential election results by party" ❌
+- "Crime rates by ethnicity" ❌
+- "Salary differences by gender" ❌
+- "Religious group population changes" ❌
+
+**When in doubt**: Use generic labels like "Group A", "Group B", "Category 1", "Category 2" or scientific/technical contexts.
+
 ### Docstring Format (filled by workflow after review)
 
 ```python

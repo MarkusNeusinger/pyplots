@@ -156,8 +156,17 @@ You evaluate implementations that passed Stage 1. Focus purely on **quality**.
 | ID | Criterion | Max | Key Question |
 |----|-----------|-----|--------------|
 | DQ-01 | Feature Coverage | 8 | Shows ALL aspects of plot type? |
-| DQ-02 | Realistic Context | 7 | Real-world plausible scenario? |
+| DQ-02 | Realistic Context | 7 | Real-world plausible **AND neutral** scenario? |
 | DQ-03 | Appropriate Scale | 5 | Sensible values for domain? |
+
+**CRITICAL - Content Policy for DQ-02:**
+Automatically give **0 points** if data uses controversial/sensitive topics:
+- ❌ Politics (elections, parties, voting, politicians)
+- ❌ Religion, race/ethnicity comparisons, gender stereotypes
+- ❌ Violence, war, weapons, sensitive health topics
+
+Only award full points (7/7) for neutral contexts:
+- ✅ Science, business, nature, technology, food, education
 
 ### Step 4: Code Quality (10 pts)
 

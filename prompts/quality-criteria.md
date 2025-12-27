@@ -261,9 +261,16 @@ Example data must show ALL features of the plot type.
 
 | Points | Criterion |
 |--------|-----------|
-| 7 | Real, comprehensible scenario |
+| 7 | Real, comprehensible, **neutral** scenario (science, business, nature) |
 | 3 | Plausible, but generic |
-| 0 | Nonsensical data (bicycle with fuel consumption) |
+| 0 | Nonsensical data OR controversial/sensitive topic (politics, race, religion, gender stereotypes) |
+
+**Content Policy:** Data must avoid controversial, divisive, or sensitive topics:
+- ❌ Politics (elections, parties, voting)
+- ❌ Religion, race/ethnicity comparisons
+- ❌ Gender/sexuality stereotypes
+- ❌ Violence, war, weapons
+- ✅ Science, business, nature, technology, food, education (generic)
 
 ### DQ-03: Appropriate Scale (5 Points)
 

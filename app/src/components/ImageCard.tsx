@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
@@ -10,6 +10,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import type { PlotImage, LibraryInfo, SpecInfo } from '../types';
 import { BATCH_SIZE, type ImageSize } from '../constants';
+import { useCopyCode } from '../hooks';
 
 interface ImageCardProps {
   image: PlotImage;
@@ -40,7 +41,9 @@ export function ImageCard({
   onTrackEvent,
   onImageLoad,
 }: ImageCardProps) {
-  const [copied, setCopied] = useState(false);
+  const { copied, copyToClipboard } = useCopyCode({
+    onCopy: () => onTrackEvent?.('copy_code', { spec: image.spec_id || selectedSpec, library: image.library, method: 'card' }),
+  });
   const labelFontSize = imageSize === 'compact' ? '0.65rem' : '0.8rem';
 
   const cardId = `${image.spec_id}-${image.library}`;
@@ -55,12 +58,9 @@ export function ImageCard({
   const handleCopyCode = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     if (image.code) {
-      navigator.clipboard.writeText(image.code);
-      setCopied(true);
-      onTrackEvent?.('copy_code', { spec: image.spec_id || selectedSpec, library: image.library, method: 'card' });
-      setTimeout(() => setCopied(false), 2000);
+      copyToClipboard(image.code);
     }
-  }, [image.code, image.library, image.spec_id, selectedSpec, onTrackEvent]);
+  }, [image.code, copyToClipboard]);
 
   // Animate first batch only (initial load), subsequent batches appear instantly
   const isFirstBatch = index < BATCH_SIZE;

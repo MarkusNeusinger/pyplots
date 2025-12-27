@@ -16,6 +16,7 @@ import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import type { FilterCategory, ActiveFilters, FilterCounts } from '../types';
 import { FILTER_LABELS, FILTER_CATEGORIES } from '../types';
 import type { ImageSize } from '../constants';
+import { getAvailableValues, getAvailableValuesForGroup, getSearchResults } from '../utils';
 
 interface FilterBarProps {
   activeFilters: ActiveFilters;
@@ -170,67 +171,8 @@ export function FilterBar({
     [activeGroupIndex, activeFilters, onAddValueToGroup, onTrackEvent]
   );
 
-  // Get counts for a category
-  const getCounts = (category: FilterCategory): Record<string, number> => {
-    return filterCounts?.[category] || {};
-  };
-
-  // Get all selected values across all groups for a category
-  const getSelectedValuesForCategory = (category: FilterCategory): string[] => {
-    return activeFilters
-      .filter((f) => f.category === category)
-      .flatMap((f) => f.values);
-  };
-
-  // Get available values for a category (not already selected in any group)
-  const getAvailableValues = (category: FilterCategory): [string, number][] => {
-    const counts = getCounts(category);
-    const selected = getSelectedValuesForCategory(category);
-    return Object.entries(counts)
-      .filter(([value]) => !selected.includes(value))
-      .sort((a, b) => b[1] - a[1]);
-  };
-
-  // Get available values for adding to a specific group (OR - not in that group)
-  // Uses orCounts which has counts with all OTHER filters applied
-  // Preview = currentTotal + orCounts[groupIndex][value]
-  const getAvailableValuesForGroup = (groupIndex: number): [string, number][] => {
-    const group = activeFilters[groupIndex];
-    if (!group) return [];
-
-    // orCounts[groupIndex] contains counts for each value with other filters applied
-    const groupOrCounts = orCounts[groupIndex] || {};
-
-    return Object.entries(groupOrCounts)
-      .filter(([value]) => !group.values.includes(value))
-      .map(([value, count]) => [value, currentTotal + count] as [string, number])
-      .sort((a, b) => b[1] - a[1]);
-  };
-
-  // Search across all categories
-  const getSearchResults = (): { category: FilterCategory; value: string; count: number }[] => {
-    if (!filterCounts) return [];
-
-    const query = searchQuery.toLowerCase().trim();
-    const results: { category: FilterCategory; value: string; count: number }[] = [];
-
-    const categoriesToSearch = selectedCategory ? [selectedCategory] : FILTER_CATEGORIES;
-
-    for (const category of categoriesToSearch) {
-      const counts = getCounts(category);
-      const selected = getSelectedValuesForCategory(category);
-
-      for (const [value, count] of Object.entries(counts)) {
-        if (selected.includes(value)) continue;
-        if (query && !value.toLowerCase().includes(query)) continue;
-        results.push({ category, value, count });
-      }
-    }
-
-    return results.sort((a, b) => b.count - a.count);
-  };
-
-  const searchResults = getSearchResults();
+  // Use utility functions with component state
+  const searchResults = getSearchResults(filterCounts, activeFilters, searchQuery, selectedCategory);
   // Only open if anchor is valid and in document
   const isDropdownOpen = Boolean(dropdownAnchor) && document.body.contains(dropdownAnchor);
   const hasQuery = searchQuery.trim().length > 0;
@@ -242,8 +184,8 @@ export function FilterBar({
       // Categories list
       return FILTER_CATEGORIES
         .filter((cat) => {
-          const availableValues = filterCounts?.[cat] ? Object.keys(filterCounts[cat]).filter((v) => !activeFilters.some((f) => f.category === cat && f.values.includes(v))) : [];
-          return availableValues.length > 0;
+          const available = getAvailableValues(filterCounts, activeFilters, cat);
+          return available.length > 0;
         })
         .map((cat) => ({ type: 'category' as const, category: cat }));
     } else {
@@ -289,7 +231,9 @@ export function FilterBar({
 
   // Get active group for chip menu
   const activeGroup = activeGroupIndex !== null ? activeFilters[activeGroupIndex] : null;
-  const availableValuesForActiveGroup = activeGroupIndex !== null ? getAvailableValuesForGroup(activeGroupIndex) : [];
+  const availableValuesForActiveGroup = activeGroupIndex !== null
+    ? getAvailableValuesForGroup(activeGroupIndex, activeFilters, orCounts, currentTotal)
+    : [];
 
   return (
     <Box
@@ -523,8 +467,8 @@ export function FilterBar({
         {!selectedCategory && !hasQuery
           ? // Show categories
             FILTER_CATEGORIES.map((category) => {
-              const availableValues = getAvailableValues(category);
-              if (availableValues.length === 0) return null;
+              const availableVals = getAvailableValues(filterCounts, activeFilters, category);
+              if (availableVals.length === 0) return null;
               // Calculate actual index among visible items
               const visibleIdx = dropdownItems.findIndex((item) => item.type === 'category' && item.category === category);
               return (
@@ -536,7 +480,7 @@ export function FilterBar({
                 >
                   <ListItemText
                     primary={FILTER_LABELS[category]}
-                    secondary={`${availableValues.length} options`}
+                    secondary={`${availableVals.length} options`}
                     primaryTypographyProps={{
                       fontFamily: '"JetBrains Mono", monospace',
                       fontSize: '0.9rem',

@@ -1,0 +1,27 @@
+library: bokeh
+specification_id: forest-basic
+created: '2025-12-27T19:21:59Z'
+updated: '2025-12-27T19:30:02Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20543282172
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/forest-basic/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/forest-basic/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/forest-basic/bokeh/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent implementation of all forest plot elements (diamond, whiskers, reference
+    line, weighted markers)
+  - Realistic medical meta-analysis data with appropriate study naming conventions
+  - Clean KISS code structure with proper Bokeh idioms (ColumnDataSource, Span, Label)
+  - Good visual hierarchy distinguishing individual studies from pooled estimate
+  - Proper use of Bokeh patch() for diamond shape
+  weaknesses:
+  - Right side of canvas has excessive whitespace (x_range extends to 4 but data only
+    goes to ~-0.2)
+  - All studies favor treatment - missing a study crossing the null line would better
+    demonstrate forest plot capabilities
+  - Could add HoverTool for interactivity (a Bokeh strength)

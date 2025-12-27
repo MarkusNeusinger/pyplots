@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-error: Bar Chart with Error Bars
-Library: altair | Python 3.13
-Quality: pending | Created: 2025-12-27
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-27
 """
 
 import altair as alt

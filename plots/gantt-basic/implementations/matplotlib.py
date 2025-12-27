@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 gantt-basic: Basic Gantt Chart
-Library: matplotlib | Python 3.13
-Quality: pending | Created: 2025-12-27
+Library: matplotlib 3.10.8 | Python 3.13.11
+Quality: 95/100 | Created: 2025-12-27
 """
 
 from datetime import datetime, timedelta

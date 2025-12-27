@@ -155,6 +155,59 @@ The middot (·) separator is required. No color or style requirements - the AI d
 5. **Style** - Labels, title, grid, etc.
 6. **Save** - Always save as `plot.png`
 
+### Data Generation Strategy
+
+Choose the appropriate data generation method based on the plot type:
+
+**1. Synthetic Data with NumPy (default for most plots):**
+```python
+np.random.seed(42)  # Always set seed for reproducibility!
+x = np.random.normal(loc=50000, scale=15000, size=500)  # Salaries
+y = np.random.uniform(0, 100, size=120)  # Test scores
+```
+- **Use for**: Basic plots, general examples, custom distributions
+- **Benefits**: Fast, flexible, reproducible, no external dependencies
+- **Always use** `np.random.seed(42)` at the start of the Data section
+
+**2. Scikit-learn Datasets (for ML-related plots):**
+```python
+from sklearn.datasets import load_iris, make_classification
+iris = load_iris()
+X, y = iris.data, iris.target
+```
+- **Use for**: Classification plots, clustering, regression, ML metrics
+- **Available datasets**: `load_iris()`, `load_wine()`, `load_breast_cancer()`, `load_digits()`
+- **Generators**: `make_classification()`, `make_regression()`, `make_blobs()`
+
+**3. Seaborn Datasets (for realistic domain examples):**
+```python
+import seaborn as sns
+df = sns.load_dataset('tips')  # Restaurant tipping data
+```
+- **Use for**: When spec asks for realistic domain data or named datasets
+- **Available**: `'tips'`, `'titanic'`, `'iris'`, `'flights'`, `'planets'`, `'penguins'`
+- **Benefits**: Real-world patterns, clean data, good for demonstrations
+
+**4. Domain-specific synthetic (for specialized plots):**
+```python
+# Time series
+dates = pd.date_range('2024-01-01', periods=100, freq='D')
+values = np.cumsum(np.random.randn(100)) + 100
+
+# Correlation matrix
+np.random.seed(42)
+corr_matrix = np.random.rand(5, 5)
+corr_matrix = (corr_matrix + corr_matrix.T) / 2  # Symmetric
+np.fill_diagonal(corr_matrix, 1.0)  # Diagonal = 1
+```
+
+**Guidelines:**
+- **Prefer synthetic data** for flexibility and speed
+- **Use sklearn/seaborn datasets** when you need realistic patterns or the spec mentions them
+- **Always set** `np.random.seed(42)` when using random data
+- **Make data realistic**: Use meaningful variable names, realistic ranges, proper units
+- **No external files**: Never load CSV/JSON - generate everything in-memory
+
 ### Docstring Format (filled by workflow after review)
 
 ```python

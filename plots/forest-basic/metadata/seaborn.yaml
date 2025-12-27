@@ -1,0 +1,27 @@
+library: seaborn
+specification_id: forest-basic
+created: '2025-12-27T19:21:16Z'
+updated: '2025-12-27T19:28:36Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20543281061
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/forest-basic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/forest-basic/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - 'Excellent implementation of all forest plot requirements: diamond pooled estimate,
+    weighted markers, reference line, CI whiskers'
+  - Clear, professional layout with study labels and effect sizes displayed in readable
+    format
+  - Good use of seaborn scatterplot for weighted point estimates with size mapping
+  - Proper directional annotations help interpret the plot
+  - Realistic meta-analysis data with chronological study names and varied effect
+    sizes
+  weaknesses:
+  - sns.set_style called after plt.subplots (should be called before for idiomatic
+    seaborn usage)
+  - Layout could be slightly tighter on the right side to reduce whitespace

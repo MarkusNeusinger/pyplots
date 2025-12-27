@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 gantt-basic: Basic Gantt Chart
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2025-12-27
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 88/100 | Created: 2025-12-27
 """
 
 from datetime import datetime

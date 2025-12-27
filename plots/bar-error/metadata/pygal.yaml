@@ -1,0 +1,25 @@
+library: pygal
+specification_id: bar-error
+created: '2025-12-27T19:22:12Z'
+updated: '2025-12-27T19:29:48Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20543283514
+issue: 0
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-error/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-error/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-error/pygal/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of pygal native confidence interval (ci) feature for error bars
+    with caps
+  - Clean professional appearance with appropriate font scaling for 4800x2700 canvas
+  - Well-chosen scientific context (treatment comparison) that matches spec applications
+  - Proper title format and comprehensive axis labeling with units
+  - Good use of custom Style for consistent visual appearance
+  weaknesses:
+  - Legend placement at bottom-left corner appears disconnected from the chart
+  - Grid lines could be more subtle (currently dotted but still prominent)
+  - Only symmetric error bars shown when spec mentions asymmetric as an option

@@ -1,0 +1,27 @@
+library: matplotlib
+specification_id: lift-curve
+created: '2025-12-27T19:20:38Z'
+updated: '2025-12-27T19:23:10Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20543281060
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/lift-curve/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/lift-curve/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 93
+review:
+  strengths:
+  - Excellent implementation of lift curve with proper calculation methodology (sort
+    by score, cumulative lift at each percentage)
+  - Clear visual distinction between model lift curve and random baseline with appropriate
+    colors
+  - Well-placed decile annotations that show practical lift values at key targeting
+    thresholds
+  - Shaded area between curves provides intuitive visualization of model value
+  - Realistic customer response data with appropriate base rate and sample size
+  - Clean, well-structured code following KISS principles
+  weaknesses:
+  - Y-axis label could include units or clarification (e.g., Cumulative Lift (ratio))
+  - Does not leverage distinctive matplotlib features beyond basic plotting capabilities

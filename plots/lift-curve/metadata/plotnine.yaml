@@ -1,0 +1,24 @@
+library: plotnine
+specification_id: lift-curve
+created: '2025-12-27T19:20:56Z'
+updated: '2025-12-27T19:26:28Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20543282476
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/lift-curve/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/lift-curve/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent implementation of lift curve with correct mathematical calculation
+  - Clean use of plotnine grammar of graphics (ggplot, geom_line, geom_point, geom_hline)
+  - Good visual distinction with yellow-filled decile markers on blue line
+  - Proper reference line at y=1 for random selection baseline
+  - Well-documented code with realistic customer response scenario
+  - Appropriate sizing for high-resolution output (16x9, 300 DPI)
+  weaknesses:
+  - Y-axis label could include (ratio) for clarity since lift is a unitless ratio
+  - Could add text annotations at key decile points showing actual lift values

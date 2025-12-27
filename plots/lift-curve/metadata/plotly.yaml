@@ -1,0 +1,25 @@
+library: plotly
+specification_id: lift-curve
+created: '2025-12-27T19:20:40Z'
+updated: '2025-12-27T19:24:03Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20543281194
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/lift-curve/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/lift-curve/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/lift-curve/plotly/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent title format and text sizing throughout
+  - Well-implemented hover templates with informative formatting
+  - Clear annotation highlighting the key 10% lift metric
+  - Colorblind-safe color scheme with good contrast
+  - Clean code structure following KISS principles
+  - Realistic customer response model scenario
+  weaknesses:
+  - Grid lines are very subtle (alpha 0.1) - could be slightly more visible for better
+    readability
+  - Marker density in early percentages could be reduced for cleaner visualization

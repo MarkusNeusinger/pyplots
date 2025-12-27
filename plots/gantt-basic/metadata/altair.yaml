@@ -1,0 +1,30 @@
+library: altair
+specification_id: gantt-basic
+created: '2025-12-27T19:21:12Z'
+updated: '2025-12-27T19:28:44Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20543282970
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/altair/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent visual clarity with well-sized bars, clear color coding, and readable
+    labels at all sizes
+  - 'Perfect spec compliance: correct Gantt chart implementation with all required
+    features (task bars, categories, date formatting)'
+  - Realistic software development project scenario demonstrates practical Gantt chart
+    use
+  - Good use of Altair declarative grammar with x/x2 temporal encoding for date ranges
+  - Interactive HTML version with tooltips showing task details enhances usability
+  - Colorblind-safe palette using distinct hues (blue, yellow, green, red-orange,
+    purple)
+  weaknesses:
+  - Axis labels are functional but could be more descriptive (e.g., Project Timeline
+    2024 instead of Timeline)
+  - Could demonstrate more Altair-specific features like layered marks or selections
+  - Minor whitespace imbalance between chart area and margins

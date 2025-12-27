@@ -14,9 +14,6 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### scatter-color-mapped ✅
 **Description:** Scatter plot with a third variable encoded as color using a colormap. Includes colorbar for reference.
 
-### scatter-size-mapped 📋
-**Description:** Bubble chart where marker size represents a third variable. Semi-transparent markers reveal overlapping points.
-
 ### scatter-categorical 📋
 **Description:** Scatter plot with points colored by category. Distinct colors for each group with legend.
 
@@ -85,7 +82,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### bar-stacked-percent ✅
 **Description:** Stacked bars normalized to 100% showing proportions.
 
-### bar-error 📋
+### bar-error ✅
 **Description:** Bar chart with error bars showing uncertainty.
 
 ### bar-sorted 📋
@@ -526,7 +523,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### span-basic ✅
 **Description:** A span plot highlights a specific region of interest on a chart using a shaded rectangular area that spans the full height or width.
 
-### gantt-basic 📋
+### gantt-basic ✅
 **Description:** Project timeline Gantt chart with horizontal task bars.
 
 ### timeline-basic 📋
@@ -756,7 +753,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### calibration-curve ✅
 **Description:** Calibration curve (reliability diagram) visualizing how well predicted probabilities match actual outcomes for probability calibration.
 
-### lift-curve 📋
+### lift-curve ✅
 **Description:** Lift chart showing model performance compared to random baseline for marketing/churn prediction.
 
 ### gain-curve 📋
@@ -820,7 +817,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### survival-curve 📋
 **Description:** Kaplan-Meier survival analysis plot.
 
-### forest-plot 📋
+### forest-basic ✅
 **Description:** Meta-analysis effect sizes with confidence intervals.
 
 ### volcano-plot 📋
@@ -886,8 +883,8 @@ Druckbare Vorlagen und spielerische Visualisierungen.
 ## Statistics
 
 - **Total Plot Types:** 235+
-- **Implemented:** 104 ✅
-- **Planned:** 135+ 📋
+- **Implemented:** 108 ✅
+- **Planned:** 130+ 📋
 - **Categories:** 31
 
 ---

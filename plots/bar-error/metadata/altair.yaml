@@ -1,0 +1,25 @@
+library: altair
+specification_id: bar-error
+created: '2025-12-27T19:22:47Z'
+updated: '2025-12-27T19:31:19Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20543282151
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-error/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-error/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-error/altair/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Altair layered composition with separate marks for bars, error
+    lines, and caps
+  - Clear annotation explaining what error bars represent (±1 SD) as required by spec
+  - Realistic scientific context with treatment comparison data
+  - Proper title format and axis labeling with appropriate font sizes
+  - Clean, readable code following KISS principles
+  weaknesses:
+  - No tooltips for interactivity - Altair strength is interactive visualization
+  - Only symmetric error bars shown; asymmetric example would demonstrate fuller feature
+    coverage

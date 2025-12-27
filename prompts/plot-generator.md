@@ -161,13 +161,13 @@ Choose the appropriate data generation method based on the plot type:
 
 **1. Synthetic Data with NumPy (default for most plots):**
 ```python
-np.random.seed(42)  # Always set seed for reproducibility!
+np.random.seed(42)  # Always set seed when using random data for reproducibility!
 x = np.random.normal(loc=50000, scale=15000, size=500)  # Salaries
 y = np.random.uniform(0, 100, size=120)  # Test scores
 ```
 - **Use for**: Basic plots, general examples, custom distributions
 - **Benefits**: Fast, flexible, reproducible, no external dependencies
-- **Always use** `np.random.seed(42)` at the start of the Data section
+- **Always use** `np.random.seed(42)` when generating random data (not needed for deterministic datasets like sklearn)
 
 **2. Scikit-learn Datasets (for ML-related plots):**
 ```python
@@ -225,7 +225,7 @@ np.fill_diagonal(corr_matrix, 1.0)  # Diagonal = 1
 - **Science**: Temperature, measurements, physics, chemistry data
 - **Business**: Sales figures, revenue, generic products (e.g., "Product A", "Product B")
 - **Nature**: Weather, plant growth, animal populations, environmental data
-- **Education**: Test scores, study hours, grades (generic, non-comparative)
+- **Education**: Test scores, study hours, grades (without stereotyping or demographic comparisons)
 - **Sports**: Generic statistics (avoid politically-charged teams/leagues)
 - **Technology**: Performance metrics, user engagement, response times
 - **Food**: Restaurant data (tips dataset), recipes, nutrition

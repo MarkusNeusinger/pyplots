@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 forest-basic: Meta-Analysis Forest Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 68/100 | Created: 2025-12-27
@@ -28,6 +28,11 @@ pooled_effect = -0.43
 pooled_ci_lower = -0.58
 pooled_ci_upper = -0.28
 
+# Inline weight normalization (min=7.6, max=14.2, range=6.6)
+min_weight = 7.6
+max_weight = 14.2
+weight_range = 6.6
+
 # Custom style for large canvas (4800 x 2700)
 custom_style = Style(
     background="white",
@@ -37,10 +42,7 @@ custom_style = Style(
     foreground_subtle="#666666",
     colors=(
         "#306998",  # Study markers (Python Blue)
-        "#306998",  # CI lines
-        "#4A4A4A",  # Null line
-        "#CC6600",  # Pooled diamond (distinct orange)
-        "#CC6600",  # Pooled CI
+        "#FFD43B",  # Pooled diamond (Yellow for contrast)
     ),
     title_font_size=56,
     label_font_size=32,
@@ -52,18 +54,6 @@ custom_style = Style(
     font_family="Arial",
 )
 
-# Normalize weights to dot sizes (range 12-28 for visibility)
-min_weight = min(w for _, _, _, _, w in studies)
-max_weight = max(w for _, _, _, _, w in studies)
-weight_range = max_weight - min_weight if max_weight > min_weight else 1
-
-
-def get_dot_size(weight):
-    """Scale weight to marker size between 12 and 28."""
-    normalized = (weight - min_weight) / weight_range
-    return int(12 + normalized * 16)
-
-
 # Create XY chart for forest plot
 chart = pygal.XY(
     width=4800,
@@ -71,9 +61,7 @@ chart = pygal.XY(
     title="forest-basic · pygal · pyplots.ai",
     x_title="Mean Difference (95% CI)",
     style=custom_style,
-    show_legend=True,
-    legend_at_bottom=True,
-    legend_box_size=20,
+    show_legend=False,
     dots_size=16,
     stroke=False,
     show_y_guides=False,
@@ -81,50 +69,42 @@ chart = pygal.XY(
     x_label_rotation=0,
     range=(-1.3, 0.4),
     margin=100,
-    truncate_legend=-1,
 )
 
-# Add each study as separate series for weight-based sizing
-for i, (study, effect, _ci_low, _ci_high, weight) in enumerate(studies):
-    y_pos = len(studies) - i  # Position from top (10 down to 1)
-    dot_size = get_dot_size(weight)
-
-    # Add study point with weight-proportional size
-    chart.add(study, [(effect, y_pos)], dots_size=dot_size, stroke=False, show_legend=False)
-
-# Add CI whiskers as individual line segments (one series per study)
-for i, (_study, _effect, ci_low, ci_high, _weight) in enumerate(studies):
-    y_pos = len(studies) - i
-    chart.add(
-        None,  # No legend entry
-        [(ci_low, y_pos), (ci_high, y_pos)],
-        stroke=True,
-        show_dots=False,
-        stroke_style={"width": 4},
-        show_legend=False,
-    )
-
-# Add vertical reference line at x=0 (null effect)
+# Add vertical reference line at x=0 (null effect) first (background layer)
 chart.add(
-    "Null (x=0)",
+    None,
     [(0, -0.5), (0, len(studies) + 0.5)],
     stroke=True,
     show_dots=False,
     stroke_style={"width": 3, "dasharray": "12, 6"},
 )
 
-# Add pooled estimate as a diamond shape using 4 points
-# Diamond vertices: top, right, bottom, left
-diamond_height = 0.4
-diamond_width = 0.06
+# Add CI whiskers first (behind study points)
+for i, (_study, _effect, ci_low, ci_high, _weight) in enumerate(studies):
+    y_pos = len(studies) - i
+    chart.add(None, [(ci_low, y_pos), (ci_high, y_pos)], stroke=True, show_dots=False, stroke_style={"width": 4})
+
+# Add each study point with weight-proportional size (inline calculation)
+for i, (_study, effect, _ci_low, _ci_high, weight) in enumerate(studies):
+    y_pos = len(studies) - i
+    dot_size = int(12 + ((weight - min_weight) / weight_range) * 16)
+    chart.add(None, [(effect, y_pos)], dots_size=dot_size, stroke=False)
+
+# Add pooled CI whisker (behind diamond)
+chart.add(None, [(pooled_ci_lower, 0), (pooled_ci_upper, 0)], stroke=True, show_dots=False, stroke_style={"width": 5})
+
+# Add pooled estimate as a diamond shape
+# Diamond spans the CI width horizontally and has fixed vertical extent
+diamond_half_height = 0.35
 chart.add(
-    "Pooled Estimate",
+    None,
     [
-        (pooled_effect, 0 + diamond_height / 2),  # Top
-        (pooled_effect + diamond_width, 0),  # Right
-        (pooled_effect, 0 - diamond_height / 2),  # Bottom
-        (pooled_effect - diamond_width, 0),  # Left
-        (pooled_effect, 0 + diamond_height / 2),  # Close diamond
+        (pooled_effect, diamond_half_height),  # Top vertex
+        (pooled_ci_upper, 0),  # Right vertex (at CI upper bound)
+        (pooled_effect, -diamond_half_height),  # Bottom vertex
+        (pooled_ci_lower, 0),  # Left vertex (at CI lower bound)
+        (pooled_effect, diamond_half_height),  # Close the shape
     ],
     stroke=True,
     fill=True,
@@ -132,21 +112,11 @@ chart.add(
     stroke_style={"width": 3},
 )
 
-# Add pooled CI whiskers
-chart.add(
-    "Pooled 95% CI",
-    [(pooled_ci_lower, 0), (pooled_ci_upper, 0)],
-    stroke=True,
-    show_dots=False,
-    stroke_style={"width": 5},
-)
-
 # Y-axis labels with study names and CIs
 y_labels = []
 for i, (study, _effect, ci_low, ci_high, _weight) in enumerate(studies):
     y_labels.append({"value": len(studies) - i, "label": f"{study} [{ci_low:.2f}, {ci_high:.2f}]"})
 y_labels.append({"value": 0, "label": f"Pooled [{pooled_ci_lower:.2f}, {pooled_ci_upper:.2f}]"})
-
 chart.y_labels = y_labels
 
 # Save outputs

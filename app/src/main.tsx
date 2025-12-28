@@ -4,11 +4,14 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import App from './App';
 
-// Import Inter font
+// Import Inter font (body text)
 import '@fontsource/inter/400.css';
 import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
+
+// Import MonoLisa font (code/monospace) - hosted on GCS
+import './styles/fonts.css';
 
 const theme = createTheme({
   typography: {

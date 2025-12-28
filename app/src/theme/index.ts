@@ -5,7 +5,8 @@
  */
 
 export const typography = {
-  fontFamily: '"JetBrains Mono", monospace',
+  // MonoLisa with system mono fallback (size-adjusted to prevent CLS)
+  fontFamily: '"MonoLisa", "MonoLisa Fallback", Consolas, Menlo, Monaco, "DejaVu Sans Mono", monospace',
 } as const;
 
 export const colors = {

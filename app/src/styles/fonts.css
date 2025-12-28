@@ -1,0 +1,53 @@
+/**
+ * MonoLisa Font Setup
+ *
+ * Font files hosted on GCS: gs://pyplots-images/fonts/
+ *
+ * Upload instructions:
+ *   gsutil cp MonoLisa-Regular.woff2 gs://pyplots-images/fonts/
+ *   gsutil cp MonoLisa-Medium.woff2 gs://pyplots-images/fonts/
+ *   gsutil cp MonoLisa-Bold.woff2 gs://pyplots-images/fonts/
+ *   gsutil setmeta -h "Cache-Control:public, max-age=31536000, immutable" gs://pyplots-images/fonts/*.woff2
+ */
+
+/* ==========================================================================
+   Fallback Font (matches MonoLisa metrics to prevent CLS)
+   ========================================================================== */
+
+@font-face {
+  font-family: 'MonoLisa Fallback';
+  src: local('Consolas'), local('Menlo'), local('Monaco'), local('DejaVu Sans Mono');
+  /* Adjust these values to match MonoLisa metrics */
+  size-adjust: 100%;
+  ascent-override: 95%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
+/* ==========================================================================
+   MonoLisa Font Faces
+   ========================================================================== */
+
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-images/fonts/MonoLisa-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-images/fonts/MonoLisa-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-images/fonts/MonoLisa-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}

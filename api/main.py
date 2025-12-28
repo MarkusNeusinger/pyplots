@@ -12,7 +12,7 @@ load_dotenv()
 import logging  # noqa: E402
 from contextlib import asynccontextmanager  # noqa: E402
 
-from fastapi import FastAPI  # noqa: E402
+from fastapi import FastAPI, Request, Response  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 
 from api.routers import (  # noqa: E402
@@ -72,6 +72,35 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# Add cache headers middleware
+@app.middleware("http")
+async def add_cache_headers(request: Request, call_next):
+    """Add Cache-Control headers to API responses for better browser caching."""
+    response: Response = await call_next(request)
+
+    # Skip for non-GET requests or error responses
+    if request.method != "GET" or response.status_code >= 400:
+        return response
+
+    path = request.url.path
+
+    # Static data that rarely changes (5 min cache, stale-while-revalidate for 1 hour)
+    if path in ("/libraries", "/stats"):
+        response.headers["Cache-Control"] = "public, max-age=300, stale-while-revalidate=3600"
+    # Specs list - moderate caching (2 min cache)
+    elif path == "/specs":
+        response.headers["Cache-Control"] = "public, max-age=120, stale-while-revalidate=600"
+    # Filter endpoint - short cache (30 sec) with stale-while-revalidate
+    elif path == "/plots/filter":
+        response.headers["Cache-Control"] = "public, max-age=30, stale-while-revalidate=300"
+    # Individual spec details
+    elif path.startswith("/specs/"):
+        response.headers["Cache-Control"] = "public, max-age=120, stale-while-revalidate=600"
+
+    return response
+
 
 # Register routers
 app.include_router(health_router)

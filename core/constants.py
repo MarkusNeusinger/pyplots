@@ -13,17 +13,9 @@ from __future__ import annotations
 # =============================================================================
 
 # Canonical set of all supported plotting libraries (IDs)
-SUPPORTED_LIBRARIES = frozenset([
-    "altair",
-    "bokeh",
-    "highcharts",
-    "letsplot",
-    "matplotlib",
-    "plotly",
-    "plotnine",
-    "pygal",
-    "seaborn",
-])
+SUPPORTED_LIBRARIES = frozenset(
+    ["altair", "bokeh", "highcharts", "letsplot", "matplotlib", "plotly", "plotnine", "pygal", "seaborn"]
+)
 
 # Library metadata for database seeding and display
 LIBRARIES_METADATA = [
@@ -93,14 +85,7 @@ LIBRARIES_METADATA = [
 ]
 
 # Interactive libraries that generate HTML previews (not just PNG)
-INTERACTIVE_LIBRARIES = frozenset([
-    "altair",
-    "bokeh",
-    "highcharts",
-    "letsplot",
-    "plotly",
-    "pygal",
-])
+INTERACTIVE_LIBRARIES = frozenset(["altair", "bokeh", "highcharts", "letsplot", "plotly", "pygal"])
 
 # =============================================================================
 # GITHUB LABELS
@@ -110,33 +95,26 @@ INTERACTIVE_LIBRARIES = frozenset([
 LIBRARY_LABELS = frozenset([f"library:{lib}" for lib in SUPPORTED_LIBRARIES])
 
 # Status labels (mutually exclusive)
-STATUS_LABELS = frozenset([
-    "pending",
-    "generating",
-    "testing",
-    "reviewing",
-    "ai-approved",
-    "ai-rejected",
-    "ai-review-failed",
-    "merged",
-    "not-feasible",
-    "completed",
-])
+STATUS_LABELS = frozenset(
+    [
+        "pending",
+        "generating",
+        "testing",
+        "reviewing",
+        "ai-approved",
+        "ai-rejected",
+        "ai-review-failed",
+        "merged",
+        "not-feasible",
+        "completed",
+    ]
+)
 
 # Quality score labels (mutually exclusive)
-QUALITY_LABELS = frozenset([
-    "quality:excellent",
-    "quality:good",
-    "quality:needs-work",
-    "quality:poor",
-])
+QUALITY_LABELS = frozenset(["quality:excellent", "quality:good", "quality:needs-work", "quality:poor"])
 
 # Attempt labels
-ATTEMPT_LABELS = frozenset([
-    "ai-attempt-1",
-    "ai-attempt-2",
-    "ai-attempt-3",
-])
+ATTEMPT_LABELS = frozenset(["ai-attempt-1", "ai-attempt-2", "ai-attempt-3"])
 
 # =============================================================================
 # QUALITY THRESHOLDS

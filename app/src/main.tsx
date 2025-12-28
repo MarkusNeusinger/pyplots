@@ -4,18 +4,12 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import App from './App';
 
-// Import Inter font (body text)
-import '@fontsource/inter/400.css';
-import '@fontsource/inter/500.css';
-import '@fontsource/inter/600.css';
-import '@fontsource/inter/700.css';
-
-// Import MonoLisa font (code/monospace) - hosted on GCS
+// Import MonoLisa font - hosted on GCS (all text uses MonoLisa)
 import './styles/fonts.css';
 
 const theme = createTheme({
   typography: {
-    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    fontFamily: '"MonoLisa", "MonoLisa Fallback", Consolas, Menlo, Monaco, monospace',
   },
   palette: {
     mode: 'light',

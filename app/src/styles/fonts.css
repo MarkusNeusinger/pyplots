@@ -215,7 +215,7 @@
   unicode-range: U+2500-257F;
 }
 
-/* Powerline & Private Use Area  */
+/* Powerline & Private Use Area */
 @font-face {
   font-family: 'MonoLisa';
   src: url('https://storage.googleapis.com/pyplots-static/fonts/20-MonoLisa-normal.woff2') format('woff2');

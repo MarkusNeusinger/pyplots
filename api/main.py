@@ -64,6 +64,12 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
+# Enable GZip compression for responses > 500 bytes
+# This significantly reduces payload size for JSON API responses
+# (e.g., /plots/filter: 301KB -> ~40KB with gzip)
+# Note: GZip must be added before CORS so compression happens before CORS headers are added
+app.add_middleware(GZipMiddleware, minimum_size=500)
+
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
@@ -73,11 +79,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Enable GZip compression for responses > 500 bytes
-# This significantly reduces payload size for JSON API responses
-# (e.g., /plots/filter: 301KB -> ~40KB with gzip)
-app.add_middleware(GZipMiddleware, minimum_size=500)
 
 
 # Add cache headers middleware

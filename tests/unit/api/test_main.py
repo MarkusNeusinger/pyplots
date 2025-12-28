@@ -352,3 +352,12 @@ class TestGZipMiddleware:
                 break
         else:
             pytest.fail("GZipMiddleware not found in middleware stack")
+
+    def test_gzip_compresses_large_responses(self, client: TestClient) -> None:
+        """GZip middleware should compress responses larger than 500 bytes."""
+        # The /openapi.json endpoint returns a large JSON response (>500 bytes)
+        response = client.get("/openapi.json", headers={"Accept-Encoding": "gzip"})
+        assert response.status_code == 200
+        # Large responses should be compressed
+        content_encoding = response.headers.get("content-encoding")
+        assert content_encoding == "gzip", "Large response should be gzip compressed"

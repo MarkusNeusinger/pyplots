@@ -1,10 +1,13 @@
 """add_performance_indexes
 
 Add indexes on frequently queried columns for better query performance:
-- impls.spec_id (foreign key, heavily queried)
 - impls.library_id (foreign key, heavily queried)
 - specs.issue (lookup field)
 - impls.quality_score (sorting/filtering)
+
+Note: ix_impls_spec_id is NOT needed because the unique constraint on
+(spec_id, library_id) creates an index that covers spec_id queries
+via left-prefix optimization.
 
 Revision ID: d0c76553a5cc
 Revises: c36d82383e1d
@@ -26,10 +29,8 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     """Add performance indexes for frequently queried columns."""
-    # Add index on impls.spec_id (foreign key lookup)
-    op.create_index("ix_impls_spec_id", "impls", ["spec_id"], unique=False)
-
     # Add index on impls.library_id (foreign key lookup)
+    # Note: spec_id is covered by the (spec_id, library_id) unique constraint index
     op.create_index("ix_impls_library_id", "impls", ["library_id"], unique=False)
 
     # Add index on specs.issue (lookup by GitHub issue number)
@@ -44,4 +45,3 @@ def downgrade() -> None:
     op.drop_index("ix_impls_quality_score", table_name="impls")
     op.drop_index("ix_specs_issue", table_name="specs")
     op.drop_index("ix_impls_library_id", table_name="impls")
-    op.drop_index("ix_impls_spec_id", table_name="impls")

@@ -11,8 +11,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from core.constants import (
-    ATTEMPT_LABELS,
-    LIBRARY_LABELS,
     QUALITY_LABELS,
     QUALITY_THRESHOLD_EXCELLENT,
     QUALITY_THRESHOLD_GOOD,
@@ -20,10 +18,6 @@ from core.constants import (
     STATUS_LABELS,
     get_library_label as _get_library_label,
 )
-
-
-# Re-export constants from core.constants
-# (imported above for consistency)
 
 
 @dataclass

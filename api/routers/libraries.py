@@ -5,7 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.cache import cache_key, get_cached, set_cached
 from api.dependencies import optional_db, require_db
-from core.database import LIBRARIES_SEED, LibraryRepository, SpecRepository
+from core.constants import LIBRARIES_METADATA, SUPPORTED_LIBRARIES
+from core.database import LibraryRepository, SpecRepository
 
 
 router = APIRouter(tags=["libraries"])
@@ -19,7 +20,7 @@ async def get_libraries(db: AsyncSession | None = Depends(optional_db)):
     Returns library information including name, version, documentation URL, and description.
     """
     if db is None:
-        return {"libraries": LIBRARIES_SEED}
+        return {"libraries": LIBRARIES_METADATA}
 
     key = cache_key("libraries")
     cached = get_cached(key)
@@ -58,8 +59,7 @@ async def get_library_images(library_id: str, db: AsyncSession = Depends(require
     """
 
     # Validate library_id
-    valid_libraries = [lib["id"] for lib in LIBRARIES_SEED]
-    if library_id not in valid_libraries:
+    if library_id not in SUPPORTED_LIBRARIES:
         raise HTTPException(status_code=404, detail=f"Library '{library_id}' not found")
 
     key = cache_key("lib_images", library_id)

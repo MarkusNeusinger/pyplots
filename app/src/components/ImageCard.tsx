@@ -177,7 +177,7 @@ export const ImageCard = memo(function ImageCard({
             tooltip: {
               sx: {
                 maxWidth: { xs: '80vw', sm: 400 },
-                fontFamily: '"JetBrains Mono", monospace',
+                fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
                 fontSize: labelFontSize,
               },
             },
@@ -195,7 +195,7 @@ export const ImageCard = memo(function ImageCard({
             sx={{
               fontSize: '0.8rem',
               fontWeight: 600,
-              fontFamily: '"JetBrains Mono", monospace',
+              fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
               color: isSpecTooltipOpen ? '#3776AB' : '#9ca3af',
               textTransform: 'lowercase',
               cursor: 'pointer',
@@ -247,7 +247,7 @@ export const ImageCard = memo(function ImageCard({
             tooltip: {
               sx: {
                 maxWidth: { xs: '80vw', sm: 400 },
-                fontFamily: '"JetBrains Mono", monospace',
+                fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
                 fontSize: labelFontSize,
               },
             },
@@ -265,7 +265,7 @@ export const ImageCard = memo(function ImageCard({
             sx={{
               fontSize: '0.8rem',
               fontWeight: 600,
-              fontFamily: '"JetBrains Mono", monospace',
+              fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
               color: isLibTooltipOpen ? '#3776AB' : '#9ca3af',
               textTransform: 'lowercase',
               cursor: 'pointer',

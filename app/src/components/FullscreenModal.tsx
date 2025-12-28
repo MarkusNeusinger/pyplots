@@ -73,7 +73,7 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
         customStyle={{
           margin: 0,
           fontSize: '0.85rem',
-          fontFamily: '"JetBrains Mono", monospace',
+          fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
           background: 'transparent',
         }}
       >
@@ -211,7 +211,7 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
                       color: '#6b7280',
                       bgcolor: 'rgba(255,255,255,0.9)',
                       fontSize: '0.85rem',
-                      fontFamily: '"JetBrains Mono", monospace',
+                      fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
                       '&:hover': { color: '#3776AB', bgcolor: '#fff' },
                     }}
                   >
@@ -294,7 +294,7 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
                       color: '#6b7280',
                       bgcolor: 'rgba(255,255,255,0.9)',
                       fontSize: '0.85rem',
-                      fontFamily: '"JetBrains Mono", monospace',
+                      fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
                       '&:hover': displayCode ? { color: '#3776AB', bgcolor: '#fff' } : {},
                       ...(blinkCodeButton && {
                         animation: 'bounce 0.6s ease-in-out',
@@ -360,7 +360,7 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
                 mt: 2,
                 color: '#fff',
                 fontWeight: 600,
-                fontFamily: '"JetBrains Mono", monospace',
+                fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
                 fontSize: '1rem',
               }}
             >

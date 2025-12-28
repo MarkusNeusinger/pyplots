@@ -18,7 +18,7 @@ export function Footer({ onTrackEvent, selectedSpec, selectedLibrary }: FooterPr
           alignItems: 'center',
           gap: 1,
           fontSize: '0.8rem',
-          fontFamily: '"JetBrains Mono", monospace',
+          fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
           color: '#9ca3af',
         }}
       >

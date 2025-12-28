@@ -269,7 +269,7 @@ export function FilterBar({
             sx={{
               position: 'absolute',
               left: 0,
-              fontFamily: '"JetBrains Mono", monospace',
+              fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
               fontSize: '0.75rem',
               color: '#9ca3af',
               whiteSpace: 'nowrap',
@@ -320,7 +320,7 @@ export function FilterBar({
             }}
             deleteIcon={<CloseIcon sx={{ fontSize: '1rem !important' }} />}
             sx={{
-              fontFamily: '"JetBrains Mono", monospace',
+              fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
               fontSize: '0.85rem',
               height: 32,
               bgcolor: '#f3f4f6',
@@ -411,7 +411,7 @@ export function FilterBar({
               width: isSearchExpanded ? 'auto' : 0,
               opacity: isSearchExpanded ? 1 : 0,
               transition: 'all 0.2s ease',
-              fontFamily: '"JetBrains Mono", monospace',
+              fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
               fontSize: '0.85rem',
               '& input': {
                 padding: 0,
@@ -479,17 +479,17 @@ export function FilterBar({
                   key={category}
                   onClick={() => handleCategorySelect(category)}
                   selected={visibleIdx === highlightedIndex}
-                  sx={{ fontFamily: '"JetBrains Mono", monospace' }}
+                  sx={{ fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace' }}
                 >
                   <ListItemText
                     primary={FILTER_LABELS[category]}
                     secondary={`${availableVals.length} options`}
                     primaryTypographyProps={{
-                      fontFamily: '"JetBrains Mono", monospace',
+                      fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
                       fontSize: '0.9rem',
                     }}
                     secondaryTypographyProps={{
-                      fontFamily: '"JetBrains Mono", monospace',
+                      fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
                       fontSize: '0.75rem',
                       color: '#9ca3af',
                     }}
@@ -507,7 +507,7 @@ export function FilterBar({
                         setSelectedCategory(null);
                         setSearchQuery('');
                       }}
-                      sx={{ fontFamily: '"JetBrains Mono", monospace', color: '#6b7280' }}
+                      sx={{ fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace', color: '#6b7280' }}
                     >
                       &larr; {FILTER_LABELS[selectedCategory]}
                     </MenuItem>,
@@ -520,24 +520,24 @@ export function FilterBar({
                       key={`${category}-${value}`}
                       onClick={() => handleValueSelect(category, value)}
                       selected={idx === highlightedIndex}
-                      sx={{ fontFamily: '"JetBrains Mono", monospace' }}
+                      sx={{ fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace' }}
                     >
                       <ListItemText
                         primary={value}
                         secondary={!selectedCategory ? FILTER_LABELS[category] : undefined}
                         primaryTypographyProps={{
-                          fontFamily: '"JetBrains Mono", monospace',
+                          fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
                           fontSize: '0.85rem',
                         }}
                         secondaryTypographyProps={{
-                          fontFamily: '"JetBrains Mono", monospace',
+                          fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
                           fontSize: '0.7rem',
                           color: '#9ca3af',
                         }}
                       />
                       <Typography
                         sx={{
-                          fontFamily: '"JetBrains Mono", monospace',
+                          fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
                           fontSize: '0.75rem',
                           color: '#9ca3af',
                           ml: 2,
@@ -551,7 +551,7 @@ export function FilterBar({
                     <MenuItem key="no-results" disabled>
                       <Typography
                         sx={{
-                          fontFamily: '"JetBrains Mono", monospace',
+                          fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
                           fontSize: '0.85rem',
                           color: '#9ca3af',
                         }}
@@ -589,7 +589,7 @@ export function FilterBar({
                     py: 0.5,
                     fontSize: '0.7rem',
                     color: '#9ca3af',
-                    fontFamily: '"JetBrains Mono", monospace',
+                    fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
                     textTransform: 'uppercase',
                   }}
                 >
@@ -599,7 +599,7 @@ export function FilterBar({
                   <MenuItem
                     key={`add-${value}`}
                     onClick={() => handleAddValueToExistingGroup(value)}
-                    sx={{ fontFamily: '"JetBrains Mono", monospace', py: 0.5 }}
+                    sx={{ fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace', py: 0.5 }}
                   >
                     <AddIcon fontSize="small" sx={{ mr: 1, color: '#22c55e', fontSize: '1rem' }} />
                     <Typography sx={{ fontSize: '0.85rem', flex: 1 }}>{value}</Typography>
@@ -614,7 +614,7 @@ export function FilterBar({
             <MenuItem
               key={`remove-${value}`}
               onClick={() => handleRemoveValue(value)}
-              sx={{ fontFamily: '"JetBrains Mono", monospace' }}
+              sx={{ fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace' }}
             >
               <CloseIcon fontSize="small" sx={{ mr: 1, color: '#ef4444' }} />
               {value}
@@ -627,7 +627,7 @@ export function FilterBar({
                 <MenuItem
                   key="remove-all"
                   onClick={handleRemoveGroup}
-                  sx={{ fontFamily: '"JetBrains Mono", monospace', color: '#ef4444' }}
+                  sx={{ fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace', color: '#ef4444' }}
                 >
                   <CloseIcon fontSize="small" sx={{ mr: 1 }} />
                   remove all

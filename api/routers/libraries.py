@@ -4,20 +4,21 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.cache import cache_key, get_cached, set_cached
-from core.database import LIBRARIES_SEED, LibraryRepository, SpecRepository, get_db, is_db_configured
+from api.dependencies import optional_db, require_db
+from core.database import LIBRARIES_SEED, LibraryRepository, SpecRepository
 
 
 router = APIRouter(tags=["libraries"])
 
 
 @router.get("/libraries")
-async def get_libraries(db: AsyncSession = Depends(get_db)):
+async def get_libraries(db: AsyncSession | None = Depends(optional_db)):
     """
     Get list of all supported plotting libraries.
 
     Returns library information including name, version, documentation URL, and description.
     """
-    if not is_db_configured():
+    if db is None:
         return {"libraries": LIBRARIES_SEED}
 
     key = cache_key("libraries")
@@ -45,7 +46,7 @@ async def get_libraries(db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/libraries/{library_id}/images")
-async def get_library_images(library_id: str, db: AsyncSession = Depends(get_db)):
+async def get_library_images(library_id: str, db: AsyncSession = Depends(require_db)):
     """
     Get all plot images for a specific library across all specs.
 
@@ -55,8 +56,6 @@ async def get_library_images(library_id: str, db: AsyncSession = Depends(get_db)
     Returns:
         List of images with spec_id, preview_url, thumb, and html
     """
-    if not is_db_configured():
-        raise HTTPException(status_code=503, detail="Database not configured")
 
     # Validate library_id
     valid_libraries = [lib["id"] for lib in LIBRARIES_SEED]

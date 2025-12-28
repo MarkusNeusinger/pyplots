@@ -5,21 +5,20 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import SpecRepository, get_db, is_db_configured
+from api.dependencies import require_db
+from core.database import SpecRepository
 
 
 router = APIRouter(tags=["download"])
 
 
 @router.get("/download/{spec_id}/{library}")
-async def download_image(spec_id: str, library: str, db: AsyncSession = Depends(get_db)):
+async def download_image(spec_id: str, library: str, db: AsyncSession = Depends(require_db)):
     """
     Proxy download for plot images to avoid CORS issues.
 
     Returns the image as a downloadable file.
     """
-    if not is_db_configured():
-        raise HTTPException(status_code=503, detail="Database not configured")
 
     repo = SpecRepository(db)
     spec = await repo.get_by_id(spec_id)

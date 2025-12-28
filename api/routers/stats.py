@@ -4,22 +4,24 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.cache import cache_key, get_cached, set_cached
+from api.dependencies import optional_db
 from api.schemas import StatsResponse
-from core.database import LIBRARIES_SEED, LibraryRepository, SpecRepository, get_db, is_db_configured
+from core.constants import LIBRARIES_METADATA
+from core.database import LibraryRepository, SpecRepository
 
 
 router = APIRouter(tags=["stats"])
 
 
 @router.get("/stats", response_model=StatsResponse)
-async def get_stats(db: AsyncSession = Depends(get_db)):
+async def get_stats(db: AsyncSession | None = Depends(optional_db)):
     """
     Get platform statistics.
 
     Returns counts of specs, implementations (plots), and libraries.
     """
-    if not is_db_configured():
-        return StatsResponse(specs=0, plots=0, libraries=len(LIBRARIES_SEED))
+    if db is None:
+        return StatsResponse(specs=0, plots=0, libraries=len(LIBRARIES_METADATA))
 
     key = cache_key("stats")
     cached = get_cached(key)

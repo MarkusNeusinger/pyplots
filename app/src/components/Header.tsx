@@ -49,7 +49,7 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
         component="h1"
         sx={{
           fontWeight: 700,
-          fontFamily: '"JetBrains Mono", monospace',
+          fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
           mb: { xs: 2, md: 3 },
           letterSpacing: '-0.02em',
           fontSize: { xs: '2rem', md: '3.75rem' },
@@ -114,7 +114,7 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
           maxWidth: 560,
           mx: 'auto',
           lineHeight: 1.8,
-          fontFamily: '"JetBrains Mono", monospace',
+          fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
           color: '#6b7280',
           fontSize: { xs: '0.875rem', md: '1rem' },
         }}
@@ -128,7 +128,7 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
           mx: 'auto',
           mt: { xs: 1, md: 1.5 },
           lineHeight: 1.8,
-          fontFamily: '"JetBrains Mono", monospace',
+          fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
           color: '#374151',
           fontSize: { xs: '0.925rem', md: '1.05rem' },
           fontWeight: 500,

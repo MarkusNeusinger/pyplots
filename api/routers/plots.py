@@ -235,7 +235,8 @@ async def get_filtered_plots(request: Request, db: AsyncSession = Depends(requir
                         "url": impl.preview_url,
                         "thumb": impl.preview_thumb,
                         "html": impl.preview_html,
-                        "code": impl.code,
+                        # Note: code excluded to reduce payload (~2MB savings)
+                        # Fetch via /specs/{spec_id} when needed
                     }
                 )
 

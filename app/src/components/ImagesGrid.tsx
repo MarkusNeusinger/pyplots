@@ -139,7 +139,7 @@ export function ImagesGrid({
                     openTooltip={openTooltip}
                     imageSize={imageSize}
                     onTooltipToggle={onTooltipToggle}
-                    onClick={() => handleCardClick(image)}
+                    onClick={handleCardClick}
                     onTrackEvent={onTrackEvent}
                   />
                 </Grid>

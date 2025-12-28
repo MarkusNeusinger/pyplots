@@ -25,7 +25,7 @@ interface ImageCardProps {
   openTooltip: string | null;
   imageSize: ImageSize;
   onTooltipToggle: (id: string | null) => void;
-  onClick: () => void;
+  onClick: (image: PlotImage) => void;
   onTrackEvent?: (name: string, props?: Record<string, string | undefined>) => void;
 }
 
@@ -46,6 +46,11 @@ export const ImageCard = memo(function ImageCard({
   const labelFontSize = imageSize === 'compact' ? '0.65rem' : '0.8rem';
   const { fetchCode } = useCodeFetch();
   const [copyState, setCopyState] = useState<'idle' | 'loading' | 'copied'>('idle');
+
+  // Stable click handler - calls onClick with image
+  const handleClick = useCallback(() => {
+    onClick(image);
+  }, [onClick, image]);
 
   const handleCopyCode = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -91,11 +96,11 @@ export const ImageCard = memo(function ImageCard({
     >
       <Card
         elevation={0}
-        onClick={onClick}
+        onClick={handleClick}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            onClick();
+            handleClick();
           }
         }}
         tabIndex={0}

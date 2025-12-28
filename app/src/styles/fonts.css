@@ -1,24 +1,19 @@
-/**
- * MonoLisa Font Setup
+/*!
+ * MonoLisa 2.017 - Webfont
+ * Hosted on GCS: gs://pyplots-static/fonts/
+ * CORS restricted to pyplots.ai
  *
- * Font files hosted on GCS: gs://pyplots-static/fonts/
- * Bucket has CORS restriction: only pyplots.ai can load these assets.
- *
- * Upload instructions:
- *   gsutil cp MonoLisa-Regular.woff2 gs://pyplots-static/fonts/
- *   gsutil cp MonoLisa-Medium.woff2 gs://pyplots-static/fonts/
- *   gsutil cp MonoLisa-Bold.woff2 gs://pyplots-static/fonts/
- *   gsutil setmeta -h "Cache-Control:public, max-age=31536000, immutable" "gs://pyplots-static/fonts/*.woff2"
+ * © 2025 FaceType Foundry. All Rights Reserved.
+ * License: https://www.monolisa.dev/license
  */
 
 /* ==========================================================================
-   Fallback Font (matches MonoLisa metrics to prevent CLS)
+   Fallback Font (prevents CLS while MonoLisa loads)
    ========================================================================== */
 
 @font-face {
   font-family: 'MonoLisa Fallback';
   src: local('Consolas'), local('Menlo'), local('Monaco'), local('DejaVu Sans Mono');
-  /* Adjust these values to match MonoLisa metrics */
   size-adjust: 100%;
   ascent-override: 95%;
   descent-override: 25%;
@@ -26,29 +21,215 @@
 }
 
 /* ==========================================================================
-   MonoLisa Font Faces
+   MonoLisa Variable Font - Unicode Subsets
+   Browser only downloads what's needed!
    ========================================================================== */
 
+/* Basic Latin (A-Z, a-z, 0-9, punctuation) */
 @font-face {
   font-family: 'MonoLisa';
-  src: url('https://storage.googleapis.com/pyplots-static/fonts/MonoLisa-Regular.woff2') format('woff2');
-  font-weight: 400;
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/0-MonoLisa-normal.woff2') format('woff2');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0020-007F;
 }
 
 @font-face {
   font-family: 'MonoLisa';
-  src: url('https://storage.googleapis.com/pyplots-static/fonts/MonoLisa-Medium.woff2') format('woff2');
-  font-weight: 500;
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/1-MonoLisa-italic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0020-007F;
+}
+
+/* Latin-1 Supplement (ä, ö, ü, ß, etc.) */
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/2-MonoLisa-normal.woff2') format('woff2');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0080-00FF;
 }
 
 @font-face {
   font-family: 'MonoLisa';
-  src: url('https://storage.googleapis.com/pyplots-static/fonts/MonoLisa-Bold.woff2') format('woff2');
-  font-weight: 700;
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/3-MonoLisa-italic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0080-00FF;
+}
+
+/* General Punctuation */
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/4-MonoLisa-normal.woff2') format('woff2');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+2000-206F;
+}
+
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/5-MonoLisa-italic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+2000-206F;
+}
+
+/* Miscellaneous Technical */
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/6-MonoLisa-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+2300-23FF;
+}
+
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/7-MonoLisa-italic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+2300-23FF;
+}
+
+/* Arrows */
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/8-MonoLisa-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+2190-21FF;
+}
+
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/9-MonoLisa-italic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+2190-21FF;
+}
+
+/* Currency Symbols */
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/10-MonoLisa-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+20A0-20CF;
+}
+
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/11-MonoLisa-italic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+20A0-20CF;
+}
+
+/* Mathematical Operators */
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/12-MonoLisa-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+2200-22FF;
+}
+
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/13-MonoLisa-italic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+2200-22FF;
+}
+
+/* Block Elements ░▒▓█ */
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/14-MonoLisa-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+2580-259F;
+}
+
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/15-MonoLisa-italic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+2580-259F;
+}
+
+/* Geometric Shapes ■□▲△ */
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/16-MonoLisa-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+25A0-25FF;
+}
+
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/17-MonoLisa-italic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+25A0-25FF;
+}
+
+/* Box Drawing ┌─┐│└─┘ */
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/18-MonoLisa-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+2500-257F;
+}
+
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/19-MonoLisa-italic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+2500-257F;
+}
+
+/* Powerline & Private Use Area  */
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/20-MonoLisa-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E000-F8FF;
+}
+
+@font-face {
+  font-family: 'MonoLisa';
+  src: url('https://storage.googleapis.com/pyplots-static/fonts/21-MonoLisa-italic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+E000-F8FF;
 }

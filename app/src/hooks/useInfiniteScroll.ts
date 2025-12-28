@@ -99,9 +99,9 @@ export function useInfiniteScroll({
   }, [checkAndLoad]);
 
   // Re-check after images are added (in case we need more)
+  // Use longer delay to reduce state churn during rapid scrolling
   useEffect(() => {
-    // Small delay to let DOM update
-    const timer = setTimeout(checkAndLoad, 50);
+    const timer = setTimeout(checkAndLoad, 200);
     return () => clearTimeout(timer);
   }, [displayedImages.length, checkAndLoad]);
 

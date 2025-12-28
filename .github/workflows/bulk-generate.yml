@@ -158,6 +158,8 @@ jobs:
     needs: [build-matrix, generate]
     if: always()
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Post summary

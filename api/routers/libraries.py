@@ -4,21 +4,23 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.cache import cache_key, get_cached, set_cached
-from core.database import LIBRARIES_SEED, LibraryRepository, SpecRepository, get_db, is_db_configured
+from api.dependencies import optional_db, require_db
+from core.constants import LIBRARIES_METADATA, SUPPORTED_LIBRARIES
+from core.database import LibraryRepository, SpecRepository
 
 
 router = APIRouter(tags=["libraries"])
 
 
 @router.get("/libraries")
-async def get_libraries(db: AsyncSession = Depends(get_db)):
+async def get_libraries(db: AsyncSession | None = Depends(optional_db)):
     """
     Get list of all supported plotting libraries.
 
     Returns library information including name, version, documentation URL, and description.
     """
-    if not is_db_configured():
-        return {"libraries": LIBRARIES_SEED}
+    if db is None:
+        return {"libraries": LIBRARIES_METADATA}
 
     key = cache_key("libraries")
     cached = get_cached(key)
@@ -45,7 +47,7 @@ async def get_libraries(db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/libraries/{library_id}/images")
-async def get_library_images(library_id: str, db: AsyncSession = Depends(get_db)):
+async def get_library_images(library_id: str, db: AsyncSession = Depends(require_db)):
     """
     Get all plot images for a specific library across all specs.
 
@@ -55,12 +57,9 @@ async def get_library_images(library_id: str, db: AsyncSession = Depends(get_db)
     Returns:
         List of images with spec_id, preview_url, thumb, and html
     """
-    if not is_db_configured():
-        raise HTTPException(status_code=503, detail="Database not configured")
 
     # Validate library_id
-    valid_libraries = [lib["id"] for lib in LIBRARIES_SEED]
-    if library_id not in valid_libraries:
+    if library_id not in SUPPORTED_LIBRARIES:
         raise HTTPException(status_code=404, detail=f"Library '{library_id}' not found")
 
     key = cache_key("lib_images", library_id)

@@ -60,15 +60,8 @@ def mock_db_client():
     mock_result.scalars.return_value.all.return_value = [mock_spec1, mock_spec2]
     mock_session.execute.return_value = mock_result
 
-    # Patch is_db_configured to return True in all routers
-    with (
-        patch("api.routers.specs.is_db_configured", return_value=True),
-        patch("api.routers.stats.is_db_configured", return_value=True),
-        patch("api.routers.libraries.is_db_configured", return_value=True),
-        patch("api.routers.plots.is_db_configured", return_value=True),
-        patch("api.routers.download.is_db_configured", return_value=True),
-        patch("api.routers.seo.is_db_configured", return_value=True),
-    ):
+    # Patch is_db_configured in api.dependencies (centralized location)
+    with patch("api.dependencies.is_db_configured", return_value=True):
         client = TestClient(app)
         yield client
 

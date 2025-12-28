@@ -1,11 +1,12 @@
 """Filter endpoint for plots."""
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.cache import get_cached, set_cached
+from api.dependencies import require_db
 from api.schemas import FilteredPlotsResponse
-from core.database import SpecRepository, get_db, is_db_configured
+from core.database import SpecRepository
 
 
 router = APIRouter(tags=["plots"])
@@ -171,7 +172,7 @@ def _calculate_or_counts(
 
 
 @router.get("/plots/filter", response_model=FilteredPlotsResponse)
-async def get_filtered_plots(request: Request, db: AsyncSession = Depends(get_db)):
+async def get_filtered_plots(request: Request, db: AsyncSession = Depends(require_db)):
     """
     Get filtered plot images with counts for all filter categories.
 
@@ -191,8 +192,6 @@ async def get_filtered_plots(request: Request, db: AsyncSession = Depends(get_db
     Returns:
         FilteredPlotsResponse with images, counts, and orCounts per group
     """
-    if not is_db_configured():
-        raise HTTPException(status_code=503, detail="Database not configured")
 
     # Parse query params into filter groups
     filter_groups: list[dict] = []

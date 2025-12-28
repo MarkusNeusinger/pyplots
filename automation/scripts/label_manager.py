@@ -10,41 +10,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-
-# Status labels that are mutually exclusive
-STATUS_LABELS = frozenset(
-    [
-        "pending",
-        "generating",
-        "testing",
-        "reviewing",
-        "ai-approved",
-        "ai-rejected",
-        "ai-review-failed",
-        "merged",
-        "not-feasible",
-        "completed",
-    ]
-)
-
-# Quality score labels that are mutually exclusive
-QUALITY_LABELS = frozenset(["quality:excellent", "quality:good", "quality:needs-work", "quality:poor"])
-
-# Attempt labels
-ATTEMPT_LABELS = frozenset(["ai-attempt-1", "ai-attempt-2", "ai-attempt-3"])
-
-# Library labels
-LIBRARY_LABELS = frozenset(
-    [
-        "library:matplotlib",
-        "library:seaborn",
-        "library:plotly",
-        "library:bokeh",
-        "library:altair",
-        "library:plotnine",
-        "library:pygal",
-        "library:highcharts",
-    ]
+from core.constants import (
+    QUALITY_LABELS,
+    QUALITY_THRESHOLD_EXCELLENT,
+    QUALITY_THRESHOLD_GOOD,
+    QUALITY_THRESHOLD_NEEDS_WORK,
+    STATUS_LABELS,
+    get_library_label as _get_library_label,
 )
 
 
@@ -139,11 +111,11 @@ def get_quality_label(score: int) -> str:
         >>> get_quality_label(60)
         'quality:poor'
     """
-    if score >= 90:
+    if score >= QUALITY_THRESHOLD_EXCELLENT:
         return "quality:excellent"
-    elif score >= 85:
+    elif score >= QUALITY_THRESHOLD_GOOD:
         return "quality:good"
-    elif score >= 75:
+    elif score >= QUALITY_THRESHOLD_NEEDS_WORK:
         return "quality:needs-work"
     else:
         return "quality:poor"
@@ -209,7 +181,7 @@ def get_library_label(library: str) -> str:
         >>> get_library_label('matplotlib')
         'library:matplotlib'
     """
-    return f"library:{library.lower()}"
+    return _get_library_label(library)
 
 
 def is_approved(labels: list[str]) -> bool:

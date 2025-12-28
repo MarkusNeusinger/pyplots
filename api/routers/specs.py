@@ -4,22 +4,21 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.cache import cache_key, get_cached, set_cached
+from api.dependencies import require_db
 from api.schemas import ImplementationResponse, SpecDetailResponse, SpecListItem
-from core.database import SpecRepository, get_db, is_db_configured
+from core.database import SpecRepository
 
 
 router = APIRouter(tags=["specs"])
 
 
 @router.get("/specs", response_model=list[SpecListItem])
-async def get_specs(db: AsyncSession = Depends(get_db)):
+async def get_specs(db: AsyncSession = Depends(require_db)):
     """
     Get list of all specs with metadata.
 
     Returns only specs that have at least one implementation.
     """
-    if not is_db_configured():
-        raise HTTPException(status_code=503, detail="Database not configured")
 
     key = cache_key("specs_list")
     cached = get_cached(key)
@@ -42,7 +41,7 @@ async def get_specs(db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/specs/{spec_id}", response_model=SpecDetailResponse)
-async def get_spec(spec_id: str, db: AsyncSession = Depends(get_db)):
+async def get_spec(spec_id: str, db: AsyncSession = Depends(require_db)):
     """
     Get detailed spec information including all implementations.
 
@@ -52,8 +51,6 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(get_db)):
     Returns:
         Full spec details with all library implementations and preview URLs
     """
-    if not is_db_configured():
-        raise HTTPException(status_code=503, detail="Database not configured")
 
     key = cache_key("spec", spec_id)
     cached = get_cached(key)
@@ -104,14 +101,12 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/specs/{spec_id}/images")
-async def get_spec_images(spec_id: str, db: AsyncSession = Depends(get_db)):
+async def get_spec_images(spec_id: str, db: AsyncSession = Depends(require_db)):
     """
     Get plot images for a specification across all libraries.
 
     Returns preview_url, preview_thumb, and preview_html from database.
     """
-    if not is_db_configured():
-        raise HTTPException(status_code=503, detail="Database not configured")
 
     key = cache_key("spec_images", spec_id)
     cached = get_cached(key)

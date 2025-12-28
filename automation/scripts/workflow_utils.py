@@ -10,6 +10,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from core.constants import SUPPORTED_LIBRARIES, is_valid_library as _is_valid_library
+
 
 @dataclass
 class BranchInfo:
@@ -208,8 +210,8 @@ def parse_plot_path(file_path: str) -> dict[str, str] | None:
     return None
 
 
-# Valid libraries for validation
-VALID_LIBRARIES = frozenset(["matplotlib", "seaborn", "plotly", "bokeh", "altair", "plotnine", "pygal", "highcharts"])
+# Valid libraries for validation (re-exported from core.constants)
+VALID_LIBRARIES = SUPPORTED_LIBRARIES
 
 
 def is_valid_library(library: str) -> bool:
@@ -229,4 +231,4 @@ def is_valid_library(library: str) -> bool:
         >>> is_valid_library('pandas')
         False
     """
-    return library.lower() in VALID_LIBRARIES
+    return _is_valid_library(library)

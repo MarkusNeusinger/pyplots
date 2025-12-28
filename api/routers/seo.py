@@ -7,14 +7,16 @@ from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.cache import cache_key, get_cached, set_cached
-from core.database import LIBRARIES_SEED, SpecRepository, get_db, is_db_configured
+from api.dependencies import optional_db
+from core.constants import LIBRARIES_METADATA
+from core.database import SpecRepository
 
 
 router = APIRouter(tags=["seo"])
 
 
 @router.get("/sitemap.xml")
-async def get_sitemap(db: AsyncSession = Depends(get_db)):
+async def get_sitemap(db: AsyncSession | None = Depends(optional_db)):
     """
     Generate dynamic XML sitemap for SEO.
 
@@ -33,7 +35,7 @@ async def get_sitemap(db: AsyncSession = Depends(get_db)):
     ]
 
     # Add spec URLs (only specs with implementations)
-    if is_db_configured():
+    if db is not None:
         repo = SpecRepository(db)
         specs = await repo.get_all()
         for spec in specs:
@@ -42,7 +44,7 @@ async def get_sitemap(db: AsyncSession = Depends(get_db)):
                 xml_lines.append(f"  <url><loc>https://pyplots.ai/?spec={spec_id}</loc></url>")
 
     # Add library URLs (static list)
-    for lib in LIBRARIES_SEED:
+    for lib in LIBRARIES_METADATA:
         lib_id = html.escape(lib["id"])
         xml_lines.append(f"  <url><loc>https://pyplots.ai/?lib={lib_id}</loc></url>")
 

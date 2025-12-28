@@ -16,12 +16,39 @@ from api.routers.plots import (
     _calculate_or_counts,
     _image_matches_groups,
 )
+from core.database import get_db
+
+
+# Path to patch is_db_configured - it's now in api.dependencies
+DB_CONFIG_PATCH = "api.dependencies.is_db_configured"
 
 
 @pytest.fixture
 def client() -> TestClient:
     """Create a test client for the FastAPI app."""
     return TestClient(app)
+
+
+@pytest.fixture
+def db_client():
+    """Create a test client with mocked database dependency.
+
+    This fixture overrides get_db to return a mock session and
+    patches is_db_configured to return True, enabling proper
+    testing of endpoints that use optional_db.
+    """
+    mock_session = AsyncMock()
+
+    async def mock_get_db():
+        yield mock_session
+
+    app.dependency_overrides[get_db] = mock_get_db
+
+    with patch(DB_CONFIG_PATCH, return_value=True):
+        client = TestClient(app)
+        yield client, mock_session
+
+    app.dependency_overrides.clear()
 
 
 @pytest.fixture
@@ -78,7 +105,7 @@ class TestStatsRouter:
 
     def test_stats_without_db(self, client: TestClient) -> None:
         """Stats should return zeros when DB not configured."""
-        with patch("api.routers.stats.is_db_configured", return_value=False):
+        with patch(DB_CONFIG_PATCH, return_value=False):
             response = client.get("/stats")
             assert response.status_code == 200
             data = response.json()
@@ -86,8 +113,10 @@ class TestStatsRouter:
             assert data["plots"] == 0
             assert "libraries" in data
 
-    def test_stats_with_db(self, client: TestClient, mock_spec, mock_lib) -> None:
+    def test_stats_with_db(self, db_client, mock_spec, mock_lib) -> None:
         """Stats should return counts when DB is configured."""
+        client, _ = db_client
+
         mock_spec_repo = MagicMock()
         mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
 
@@ -95,7 +124,6 @@ class TestStatsRouter:
         mock_lib_repo.get_all = AsyncMock(return_value=[mock_lib])
 
         with (
-            patch("api.routers.stats.is_db_configured", return_value=True),
             patch("api.routers.stats.get_cached", return_value=None),
             patch("api.routers.stats.set_cached"),
             patch("api.routers.stats.SpecRepository", return_value=mock_spec_repo),
@@ -108,14 +136,12 @@ class TestStatsRouter:
             assert data["plots"] == 1
             assert data["libraries"] == 1
 
-    def test_stats_cached(self, client: TestClient) -> None:
+    def test_stats_cached(self, db_client) -> None:
         """Stats should return cached response when available."""
+        client, _ = db_client
         cached_response = {"specs": 5, "plots": 10, "libraries": 9}
 
-        with (
-            patch("api.routers.stats.is_db_configured", return_value=True),
-            patch("api.routers.stats.get_cached", return_value=cached_response),
-        ):
+        with patch("api.routers.stats.get_cached", return_value=cached_response):
             response = client.get("/stats")
             assert response.status_code == 200
             data = response.json()
@@ -128,7 +154,7 @@ class TestLibrariesRouter:
 
     def test_libraries_without_db(self, client: TestClient) -> None:
         """Libraries should return seed data when DB not configured."""
-        with patch("api.routers.libraries.is_db_configured", return_value=False):
+        with patch(DB_CONFIG_PATCH, return_value=False):
             response = client.get("/libraries")
             assert response.status_code == 200
             data = response.json()
@@ -137,23 +163,32 @@ class TestLibrariesRouter:
 
     def test_library_images_without_db(self, client: TestClient) -> None:
         """Library images should return 503 when DB not configured."""
-        with patch("api.routers.libraries.is_db_configured", return_value=False):
+        with patch(DB_CONFIG_PATCH, return_value=False):
             response = client.get("/libraries/matplotlib/images")
             assert response.status_code == 503
 
     def test_library_images_invalid_library(self, client: TestClient) -> None:
         """Library images should return 404 for invalid library."""
-        with patch("api.routers.libraries.is_db_configured", return_value=True):
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_all = AsyncMock(return_value=[])
+
+        with (
+            patch(DB_CONFIG_PATCH, return_value=True),
+            patch("api.routers.libraries.get_cached", return_value=None),
+            patch("api.routers.libraries.set_cached"),
+            patch("api.routers.libraries.SpecRepository", return_value=mock_spec_repo),
+        ):
             response = client.get("/libraries/invalid_lib/images")
             assert response.status_code == 404
 
-    def test_libraries_with_db(self, client: TestClient, mock_lib) -> None:
+    def test_libraries_with_db(self, db_client, mock_lib) -> None:
         """Libraries should return data from DB when configured."""
+        client, _ = db_client
+
         mock_lib_repo = MagicMock()
         mock_lib_repo.get_all = AsyncMock(return_value=[mock_lib])
 
         with (
-            patch("api.routers.libraries.is_db_configured", return_value=True),
             patch("api.routers.libraries.get_cached", return_value=None),
             patch("api.routers.libraries.set_cached"),
             patch("api.routers.libraries.LibraryRepository", return_value=mock_lib_repo),
@@ -171,19 +206,19 @@ class TestSpecsRouter:
 
     def test_specs_without_db(self, client: TestClient) -> None:
         """Specs should return 503 when DB not configured."""
-        with patch("api.routers.specs.is_db_configured", return_value=False):
+        with patch(DB_CONFIG_PATCH, return_value=False):
             response = client.get("/specs")
             assert response.status_code == 503
 
     def test_spec_detail_without_db(self, client: TestClient) -> None:
         """Spec detail should return 503 when DB not configured."""
-        with patch("api.routers.specs.is_db_configured", return_value=False):
+        with patch(DB_CONFIG_PATCH, return_value=False):
             response = client.get("/specs/scatter-basic")
             assert response.status_code == 503
 
     def test_spec_images_without_db(self, client: TestClient) -> None:
         """Spec images should return 503 when DB not configured."""
-        with patch("api.routers.specs.is_db_configured", return_value=False):
+        with patch(DB_CONFIG_PATCH, return_value=False):
             response = client.get("/specs/scatter-basic/images")
             assert response.status_code == 503
 
@@ -193,7 +228,7 @@ class TestSpecsRouter:
         mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
 
         with (
-            patch("api.routers.specs.is_db_configured", return_value=True),
+            patch(DB_CONFIG_PATCH, return_value=True),
             patch("api.routers.specs.get_cached", return_value=None),
             patch("api.routers.specs.set_cached"),
             patch("api.routers.specs.SpecRepository", return_value=mock_spec_repo),
@@ -211,7 +246,7 @@ class TestSpecsRouter:
         mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
 
         with (
-            patch("api.routers.specs.is_db_configured", return_value=True),
+            patch(DB_CONFIG_PATCH, return_value=True),
             patch("api.routers.specs.get_cached", return_value=None),
             patch("api.routers.specs.set_cached"),
             patch("api.routers.specs.SpecRepository", return_value=mock_spec_repo),
@@ -227,7 +262,7 @@ class TestSpecsRouter:
         mock_spec_repo.get_by_id = AsyncMock(return_value=None)
 
         with (
-            patch("api.routers.specs.is_db_configured", return_value=True),
+            patch(DB_CONFIG_PATCH, return_value=True),
             patch("api.routers.specs.get_cached", return_value=None),
             patch("api.routers.specs.SpecRepository", return_value=mock_spec_repo),
         ):
@@ -240,7 +275,7 @@ class TestDownloadRouter:
 
     def test_download_without_db(self, client: TestClient) -> None:
         """Download should return 503 when DB not configured."""
-        with patch("api.routers.download.is_db_configured", return_value=False):
+        with patch(DB_CONFIG_PATCH, return_value=False):
             response = client.get("/download/scatter-basic/matplotlib")
             assert response.status_code == 503
 
@@ -250,7 +285,7 @@ class TestDownloadRouter:
         mock_spec_repo.get_by_id = AsyncMock(return_value=None)
 
         with (
-            patch("api.routers.download.is_db_configured", return_value=True),
+            patch(DB_CONFIG_PATCH, return_value=True),
             patch("api.routers.download.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/download/nonexistent/matplotlib")
@@ -263,7 +298,7 @@ class TestDownloadRouter:
         mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
 
         with (
-            patch("api.routers.download.is_db_configured", return_value=True),
+            patch(DB_CONFIG_PATCH, return_value=True),
             patch("api.routers.download.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/download/scatter-basic/seaborn")
@@ -275,7 +310,7 @@ class TestSeoRouter:
 
     def test_sitemap_structure(self, client: TestClient) -> None:
         """Sitemap should return valid XML structure."""
-        with patch("api.routers.seo.is_db_configured", return_value=False):
+        with patch(DB_CONFIG_PATCH, return_value=False):
             response = client.get("/sitemap.xml")
             assert response.status_code == 200
             assert response.headers["content-type"] == "application/xml"
@@ -285,13 +320,14 @@ class TestSeoRouter:
             # Check for homepage URL as proper XML element
             assert "<loc>https://pyplots.ai/</loc>" in content
 
-    def test_sitemap_with_db(self, client: TestClient, mock_spec) -> None:
+    def test_sitemap_with_db(self, db_client, mock_spec) -> None:
         """Sitemap should include specs from DB."""
+        client, _ = db_client
+
         mock_spec_repo = MagicMock()
         mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
 
         with (
-            patch("api.routers.seo.is_db_configured", return_value=True),
             patch("api.routers.seo.get_cached", return_value=None),
             patch("api.routers.seo.set_cached"),
             patch("api.routers.seo.SpecRepository", return_value=mock_spec_repo),
@@ -306,13 +342,13 @@ class TestPlotsRouter:
 
     def test_filter_without_db(self, client: TestClient) -> None:
         """Filter should return 503 when DB not configured."""
-        with patch("api.routers.plots.is_db_configured", return_value=False):
+        with patch(DB_CONFIG_PATCH, return_value=False):
             response = client.get("/plots/filter")
             assert response.status_code == 503
 
     def test_filter_with_params_without_db(self, client: TestClient) -> None:
         """Filter with params should return 503 when DB not configured."""
-        with patch("api.routers.plots.is_db_configured", return_value=False):
+        with patch(DB_CONFIG_PATCH, return_value=False):
             response = client.get("/plots/filter?lib=matplotlib")
             assert response.status_code == 503
 
@@ -322,7 +358,7 @@ class TestPlotsRouter:
         mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
 
         with (
-            patch("api.routers.plots.is_db_configured", return_value=True),
+            patch(DB_CONFIG_PATCH, return_value=True),
             patch("api.routers.plots.get_cached", return_value=None),
             patch("api.routers.plots.set_cached"),
             patch("api.routers.plots.SpecRepository", return_value=mock_spec_repo),
@@ -340,7 +376,7 @@ class TestPlotsRouter:
         mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
 
         with (
-            patch("api.routers.plots.is_db_configured", return_value=True),
+            patch(DB_CONFIG_PATCH, return_value=True),
             patch("api.routers.plots.get_cached", return_value=None),
             patch("api.routers.plots.set_cached"),
             patch("api.routers.plots.SpecRepository", return_value=mock_spec_repo),
@@ -360,7 +396,7 @@ class TestPlotsRouter:
         cached_response.orCounts = []
 
         with (
-            patch("api.routers.plots.is_db_configured", return_value=True),
+            patch(DB_CONFIG_PATCH, return_value=True),
             patch("api.routers.plots.get_cached", return_value=cached_response),
         ):
             response = client.get("/plots/filter")

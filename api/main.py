@@ -101,6 +101,7 @@ async def add_cache_headers(request: Request, call_next):
 
     return response
 
+
 # Register routers
 app.include_router(health_router)
 app.include_router(stats_router)

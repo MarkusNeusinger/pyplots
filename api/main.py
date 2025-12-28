@@ -14,6 +14,7 @@ from contextlib import asynccontextmanager  # noqa: E402
 
 from fastapi import FastAPI, Request, Response  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
+from starlette.middleware.gzip import GZipMiddleware  # noqa: E402
 
 from api.routers import (  # noqa: E402
     download_router,
@@ -62,6 +63,12 @@ app = FastAPI(
     redoc_url="/redoc",
     openapi_url="/openapi.json",
 )
+
+# Enable GZip compression for responses > 500 bytes
+# This significantly reduces payload size for JSON API responses
+# (e.g., /plots/filter: 301KB -> ~40KB with gzip)
+# Note: GZip must be added before CORS so compression happens before CORS headers are added
+app.add_middleware(GZipMiddleware, minimum_size=500)
 
 # Configure CORS
 app.add_middleware(

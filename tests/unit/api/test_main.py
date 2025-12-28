@@ -318,3 +318,37 @@ class TestSpecImagesEndpoint:
         for img in data["images"]:
             assert "library" in img
             assert "url" in img
+
+
+class TestGZipMiddleware:
+    """Tests for GZip compression middleware."""
+
+    def test_gzip_middleware_is_configured(self, client: TestClient) -> None:
+        """GZip middleware should be configured in the app."""
+        from starlette.middleware.gzip import GZipMiddleware
+
+        # Check that GZipMiddleware is in the middleware stack
+        middleware_classes = [m.cls for m in client.app.user_middleware]
+        assert GZipMiddleware in middleware_classes
+
+    def test_gzip_not_used_for_small_responses(self, client: TestClient) -> None:
+        """GZip middleware should not compress small responses."""
+        response = client.get("/health", headers={"Accept-Encoding": "gzip"})
+        assert response.status_code == 200
+        # Small responses should not be compressed (below minimum_size=500)
+        # The health endpoint returns a small JSON response
+        content_encoding = response.headers.get("content-encoding")
+        # Either no encoding or not gzip for small responses
+        assert content_encoding is None or content_encoding != "gzip"
+
+    def test_gzip_minimum_size_is_500(self, client: TestClient) -> None:
+        """GZip middleware should have minimum_size of 500 bytes."""
+        from starlette.middleware.gzip import GZipMiddleware
+
+        # Find the GZipMiddleware and check its configuration
+        for middleware in client.app.user_middleware:
+            if middleware.cls == GZipMiddleware:
+                assert middleware.kwargs.get("minimum_size") == 500
+                break
+        else:
+            pytest.fail("GZipMiddleware not found in middleware stack")

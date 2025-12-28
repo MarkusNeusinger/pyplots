@@ -9,6 +9,14 @@ import { useInfiniteScroll, useAnalytics, useFilterState, isFiltersEmpty } from 
 import { Header, Footer, FilterBar, ImagesGrid, FullscreenModal } from './components';
 
 function App() {
+  // Disable browser scroll restoration to prevent F5 reload from cascading infinite scroll
+  useEffect(() => {
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+  }, []);
+
   // Custom hooks
   const { trackPageview, trackEvent } = useAnalytics();
 

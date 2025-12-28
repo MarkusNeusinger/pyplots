@@ -1,8 +1,9 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 import CloseIcon from '@mui/icons-material/Close';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -13,7 +14,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import type { PlotImage } from '../types';
 import { API_URL } from '../constants';
-import { useCopyCode } from '../hooks';
+import { useCopyCode, useCodeFetch } from '../hooks';
 
 interface FullscreenModalProps {
   image: PlotImage | null;
@@ -26,13 +27,32 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
   const [showCode, setShowCode] = useState(false);
   const [blinkCodeButton, setBlinkCodeButton] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
+  const [fetchedCode, setFetchedCode] = useState<string | null>(null);
+  const [codeLoading, setCodeLoading] = useState(false);
 
+  const { fetchCode } = useCodeFetch();
   const { copied, copyToClipboard, reset: resetCopied } = useCopyCode({
     onCopy: () => {
       const specId = selectedSpec || image?.spec_id;
       onTrackEvent?.('copy_code', { spec: specId, library: image?.library, method: 'modal' });
     },
   });
+
+  // Code to display - prefer image.code if available, otherwise fetched
+  const displayCode = image?.code ?? fetchedCode;
+
+  // Fetch code when modal opens (if not already present in image)
+  useEffect(() => {
+    if (image && !image.code && image.spec_id) {
+      setCodeLoading(true);
+      fetchCode(image.spec_id, image.library).then((code) => {
+        setFetchedCode(code);
+        setCodeLoading(false);
+      });
+    } else {
+      setFetchedCode(null);
+    }
+  }, [image, fetchCode]);
 
   // Reset state when modal opens
   const handleOpen = useCallback(() => {
@@ -45,7 +65,7 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
 
   // Memoize syntax-highlighted code to avoid expensive re-renders
   const highlightedCode = useMemo(() => {
-    if (!image?.code) return null;
+    if (!displayCode) return null;
     return (
       <SyntaxHighlighter
         language="python"
@@ -57,17 +77,17 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
           background: 'transparent',
         }}
       >
-        {image.code}
+        {displayCode}
       </SyntaxHighlighter>
     );
-  }, [image?.code]);
+  }, [displayCode]);
 
   // Copy code to clipboard
   const handleCopyCode = useCallback(() => {
-    if (image?.code) {
-      copyToClipboard(image.code);
+    if (displayCode) {
+      copyToClipboard(displayCode);
     }
-  }, [image?.code, copyToClipboard]);
+  }, [displayCode, copyToClipboard]);
 
   // Track native copy events (Ctrl+C, Cmd+C)
   const handleNativeCopy = useCallback(() => {
@@ -255,11 +275,13 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
                   zIndex: 1,
                 }}
               >
-                {image?.code && (
+                {(displayCode || codeLoading) && (
                   <Box
                     onClick={() => {
-                      setShowCode(true);
-                      onTrackEvent?.('view_code', { spec: selectedSpec || image?.spec_id, library: image?.library });
+                      if (displayCode) {
+                        setShowCode(true);
+                        onTrackEvent?.('view_code', { spec: selectedSpec || image?.spec_id, library: image?.library });
+                      }
                     }}
                     sx={{
                       display: 'flex',
@@ -268,12 +290,12 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
                       px: 1,
                       py: 0.5,
                       borderRadius: 1,
-                      cursor: 'pointer',
+                      cursor: displayCode ? 'pointer' : 'default',
                       color: '#6b7280',
                       bgcolor: 'rgba(255,255,255,0.9)',
                       fontSize: '0.85rem',
                       fontFamily: '"JetBrains Mono", monospace',
-                      '&:hover': { color: '#3776AB', bgcolor: '#fff' },
+                      '&:hover': displayCode ? { color: '#3776AB', bgcolor: '#fff' } : {},
                       ...(blinkCodeButton && {
                         animation: 'bounce 0.6s ease-in-out',
                         '@keyframes bounce': {
@@ -285,7 +307,11 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
                       }),
                     }}
                   >
-                    <CodeIcon sx={{ fontSize: 20 }} />
+                    {codeLoading ? (
+                      <CircularProgress size={16} sx={{ color: '#6b7280' }} />
+                    ) : (
+                      <CodeIcon sx={{ fontSize: 20 }} />
+                    )}
                     code
                   </Box>
                 )}

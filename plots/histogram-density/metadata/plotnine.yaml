@@ -1,0 +1,24 @@
+library: plotnine
+specification_id: histogram-density
+created: '2025-12-29T22:48:11Z'
+updated: '2025-12-29T22:56:54Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584330765
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-density/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-density/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent bimodal data choice that clearly demonstrates density histogram purpose
+  - Clean layering of histogram with density curve overlay
+  - Proper density normalization using y=..density..
+  - Good color contrast between blue histogram and yellow density line
+  - Appropriate figure sizing and text scaling for 4800x2700 output
+  weaknesses:
+  - Uses deprecated ..density.. syntax instead of modern after_stat(density)
+  - Grid styling incorrectly uses element_text for panel_grid_major_y (should be element_line)
+  - Axis labels lack units where applicable

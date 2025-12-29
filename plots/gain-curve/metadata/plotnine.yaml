@@ -1,0 +1,29 @@
+library: plotnine
+specification_id: gain-curve
+created: '2025-12-29T22:48:23Z'
+updated: '2025-12-29T22:57:24Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584328972
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/gain-curve/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gain-curve/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent visual clarity with well-chosen line widths and colors that make all
+    curves easily distinguishable
+  - Perfect implementation of the gain curve concept with all three required curves
+    (model, perfect, baseline)
+  - Strong adherence to plotnine grammar of graphics approach with clean layered construction
+  - Realistic marketing response model context that demonstrates practical application
+  - Proper axis scaling and labeling with units in percentage format
+  weaknesses:
+  - Legend title Curve is generic; consider removing the legend title or using more
+    descriptive text
+  - The variable n_samples is redefined at line 49 (shadowing the earlier definition
+    at line 27)
+  - Could benefit from annotation showing key metrics like the area under the curve
+    or lift at specific percentiles

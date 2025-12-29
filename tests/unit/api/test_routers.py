@@ -17,6 +17,7 @@ from api.routers.plots import (
     _image_matches_groups,
 )
 from core.database import get_db
+from tests.conftest import TEST_IMAGE_URL, TEST_THUMB_URL
 
 
 # Path to patch is_db_configured - it's now in api.dependencies
@@ -58,8 +59,8 @@ def mock_spec():
     mock_impl.library_id = "matplotlib"
     mock_impl.library = MagicMock()
     mock_impl.library.name = "Matplotlib"
-    mock_impl.preview_url = "https://example.com/plot.png"
-    mock_impl.preview_thumb = "https://example.com/thumb.png"
+    mock_impl.preview_url = TEST_IMAGE_URL
+    mock_impl.preview_thumb = TEST_THUMB_URL
     mock_impl.preview_html = None
     mock_impl.quality_score = 92.5
     mock_impl.code = "import matplotlib.pyplot as plt"
@@ -124,8 +125,8 @@ class TestStatsRouter:
         mock_lib_repo.get_all = AsyncMock(return_value=[mock_lib])
 
         with (
-            patch("api.routers.stats.get_cached", return_value=None),
-            patch("api.routers.stats.set_cached"),
+            patch("api.routers.stats.get_cache", return_value=None),
+            patch("api.routers.stats.set_cache"),
             patch("api.routers.stats.SpecRepository", return_value=mock_spec_repo),
             patch("api.routers.stats.LibraryRepository", return_value=mock_lib_repo),
         ):
@@ -141,7 +142,7 @@ class TestStatsRouter:
         client, _ = db_client
         cached_response = {"specs": 5, "plots": 10, "libraries": 9}
 
-        with patch("api.routers.stats.get_cached", return_value=cached_response):
+        with patch("api.routers.stats.get_cache", return_value=cached_response):
             response = client.get("/stats")
             assert response.status_code == 200
             data = response.json()
@@ -174,8 +175,8 @@ class TestLibrariesRouter:
 
         with (
             patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.libraries.get_cached", return_value=None),
-            patch("api.routers.libraries.set_cached"),
+            patch("api.routers.libraries.get_cache", return_value=None),
+            patch("api.routers.libraries.set_cache"),
             patch("api.routers.libraries.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/libraries/invalid_lib/images")
@@ -189,8 +190,8 @@ class TestLibrariesRouter:
         mock_lib_repo.get_all = AsyncMock(return_value=[mock_lib])
 
         with (
-            patch("api.routers.libraries.get_cached", return_value=None),
-            patch("api.routers.libraries.set_cached"),
+            patch("api.routers.libraries.get_cache", return_value=None),
+            patch("api.routers.libraries.set_cache"),
             patch("api.routers.libraries.LibraryRepository", return_value=mock_lib_repo),
         ):
             response = client.get("/libraries")
@@ -229,8 +230,8 @@ class TestSpecsRouter:
 
         with (
             patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.specs.get_cached", return_value=None),
-            patch("api.routers.specs.set_cached"),
+            patch("api.routers.specs.get_cache", return_value=None),
+            patch("api.routers.specs.set_cache"),
             patch("api.routers.specs.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/specs")
@@ -247,8 +248,8 @@ class TestSpecsRouter:
 
         with (
             patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.specs.get_cached", return_value=None),
-            patch("api.routers.specs.set_cached"),
+            patch("api.routers.specs.get_cache", return_value=None),
+            patch("api.routers.specs.set_cache"),
             patch("api.routers.specs.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/specs/scatter-basic")
@@ -263,7 +264,7 @@ class TestSpecsRouter:
 
         with (
             patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.specs.get_cached", return_value=None),
+            patch("api.routers.specs.get_cache", return_value=None),
             patch("api.routers.specs.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/specs/nonexistent")
@@ -328,8 +329,8 @@ class TestSeoRouter:
         mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
 
         with (
-            patch("api.routers.seo.get_cached", return_value=None),
-            patch("api.routers.seo.set_cached"),
+            patch("api.routers.seo.get_cache", return_value=None),
+            patch("api.routers.seo.set_cache"),
             patch("api.routers.seo.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/sitemap.xml")
@@ -359,8 +360,8 @@ class TestPlotsRouter:
 
         with (
             patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.plots.get_cached", return_value=None),
-            patch("api.routers.plots.set_cached"),
+            patch("api.routers.plots.get_cache", return_value=None),
+            patch("api.routers.plots.set_cache"),
             patch("api.routers.plots.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/plots/filter")
@@ -377,8 +378,8 @@ class TestPlotsRouter:
 
         with (
             patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.plots.get_cached", return_value=None),
-            patch("api.routers.plots.set_cached"),
+            patch("api.routers.plots.get_cache", return_value=None),
+            patch("api.routers.plots.set_cache"),
             patch("api.routers.plots.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/plots/filter?lib=matplotlib")
@@ -397,7 +398,7 @@ class TestPlotsRouter:
 
         with (
             patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.plots.get_cached", return_value=cached_response),
+            patch("api.routers.plots.get_cache", return_value=cached_response),
         ):
             response = client.get("/plots/filter")
             assert response.status_code == 200
@@ -462,7 +463,7 @@ class TestPlotsHelperFunctions:
         """Global counts should tally all implementations."""
         mock_impl = MagicMock()
         mock_impl.library_id = "matplotlib"
-        mock_impl.preview_url = "https://example.com/plot.png"
+        mock_impl.preview_url = TEST_IMAGE_URL
 
         mock_spec = MagicMock()
         mock_spec.id = "scatter-basic"

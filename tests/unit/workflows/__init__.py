@@ -1,1 +1,1 @@
-"""Unit tests for GitHub Actions workflows."""
+"""Unit tests for GitHub workflow utilities."""

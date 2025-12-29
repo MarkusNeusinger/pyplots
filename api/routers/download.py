@@ -1,11 +1,12 @@
 """Download proxy endpoint."""
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.dependencies import require_db
+from api.exceptions import raise_external_service_error, raise_not_found
 from core.database import SpecRepository
 
 
@@ -24,12 +25,12 @@ async def download_image(spec_id: str, library: str, db: AsyncSession = Depends(
     spec = await repo.get_by_id(spec_id)
 
     if not spec:
-        raise HTTPException(status_code=404, detail=f"Spec '{spec_id}' not found")
+        raise_not_found("Spec", spec_id)
 
     # Find the implementation for the requested library
     impl = next((i for i in spec.impls if i.library_id == library), None)
     if not impl or not impl.preview_url:
-        raise HTTPException(status_code=404, detail=f"No image found for {spec_id}/{library}")
+        raise_not_found(f"Implementation for {spec_id}", library)
 
     # Fetch the image from GCS
     async with httpx.AsyncClient() as client:
@@ -37,7 +38,7 @@ async def download_image(spec_id: str, library: str, db: AsyncSession = Depends(
             response = await client.get(impl.preview_url)
             response.raise_for_status()
         except httpx.HTTPError as e:
-            raise HTTPException(status_code=502, detail=f"Failed to fetch image: {e}") from e
+            raise_external_service_error("GCS", str(e))
 
     # Return as downloadable file
     filename = f"{spec_id}-{library}.png"

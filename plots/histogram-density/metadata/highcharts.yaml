@@ -1,0 +1,25 @@
+library: highcharts
+specification_id: histogram-density
+created: '2025-12-29T22:52:10Z'
+updated: '2025-12-29T23:00:06Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584332292
+issue: 0
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-density/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-density/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-density/highcharts/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent implementation of density histogram with theoretical PDF overlay
+  - Colorblind-safe color palette (blue histogram, yellow PDF curve)
+  - 'Title follows correct format: histogram-density · highcharts · pyplots.ai'
+  - Realistic test score scenario with appropriate scale (centered around 75)
+  - Proper use of Highcharts column series for histogram and area spline for PDF
+  weaknesses:
+  - Y-axis tick labels are slightly dense - could use fewer tick marks for cleaner
+    appearance
+  - Legend positioned in upper right could potentially overlap with tall bars in some
+    datasets

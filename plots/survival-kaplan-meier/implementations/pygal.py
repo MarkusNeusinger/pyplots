@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 survival-kaplan-meier: Kaplan-Meier Survival Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-29
@@ -138,55 +138,75 @@ se_exp = surv_exp * np.sqrt(var_exp)
 ci_upper_exp = np.minimum(surv_exp + 1.96 * se_exp, 1.0)
 ci_lower_exp = np.maximum(surv_exp - 1.96 * se_exp, 0.0)
 
-# Create CI step function data - combined for cleaner visual
-ci_std_upper_step = []
-ci_std_lower_step = []
+# Create CI band step data - upper bound then back via lower for fill effect
+ci_band_std = []
 for i in range(len(time_std)):
     if i > 0:
-        ci_std_upper_step.append((float(time_std[i]), float(ci_upper_std[i - 1])))
-        ci_std_lower_step.append((float(time_std[i]), float(ci_lower_std[i - 1])))
-    ci_std_upper_step.append((float(time_std[i]), float(ci_upper_std[i])))
-    ci_std_lower_step.append((float(time_std[i]), float(ci_lower_std[i])))
+        ci_band_std.append((float(time_std[i]), float(ci_upper_std[i - 1])))
+    ci_band_std.append((float(time_std[i]), float(ci_upper_std[i])))
+# Trace back along lower bound (reversed)
+for i in range(len(time_std) - 1, -1, -1):
+    ci_band_std.append((float(time_std[i]), float(ci_lower_std[i])))
+    if i > 0:
+        ci_band_std.append((float(time_std[i]), float(ci_lower_std[i - 1])))
 
-ci_exp_upper_step = []
-ci_exp_lower_step = []
+ci_band_exp = []
 for i in range(len(time_exp)):
     if i > 0:
-        ci_exp_upper_step.append((float(time_exp[i]), float(ci_upper_exp[i - 1])))
-        ci_exp_lower_step.append((float(time_exp[i]), float(ci_lower_exp[i - 1])))
-    ci_exp_upper_step.append((float(time_exp[i]), float(ci_upper_exp[i])))
-    ci_exp_lower_step.append((float(time_exp[i]), float(ci_lower_exp[i])))
+        ci_band_exp.append((float(time_exp[i]), float(ci_upper_exp[i - 1])))
+    ci_band_exp.append((float(time_exp[i]), float(ci_upper_exp[i])))
+# Trace back along lower bound (reversed)
+for i in range(len(time_exp) - 1, -1, -1):
+    ci_band_exp.append((float(time_exp[i]), float(ci_lower_exp[i])))
+    if i > 0:
+        ci_band_exp.append((float(time_exp[i]), float(ci_lower_exp[i - 1])))
 
-# Get censored observation points with survival values (as simple tuples for pygal XY)
+# Get censored observation points - create vertical tick marks
+# Each tick is a short vertical line segment at the survival probability
+tick_height = 0.03  # Height of censored tick marks
 censored_times_std = times_std_sorted[censored_std_sorted == 1]
-censored_markers_std = []
+censored_ticks_std = []
 for ct in censored_times_std:
     idx = np.searchsorted(time_std, ct, side="right") - 1
     idx = max(0, min(idx, len(surv_std) - 1))
-    censored_markers_std.append((float(ct), float(surv_std[idx])))
+    y_val = float(surv_std[idx])
+    # Each tick is a pair of points (vertical line segment)
+    censored_ticks_std.append((float(ct), y_val - tick_height / 2))
+    censored_ticks_std.append((float(ct), y_val + tick_height / 2))
+    censored_ticks_std.append((None, None))  # Break to create separate tick marks
 
 censored_times_exp = times_exp_sorted[censored_exp_sorted == 1]
-censored_markers_exp = []
+censored_ticks_exp = []
 for ct in censored_times_exp:
     idx = np.searchsorted(time_exp, ct, side="right") - 1
     idx = max(0, min(idx, len(surv_exp) - 1))
-    censored_markers_exp.append((float(ct), float(surv_exp[idx])))
+    y_val = float(surv_exp[idx])
+    censored_ticks_exp.append((float(ct), y_val - tick_height / 2))
+    censored_ticks_exp.append((float(ct), y_val + tick_height / 2))
+    censored_ticks_exp.append((None, None))
 
 # Custom style for pyplots (4800x2700 canvas)
-# Colorblind-safe blue/yellow palette
+# Colorblind-safe blue/orange palette for better contrast
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998", "#FFD43B", "#7BA3C9", "#FFE680", "#306998", "#FFD43B"),
+    colors=(
+        "rgba(48, 105, 152, 0.25)",  # Standard CI band (blue, transparent)
+        "rgba(255, 140, 0, 0.25)",  # Experimental CI band (orange, transparent)
+        "#306998",  # Standard curve (solid blue)
+        "#FF8C00",  # Experimental curve (solid orange)
+        "#306998",  # Standard censored ticks
+        "#FF8C00",  # Experimental censored ticks
+    ),
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
-    legend_font_size=40,
+    legend_font_size=42,
     value_font_size=36,
-    stroke_width=5,
+    stroke_width=4,
     guide_stroke_dasharray="5,5",
     major_guide_stroke_dasharray="5,5",
     font_family="sans-serif",
@@ -209,27 +229,30 @@ chart = pygal.XY(
     show_y_guides=True,
     x_label_rotation=0,
     truncate_legend=-1,
-    legend_at_bottom=True,
-    legend_at_bottom_columns=3,
+    legend_at_bottom=False,
     show_legend=True,
     range=(0, 1.05),
     include_x_axis=True,
-    margin=60,
-    spacing=40,
+    margin=80,
+    spacing=50,
     explicit_size=True,
 )
 
-# Add main survival curves first (these are the primary data)
-chart.add("Standard Treatment", step_std, stroke_style={"width": 8})
-chart.add("Experimental Treatment", step_exp, stroke_style={"width": 8})
+# Add CI bands first (background, filled polygons for shaded effect)
+chart.add("Standard 95% CI", ci_band_std, fill=True, stroke=False, show_dots=False)
+chart.add("Experimental 95% CI", ci_band_exp, fill=True, stroke=False, show_dots=False)
 
-# Add 95% CI bounds as thinner dashed lines (same colors, lighter)
-chart.add("Standard 95% CI", ci_std_upper_step + ci_std_lower_step, stroke_style={"width": 3, "dasharray": "10,6"})
-chart.add("Experimental 95% CI", ci_exp_upper_step + ci_exp_lower_step, stroke_style={"width": 3, "dasharray": "10,6"})
+# Add main survival curves on top (solid lines with higher stroke width)
+chart.add("Standard Treatment", step_std, stroke_style={"width": 7}, fill=False)
+chart.add("Experimental Treatment", step_exp, stroke_style={"width": 7}, fill=False)
 
-# Add censored observations as separate scatter series with visible markers
-chart.add("Censored (Std)", censored_markers_std, stroke=False, show_dots=True, dots_size=15)
-chart.add("Censored (Exp)", censored_markers_exp, stroke=False, show_dots=True, dots_size=15)
+# Add censored tick marks (vertical strokes on the curve)
+chart.add(
+    "Censored (Standard)", censored_ticks_std, stroke_style={"width": 4}, show_dots=False, allow_interruptions=True
+)
+chart.add(
+    "Censored (Experimental)", censored_ticks_exp, stroke_style={"width": 4}, show_dots=False, allow_interruptions=True
+)
 
 # Save outputs
 chart.render_to_file("plot.html")

@@ -29,8 +29,9 @@ class TestSpecsEndpoints:
 
     async def test_get_specs_with_db(self, async_client, test_db_with_data):
         """Should return all specs from database."""
-        with patch("api.dependencies.get_db", return_value=test_db_with_data), patch(
-            "api.dependencies.is_db_configured", return_value=True
+        with (
+            patch("api.dependencies.get_db", return_value=test_db_with_data),
+            patch("api.dependencies.is_db_configured", return_value=True),
         ):
             response = await async_client.get("/specs")
 
@@ -42,8 +43,9 @@ class TestSpecsEndpoints:
 
     async def test_get_spec_detail(self, async_client, test_db_with_data):
         """Should return spec detail with implementations."""
-        with patch("api.dependencies.get_db", return_value=test_db_with_data), patch(
-            "api.dependencies.is_db_configured", return_value=True
+        with (
+            patch("api.dependencies.get_db", return_value=test_db_with_data),
+            patch("api.dependencies.is_db_configured", return_value=True),
         ):
             response = await async_client.get("/specs/scatter-basic")
 
@@ -56,8 +58,9 @@ class TestSpecsEndpoints:
 
     async def test_get_spec_not_found(self, async_client, test_db_with_data):
         """Should return 404 for non-existent spec."""
-        with patch("api.dependencies.get_db", return_value=test_db_with_data), patch(
-            "api.dependencies.is_db_configured", return_value=True
+        with (
+            patch("api.dependencies.get_db", return_value=test_db_with_data),
+            patch("api.dependencies.is_db_configured", return_value=True),
         ):
             response = await async_client.get("/specs/nonexistent")
 
@@ -65,8 +68,9 @@ class TestSpecsEndpoints:
 
     async def test_get_spec_images(self, async_client, test_db_with_data):
         """Should return images for spec."""
-        with patch("api.dependencies.get_db", return_value=test_db_with_data), patch(
-            "api.dependencies.is_db_configured", return_value=True
+        with (
+            patch("api.dependencies.get_db", return_value=test_db_with_data),
+            patch("api.dependencies.is_db_configured", return_value=True),
         ):
             response = await async_client.get("/specs/scatter-basic/images")
 
@@ -81,8 +85,9 @@ class TestLibrariesEndpoints:
 
     async def test_get_libraries(self, async_client, test_db_with_data):
         """Should return all libraries."""
-        with patch("api.dependencies.get_db", return_value=test_db_with_data), patch(
-            "api.dependencies.is_db_configured", return_value=True
+        with (
+            patch("api.dependencies.get_db", return_value=test_db_with_data),
+            patch("api.dependencies.is_db_configured", return_value=True),
         ):
             response = await async_client.get("/libraries")
 
@@ -93,8 +98,9 @@ class TestLibrariesEndpoints:
 
     async def test_get_library_images(self, async_client, test_db_with_data):
         """Should return images for library."""
-        with patch("api.dependencies.get_db", return_value=test_db_with_data), patch(
-            "api.dependencies.is_db_configured", return_value=True
+        with (
+            patch("api.dependencies.get_db", return_value=test_db_with_data),
+            patch("api.dependencies.is_db_configured", return_value=True),
         ):
             response = await async_client.get("/libraries/matplotlib/images")
 
@@ -105,8 +111,9 @@ class TestLibrariesEndpoints:
 
     async def test_get_library_images_invalid(self, async_client, test_db_with_data):
         """Should return 404 for invalid library."""
-        with patch("api.dependencies.get_db", return_value=test_db_with_data), patch(
-            "api.dependencies.is_db_configured", return_value=True
+        with (
+            patch("api.dependencies.get_db", return_value=test_db_with_data),
+            patch("api.dependencies.is_db_configured", return_value=True),
         ):
             response = await async_client.get("/libraries/invalid/images")
 
@@ -118,8 +125,9 @@ class TestStatsEndpoints:
 
     async def test_get_stats(self, async_client, test_db_with_data):
         """Should return statistics from database."""
-        with patch("api.dependencies.get_db", return_value=test_db_with_data), patch(
-            "api.dependencies.is_db_configured", return_value=True
+        with (
+            patch("api.dependencies.get_db", return_value=test_db_with_data),
+            patch("api.dependencies.is_db_configured", return_value=True),
         ):
             response = await async_client.get("/stats")
 
@@ -135,8 +143,9 @@ class TestPlotsFilterEndpoints:
 
     async def test_filter_no_params(self, async_client, test_db_with_data):
         """Should return all images when no filters."""
-        with patch("api.dependencies.get_db", return_value=test_db_with_data), patch(
-            "api.dependencies.is_db_configured", return_value=True
+        with (
+            patch("api.dependencies.get_db", return_value=test_db_with_data),
+            patch("api.dependencies.is_db_configured", return_value=True),
         ):
             response = await async_client.get("/plots/filter")
 
@@ -147,8 +156,9 @@ class TestPlotsFilterEndpoints:
 
     async def test_filter_by_library(self, async_client, test_db_with_data):
         """Should filter by library."""
-        with patch("api.dependencies.get_db", return_value=test_db_with_data), patch(
-            "api.dependencies.is_db_configured", return_value=True
+        with (
+            patch("api.dependencies.get_db", return_value=test_db_with_data),
+            patch("api.dependencies.is_db_configured", return_value=True),
         ):
             response = await async_client.get("/plots/filter?lib=matplotlib")
 
@@ -159,8 +169,9 @@ class TestPlotsFilterEndpoints:
 
     async def test_filter_by_spec(self, async_client, test_db_with_data):
         """Should filter by spec."""
-        with patch("api.dependencies.get_db", return_value=test_db_with_data), patch(
-            "api.dependencies.is_db_configured", return_value=True
+        with (
+            patch("api.dependencies.get_db", return_value=test_db_with_data),
+            patch("api.dependencies.is_db_configured", return_value=True),
         ):
             response = await async_client.get("/plots/filter?spec=scatter-basic")
 
@@ -171,8 +182,9 @@ class TestPlotsFilterEndpoints:
 
     async def test_filter_by_plot_type(self, async_client, test_db_with_data):
         """Should filter by plot type tag."""
-        with patch("api.dependencies.get_db", return_value=test_db_with_data), patch(
-            "api.dependencies.is_db_configured", return_value=True
+        with (
+            patch("api.dependencies.get_db", return_value=test_db_with_data),
+            patch("api.dependencies.is_db_configured", return_value=True),
         ):
             response = await async_client.get("/plots/filter?plot=scatter")
 
@@ -182,8 +194,9 @@ class TestPlotsFilterEndpoints:
 
     async def test_filter_combined(self, async_client, test_db_with_data):
         """Should filter by multiple parameters (AND logic)."""
-        with patch("api.dependencies.get_db", return_value=test_db_with_data), patch(
-            "api.dependencies.is_db_configured", return_value=True
+        with (
+            patch("api.dependencies.get_db", return_value=test_db_with_data),
+            patch("api.dependencies.is_db_configured", return_value=True),
         ):
             response = await async_client.get("/plots/filter?lib=matplotlib&plot=scatter")
 
@@ -199,8 +212,9 @@ class TestDownloadEndpoints:
 
     async def test_download_code(self, async_client, test_db_with_data):
         """Should return implementation code as Python file."""
-        with patch("api.dependencies.get_db", return_value=test_db_with_data), patch(
-            "api.dependencies.is_db_configured", return_value=True
+        with (
+            patch("api.dependencies.get_db", return_value=test_db_with_data),
+            patch("api.dependencies.is_db_configured", return_value=True),
         ):
             response = await async_client.get("/download/scatter-basic/matplotlib")
 
@@ -210,8 +224,9 @@ class TestDownloadEndpoints:
 
     async def test_download_spec_not_found(self, async_client, test_db_with_data):
         """Should return 404 for non-existent spec."""
-        with patch("api.dependencies.get_db", return_value=test_db_with_data), patch(
-            "api.dependencies.is_db_configured", return_value=True
+        with (
+            patch("api.dependencies.get_db", return_value=test_db_with_data),
+            patch("api.dependencies.is_db_configured", return_value=True),
         ):
             response = await async_client.get("/download/nonexistent/matplotlib")
 
@@ -219,8 +234,9 @@ class TestDownloadEndpoints:
 
     async def test_download_impl_not_found(self, async_client, test_db_with_data):
         """Should return 404 for non-existent implementation."""
-        with patch("api.dependencies.get_db", return_value=test_db_with_data), patch(
-            "api.dependencies.is_db_configured", return_value=True
+        with (
+            patch("api.dependencies.get_db", return_value=test_db_with_data),
+            patch("api.dependencies.is_db_configured", return_value=True),
         ):
             response = await async_client.get("/download/scatter-basic/plotly")
 
@@ -232,8 +248,9 @@ class TestSeoEndpoints:
 
     async def test_sitemap(self, async_client, test_db_with_data):
         """Should return sitemap XML with spec URLs."""
-        with patch("api.dependencies.get_db", return_value=test_db_with_data), patch(
-            "api.dependencies.is_db_configured", return_value=True
+        with (
+            patch("api.dependencies.get_db", return_value=test_db_with_data),
+            patch("api.dependencies.is_db_configured", return_value=True),
         ):
             response = await async_client.get("/sitemap.xml")
 

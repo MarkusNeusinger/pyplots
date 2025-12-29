@@ -16,15 +16,12 @@ from api.routers.plots import (
     _calculate_or_counts,
     _image_matches_groups,
 )
-<<<<<<< HEAD
 from core.database import get_db
+from tests.conftest import TEST_IMAGE_URL, TEST_THUMB_URL
 
 
 # Path to patch is_db_configured - it's now in api.dependencies
 DB_CONFIG_PATCH = "api.dependencies.is_db_configured"
-=======
-from tests.conftest import TEST_IMAGE_URL, TEST_THUMB_URL
->>>>>>> 4b9b3fc (refactor: implement all low priority code quality improvements)
 
 
 @pytest.fixture
@@ -128,14 +125,8 @@ class TestStatsRouter:
         mock_lib_repo.get_all = AsyncMock(return_value=[mock_lib])
 
         with (
-<<<<<<< HEAD
             patch("api.routers.stats.get_cache", return_value=None),
             patch("api.routers.stats.set_cache"),
-=======
-            patch("api.routers.stats.is_db_configured", return_value=True),
-            patch("api.routers.stats.get_cache", return_value=None),
-            patch("api.routers.stats.set_cache"),
->>>>>>> 4b9b3fc (refactor: implement all low priority code quality improvements)
             patch("api.routers.stats.SpecRepository", return_value=mock_spec_repo),
             patch("api.routers.stats.LibraryRepository", return_value=mock_lib_repo),
         ):
@@ -151,14 +142,7 @@ class TestStatsRouter:
         client, _ = db_client
         cached_response = {"specs": 5, "plots": 10, "libraries": 9}
 
-<<<<<<< HEAD
         with patch("api.routers.stats.get_cache", return_value=cached_response):
-=======
-        with (
-            patch("api.routers.stats.is_db_configured", return_value=True),
-            patch("api.routers.stats.get_cache", return_value=cached_response),
-        ):
->>>>>>> 4b9b3fc (refactor: implement all low priority code quality improvements)
             response = client.get("/stats")
             assert response.status_code == 200
             data = response.json()
@@ -206,14 +190,8 @@ class TestLibrariesRouter:
         mock_lib_repo.get_all = AsyncMock(return_value=[mock_lib])
 
         with (
-<<<<<<< HEAD
             patch("api.routers.libraries.get_cache", return_value=None),
             patch("api.routers.libraries.set_cache"),
-=======
-            patch("api.routers.libraries.is_db_configured", return_value=True),
-            patch("api.routers.libraries.get_cache", return_value=None),
-            patch("api.routers.libraries.set_cache"),
->>>>>>> 4b9b3fc (refactor: implement all low priority code quality improvements)
             patch("api.routers.libraries.LibraryRepository", return_value=mock_lib_repo),
         ):
             response = client.get("/libraries")
@@ -251,15 +229,9 @@ class TestSpecsRouter:
         mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
 
         with (
-<<<<<<< HEAD
-            patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.specs.get_cache", return_value=None),
-            patch("api.routers.specs.set_cache"),
-=======
             patch("api.routers.specs.is_db_configured", return_value=True),
             patch("api.routers.specs.get_cache", return_value=None),
             patch("api.routers.specs.set_cache"),
->>>>>>> 4b9b3fc (refactor: implement all low priority code quality improvements)
             patch("api.routers.specs.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/specs")
@@ -275,15 +247,9 @@ class TestSpecsRouter:
         mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
 
         with (
-<<<<<<< HEAD
-            patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.specs.get_cache", return_value=None),
-            patch("api.routers.specs.set_cache"),
-=======
             patch("api.routers.specs.is_db_configured", return_value=True),
             patch("api.routers.specs.get_cache", return_value=None),
             patch("api.routers.specs.set_cache"),
->>>>>>> 4b9b3fc (refactor: implement all low priority code quality improvements)
             patch("api.routers.specs.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/specs/scatter-basic")
@@ -297,13 +263,8 @@ class TestSpecsRouter:
         mock_spec_repo.get_by_id = AsyncMock(return_value=None)
 
         with (
-<<<<<<< HEAD
-            patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.specs.get_cache", return_value=None),
-=======
             patch("api.routers.specs.is_db_configured", return_value=True),
             patch("api.routers.specs.get_cache", return_value=None),
->>>>>>> 4b9b3fc (refactor: implement all low priority code quality improvements)
             patch("api.routers.specs.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/specs/nonexistent")
@@ -368,14 +329,8 @@ class TestSeoRouter:
         mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
 
         with (
-<<<<<<< HEAD
             patch("api.routers.seo.get_cache", return_value=None),
             patch("api.routers.seo.set_cache"),
-=======
-            patch("api.routers.seo.is_db_configured", return_value=True),
-            patch("api.routers.seo.get_cache", return_value=None),
-            patch("api.routers.seo.set_cache"),
->>>>>>> 4b9b3fc (refactor: implement all low priority code quality improvements)
             patch("api.routers.seo.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/sitemap.xml")
@@ -404,15 +359,9 @@ class TestPlotsRouter:
         mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
 
         with (
-<<<<<<< HEAD
-            patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.plots.get_cache", return_value=None),
-            patch("api.routers.plots.set_cache"),
-=======
             patch("api.routers.plots.is_db_configured", return_value=True),
             patch("api.routers.plots.get_cache", return_value=None),
             patch("api.routers.plots.set_cache"),
->>>>>>> 4b9b3fc (refactor: implement all low priority code quality improvements)
             patch("api.routers.plots.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/plots/filter")
@@ -428,15 +377,9 @@ class TestPlotsRouter:
         mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
 
         with (
-<<<<<<< HEAD
-            patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.plots.get_cache", return_value=None),
-            patch("api.routers.plots.set_cache"),
-=======
             patch("api.routers.plots.is_db_configured", return_value=True),
             patch("api.routers.plots.get_cache", return_value=None),
             patch("api.routers.plots.set_cache"),
->>>>>>> 4b9b3fc (refactor: implement all low priority code quality improvements)
             patch("api.routers.plots.SpecRepository", return_value=mock_spec_repo),
         ):
             response = client.get("/plots/filter?lib=matplotlib")
@@ -454,13 +397,8 @@ class TestPlotsRouter:
         cached_response.orCounts = []
 
         with (
-<<<<<<< HEAD
-            patch(DB_CONFIG_PATCH, return_value=True),
-            patch("api.routers.plots.get_cache", return_value=cached_response),
-=======
             patch("api.routers.plots.is_db_configured", return_value=True),
             patch("api.routers.plots.get_cache", return_value=cached_response),
->>>>>>> 4b9b3fc (refactor: implement all low priority code quality improvements)
         ):
             response = client.get("/plots/filter")
             assert response.status_code == 200

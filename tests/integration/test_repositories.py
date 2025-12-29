@@ -147,11 +147,7 @@ class TestSpecRepository:
         """Should update existing spec via upsert."""
         repo = SpecRepository(test_db_with_data)
 
-        spec_data = {
-            "id": "scatter-basic",
-            "title": "Updated via Upsert",
-            "description": "New description",
-        }
+        spec_data = {"id": "scatter-basic", "title": "Updated via Upsert", "description": "New description"}
 
         spec = await repo.upsert(spec_data)
         assert spec.id == "scatter-basic"
@@ -229,12 +225,7 @@ class TestLibraryRepository:
         """Should create new library via upsert."""
         repo = LibraryRepository(test_session)
 
-        library_data = {
-            "id": "bokeh",
-            "name": "Bokeh",
-            "version": "3.4.0",
-            "documentation_url": "https://bokeh.org",
-        }
+        library_data = {"id": "bokeh", "name": "Bokeh", "version": "3.4.0", "documentation_url": "https://bokeh.org"}
 
         library = await repo.upsert(library_data)
         assert library.id == "bokeh"

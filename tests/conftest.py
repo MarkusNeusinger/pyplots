@@ -12,6 +12,12 @@ from core.database.models import Base
 matplotlib.use("Agg")  # Non-interactive backend for CI
 
 
+# Test constants
+TEST_IMAGE_URL = "https://example.com/plot.png"
+TEST_THUMB_URL = "https://example.com/thumb.png"
+TEST_HTML_URL = "https://example.com/plot.html"
+
+
 @pytest.fixture
 def sample_data():
     """Provide sample data for plot tests."""
@@ -117,8 +123,8 @@ async def test_db_with_data(test_session):
         spec_id="scatter-basic",
         library_id="matplotlib",
         code="import matplotlib.pyplot as plt\n# scatter plot code",
-        preview_url="https://example.com/scatter-matplotlib.png",
-        preview_thumb="https://example.com/scatter-matplotlib-thumb.png",
+        preview_url=TEST_IMAGE_URL.replace("plot", "scatter-matplotlib"),
+        preview_thumb=TEST_THUMB_URL.replace("thumb", "scatter-matplotlib-thumb"),
         quality_score=92.5,
         generated_by="claude",
         python_version="3.13",
@@ -128,8 +134,8 @@ async def test_db_with_data(test_session):
         spec_id="scatter-basic",
         library_id="seaborn",
         code="import seaborn as sns\n# scatter plot code",
-        preview_url="https://example.com/scatter-seaborn.png",
-        preview_thumb="https://example.com/scatter-seaborn-thumb.png",
+        preview_url=TEST_IMAGE_URL.replace("plot", "scatter-seaborn"),
+        preview_thumb=TEST_THUMB_URL.replace("thumb", "scatter-seaborn-thumb"),
         quality_score=95.0,
         generated_by="claude",
         python_version="3.13",
@@ -139,7 +145,7 @@ async def test_db_with_data(test_session):
         spec_id="bar-grouped",
         library_id="matplotlib",
         code="import matplotlib.pyplot as plt\n# bar chart code",
-        preview_url="https://example.com/bar-matplotlib.png",
+        preview_url=TEST_IMAGE_URL.replace("plot", "bar-matplotlib"),
         quality_score=88.0,
         generated_by="claude",
         python_version="3.13",

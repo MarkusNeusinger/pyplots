@@ -2,7 +2,7 @@
 Tests for api/cache.py caching utilities.
 """
 
-from api.cache import cache_key, get_cached, set_cached
+from api.cache import cache_key, get_cache, set_cache
 
 
 class TestCacheKey:
@@ -34,11 +34,11 @@ class TestCacheKey:
 
 
 class TestCacheOperations:
-    """Tests for get_cached and set_cached functions."""
+    """Tests for get_cache and set_cache functions."""
 
     def test_get_nonexistent_returns_none(self) -> None:
         """Getting nonexistent key should return None."""
-        result = get_cached("nonexistent_key_12345")
+        result = get_cache("nonexistent_key_12345")
         assert result is None
 
     def test_set_and_get(self) -> None:
@@ -46,8 +46,8 @@ class TestCacheOperations:
         test_key = "test_key_set_get"
         test_value = {"data": "test_value"}
 
-        set_cached(test_key, test_value)
-        result = get_cached(test_key)
+        set_cache(test_key, test_value)
+        result = get_cache(test_key)
 
         assert result == test_value
 
@@ -55,17 +55,17 @@ class TestCacheOperations:
         """Setting same key twice should overwrite."""
         test_key = "test_key_overwrite"
 
-        set_cached(test_key, "first")
-        set_cached(test_key, "second")
+        set_cache(test_key, "first")
+        set_cache(test_key, "second")
 
-        assert get_cached(test_key) == "second"
+        assert get_cache(test_key) == "second"
 
     def test_cache_complex_types(self) -> None:
         """Cache should handle complex types."""
         test_key = "test_key_complex"
         test_value = {"list": [1, 2, 3], "nested": {"a": 1, "b": 2}, "tuple": (1, 2, 3)}
 
-        set_cached(test_key, test_value)
-        result = get_cached(test_key)
+        set_cache(test_key, test_value)
+        result = get_cache(test_key)
 
         assert result == test_value

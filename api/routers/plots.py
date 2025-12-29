@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.cache import get_cached, set_cached
+from api.cache import get_cache, set_cache
 from api.dependencies import require_db
 from api.schemas import FilteredPlotsResponse
 from core.database import SpecRepository
@@ -316,7 +316,7 @@ async def get_filtered_plots(request: Request, db: AsyncSession = Depends(requir
 
     # Check cache
     cache_key = _build_cache_key(filter_groups)
-    cached = get_cached(cache_key)
+    cached = get_cache(cache_key)
     if cached:
         return cached
 
@@ -345,5 +345,5 @@ async def get_filtered_plots(request: Request, db: AsyncSession = Depends(requir
         globalCounts=global_counts,
         orCounts=or_counts,
     )
-    set_cached(cache_key, result)
+    set_cache(cache_key, result)
     return result

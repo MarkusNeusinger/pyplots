@@ -1,1 +1,1 @@
-# Automation scripts tests
+"""Unit tests for automation scripts."""

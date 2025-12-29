@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.cache import cache_key, get_cached, set_cached
+from api.cache import cache_key, get_cache, set_cache
 from api.dependencies import optional_db, require_db
 from api.exceptions import raise_not_found
 from core.constants import LIBRARIES_METADATA, SUPPORTED_LIBRARIES
@@ -24,7 +24,7 @@ async def get_libraries(db: AsyncSession | None = Depends(optional_db)):
         return {"libraries": LIBRARIES_METADATA}
 
     key = cache_key("libraries")
-    cached = get_cached(key)
+    cached = get_cache(key)
     if cached:
         return cached
 
@@ -43,7 +43,7 @@ async def get_libraries(db: AsyncSession | None = Depends(optional_db)):
             for lib in libraries
         ]
     }
-    set_cached(key, result)
+    set_cache(key, result)
     return result
 
 
@@ -64,7 +64,7 @@ async def get_library_images(library_id: str, db: AsyncSession = Depends(require
         raise_not_found("Library", library_id)
 
     key = cache_key("lib_images", library_id)
-    cached = get_cached(key)
+    cached = get_cache(key)
     if cached:
         return cached
 
@@ -87,5 +87,5 @@ async def get_library_images(library_id: str, db: AsyncSession = Depends(require
                 )
 
     result = {"library": library_id, "images": images}
-    set_cached(key, result)
+    set_cache(key, result)
     return result

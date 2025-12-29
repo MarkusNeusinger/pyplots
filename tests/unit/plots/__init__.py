@@ -1,1 +1,1 @@
-# Plot tests package
+"""Unit tests for plot implementations."""

@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.cache import cache_key, get_cached, set_cached
+from api.cache import cache_key, get_cache, set_cache
 from api.dependencies import require_db
 from api.exceptions import raise_not_found
 from api.schemas import ImplementationResponse, SpecDetailResponse, SpecListItem
@@ -22,7 +22,7 @@ async def get_specs(db: AsyncSession = Depends(require_db)):
     """
 
     key = cache_key("specs_list")
-    cached = get_cached(key)
+    cached = get_cache(key)
     if cached:
         return cached
 
@@ -37,7 +37,7 @@ async def get_specs(db: AsyncSession = Depends(require_db)):
         for spec in specs
         if spec.impls  # Filter: only specs with implementations
     ]
-    set_cached(key, result)
+    set_cache(key, result)
     return result
 
 
@@ -54,7 +54,7 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(require_db)):
     """
 
     key = cache_key("spec", spec_id)
-    cached = get_cached(key)
+    cached = get_cache(key)
     if cached:
         return cached
 
@@ -97,7 +97,7 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(require_db)):
         suggested=spec.suggested,
         implementations=impls,
     )
-    set_cached(key, result)
+    set_cache(key, result)
     return result
 
 
@@ -110,7 +110,7 @@ async def get_spec_images(spec_id: str, db: AsyncSession = Depends(require_db)):
     """
 
     key = cache_key("spec_images", spec_id)
-    cached = get_cached(key)
+    cached = get_cache(key)
     if cached:
         return cached
 
@@ -130,5 +130,5 @@ async def get_spec_images(spec_id: str, db: AsyncSession = Depends(require_db)):
     ]
 
     result = {"spec_id": spec_id, "images": images}
-    set_cached(key, result)
+    set_cache(key, result)
     return result

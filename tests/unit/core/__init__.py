@@ -1,1 +1,1 @@
-"""Tests for core module."""
+"""Unit tests for core business logic."""

@@ -8,9 +8,11 @@ from typing import Any
 
 from cachetools import TTLCache
 
+from core.config import settings
 
-# Global cache instance (1000 entries, 10 min TTL)
-_cache: TTLCache = TTLCache(maxsize=1000, ttl=600)
+
+# Global cache instance (configured via settings)
+_cache: TTLCache = TTLCache(maxsize=settings.cache_maxsize, ttl=settings.cache_ttl)
 
 
 def cache_key(*parts: str) -> str:
@@ -30,7 +32,7 @@ def cache_key(*parts: str) -> str:
     return ":".join(str(p) for p in parts if p)
 
 
-def get_cached(key: str) -> Any | None:
+def get_cache(key: str) -> Any | None:
     """
     Get value from cache.
 
@@ -43,7 +45,7 @@ def get_cached(key: str) -> Any | None:
     return _cache.get(key)
 
 
-def set_cached(key: str, value: Any) -> None:
+def set_cache(key: str, value: Any) -> None:
     """
     Set value in cache.
 

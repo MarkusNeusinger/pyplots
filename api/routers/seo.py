@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.cache import cache_key, get_cached, set_cached
+from api.cache import cache_key, get_cache, set_cache
 from api.dependencies import optional_db
 from core.constants import LIBRARIES_METADATA
 from core.database import SpecRepository
@@ -23,7 +23,7 @@ async def get_sitemap(db: AsyncSession | None = Depends(optional_db)):
     Includes all specs with implementations and all libraries.
     """
     key = cache_key("sitemap_xml")
-    cached = get_cached(key)
+    cached = get_cache(key)
     if cached:
         return Response(content=cached, media_type="application/xml")
 
@@ -51,5 +51,5 @@ async def get_sitemap(db: AsyncSession | None = Depends(optional_db)):
     xml_lines.append("</urlset>")
     xml = "\n".join(xml_lines)
 
-    set_cached(key, xml)
+    set_cache(key, xml)
     return Response(content=xml, media_type="application/xml")

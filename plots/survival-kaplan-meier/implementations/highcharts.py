@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 survival-kaplan-meier: Kaplan-Meier Survival Plot
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2025-12-29
+Library: highcharts unknown | Python 3.13.11
+Quality: 88/100 | Created: 2025-12-29
 """
 
 import tempfile

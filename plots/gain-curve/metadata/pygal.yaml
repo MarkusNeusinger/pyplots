@@ -1,0 +1,27 @@
+library: pygal
+specification_id: gain-curve
+created: '2025-12-29T22:47:43Z'
+updated: '2025-12-29T22:55:57Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584330787
+issue: 0
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/gain-curve/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gain-curve/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/gain-curve/pygal/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Correct implementation of cumulative gains chart with model curve and random baseline
+  - Excellent color contrast (blue vs gray) for colorblind accessibility
+  - Good custom styling with appropriate font sizes for large canvas (4800×2700)
+  - Clean KISS code structure following linear flow pattern
+  - Proper axis labels with percentage units
+  - Correct title format following spec-id · library · pyplots.ai convention
+  - Appropriate data sampling (every 2%) for smooth pygal rendering
+  weaknesses:
+  - Legend placement in top-left corner is outside the main plot area and appears
+    isolated
+  - Could add a Perfect Model reference line (vertical to 100% at positive rate, then
+    horizontal) as mentioned in spec notes

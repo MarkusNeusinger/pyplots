@@ -93,13 +93,15 @@ def clear_cache_by_pattern(pattern: str) -> int:
 
 def clear_spec_cache(spec_id: str) -> int:
     """
-    Clear all cache entries for a specific spec.
+    Clear all cache entries related to a specific spec.
+
+    Clears spec detail, spec images, spec list, filters, and stats caches.
 
     Args:
         spec_id: The specification ID
 
     Returns:
-        Number of cache entries cleared
+        Total count across all cleared patterns (may count overlapping keys multiple times)
 
     Example:
         >>> clear_spec_cache("scatter-basic")

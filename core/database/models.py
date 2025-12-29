@@ -37,7 +37,9 @@ class Spec(Base):
     updated: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)  # When spec was last modified
     issue: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # GitHub issue number
     suggested: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # GitHub username
-    tags: Mapped[Optional[dict]] = mapped_column(UniversalJSON, nullable=True)  # {plot_type, data_type, domain, features}
+    tags: Mapped[Optional[dict]] = mapped_column(
+        UniversalJSON, nullable=True
+    )  # {plot_type, data_type, domain, features}
 
     # System
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())

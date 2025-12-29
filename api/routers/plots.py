@@ -235,7 +235,7 @@ def _collect_all_images(all_specs: list) -> list[dict]:
         all_specs: List of Spec objects
 
     Returns:
-        List of image dicts with spec_id, library, urls, and code
+        List of image dicts with spec_id, library, quality, url, thumb, and html
     """
     all_images: list[dict] = []
     for spec_obj in all_specs:

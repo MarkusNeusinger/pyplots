@@ -73,9 +73,7 @@ class SpecRepository:
         for tag in tags:
             filters.append(cast(Spec.tags, String).contains(f'"{tag}"'))
 
-        result = await self.session.execute(
-            select(Spec).where(or_(*filters)).options(selectinload(Spec.impls))
-        )
+        result = await self.session.execute(select(Spec).where(or_(*filters)).options(selectinload(Spec.impls)))
         return list(result.scalars().all())
 
     async def create(self, spec_data: dict) -> Spec:

@@ -85,20 +85,20 @@ class TestSettingsProperties:
             assert settings.is_development is False
             assert settings.is_test is True
 
-    def test_has_database_with_database_url(self) -> None:
+    def test_is_database_configured_with_database_url(self) -> None:
         """Should return True when DATABASE_URL is set."""
         test_url = "postgresql+asyncpg://localhost/db"
         with patch.dict(os.environ, {"DATABASE_URL": test_url}, clear=True):
             settings = Settings()
-            assert settings.has_database is True
+            assert settings.is_database_configured is True
 
-    def test_has_database_with_instance_name(self) -> None:
+    def test_is_database_configured_with_instance_name(self) -> None:
         """Should return True when INSTANCE_CONNECTION_NAME is set."""
         with patch.dict(os.environ, {"INSTANCE_CONNECTION_NAME": "project:region:instance"}, clear=True):
             settings = Settings()
-            assert settings.has_database is True
+            assert settings.is_database_configured is True
 
-    def test_has_database_with_both(self) -> None:
+    def test_is_database_configured_with_both(self) -> None:
         """Should return True when both database configs are set."""
         with patch.dict(
             os.environ,
@@ -109,13 +109,13 @@ class TestSettingsProperties:
             clear=True,
         ):
             settings = Settings()
-            assert settings.has_database is True
+            assert settings.is_database_configured is True
 
-    def test_has_database_with_neither(self) -> None:
+    def test_is_database_configured_with_neither(self) -> None:
         """Should return False when no database config is set."""
         with patch.dict(os.environ, {}, clear=True):
             settings = Settings()
-            assert settings.has_database is False
+            assert settings.is_database_configured is False
 
     def test_has_google_cloud_with_credentials(self) -> None:
         """Should return True when google cloud credentials are set."""

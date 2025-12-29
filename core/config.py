@@ -127,8 +127,13 @@ class Settings(BaseSettings):
         return self.environment.lower() == "test"
 
     @property
-    def has_database(self) -> bool:
-        """Check if database is configured."""
+    def is_database_configured(self) -> bool:
+        """
+        Check if database configuration is present.
+
+        Note: This only verifies config presence, not connectivity or validity.
+        Use core.database.is_db_configured() for runtime checks.
+        """
         return bool(self.database_url or self.instance_connection_name)
 
     @property

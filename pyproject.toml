@@ -160,6 +160,11 @@ addopts = [
     "--strict-markers",
     "-ra",
 ]
+markers = [
+    "unit: Unit tests with mocks (fast)",
+    "integration: Integration tests with real database (slower)",
+    "e2e: End-to-end tests covering full API stack (slowest)",
+]
 
 # ===== Build System =====
 

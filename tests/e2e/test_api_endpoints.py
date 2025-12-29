@@ -1,7 +1,8 @@
 """
-Integration tests for API endpoints.
+End-to-end tests for API endpoints.
 
 Tests full stack with real database and FastAPI TestClient.
+Covers complete request-response cycle through all layers.
 """
 
 from unittest.mock import patch
@@ -12,6 +13,9 @@ from httpx import AsyncClient
 from api.main import app
 
 
+pytestmark = pytest.mark.e2e
+
+
 @pytest.fixture
 async def async_client():
     """Create async test client for FastAPI."""
@@ -19,6 +23,7 @@ async def async_client():
         yield client
 
 
+@pytest.mark.e2e
 class TestSpecsEndpoints:
     """Integration tests for /specs endpoints."""
 

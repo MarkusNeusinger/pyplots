@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 survival-kaplan-meier: Kaplan-Meier Survival Plot
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 82/100 | Created: 2025-12-29
+Quality: 78/100 | Created: 2025-12-29
 """
 
 import numpy as np

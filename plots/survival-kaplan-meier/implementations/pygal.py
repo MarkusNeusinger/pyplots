@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 survival-kaplan-meier: Kaplan-Meier Survival Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-29
@@ -30,7 +30,7 @@ survival_times_experimental = np.concatenate(
 censored_experimental = np.random.binomial(1, 0.30, size=n_per_group)
 event_experimental = 1 - censored_experimental
 
-# Calculate Kaplan-Meier for Standard treatment (inline, no functions)
+# Calculate Kaplan-Meier for Standard treatment
 order_std = np.argsort(survival_times_standard)
 times_std_sorted = survival_times_standard[order_std]
 events_std_sorted = event_standard[order_std]
@@ -58,7 +58,7 @@ for t in unique_times_std:
 time_std = np.array(time_points_std)
 surv_std = np.array(survival_std)
 
-# Calculate Kaplan-Meier for Experimental treatment (inline, no functions)
+# Calculate Kaplan-Meier for Experimental treatment
 order_exp = np.argsort(survival_times_experimental)
 times_exp_sorted = survival_times_experimental[order_exp]
 events_exp_sorted = event_experimental[order_exp]
@@ -86,25 +86,25 @@ for t in unique_times_exp:
 time_exp = np.array(time_points_exp)
 surv_exp = np.array(survival_exp)
 
-# Create step function data for pygal XY chart (inline)
+# Create step function data for pygal XY chart
 step_std = []
 for i in range(len(time_std)):
     if i > 0:
-        step_std.append((time_std[i], surv_std[i - 1]))
-    step_std.append((time_std[i], surv_std[i]))
+        step_std.append((float(time_std[i]), float(surv_std[i - 1])))
+    step_std.append((float(time_std[i]), float(surv_std[i])))
 
 step_exp = []
 for i in range(len(time_exp)):
     if i > 0:
-        step_exp.append((time_exp[i], surv_exp[i - 1]))
-    step_exp.append((time_exp[i], surv_exp[i]))
+        step_exp.append((float(time_exp[i]), float(surv_exp[i - 1])))
+    step_exp.append((float(time_exp[i]), float(surv_exp[i])))
 
 # Calculate 95% confidence intervals using Greenwood's formula
 # Standard treatment CI
 var_std = []
 n_risk_std = len(times_std_sorted)
 cumvar_std = 0.0
-for i, _t in enumerate(time_std):
+for i in range(len(time_std)):
     if i == 0:
         var_std.append(0.0)
     else:
@@ -123,7 +123,7 @@ ci_lower_std = np.maximum(surv_std - 1.96 * se_std, 0.0)
 var_exp = []
 n_risk_exp = len(times_exp_sorted)
 cumvar_exp = 0.0
-for i, _t in enumerate(time_exp):
+for i in range(len(time_exp)):
     if i == 0:
         var_exp.append(0.0)
     else:
@@ -138,60 +138,59 @@ se_exp = surv_exp * np.sqrt(var_exp)
 ci_upper_exp = np.minimum(surv_exp + 1.96 * se_exp, 1.0)
 ci_lower_exp = np.maximum(surv_exp - 1.96 * se_exp, 0.0)
 
-# Create confidence interval band data (as filled area between upper and lower)
-# For pygal, we create upper and lower lines as step functions
-ci_std_upper = []
-ci_std_lower = []
+# Create CI step function data - combined for cleaner visual
+ci_std_upper_step = []
+ci_std_lower_step = []
 for i in range(len(time_std)):
     if i > 0:
-        ci_std_upper.append((time_std[i], ci_upper_std[i - 1]))
-        ci_std_lower.append((time_std[i], ci_lower_std[i - 1]))
-    ci_std_upper.append((time_std[i], ci_upper_std[i]))
-    ci_std_lower.append((time_std[i], ci_lower_std[i]))
+        ci_std_upper_step.append((float(time_std[i]), float(ci_upper_std[i - 1])))
+        ci_std_lower_step.append((float(time_std[i]), float(ci_lower_std[i - 1])))
+    ci_std_upper_step.append((float(time_std[i]), float(ci_upper_std[i])))
+    ci_std_lower_step.append((float(time_std[i]), float(ci_lower_std[i])))
 
-ci_exp_upper = []
-ci_exp_lower = []
+ci_exp_upper_step = []
+ci_exp_lower_step = []
 for i in range(len(time_exp)):
     if i > 0:
-        ci_exp_upper.append((time_exp[i], ci_upper_exp[i - 1]))
-        ci_exp_lower.append((time_exp[i], ci_lower_exp[i - 1]))
-    ci_exp_upper.append((time_exp[i], ci_upper_exp[i]))
-    ci_exp_lower.append((time_exp[i], ci_lower_exp[i]))
+        ci_exp_upper_step.append((float(time_exp[i]), float(ci_upper_exp[i - 1])))
+        ci_exp_lower_step.append((float(time_exp[i]), float(ci_lower_exp[i - 1])))
+    ci_exp_upper_step.append((float(time_exp[i]), float(ci_upper_exp[i])))
+    ci_exp_lower_step.append((float(time_exp[i]), float(ci_lower_exp[i])))
 
-# Identify censored observation points with their survival values
-# For each censored time, find the survival probability at that time
+# Get censored observation points with survival values (as simple tuples for pygal XY)
 censored_times_std = times_std_sorted[censored_std_sorted == 1]
-censored_surv_std = []
+censored_markers_std = []
 for ct in censored_times_std:
     idx = np.searchsorted(time_std, ct, side="right") - 1
     idx = max(0, min(idx, len(surv_std) - 1))
-    censored_surv_std.append((ct, surv_std[idx]))
+    censored_markers_std.append((float(ct), float(surv_std[idx])))
 
 censored_times_exp = times_exp_sorted[censored_exp_sorted == 1]
-censored_surv_exp = []
+censored_markers_exp = []
 for ct in censored_times_exp:
     idx = np.searchsorted(time_exp, ct, side="right") - 1
     idx = max(0, min(idx, len(surv_exp) - 1))
-    censored_surv_exp.append((ct, surv_exp[idx]))
+    censored_markers_exp.append((float(ct), float(surv_exp[idx])))
 
 # Custom style for pyplots (4800x2700 canvas)
+# Colorblind-safe blue/yellow palette
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998", "#FFD43B", "#89B6D9", "#FFE99A"),
+    colors=("#306998", "#FFD43B", "#7BA3C9", "#FFE680", "#306998", "#FFD43B"),
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
-    legend_font_size=42,
+    legend_font_size=40,
     value_font_size=36,
-    stroke_width=6,
+    stroke_width=5,
     guide_stroke_dasharray="5,5",
     major_guide_stroke_dasharray="5,5",
     font_family="sans-serif",
-    opacity=0.9,
+    opacity=1.0,
     opacity_hover=1.0,
 )
 
@@ -211,32 +210,26 @@ chart = pygal.XY(
     x_label_rotation=0,
     truncate_legend=-1,
     legend_at_bottom=True,
-    legend_at_bottom_columns=4,
+    legend_at_bottom_columns=3,
     show_legend=True,
     range=(0, 1.05),
     include_x_axis=True,
-    margin=50,
-    spacing=30,
+    margin=60,
+    spacing=40,
+    explicit_size=True,
 )
 
-# Add confidence interval boundaries (dashed, lighter colors)
-chart.add("Standard 95% CI Upper", ci_std_upper, stroke_style={"width": 2, "dasharray": "8,4"}, show_dots=False)
-chart.add("Experimental 95% CI Upper", ci_exp_upper, stroke_style={"width": 2, "dasharray": "8,4"}, show_dots=False)
+# Add main survival curves first (these are the primary data)
+chart.add("Standard Treatment", step_std, stroke_style={"width": 8})
+chart.add("Experimental Treatment", step_exp, stroke_style={"width": 8})
 
-# Add main survival curves (solid, thicker lines)
-chart.add("Standard Treatment", step_std, stroke_style={"width": 6}, show_dots=False)
-chart.add("Experimental Treatment", step_exp, stroke_style={"width": 6}, show_dots=False)
+# Add 95% CI bounds as thinner dashed lines (same colors, lighter)
+chart.add("Standard 95% CI", ci_std_upper_step + ci_std_lower_step, stroke_style={"width": 3, "dasharray": "10,6"})
+chart.add("Experimental 95% CI", ci_exp_upper_step + ci_exp_lower_step, stroke_style={"width": 3, "dasharray": "10,6"})
 
-# Add censored observations as scatter points with tick marks
-# For pygal, we add censored marks as a separate series with dots
-# Since we can't overlay easily, we add them to the main chart
-# Using the dot feature on a separate no-stroke series
-chart.add("Censored (Standard)", censored_surv_std, stroke=False, show_dots=True, dots_size=10)
-chart.add("Censored (Experimental)", censored_surv_exp, stroke=False, show_dots=True, dots_size=10)
-
-# Add CI lower bounds
-chart.add("Standard 95% CI Lower", ci_std_lower, stroke_style={"width": 2, "dasharray": "8,4"}, show_dots=False)
-chart.add("Experimental 95% CI Lower", ci_exp_lower, stroke_style={"width": 2, "dasharray": "8,4"}, show_dots=False)
+# Add censored observations as separate scatter series with visible markers
+chart.add("Censored (Std)", censored_markers_std, stroke=False, show_dots=True, dots_size=15)
+chart.add("Censored (Exp)", censored_markers_exp, stroke=False, show_dots=True, dots_size=15)
 
 # Save outputs
 chart.render_to_file("plot.html")

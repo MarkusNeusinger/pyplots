@@ -1,0 +1,29 @@
+library: matplotlib
+specification_id: venn-basic
+created: '2025-12-29T22:49:22Z'
+updated: '2025-12-29T22:58:19Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584328597
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/venn-basic/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/venn-basic/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent choice of square figure format (12x12) which is ideal for circular Venn
+    diagrams
+  - Clear and intuitive color scheme with Python blue (#306998), JavaScript yellow
+    (#FFD43B), and SQL cyan (#4ECDC4)
+  - Well-organized code with clear variable names explaining each region
+  - Appropriate alpha transparency (0.6) that shows overlaps clearly
+  - Good use of matplotlib_venn library venn3 function with proper 7-tuple subset
+    format
+  - Realistic and relatable data context (developer survey about programming languages)
+  weaknesses:
+  - Figure size uses 12x12 instead of the standard 3600x3600 or 4800x2700 canvas dimensions
+  - Could add a brief subtitle or annotation explaining the data context
+  - The yellow JavaScript circle could benefit from a slightly darker shade for better
+    contrast against white background

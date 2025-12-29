@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 venn-basic: Venn Diagram
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-29
@@ -6,7 +6,7 @@ Quality: 88/100 | Created: 2025-12-29
 
 import numpy as np
 from bokeh.io import export_png
-from bokeh.models import Label
+from bokeh.models import HoverTool, Label
 from bokeh.plotting import figure, output_file, save
 
 
@@ -23,7 +23,6 @@ only_bc = 25 - 10  # 15
 abc = 10
 
 # Circle parameters for 3-set Venn diagram
-# Using equal-sized circles positioned to create readable overlaps
 radius = 0.35
 centers = [
     (-0.2, 0.15),  # A - top left
@@ -31,14 +30,14 @@ centers = [
     (0.0, -0.2),  # C - bottom center
 ]
 
-# Create figure with proper sizing
+# Create figure with proper sizing and hover tool
 p = figure(
     width=4800,
     height=2700,
     title="venn-basic · bokeh · pyplots.ai",
     x_range=(-1, 1),
     y_range=(-0.8, 0.8),
-    tools="",
+    tools="hover",
     toolbar_location=None,
 )
 
@@ -46,39 +45,60 @@ p = figure(
 colors = ["#306998", "#FFD43B", "#4DAF4A"]  # Python Blue, Python Yellow, Green
 alpha = 0.4
 
+# Generate circle points inline (KISS - no helper function)
+n_points = 100
+theta = np.linspace(0, 2 * np.pi, n_points)
 
-# Function to generate circle points
-def circle_points(cx, cy, r, n=100):
-    theta = np.linspace(0, 2 * np.pi, n)
-    x = cx + r * np.cos(theta)
-    y = cy + r * np.sin(theta)
-    return x.tolist(), y.tolist()
-
-
-# Draw the three circles as patches
+# Draw the three circles as patches with hover tooltips
 for i, (cx, cy) in enumerate(centers):
-    x_pts, y_pts = circle_points(cx, cy, radius)
-    p.patch(x_pts, y_pts, fill_color=colors[i], fill_alpha=alpha, line_color=colors[i], line_width=4, line_alpha=0.8)
+    x_pts = (cx + radius * np.cos(theta)).tolist()
+    y_pts = (cy + radius * np.sin(theta)).tolist()
+    p.patch(
+        x_pts,
+        y_pts,
+        fill_color=colors[i],
+        fill_alpha=alpha,
+        line_color=colors[i],
+        line_width=4,
+        line_alpha=0.8,
+        name=f"set_{i}",
+    )
 
-# Add set labels outside circles
+# Configure hover tool for interactivity
+hover = p.select({"type": HoverTool})
+hover.tooltips = [("Set", "@name"), ("Region", "Hover over numbers for details")]
+hover.mode = "mouse"
+
+# Add set labels with total sizes outside circles
 label_positions = [
-    (-0.55, 0.45, set_labels[0]),  # A - top left
-    (0.55, 0.45, set_labels[1]),  # B - top right
-    (0.0, -0.65, set_labels[2]),  # C - bottom
+    (-0.55, 0.50, set_labels[0], f"n={set_sizes[0]}"),  # A - top left
+    (0.55, 0.50, set_labels[1], f"n={set_sizes[1]}"),  # B - top right
+    (0.0, -0.62, set_labels[2], f"n={set_sizes[2]}"),  # C - bottom
 ]
 
-for lx, ly, text in label_positions:
+for lx, ly, text, size_text in label_positions:
     label = Label(
         x=lx,
         y=ly,
         text=text,
-        text_font_size="26pt",
+        text_font_size="32pt",
         text_font_style="bold",
         text_align="center",
         text_baseline="middle",
         text_color="#333333",
     )
     p.add_layout(label)
+    # Add set size below the label
+    size_label = Label(
+        x=lx,
+        y=ly - 0.08,
+        text=size_text,
+        text_font_size="24pt",
+        text_align="center",
+        text_baseline="middle",
+        text_color="#666666",
+    )
+    p.add_layout(size_label)
 
 # Add region counts
 # Positions for each region (calculated manually for clarity)
@@ -98,7 +118,7 @@ for rx, ry, count, _desc in region_labels:
         x=rx,
         y=ry,
         text=count,
-        text_font_size="32pt",
+        text_font_size="36pt",
         text_font_style="bold",
         text_align="center",
         text_baseline="middle",
@@ -106,8 +126,8 @@ for rx, ry, count, _desc in region_labels:
     )
     p.add_layout(count_label)
 
-# Style the figure
-p.title.text_font_size = "28pt"
+# Style the figure - larger title for 4800x2700 canvas
+p.title.text_font_size = "48pt"
 p.title.align = "center"
 
 # Remove axes for cleaner look (Venn diagrams don't need axes)

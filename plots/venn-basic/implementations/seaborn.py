@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 venn-basic: Venn Diagram
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 75/100 | Created: 2025-12-29
@@ -26,14 +26,15 @@ ac_only = intersections["AC"] - intersections["ABC"]
 bc_only = intersections["BC"] - intersections["ABC"]
 abc = intersections["ABC"]
 
-# Set seaborn style
-sns.set_theme(style="white")
+# Set seaborn style with custom context
+sns.set_theme(style="white", context="talk", font_scale=1.2)
 
 # Create figure (square for symmetric diagram)
 fig, ax = plt.subplots(figsize=(12, 12))
 
-# Get colors from seaborn palette
-colors = sns.color_palette("Set2", n_colors=3)
+# Get colors from seaborn palette - using colorblind-safe Set2
+palette = sns.color_palette("Set2", n_colors=3)
+colors = list(palette)
 
 # Circle positions (equilateral triangle arrangement)
 r = 1.5  # Circle radius
@@ -47,9 +48,11 @@ centers = [
 ]
 
 # Draw circles with transparency
-for center, color in zip(centers, colors, strict=True):
-    circle = mpatches.Circle(center, r, alpha=0.4, facecolor=color, edgecolor=color, linewidth=3)
+circles = []
+for center, color, label in zip(centers, colors, set_labels, strict=True):
+    circle = mpatches.Circle(center, r, alpha=0.4, facecolor=color, edgecolor=color, linewidth=3, label=label)
     ax.add_patch(circle)
+    circles.append(circle)
 
 # Position labels outside circles
 label_offset = 2.3
@@ -101,12 +104,43 @@ for region, pos in region_positions.items():
 
 # Set axis properties
 ax.set_xlim(-3.5, 3.5)
-ax.set_ylim(-3, 3.5)
+ax.set_ylim(-3.5, 3.5)
 ax.set_aspect("equal")
 ax.axis("off")
 
 # Title
 ax.set_title("venn-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
+
+# Add legend with seaborn-style patches
+legend_patches = [
+    mpatches.Patch(facecolor=c, edgecolor=c, alpha=0.6, label=lbl) for c, lbl in zip(colors, set_labels, strict=True)
+]
+ax.legend(
+    handles=legend_patches,
+    loc="lower center",
+    bbox_to_anchor=(0.5, -0.02),
+    ncol=3,
+    fontsize=18,
+    frameon=True,
+    fancybox=True,
+    shadow=False,
+    framealpha=0.9,
+    edgecolor="#cccccc",
+    title="Programming Languages",
+    title_fontsize=16,
+)
+
+# Add subtitle annotation explaining data context
+fig.text(
+    0.5,
+    0.02,
+    "Developer Survey 2024: Language preferences among 150 respondents",
+    ha="center",
+    va="bottom",
+    fontsize=14,
+    style="italic",
+    color="#666666",
+)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

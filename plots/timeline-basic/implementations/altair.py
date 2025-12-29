@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 timeline-basic: Event Timeline
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-29
@@ -63,8 +63,8 @@ data["y_offset"] = [1.5 if i % 2 == 0 else -1.5 for i in range(len(data))]
 data["y_zero"] = 0
 data["y_label"] = [2.3 if i % 2 == 0 else -2.3 for i in range(len(data))]
 
-# Color palette for categories (Python Blue and complementary colors)
-category_colors = {"Planning": "#306998", "Development": "#FFD43B", "Testing": "#4ECDC4", "Release": "#E8575A"}
+# Color palette for categories (Python Blue and complementary colors with good contrast)
+category_colors = {"Planning": "#306998", "Development": "#E5A000", "Testing": "#4ECDC4", "Release": "#E8575A"}
 
 # Shared y scale
 y_scale = alt.Scale(domain=[-3.5, 3.5])
@@ -94,18 +94,7 @@ points = (
             axis=alt.Axis(title="Date", format="%b %Y", labelFontSize=18, titleFontSize=22, labelAngle=-45, grid=False),
         ),
         y=alt.Y("y_offset:Q", scale=y_scale),
-        color=alt.Color(
-            "category:N",
-            scale=color_scale,
-            legend=alt.Legend(
-                title="Phase",
-                titleFontSize=20,
-                labelFontSize=18,
-                orient="top-right",
-                direction="vertical",
-                symbolSize=400,
-            ),
-        ),
+        color=alt.Color("category:N", scale=color_scale, legend=None),
         tooltip=[
             alt.Tooltip("date:T", title="Date", format="%B %d, %Y"),
             alt.Tooltip("event:N", title="Event"),
@@ -124,9 +113,39 @@ labels = (
     .encode(x="date:T", y=alt.Y("y_label:Q", scale=y_scale), text="event:N", color=alt.value("#333333"))
 )
 
+# Create inline legend using text and point marks
+legend_data = pd.DataFrame(
+    {
+        "category": list(category_colors.keys()),
+        "x_pos": [
+            pd.Timestamp("2024-02-01"),
+            pd.Timestamp("2024-05-01"),
+            pd.Timestamp("2024-08-01"),
+            pd.Timestamp("2024-11-01"),
+        ],
+        "y_pos": [3.2, 3.2, 3.2, 3.2],
+    }
+)
+
+legend_points = (
+    alt.Chart(legend_data)
+    .mark_circle(size=300, stroke="white", strokeWidth=2)
+    .encode(
+        x=alt.X("x_pos:T"),
+        y=alt.Y("y_pos:Q", scale=y_scale),
+        color=alt.Color("category:N", scale=color_scale, legend=None),
+    )
+)
+
+legend_labels = (
+    alt.Chart(legend_data)
+    .mark_text(align="left", fontSize=16, fontWeight="bold", dx=15)
+    .encode(x=alt.X("x_pos:T"), y=alt.Y("y_pos:Q", scale=y_scale), text="category:N", color=alt.value("#333333"))
+)
+
 # Combine all layers
 chart = (
-    (timeline_line + connectors + points + labels)
+    alt.layer(timeline_line, connectors, points, labels, legend_points, legend_labels)
     .properties(
         width=1600, height=900, title=alt.Title("timeline-basic · altair · pyplots.ai", fontSize=28, anchor="middle")
     )

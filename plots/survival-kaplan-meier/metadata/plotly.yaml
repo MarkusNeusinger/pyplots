@@ -1,0 +1,27 @@
+library: plotly
+specification_id: survival-kaplan-meier
+created: '2025-12-29T22:50:11Z'
+updated: '2025-12-29T22:58:58Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584327654
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent implementation of the Kaplan-Meier algorithm with Greenwood formula
+    for confidence intervals
+  - Professional step-function visualization with properly constructed step coordinates
+  - Clear visual distinction between treatment groups with accessible color scheme
+  - Median survival annotation provides valuable clinical context
+  - Interactive hover tooltips enhance data exploration
+  - Produces both PNG and HTML output leveraging Plotly interactivity
+  weaknesses:
+  - Legend could be cleaner by combining censored markers description or using a single
+    legend entry style
+  - Code complexity is higher than typical KISS style due to manual KM calculation
+    (though necessary without lifelines library)

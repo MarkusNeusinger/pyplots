@@ -1,0 +1,26 @@
+library: plotly
+specification_id: venn-basic
+created: '2025-12-29T22:50:20Z'
+updated: '2025-12-29T22:55:57Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584328990
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/venn-basic/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/venn-basic/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/venn-basic/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Plotly graph_objects for custom shape drawing with go.Scatter
+    fill=toself
+  - Clear visual hierarchy with distinct colors (blue, yellow, green) at appropriate
+    transparency
+  - All 7 Venn regions labeled with counts and descriptive text for exclusive regions
+  - Proper mathematical calculation of exclusive region sizes
+  - Outputs both static PNG and interactive HTML leveraging Plotly interactivity capability
+  - Clean, well-organized code with clear comments explaining the data scenario
+  weaknesses:
+  - Square format (1200x1200 scaled to 3600x3600) deviates from recommended 1600x900
+    landscape in library rules (minor, justified for this plot type)

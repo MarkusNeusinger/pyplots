@@ -1,0 +1,30 @@
+# Specification-level metadata for parallel-categories-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: parallel-categories-basic
+title: Basic Parallel Categories Plot
+
+# Specification tracking
+created: 2025-12-29T23:55:26Z
+updated: null
+issue: 2501
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - parallel-categories
+    - flow
+    - categorical
+  data_type:
+    - categorical
+    - frequency
+  domain:
+    - general
+    - business
+    - statistics
+  features:
+    - basic
+    - proportional
+    - multi-dimensional

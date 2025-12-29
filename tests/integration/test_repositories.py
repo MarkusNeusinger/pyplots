@@ -13,7 +13,6 @@ from core.database.repositories import ImplRepository, LibraryRepository, SpecRe
 pytestmark = pytest.mark.integration
 
 
-@pytest.mark.integration
 class TestSpecRepository:
     """Integration tests for SpecRepository."""
 
@@ -154,7 +153,6 @@ class TestSpecRepository:
         assert spec.title == "Updated via Upsert"
 
 
-@pytest.mark.integration
 class TestLibraryRepository:
     """Integration tests for LibraryRepository."""
 
@@ -242,7 +240,6 @@ class TestLibraryRepository:
         assert library.version == "3.12.0"
 
 
-@pytest.mark.integration
 class TestImplRepository:
     """Integration tests for ImplRepository."""
 

@@ -247,30 +247,13 @@ def _collect_all_images(all_specs: list) -> list[dict]:
                     {
                         "spec_id": spec_obj.id,
                         "library": impl.library_id,
+                        "quality": impl.quality_score,
                         "url": impl.preview_url,
                         "thumb": impl.preview_thumb,
                         "html": impl.preview_html,
-                        "code": impl.code,
                     }
                 )
     return all_images
-
-
-def _build_spec_id_to_tags(all_specs: list) -> dict:
-    """
-    Build mapping of spec_id to tags.
-
-    Args:
-        all_specs: List of Spec objects
-
-    Returns:
-        Dict mapping spec_id to tags dict
-    """
-    spec_id_to_tags: dict = {}
-    for spec_obj in all_specs:
-        if spec_obj.impls:
-            spec_id_to_tags[spec_obj.id] = spec_obj.tags or {}
-    return spec_id_to_tags
 
 
 def _filter_images(all_images: list[dict], filter_groups: list[dict], spec_lookup: dict) -> list[dict]:
@@ -327,7 +310,7 @@ async def get_filtered_plots(request: Request, db: AsyncSession = Depends(requir
     # Build data structures
     spec_lookup = _build_spec_lookup(all_specs)
     all_images = _collect_all_images(all_specs)
-    spec_id_to_tags = _build_spec_id_to_tags(all_specs)
+    spec_id_to_tags = {spec_id: spec_data["tags"] for spec_id, spec_data in spec_lookup.items()}
 
     # Filter images
     filtered_images = _filter_images(all_images, filter_groups, spec_lookup)

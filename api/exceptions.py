@@ -97,12 +97,7 @@ async def generic_exception_handler(request: Request, exc: Exception) -> JSONRes
     """Handle unexpected exceptions with 500 status."""
     return JSONResponse(
         status_code=500,
-        content={
-            "status": 500,
-            "message": "Internal server error",
-            "detail": str(exc) if isinstance(exc, Exception) else "An unexpected error occurred",
-            "path": request.url.path,
-        },
+        content={"status": 500, "message": "Internal server error", "detail": str(exc), "path": request.url.path},
     )
 
 

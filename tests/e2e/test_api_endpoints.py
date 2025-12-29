@@ -23,7 +23,6 @@ async def async_client():
         yield client
 
 
-@pytest.mark.e2e
 class TestSpecsEndpoints:
     """Integration tests for /specs endpoints."""
 

@@ -1,0 +1,29 @@
+# Specification-level metadata for timeline-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: timeline-basic
+title: Event Timeline
+
+# Specification tracking
+created: 2025-12-29T22:38:46Z
+updated: null
+issue: 2443
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - timeline
+    - event
+  data_type:
+    - datetime
+    - categorical
+  domain:
+    - general
+    - business
+    - education
+  features:
+    - basic
+    - temporal
+    - annotated

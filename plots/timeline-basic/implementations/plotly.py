@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 timeline-basic: Event Timeline
-Library: plotly | Python 3.13
-Quality: pending | Created: 2025-12-29
+Library: plotly 6.5.0 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-29
 """
 
 import pandas as pd

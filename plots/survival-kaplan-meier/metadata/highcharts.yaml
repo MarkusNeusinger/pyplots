@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: survival-kaplan-meier
 created: '2025-12-29T22:57:27Z'
-updated: '2025-12-29T23:02:04Z'
+updated: '2025-12-29T23:12:17Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20584330823
 issue: 0
@@ -10,18 +10,18 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/highcharts/plot.html
-quality_score: 88
+quality_score: 91
 review:
   strengths:
-  - Excellent use of Highcharts step function for authentic Kaplan-Meier visualization
-  - Beautiful confidence interval bands using AreaRangeSeries with appropriate transparency
-  - Colorblind-safe color palette (blue/yellow)
-  - Proper Greenwood formula implementation for confidence intervals
-  - Clean separation between two treatment groups with distinct visual styling
-  - Correct title format and informative subtitle
+  - Inline Kaplan-Meier calculation with Greenwood formula for CI (KISS principle
+    followed)
+  - Excellent colorblind-safe blue/yellow color scheme with good contrast
+  - 'Proper step function implementation using Highcharts step: left option'
+  - Confidence interval bands correctly implemented with AreaRangeSeries and appropriate
+    transparency
+  - Censored observation markers now visible as diamond shapes on the curves
+  - Realistic clinical trial data with meaningful difference between treatment groups
   weaknesses:
-  - Censored observation markers are not visible on the plot (the code creates ScatterSeries
-    for them but they do not appear as tick marks on the survival curves as specified)
-  - Contains a function definition (kaplan_meier) which violates the KISS principle
-    of no functions/classes
-  - Legend is positioned in corner away from the data
+  - Legend positioned in middle-left area potentially overlapping with data visualization
+    region
+  - Censored markers could be slightly larger for better visibility at the high resolution

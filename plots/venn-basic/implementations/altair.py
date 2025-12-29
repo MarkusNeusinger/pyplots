@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 venn-basic: Venn Diagram
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-29
@@ -31,10 +31,10 @@ radius_c = base_radius * math.sqrt(set_sizes[2] / 100)  # ~170 (60 -> 0.775)
 
 # Position circles centered in canvas with proper overlap
 # A (left-top), B (right-top), C (bottom-center)
-center_x, center_y = 600, 580
+center_x, center_y = 600, 600  # True center of canvas
 offset_x = 130  # Horizontal offset for A and B from center
-offset_y_top = -60  # Vertical offset for A and B (above center)
-offset_y_bottom = 130  # Vertical offset for C (below center)
+offset_y_top = -70  # Vertical offset for A and B (above center)
+offset_y_bottom = 120  # Vertical offset for C (below center)
 
 cx_a, cy_a = center_x - offset_x, center_y + offset_y_top  # A - left-top
 cx_b, cy_b = center_x + offset_x, center_y + offset_y_top  # B - right-top
@@ -84,9 +84,9 @@ region_data = pd.DataFrame(
     }
 )
 
-# Set name labels outside circles - positioned further out for clarity
+# Set name labels outside circles - positioned prominently for visibility
 set_label_data = pd.DataFrame(
-    {"x": [cx_a - 180, cx_b + 180, cx_c], "y": [cy_a - 100, cy_b - 100, cy_c + 180], "label": set_labels}
+    {"x": [cx_a - 200, cx_b + 200, cx_c], "y": [cy_a - 130, cy_b - 130, cy_c + 200], "label": set_labels}
 )
 
 # Draw filled circles using point marks with proportional sizes
@@ -94,8 +94,8 @@ background_circles = (
     alt.Chart(fill_centers)
     .mark_point(shape="circle", filled=True, opacity=0.35)
     .encode(
-        x=alt.X("x:Q", scale=alt.Scale(domain=[150, 1050]), axis=None),
-        y=alt.Y("y:Q", scale=alt.Scale(domain=[150, 1050]), axis=None),
+        x=alt.X("x:Q", scale=alt.Scale(domain=[100, 1100]), axis=None),
+        y=alt.Y("y:Q", scale=alt.Scale(domain=[100, 1100]), axis=None),
         color=alt.Color("color:N", scale=None, legend=None),
         size=alt.Size("size:Q", scale=None, legend=None),
     )
@@ -106,31 +106,31 @@ outline_circles = (
     alt.Chart(fill_centers)
     .mark_point(shape="circle", filled=False, strokeWidth=4)
     .encode(
-        x=alt.X("x:Q", scale=alt.Scale(domain=[150, 1050]), axis=None),
-        y=alt.Y("y:Q", scale=alt.Scale(domain=[150, 1050]), axis=None),
+        x=alt.X("x:Q", scale=alt.Scale(domain=[100, 1100]), axis=None),
+        y=alt.Y("y:Q", scale=alt.Scale(domain=[100, 1100]), axis=None),
         stroke=alt.Color("color:N", scale=None, legend=None),
         size=alt.Size("size:Q", scale=None, legend=None),
     )
 )
 
-# Region count labels - larger font for better legibility
+# Region count labels - larger font for better legibility at 3600x3600
 counts_layer = (
     alt.Chart(region_data)
-    .mark_text(fontSize=32, fontWeight="bold", color="#1a1a1a")
+    .mark_text(fontSize=42, fontWeight="bold", color="#1a1a1a")
     .encode(
-        x=alt.X("x:Q", scale=alt.Scale(domain=[150, 1050]), axis=None),
-        y=alt.Y("y:Q", scale=alt.Scale(domain=[150, 1050]), axis=None),
+        x=alt.X("x:Q", scale=alt.Scale(domain=[100, 1100]), axis=None),
+        y=alt.Y("y:Q", scale=alt.Scale(domain=[100, 1100]), axis=None),
         text="count:N",
     )
 )
 
-# Set name labels - larger font for better legibility
+# Set name labels - larger font for better legibility at 3600x3600
 names_layer = (
     alt.Chart(set_label_data)
-    .mark_text(fontSize=28, fontWeight="bold", color="#333333")
+    .mark_text(fontSize=36, fontWeight="bold", color="#333333")
     .encode(
-        x=alt.X("x:Q", scale=alt.Scale(domain=[150, 1050]), axis=None),
-        y=alt.Y("y:Q", scale=alt.Scale(domain=[150, 1050]), axis=None),
+        x=alt.X("x:Q", scale=alt.Scale(domain=[100, 1100]), axis=None),
+        y=alt.Y("y:Q", scale=alt.Scale(domain=[100, 1100]), axis=None),
         text="label:N",
     )
 )
@@ -139,7 +139,7 @@ names_layer = (
 chart = (
     alt.layer(background_circles, outline_circles, counts_layer, names_layer)
     .properties(
-        width=1200, height=1200, title=alt.Title(text="venn-basic · altair · pyplots.ai", fontSize=32, anchor="middle")
+        width=1200, height=1200, title=alt.Title(text="venn-basic · altair · pyplots.ai", fontSize=40, anchor="middle")
     )
     .configure_view(strokeWidth=0)
 )

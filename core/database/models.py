@@ -9,12 +9,12 @@ from typing import Optional
 from uuid import uuid4
 
 from sqlalchemy import BigInteger, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
-from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from core.constants import LIBRARIES_METADATA
 from core.database.connection import Base
+from core.database.types import StringArray, UniversalJSON, UniversalUUID
 
 
 class Spec(Base):
@@ -28,16 +28,18 @@ class Spec(Base):
 
     # From spec.md
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Prose text
-    applications: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)  # Use cases
-    data: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)  # Data requirements
-    notes: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)  # Optional hints
+    applications: Mapped[list[str]] = mapped_column(StringArray, default=list)  # Use cases
+    data: Mapped[list[str]] = mapped_column(StringArray, default=list)  # Data requirements
+    notes: Mapped[list[str]] = mapped_column(StringArray, default=list)  # Optional hints
 
     # From metadata.yaml
     created: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)  # When spec was first created
     updated: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)  # When spec was last modified
     issue: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # GitHub issue number
     suggested: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # GitHub username
-    tags: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)  # {plot_type, data_type, domain, features}
+    tags: Mapped[Optional[dict]] = mapped_column(
+        UniversalJSON, nullable=True
+    )  # {plot_type, data_type, domain, features}
 
     # System
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
@@ -67,7 +69,7 @@ class Impl(Base):
     __tablename__ = "impls"
 
     # Identification
-    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=lambda: str(uuid4()))
+    id: Mapped[str] = mapped_column(UniversalUUID, primary_key=True, default=lambda: str(uuid4()))
     spec_id: Mapped[str] = mapped_column(String, ForeignKey("specs.id", ondelete="CASCADE"), nullable=False)
     library_id: Mapped[str] = mapped_column(String, ForeignKey("libraries.id", ondelete="CASCADE"), nullable=False)
 
@@ -84,7 +86,7 @@ class Impl(Base):
     library_version: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # e.g., "3.9.0"
 
     # Test matrix: [{"py": "3.11", "lib": "3.8.5", "ok": true}, ...]
-    tested: Mapped[Optional[list]] = mapped_column(JSONB, nullable=True)
+    tested: Mapped[Optional[list]] = mapped_column(UniversalJSON, nullable=True)
 
     # Quality & Generation
     quality_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
@@ -95,8 +97,8 @@ class Impl(Base):
     workflow_run: Mapped[Optional[int]] = mapped_column(BigInteger, nullable=True)  # GitHub Actions run ID
 
     # Review feedback (structured arrays from impl-review)
-    review_strengths: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)  # What's good
-    review_weaknesses: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)  # What needs work
+    review_strengths: Mapped[list[str]] = mapped_column(StringArray, default=list)  # What's good
+    review_weaknesses: Mapped[list[str]] = mapped_column(StringArray, default=list)  # What needs work
 
     # System
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())

@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.cache import get_cached, set_cached
+from api.cache import get_cache, set_cache
 from api.dependencies import require_db
 from api.schemas import FilteredPlotsResponse
 from core.database import SpecRepository
@@ -171,6 +171,108 @@ def _calculate_or_counts(
     return or_counts
 
 
+def _parse_filter_groups(request: Request) -> list[dict]:
+    """
+    Parse query parameters into filter groups.
+
+    Args:
+        request: FastAPI request object
+
+    Returns:
+        List of filter group dicts with category and values
+    """
+    filter_groups: list[dict] = []
+    query_params = request.query_params.multi_items()
+
+    for key, value in query_params:
+        if key in ("lib", "spec", "plot", "data", "dom", "feat") and value:
+            values = [v.strip() for v in value.split(",") if v.strip()]
+            if values:
+                filter_groups.append({"category": key, "values": values})
+
+    return filter_groups
+
+
+def _build_cache_key(filter_groups: list[dict]) -> str:
+    """
+    Build cache key from filter groups.
+
+    Args:
+        filter_groups: List of filter group dicts
+
+    Returns:
+        Cache key string
+    """
+    if not filter_groups:
+        return "filter:all"
+
+    cache_parts = [f"{g['category']}={','.join(sorted(g['values']))}" for g in filter_groups]
+    return f"filter:{':'.join(cache_parts)}"
+
+
+def _build_spec_lookup(all_specs: list) -> dict:
+    """
+    Build lookup dictionary of spec_id -> (spec_obj, tags).
+
+    Args:
+        all_specs: List of Spec objects
+
+    Returns:
+        Dict mapping spec_id to spec object and tags
+    """
+    spec_lookup: dict = {}
+    for spec_obj in all_specs:
+        if spec_obj.impls:
+            spec_lookup[spec_obj.id] = {"spec": spec_obj, "tags": spec_obj.tags or {}}
+    return spec_lookup
+
+
+def _collect_all_images(all_specs: list) -> list[dict]:
+    """
+    Collect all plot images from specs with implementations.
+
+    Args:
+        all_specs: List of Spec objects
+
+    Returns:
+        List of image dicts with spec_id, library, quality, url, thumb, and html
+    """
+    all_images: list[dict] = []
+    for spec_obj in all_specs:
+        if not spec_obj.impls:
+            continue
+        for impl in spec_obj.impls:
+            if impl.preview_url:
+                all_images.append(
+                    {
+                        "spec_id": spec_obj.id,
+                        "library": impl.library_id,
+                        "quality": impl.quality_score,
+                        "url": impl.preview_url,
+                        "thumb": impl.preview_thumb,
+                        "html": impl.preview_html,
+                    }
+                )
+    return all_images
+
+
+def _filter_images(all_images: list[dict], filter_groups: list[dict], spec_lookup: dict) -> list[dict]:
+    """
+    Filter images based on filter groups.
+
+    Args:
+        all_images: List of all image dicts
+        filter_groups: List of filter group dicts
+        spec_lookup: Spec lookup dictionary
+
+    Returns:
+        Filtered list of image dicts
+    """
+    return [
+        img for img in all_images if _image_matches_groups(img["spec_id"], img["library"], filter_groups, spec_lookup)
+    ]
+
+
 @router.get("/plots/filter", response_model=FilteredPlotsResponse)
 async def get_filtered_plots(request: Request, db: AsyncSession = Depends(require_db)):
     """
@@ -192,70 +294,33 @@ async def get_filtered_plots(request: Request, db: AsyncSession = Depends(requir
     Returns:
         FilteredPlotsResponse with images, counts, and orCounts per group
     """
+    # Parse query parameters
+    filter_groups = _parse_filter_groups(request)
 
-    # Parse query params into filter groups
-    filter_groups: list[dict] = []
-    query_params = request.query_params.multi_items()
-
-    for key, value in query_params:
-        if key in ("lib", "spec", "plot", "data", "dom", "feat") and value:
-            values = [v.strip() for v in value.split(",") if v.strip()]
-            if values:
-                filter_groups.append({"category": key, "values": values})
-
-    # Build cache key from filter groups
-    cache_parts = [f"{g['category']}={','.join(sorted(g['values']))}" for g in filter_groups]
-    cache_key = f"filter:{':'.join(cache_parts)}" if cache_parts else "filter:all"
-
-    cached = get_cached(cache_key)
+    # Check cache
+    cache_key = _build_cache_key(filter_groups)
+    cached = get_cache(cache_key)
     if cached:
         return cached
 
-    # Get all specs with implementations
+    # Fetch data from database
     repo = SpecRepository(db)
     all_specs = await repo.get_all()
 
-    # Build lookup of spec_id -> (spec_obj, tags)
-    spec_lookup: dict = {}
-    for spec_obj in all_specs:
-        if spec_obj.impls:
-            spec_lookup[spec_obj.id] = {"spec": spec_obj, "tags": spec_obj.tags or {}}
+    # Build data structures
+    spec_lookup = _build_spec_lookup(all_specs)
+    all_images = _collect_all_images(all_specs)
+    spec_id_to_tags = {spec_id: spec_data["tags"] for spec_id, spec_data in spec_lookup.items()}
 
-    # Build list of all images with metadata
-    all_images: list[dict] = []
-    for spec_obj in all_specs:
-        if not spec_obj.impls:
-            continue
-        for impl in spec_obj.impls:
-            if impl.preview_url:
-                all_images.append(
-                    {
-                        "spec_id": spec_obj.id,
-                        "library": impl.library_id,
-                        "url": impl.preview_url,
-                        "thumb": impl.preview_thumb,
-                        "html": impl.preview_html,
-                        # Note: code excluded to reduce payload (~2MB savings)
-                        # Fetch via /specs/{spec_id} when needed
-                    }
-                )
-
-    # Filter images based on all groups
-    filtered_images = [
-        img for img in all_images if _image_matches_groups(img["spec_id"], img["library"], filter_groups, spec_lookup)
-    ]
-
-    # Build spec_id -> tags lookup
-    spec_id_to_tags: dict = {}
-    for spec_obj in all_specs:
-        if spec_obj.impls:
-            spec_id_to_tags[spec_obj.id] = spec_obj.tags or {}
+    # Filter images
+    filtered_images = _filter_images(all_images, filter_groups, spec_lookup)
 
     # Calculate counts
     global_counts = _calculate_global_counts(all_specs)
     counts = _calculate_contextual_counts(filtered_images, spec_id_to_tags)
     or_counts = _calculate_or_counts(filter_groups, all_images, spec_id_to_tags, spec_lookup)
 
+    # Build and cache response
     result = FilteredPlotsResponse(
         total=len(filtered_images),
         images=filtered_images,
@@ -263,5 +328,5 @@ async def get_filtered_plots(request: Request, db: AsyncSession = Depends(requir
         globalCounts=global_counts,
         orCounts=or_counts,
     )
-    set_cached(cache_key, result)
+    set_cache(cache_key, result)
     return result

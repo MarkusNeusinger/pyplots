@@ -1,10 +1,11 @@
 """Spec endpoints."""
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.cache import cache_key, get_cached, set_cached
+from api.cache import cache_key, get_cache, set_cache
 from api.dependencies import require_db
+from api.exceptions import raise_not_found
 from api.schemas import ImplementationResponse, SpecDetailResponse, SpecListItem
 from core.database import SpecRepository
 
@@ -21,7 +22,7 @@ async def get_specs(db: AsyncSession = Depends(require_db)):
     """
 
     key = cache_key("specs_list")
-    cached = get_cached(key)
+    cached = get_cache(key)
     if cached:
         return cached
 
@@ -36,7 +37,7 @@ async def get_specs(db: AsyncSession = Depends(require_db)):
         for spec in specs
         if spec.impls  # Filter: only specs with implementations
     ]
-    set_cached(key, result)
+    set_cache(key, result)
     return result
 
 
@@ -53,7 +54,7 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(require_db)):
     """
 
     key = cache_key("spec", spec_id)
-    cached = get_cached(key)
+    cached = get_cache(key)
     if cached:
         return cached
 
@@ -61,11 +62,11 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(require_db)):
     spec = await repo.get_by_id(spec_id)
 
     if not spec:
-        raise HTTPException(status_code=404, detail=f"Spec '{spec_id}' not found")
+        raise_not_found("Spec", spec_id)
 
     # Only return spec if it has implementations
     if not spec.impls:
-        raise HTTPException(status_code=404, detail=f"Spec '{spec_id}' has no implementations")
+        raise_not_found("Spec with implementations", spec_id)
 
     impls = [
         ImplementationResponse(
@@ -96,7 +97,7 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(require_db)):
         suggested=spec.suggested,
         implementations=impls,
     )
-    set_cached(key, result)
+    set_cache(key, result)
     return result
 
 
@@ -109,7 +110,7 @@ async def get_spec_images(spec_id: str, db: AsyncSession = Depends(require_db)):
     """
 
     key = cache_key("spec_images", spec_id)
-    cached = get_cached(key)
+    cached = get_cache(key)
     if cached:
         return cached
 
@@ -117,10 +118,10 @@ async def get_spec_images(spec_id: str, db: AsyncSession = Depends(require_db)):
     spec = await repo.get_by_id(spec_id)
 
     if not spec:
-        raise HTTPException(status_code=404, detail=f"Spec '{spec_id}' not found")
+        raise_not_found("Spec", spec_id)
 
     if not spec.impls:
-        raise HTTPException(status_code=404, detail=f"Spec '{spec_id}' has no implementations")
+        raise_not_found("Spec with implementations", spec_id)
 
     images = [
         {"library": impl.library_id, "url": impl.preview_url, "thumb": impl.preview_thumb, "html": impl.preview_html}
@@ -129,5 +130,5 @@ async def get_spec_images(spec_id: str, db: AsyncSession = Depends(require_db)):
     ]
 
     result = {"spec_id": spec_id, "images": images}
-    set_cached(key, result)
+    set_cache(key, result)
     return result

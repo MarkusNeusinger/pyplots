@@ -1,1 +1,1 @@
-"""Unit tests for prompts."""
+"""Unit tests for AI prompts."""

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 venn-basic: Venn Diagram
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-29
@@ -39,7 +39,7 @@ custom_style = Style(
     opacity=0.4,
     opacity_hover=0.5,
     title_font_size=56,
-    legend_font_size=32,
+    legend_font_size=44,  # Increased legend font size for better visibility
     label_font_size=28,
     major_label_font_size=24,
     value_font_size=32,
@@ -56,7 +56,7 @@ chart = pygal.XY(
     show_dots=False,
     show_legend=True,
     legend_at_bottom=True,
-    legend_box_size=28,
+    legend_box_size=36,  # Larger legend box for better visibility
     title="venn-basic · pygal · pyplots.ai",
     show_x_guides=False,
     show_y_guides=False,
@@ -64,7 +64,7 @@ chart = pygal.XY(
     show_y_labels=False,
     x_title=None,
     y_title=None,
-    margin=200,  # Larger margin to prevent label and circle cut-off
+    margin=250,  # Larger margin to prevent label and circle cut-off
     spacing=15,
     explicit_size=True,
 )
@@ -120,10 +120,10 @@ labels = [
         count_style,
     ),
     (center_x, center_y - ((cy_a + cy_c) / 2) * scale, str(abc_overlap), count_style),
-    # Set name labels (positioned INSIDE circles, at top inner edge)
-    (center_x + cx_a * scale, center_y - (cy_a + 0.5) * scale, set_labels[0], name_style),
-    (center_x + cx_b * scale, center_y - (cy_b + 0.5) * scale, set_labels[1], name_style),
-    (center_x + cx_c * scale, center_y - (cy_c - 0.55) * scale, set_labels[2], name_style),
+    # Set name labels (positioned further INSIDE circles to prevent cut-off)
+    (center_x + cx_a * scale, center_y - (cy_a + 0.35) * scale, set_labels[0], name_style),
+    (center_x + cx_b * scale, center_y - (cy_b + 0.35) * scale, set_labels[1], name_style),
+    (center_x + cx_c * scale, center_y - (cy_c - 0.45) * scale, set_labels[2], name_style),
 ]
 
 # Build and insert SVG text elements

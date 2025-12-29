@@ -1,0 +1,29 @@
+library: altair
+specification_id: survival-kaplan-meier
+created: '2025-12-29T22:50:58Z'
+updated: '2025-12-29T22:59:02Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584329111
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/altair/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent visual execution with step-function curves, CI bands, and censoring
+    marks all clearly visible and properly layered
+  - Colorblind-safe color palette (blue vs yellow) with good contrast
+  - Correct implementation of Kaplan-Meier algorithm including Greenwood formula for
+    variance estimation
+  - Proper use of Altair layered chart composition and mark types (line, area, tick)
+  - Clinically realistic data scenario with appropriate sample sizes and event rates
+  weaknesses:
+  - Code contains a kaplan_meier() function definition which violates the KISS structure
+    requirement (imports → data → plot → save, no functions)
+  - Y-axis scale extends to 1.10 creating unnecessary whitespace above the survival
+    probability ceiling of 1.0
+  - Legend placed inside plot area (upper-right) could overlap data in some scenarios;
+    consider placing outside

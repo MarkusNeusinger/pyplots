@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 venn-basic: Venn Diagram
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-29
@@ -64,20 +64,20 @@ chart = pygal.XY(
     show_y_labels=False,
     x_title=None,
     y_title=None,
-    margin=150,  # Increased margin to prevent label cut-off
+    margin=200,  # Larger margin to prevent label and circle cut-off
     spacing=15,
     explicit_size=True,
 )
 
-# Circle parameters for 3-set Venn diagram
-r = 1.0
+# Circle parameters for 3-set Venn diagram (smaller radius to fit within canvas)
+r = 0.75
 n_points = 150
 theta = np.linspace(0, 2 * np.pi, n_points)
 
 # Circle centers in equilateral triangle arrangement (tighter to fit within margins)
-cx_a, cy_a = -0.5, 0.3  # Top left
-cx_b, cy_b = 0.5, 0.3  # Top right
-cx_c, cy_c = 0.0, -0.5  # Bottom center
+cx_a, cy_a = -0.4, 0.2  # Top left
+cx_b, cy_b = 0.4, 0.2  # Top right
+cx_c, cy_c = 0.0, -0.45  # Bottom center
 
 # Generate circle points for each set
 circle_a = [(cx_a + r * np.cos(t), cy_a + r * np.sin(t)) for t in theta]
@@ -93,37 +93,37 @@ chart.add(f"{set_labels[2]} (n={set_sizes[2]})", circle_c)
 svg_content = chart.render().decode("utf-8")
 
 # Coordinate transformation: scale data coordinates to SVG pixels
-scale = 3600 * 0.30  # Scale factor for data to SVG conversion
+scale = 3600 * 0.35  # Scale factor for data to SVG conversion
 center_x = 3600 / 2
-center_y = 3600 / 2 - 50
+center_y = 3600 / 2
 
 # Region count labels (positioned inside each region)
 count_style = 'font-size="52px" font-weight="bold" fill="#222" text-anchor="middle" dominant-baseline="middle"'
 name_style = 'font-size="40px" font-weight="bold" fill="#333" text-anchor="middle" dominant-baseline="middle"'
 
 labels = [
-    # Region counts
-    (center_x + (cx_a - 0.4) * scale, center_y - (cy_a + 0.3) * scale, str(only_a), count_style),
-    (center_x + (cx_b + 0.4) * scale, center_y - (cy_b + 0.3) * scale, str(only_b), count_style),
-    (center_x + cx_c * scale, center_y - (cy_c - 0.5) * scale, str(only_c), count_style),
-    (center_x, center_y - (cy_a + 0.45) * scale, str(only_ab), count_style),
+    # Region counts - adjusted for new circle positions
+    (center_x + (cx_a - 0.35) * scale, center_y - (cy_a + 0.25) * scale, str(only_a), count_style),
+    (center_x + (cx_b + 0.35) * scale, center_y - (cy_b + 0.25) * scale, str(only_b), count_style),
+    (center_x + cx_c * scale, center_y - (cy_c - 0.4) * scale, str(only_c), count_style),
+    (center_x, center_y - (cy_a + 0.35) * scale, str(only_ab), count_style),
     (
-        center_x + ((cx_a + cx_c) / 2 - 0.25) * scale,
-        center_y - ((cy_a + cy_c) / 2 - 0.1) * scale,
+        center_x + ((cx_a + cx_c) / 2 - 0.2) * scale,
+        center_y - ((cy_a + cy_c) / 2 - 0.08) * scale,
         str(only_ac),
         count_style,
     ),
     (
-        center_x + ((cx_b + cx_c) / 2 + 0.25) * scale,
-        center_y - ((cy_b + cy_c) / 2 - 0.1) * scale,
+        center_x + ((cx_b + cx_c) / 2 + 0.2) * scale,
+        center_y - ((cy_b + cy_c) / 2 - 0.08) * scale,
         str(only_bc),
         count_style,
     ),
-    (center_x, center_y, str(abc_overlap), count_style),
-    # Set name labels (positioned inside circles, near top edge - not outside)
-    (center_x + cx_a * scale, center_y - (cy_a + 0.75) * scale, set_labels[0], name_style),
-    (center_x + cx_b * scale, center_y - (cy_b + 0.75) * scale, set_labels[1], name_style),
-    (center_x + cx_c * scale, center_y - (cy_c - 0.85) * scale, set_labels[2], name_style),
+    (center_x, center_y - ((cy_a + cy_c) / 2) * scale, str(abc_overlap), count_style),
+    # Set name labels (positioned INSIDE circles, at top inner edge)
+    (center_x + cx_a * scale, center_y - (cy_a + 0.5) * scale, set_labels[0], name_style),
+    (center_x + cx_b * scale, center_y - (cy_b + 0.5) * scale, set_labels[1], name_style),
+    (center_x + cx_c * scale, center_y - (cy_c - 0.55) * scale, set_labels[2], name_style),
 ]
 
 # Build and insert SVG text elements

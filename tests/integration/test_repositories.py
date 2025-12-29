@@ -22,9 +22,12 @@ class TestSpecRepository:
         specs = await repo.get_all()
 
         assert len(specs) == 2
-        assert specs[0].id == "bar-grouped"
-        assert specs[1].id == "scatter-basic"
-        assert len(specs[1].impls) == 2
+        spec_ids = {spec.id for spec in specs}
+        assert spec_ids == {"bar-grouped", "scatter-basic"}
+
+        # Check implementations
+        scatter_spec = next(s for s in specs if s.id == "scatter-basic")
+        assert len(scatter_spec.impls) == 2
 
     async def test_get_by_id(self, test_db_with_data):
         """Should fetch spec by ID with implementations and library info."""

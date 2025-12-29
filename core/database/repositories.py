@@ -64,8 +64,17 @@ class SpecRepository:
         Returns:
             List of matching Spec objects
         """
+        # Build filter: search for any tag value in the JSON structure
+        # Works with both PostgreSQL and SQLite
+        from sqlalchemy import String, cast, or_
+
+        # Convert tags JSON to string and search for each tag
+        filters = []
+        for tag in tags:
+            filters.append(cast(Spec.tags, String).contains(f'"{tag}"'))
+
         result = await self.session.execute(
-            select(Spec).where(Spec.tags.overlap(tags)).options(selectinload(Spec.impls))
+            select(Spec).where(or_(*filters)).options(selectinload(Spec.impls))
         )
         return list(result.scalars().all())
 

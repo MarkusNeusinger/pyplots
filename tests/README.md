@@ -137,10 +137,10 @@ async def async_client():
 
 GitHub Actions runs tests on every PR:
 
-- **ci-unittest.yml**: Runs unit tests only (integration/e2e require PostgreSQL)
+- **ci-unittest.yml**: Runs unit and integration tests with SQLite
 - **Coverage**: Reports code coverage to ensure >90% coverage
 
-**Note**: Integration and E2E tests use SQLite fixtures but models have PostgreSQL ARRAY types. To run these tests locally, you need a real PostgreSQL instance. CI currently only runs unit tests (with mocked dependencies).
+**Note**: Integration tests now work with SQLite thanks to custom database types that support both PostgreSQL and SQLite. E2E tests require database dependency override and are not yet included in CI.
 
 ## Writing New Tests
 

@@ -8,7 +8,7 @@ Covers complete request-response cycle through all layers.
 from unittest.mock import patch
 
 import pytest
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 
 from api.main import app
 
@@ -19,7 +19,7 @@ pytestmark = pytest.mark.e2e
 @pytest.fixture
 async def async_client():
     """Create async test client for FastAPI."""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         yield client
 
 

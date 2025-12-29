@@ -1,0 +1,26 @@
+library: plotnine
+specification_id: venn-basic
+created: '2025-12-29T22:49:39Z'
+updated: '2025-12-29T22:58:31Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584330726
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/venn-basic/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/venn-basic/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of a Venn diagram using plotnine grammar of graphics
+    approach
+  - Clean, readable layout with well-positioned count labels in each region
+  - Good use of transparency (alpha=0.45) to show overlap regions clearly
+  - Realistic tech team scenario with mathematically consistent intersection counts
+  - Proper calculation of exclusive region counts from set totals and intersections
+  - Clean theme with hidden axes and grid appropriate for a Venn diagram
+  weaknesses:
+  - 'Two of the three colors are shades of blue (#306998 and #4B8BBE), which could
+    be confusing for colorblind users'
+  - Figure size is 12x12 (square) instead of 16x9 as recommended in library guidelines

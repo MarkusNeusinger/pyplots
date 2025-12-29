@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 venn-basic: Venn Diagram
-Library: pygal | Python 3.13
-Quality: pending | Created: 2025-12-29
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 74/100 | Created: 2025-12-29
 """
 
 # Note: This file is named pygal.py which shadows the pygal library when run directly.

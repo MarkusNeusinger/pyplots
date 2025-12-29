@@ -66,9 +66,11 @@ jobs:
       if: steps.check.outputs.should_test == 'true'
       run: uv sync --extra test
 
-    - name: Run tests with coverage
+    - name: Run unit and integration tests with coverage
       if: steps.check.outputs.should_test == 'true'
-      run: uv run pytest tests/unit -v --tb=short --cov=core --cov=api --cov-report=term-missing --cov-report=xml
+      run: uv run pytest tests/unit tests/integration -v --tb=short --cov=core --cov=api --cov-report=term-missing --cov-report=xml
+      # Note: E2E tests require database dependency override (not implemented yet)
+      # Integration tests now work with SQLite using custom database types
 
     - name: Upload coverage to GitHub Artifacts
       if: steps.check.outputs.should_test == 'true' && always()

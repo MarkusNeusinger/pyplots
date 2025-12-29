@@ -1,0 +1,26 @@
+library: bokeh
+specification_id: venn-basic
+created: '2025-12-29T22:48:50Z'
+updated: '2025-12-29T23:04:45Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584330248
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/venn-basic/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/venn-basic/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/venn-basic/bokeh/plot.html
+quality_score: 90
+review:
+  strengths:
+  - Excellent visual clarity with well-chosen transparency (alpha=0.4) creating distinct
+    overlap colors
+  - Correct implementation of 3-set Venn diagram with accurate inclusion-exclusion
+    calculations
+  - Good use of Bokeh patch method for creating smooth circles
+  - Proper title format and clean layout without unnecessary axes/grid
+  - Interactive HTML output with hover tool
+  weaknesses:
+  - Set size labels (n=100, n=80, n=60) defined in code but not rendering visibly
+    in output image
+  - Hover tooltips could display actual region data instead of generic instructions

@@ -1,0 +1,30 @@
+# Specification-level metadata for contour-filled
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: contour-filled
+title: Filled Contour Plot
+
+# Specification tracking
+created: 2025-12-29T23:55:20Z
+updated: null
+issue: 2500
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - contour
+    - heatmap
+  data_type:
+    - numeric
+    - continuous
+    - spatial
+  domain:
+    - general
+    - science
+    - engineering
+  features:
+    - filled
+    - gradient
+    - 2d

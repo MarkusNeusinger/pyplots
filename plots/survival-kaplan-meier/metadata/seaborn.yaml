@@ -1,0 +1,32 @@
+library: seaborn
+specification_id: survival-kaplan-meier
+created: '2025-12-29T22:48:27Z'
+updated: '2025-12-29T22:57:27Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584327715
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent Kaplan-Meier step function implementation with proper survival probability
+    calculation
+  - Clear visual separation between Treatment (blue) and Control (yellow) groups with
+    colorblind-friendly palette
+  - Correctly implemented 95% confidence intervals as shaded bands using Greenwood
+    formula
+  - Censored observations properly marked with vertical tick marks on the curves
+  - 'Helpful median survival annotation box showing Treatment: 22.4 months vs Control:
+    16.9 months'
+  - Clean clinical trial scenario with realistic survival data (150 patients, 36-month
+    follow-up)
+  - Proper title format following pyplots.ai conventions
+  weaknesses:
+  - Code uses functions (kaplan_meier) which violates KISS principle - should be inline
+    calculations
+  - Does not use any seaborn-specific plotting functions (only sns.set_style) - relies
+    entirely on matplotlib for actual plotting

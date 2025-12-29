@@ -1,0 +1,30 @@
+library: matplotlib
+specification_id: survival-kaplan-meier
+created: '2025-12-29T22:48:00Z'
+updated: '2025-12-29T22:56:44Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584327733
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent implementation of Kaplan-Meier step functions using ax.step with correct
+    post interpolation
+  - 'Complete spec compliance: CI bands, censored tick marks, median annotations,
+    group comparison all included'
+  - Clean, well-commented code following KISS principles with proper Greenwald variance
+    calculation
+  - Good color choices (blue/yellow) that are colorblind-accessible and high contrast
+  - Proper handling of censored observations with interpolated survival values for
+    tick mark placement
+  weaknesses:
+  - Missing at-risk table below the plot which was suggested in spec Notes
+  - The confidence interval bands could be slightly more transparent to better show
+    curve overlap regions
+  - Median text box positioning could be adjusted to avoid any potential overlap with
+    axis labels

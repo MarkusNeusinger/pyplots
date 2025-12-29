@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 venn-basic: Venn Diagram
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-29
@@ -25,6 +25,9 @@ ab_only = intersections["AB"] - intersections["ABC"]
 ac_only = intersections["AC"] - intersections["ABC"]
 bc_only = intersections["BC"] - intersections["ABC"]
 abc = intersections["ABC"]
+
+# Total unique respondents using inclusion-exclusion principle
+total_respondents = sum(set_sizes) - sum(intersections.values()) + intersections["ABC"]
 
 # Set seaborn style with custom context
 sns.set_theme(style="white", context="talk", font_scale=1.2)
@@ -102,39 +105,20 @@ for region, pos in region_positions.items():
         bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "none", "alpha": 0.7},
     )
 
-# Set axis properties
-ax.set_xlim(-3.5, 3.5)
-ax.set_ylim(-3.5, 3.5)
+# Set axis properties - tighter bounds for better canvas utilization
+ax.set_xlim(-3.0, 3.0)
+ax.set_ylim(-2.8, 3.0)
 ax.set_aspect("equal")
 ax.axis("off")
 
 # Title
 ax.set_title("venn-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
 
-# Add legend with seaborn-style patches
-legend_patches = [
-    mpatches.Patch(facecolor=c, edgecolor=c, alpha=0.6, label=lbl) for c, lbl in zip(colors, set_labels, strict=True)
-]
-ax.legend(
-    handles=legend_patches,
-    loc="lower center",
-    bbox_to_anchor=(0.5, -0.02),
-    ncol=3,
-    fontsize=18,
-    frameon=True,
-    fancybox=True,
-    shadow=False,
-    framealpha=0.9,
-    edgecolor="#cccccc",
-    title="Programming Languages",
-    title_fontsize=16,
-)
-
-# Add subtitle annotation explaining data context
+# Add subtitle annotation explaining data context (using computed total)
 fig.text(
     0.5,
     0.02,
-    "Developer Survey 2024: Language preferences among 150 respondents",
+    f"Developer Survey 2024: Language preferences among {total_respondents} respondents",
     ha="center",
     va="bottom",
     fontsize=14,

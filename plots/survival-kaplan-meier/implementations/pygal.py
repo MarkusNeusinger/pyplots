@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 survival-kaplan-meier: Kaplan-Meier Survival Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-29
@@ -18,86 +18,161 @@ n_per_group = 80
 
 # Standard treatment group - shorter median survival
 survival_times_standard = np.concatenate(
-    [
-        np.random.exponential(scale=18, size=50),  # Most patients
-        np.random.exponential(scale=8, size=30),  # Higher risk subset
-    ]
+    [np.random.exponential(scale=18, size=50), np.random.exponential(scale=8, size=30)]
 )
-censored_standard = np.random.binomial(1, 0.25, size=n_per_group)  # 25% censored
+censored_standard = np.random.binomial(1, 0.25, size=n_per_group)
 event_standard = 1 - censored_standard
 
 # Experimental treatment group - longer median survival
 survival_times_experimental = np.concatenate(
-    [
-        np.random.exponential(scale=28, size=55),  # Most patients - better response
-        np.random.exponential(scale=12, size=25),  # Some non-responders
-    ]
+    [np.random.exponential(scale=28, size=55), np.random.exponential(scale=12, size=25)]
 )
-censored_experimental = np.random.binomial(1, 0.30, size=n_per_group)  # 30% censored
+censored_experimental = np.random.binomial(1, 0.30, size=n_per_group)
 event_experimental = 1 - censored_experimental
 
+# Calculate Kaplan-Meier for Standard treatment (inline, no functions)
+order_std = np.argsort(survival_times_standard)
+times_std_sorted = survival_times_standard[order_std]
+events_std_sorted = event_standard[order_std]
+censored_std_sorted = censored_standard[order_std]
 
-# Kaplan-Meier estimator function
-def kaplan_meier(times, events):
-    """Calculate Kaplan-Meier survival curve."""
-    # Sort by time
-    order = np.argsort(times)
-    times = times[order]
-    events = events[order]
+unique_times_std = np.unique(times_std_sorted[events_std_sorted == 1])
+survival_std = [1.0]
+time_points_std = [0.0]
+n_at_risk_std = len(times_std_sorted)
 
-    # Get unique event times
-    unique_times = np.unique(times[events == 1])
+for t in unique_times_std:
+    d = np.sum((times_std_sorted == t) & (events_std_sorted == 1))
+    if len(time_points_std) > 1:
+        prev_t = time_points_std[-1]
+        lost = np.sum((times_std_sorted > prev_t) & (times_std_sorted < t))
+        n_at_risk_std -= lost
+    if n_at_risk_std > 0:
+        s = survival_std[-1] * (1 - d / n_at_risk_std)
+    else:
+        s = survival_std[-1]
+    time_points_std.append(t)
+    survival_std.append(s)
+    n_at_risk_std -= d
 
-    survival = [1.0]
-    time_points = [0.0]
+time_std = np.array(time_points_std)
+surv_std = np.array(survival_std)
 
-    n_at_risk = len(times)
+# Calculate Kaplan-Meier for Experimental treatment (inline, no functions)
+order_exp = np.argsort(survival_times_experimental)
+times_exp_sorted = survival_times_experimental[order_exp]
+events_exp_sorted = event_experimental[order_exp]
+censored_exp_sorted = censored_experimental[order_exp]
 
-    for t in unique_times:
-        # Number of events at time t
-        d = np.sum((times == t) & (events == 1))
+unique_times_exp = np.unique(times_exp_sorted[events_exp_sorted == 1])
+survival_exp = [1.0]
+time_points_exp = [0.0]
+n_at_risk_exp = len(times_exp_sorted)
 
-        # Adjust at-risk count for those lost between previous time and current
-        if len(time_points) > 1:
-            prev_t = time_points[-1]
-            lost = np.sum((times > prev_t) & (times < t))
-            n_at_risk -= lost
+for t in unique_times_exp:
+    d = np.sum((times_exp_sorted == t) & (events_exp_sorted == 1))
+    if len(time_points_exp) > 1:
+        prev_t = time_points_exp[-1]
+        lost = np.sum((times_exp_sorted > prev_t) & (times_exp_sorted < t))
+        n_at_risk_exp -= lost
+    if n_at_risk_exp > 0:
+        s = survival_exp[-1] * (1 - d / n_at_risk_exp)
+    else:
+        s = survival_exp[-1]
+    time_points_exp.append(t)
+    survival_exp.append(s)
+    n_at_risk_exp -= d
 
-        # Survival probability
-        if n_at_risk > 0:
-            s = survival[-1] * (1 - d / n_at_risk)
-        else:
-            s = survival[-1]
+time_exp = np.array(time_points_exp)
+surv_exp = np.array(survival_exp)
 
-        time_points.append(t)
-        survival.append(s)
+# Create step function data for pygal XY chart (inline)
+step_std = []
+for i in range(len(time_std)):
+    if i > 0:
+        step_std.append((time_std[i], surv_std[i - 1]))
+    step_std.append((time_std[i], surv_std[i]))
 
-        # Update at-risk for next iteration
-        n_at_risk -= d
+step_exp = []
+for i in range(len(time_exp)):
+    if i > 0:
+        step_exp.append((time_exp[i], surv_exp[i - 1]))
+    step_exp.append((time_exp[i], surv_exp[i]))
 
-    return np.array(time_points), np.array(survival)
+# Calculate 95% confidence intervals using Greenwood's formula
+# Standard treatment CI
+var_std = []
+n_risk_std = len(times_std_sorted)
+cumvar_std = 0.0
+for i, _t in enumerate(time_std):
+    if i == 0:
+        var_std.append(0.0)
+    else:
+        mask = times_std_sorted == time_std[i]
+        d = np.sum(mask & (events_std_sorted == 1))
+        if n_risk_std > 0 and d > 0:
+            cumvar_std += d / (n_risk_std * (n_risk_std - d + 0.001))
+        var_std.append(cumvar_std)
+        n_risk_std -= np.sum(mask)
 
+se_std = surv_std * np.sqrt(var_std)
+ci_upper_std = np.minimum(surv_std + 1.96 * se_std, 1.0)
+ci_lower_std = np.maximum(surv_std - 1.96 * se_std, 0.0)
 
-# Calculate Kaplan-Meier curves
-time_std, surv_std = kaplan_meier(survival_times_standard, event_standard)
-time_exp, surv_exp = kaplan_meier(survival_times_experimental, event_experimental)
+# Experimental treatment CI
+var_exp = []
+n_risk_exp = len(times_exp_sorted)
+cumvar_exp = 0.0
+for i, _t in enumerate(time_exp):
+    if i == 0:
+        var_exp.append(0.0)
+    else:
+        mask = times_exp_sorted == time_exp[i]
+        d = np.sum(mask & (events_exp_sorted == 1))
+        if n_risk_exp > 0 and d > 0:
+            cumvar_exp += d / (n_risk_exp * (n_risk_exp - d + 0.001))
+        var_exp.append(cumvar_exp)
+        n_risk_exp -= np.sum(mask)
 
+se_exp = surv_exp * np.sqrt(var_exp)
+ci_upper_exp = np.minimum(surv_exp + 1.96 * se_exp, 1.0)
+ci_lower_exp = np.maximum(surv_exp - 1.96 * se_exp, 0.0)
 
-# Create step function data for pygal XY chart
-def create_step_data(times, survival):
-    """Convert survival data to step function points for pygal."""
-    points = []
-    for i in range(len(times)):
-        if i > 0:
-            # Horizontal line from previous time to current time at previous survival level
-            points.append((times[i], survival[i - 1]))
-        # Vertical drop (or initial point)
-        points.append((times[i], survival[i]))
-    return points
+# Create confidence interval band data (as filled area between upper and lower)
+# For pygal, we create upper and lower lines as step functions
+ci_std_upper = []
+ci_std_lower = []
+for i in range(len(time_std)):
+    if i > 0:
+        ci_std_upper.append((time_std[i], ci_upper_std[i - 1]))
+        ci_std_lower.append((time_std[i], ci_lower_std[i - 1]))
+    ci_std_upper.append((time_std[i], ci_upper_std[i]))
+    ci_std_lower.append((time_std[i], ci_lower_std[i]))
 
+ci_exp_upper = []
+ci_exp_lower = []
+for i in range(len(time_exp)):
+    if i > 0:
+        ci_exp_upper.append((time_exp[i], ci_upper_exp[i - 1]))
+        ci_exp_lower.append((time_exp[i], ci_lower_exp[i - 1]))
+    ci_exp_upper.append((time_exp[i], ci_upper_exp[i]))
+    ci_exp_lower.append((time_exp[i], ci_lower_exp[i]))
 
-step_std = create_step_data(time_std, surv_std)
-step_exp = create_step_data(time_exp, surv_exp)
+# Identify censored observation points with their survival values
+# For each censored time, find the survival probability at that time
+censored_times_std = times_std_sorted[censored_std_sorted == 1]
+censored_surv_std = []
+for ct in censored_times_std:
+    idx = np.searchsorted(time_std, ct, side="right") - 1
+    idx = max(0, min(idx, len(surv_std) - 1))
+    censored_surv_std.append((ct, surv_std[idx]))
+
+censored_times_exp = times_exp_sorted[censored_exp_sorted == 1]
+censored_surv_exp = []
+for ct in censored_times_exp:
+    idx = np.searchsorted(time_exp, ct, side="right") - 1
+    idx = max(0, min(idx, len(surv_exp) - 1))
+    censored_surv_exp.append((ct, surv_exp[idx]))
 
 # Custom style for pyplots (4800x2700 canvas)
 custom_style = Style(
@@ -106,7 +181,7 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998", "#FFD43B", "#E15759", "#76B7B2"),  # Python Blue first, then Yellow
+    colors=("#306998", "#FFD43B", "#89B6D9", "#FFE99A"),
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
@@ -128,24 +203,40 @@ chart = pygal.XY(
     title="survival-kaplan-meier · pygal · pyplots.ai",
     x_title="Time (Months)",
     y_title="Survival Probability",
-    show_dots=False,  # Step function without dots at each point
+    show_dots=False,
     stroke=True,
     fill=False,
     show_x_guides=True,
     show_y_guides=True,
     x_label_rotation=0,
     truncate_legend=-1,
-    legend_at_bottom=False,
+    legend_at_bottom=True,
+    legend_at_bottom_columns=4,
     show_legend=True,
-    range=(0, 1.05),  # Y-axis range for survival probability
+    range=(0, 1.05),
     include_x_axis=True,
     margin=50,
     spacing=30,
 )
 
-# Add survival curves
-chart.add("Standard Treatment", step_std, stroke_style={"width": 6})
-chart.add("Experimental Treatment", step_exp, stroke_style={"width": 6})
+# Add confidence interval boundaries (dashed, lighter colors)
+chart.add("Standard 95% CI Upper", ci_std_upper, stroke_style={"width": 2, "dasharray": "8,4"}, show_dots=False)
+chart.add("Experimental 95% CI Upper", ci_exp_upper, stroke_style={"width": 2, "dasharray": "8,4"}, show_dots=False)
+
+# Add main survival curves (solid, thicker lines)
+chart.add("Standard Treatment", step_std, stroke_style={"width": 6}, show_dots=False)
+chart.add("Experimental Treatment", step_exp, stroke_style={"width": 6}, show_dots=False)
+
+# Add censored observations as scatter points with tick marks
+# For pygal, we add censored marks as a separate series with dots
+# Since we can't overlay easily, we add them to the main chart
+# Using the dot feature on a separate no-stroke series
+chart.add("Censored (Standard)", censored_surv_std, stroke=False, show_dots=True, dots_size=10)
+chart.add("Censored (Experimental)", censored_surv_exp, stroke=False, show_dots=True, dots_size=10)
+
+# Add CI lower bounds
+chart.add("Standard 95% CI Lower", ci_std_lower, stroke_style={"width": 2, "dasharray": "8,4"}, show_dots=False)
+chart.add("Experimental 95% CI Lower", ci_exp_lower, stroke_style={"width": 2, "dasharray": "8,4"}, show_dots=False)
 
 # Save outputs
 chart.render_to_file("plot.html")

@@ -229,7 +229,7 @@ class TestSpecsRouter:
         mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
 
         with (
-            patch("api.routers.specs.is_db_configured", return_value=True),
+            patch(DB_CONFIG_PATCH, return_value=True),
             patch("api.routers.specs.get_cache", return_value=None),
             patch("api.routers.specs.set_cache"),
             patch("api.routers.specs.SpecRepository", return_value=mock_spec_repo),
@@ -247,7 +247,7 @@ class TestSpecsRouter:
         mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
 
         with (
-            patch("api.routers.specs.is_db_configured", return_value=True),
+            patch(DB_CONFIG_PATCH, return_value=True),
             patch("api.routers.specs.get_cache", return_value=None),
             patch("api.routers.specs.set_cache"),
             patch("api.routers.specs.SpecRepository", return_value=mock_spec_repo),
@@ -263,7 +263,7 @@ class TestSpecsRouter:
         mock_spec_repo.get_by_id = AsyncMock(return_value=None)
 
         with (
-            patch("api.routers.specs.is_db_configured", return_value=True),
+            patch(DB_CONFIG_PATCH, return_value=True),
             patch("api.routers.specs.get_cache", return_value=None),
             patch("api.routers.specs.SpecRepository", return_value=mock_spec_repo),
         ):
@@ -359,7 +359,7 @@ class TestPlotsRouter:
         mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
 
         with (
-            patch("api.routers.plots.is_db_configured", return_value=True),
+            patch(DB_CONFIG_PATCH, return_value=True),
             patch("api.routers.plots.get_cache", return_value=None),
             patch("api.routers.plots.set_cache"),
             patch("api.routers.plots.SpecRepository", return_value=mock_spec_repo),
@@ -377,7 +377,7 @@ class TestPlotsRouter:
         mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
 
         with (
-            patch("api.routers.plots.is_db_configured", return_value=True),
+            patch(DB_CONFIG_PATCH, return_value=True),
             patch("api.routers.plots.get_cache", return_value=None),
             patch("api.routers.plots.set_cache"),
             patch("api.routers.plots.SpecRepository", return_value=mock_spec_repo),
@@ -397,7 +397,7 @@ class TestPlotsRouter:
         cached_response.orCounts = []
 
         with (
-            patch("api.routers.plots.is_db_configured", return_value=True),
+            patch(DB_CONFIG_PATCH, return_value=True),
             patch("api.routers.plots.get_cache", return_value=cached_response),
         ):
             response = client.get("/plots/filter")

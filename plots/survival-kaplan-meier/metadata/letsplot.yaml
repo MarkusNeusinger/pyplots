@@ -1,0 +1,29 @@
+library: letsplot
+specification_id: survival-kaplan-meier
+created: '2025-12-29T22:47:49Z'
+updated: '2025-12-29T22:56:09Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584331376
+issue: 0
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/letsplot/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of Kaplan-Meier survival curves using lets-plot ggplot2
+    grammar of graphics
+  - Proper use of geom_step for survival curves (not smooth lines) as required for
+    KM plots
+  - 95% confidence intervals correctly implemented using Greenwood formula and displayed
+    as ribbons
+  - Censored observations clearly marked with plus symbols along the curves
+  - Good color differentiation between Treatment and Control groups
+  - Realistic clinical trial scenario with appropriate sample sizes and hazard rates
+  - Both PNG and HTML outputs generated as expected for interactive library
+  weaknesses:
+  - Code uses helper functions instead of flat KISS structure required by code standards
+  - Legend shows colored boxes instead of step-line representations
+  - Missing optional median survival time annotation mentioned in spec notes

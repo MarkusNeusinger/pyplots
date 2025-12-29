@@ -66,9 +66,12 @@ jobs:
       if: steps.check.outputs.should_test == 'true'
       run: uv sync --extra test
 
-    - name: Run tests with coverage
+    - name: Run unit tests with coverage
       if: steps.check.outputs.should_test == 'true'
       run: uv run pytest tests/unit -v --tb=short --cov=core --cov=api --cov-report=term-missing --cov-report=xml
+      # Note: Integration and E2E tests require PostgreSQL (not supported in CI yet)
+      # They use SQLite fixtures but models have PostgreSQL ARRAY types
+      # TODO: Add PostgreSQL service container to run integration/e2e tests
 
     - name: Upload coverage to GitHub Artifacts
       if: steps.check.outputs.should_test == 'true' && always()

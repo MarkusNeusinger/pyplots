@@ -1,0 +1,26 @@
+library: bokeh
+specification_id: gain-curve
+created: '2025-12-29T23:21:24Z'
+updated: '2025-12-29T23:23:37Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584840801
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/gain-curve/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gain-curve/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/gain-curve/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of all three required curves (model, baseline, perfect
+    model)
+  - Clean, well-structured code following KISS principles
+  - Good color choices that are colorblind-accessible
+  - Proper use of ColumnDataSource for data management
+  - Realistic customer response scenario with appropriate beta distributions
+  weaknesses:
+  - Could benefit from HoverTool to show exact values on hover (bokeh interactive
+    strength)
+  - Legend border line is slightly heavy at 2px width
+  - Text sizes could be increased slightly for better readability at full resolution

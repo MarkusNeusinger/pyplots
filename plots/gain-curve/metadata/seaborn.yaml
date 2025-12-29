@@ -1,0 +1,26 @@
+library: seaborn
+specification_id: gain-curve
+created: '2025-12-29T22:49:43Z'
+updated: '2025-12-29T22:58:45Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584327294
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/gain-curve/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gain-curve/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent visual clarity with proper font sizing and colorblind-safe palette
+  - Complete implementation of all spec requirements including model curve, baseline,
+    and perfect model
+  - Realistic customer churn scenario that aligns perfectly with spec applications
+  - Clean KISS code structure with reproducibility via fixed seed
+  - Shaded lift area effectively highlights model improvement over baseline
+  weaknesses:
+  - Library features could be better utilized - mostly uses basic sns.lineplot which
+    offers little advantage over pure matplotlib
+  - Legend placement in lower right partially overlaps the data region; upper left
+    would be cleaner

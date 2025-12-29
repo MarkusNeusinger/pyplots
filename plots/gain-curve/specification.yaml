@@ -1,0 +1,29 @@
+# Specification-level metadata for gain-curve
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: gain-curve
+title: Cumulative Gains Chart
+
+# Specification tracking
+created: 2025-12-29T22:39:00Z
+updated: null
+issue: 2440
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - line
+    - curve
+  data_type:
+    - numeric
+    - binary
+  domain:
+    - statistics
+    - business
+    - marketing
+  features:
+    - basic
+    - model-evaluation
+    - cumulative

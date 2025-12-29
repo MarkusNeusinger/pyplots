@@ -1,1 +1,1 @@
-# Automation tests
+"""Unit tests for automation utilities."""

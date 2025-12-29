@@ -1,0 +1,25 @@
+library: altair
+specification_id: timeline-basic
+created: '2025-12-29T22:51:19Z'
+updated: '2025-12-29T23:10:41Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584329330
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/timeline-basic/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/timeline-basic/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/timeline-basic/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent alternating label placement above/below axis prevents overlap perfectly
+  - Creative inline legend implementation that integrates with the chart
+  - Clean layered chart architecture using alt.layer() for composability
+  - Good use of Altair declarative encoding system with proper type annotations
+  - Appropriate color palette with good accessibility
+  - Interactive tooltips provide additional detail on hover
+  weaknesses:
+  - Event labels at 16pt fontSize could be slightly larger (18pt) for better readability
+  - Inline legend positioned close to top event labels, could use more vertical separation
+  - Could add .interactive() to enable zoom/pan for exploring dense timelines

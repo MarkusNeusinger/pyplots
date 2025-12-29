@@ -4,9 +4,10 @@ FastAPI dependencies for pyplots API.
 Reusable dependencies for database access, authentication, etc.
 """
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.exceptions import raise_database_not_configured
 from core.database import get_db, is_db_configured
 
 
@@ -14,7 +15,7 @@ async def require_db(db: AsyncSession = Depends(get_db)) -> AsyncSession:
     """
     Dependency that requires database to be configured.
 
-    Raises HTTPException 503 if database is not configured.
+    Raises DatabaseNotConfiguredError 503 if database is not configured.
     Use this for endpoints that cannot function without a database.
 
     Args:
@@ -24,7 +25,7 @@ async def require_db(db: AsyncSession = Depends(get_db)) -> AsyncSession:
         Database session
 
     Raises:
-        HTTPException: 503 Service Unavailable if database not configured
+        DatabaseNotConfiguredError: 503 Service Unavailable if database not configured
 
     Example:
         ```python
@@ -35,10 +36,7 @@ async def require_db(db: AsyncSession = Depends(get_db)) -> AsyncSession:
         ```
     """
     if not is_db_configured():
-        raise HTTPException(
-            status_code=503,
-            detail="Database not configured. Please check DATABASE_URL or INSTANCE_CONNECTION_NAME environment variables.",
-        )
+        raise_database_not_configured()
     return db
 
 

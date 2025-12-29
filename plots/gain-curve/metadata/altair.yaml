@@ -1,0 +1,27 @@
+library: altair
+specification_id: gain-curve
+created: '2025-12-29T22:47:44Z'
+updated: '2025-12-29T22:55:18Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584329173
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/gain-curve/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gain-curve/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/gain-curve/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of Altair's layered composition pattern with separate charts for
+    model curve, area fill, baseline, and custom legend elements
+  - Clean implementation of monotone interpolation for smooth curve rendering
+  - Good visual hierarchy with shaded area under the model curve providing clear differentiation
+    from baseline
+  - Proper use of Altair's configure_axis and configure_view for styling
+  - Custom legend implementation shows creative use of mark_line and mark_text layers
+  weaknesses:
+  - Custom legend placement in upper-left overlaps the plot data area slightly; consider
+    moving to a less intrusive location
+  - The axis labels include (%) in the title text but this could be formatted more
+    consistently

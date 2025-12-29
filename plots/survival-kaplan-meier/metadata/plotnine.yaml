@@ -1,0 +1,28 @@
+library: plotnine
+specification_id: survival-kaplan-meier
+created: '2025-12-29T22:47:28Z'
+updated: '2025-12-29T22:50:20Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584329185
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of Kaplan-Meier survival curves using plotnine native
+    grammar of graphics
+  - 'All spec requirements met: step functions, confidence intervals, censored marks,
+    group comparison'
+  - Custom KM estimator with proper Greenwood formula for variance estimation
+  - Strong colorblind-accessible color contrast between treatment groups (blue vs
+    yellow)
+  - Professional appearance with appropriate text sizing for 16:9 format
+  - Proper handling of censored observations displayed as tick marks on curves
+  weaknesses:
+  - Code uses helper functions instead of flat KISS structure (imports → data → plot
+    → save)
+  - Legend position overlaps with data region

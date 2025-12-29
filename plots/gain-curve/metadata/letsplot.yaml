@@ -1,0 +1,28 @@
+library: letsplot
+specification_id: gain-curve
+created: '2025-12-29T22:48:22Z'
+updated: '2025-12-29T22:57:21Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584330606
+issue: 0
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/gain-curve/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gain-curve/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/gain-curve/letsplot/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of the gain curve with all three required reference lines
+    (model, random, perfect)
+  - Proper use of lets-plot grammar of graphics with theme_minimal and clean styling
+  - Good color choices that are colorblind-accessible (blue, gray, yellow)
+  - Realistic customer response scenario matching the spec marketing application
+  - Clean KISS code structure with proper reproducibility seed
+  - Correct title format and descriptive axis labels with units
+  weaknesses:
+  - Grid lines are not visible due to theme_minimal; adding subtle grid would improve
+    readability
+  - X-axis scale extends slightly beyond 100% which looks unintended
+  - Model curve appears stepped/jagged due to discrete data points rather than smoothly
+    interpolated

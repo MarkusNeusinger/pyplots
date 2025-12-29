@@ -1,0 +1,27 @@
+library: pygal
+specification_id: survival-kaplan-meier
+created: '2025-12-29T22:48:14Z'
+updated: '2025-12-29T23:18:20Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584330240
+issue: 0
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/pygal/plot.html
+quality_score: 86
+review:
+  strengths:
+  - Correct implementation of Kaplan-Meier step function using pygal XY chart
+  - Colorblind-safe blue/orange palette with good contrast
+  - Includes 95% confidence intervals as filled bands
+  - Shows censored observations with tick marks on curves
+  - Custom Style well-tuned for large canvas (4800x2700)
+  - Clean comparison of two treatment groups showing distinct survival patterns
+  weaknesses:
+  - Legend is cluttered with 6 entries including CI bands and censored marks that
+    do not need separate legend entries
+  - Grid lines (dashed guides) are slightly distracting and could use lower alpha
+  - Censored tick marks appear as dots rather than traditional vertical tick marks
+    due to pygal limitations

@@ -12,10 +12,16 @@ load_dotenv()
 import logging  # noqa: E402
 from contextlib import asynccontextmanager  # noqa: E402
 
-from fastapi import FastAPI, Request, Response  # noqa: E402
+from fastapi import FastAPI, HTTPException, Request, Response  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 from starlette.middleware.gzip import GZipMiddleware  # noqa: E402
 
+from api.exceptions import (  # noqa: E402
+    PyplotsException,
+    generic_exception_handler,
+    http_exception_handler,
+    pyplots_exception_handler,
+)
 from api.routers import (  # noqa: E402
     download_router,
     health_router,
@@ -63,6 +69,11 @@ app = FastAPI(
     redoc_url="/redoc",
     openapi_url="/openapi.json",
 )
+
+# Register exception handlers
+app.add_exception_handler(PyplotsException, pyplots_exception_handler)
+app.add_exception_handler(HTTPException, http_exception_handler)
+app.add_exception_handler(Exception, generic_exception_handler)
 
 # Enable GZip compression for responses > 500 bytes
 # This significantly reduces payload size for JSON API responses

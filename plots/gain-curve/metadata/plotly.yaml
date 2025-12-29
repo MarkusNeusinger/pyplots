@@ -1,0 +1,28 @@
+library: plotly
+specification_id: gain-curve
+created: '2025-12-29T23:20:47Z'
+updated: '2025-12-29T23:23:00Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584841141
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/gain-curve/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gain-curve/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/gain-curve/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent implementation of cumulative gains chart with all three required curves
+    (model, random baseline, perfect model)
+  - Clear, readable text sizing following the library guidelines (28pt title, 22pt
+    labels, 18pt ticks)
+  - Good use of Plotly fill feature to highlight the gain over baseline
+  - Well-structured code with clear data simulation using beta distributions for realistic
+    model scores
+  - Correct title format and professional appearance
+  weaknesses:
+  - Legend placement in lower-right corner has minor overlap with the baseline diagonal
+    line
+  - Could better leverage Plotly interactive features (hover tooltips with specific
+    values, annotations for key thresholds)

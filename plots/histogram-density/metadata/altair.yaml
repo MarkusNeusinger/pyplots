@@ -1,0 +1,25 @@
+library: altair
+specification_id: histogram-density
+created: '2025-12-29T22:49:29Z'
+updated: '2025-12-29T22:58:35Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584328879
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-density/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-density/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-density/altair/plot.html
+quality_score: 93
+review:
+  strengths:
+  - Excellent bimodal distribution demonstrates density histogram features very effectively
+  - Clean visual design with proper color contrast between histogram bars and KDE
+    overlay
+  - Proper density normalization with clear axis labeling including units
+  - Interactive tooltips provide additional value for exploration
+  - Realistic cognitive psychology scenario with plausible reaction time values
+  weaknesses:
+  - Missing legend to identify the KDE line (yellow line has no label)
+  - Could use Altair's built-in transform_density() instead of scipy for more idiomatic
+    implementation

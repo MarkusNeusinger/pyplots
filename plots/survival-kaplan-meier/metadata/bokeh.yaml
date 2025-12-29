@@ -1,0 +1,28 @@
+library: bokeh
+specification_id: survival-kaplan-meier
+created: '2025-12-29T22:48:12Z'
+updated: '2025-12-29T22:56:55Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584328803
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of Kaplan-Meier algorithm with proper step functions
+    and Greenwood formula for confidence intervals
+  - Beautiful color scheme with Python blue/yellow that provides excellent contrast
+    and colorblind accessibility
+  - 'All specification requirements met: step curves, CI bands, censoring marks, group
+    comparison, median line'
+  - 'Proper use of Bokeh features: ColumnDataSource, patch for CI areas, Span annotation'
+  - Realistic clinical trial scenario with appropriate sample sizes and time scales
+  weaknesses:
+  - Legend text appears small relative to the plot size; could benefit from larger
+    font or better positioning
+  - Code uses helper functions instead of flat KISS structure preferred by guidelines
+  - Censoring tick marks could be slightly more prominent for better visibility

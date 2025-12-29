@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.cache import cache_key, get_cached, set_cached
+from api.cache import cache_key, get_cache, set_cache
 from api.dependencies import optional_db
 from api.schemas import StatsResponse
 from core.constants import LIBRARIES_METADATA
@@ -24,7 +24,7 @@ async def get_stats(db: AsyncSession | None = Depends(optional_db)):
         return StatsResponse(specs=0, plots=0, libraries=len(LIBRARIES_METADATA))
 
     key = cache_key("stats")
-    cached = get_cached(key)
+    cached = get_cache(key)
     if cached:
         return cached
 
@@ -40,5 +40,5 @@ async def get_stats(db: AsyncSession | None = Depends(optional_db)):
     total_impls = sum(len(s.impls) for s in specs)
 
     result = StatsResponse(specs=len(specs_with_impls), plots=total_impls, libraries=len(libraries))
-    set_cached(key, result)
+    set_cache(key, result)
     return result

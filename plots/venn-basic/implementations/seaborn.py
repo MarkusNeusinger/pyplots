@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 venn-basic: Venn Diagram
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-29
@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
+
+np.random.seed(42)
 
 # Data - Survey results on programming language preferences
 # Set A: Python users, Set B: JavaScript users, Set C: SQL users
@@ -93,16 +95,17 @@ region_counts = {"A": only_a, "B": only_b, "C": only_c, "AB": ab_only, "AC": ac_
 
 for region, pos in region_positions.items():
     count = region_counts[region]
+    pct = count / total_respondents * 100
     ax.text(
         pos[0],
         pos[1],
-        str(count),
+        f"{count}\n({pct:.0f}%)",
         ha="center",
         va="center",
-        fontsize=24,
+        fontsize=20,
         fontweight="bold",
         color="#333333",
-        bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "none", "alpha": 0.7},
+        bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "none", "alpha": 0.8},
     )
 
 # Set axis properties - tighter bounds for better canvas utilization

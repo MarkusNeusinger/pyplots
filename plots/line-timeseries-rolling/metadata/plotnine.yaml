@@ -1,0 +1,25 @@
+library: plotnine
+specification_id: line-timeseries-rolling
+created: '2025-12-30T18:40:03Z'
+updated: '2025-12-30T18:42:10Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20603334572
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of plotnine grammar of graphics with proper aesthetics mapping for
+    color, alpha, and size
+  - Clear visual distinction between raw data (lighter blue, thin line) and rolling
+    average (prominent yellow, thicker line)
+  - Proper title format following pyplots.ai conventions
+  - Good use of scale_alpha_manual and scale_size_manual for visual differentiation
+  - Well-structured data transformation to long format for ggplot-style plotting
+  weaknesses:
+  - X-axis date labels are slightly crowded with 7-day breaks over 6 months - could
+    use monthly breaks for cleaner appearance

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 box-horizontal: Horizontal Box Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 68/100 | Created: 2025-12-30
@@ -17,17 +17,17 @@ HorizontalBox = type("HorizontalBox", (pygal.graph.horizontal.HorizontalGraph, p
 np.random.seed(42)
 categories = ["Database Query", "API Gateway", "Authentication", "File Upload", "Image Processing"]
 data = {
-    "Database Query": np.random.lognormal(3.5, 0.8, 80),
-    "API Gateway": np.random.lognormal(3.2, 0.5, 80),
-    "Authentication": np.random.lognormal(3.8, 0.6, 80),
-    "File Upload": np.random.lognormal(4.5, 0.9, 80),
-    "Image Processing": np.random.lognormal(5.0, 0.7, 80),
+    "Database Query": np.random.lognormal(3.5, 0.6, 80),
+    "API Gateway": np.random.lognormal(3.2, 0.4, 80),
+    "Authentication": np.random.lognormal(3.8, 0.5, 80),
+    "File Upload": np.random.lognormal(4.2, 0.7, 80),
+    "Image Processing": np.random.lognormal(4.5, 0.6, 80),
 }
 
-# Add some outliers to demonstrate box plot features
-data["Database Query"] = np.append(data["Database Query"], [500, 600, 800])
-data["File Upload"] = np.append(data["File Upload"], [1500, 2000])
-data["Image Processing"] = np.append(data["Image Processing"], [2500, 3000, 3500])
+# Add outliers with more moderate values to avoid excessive whitespace
+data["Database Query"] = np.append(data["Database Query"], [180, 220, 280])
+data["File Upload"] = np.append(data["File Upload"], [350, 420])
+data["Image Processing"] = np.append(data["Image Processing"], [450, 520, 580])
 
 # Custom style using PyPlots colors - scaled for 4800x2700 canvas
 custom_style = Style(
@@ -44,7 +44,7 @@ custom_style = Style(
     value_font_size=32,
 )
 
-# Create horizontal box chart
+# Create horizontal box chart with category labels displayed on y-axis
 chart = HorizontalBox(
     width=4800,
     height=2700,
@@ -54,22 +54,23 @@ chart = HorizontalBox(
     show_legend=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=5,
-    legend_box_size=24,
+    legend_box_size=30,
     show_y_guides=True,
     show_x_guides=False,
     margin=50,
-    margin_left=350,
-    margin_bottom=180,
-    spacing=80,
+    margin_left=400,
+    margin_bottom=200,
+    spacing=60,
     box_mode="tukey",
     truncate_label=-1,
     truncate_legend=-1,
+    dots_size=8,
 )
 
-# Set category labels (in horizontal mode, x_labels appear on the y-axis)
+# Set category labels on y-axis (in horizontal mode, x_labels display on the y-axis)
 chart.x_labels = categories
 
-# Add data for each category
+# Add data for each category (legend entries match the x_labels for cross-referencing)
 for category in categories:
     chart.add(category, data[category].tolist())
 

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 parallel-categories-basic: Basic Parallel Categories Plot
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-30
@@ -15,6 +15,14 @@ from matplotlib.path import Path
 # Set seaborn style for consistent aesthetics
 sns.set_style("whitegrid")
 sns.set_context("talk", font_scale=1.2)
+
+# Use seaborn's colorblind-safe palette for accessibility
+class_palette = sns.color_palette("colorblind", 3)
+class_colors = {
+    "First": class_palette[0],  # Blue
+    "Second": class_palette[1],  # Orange
+    "Third": class_palette[2],  # Green
+}
 
 # Data - Titanic-style dataset with categorical dimensions
 # Using realistic passenger data patterns
@@ -57,11 +65,20 @@ dim_orders = {
     "Outcome": ["Survived", "Did Not Survive"],
 }
 
-# Create figure
+# Create figure with main plot and inset for seaborn count visualization
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Color palette for the first dimension (Class)
-class_colors = {"First": "#306998", "Second": "#FFD43B", "Third": "#8FBC8F"}
+# Create inset axes for seaborn countplot showing class distribution
+ax_inset = fig.add_axes([0.85, 0.62, 0.12, 0.28])
+sns.countplot(
+    data=df, x="Class", hue="Class", palette=class_colors, ax=ax_inset, legend=False, order=dim_orders["Class"]
+)
+ax_inset.set_title("Class Distribution", fontsize=11, fontweight="bold")
+ax_inset.set_xlabel("")
+ax_inset.set_ylabel("Count", fontsize=10)
+ax_inset.tick_params(axis="both", labelsize=8)
+ax_inset.tick_params(axis="x", rotation=30)
+sns.despine(ax=ax_inset)
 
 # Calculate positions for each dimension
 n_dims = len(dimensions)
@@ -127,7 +144,7 @@ for dim_idx, dim in enumerate(dimensions):
                 cat,
                 ha="center",
                 va="center",
-                fontsize=11,
+                fontsize=14,
                 fontweight="bold",
                 color="white",
                 zorder=11,
@@ -198,20 +215,20 @@ for i in range(n_dims - 1):
 
         path = Path(verts, codes)
 
-        # Color based on first category (Class)
+        # Color based on first category (Class) - uses seaborn colorblind palette
         first_cat = df.loc[(df[dim1] == cat1) & (df[dim2] == cat2), "Class"].mode()
         if len(first_cat) > 0:
-            color = class_colors.get(first_cat.iloc[0], "#306998")
+            color = class_colors.get(first_cat.iloc[0], class_palette[0])
         else:
-            color = "#306998"
+            color = class_palette[0]
 
         patch = mpatches.PathPatch(path, facecolor=color, edgecolor="white", linewidth=0.3, alpha=0.6, zorder=5)
         ax.add_patch(patch)
 
-# Add dimension labels at the top
+# Add dimension labels at the top - using seaborn palette color
 for dim_idx, dim in enumerate(dimensions):
     x_pos = x_positions[dim_idx]
-    ax.text(x_pos, 0.98, dim, ha="center", va="bottom", fontsize=18, fontweight="bold", color="#306998")
+    ax.text(x_pos, 0.98, dim, ha="center", va="bottom", fontsize=18, fontweight="bold", color=class_palette[0])
 
 # Add legend for Class colors
 legend_patches = [
@@ -222,14 +239,14 @@ legend_patches = [
 ax.legend(
     handles=legend_patches,
     loc="lower right",
-    fontsize=14,
+    fontsize=12,
     framealpha=0.9,
     edgecolor="gray",
-    bbox_to_anchor=(1.12, 0.02),
+    bbox_to_anchor=(1.18, 0.02),
 )
 
 # Style adjustments
-ax.set_xlim(-0.15, 1.25)
+ax.set_xlim(-0.15, 1.30)
 ax.set_ylim(0, 1.05)
 ax.set_aspect("auto")
 ax.axis("off")
@@ -237,5 +254,4 @@ ax.axis("off")
 # Title
 ax.set_title("parallel-categories-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
 
-plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")

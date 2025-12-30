@@ -1,0 +1,26 @@
+library: plotly
+specification_id: scatter-annotated
+created: '2025-12-30T17:49:25Z'
+updated: '2025-12-30T17:58:56Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20602450204
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent manual annotation positioning with custom offsets for each company prevents
+    label overlap
+  - Clean annotation styling with white background boxes, blue borders, and connecting
+    arrows
+  - Good use of realistic tech company data that makes the plot immediately comprehensible
+  - Proper title format and descriptive axis labels with units
+  - Both PNG and HTML exports provided
+  weaknesses:
+  - Does not fully leverage plotly interactive capabilities as a distinctive feature
+    (hover is secondary to static annotations)
+  - Grid opacity (0.1) is too subtle and could be slightly more visible (0.2-0.3 recommended)

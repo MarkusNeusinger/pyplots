@@ -1,0 +1,27 @@
+library: plotnine
+specification_id: contour-filled
+created: '2025-12-30T00:04:15Z'
+updated: '2025-12-30T00:12:07Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20585401354
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-filled/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-filled/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of viridis colormap for colorblind accessibility and visual appeal
+  - Clever hybrid approach combining plotnine geom_tile with matplotlib contour overlay
+    for precise level identification
+  - Well-chosen mathematical function demonstrating multiple peaks and a valley for
+    comprehensive feature coverage
+  - Proper text sizing following library guidelines (14pt base, 20pt axis titles,
+    24pt title)
+  - Clean separation of data generation and visualization code
+  weaknesses:
+  - Uses matplotlib contour function directly instead of pure plotnine (acceptable
+    workaround but reduces library-native score)
+  - Axis labels lack units (though Coordinate is descriptive for mathematical domain)

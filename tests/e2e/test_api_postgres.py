@@ -9,6 +9,8 @@ These tests are skipped if DATABASE_URL is not set, allowing
 local development without PostgreSQL.
 """
 
+from unittest.mock import patch
+
 import pytest
 from httpx import ASGITransport, AsyncClient
 
@@ -35,8 +37,12 @@ async def client(pg_db_with_data):
         yield pg_db_with_data
 
     app.dependency_overrides[get_db] = override_get_db
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        yield ac
+
+    # Patch is_db_configured to return True (it checks env vars, not dependencies)
+    with patch("api.dependencies.is_db_configured", return_value=True):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+            yield ac
+
     app.dependency_overrides.clear()
 
 

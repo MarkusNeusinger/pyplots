@@ -8,6 +8,7 @@ Tests are skipped if DATABASE_URL is not set.
 import os
 
 import pytest
+import pytest_asyncio
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
@@ -21,26 +22,22 @@ TEST_IMAGE_URL = "https://storage.googleapis.com/pyplots-images/test/plot.png"
 TEST_THUMB_URL = "https://storage.googleapis.com/pyplots-images/test/thumb.png"
 
 
-@pytest.fixture(scope="session")
-def event_loop():
-    """Create event loop for session-scoped async fixtures."""
-    import asyncio
-
-    policy = asyncio.get_event_loop_policy()
-    loop = policy.new_event_loop()
-    yield loop
-    loop.close()
+def _get_database_url():
+    """Get DATABASE_URL from environment, loading .env if needed."""
+    from dotenv import load_dotenv
+    load_dotenv()
+    return os.environ.get("DATABASE_URL")
 
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture(scope="function")
 async def pg_engine():
     """
     Create PostgreSQL engine and setup test schema.
 
     Creates a separate 'test_e2e' schema to isolate tests from production data.
-    The schema is dropped and recreated at the start of the test session.
+    The schema is dropped and recreated for each test.
     """
-    database_url = os.environ.get("DATABASE_URL")
+    database_url = _get_database_url()
     if not database_url:
         pytest.skip("DATABASE_URL not set - skipping PostgreSQL E2E tests")
 
@@ -61,7 +58,7 @@ async def pg_engine():
     await engine.dispose()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def pg_session(pg_engine):
     """Create session with test schema."""
     async_session = async_sessionmaker(pg_engine, class_=AsyncSession, expire_on_commit=False)
@@ -72,7 +69,7 @@ async def pg_session(pg_engine):
         await session.rollback()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def pg_db_with_data(pg_session):
     """
     Seed test schema with sample data.

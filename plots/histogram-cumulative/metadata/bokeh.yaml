@@ -1,0 +1,26 @@
+library: bokeh
+specification_id: histogram-cumulative
+created: '2025-12-30T09:32:31Z'
+updated: '2025-12-30T09:34:41Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20593349825
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent step function implementation using manual coordinate construction
+  - Clean visual design with filled area under curve adding depth
+  - Yellow markers at bin edges provide clear visual anchors for data points
+  - Realistic web service response time scenario demonstrates practical application
+  - Text sizing well-calibrated for 4800x2700 canvas
+  - Proper use of ColumnDataSource for all data
+  weaknesses:
+  - Bokeh toolbar/logo visible in top-right corner should be hidden for cleaner export
+  - Could leverage HoverTool to show percentile information on hover
+  - No reference lines showing common percentiles (p50, p90, p99) which would enhance
+    the cumulative histogram utility

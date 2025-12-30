@@ -1,0 +1,27 @@
+library: altair
+specification_id: icicle-basic
+created: '2025-12-30T00:03:43Z'
+updated: '2025-12-30T00:22:46Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20585400003
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/icicle-basic/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/icicle-basic/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/icicle-basic/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent hierarchical visualization with clear parent-child relationships visible
+    through spatial adjacency
+  - Smart label hiding for narrow rectangles prevents text overlap
+  - Good use of Altair declarative syntax with mark_rect and transform_calculate
+  - Interactive tooltips enhance usability
+  - File system example matches specification suggested application perfectly
+  - Clean code structure following KISS principles with iterative tree building
+  weaknesses:
+  - Color palette uses only blue hues which may reduce accessibility for some colorblind
+    users; consider using more distinct hues across levels
+  - Some leaf nodes appear very narrow making the hierarchy harder to read in that
+    section

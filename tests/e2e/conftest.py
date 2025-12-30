@@ -1,78 +1,85 @@
 """
-Pytest configuration and fixtures for pyplots tests.
+E2E test fixtures with real PostgreSQL database.
+
+Uses a separate 'test_e2e' schema to isolate test data from production.
+Tests are skipped if DATABASE_URL is not set.
 """
 
-import matplotlib
+import os
+
 import pytest
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from core.database.models import Base
 
 
-matplotlib.use("Agg")  # Non-interactive backend for CI
+TEST_SCHEMA = "test_e2e"
+
+# Test data constants
+TEST_IMAGE_URL = "https://storage.googleapis.com/pyplots-images/test/plot.png"
+TEST_THUMB_URL = "https://storage.googleapis.com/pyplots-images/test/thumb.png"
 
 
-# Test constants
-TEST_IMAGE_URL = "https://example.com/plot.png"
-TEST_THUMB_URL = "https://example.com/thumb.png"
-TEST_HTML_URL = "https://example.com/plot.html"
+@pytest.fixture(scope="session")
+def event_loop():
+    """Create event loop for session-scoped async fixtures."""
+    import asyncio
+
+    policy = asyncio.get_event_loop_policy()
+    loop = policy.new_event_loop()
+    yield loop
+    loop.close()
 
 
-@pytest.fixture
-def sample_data():
-    """Provide sample data for plot tests."""
-    import numpy as np
-    import pandas as pd
+@pytest.fixture(scope="session")
+async def pg_engine():
+    """
+    Create PostgreSQL engine and setup test schema.
 
-    np.random.seed(42)
-    return pd.DataFrame(
-        {
-            "x": np.random.randn(50),
-            "y": np.random.randn(50),
-            "category": np.random.choice(["A", "B", "C"], 50),
-            "size": np.random.uniform(10, 100, 50),
-        }
-    )
+    Creates a separate 'test_e2e' schema to isolate tests from production data.
+    The schema is dropped and recreated at the start of the test session.
+    """
+    database_url = os.environ.get("DATABASE_URL")
+    if not database_url:
+        pytest.skip("DATABASE_URL not set - skipping PostgreSQL E2E tests")
 
+    engine = create_async_engine(database_url, echo=False)
 
-@pytest.fixture
-def temp_output_dir(tmp_path):
-    """Provide a temporary directory for plot outputs."""
-    output_dir = tmp_path / "plot_outputs"
-    output_dir.mkdir()
-    return output_dir
-
-
-# ===== Integration Test Fixtures =====
-
-
-@pytest.fixture
-async def test_engine():
-    """Create an in-memory SQLite async engine for testing."""
-    engine = create_async_engine("sqlite+aiosqlite:///:memory:", echo=False)
-
-    # Create all tables
+    # Create test schema and tables
     async with engine.begin() as conn:
+        await conn.execute(text(f"DROP SCHEMA IF EXISTS {TEST_SCHEMA} CASCADE"))
+        await conn.execute(text(f"CREATE SCHEMA {TEST_SCHEMA}"))
+        await conn.execute(text(f"SET search_path TO {TEST_SCHEMA}"))
         await conn.run_sync(Base.metadata.create_all)
 
     yield engine
 
-    # Cleanup
+    # Cleanup: Drop entire test schema
+    async with engine.begin() as conn:
+        await conn.execute(text(f"DROP SCHEMA IF EXISTS {TEST_SCHEMA} CASCADE"))
     await engine.dispose()
 
 
 @pytest.fixture
-async def test_session(test_engine):
-    """Create a test database session."""
-    async_session = async_sessionmaker(test_engine, class_=AsyncSession, expire_on_commit=False)
-
+async def pg_session(pg_engine):
+    """Create session with test schema."""
+    async_session = async_sessionmaker(pg_engine, class_=AsyncSession, expire_on_commit=False)
     async with async_session() as session:
+        # Ensure we're in test schema
+        await session.execute(text(f"SET search_path TO {TEST_SCHEMA}"))
         yield session
+        await session.rollback()
 
 
 @pytest.fixture
-async def test_db_with_data(test_session):
-    """Create a test database with sample data."""
+async def pg_db_with_data(pg_session):
+    """
+    Seed test schema with sample data.
+
+    Creates the same test data as tests/conftest.py:test_db_with_data
+    but in the PostgreSQL test schema.
+    """
     from core.database.models import Impl, Library, Spec
 
     # Create libraries
@@ -90,7 +97,7 @@ async def test_db_with_data(test_session):
         documentation_url="https://seaborn.pydata.org",
         description="Statistical data visualization",
     )
-    test_session.add_all([matplotlib_lib, seaborn_lib])
+    pg_session.add_all([matplotlib_lib, seaborn_lib])
 
     # Create specs
     scatter_spec = Spec(
@@ -115,8 +122,8 @@ async def test_db_with_data(test_session):
         issue=43,
         suggested="contributor2",
     )
-    test_session.add_all([scatter_spec, bar_spec])
-    await test_session.commit()
+    pg_session.add_all([scatter_spec, bar_spec])
+    await pg_session.commit()
 
     # Create implementations
     scatter_matplotlib = Impl(
@@ -151,10 +158,10 @@ async def test_db_with_data(test_session):
         python_version="3.13",
         library_version="3.10.0",
     )
-    test_session.add_all([scatter_matplotlib, scatter_seaborn, bar_matplotlib])
-    await test_session.commit()
+    pg_session.add_all([scatter_matplotlib, scatter_seaborn, bar_matplotlib])
+    await pg_session.commit()
 
     # Expire all cached objects to ensure fresh loading with relationships
-    test_session.expire_all()
+    pg_session.expire_all()
 
-    yield test_session
+    yield pg_session

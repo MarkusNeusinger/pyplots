@@ -1,4 +1,4 @@
-name: "CI: Unit Tests"
+name: "CI: Tests"
 run-name: "Tests: ${{ github.ref_name }}"
 
 on:
@@ -16,10 +16,15 @@ on:
 
 jobs:
   test:
-    name: Run Unit Tests
+    name: Run Tests
     runs-on: ubuntu-latest
     permissions:
       contents: read
+
+    env:
+      # E2E tests use isolated test_e2e schema (production data unaffected)
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      ENVIRONMENT: test
 
     steps:
     - uses: actions/checkout@v6
@@ -66,11 +71,18 @@ jobs:
       if: steps.check.outputs.should_test == 'true'
       run: uv sync --extra test
 
-    - name: Run unit and integration tests with coverage
+    - name: Run all tests with coverage
       if: steps.check.outputs.should_test == 'true'
-      run: uv run pytest tests/unit tests/integration -v --tb=short --cov=core --cov=api --cov-report=term-missing --cov-report=xml
-      # Note: E2E tests require database dependency override (not implemented yet)
-      # Integration tests now work with SQLite using custom database types
+      run: |
+        uv run pytest tests/unit tests/integration tests/e2e \
+          -v --tb=short \
+          --cov=core --cov=api \
+          --cov-report=term-missing \
+          --cov-report=xml
+      # Tests include:
+      # - Unit tests: Fast, mocked dependencies
+      # - Integration tests: SQLite in-memory for repository layer
+      # - E2E tests: Real PostgreSQL with isolated test_e2e schema
 
     - name: Upload coverage to GitHub Artifacts
       if: steps.check.outputs.should_test == 'true' && always()

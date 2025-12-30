@@ -25,7 +25,7 @@ WORKFLOWS_DIR = Path(__file__).parent.parent.parent.parent / ".github" / "workfl
 EXPECTED_WORKFLOWS = [
     # CI workflows
     "ci-lint.yml",
-    "ci-unittest.yml",
+    "ci-tests.yml",
     # Specification workflows
     "spec-create.yml",
     "spec-update.yml",

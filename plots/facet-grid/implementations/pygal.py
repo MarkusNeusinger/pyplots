@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 facet-grid: Faceted Grid Plot
-Library: pygal | Python 3.13
-Quality: pending | Created: 2025-12-30
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-30
 """
 
 from io import BytesIO

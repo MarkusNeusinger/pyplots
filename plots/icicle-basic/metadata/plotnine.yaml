@@ -1,0 +1,27 @@
+library: plotnine
+specification_id: icicle-basic
+created: '2025-12-30T21:52:31Z'
+updated: '2025-12-30T22:06:37Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20606631356
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/icicle-basic/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/icicle-basic/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent hierarchical visualization with clear parent-child relationships visible
+    through spatial adjacency
+  - 'Smart label handling: shows name+value for wide rectangles, name-only for medium,
+    hidden for narrow'
+  - Good color contrast between hierarchy levels with appropriate text colors (white
+    on dark, black on light)
+  - Proper bottom-up value aggregation for non-leaf nodes
+  - Clean theme_void usage appropriate for this chart type
+  - Well-implemented BFS algorithm for layout calculation
+  weaknesses:
+  - Legend shows Hierarchy Level with just numbers 0-3 instead of the more descriptive
+    labels defined in the code

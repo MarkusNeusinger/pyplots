@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 errorbar-asymmetric: Asymmetric Error Bars Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-30
@@ -25,17 +25,12 @@ y_values = [12.5, 14.2, 13.8, 18.5, 15.2, 16.8]
 error_lower = [1.2, 1.5, 2.0, 2.5, 1.8, 2.2]  # Downside risk
 error_upper = [2.5, 3.0, 2.8, 4.5, 3.2, 3.8]  # Upside potential
 
-# Compute low and high values for errorbar series
-low_values = [y - el for y, el in zip(y_values, error_lower, strict=True)]
-high_values = [y + eu for y, eu in zip(y_values, error_upper, strict=True)]
-
 # Create chart
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
 # Chart configuration for 4800x2700 canvas
 chart.options.chart = {
-    "type": "columnrange",
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
@@ -64,16 +59,15 @@ chart.options.x_axis = {
     "labels": {"style": {"fontSize": "28px"}},
 }
 
-# Y-axis configuration
+# Y-axis configuration - let axis auto-scale to better use canvas space
 chart.options.y_axis = {
     "title": {"text": "Sales Forecast (Million USD)", "style": {"fontSize": "36px"}},
     "labels": {"style": {"fontSize": "28px"}},
-    "min": 0,
     "gridLineColor": "#e0e0e0",
     "gridLineWidth": 1,
 }
 
-# Legend configuration
+# Legend configuration - positioned closer to the data, inside the plot area
 chart.options.legend = {
     "enabled": True,
     "itemStyle": {"fontSize": "32px"},
@@ -82,36 +76,33 @@ chart.options.legend = {
     "symbolHeight": 24,
     "align": "right",
     "verticalAlign": "top",
-    "x": -50,
-    "y": 80,
+    "x": -80,
+    "y": 120,
     "layout": "vertical",
+    "backgroundColor": "#ffffff",
+    "borderColor": "#e0e0e0",
+    "borderWidth": 1,
+    "padding": 16,
 }
 
-# Plot options
+# Plot options - configure errorbar series with visible caps
 chart.options.plot_options = {
-    "columnrange": {"dataLabels": {"enabled": False}, "pointWidth": 50, "borderRadius": 0},
+    "errorbar": {"stemWidth": 6, "whiskerLength": 40, "whiskerWidth": 6},
     "scatter": {"marker": {"radius": 16, "symbol": "circle"}},
 }
 
-# Create series data for error bars (columnrange represents low-high range)
+# Create errorbar data with asymmetric errors: [low, high] format
 errorbar_data = []
-for i in range(len(categories)):
-    errorbar_data.append({"low": low_values[i], "high": high_values[i]})
+for y, el, eu in zip(y_values, error_lower, error_upper, strict=True):
+    errorbar_data.append([y - el, y + eu])
 
 # Create series data for central points
 scatter_data = []
 for i, y in enumerate(y_values):
     scatter_data.append({"x": i, "y": y})
 
-# Add error bar series using raw options (columnrange for range display)
+# Add series - use native errorbar series type for authentic error bars with caps
 chart.options.series = [
-    {
-        "name": "10th-90th Percentile Range",
-        "type": "columnrange",
-        "data": errorbar_data,
-        "color": "#306998",
-        "opacity": 0.6,
-    },
     {
         "name": "Point Estimate",
         "type": "scatter",
@@ -119,6 +110,15 @@ chart.options.series = [
         "color": "#FFD43B",
         "marker": {"radius": 18, "symbol": "diamond", "lineColor": "#306998", "lineWidth": 3},
         "zIndex": 5,
+    },
+    {
+        "name": "10th-90th Percentile Range",
+        "type": "errorbar",
+        "data": errorbar_data,
+        "color": "#306998",
+        "stemColor": "#306998",
+        "whiskerColor": "#306998",
+        "showInLegend": True,
     },
 ]
 

@@ -1,0 +1,30 @@
+library: seaborn
+specification_id: contour-filled
+created: '2025-12-30T00:02:08Z'
+updated: '2025-12-30T00:04:19Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20585400286
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-filled/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-filled/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent visual clarity with smooth color transitions from 80x80 grid resolution
+  - Viridis colormap is colorblind-accessible and visually appealing
+  - Subtle white contour line overlay at 0.4 alpha helps with precise level identification
+    without being distracting
+  - Clean KISS code structure with proper seaborn styling setup
+  - Multi-peak surface with saddle region demonstrates varied contour features
+  - Correct title format and well-sized text elements
+  - Equal aspect ratio ensures geometric accuracy of contours
+  weaknesses:
+  - Axis labels are generic (X Coordinate, Y Coordinate) rather than having units
+    or representing a specific real-world context
+  - Limited use of seaborn-specific features since seaborn lacks native contour functions
+    - relies primarily on matplotlib for the actual contour plotting
+  - Could benefit from a more application-specific scenario (e.g., topographic elevation,
+    temperature field) rather than abstract mathematical function

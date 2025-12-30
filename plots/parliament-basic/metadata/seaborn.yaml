@@ -1,0 +1,25 @@
+library: seaborn
+specification_id: parliament-basic
+created: '2025-12-30T00:02:51Z'
+updated: '2025-12-30T00:18:44Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20585399654
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 90
+review:
+  strengths:
+  - Excellent semicircular layout with 5 well-proportioned concentric arcs
+  - Clean neutral data context using corporate departments
+  - Proper random seed set for reproducibility
+  - Good use of seaborn colorblind palette for accessibility
+  - Clear legend with department names and seat counts
+  - Helpful annotations for majority threshold and total seats
+  - White edge borders on seats provide good visual separation
+  weaknesses:
+  - Layout has some empty space below the baseline that could be better utilized
+  - Title uses regular dots which work but could be improved

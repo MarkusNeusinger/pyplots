@@ -46,8 +46,14 @@ This file provides guidance to GitHub Copilot when working with code in this rep
 # Install dependencies (uses uv - fast Python package manager)
 uv sync --all-extras
 
-# Run all tests
+# Run all tests (unit + integration)
 uv run pytest
+
+# Run only unit tests
+uv run pytest tests/unit
+
+# Run only integration tests (uses SQLite in-memory)
+uv run pytest tests/integration
 
 # Check code formatting and linting
 uv run ruff check .
@@ -100,9 +106,12 @@ Examples: `scatter-basic`, `scatter-color-mapped`, `bar-grouped-horizontal`, `he
 - **`plots/{spec-id}/`**: Plot-centric directories (spec + metadata + implementations)
 - **`prompts/`**: AI agent prompts for code generation and quality evaluation
 - **`core/`**: Shared business logic (database, repositories, config)
+  - **`core/database/types.py`**: Custom SQLAlchemy types (PostgreSQL + SQLite compatibility)
 - **`api/`**: FastAPI backend (routers, schemas, dependencies)
 - **`app/`**: React frontend (React 19 + TypeScript + Vite 7 + MUI 7)
-- **`tests/unit/`**: Unit tests mirroring source structure
+- **`tests/unit/`**: Unit tests with mocked dependencies
+- **`tests/integration/`**: Integration tests with SQLite in-memory database
+- **`tests/e2e/`**: End-to-end tests with full FastAPI stack
 - **`docs/`**: Architecture and workflow documentation
 
 ## GitHub Issue Labels
@@ -151,9 +160,14 @@ Examples: `scatter-basic`, `scatter-color-mapped`, `bar-grouped-horizontal`, `he
 ### Testing Standards
 
 - **Coverage Target**: 90%+
-- **Test Structure**: Mirror source structure in `tests/unit/`
+- **Test Structure**: Mirror source structure in `tests/unit/` and `tests/integration/`
 - **Naming**: `test_{what_it_does}`
 - **Fixtures**: Use pytest fixtures in `tests/conftest.py`
+- **Test Types**:
+  - **Unit tests** (`tests/unit/`): Fast, isolated, mocked dependencies - run in CI
+  - **Integration tests** (`tests/integration/`): Real database with SQLite in-memory - run in CI
+  - **E2E tests** (`tests/e2e/`): Full stack with FastAPI TestClient - not yet in CI
+- **Markers**: Use `@pytest.mark.unit`, `@pytest.mark.integration`, `@pytest.mark.e2e`
 
 ### Plot Implementation Style (KISS)
 
@@ -219,11 +233,12 @@ Automatic deployment on push to `main`:
 ## Acceptance Criteria
 
 Before completing any task:
-1. All tests pass: `uv run pytest`
+1. All tests pass: `uv run pytest tests/unit tests/integration`
 2. Code passes linting: `uv run ruff check .`
 3. Code is properly formatted: `uv run ruff format --check .`
 4. Type hints are included for all new functions
 5. Docstrings follow Google style for public functions
+6. Add integration tests for database-related changes (repositories, models)
 
 ## Database
 
@@ -232,6 +247,19 @@ Before completing any task:
 **Connection Modes** (priority order):
 1. `DATABASE_URL` - Direct connection (local development)
 2. `INSTANCE_CONNECTION_NAME` - Cloud SQL Connector (Cloud Run)
+
+**Database Types** (`core/database/types.py`):
+- Custom SQLAlchemy types support both PostgreSQL (production) and SQLite (tests)
+- **Production**: Uses optimized PostgreSQL native types (ARRAY, JSONB, UUID)
+- **Tests**: Uses compatible SQLite types (JSON, String) for in-memory testing
+- **StringArray**: ARRAY(String) in PostgreSQL, JSON text in SQLite
+- **UniversalJSON**: JSONB in PostgreSQL, JSON in SQLite
+- **UniversalUUID**: UUID in PostgreSQL, String(36) in SQLite
+
+**Benefits**:
+- Integration tests run with SQLite in CI (no PostgreSQL needed)
+- Production still uses optimized PostgreSQL types
+- Same models/code work in both environments
 
 **Local Setup**:
 ```bash

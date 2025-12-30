@@ -1,0 +1,26 @@
+library: letsplot
+specification_id: parliament-basic
+created: '2025-12-30T00:08:54Z'
+updated: '2025-12-30T00:27:32Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20585406402
+issue: 0
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/letsplot/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent semicircular parliament visualization with clean concentric arcs
+  - Uses neutral non-political data context (board divisions instead of political
+    parties)
+  - Colorblind-safe palette with distinct, visually appealing colors
+  - Legend clearly shows division names with seat counts in parentheses
+  - Includes majority threshold annotation and total seats information
+  - Good use of theme_void for clean presentation
+  - Proper aspect ratio with coord_fixed
+  weaknesses:
+  - Title uses lets-plot with hyphen instead of letsplot (one word)
+  - Seats are distributed by row rather than strictly left-to-right across the semicircle

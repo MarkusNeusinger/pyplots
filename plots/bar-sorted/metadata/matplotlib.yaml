@@ -1,0 +1,26 @@
+library: matplotlib
+specification_id: bar-sorted
+created: '2025-12-30T09:30:45Z'
+updated: '2025-12-30T09:36:46Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20593348250
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 94
+review:
+  strengths:
+  - Excellent horizontal bar orientation making category labels highly readable
+  - Clean sorting implementation with clear visual hierarchy from largest to smallest
+  - Value labels on bars enhance readability as recommended in spec
+  - Professional styling with removed spines, subtle grid, and white edge color on
+    bars
+  - Proper title format following pyplots.ai convention
+  - Good canvas utilization with appropriate margins
+  weaknesses:
+  - Data scenario is somewhat generic (product categories with random values); could
+    use a more specific real-world dataset
+  - Does not demonstrate any advanced matplotlib features beyond basic bar chart functionality

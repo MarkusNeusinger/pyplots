@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 violin-box: Violin Plot with Embedded Box Plot
-Library: bokeh 3.8.1 | Python 3.13
-Quality: 84/100 | Created: 2025-12-30
+Library: bokeh 3.8.1 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-30
 """
 
 import numpy as np

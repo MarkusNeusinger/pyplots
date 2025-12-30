@@ -1,0 +1,30 @@
+library: plotly
+specification_id: line-styled
+created: '2025-12-30T10:37:58Z'
+updated: '2025-12-30T10:45:21Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20594555333
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-styled/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-styled/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-styled/plotly/plot.html
+quality_score: 94
+review:
+  strengths:
+  - Excellent visual clarity with all four line styles (solid, dashed, dotted, dash-dot)
+    easily distinguishable
+  - Well-chosen realistic scenario with temperature sensors showing believable diurnal
+    patterns
+  - Proper use of Plotly layout customization for professional appearance
+  - Good color palette with distinct, accessible colors
+  - Appropriate line width (4) for the canvas size
+  - Clean, simple code following KISS principles
+  - Both PNG and HTML outputs generated for static and interactive use
+  weaknesses:
+  - Blue (#306998) and purple (#9C27B0) lines could be more differentiated for better
+    colorblind accessibility
+  - Could utilize Plotly-specific features like custom hover templates to enhance
+    interactivity
+  - Grid alpha at 0.1 is at the very low end of visibility

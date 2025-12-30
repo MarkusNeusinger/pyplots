@@ -1,7 +1,7 @@
 library: altair
 specification_id: parallel-categories-basic
 created: '2025-12-30T00:11:58Z'
-updated: '2025-12-30T00:17:56Z'
+updated: '2025-12-30T00:35:19Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20585401220
 issue: 0
@@ -10,22 +10,19 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/altair/plot.html
-quality_score: 83
+quality_score: 90
 review:
   strengths:
-  - Excellent choice of customer journey e-commerce data that clearly demonstrates
-    the parallel categories concept
-  - Creative implementation using Altair layers (bezier curves for flows, rect marks
-    for boxes, text marks for labels)
-  - Good color scheme for the Channel dimension with distinct colors that aid flow
-    tracing
-  - Correct title format and proper PNG/HTML output
-  - Reproducible with fixed random seed
+  - Column headers now correctly positioned above boxes, improving readability
+  - Creative bezier curve implementation for smooth flow ribbons
+  - Excellent customer journey e-commerce data scenario demonstrating the parallel
+    categories concept
+  - Good layered composition using Altair declarative approach
+  - Flow Colors legend added to explain channel-to-color mapping
+  - Proper title format and dual output (PNG + HTML)
   weaknesses:
-  - Column dimension headers appear below the boxes rather than above them, causing
-    confusion about which column represents which dimension
-  - Middle and right columns use uniform gray color instead of extending the color
-    scheme, making it harder to trace flows visually
-  - No explicit legend explaining the color-to-channel mapping
-  - Some flow ribbons are quite thin and hard to trace across the diagram
-  - Count labels are small and positioned inconsistently
+  - Category and Outcome columns use uniform grey instead of distinct colors per category,
+    reducing visual interest
+  - Some thinner flow ribbons are harder to trace across the full diagram
+  - Count labels positioned to the right of boxes overlap with ribbon starting points
+    on some boxes

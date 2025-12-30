@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 parallel-categories-basic: Basic Parallel Categories Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-30
@@ -24,12 +24,6 @@ dimension_values = {
     "Payment": ["Credit Card", "Debit Card", "Digital Wallet"],
     "Outcome": ["Completed", "Returned", "Cancelled"],
 }
-
-
-# Helper function to escape XML special characters
-def xml_escape(text):
-    """Escape special characters for XML/SVG."""
-    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 # Generate flow data - counts of observations for each path
@@ -84,6 +78,13 @@ category_colors = {
     "Clothing": "#FFD43B",  # Python Yellow
     "Home & Garden": "#4ECDC4",  # Teal
     "Sports": "#E17055",  # Coral
+}
+
+# Secondary colors for middle dimensions - distinct from category colors
+dimension_colors = {
+    "Channel": {"Online": "#7B68EE", "Store": "#20B2AA", "Mobile App": "#FF69B4"},
+    "Payment": {"Credit Card": "#9370DB", "Debit Card": "#3CB371", "Digital Wallet": "#FF6347"},
+    "Outcome": {"Completed": "#32CD32", "Returned": "#FFA500", "Cancelled": "#DC143C"},
 }
 
 # Custom style for pygal
@@ -176,22 +177,22 @@ for dim_idx, dim_name in enumerate(categories):
         if height < 1:
             continue
 
-        # Color based on first dimension category for the portion
-        # For first dimension, use category color directly
+        # Color based on dimension - use category colors for first dim, dimension colors for others
         if dim_idx == 0:
             fill_color = category_colors[cat]
         else:
-            fill_color = "#888888"  # Gray for other dimensions
+            fill_color = dimension_colors[dim_name][cat]
 
         parallel_svg += f'''
     <rect x="{x - bar_width / 2:.0f}" y="{y_top:.0f}" width="{bar_width:.0f}" height="{height:.0f}"
           fill="{fill_color}" stroke="white" stroke-width="2" opacity="0.9"/>'''
 
-    # Add dimension label at top
+    # Add dimension label at top (escape & for Home & Garden)
+    dim_name_escaped = dim_name.replace("&", "&amp;")
     parallel_svg += f'''
     <text x="{x:.0f}" y="{margin_top - 60:.0f}" text-anchor="middle"
           font-size="48" font-weight="bold" font-family="DejaVu Sans, sans-serif"
-          fill="#333333">{xml_escape(dim_name)}</text>'''
+          fill="#333333">{dim_name_escaped}</text>'''
 
 # Add category labels for each dimension
 for dim_idx, dim_name in enumerate(categories):
@@ -201,28 +202,36 @@ for dim_idx, dim_name in enumerate(categories):
         y_center = (y_top + y_bottom) / 2
         height = y_bottom - y_top
 
-        if height < 15:  # Skip label if too small
-            continue
-
         # Position label based on dimension
-        if dim_idx == 0:  # Left side
+        if dim_idx == 0:  # Left side - outside bar
             label_x = x - bar_width / 2 - 20
             anchor = "end"
-        elif dim_idx == n_dims - 1:  # Right side
+        elif dim_idx == n_dims - 1:  # Right side - outside bar
             label_x = x + bar_width / 2 + 20
             anchor = "start"
-        else:  # Middle - put inside or below
+        else:  # Middle dimensions - below the bar
             label_x = x
             anchor = "middle"
 
-        # Calculate font size based on bar height
-        font_size = min(36, max(20, height * 0.4))
+        # Use consistent readable font size (minimum 28px for all labels)
+        font_size = max(28, min(36, height * 0.35))
+
+        # Escape special characters
+        cat_escaped = cat.replace("&", "&amp;")
 
         if dim_idx in [0, n_dims - 1]:
+            # Side labels - next to bars
             parallel_svg += f'''
     <text x="{label_x:.0f}" y="{y_center:.0f}" text-anchor="{anchor}"
           font-size="{font_size:.0f}" font-family="DejaVu Sans, sans-serif"
-          fill="#333333" dominant-baseline="middle">{xml_escape(cat)}</text>'''
+          fill="#333333" dominant-baseline="middle">{cat_escaped}</text>'''
+        else:
+            # Middle dimension labels - below each bar segment
+            label_y = y_bottom + 35
+            parallel_svg += f'''
+    <text x="{label_x:.0f}" y="{label_y:.0f}" text-anchor="{anchor}"
+          font-size="{font_size:.0f}" font-family="DejaVu Sans, sans-serif"
+          fill="#333333">{cat_escaped}</text>'''
 
 # Calculate flow offsets for drawing ribbons
 # Track cumulative position for each (dim_idx, category, direction)
@@ -316,10 +325,11 @@ legend_spacing = 400
 
 for idx, (cat, color) in enumerate(category_colors.items()):
     lx = legend_x + idx * legend_spacing
+    cat_escaped = cat.replace("&", "&amp;")
     parallel_svg += f'''
     <rect x="{lx:.0f}" y="{legend_y:.0f}" width="50" height="50" fill="{color}" stroke="none"/>
     <text x="{lx + 70:.0f}" y="{legend_y + 38:.0f}" text-anchor="start"
-          font-size="40" font-family="DejaVu Sans, sans-serif" fill="#333333">{xml_escape(cat)}</text>'''
+          font-size="40" font-family="DejaVu Sans, sans-serif" fill="#333333">{cat_escaped}</text>'''
 
 # Add subtitle
 parallel_svg += f'''

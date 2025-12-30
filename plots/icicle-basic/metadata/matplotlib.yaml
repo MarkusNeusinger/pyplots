@@ -1,0 +1,30 @@
+library: matplotlib
+specification_id: icicle-basic
+created: '2025-12-30T00:03:34Z'
+updated: '2025-12-30T00:21:59Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20585399330
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/icicle-basic/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/icicle-basic/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 90
+review:
+  strengths:
+  - Excellent hierarchical visualization with clear parent-child relationships through
+    spatial adjacency
+  - Smart label truncation prevents overlap while keeping labels readable where space
+    permits
+  - Colorblind-safe palette with appropriate contrast (black text on yellow, white
+    on others)
+  - Good use of file system metaphor as realistic, neutral example data
+  - Clean code structure following KISS principle with inline data processing
+  - Level labels on right side provide helpful context for hierarchy depth
+  weaknesses:
+  - Item-level (depth 3) labels are heavily truncated to 1-2 characters, making them
+    difficult to identify
+  - No random seed statement (though data is deterministic, adding np.random.seed(42)
+    comment would clarify intent)
+  - Could use matplotlib colormap instead of manual color list for better scalability

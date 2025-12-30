@@ -84,9 +84,7 @@ def _create_direct_engine():
     poolclass = NullPool if ENVIRONMENT == "test" else None
 
     # Build engine kwargs - NullPool doesn't support pool_size/max_overflow
-    engine_kwargs = {
-        "echo": ENVIRONMENT == "development",
-    }
+    engine_kwargs = {"echo": ENVIRONMENT == "development"}
     if poolclass:
         engine_kwargs["poolclass"] = poolclass
     else:

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 parliament-basic: Parliament Seat Chart
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 86/100 | Created: 2025-12-30
@@ -23,67 +23,40 @@ parties = [
 
 total_seats = sum(p["seats"] for p in parties)
 
-
 # Generate seat positions in semicircular arcs
-# We arrange seats in multiple rows (arcs) from inner to outer
-def generate_parliament_seats(parties_data, total):
-    # Calculate number of rows based on total seats
-    # More seats = more rows for better distribution
-    if total <= 100:
-        n_rows = 3
-    elif total <= 200:
-        n_rows = 4
-    elif total <= 400:
-        n_rows = 5
+# Calculate number of rows based on total seats (more seats = more rows)
+n_rows = 5  # For 300 seats
+inner_radius = 3.0
+row_spacing = 1.0
+
+# Calculate seats per row (more seats in outer rows)
+row_weights = [(inner_radius + i * row_spacing) for i in range(n_rows)]
+total_weight = sum(row_weights)
+seats_per_row = [max(1, int(total_seats * w / total_weight)) for w in row_weights]
+
+# Adjust to match total exactly
+diff = total_seats - sum(seats_per_row)
+for i in range(abs(diff)):
+    if diff > 0:
+        seats_per_row[-(i % n_rows) - 1] += 1
     else:
-        n_rows = 6
+        seats_per_row[i % n_rows] -= 1
 
-    # Inner radius and row spacing
-    inner_radius = 3.0
-    row_spacing = 1.0
+# Generate positions for each seat
+all_seats = []
+seat_idx = 0
 
-    # Calculate seats per row (more seats in outer rows)
-    row_weights = [(inner_radius + i * row_spacing) for i in range(n_rows)]
-    total_weight = sum(row_weights)
-    seats_per_row = [max(1, int(total * w / total_weight)) for w in row_weights]
+for row_idx, n_seats_in_row in enumerate(seats_per_row):
+    radius = inner_radius + row_idx * row_spacing
+    angles = np.linspace(np.pi, 0, n_seats_in_row)
+    for angle in angles:
+        x = radius * np.cos(angle)
+        y = radius * np.sin(angle)
+        all_seats.append({"x": x, "y": y, "seat_idx": seat_idx, "angle": angle})
+        seat_idx += 1
 
-    # Adjust to match total exactly
-    diff = total - sum(seats_per_row)
-    for i in range(abs(diff)):
-        if diff > 0:
-            seats_per_row[-(i % n_rows) - 1] += 1
-        else:
-            seats_per_row[i % n_rows] -= 1
-
-    # Generate positions for each seat
-    all_seats = []
-    seat_idx = 0
-
-    for row_idx, n_seats_in_row in enumerate(seats_per_row):
-        radius = inner_radius + row_idx * row_spacing
-        # Angles from pi (left) to 0 (right) for semicircle
-        angles = np.linspace(np.pi, 0, n_seats_in_row)
-
-        for angle in angles:
-            x = radius * np.cos(angle)
-            y = radius * np.sin(angle)
-            all_seats.append({"x": x, "y": y, "seat_idx": seat_idx})
-            seat_idx += 1
-
-    return all_seats, n_rows, inner_radius, row_spacing
-
-
-seats_positions, n_rows, inner_radius, row_spacing = generate_parliament_seats(parties, total_seats)
-
-# Assign parties to seats (left to right arrangement)
-# Sort seats by angle (left to right)
-seats_with_angle = []
-for s in seats_positions:
-    angle = np.arctan2(s["y"], s["x"])
-    seats_with_angle.append({**s, "angle": angle})
-
-# Sort by angle descending (pi to 0 = left to right)
-seats_sorted = sorted(seats_with_angle, key=lambda x: -x["angle"])
+# Sort seats by angle descending (pi to 0 = left to right)
+seats_sorted = sorted(all_seats, key=lambda s: -s["angle"])
 
 # Assign parties to seats in order
 seat_data = []
@@ -92,7 +65,6 @@ for party_info in parties:
     party_name = party_info["party"]
     party_color = party_info["color"]
     n_seats = party_info["seats"]
-
     for _ in range(n_seats):
         if current_idx < len(seats_sorted):
             seat = seats_sorted[current_idx]
@@ -132,6 +104,7 @@ chart = (
                 direction="horizontal",
                 columns=3,
                 titleOrient="top",
+                titleAnchor="middle",
             ),
         ),
         tooltip=["party:N", "seats_count:Q"],
@@ -140,7 +113,7 @@ chart = (
         width=1500, height=800, title=alt.Title("parliament-basic · altair · pyplots.ai", fontSize=28, anchor="middle")
     )
     .configure_view(strokeWidth=0)
-    .configure_legend(padding=20)
+    .configure_legend(padding=20, offset=0)
 )
 
 # Save as PNG and HTML

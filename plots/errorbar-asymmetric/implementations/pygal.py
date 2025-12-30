@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 errorbar-asymmetric: Asymmetric Error Bars Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -19,8 +19,8 @@ error_upper = [20, 28, 50, 15, 22, 30]  # 90th percentile distance from median
 # Now Steel and Copper have larger lower than upper (conservative), others have larger upper
 
 # Cap width for horizontal lines at error bar ends (in x-axis units)
-# Increased width for better visibility as proper horizontal lines
-cap_width = 0.25
+# Wider caps for clear visibility as proper horizontal lines (approx 1/3 of spacing between bars)
+cap_width = 0.35
 
 # Custom style for 4800x2700 canvas with larger fonts
 custom_style = Style(
@@ -49,8 +49,8 @@ chart = pygal.XY(
     x_title="Material",
     y_title="Tensile Strength (MPa)",
     show_legend=True,
-    legend_at_bottom=True,
-    legend_at_bottom_columns=3,
+    legend_at_bottom=False,
+    legend_box_size=28,
     show_y_guides=True,
     show_x_guides=False,
     print_values=False,
@@ -86,9 +86,9 @@ for i in range(len(materials)):
     else:
         chart.add(None, bar_data, stroke=True, show_dots=False, stroke_style={"width": 7})
 
-    # Add caps as visible horizontal lines (thicker stroke for clarity)
-    chart.add(None, bottom_cap, stroke=True, show_dots=False, stroke_style={"width": 10})
-    chart.add(None, top_cap, stroke=True, show_dots=False, stroke_style={"width": 10})
+    # Add caps as visible horizontal lines (thicker stroke for clarity as proper T-caps)
+    chart.add(None, bottom_cap, stroke=True, show_dots=False, stroke_style={"width": 12})
+    chart.add(None, top_cap, stroke=True, show_dots=False, stroke_style={"width": 12})
 
 # Add central points as main series (on top of error bars)
 central_data = [(i + 1, y_values[i]) for i in range(len(materials))]

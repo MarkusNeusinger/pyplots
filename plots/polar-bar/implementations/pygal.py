@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 polar-bar: Polar Bar Chart (Wind Rose)
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -24,7 +24,7 @@ custom_style = Style(
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
+    foreground_subtle="#999999",
     colors=("#A6CEE3", "#5B9BD5", "#306998", "#2E5A88"),  # Light to dark blue gradient
     title_font_size=72,
     label_font_size=52,
@@ -42,7 +42,7 @@ chart = pygal.Radar(
     width=4800,
     height=2700,
     style=custom_style,
-    title="Wind Rose - Wind Frequency (%) by Direction · polar-bar · pygal · pyplots.ai",
+    title="Wind Rose · Wind Frequency (%) by Direction · polar-bar · pygal · pyplots.ai",
     show_legend=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=4,

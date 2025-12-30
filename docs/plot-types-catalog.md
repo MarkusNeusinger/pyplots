@@ -85,7 +85,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### bar-error ✅
 **Description:** Bar chart with error bars showing uncertainty.
 
-### bar-sorted 📋
+### bar-sorted ✅
 **Description:** Bar chart with categories sorted by value.
 
 ### bar-categorical 📋
@@ -128,7 +128,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### histogram-2d ✅
 **Description:** Two-dimensional histogram as heatmap.
 
-### histogram-cumulative 📋
+### histogram-cumulative ✅
 **Description:** Cumulative distribution function as histogram.
 
 ---
@@ -160,7 +160,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### box-grouped ✅
 **Description:** Multiple box plots grouped by category.
 
-### box-horizontal 📋
+### box-horizontal ✅
 **Description:** Horizontal box plot orientation.
 
 ### box-notched ✅
@@ -297,7 +297,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### count-basic ✅
 **Description:** Bar chart of category counts.
 
-### point-basic 📋
+### point-basic ✅
 **Description:** Point estimates with confidence intervals.
 
 ### cat-strip 📋
@@ -401,7 +401,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### contour-filled ✅
 **Description:** Filled contour regions.
 
-### contour-density 📋
+### contour-density ✅
 **Description:** Contour plot from point density.
 
 ### hexbin-basic ✅
@@ -883,7 +883,7 @@ Druckbare Vorlagen und spielerische Visualisierungen.
 ## Statistics
 
 - **Total Plot Types:** 235+
-- **Implemented:** 118 ✅
+- **Implemented:** 123 ✅
 - **Planned:** 120+ 📋
 - **Categories:** 31
 

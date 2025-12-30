@@ -1,0 +1,25 @@
+library: matplotlib
+specification_id: box-horizontal
+created: '2025-12-30T09:30:57Z'
+updated: '2025-12-30T09:38:46Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20593347218
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/box-horizontal/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-horizontal/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 94
+review:
+  strengths:
+  - Excellent data variety showcasing different distribution types (tight, wide, skewed,
+    with outliers)
+  - Perfect use of horizontal orientation with readable service type labels
+  - 'Strong color scheme using Python colors (#306998 blue, #FFD43B yellow) that is
+    colorblind-accessible'
+  - Comprehensive matplotlib boxplot customization demonstrating library capabilities
+  - Clean, well-structured code following KISS principles
+  weaknesses:
+  - Grid only on x-axis; adding subtle y-axis grid lines could help visually align
+    categories across the plot

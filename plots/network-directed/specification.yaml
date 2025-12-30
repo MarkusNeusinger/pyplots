@@ -1,0 +1,31 @@
+# Specification-level metadata for network-directed
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: network-directed
+title: Directed Network Graph
+
+# Specification tracking
+created: 2025-12-30T23:43:28Z
+updated: 2025-12-30T23:43:28Z
+issue: 2858
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - network
+    - graph
+    - directed
+  data_type:
+    - network
+    - relational
+    - categorical
+  domain:
+    - general
+    - technology
+    - research
+  features:
+    - directed
+    - arrows
+    - flow-visualization

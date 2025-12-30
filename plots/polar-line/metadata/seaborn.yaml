@@ -1,0 +1,25 @@
+library: seaborn
+specification_id: polar-line
+created: '2025-12-30T16:29:48Z'
+updated: '2025-12-30T16:35:44Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20601055649
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-line/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-line/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent color accessibility using seaborn colorblind palette (blue/orange contrast)
+  - Perfect title format following pyplots.ai conventions
+  - Well-chosen real-world scenario (hourly temperature by season) that demonstrates
+    cyclical data visualization
+  - Clean code structure with proper reproducibility (seed=42)
+  - Good use of closed loops to create continuous circular lines
+  - Clear axis labeling with units and 24-hour time format
+  weaknesses:
+  - Legend styling (fancybox=True, shadow=True) is overly decorative and inconsistent
+    with clean seaborn aesthetic

@@ -1,0 +1,26 @@
+library: seaborn
+specification_id: cat-strip
+created: '2025-12-30T16:29:47Z'
+updated: '2025-12-30T16:36:56Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20601055366
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/cat-strip/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/cat-strip/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent data design showing varied distributions across plants (tight vs variable,
+    high vs low quality)
+  - Proper seaborn API usage with hue parameter to avoid deprecation warning
+  - Clean, readable code following KISS principles
+  - Appropriate jitter (0.3) and alpha (0.7) for the data density
+  - Correct title format and descriptive axis labels with units
+  weaknesses:
+  - Does not leverage distinctive seaborn features (e.g., could overlay with boxplot
+    or violin for statistical summary)
+  - Color palette includes two blue shades (Plant A and Plant C) that may be confused
+    at a glance

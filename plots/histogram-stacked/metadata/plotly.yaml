@@ -1,0 +1,25 @@
+library: plotly
+specification_id: histogram-stacked
+created: '2025-12-30T10:37:26Z'
+updated: '2025-12-30T10:43:56Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20594557680
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/plotly/plot.html
+quality_score: 93
+review:
+  strengths:
+  - Excellent visual clarity with well-sized text and balanced layout
+  - Proper implementation of stacked histogram using consistent bin edges across all
+    groups
+  - Realistic manufacturing QC scenario with meaningful overlapping distributions
+  - Clean, readable code following KISS principles
+  - Both PNG and HTML outputs generated correctly
+  weaknesses:
+  - Uses manual histogram calculation with go.Bar instead of more idiomatic Plotly
+    histogram traces
+  - Does not leverage Plotly interactive features like custom hover templates

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-sorted: Sorted Bar Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-30
@@ -14,7 +14,6 @@ values = [4850, 3720, 2980, 2450, 1890, 1560, 1240, 980]
 
 # Sort data by values (descending) - already sorted, but making it explicit
 sorted_pairs = sorted(zip(categories, values, strict=True), key=lambda x: x[1], reverse=True)
-sorted_categories, sorted_values = zip(*sorted_pairs, strict=True)
 
 # Custom style for 4800x2700 canvas
 custom_style = Style(
@@ -34,6 +33,10 @@ custom_style = Style(
     stroke_width=2,
 )
 
+# Extract sorted categories and values (reversed for pygal which renders bottom-to-top)
+sorted_categories = [pair[0] for pair in reversed(sorted_pairs)]
+sorted_values = [pair[1] for pair in reversed(sorted_pairs)]
+
 # Create horizontal bar chart (better for category labels)
 chart = pygal.HorizontalBar(
     width=4800,
@@ -42,7 +45,7 @@ chart = pygal.HorizontalBar(
     title="bar-sorted · pygal · pyplots.ai",
     x_title="Sales (USD)",
     show_legend=False,
-    show_y_guides=True,
+    show_x_guides=True,
     print_values=True,
     print_values_position="center",
     value_formatter=lambda x: f"${x:,.0f}",
@@ -51,10 +54,10 @@ chart = pygal.HorizontalBar(
     truncate_label=-1,
 )
 
-# Set category labels on Y-axis
+# Set category labels on Y-axis (x_labels maps to Y-axis in HorizontalBar)
 chart.x_labels = sorted_categories
 
-# Add data as single series
+# Add data as single series (no legend needed since x_labels provide categories)
 chart.add("Sales", sorted_values)
 
 # Save as PNG and HTML

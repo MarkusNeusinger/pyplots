@@ -1,0 +1,29 @@
+library: bokeh
+specification_id: line-timeseries-rolling
+created: '2025-12-30T17:48:24Z'
+updated: '2025-12-30T17:56:16Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20602451770
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/bokeh/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent visual distinction between raw data (blue, semi-transparent) and rolling
+    average (yellow, prominent)
+  - Realistic temperature scenario with clear seasonal pattern that demonstrates the
+    value of rolling averages
+  - Proper handling of NaN values at rolling window boundaries by creating separate
+    data sources
+  - Interactive tools included (pan, wheel_zoom, box_zoom, reset, save) and HTML output
+    generated
+  - Clean KISS code structure following Bokeh best practices with ColumnDataSource
+  weaknesses:
+  - Legend text appears small at the top left corner when viewing the full-resolution
+    image
+  - Could add HoverTool to display exact date and temperature values on hover for
+    better interactivity

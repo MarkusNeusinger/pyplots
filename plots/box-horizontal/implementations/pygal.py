@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 box-horizontal: Horizontal Box Plot
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 62/100 | Created: 2025-12-30
+Quality: 68/100 | Created: 2025-12-30
 """
 
 import numpy as np

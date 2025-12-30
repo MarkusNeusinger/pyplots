@@ -1,0 +1,31 @@
+# Specification-level metadata for streamline-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: streamline-basic
+title: Basic Streamline Plot
+
+# Specification tracking
+created: 2025-12-30T23:43:21Z
+updated: null
+issue: 2861
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - streamline
+    - vector-field
+    - flow
+  data_type:
+    - numeric
+    - continuous
+    - spatial
+  domain:
+    - general
+    - science
+    - engineering
+  features:
+    - basic
+    - flow-visualization
+    - 2d

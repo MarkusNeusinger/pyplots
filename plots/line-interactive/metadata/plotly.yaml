@@ -1,0 +1,24 @@
+library: plotly
+specification_id: line-interactive
+created: '2025-12-30T17:48:10Z'
+updated: '2025-12-30T17:55:50Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20602450418
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-interactive/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-interactive/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-interactive/plotly/plot.html
+quality_score: 93
+review:
+  strengths:
+  - Excellent use of Plotly interactive features (rangeslider, rangeselector, hover
+    templates)
+  - Well-crafted realistic data with daily cycles, trend, noise, and anomaly spikes
+  - Perfect title format following pyplots conventions
+  - Clean visual design with appropriate text sizes and layout
+  - Good use of hovertemplate for formatted datetime and percentage display
+  weaknesses:
+  - Missing visible legend in the plot (trace has name but legend not shown)
+  - Pandas import is unnecessary - could use numpy for date generation

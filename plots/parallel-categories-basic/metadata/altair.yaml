@@ -1,0 +1,28 @@
+library: altair
+specification_id: parallel-categories-basic
+created: '2025-12-30T00:11:58Z'
+updated: '2025-12-30T00:35:19Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20585401220
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/altair/plot.html
+quality_score: 90
+review:
+  strengths:
+  - Column headers now correctly positioned above boxes, improving readability
+  - Creative bezier curve implementation for smooth flow ribbons
+  - Excellent customer journey e-commerce data scenario demonstrating the parallel
+    categories concept
+  - Good layered composition using Altair declarative approach
+  - Flow Colors legend added to explain channel-to-color mapping
+  - Proper title format and dual output (PNG + HTML)
+  weaknesses:
+  - Category and Outcome columns use uniform grey instead of distinct colors per category,
+    reducing visual interest
+  - Some thinner flow ribbons are harder to trace across the full diagram
+  - Count labels positioned to the right of boxes overlap with ribbon starting points
+    on some boxes

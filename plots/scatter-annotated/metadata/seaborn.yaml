@@ -1,0 +1,25 @@
+library: seaborn
+specification_id: scatter-annotated
+created: '2025-12-30T17:47:43Z'
+updated: '2025-12-30T18:06:41Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20602451004
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of adjustText library for automatic label positioning with subtle
+    connecting lines
+  - Proper seaborn theming with whitegrid and colorblind palette
+  - Text sizes optimized for the 4800x2700 resolution
+  - Realistic tech company scenario matching spec application examples
+  - Good marker sizing (s=200) and alpha (0.7) for the data density
+  - Clean, readable code structure following KISS principles
+  weaknesses:
+  - Grid styling could be more subtle (consider reducing grid alpha or using a lighter
+    style)

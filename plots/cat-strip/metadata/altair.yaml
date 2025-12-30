@@ -1,0 +1,29 @@
+library: altair
+specification_id: cat-strip
+created: '2025-12-30T16:29:50Z'
+updated: '2025-12-30T16:36:52Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20601057771
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/cat-strip/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/cat-strip/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/cat-strip/altair/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Altair transform_calculate for implementing jitter with Box-Muller
+    transform
+  - Clean declarative syntax with proper encoding types (N for nominal, Q for quantitative)
+  - Good font sizing configuration making all text highly readable
+  - Realistic business context with product ratings across departments
+  - Proper use of xOffset encoding for jitter positioning
+  - Interactive tooltips with formatted rating values
+  weaknesses:
+  - No legend present (minor, as single color does not require one, but could show
+    data count per category)
+  - All categories have exactly 30 points - varying counts would demonstrate the plot
+    type better
+  - Could use additional Altair features like selection for interactivity or layering
+    with mean markers

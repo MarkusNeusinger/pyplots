@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 circlepacking-basic: Circle Packing Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 62/100 | Created: 2025-12-30
@@ -6,6 +6,7 @@ Quality: 62/100 | Created: 2025-12-30
 
 import math
 
+import cairosvg
 import pygal
 from pygal.etree import etree
 from pygal.style import Style
@@ -74,7 +75,7 @@ DEPTH_COLORS = [
 ]
 
 # Padding between circles
-PADDING = 8
+PADDING = 12
 
 # All circles to draw
 all_circles = []
@@ -91,14 +92,14 @@ n_depts = len(departments)
 total_dept_value = sum(d["value"] for d in departments)
 
 # Calculate radii for each department based on value (area-proportional)
-dept_total_area = math.pi * (root_r * 0.7) ** 2  # Use 70% of root for departments
+dept_total_area = math.pi * (root_r * 0.65) ** 2  # Use 65% of root for departments
 dept_radii = []
 for dept in departments:
     dept_area = dept_total_area * (dept["value"] / total_dept_value)
     dept_radii.append(math.sqrt(dept_area / math.pi))
 
 # Position departments in a ring around center
-dept_ring_radius = root_r * 0.42
+dept_ring_radius = root_r * 0.45
 dept_circles = []
 for i, dept in enumerate(departments):
     angle = (2 * math.pi * i / n_depts) - math.pi / 2  # Start from top
@@ -108,7 +109,7 @@ for i, dept in enumerate(departments):
     dept_circles.append({"node": dept, "x": x, "y": y, "r": r})
     all_circles.append({"x": x, "y": y, "r": r, "label": dept["label"], "value": dept["value"], "depth": 1})
 
-# Pack teams within each department
+# Pack teams within each department - scale to fit and arrange in ring
 for dc in dept_circles:
     dept = dc["node"]
     teams = dept["children"]
@@ -116,33 +117,49 @@ for dc in dept_circles:
         continue
 
     dept_x, dept_y, dept_r = dc["x"], dc["y"], dc["r"]
+    n_teams = len(teams)
 
-    # Calculate team radii (area-proportional to value)
+    # Sort teams by value (largest first)
+    sorted_teams = sorted(teams, key=lambda t: -t["value"])
     total_team_value = sum(t["value"] for t in teams)
-    team_usable_area = math.pi * (dept_r * 0.82) ** 2
-    team_circles = []
-    for team in sorted(teams, key=lambda t: -t["value"]):
-        team_area = team_usable_area * (team["value"] / total_team_value)
-        tr = math.sqrt(team_area / math.pi)
-        team_circles.append({"node": team, "r": tr, "x": 0, "y": 0})
 
-    # Place teams using simple circular arrangement within department
-    n_teams = len(team_circles)
+    # Calculate scaling factor so all team circles fit inside department
+    # Using a ring layout where teams are arranged around department center
     if n_teams == 1:
-        team_circles[0]["x"] = dept_x
-        team_circles[0]["y"] = dept_y
+        # Single team - put at center with limited radius
+        scale_r = dept_r * 0.6
+        team_data = [{"node": sorted_teams[0], "r": scale_r, "x": dept_x, "y": dept_y}]
     else:
-        # Calculate ring radius that keeps teams inside department
-        max_team_r = max(tc["r"] for tc in team_circles)
-        team_ring_r = dept_r - max_team_r - PADDING
+        # Multiple teams - arrange in a ring
+        # First, calculate proportional radii
+        max_single_r = dept_r * 0.35  # Max radius for any single team
+        team_data = []
+        for team in sorted_teams:
+            # Area-proportional sizing with max limit
+            proportion = team["value"] / total_team_value
+            tr = min(max_single_r, dept_r * 0.5 * math.sqrt(proportion * n_teams / math.pi))
+            team_data.append({"node": team, "r": tr, "x": 0.0, "y": 0.0})
 
-        for i, tc in enumerate(team_circles):
+        # Calculate ring radius that keeps all teams inside department
+        max_team_r = max(td["r"] for td in team_data)
+        ring_radius = dept_r - max_team_r - PADDING * 2
+
+        # If ring too small, scale down all team radii
+        if ring_radius < max_team_r:
+            scale = (dept_r * 0.4) / max_team_r
+            for td in team_data:
+                td["r"] *= scale
+            max_team_r = max(td["r"] for td in team_data)
+            ring_radius = dept_r - max_team_r - PADDING * 2
+
+        # Place teams around the ring
+        for i, td in enumerate(team_data):
             angle = (2 * math.pi * i / n_teams) - math.pi / 2
-            tc["x"] = dept_x + team_ring_r * 0.5 * math.cos(angle)
-            tc["y"] = dept_y + team_ring_r * 0.5 * math.sin(angle)
+            td["x"] = dept_x + ring_radius * 0.6 * math.cos(angle)
+            td["y"] = dept_y + ring_radius * 0.6 * math.sin(angle)
 
     # Add team circles to all_circles
-    for tc in team_circles:
+    for tc in team_data:
         all_circles.append(
             {
                 "x": tc["x"],
@@ -166,7 +183,7 @@ custom_style = Style(
     legend_font_size=48,
 )
 
-# Create base chart (using Pie as canvas with XML filter for circles)
+# Create base chart using Pie with dummy data (to enable legend and title rendering)
 chart = pygal.Pie(
     width=WIDTH,
     height=HEIGHT,
@@ -175,79 +192,117 @@ chart = pygal.Pie(
     show_legend=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=3,
-    inner_radius=0,
+    inner_radius=0.99,  # Nearly invisible inner ring - hides "No data" issue
     margin=80,
+    print_values=False,
+    print_labels=False,
 )
 
-# Add legend entries
-chart.add("Company (Root)", [])
-chart.add("Departments", [])
-chart.add("Teams", [])
+# Add minimal dummy values to avoid "No data" text
+chart.add("Company (Root)", [{"value": 0.001, "label": ""}])
+chart.add("Departments", [{"value": 0.001, "label": ""}])
+chart.add("Teams", [{"value": 0.001, "label": ""}])
 
+# Store circle data for XML filter
+circles_data = all_circles
+depth_colors = DEPTH_COLORS
 
-# XML filter to render circle packing
-circles_data = all_circles  # Capture for closure
+# Render SVG first to get the raw XML
+svg_string = chart.render().decode("utf-8")
+svg_root = etree.fromstring(svg_string.encode("utf-8"))
 
+# Find the main graph group and add circle packing elements
+g = etree.SubElement(svg_root, "g")
+g.set("class", "circle-packing")
 
-def add_circle_packing_filter(svg_root):
-    g = etree.SubElement(svg_root, "g")
-    g.set("class", "circle-packing")
+# Sort by depth (draw outer circles first, then inner)
+sorted_circles = sorted(circles_data, key=lambda c: c["depth"])
 
-    # Sort by depth (draw outer circles first, then inner)
-    sorted_circles = sorted(circles_data, key=lambda c: c["depth"])
+for circle in sorted_circles:
+    depth = circle["depth"]
+    color = depth_colors[depth]
+    opacity = 0.25 if depth == 0 else (0.45 if depth == 1 else 0.9)
 
-    for circle in sorted_circles:
-        depth = circle["depth"]
-        color = DEPTH_COLORS[depth]
-        opacity = 0.25 if depth == 0 else (0.45 if depth == 1 else 0.9)
+    # Circle element
+    elem = etree.SubElement(g, "circle")
+    elem.set("cx", f"{circle['x']:.1f}")
+    elem.set("cy", f"{circle['y']:.1f}")
+    elem.set("r", f"{circle['r']:.1f}")
+    elem.set("fill", color)
+    elem.set("fill-opacity", str(opacity))
+    elem.set("stroke", "#333")
+    elem.set("stroke-width", "3" if depth < 2 else "2")
 
-        # Circle element
-        elem = etree.SubElement(g, "circle")
-        elem.set("cx", f"{circle['x']:.1f}")
-        elem.set("cy", f"{circle['y']:.1f}")
-        elem.set("r", f"{circle['r']:.1f}")
-        elem.set("fill", color)
-        elem.set("fill-opacity", str(opacity))
-        elem.set("stroke", "#333")
-        elem.set("stroke-width", "3" if depth < 2 else "2")
+    # Tooltip
+    title = etree.SubElement(elem, "title")
+    title.text = f"{circle['label']}: {circle['value']} people"
 
-        # Tooltip
-        title = etree.SubElement(elem, "title")
-        title.text = f"{circle['label']}: {circle['value']} people"
+    # Labels: show dept labels above their circles, team labels inside
+    if depth == 1:
+        # Department label above the circle (outside child region)
+        text = etree.SubElement(g, "text")
+        text.set("x", f"{circle['x']:.1f}")
+        text.set("y", f"{circle['y'] - circle['r'] - 15:.1f}")  # Above circle
+        text.set("text-anchor", "middle")
+        text.set("dominant-baseline", "auto")
+        text.set("fill", "#222")
+        text.set("font-size", "48")
+        text.set("font-family", "sans-serif")
+        text.set("font-weight", "bold")
+        text.text = circle["label"]
+    elif depth == 2 and circle["r"] > 40:
+        # Team label inside circle
+        text = etree.SubElement(g, "text")
+        text.set("x", f"{circle['x']:.1f}")
+        text.set("y", f"{circle['y']:.1f}")
+        text.set("text-anchor", "middle")
+        text.set("dominant-baseline", "middle")
+        text.set("fill", "#222")
+        font_size = int(min(circle["r"] * 0.4, 38))
+        text.set("font-size", str(font_size))
+        text.set("font-family", "sans-serif")
+        text.set("font-weight", "bold")
+        text.text = circle["label"]
 
-        # Label for circles
-        min_label_r = 35 if depth == 2 else 70
-        if circle["r"] > min_label_r:
-            text = etree.SubElement(g, "text")
-            text.set("x", f"{circle['x']:.1f}")
-            y_offset = 0 if depth == 2 else -circle["r"] * 0.15
-            text.set("y", f"{circle['y'] + y_offset:.1f}")
-            text.set("text-anchor", "middle")
-            text.set("dominant-baseline", "middle")
-            text.set("fill", "#333" if depth < 2 else "#222")
-            font_size = int(min(circle["r"] * 0.35, 44 if depth == 2 else 52))
-            text.set("font-size", str(font_size))
-            text.set("font-family", "sans-serif")
-            text.set("font-weight", "bold")
-            text.text = circle["label"]
+        # Value text below label
+        if circle["r"] > 55:
+            val_text = etree.SubElement(g, "text")
+            val_text.set("x", f"{circle['x']:.1f}")
+            val_text.set("y", f"{circle['y'] + font_size * 0.9:.1f}")
+            val_text.set("text-anchor", "middle")
+            val_text.set("dominant-baseline", "middle")
+            val_text.set("fill", "#444")
+            val_text.set("font-size", str(int(font_size * 0.7)))
+            val_text.set("font-family", "sans-serif")
+            val_text.text = f"{circle['value']}"
+    elif depth == 0:
+        # Root label at center (visible through transparent circles)
+        text = etree.SubElement(g, "text")
+        text.set("x", f"{circle['x']:.1f}")
+        text.set("y", f"{circle['y']:.1f}")
+        text.set("text-anchor", "middle")
+        text.set("dominant-baseline", "middle")
+        text.set("fill", "#333")
+        text.set("font-size", "56")
+        text.set("font-family", "sans-serif")
+        text.set("font-weight", "bold")
+        text.set("opacity", "0.6")
+        text.text = circle["label"]
 
-            # Value text for leaf nodes
-            if depth == 2 and circle["r"] > 50:
-                val_text = etree.SubElement(g, "text")
-                val_text.set("x", f"{circle['x']:.1f}")
-                val_text.set("y", f"{circle['y'] + font_size * 0.85:.1f}")
-                val_text.set("text-anchor", "middle")
-                val_text.set("dominant-baseline", "middle")
-                val_text.set("fill", "#444")
-                val_text.set("font-size", str(int(font_size * 0.7)))
-                val_text.set("font-family", "sans-serif")
-                val_text.text = f"{circle['value']}"
+# Hide any "No data" text by finding and removing it (using parent map since etree lacks getparent)
+parent_map = {c: p for p in svg_root.iter() for c in p}
+elements_to_remove = []
+for elem in svg_root.iter():
+    if elem.text and "No data" in str(elem.text):
+        elements_to_remove.append(elem)
+for elem in elements_to_remove:
+    if elem in parent_map:
+        parent_map[elem].remove(elem)
 
-    return svg_root
+# Write modified SVG to file
+svg_output = etree.tostring(svg_root, encoding="unicode")
+with open("plot.html", "w") as f:
+    f.write(svg_output)
 
-
-chart.add_xml_filter(add_circle_packing_filter)
-
-# Save
-chart.render_to_png("plot.png")
-chart.render_to_file("plot.html")
+# Render to PNG via cairosvg
+cairosvg.svg2png(bytestring=svg_output.encode("utf-8"), write_to="plot.png")

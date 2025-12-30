@@ -1,0 +1,26 @@
+library: plotly
+specification_id: histogram-cumulative
+created: '2025-12-30T09:31:29Z'
+updated: '2025-12-30T09:40:27Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20593348147
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent visual design with clear step function representation of cumulative
+    distribution
+  - Thoughtful addition of percentile reference lines (25th, 50th, 75th) with dashed
+    yellow styling that enhances understanding
+  - Custom hover templates provide informative tooltips showing exact proportions
+  - Proper use of shape=hv for authentic step function appearance
+  - Good color scheme using Python Blue and Yellow with appropriate contrast
+  weaknesses:
+  - Uses manual histogram calculation with np.histogram instead of Plotly native go.Histogram
+    with cumulative_enabled=True
+  - Legend position in upper-left could be moved to avoid potential visual overlap

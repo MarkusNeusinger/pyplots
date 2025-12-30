@@ -1,0 +1,25 @@
+library: plotnine
+specification_id: point-basic
+created: '2025-12-30T09:31:03Z'
+updated: '2025-12-30T09:39:19Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20593350752
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/point-basic/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/point-basic/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of plotnine grammar of graphics with proper layer composition (vline
+    → errorbar → point)
+  - Smart horizontal orientation makes category labels easy to read
+  - Thoughtful data sorting by estimate value improves visual comprehension
+  - Reference line at 7.0 provides meaningful context for interpretation
+  - Proper categorical ordering preserves the sorted display
+  - Clean, professional appearance with well-calibrated font sizes
+  weaknesses:
+  - Grid styling uses non-standard alpha parameter in element_line (may cause warnings
+    in some plotnine versions)

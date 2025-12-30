@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 icicle-basic: Basic Icicle Chart
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -19,6 +19,8 @@ from lets_plot import (
     scale_fill_manual,
     scale_size_identity,
     theme,
+    xlim,
+    ylim,
 )
 
 
@@ -122,12 +124,13 @@ rect_df["y_center"] = (rect_df["ymin"] + rect_df["ymax"]) / 2
 rect_df["width"] = rect_df["xmax"] - rect_df["xmin"]
 
 # Only show labels for rectangles wide enough (threshold based on label length)
+# Balanced threshold to show labels while avoiding overlap
 rect_df["label_len"] = rect_df["name"].str.len()
-rect_df["show_label"] = rect_df["width"] > (rect_df["label_len"] * 0.008 + 0.015)
+rect_df["show_label"] = rect_df["width"] > (rect_df["label_len"] * 0.007 + 0.01)
 label_df = rect_df[rect_df["show_label"]].copy()
 
-# Adjust font size based on level for better fit
-label_df["font_size"] = label_df["level"].map({0: 14, 1: 12, 2: 10, 3: 8})
+# Adjust font size based on level for better fit (smaller at deeper levels to prevent overlap)
+label_df["font_size"] = label_df["level"].map({0: 14, 1: 12, 2: 8, 3: 7})
 
 # Color palette by level (Python colors + complementary)
 colors = {
@@ -152,7 +155,9 @@ plot = (
     )
     + scale_fill_manual(values=colors, name="Level")
     + scale_size_identity()
-    + labs(title="File System · icicle-basic · letsplot · pyplots.ai")
+    + xlim(-0.02, 1.02)
+    + ylim(-0.1, max_level + 1.1)
+    + labs(title="icicle-basic · letsplot · pyplots.ai")
     + theme(
         axis_title=element_blank(),
         axis_text=element_blank(),

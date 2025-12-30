@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-density: Density Contour Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -48,12 +48,12 @@ x_grid = np.linspace(x_min, x_max, grid_size)
 y_grid = np.linspace(y_min, y_max, grid_size)
 X, Y = np.meshgrid(x_grid, y_grid)
 
-# Compute 2D Kernel Density Estimation using Gaussian kernel (manual implementation)
+# Compute 2D Kernel Density Estimation using Gaussian kernel
 # Scott's rule for 2D bandwidth
 n = len(x_points)
 std_x = np.std(x_points)
 std_y = np.std(y_points)
-bandwidth = n ** (-1 / 6)  # Scott's rule for 2D
+bandwidth = n ** (-1 / 6)
 h_x = bandwidth * std_x
 h_y = bandwidth * std_y
 
@@ -67,35 +67,51 @@ Z /= n * 2 * np.pi * h_x * h_y
 Z_min, Z_max = Z.min(), Z.max()
 Z_normalized = (Z - Z_min) / (Z_max - Z_min) * 100
 
+# Marching squares lookup table
+ms_table = {
+    0: [],
+    1: [[3, 2]],
+    2: [[1, 2]],
+    3: [[3, 1]],
+    4: [[0, 1]],
+    5: [[0, 3], [1, 2]],
+    6: [[0, 2]],
+    7: [[0, 3]],
+    8: [[0, 3]],
+    9: [[0, 2]],
+    10: [[0, 1], [2, 3]],
+    11: [[0, 1]],
+    12: [[1, 3]],
+    13: [[1, 2]],
+    14: [[2, 3]],
+    15: [],
+}
 
-def marching_squares_contour(Z, level):
-    """Extract contour paths using marching squares algorithm with linear interpolation."""
-    rows, cols = Z.shape
+# Contour levels and colorblind-safe colors (viridis-inspired)
+contour_levels = [10, 20, 30, 40, 50, 60, 70, 80, 90]
+level_colors = {
+    10: "#440154",
+    20: "#482878",
+    30: "#3e4989",
+    40: "#31688e",
+    50: "#26828e",
+    60: "#1f9e89",
+    70: "#35b779",
+    80: "#6ece58",
+    90: "#fde725",
+}
+
+contour_series = []
+label_positions = []
+rows, cols = Z_normalized.shape
+
+# Extract contours using marching squares (inline)
+for level in contour_levels:
     segments = []
-
-    ms_table = {
-        0: [],
-        1: [[3, 2]],
-        2: [[1, 2]],
-        3: [[3, 1]],
-        4: [[0, 1]],
-        5: [[0, 3], [1, 2]],
-        6: [[0, 2]],
-        7: [[0, 3]],
-        8: [[0, 3]],
-        9: [[0, 2]],
-        10: [[0, 1], [2, 3]],
-        11: [[0, 1]],
-        12: [[1, 3]],
-        13: [[1, 2]],
-        14: [[2, 3]],
-        15: [],
-    }
-
     for i in range(rows - 1):
         for j in range(cols - 1):
-            tl, tr = Z[i, j], Z[i, j + 1]
-            br, bl = Z[i + 1, j + 1], Z[i + 1, j]
+            tl, tr = Z_normalized[i, j], Z_normalized[i, j + 1]
+            br, bl = Z_normalized[i + 1, j + 1], Z_normalized[i + 1, j]
 
             config = 0
             if tl >= level:
@@ -112,22 +128,18 @@ def marching_squares_contour(Z, level):
                 continue
 
             edge_points = {}
-
             if tl != tr:
                 t = (level - tl) / (tr - tl)
                 if 0 <= t <= 1:
                     edge_points[0] = (j + t, i)
-
             if tr != br:
                 t = (level - tr) / (br - tr)
                 if 0 <= t <= 1:
                     edge_points[1] = (j + 1, i + t)
-
             if bl != br:
                 t = (level - bl) / (br - bl)
                 if 0 <= t <= 1:
                     edge_points[2] = (j + t, i + 1)
-
             if tl != bl:
                 t = (level - tl) / (bl - tl)
                 if 0 <= t <= 1:
@@ -137,17 +149,9 @@ def marching_squares_contour(Z, level):
                 if e1 in edge_points and e2 in edge_points:
                     segments.append((edge_points[e1], edge_points[e2]))
 
-    return segments
-
-
-def connect_segments(segments):
-    """Connect line segments into continuous paths."""
-    if not segments:
-        return []
-
+    # Connect segments into paths (inline)
     paths = []
     remaining = list(segments)
-
     while remaining:
         seg = remaining.pop(0)
         path = [seg[0], seg[1]]
@@ -180,50 +184,22 @@ def connect_segments(segments):
         if len(path) >= 4:
             paths.append(path)
 
-    return paths
-
-
-# Extract contour lines at various density levels
-contour_levels = [10, 20, 30, 40, 50, 60, 70, 80, 90]
-
-# Colorblind-safe colors for contour lines (viridis-inspired)
-level_colors = {
-    10: "#440154",
-    20: "#482878",
-    30: "#3e4989",
-    40: "#31688e",
-    50: "#26828e",
-    60: "#1f9e89",
-    70: "#35b779",
-    80: "#6ece58",
-    90: "#fde725",
-}
-
-contour_series = []
-label_positions = []
-
-for level in contour_levels:
-    segments = marching_squares_contour(Z_normalized, level)
-    paths = connect_segments(segments)
-
+    # Convert paths to series
     for path in paths:
         if len(path) < 4:
             continue
 
-        # Convert grid indices to real coordinates
         real_path = []
         for pt in path:
             real_x = x_min + (pt[0] / (grid_size - 1)) * (x_max - x_min)
             real_y = y_min + (pt[1] / (grid_size - 1)) * (y_max - y_min)
             real_path.append([round(real_x, 3), round(real_y, 3)])
 
-        # Subsample for performance
         step = max(1, len(real_path) // 100)
         subsampled = real_path[::step]
         if len(real_path) > step and real_path[-1] != subsampled[-1]:
             subsampled.append(real_path[-1])
 
-        # Add contour line with appropriate color
         contour_series.append(
             {
                 "type": "line",
@@ -239,7 +215,6 @@ for level in contour_levels:
             }
         )
 
-        # Store label position for key levels
         key_levels = [20, 50, 80]
         if level in key_levels and len(path) > 8 and not any(lp["level"] == level for lp in label_positions):
             mid_idx = len(path) // 2
@@ -262,7 +237,7 @@ chart.options.chart = {
     "height": 2700,
     "backgroundColor": "#ffffff",
     "marginBottom": 200,
-    "marginRight": 150,
+    "marginRight": 350,
     "marginLeft": 220,
     "marginTop": 140,
 }
@@ -273,9 +248,9 @@ chart.options.title = {
     "style": {"fontSize": "64px", "fontWeight": "bold"},
 }
 
-# X-axis
+# X-axis with meaningful label
 chart.options.x_axis = {
-    "title": {"text": "X Variable", "style": {"fontSize": "48px"}, "margin": 25},
+    "title": {"text": "Measurement A (normalized units)", "style": {"fontSize": "48px"}, "margin": 25},
     "labels": {"style": {"fontSize": "36px"}},
     "lineWidth": 3,
     "tickWidth": 3,
@@ -286,9 +261,9 @@ chart.options.x_axis = {
     "max": x_max,
 }
 
-# Y-axis
+# Y-axis with meaningful label
 chart.options.y_axis = {
-    "title": {"text": "Y Variable", "style": {"fontSize": "48px"}},
+    "title": {"text": "Measurement B (normalized units)", "style": {"fontSize": "48px"}},
     "labels": {"style": {"fontSize": "36px"}},
     "lineWidth": 3,
     "tickWidth": 3,
@@ -315,51 +290,42 @@ scatter_series = {
     "showInLegend": True,
 }
 
+# Add density legend series (visual scale representation)
+density_legend_series = []
+for level in [90, 70, 50, 30, 10]:
+    density_legend_series.append(
+        {
+            "type": "line",
+            "name": f"{level}% Density",
+            "data": [],
+            "color": level_colors[level],
+            "lineWidth": 6,
+            "marker": {"enabled": False},
+            "showInLegend": True,
+        }
+    )
+
 # Combine all series
-all_series = [scatter_series] + contour_series
+all_series = [scatter_series] + density_legend_series + contour_series
 chart.options.series = all_series
 
-# Legend configuration
+# Legend configuration with density scale
 chart.options.legend = {
     "enabled": True,
     "align": "right",
-    "verticalAlign": "top",
+    "verticalAlign": "middle",
     "layout": "vertical",
     "x": -30,
-    "y": 100,
+    "y": 0,
     "floating": True,
     "itemStyle": {"fontSize": "32px"},
-    "symbolRadius": 6,
+    "symbolRadius": 0,
     "symbolHeight": 20,
-    "symbolWidth": 30,
+    "symbolWidth": 50,
+    "title": {"text": "Density Scale", "style": {"fontSize": "36px", "fontWeight": "bold"}},
+    "itemMarginTop": 8,
+    "itemMarginBottom": 8,
 }
-
-# Add density gradient legend (custom annotation)
-gradient_labels = [
-    {
-        "point": {"x": x_max - 0.3, "y": y_max - 0.5, "xAxis": 0, "yAxis": 0},
-        "text": "Density",
-        "style": {"fontSize": "36px", "fontWeight": "bold"},
-    },
-    {
-        "point": {"x": x_max - 0.3, "y": y_max - 1.0, "xAxis": 0, "yAxis": 0},
-        "text": "High",
-        "style": {"fontSize": "28px"},
-        "backgroundColor": "#fde725",
-    },
-    {
-        "point": {"x": x_max - 0.3, "y": y_max - 1.4, "xAxis": 0, "yAxis": 0},
-        "text": "Medium",
-        "style": {"fontSize": "28px"},
-        "backgroundColor": "#26828e",
-    },
-    {
-        "point": {"x": x_max - 0.3, "y": y_max - 1.8, "xAxis": 0, "yAxis": 0},
-        "text": "Low",
-        "style": {"fontSize": "28px"},
-        "backgroundColor": "#440154",
-    },
-]
 
 # Add annotations for contour level labels
 annotations_list = []
@@ -383,7 +349,7 @@ chart.options.annotations = [{"labels": annotations_list, "labelOptions": {"shap
 chart.options.tooltip = {
     "style": {"fontSize": "28px"},
     "headerFormat": "<b>Data Point</b><br>",
-    "pointFormat": "X: {point.x:.2f}<br>Y: {point.y:.2f}",
+    "pointFormat": "Measurement A: {point.x:.2f}<br>Measurement B: {point.y:.2f}",
 }
 
 # Download Highcharts JS modules

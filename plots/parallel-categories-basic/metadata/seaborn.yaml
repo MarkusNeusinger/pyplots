@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: parallel-categories-basic
 created: '2025-12-30T00:04:01Z'
-updated: '2025-12-30T00:12:10Z'
+updated: '2025-12-30T00:25:18Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20585400178
 issue: 0
@@ -10,22 +10,19 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 78
+quality_score: 85
 review:
   strengths:
-  - Excellent implementation of a parallel categories plot using matplotlib primitives
-    since seaborn lacks native support for this chart type
-  - Well-structured data generation with realistic Titanic-style survival probability
-    patterns
-  - Clean Bezier curve ribbons with proportional widths that effectively show flow
-    between categories
-  - Good color coding by Class with appropriate alpha transparency for overlapping
-    ribbons
-  - Proper title format following the spec-id · library · pyplots.ai convention
+  - Excellent use of Titanic-style data as a classic parallel categories example
+  - Colorblind-safe seaborn palette properly applied throughout
+  - Ribbon widths correctly proportional to observation counts
+  - Creative use of seaborn countplot as an inset to add complementary information
+  - Clean bezier curve ribbons with good alpha transparency
+  - Dimension labels use seaborn palette color for visual consistency
+  - Correct title format
   weaknesses:
-  - Seaborn is only used for styling (set_style, set_context), not for actual plotting
-    - this is primarily a matplotlib implementation
-  - Category labels on middle dimensions (fontsize 11 with white text) are smaller
-    than optimal for the target resolution
-  - Yellow (#FFD43B) and light green (#8FBC8F) may be difficult to distinguish for
-    some color vision deficiencies
+  - Some category labels (Queenstown, Cherbourg) appear crowded and overlap with surrounding
+    ribbons
+  - The inset bar chart slightly crowds the right side of the visualization
+  - Middle dimension labels inside narrow category bars are harder to read
+  - Code structure is complex with nested loops

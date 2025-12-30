@@ -1,0 +1,24 @@
+library: letsplot
+specification_id: area-stacked-percent
+created: '2025-12-30T11:30:04Z'
+updated: '2025-12-30T11:36:56Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20595341903
+issue: 0
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/letsplot/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent visual clarity with well-chosen colors that are colorblind-friendly
+  - Perfect 100% stacked area representation matching the spec exactly
+  - Realistic and informative market share scenario that clearly shows composition
+    changes over time
+  - Clean ggplot2-style code structure using lets-plot grammar of graphics
+  weaknesses:
+  - Year labels display with comma separators (2,016 instead of 2016) which looks
+    unnatural for year values
+  - The HTML export setup_html() call is unnecessary overhead for PNG-only output

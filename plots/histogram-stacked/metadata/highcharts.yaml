@@ -1,0 +1,28 @@
+library: highcharts
+specification_id: histogram-stacked
+created: '2025-12-30T10:42:46Z'
+updated: '2025-12-30T10:50:48Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20594562099
+issue: 0
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/highcharts/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent colorblind-safe palette with clear visual distinction between all three
+    groups
+  - Proper implementation of stacked histogram using common bin edges calculated from
+    combined data
+  - Clean, professional appearance with well-sized text elements for high-resolution
+    output
+  - Correct title format and meaningful subtitle adding context
+  - Good use of Highcharts-specific features like plot_options stacking configuration
+  weaknesses:
+  - Output image height is 2561px instead of the expected 2700px (minor dimension
+    mismatch)
+  - Axis labels lack units (e.g., could be "Measurement Range (units)" and "Frequency
+    (count)")

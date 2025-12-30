@@ -1,0 +1,29 @@
+library: altair
+specification_id: area-stacked-percent
+created: '2025-12-30T11:23:32Z'
+updated: '2025-12-30T11:36:09Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20595338920
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/altair/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Altair's declarative grammar with stack="normalize" for proper
+    100% stacking
+  - Clear, compelling real-world narrative (energy transition) that perfectly demonstrates
+    the spec
+  - Clean code structure following KISS principles with well-organized long-format
+    data
+  - Good typography sizing making all text highly readable
+  - Appropriate use of tooltips and interactive HTML export
+  - Proper stacking order using explicit order encoding
+  weaknesses:
+  - Legend positioned outside creates slight whitespace imbalance; consider moving
+    inside plot area
+  - Nuclear data staying perfectly flat at 12% for all 10 years feels artificially
+    constant

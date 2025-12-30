@@ -1,0 +1,11 @@
+spec_id: histogram-stepwise
+title: Step Histogram
+created: '2025-12-30T11:00:00Z'
+updated: '2025-12-30T11:00:00Z'
+issue: 2645
+suggested: claude-code
+tags:
+  plot_type: [histogram, distribution]
+  domain: [statistics]
+  features: [step, outline, unfilled]
+  data_type: [numeric, continuous]

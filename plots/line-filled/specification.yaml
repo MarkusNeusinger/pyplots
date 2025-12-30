@@ -1,0 +1,11 @@
+spec_id: line-filled
+title: Filled Line Plot
+created: '2025-12-30T11:00:00Z'
+updated: '2025-12-30T11:00:00Z'
+issue: 2643
+suggested: claude-code
+tags:
+  plot_type: [line, area]
+  domain: [general, finance]
+  features: [filled, single-series]
+  data_type: [numeric, continuous]

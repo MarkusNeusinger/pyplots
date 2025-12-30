@@ -1,0 +1,27 @@
+library: bokeh
+specification_id: cat-box-strip
+created: '2025-12-30T16:31:45Z'
+updated: '2025-12-30T16:44:16Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20601057657
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/bokeh/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent manual box plot construction using Bokeh primitives (Whisker, vbar,
+    segment)
+  - Good use of jitter transform for strip points to reduce overlap
+  - Proper colorblind-safe color scheme (blue/yellow contrast)
+  - Well-calculated IQR-based whiskers with proper outlier handling
+  - Clear demonstration of different distributions and outliers across categories
+  - Font sizes properly scaled for 4800x2700 canvas
+  weaknesses:
+  - No legend explaining what box/strip elements represent (minor for this plot type)
+  - Could add HoverTool to show exact values on hover for the HTML version
+  - The median line segment has zero width (x0=x1) which works but is technically
+    a point not a line

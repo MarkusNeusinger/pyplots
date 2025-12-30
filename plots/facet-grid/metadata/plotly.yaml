@@ -1,0 +1,29 @@
+library: plotly
+specification_id: facet-grid
+created: '2025-12-30T16:30:15Z'
+updated: '2025-12-30T16:47:28Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20601057130
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/facet-grid/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/facet-grid/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/facet-grid/plotly/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Clean implementation using Plotly Express native faceting capability (facet_row,
+    facet_col)
+  - Excellent data generation with realistic business scenario (marketing spend vs
+    sales by region and quarter)
+  - Good visual hierarchy with clear title, readable axis labels with units, and subtle
+    grid
+  - Produces both PNG and HTML output leveraging Plotly interactivity
+  - Proper use of template=plotly_white for clean appearance
+  weaknesses:
+  - Legend showing regions is redundant since region is already encoded by facet rows
+  - Markers could be slightly larger (15-18 instead of 12) for better visibility with
+    ~15 points per facet
+  - Row facet labels are displayed vertically which reduces readability compared to
+    horizontal text

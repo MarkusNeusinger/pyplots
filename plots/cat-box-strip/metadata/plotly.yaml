@@ -1,0 +1,30 @@
+library: plotly
+specification_id: cat-box-strip
+created: '2025-12-30T16:30:35Z'
+updated: '2025-12-30T16:38:41Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20601056000
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent visual design with Python blue/yellow color scheme providing strong
+    contrast
+  - Box plots and strip points are well-separated visually while maintaining their
+    relationship
+  - Good jitter implementation prevents point overlap while keeping points associated
+    with their categories
+  - Data demonstrates multiple distribution characteristics (normal, tight spread,
+    outliers, bimodal)
+  - Correct title format and clear axis labels
+  - Clean, linear code structure following KISS principles
+  weaknesses:
+  - Axis labels lack units (e.g., "Performance Score (%)" would be clearer)
+  - Could use Plotly native boxpoints parameter instead of manually adding scatter
+    traces for a more elegant solution
+  - Grid alpha is perhaps too subtle, making it hard to read precise values

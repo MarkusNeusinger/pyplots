@@ -1,0 +1,26 @@
+library: letsplot
+specification_id: parallel-categories-basic
+created: '2025-12-30T00:06:40Z'
+updated: '2025-12-30T00:26:47Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20585405473
+issue: 0
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/letsplot/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Clean KISS flat structure without functions or classes (addressed previous feedback)
+  - Excellent custom implementation using geom_polygon for smooth curved ribbons with
+    easing
+  - Professional color scheme that is colorblind-accessible
+  - Realistic e-commerce customer journey scenario with meaningful category names
+  - Labels include counts for quantitative context
+  - Both PNG and HTML outputs for static and interactive viewing
+  - No text overlap with alternating label positions
+  weaknesses:
+  - Category label text could be slightly larger (size 14 → 16) for optimal readability
+    at 4800×2700

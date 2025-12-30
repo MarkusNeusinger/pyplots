@@ -1,0 +1,29 @@
+library: highcharts
+specification_id: scatter-annotated
+created: '2025-12-30T17:58:18Z'
+updated: '2025-12-30T18:06:31Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20602455906
+issue: 0
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - 'Excellent use of Highcharts dataLabels with allowOverlap: false to prevent label
+    collisions'
+  - Clean, professional appearance with appropriate color choice and transparency
+  - 'Good text outline (textOutline: 3px white) ensures label readability over grid
+    lines'
+  - Realistic tech company business context that demonstrates the annotation use case
+    well
+  - Proper title format following spec requirements
+  weaknesses:
+  - Uses raw JSON dict configuration instead of highcharts-core Python classes as
+    shown in library rules
+  - Grid lines could be slightly more visible (alpha 0.15 is quite faint)
+  - Some labels could benefit from smart positioning (e.g., labels near axis edges
+    like DataFlow appear slightly cramped)

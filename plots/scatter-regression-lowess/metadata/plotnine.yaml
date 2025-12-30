@@ -1,0 +1,26 @@
+library: plotnine
+specification_id: scatter-regression-lowess
+created: '2025-12-30T23:52:25Z'
+updated: '2025-12-30T23:54:53Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608463131
+issue: 2855
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-lowess/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-lowess/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent choice of agricultural context (temperature vs crop yield) that naturally
+    demonstrates non-linear LOWESS behavior
+  - Perfect color contrast between blue scatter points and yellow LOWESS curve
+  - Clean, minimal theme with appropriate text sizing for 4800×2700 resolution
+  - Well-structured code following KISS principles
+  - Title format exactly matches specification requirements
+  weaknesses:
+  - The LOWESS curve extends slightly below y=0 at the left edge, which is visually
+    awkward for a yield that should be positive
+  - The span parameter in geom_smooth may not be correctly controlling the LOWESS
+    bandwidth

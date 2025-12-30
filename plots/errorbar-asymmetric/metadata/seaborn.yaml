@@ -1,0 +1,27 @@
+library: seaborn
+specification_id: errorbar-asymmetric
+created: '2025-12-30T17:46:52Z'
+updated: '2025-12-30T17:50:22Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20602446687
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent visual clarity with properly sized text elements following the guidelines
+    exactly
+  - Clear demonstration of asymmetric error bars with visible caps as specified
+  - Good data context (battery life) that clearly shows asymmetric uncertainty
+  - Annotation explaining the error bar meaning (10th-90th percentile) as required
+    by spec
+  - Clean KISS code structure with proper reproducibility
+  weaknesses:
+  - The annotation box placement in the corner is functional but a proper legend entry
+    might integrate better with the plot
+  - Relies heavily on matplotlib for the core errorbar functionality rather than showcasing
+    seaborn-specific features

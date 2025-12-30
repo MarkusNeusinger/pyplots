@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 circlepacking-basic: Circle Packing Chart
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-30
@@ -25,184 +25,133 @@ from plotnine import (
 
 np.random.seed(42)
 
-
-# Create polygon points for a circle
-def make_circle_points(cx, cy, r, n_points=64):
-    angles = np.linspace(0, 2 * np.pi, n_points)
-    return cx + r * np.cos(angles), cy + r * np.sin(angles)
-
-
-# Find tangent positions for circle packing
-def find_tangent_positions(x1, y1, r1, x2, y2, r2, r):
-    d = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-    if d == 0 or d > r1 + r2 + 2 * r:
-        return []
-    a, b = r1 + r, r2 + r
-    cos_val = (a**2 + d**2 - b**2) / (2 * a * d)
-    if abs(cos_val) > 1:
-        return []
-    angle = np.arccos(cos_val)
-    base = np.arctan2(y2 - y1, x2 - x1)
-    return [
-        (x1 + a * np.cos(base + angle), y1 + a * np.sin(base + angle)),
-        (x1 + a * np.cos(base - angle), y1 + a * np.sin(base - angle)),
-    ]
-
-
-# Pack child circles within parent
-def pack_circles(children, parent_x, parent_y, parent_r, depth):
-    if not children:
-        return []
-
-    # Sort by value (largest first)
-    sorted_children = sorted(children, key=lambda x: x.get("value", 1), reverse=True)
-    total_val = sum(c.get("value", 1) for c in sorted_children)
-
-    # Calculate radii proportional to value (area encoding)
-    usable_r = parent_r * 0.85
-    radii = []
-    for c in sorted_children:
-        val = c.get("value", 1)
-        r = np.sqrt(val / total_val) * usable_r * 0.58
-        radii.append(max(r, usable_r * 0.08))
-
-    placed = []
-    result = []
-
-    for i, child in enumerate(sorted_children):
-        r = radii[i]
-
-        if i == 0:
-            # First circle: offset from center
-            cx, cy = parent_x, parent_y
-        elif i == 1:
-            # Second: tangent to first
-            px, py, pr = placed[0]
-            angle = np.pi * 2 / 3
-            cx = px + (pr + r) * np.cos(angle)
-            cy = py + (pr + r) * np.sin(angle)
-        else:
-            # Find best tangent position
-            best_pos, best_dist = None, float("inf")
-            for j in range(len(placed)):
-                for k in range(j + 1, len(placed)):
-                    x1, y1, r1 = placed[j]
-                    x2, y2, r2 = placed[k]
-                    for px, py in find_tangent_positions(x1, y1, r1, x2, y2, r2, r):
-                        dist = np.sqrt((px - parent_x) ** 2 + (py - parent_y) ** 2)
-                        if dist + r > usable_r:
-                            continue
-                        overlap = any(
-                            np.sqrt((px - ox) ** 2 + (py - oy) ** 2) < r + orr - 0.001 for ox, oy, orr in placed
-                        )
-                        if not overlap and dist < best_dist:
-                            best_dist, best_pos = dist, (px, py)
-
-            if best_pos:
-                cx, cy = best_pos
-            else:
-                angle = i * 2.39996  # Golden angle
-                dist = usable_r * 0.5
-                cx = parent_x + dist * np.cos(angle)
-                cy = parent_y + dist * np.sin(angle)
-
-        placed.append((cx, cy, r))
-        result.append(
-            {
-                "id": child["id"],
-                "label": child.get("label", child["id"]),
-                "x": cx,
-                "y": cy,
-                "r": r,
-                "depth": depth,
-                "value": child.get("value", 1),
-            }
-        )
-
-    return result
-
-
 # Hierarchical data - Company organizational structure
-hierarchy = {
-    "id": "root",
-    "label": "Company",
-    "children": [
-        {
-            "id": "eng",
-            "label": "Engineering",
-            "value": 50,
-            "children": [
-                {"id": "be", "label": "Backend", "value": 20},
-                {"id": "fe", "label": "Frontend", "value": 18},
-                {"id": "dops", "label": "DevOps", "value": 12},
-            ],
-        },
-        {
-            "id": "ops",
-            "label": "Operations",
-            "value": 35,
-            "children": [
-                {"id": "fin", "label": "Finance", "value": 15},
-                {"id": "leg", "label": "Legal", "value": 10},
-                {"id": "hr", "label": "HR", "value": 10},
-            ],
-        },
-        {
-            "id": "prod",
-            "label": "Product",
-            "value": 30,
-            "children": [
-                {"id": "des", "label": "Design", "value": 12},
-                {"id": "pm", "label": "PM", "value": 10},
-                {"id": "res", "label": "Research", "value": 8},
-            ],
-        },
-    ],
-}
+# Format: (id, label, parent_id, value)
+nodes = [
+    ("root", "Company", None, None),
+    ("eng", "Engineering", "root", 50),
+    ("ops", "Operations", "root", 35),
+    ("prod", "Product", "root", 30),
+    ("be", "Backend", "eng", 20),
+    ("fe", "Frontend", "eng", 18),
+    ("dops", "DevOps", "eng", 12),
+    ("fin", "Finance", "ops", 15),
+    ("leg", "Legal", "ops", 10),
+    ("hr", "HR", "ops", 10),
+    ("des", "Design", "prod", 12),
+    ("pm", "PM", "prod", 10),
+    ("res", "Research", "prod", 8),
+]
 
-# Build all circles
-all_circles = []
-
+# Circle positions and radii - manually laid out for proper size differentiation
 # Root circle
-root_x, root_y, root_r = 0, 0, 1.0
-all_circles.append({"id": "root", "label": "Company", "x": root_x, "y": root_y, "r": root_r, "depth": 0})
+root_x, root_y, root_r = 0.0, 0.0, 1.0
 
-# Level 1: departments
-dept_circles = pack_circles(hierarchy["children"], root_x, root_y, root_r, depth=1)
-all_circles.extend(dept_circles)
+# Calculate department radii based on their total values (area encoding: r ∝ sqrt(value))
+dept_values = {"eng": 50, "ops": 35, "prod": 30}
+dept_total = sum(dept_values.values())
+dept_scale = 0.42  # Scale factor for department circles
 
-# Level 2: teams within each department
-for dc in dept_circles:
-    dept_data = next((d for d in hierarchy["children"] if d["id"] == dc["id"]), None)
-    if dept_data and "children" in dept_data:
-        team_circles = pack_circles(dept_data["children"], dc["x"], dc["y"], dc["r"], depth=2)
-        all_circles.extend(team_circles)
+eng_r = np.sqrt(dept_values["eng"] / dept_total) * dept_scale
+ops_r = np.sqrt(dept_values["ops"] / dept_total) * dept_scale
+prod_r = np.sqrt(dept_values["prod"] / dept_total) * dept_scale
 
-# Sort by depth for proper layering (root first, teams last/on top)
-all_circles_sorted = sorted(all_circles, key=lambda c: c["depth"])
+# Position departments using angles for even distribution
+eng_x, eng_y = 0.0, 0.35
+ops_x, ops_y = -0.32, -0.22
+prod_x, prod_y = 0.32, -0.22
 
-# Build polygon dataframe
+# Calculate team radii - MUST show clear size differentiation
+# Teams within Engineering (values: 20, 18, 12)
+eng_team_values = {"be": 20, "fe": 18, "dops": 12}
+eng_team_total = sum(eng_team_values.values())
+team_scale_eng = eng_r * 0.70
+
+be_r = np.sqrt(eng_team_values["be"] / eng_team_total) * team_scale_eng
+fe_r = np.sqrt(eng_team_values["fe"] / eng_team_total) * team_scale_eng
+dops_r = np.sqrt(eng_team_values["dops"] / eng_team_total) * team_scale_eng
+
+# Teams within Operations (values: 15, 10, 10)
+ops_team_values = {"fin": 15, "leg": 10, "hr": 10}
+ops_team_total = sum(ops_team_values.values())
+team_scale_ops = ops_r * 0.70
+
+fin_r = np.sqrt(ops_team_values["fin"] / ops_team_total) * team_scale_ops
+leg_r = np.sqrt(ops_team_values["leg"] / ops_team_total) * team_scale_ops
+hr_r = np.sqrt(ops_team_values["hr"] / ops_team_total) * team_scale_ops
+
+# Teams within Product (values: 12, 10, 8)
+prod_team_values = {"des": 12, "pm": 10, "res": 8}
+prod_team_total = sum(prod_team_values.values())
+team_scale_prod = prod_r * 0.70
+
+des_r = np.sqrt(prod_team_values["des"] / prod_team_total) * team_scale_prod
+pm_r = np.sqrt(prod_team_values["pm"] / prod_team_total) * team_scale_prod
+res_r = np.sqrt(prod_team_values["res"] / prod_team_total) * team_scale_prod
+
+# Position teams within their parent departments
+# Engineering teams - arranged in a row
+be_x, be_y = eng_x - 0.10, eng_y + 0.02
+fe_x, fe_y = eng_x + 0.10, eng_y + 0.05
+dops_x, dops_y = eng_x + 0.0, eng_y - 0.12
+
+# Operations teams - arranged in a triangle
+fin_x, fin_y = ops_x + 0.02, ops_y + 0.08
+leg_x, leg_y = ops_x - 0.10, ops_y - 0.05
+hr_x, hr_y = ops_x + 0.10, ops_y - 0.05
+
+# Product teams - arranged in a triangle
+des_x, des_y = prod_x - 0.02, prod_y + 0.08
+pm_x, pm_y = prod_x - 0.10, prod_y - 0.04
+res_x, res_y = prod_x + 0.10, prod_y - 0.04
+
+# All circles data: (id, label, cx, cy, r, depth)
+circles_data = [
+    ("root", "Company", root_x, root_y, root_r, 0),
+    ("eng", "Engineering", eng_x, eng_y, eng_r, 1),
+    ("ops", "Operations", ops_x, ops_y, ops_r, 1),
+    ("prod", "Product", prod_x, prod_y, prod_r, 1),
+    ("be", "Backend", be_x, be_y, be_r, 2),
+    ("fe", "Frontend", fe_x, fe_y, fe_r, 2),
+    ("dops", "DevOps", dops_x, dops_y, dops_r, 2),
+    ("fin", "Finance", fin_x, fin_y, fin_r, 2),
+    ("leg", "Legal", leg_x, leg_y, leg_r, 2),
+    ("hr", "HR", hr_x, hr_y, hr_r, 2),
+    ("des", "Design", des_x, des_y, des_r, 2),
+    ("pm", "PM", pm_x, pm_y, pm_r, 2),
+    ("res", "Research", res_x, res_y, res_r, 2),
+]
+
+# Sort by depth for proper layering (draw root first, teams last/on top)
+circles_data = sorted(circles_data, key=lambda c: c[5])
+
+# Build polygon dataframe for drawing circles
 polygon_rows = []
-for circle in all_circles_sorted:
-    xs, ys = make_circle_points(circle["x"], circle["y"], circle["r"])
+n_points = 64
+
+for circle_id, _label, cx, cy, r, depth in circles_data:
+    angles = np.linspace(0, 2 * np.pi, n_points)
+    xs = cx + r * np.cos(angles)
+    ys = cy + r * np.sin(angles)
     for j, (x, y) in enumerate(zip(xs, ys, strict=True)):
-        polygon_rows.append({"circle_id": circle["id"], "x": x, "y": y, "order": j, "depth": circle["depth"]})
+        polygon_rows.append({"circle_id": circle_id, "x": x, "y": y, "order": j, "depth": depth})
 
 df_circles = pd.DataFrame(polygon_rows)
 
-# Labels - position department labels at top of their circles, team labels centered
+# Build labels dataframe - include ALL labels (departments AND teams)
 label_rows = []
-for circle in all_circles:
-    if circle["depth"] == 0:
-        continue
-    text_size = max(9, min(14, circle["r"] * 28))
-    if circle["depth"] == 1:
+for _circle_id, label, cx, cy, r, depth in circles_data:
+    if depth == 0:
+        continue  # Skip root label
+    if depth == 1:
         # Department labels: position at top edge of circle
-        label_y = circle["y"] + circle["r"] * 0.75
+        label_y = cy + r * 0.65
+        text_size = 11
     else:
-        # Team labels: centered
-        label_y = circle["y"]
-    label_rows.append({"x": circle["x"], "y": label_y, "label": circle["label"], "text_size": text_size})
+        # Team labels: centered in circle
+        label_y = cy
+        text_size = 8
+    label_rows.append({"x": cx, "y": label_y, "label": label, "text_size": text_size, "depth": depth})
 
 df_labels = pd.DataFrame(label_rows)
 

@@ -1,0 +1,26 @@
+library: matplotlib
+specification_id: histogram-stacked
+created: '2025-12-30T10:38:07Z'
+updated: '2025-12-30T10:45:38Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20594557552
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent realistic data scenario with server response times across geographic
+    regions
+  - Clean stacking visualization with good color separation using white edge lines
+  - All three distributions have distinct characteristics (different means, scales,
+    and sample sizes)
+  - Perfect title format and axis labeling with units
+  - Good use of alpha for slight transparency while maintaining visibility
+  weaknesses:
+  - No distinctive matplotlib features beyond basic histogram; could use annotations,
+    custom spine styling, or statistical overlays
+  - Legend visual separation could be enhanced with a border or better background

@@ -1,0 +1,23 @@
+library: plotnine
+specification_id: bar-sorted
+created: '2025-12-30T09:31:01Z'
+updated: '2025-12-30T09:39:05Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20593350489
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of pd.Categorical to enforce sort order in plotnine
+  - Value labels above bars improve readability
+  - Clean ggplot2 grammar of graphics implementation
+  - Good font sizing for high-resolution output
+  - Appropriate rotation of x-axis labels to prevent overlap
+  weaknesses:
+  - Could highlight top category with different color as spec suggests
+  - No random seed comment (data is deterministic but convention not followed)

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-interactive: Interactive Line Chart with Hover and Zoom
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -133,15 +133,16 @@ plot = (
         color="#2A9D8F",
         fontweight="bold",
     )
-    # Subtitle
+    # Subtitle (positioned prominently below title area)
     + annotate(
         "text",
-        x=dates[100],
-        y=y_max - 3,
+        x=dates[50],
+        y=y_max - 8,
         label="Static demonstration of interactive concepts: tooltips, zoom regions, anomaly markers",
-        size=11,
-        color="#666666",
+        size=12,
+        color="#444444",
         fontstyle="italic",
+        ha="left",
     )
     # Labels
     + labs(x="Time", y="Response Time (ms)", title="line-interactive · plotnine · pyplots.ai")
@@ -159,9 +160,11 @@ plot = (
         panel_background=element_rect(fill="white"),
         legend_title=element_text(size=16, weight="bold"),
         legend_text=element_text(size=14),
-        legend_position="right",
+        legend_position=(0.85, 0.75),
+        legend_direction="vertical",
         legend_key_size=20,
-        legend_background=element_rect(fill="white", color="#CCCCCC"),
+        legend_background=element_rect(fill="white", color="#CCCCCC", alpha=0.95),
+        legend_box_margin=10,
     )
 )
 

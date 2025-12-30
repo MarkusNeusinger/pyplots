@@ -1,16 +1,17 @@
-""" pyplots.ai
+"""pyplots.ai
 facet-grid: Faceted Grid Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
 """
 
-import json
 import tempfile
 import time
 import urllib.request
 from pathlib import Path
 
 import numpy as np
+from highcharts_core.chart import Chart
+from highcharts_core.options import HighchartsOptions
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -27,37 +28,36 @@ data = []
 for soil in soil_types:
     for light in light_conditions:
         # Base growth varies by light condition
-        base_growth = {"Low": 5, "Medium": 12, "High": 18}[light]
+        base_growth = {"Low": 8, "Medium": 15, "High": 22}[light]
         # Soil type affects growth rate
-        soil_factor = {"Sandy": 0.8, "Loamy": 1.2, "Clay": 1.0}[soil]
+        soil_factor = {"Sandy": 0.9, "Loamy": 1.2, "Clay": 1.0}[soil]
 
         for _ in range(n_per_group):
             water = np.random.uniform(20, 100)
-            # Growth depends on water, with some noise
-            growth = base_growth * soil_factor + water * 0.15 * soil_factor + np.random.normal(0, 2)
+            # Growth depends on water, with more noise for wider spread
+            growth = base_growth * soil_factor + water * 0.18 * soil_factor + np.random.normal(0, 3.5)
             data.append({"soil": soil, "light": light, "water": water, "growth": max(0, growth)})
 
 # Build subplot configurations
-subplots = []
 n_rows = len(soil_types)
 n_cols = len(light_conditions)
 
 # Calculate subplot dimensions with margins
 chart_width = 4800
 chart_height = 2700
-margin_top = 180
-margin_bottom = 120
-margin_left = 180
-margin_right = 80
-spacing = 60
+margin_top = 200
+margin_bottom = 140
+margin_left = 200
+margin_right = 120
+spacing = 80
 
 plot_area_width = chart_width - margin_left - margin_right
 plot_area_height = chart_height - margin_top - margin_bottom
 subplot_width = (plot_area_width - spacing * (n_cols - 1)) / n_cols
 subplot_height = (plot_area_height - spacing * (n_rows - 1)) / n_rows
 
-# Colors for facets
-colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF", "#8C564B"]
+# Colors for facets - colorblind-safe palette
+colors = ["#306998", "#FFD43B", "#9467BD"]
 
 # Build series data for each facet
 series_list = []
@@ -88,15 +88,15 @@ for row_idx, soil in enumerate(soil_types):
                 "lineWidth": 2,
                 "lineColor": "#333333",
                 "tickWidth": 2,
-                "tickLength": 8,
-                "labels": {"style": {"fontSize": "16px", "color": "#333333"}, "y": 25},
+                "tickLength": 10,
+                "labels": {"style": {"fontSize": "20px", "color": "#333333"}, "y": 30},
                 "title": {
                     "text": "Water (mm)" if row_idx == n_rows - 1 else None,
-                    "style": {"fontSize": "18px", "color": "#333333"},
-                    "y": 45,
+                    "style": {"fontSize": "24px", "color": "#333333"},
+                    "y": 55,
                 },
                 "gridLineWidth": 1,
-                "gridLineColor": "rgba(0,0,0,0.1)",
+                "gridLineColor": "rgba(0,0,0,0.15)",
                 "gridLineDashStyle": "Dash",
                 "offset": 0,
             }
@@ -112,20 +112,20 @@ for row_idx, soil in enumerate(soil_types):
                 "width": 0,
                 "height": subplot_height,
                 "min": 0,
-                "max": 40,
+                "max": 50,
                 "lineWidth": 2,
                 "lineColor": "#333333",
                 "tickWidth": 2,
-                "tickLength": 8,
-                "labels": {"style": {"fontSize": "16px", "color": "#333333"}, "x": -10},
+                "tickLength": 10,
+                "labels": {"style": {"fontSize": "20px", "color": "#333333"}, "x": -15},
                 "title": {
                     "text": "Growth (cm)" if col_idx == 0 else None,
-                    "style": {"fontSize": "18px", "color": "#333333"},
-                    "rotation": -90,
-                    "x": -40,
+                    "style": {"fontSize": "24px", "color": "#333333"},
+                    "rotation": 270,
+                    "x": -50,
                 },
                 "gridLineWidth": 1,
-                "gridLineColor": "rgba(0,0,0,0.1)",
+                "gridLineColor": "rgba(0,0,0,0.15)",
                 "gridLineDashStyle": "Dash",
                 "offset": 0,
             }
@@ -140,10 +140,10 @@ for row_idx, soil in enumerate(soil_types):
                 "xAxis": row_idx * n_cols + col_idx,
                 "yAxis": row_idx * n_cols + col_idx,
                 "marker": {
-                    "radius": 8,
+                    "radius": 10,
                     "symbol": "circle",
                     "fillColor": colors[row_idx % len(colors)],
-                    "lineWidth": 1,
+                    "lineWidth": 2,
                     "lineColor": "#333333",
                 },
                 "showInLegend": False,
@@ -160,11 +160,11 @@ for col_idx, light in enumerate(light_conditions):
         {
             "labels": [
                 {
-                    "point": {"x": left, "y": margin_top - 50, "xAxis": None, "yAxis": None},
+                    "point": {"x": left, "y": margin_top - 60, "xAxis": None, "yAxis": None},
                     "text": f"Light: {light}",
                     "backgroundColor": "transparent",
                     "borderWidth": 0,
-                    "style": {"fontSize": "22px", "fontWeight": "bold", "color": "#333333"},
+                    "style": {"fontSize": "28px", "fontWeight": "bold", "color": "#333333"},
                 }
             ],
             "labelOptions": {"useHTML": True},
@@ -178,11 +178,11 @@ for row_idx, soil in enumerate(soil_types):
         {
             "labels": [
                 {
-                    "point": {"x": chart_width - margin_right + 40, "y": top, "xAxis": None, "yAxis": None},
+                    "point": {"x": chart_width - margin_right + 50, "y": top, "xAxis": None, "yAxis": None},
                     "text": f"Soil: {soil}",
                     "backgroundColor": "transparent",
                     "borderWidth": 0,
-                    "style": {"fontSize": "20px", "fontWeight": "bold", "color": "#333333"},
+                    "style": {"fontSize": "26px", "fontWeight": "bold", "color": "#333333"},
                     "rotation": 90,
                 }
             ],
@@ -190,50 +190,57 @@ for row_idx, soil in enumerate(soil_types):
         }
     )
 
-# Build complete chart options as JavaScript
-chart_options = {
-    "chart": {
-        "type": "scatter",
-        "width": chart_width,
-        "height": chart_height,
-        "backgroundColor": "#ffffff",
-        "style": {"fontFamily": "Arial, sans-serif"},
-        "marginTop": margin_top,
-        "marginBottom": margin_bottom,
-        "marginLeft": margin_left,
-        "marginRight": margin_right,
-    },
-    "title": {
-        "text": "Plant Growth Study · facet-grid · highcharts · pyplots.ai",
-        "style": {"fontSize": "32px", "fontWeight": "bold", "color": "#333333"},
-        "y": 50,
-    },
-    "subtitle": {
-        "text": "Growth by Soil Type (rows) and Light Condition (columns)",
-        "style": {"fontSize": "22px", "color": "#666666"},
-        "y": 100,
-    },
-    "credits": {"enabled": False},
-    "legend": {"enabled": False},
-    "xAxis": x_axes,
-    "yAxis": y_axes,
-    "series": series_list,
-    "annotations": annotations,
-    "plotOptions": {
-        "scatter": {
-            "marker": {"radius": 8, "states": {"hover": {"enabled": True, "lineColor": "#333333"}}},
-            "states": {"inactive": {"opacity": 1}},
-        }
-    },
-    "tooltip": {
-        "headerFormat": "<b>{series.name}</b><br>",
-        "pointFormat": "Water: {point.x:.1f} mm<br>Growth: {point.y:.1f} cm",
-        "style": {"fontSize": "16px"},
-    },
+# Create chart using highcharts-core
+chart = Chart(container="container")
+chart.options = HighchartsOptions()
+
+# Set chart options
+chart.options.chart = {
+    "type": "scatter",
+    "width": chart_width,
+    "height": chart_height,
+    "backgroundColor": "#ffffff",
+    "style": {"fontFamily": "Arial, sans-serif"},
+    "marginTop": margin_top,
+    "marginBottom": margin_bottom,
+    "marginLeft": margin_left,
+    "marginRight": margin_right,
 }
 
-# Convert to JavaScript
-options_json = json.dumps(chart_options, indent=2)
+chart.options.title = {
+    "text": "Plant Growth Study · facet-grid · highcharts · pyplots.ai",
+    "style": {"fontSize": "36px", "fontWeight": "bold", "color": "#333333"},
+    "y": 55,
+}
+
+chart.options.subtitle = {
+    "text": "Growth by Soil Type (rows) and Light Condition (columns)",
+    "style": {"fontSize": "26px", "color": "#666666"},
+    "y": 110,
+}
+
+chart.options.credits = {"enabled": False}
+chart.options.legend = {"enabled": False}
+chart.options.x_axis = x_axes
+chart.options.y_axis = y_axes
+chart.options.series = series_list
+chart.options.annotations = annotations
+
+chart.options.plot_options = {
+    "scatter": {
+        "marker": {"radius": 10, "states": {"hover": {"enabled": True, "lineColor": "#333333"}}},
+        "states": {"inactive": {"opacity": 1}},
+    }
+}
+
+chart.options.tooltip = {
+    "headerFormat": "<b>{series.name}</b><br>",
+    "pointFormat": "Water: {point.x:.1f} mm<br>Growth: {point.y:.1f} cm",
+    "style": {"fontSize": "18px"},
+}
+
+# Generate JavaScript
+html_str = chart.to_js_literal()
 
 # Download Highcharts JS
 highcharts_url = "https://code.highcharts.com/highcharts.js"
@@ -255,9 +262,7 @@ html_content = f"""<!DOCTYPE html>
 </head>
 <body style="margin:0; padding:0;">
     <div id="container" style="width: {chart_width}px; height: {chart_height}px;"></div>
-    <script>
-        Highcharts.chart('container', {options_json});
-    </script>
+    <script>{html_str}</script>
 </body>
 </html>"""
 

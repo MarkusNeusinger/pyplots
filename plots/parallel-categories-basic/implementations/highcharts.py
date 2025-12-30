@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 parallel-categories-basic: Basic Parallel Categories Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -252,10 +252,10 @@ chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "marginLeft": 200,
-    "marginRight": 200,
-    "marginTop": 200,
-    "marginBottom": 200,
+    "marginLeft": 250,
+    "marginRight": 300,
+    "marginTop": 220,
+    "marginBottom": 250,
 }
 
 # Title
@@ -286,15 +286,17 @@ series_config = {
     "data": links_data,
     "dataLabels": {
         "enabled": True,
-        "style": {"fontSize": "36px", "fontWeight": "bold", "color": "#333333", "textOutline": "3px #ffffff"},
+        "style": {"fontSize": "40px", "fontWeight": "bold", "color": "#333333", "textOutline": "4px #ffffff"},
         "nodeFormat": "{point.name}",
+        "padding": 10,
     },
-    "nodeWidth": 50,
-    "nodePadding": 25,
-    "linkOpacity": 0.5,
+    "nodeWidth": 70,
+    "nodePadding": 40,
+    "linkOpacity": 0.6,
     "curveFactor": 0.5,
     "colorByPoint": True,
     "linkColorMode": "from",
+    "minLinkWidth": 4,
 }
 
 chart.options.series = [series_config]
@@ -305,10 +307,25 @@ chart.options.legend = {"enabled": False}
 # Disable credits
 chart.options.credits = {"enabled": False}
 
-# Download Highcharts JS and sankey module
+# Accessibility options (Highcharts-specific feature)
+chart.options.accessibility = {
+    "enabled": True,
+    "description": "Parallel categories diagram showing Titanic passenger survival rates by class, sex, and age group",
+    "point": {"valueDescriptionFormat": "{point.name}: {point.sum} passengers"},
+}
+
+# Plot options for animation and better interactivity
+chart.options.plot_options = {
+    "sankey": {
+        "animation": {"duration": 1000},
+        "states": {"hover": {"linkOpacity": 0.9, "brightness": 0.1}, "inactive": {"linkOpacity": 0.2, "opacity": 0.5}},
+    }
+}
+
+# Download Highcharts JS and modules
 highcharts_url = "https://code.highcharts.com/highcharts.js"
 sankey_url = "https://code.highcharts.com/modules/sankey.js"
-annotations_url = "https://code.highcharts.com/modules/annotations.js"
+accessibility_url = "https://code.highcharts.com/modules/accessibility.js"
 
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
@@ -316,17 +333,17 @@ with urllib.request.urlopen(highcharts_url, timeout=30) as response:
 with urllib.request.urlopen(sankey_url, timeout=30) as response:
     sankey_js = response.read().decode("utf-8")
 
-with urllib.request.urlopen(annotations_url, timeout=30) as response:
-    annotations_js = response.read().decode("utf-8")
+with urllib.request.urlopen(accessibility_url, timeout=30) as response:
+    accessibility_js = response.read().decode("utf-8")
 
 # Generate HTML with inline scripts
 html_str = chart.to_js_literal()
 
 # Custom dimension labels at bottom
 dimension_labels_html = """
-<div id="dimension-labels" style="position: absolute; bottom: 40px; left: 200px; right: 200px;
+<div id="dimension-labels" style="position: absolute; bottom: 60px; left: 250px; right: 300px;
      display: flex; justify-content: space-between; font-family: Arial, sans-serif;
-     font-size: 48px; font-weight: bold; color: #333;">
+     font-size: 52px; font-weight: bold; color: #333;">
     <span style="text-align: center; width: 25%;">Class</span>
     <span style="text-align: center; width: 25%;">Sex</span>
     <span style="text-align: center; width: 25%;">Age Group</span>
@@ -340,7 +357,7 @@ html_content = f"""<!DOCTYPE html>
     <meta charset="utf-8">
     <script>{highcharts_js}</script>
     <script>{sankey_js}</script>
-    <script>{annotations_js}</script>
+    <script>{accessibility_js}</script>
 </head>
 <body style="margin:0; position: relative;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
@@ -356,7 +373,7 @@ standalone_html = f"""<!DOCTYPE html>
     <meta charset="utf-8">
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/sankey.js"></script>
-    <script src="https://code.highcharts.com/modules/annotations.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 </head>
 <body style="margin:0; overflow:auto; position: relative;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>

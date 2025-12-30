@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-box: Violin Plot with Embedded Box Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-30
@@ -43,8 +43,7 @@ chart = pygal.XY(
     title="violin-box · pygal · pyplots.ai",
     x_title="Department",
     y_title="Performance Score",
-    show_legend=True,
-    legend_at_bottom=True,
+    show_legend=False,
     stroke=True,
     fill=True,
     dots_size=0,
@@ -58,6 +57,11 @@ chart = pygal.XY(
 # Parameters for violin shapes
 violin_width = 0.35
 n_points = 100
+
+# Box plot styling for stronger contrast
+box_stroke_style = {"width": 4, "dasharray": ""}
+median_stroke_style = {"width": 6, "dasharray": ""}
+whisker_stroke_style = {"width": 3, "dasharray": ""}
 
 # Add violins with embedded box plots for each category
 for i, (category, values) in enumerate(data.items()):
@@ -102,7 +106,7 @@ for i, (category, values) in enumerate(data.items()):
     # Identify outliers
     outliers = values[(values < lower_whisker) | (values > upper_whisker)]
 
-    box_width = 0.08
+    box_width = 0.10
 
     # Quartile box (IQR) - white filled for contrast
     quartile_box = [
@@ -112,29 +116,38 @@ for i, (category, values) in enumerate(data.items()):
         (center_x + box_width, q1),
         (center_x - box_width, q1),
     ]
-    chart.add(None, quartile_box, stroke=True, fill=True, show_dots=False, stroke_style={"width": 3})
+    chart.add(
+        "Box" if i == 0 else "", quartile_box, stroke=True, fill=True, show_dots=False, stroke_style=box_stroke_style
+    )
 
     # Whisker lines (vertical lines from box to whisker ends)
     lower_whisker_line = [(center_x, q1), (center_x, lower_whisker)]
     upper_whisker_line = [(center_x, q3), (center_x, upper_whisker)]
-    chart.add(None, lower_whisker_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 3})
-    chart.add(None, upper_whisker_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 3})
+    chart.add("", lower_whisker_line, stroke=True, fill=False, show_dots=False, stroke_style=whisker_stroke_style)
+    chart.add("", upper_whisker_line, stroke=True, fill=False, show_dots=False, stroke_style=whisker_stroke_style)
 
     # Whisker caps (horizontal lines at ends)
     cap_width = box_width * 0.8
     lower_cap = [(center_x - cap_width, lower_whisker), (center_x + cap_width, lower_whisker)]
     upper_cap = [(center_x - cap_width, upper_whisker), (center_x + cap_width, upper_whisker)]
-    chart.add(None, lower_cap, stroke=True, fill=False, show_dots=False, stroke_style={"width": 3})
-    chart.add(None, upper_cap, stroke=True, fill=False, show_dots=False, stroke_style={"width": 3})
+    chart.add("", lower_cap, stroke=True, fill=False, show_dots=False, stroke_style=whisker_stroke_style)
+    chart.add("", upper_cap, stroke=True, fill=False, show_dots=False, stroke_style=whisker_stroke_style)
 
     # Median line (thicker, contrasting)
     median_line = [(center_x - box_width * 1.2, median), (center_x + box_width * 1.2, median)]
-    chart.add(None, median_line, stroke=True, fill=False, show_dots=False, stroke_style={"width": 5})
+    chart.add(
+        "Median" if i == 0 else "",
+        median_line,
+        stroke=True,
+        fill=False,
+        show_dots=False,
+        stroke_style=median_stroke_style,
+    )
 
     # Outliers as points
     if len(outliers) > 0:
         outlier_points = [(center_x, float(o)) for o in outliers]
-        chart.add(None, outlier_points, stroke=False, fill=False, show_dots=True, dots_size=8)
+        chart.add("Outliers" if i == 0 else "", outlier_points, stroke=False, fill=False, show_dots=True, dots_size=10)
 
 # X-axis labels at violin positions
 chart.x_labels = ["", "Engineering", "Marketing", "Sales", "Operations", ""]

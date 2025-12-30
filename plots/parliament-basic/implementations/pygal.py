@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 parliament-basic: Parliament Seat Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 79/100 | Created: 2025-12-30
@@ -16,9 +16,9 @@ seats = [145, 98, 72, 35, 15]
 total_seats = sum(seats)
 majority_threshold = total_seats // 2 + 1  # 183 seats needed for majority
 
-# Custom colors (colorblind-safe, politically neutral)
-party_colors = ["#306998", "#FFD43B", "#4ECDC4", "#45B7D1", "#96CEB4"]
-threshold_color = "#E74C3C"
+# Custom colors (colorblind-safe, politically neutral, high contrast)
+party_colors = ["#306998", "#FFD43B", "#E67E22", "#27AE60", "#9B59B6"]
+threshold_color = "#C0392B"
 
 # Calculate seat positions in concentric arcs
 num_rows = 7
@@ -91,7 +91,7 @@ chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
-    title=f"Parliament Composition · parliament-basic · pygal · pyplots.ai\nTotal: {total_seats} seats | Majority: {majority_threshold} seats (50%+1)",
+    title=f"parliament-basic · pygal · pyplots.ai\nTotal: {total_seats} seats | Majority: {majority_threshold} seats (50%+1)",
     show_legend=True,
     legend_at_bottom=True,
     legend_box_size=36,

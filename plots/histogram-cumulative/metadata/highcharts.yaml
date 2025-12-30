@@ -1,0 +1,25 @@
+library: highcharts
+specification_id: histogram-cumulative
+created: '2025-12-30T09:31:54Z'
+updated: '2025-12-30T09:38:31Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20593352018
+issue: 0
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent step-area visualization that clearly shows cumulative distribution behavior
+  - Proper use of gradient fill creates visually appealing depth effect
+  - Clear title format following pyplots.ai convention with informative subtitle
+  - Well-chosen realistic educational context with appropriate sample size
+  - Good colorblind-safe color choice (#306998)
+  - Proper use of Selenium for PNG export with inline Highcharts JS
+  weaknesses:
+  - Legend could be positioned more optimally (e.g., inside the plot area in lower-right
+    corner)
+  - Output image height slightly differs from specified 2700px

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 circlepacking-basic: Circle Packing Chart
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -50,22 +50,22 @@ root_x, root_y, root_r = 0.0, 0.0, 1.0
 # Calculate department radii based on their total values (area encoding: r ∝ sqrt(value))
 dept_values = {"eng": 50, "ops": 35, "prod": 30}
 dept_total = sum(dept_values.values())
-dept_scale = 0.42  # Scale factor for department circles
+dept_scale = 0.48  # Larger scale factor for department circles to fill space better
 
 eng_r = np.sqrt(dept_values["eng"] / dept_total) * dept_scale
 ops_r = np.sqrt(dept_values["ops"] / dept_total) * dept_scale
 prod_r = np.sqrt(dept_values["prod"] / dept_total) * dept_scale
 
-# Position departments using angles for even distribution
-eng_x, eng_y = 0.0, 0.35
-ops_x, ops_y = -0.32, -0.22
-prod_x, prod_y = 0.32, -0.22
+# Position departments more centrally - place them in a tighter triangular arrangement
+eng_x, eng_y = 0.0, 0.30  # Engineering at top center
+ops_x, ops_y = -0.28, -0.12  # Operations bottom left, moved up
+prod_x, prod_y = 0.28, -0.12  # Product bottom right, moved up
 
-# Calculate team radii - MUST show clear size differentiation
-# Teams within Engineering (values: 20, 18, 12)
+# Calculate team radii with more variation to show size differences clearly
+# Teams within Engineering (values: 20, 18, 12) - wider value range
 eng_team_values = {"be": 20, "fe": 18, "dops": 12}
 eng_team_total = sum(eng_team_values.values())
-team_scale_eng = eng_r * 0.70
+team_scale_eng = eng_r * 0.75
 
 be_r = np.sqrt(eng_team_values["be"] / eng_team_total) * team_scale_eng
 fe_r = np.sqrt(eng_team_values["fe"] / eng_team_total) * team_scale_eng
@@ -74,7 +74,7 @@ dops_r = np.sqrt(eng_team_values["dops"] / eng_team_total) * team_scale_eng
 # Teams within Operations (values: 15, 10, 10)
 ops_team_values = {"fin": 15, "leg": 10, "hr": 10}
 ops_team_total = sum(ops_team_values.values())
-team_scale_ops = ops_r * 0.70
+team_scale_ops = ops_r * 0.75
 
 fin_r = np.sqrt(ops_team_values["fin"] / ops_team_total) * team_scale_ops
 leg_r = np.sqrt(ops_team_values["leg"] / ops_team_total) * team_scale_ops
@@ -83,27 +83,27 @@ hr_r = np.sqrt(ops_team_values["hr"] / ops_team_total) * team_scale_ops
 # Teams within Product (values: 12, 10, 8)
 prod_team_values = {"des": 12, "pm": 10, "res": 8}
 prod_team_total = sum(prod_team_values.values())
-team_scale_prod = prod_r * 0.70
+team_scale_prod = prod_r * 0.75
 
 des_r = np.sqrt(prod_team_values["des"] / prod_team_total) * team_scale_prod
 pm_r = np.sqrt(prod_team_values["pm"] / prod_team_total) * team_scale_prod
 res_r = np.sqrt(prod_team_values["res"] / prod_team_total) * team_scale_prod
 
-# Position teams within their parent departments
-# Engineering teams - arranged in a row
-be_x, be_y = eng_x - 0.10, eng_y + 0.02
-fe_x, fe_y = eng_x + 0.10, eng_y + 0.05
-dops_x, dops_y = eng_x + 0.0, eng_y - 0.12
+# Position teams within their parent departments - tighter arrangement
+# Engineering teams - arranged in a triangle
+be_x, be_y = eng_x - 0.12, eng_y + 0.0
+fe_x, fe_y = eng_x + 0.12, eng_y + 0.0
+dops_x, dops_y = eng_x + 0.0, eng_y - 0.14
 
 # Operations teams - arranged in a triangle
-fin_x, fin_y = ops_x + 0.02, ops_y + 0.08
+fin_x, fin_y = ops_x + 0.0, ops_y + 0.10
 leg_x, leg_y = ops_x - 0.10, ops_y - 0.05
 hr_x, hr_y = ops_x + 0.10, ops_y - 0.05
 
 # Product teams - arranged in a triangle
-des_x, des_y = prod_x - 0.02, prod_y + 0.08
-pm_x, pm_y = prod_x - 0.10, prod_y - 0.04
-res_x, res_y = prod_x + 0.10, prod_y - 0.04
+des_x, des_y = prod_x + 0.0, prod_y + 0.10
+pm_x, pm_y = prod_x - 0.10, prod_y - 0.05
+res_x, res_y = prod_x + 0.10, prod_y - 0.05
 
 # All circles data: (id, label, cx, cy, r, depth)
 circles_data = [
@@ -145,12 +145,12 @@ for _circle_id, label, cx, cy, r, depth in circles_data:
         continue  # Skip root label
     if depth == 1:
         # Department labels: position at top edge of circle
-        label_y = cy + r * 0.65
-        text_size = 11
+        label_y = cy + r * 0.60
+        text_size = 12
     else:
-        # Team labels: centered in circle
+        # Team labels: centered in circle, larger size for visibility
         label_y = cy
-        text_size = 8
+        text_size = 10
     label_rows.append({"x": cx, "y": label_y, "label": label, "text_size": text_size, "depth": depth})
 
 df_labels = pd.DataFrame(label_rows)

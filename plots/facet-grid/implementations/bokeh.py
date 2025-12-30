@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 facet-grid: Faceted Grid Plot
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-30
@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from bokeh.io import export_png
 from bokeh.layouts import column, gridplot
-from bokeh.models import ColumnDataSource
+from bokeh.models import ColumnDataSource, Div
 from bokeh.plotting import figure
 
 
@@ -37,10 +37,13 @@ for region in regions:
 
 df = pd.DataFrame(data)
 
-# Colors for each region
-colors = {"North": "#306998", "South": "#FFD43B", "East": "#4ECDC4"}
+# Colors for each region - darker orange instead of yellow for better visibility
+colors = {"North": "#306998", "South": "#E69F00", "East": "#4ECDC4"}
 
 # Create grid of plots (rows=seasons, cols=regions)
+# Target: 4800x2700 total. With 3 cols, 4 rows + title/legend:
+# - Subplot width: 4800 / 3 = 1600
+# - Subplot height: (2700 - 120 title - 100 legend) / 4 = 620
 plots = []
 
 for season in seasons:
@@ -50,7 +53,7 @@ for season in seasons:
         source = ColumnDataSource(data={"x": subset["marketing_spend"], "y": subset["sales"]})
 
         # Create figure for each cell
-        p = figure(width=1500, height=600, x_range=(5, 50), y_range=(20, 130), tools="")
+        p = figure(width=1600, height=620, x_range=(5, 50), y_range=(20, 130), tools="")
 
         # Add scatter points
         p.scatter(
@@ -90,27 +93,33 @@ for season in seasons:
 # Create gridplot layout
 grid = gridplot(plots, toolbar_location=None, merge_tools=False)
 
-# Add overall title by creating a title figure
-title_fig = figure(width=4500, height=200, tools="", x_range=(0, 1), y_range=(0, 1))
-title_fig.text(
-    x=[0.5],
-    y=[0.5],
-    text=["facet-grid · bokeh · pyplots.ai"],
-    text_font_size="32pt",
-    text_align="center",
-    text_baseline="middle",
-    text_color="#333333",
+# Add overall title using Div for cleaner implementation
+title_div = Div(
+    text="<h1 style='text-align: center; color: #333333; font-size: 32pt; margin: 20px 0;'>"
+    "facet-grid · bokeh · pyplots.ai</h1>",
+    width=4800,
+    height=120,
 )
-title_fig.xaxis.visible = False
-title_fig.yaxis.visible = False
-title_fig.xgrid.visible = False
-title_fig.ygrid.visible = False
-title_fig.outline_line_color = None
-title_fig.background_fill_color = None
-title_fig.border_fill_color = None
 
-# Combine title and grid using column layout
-final_layout = column(title_fig, grid)
+# Create legend using Div for region-color mapping
+legend_html = (
+    "<div style='text-align: center; font-size: 18pt; padding: 20px 0;'>"
+    "<span style='font-weight: bold; margin-right: 30px;'>Region:</span>"
+)
+for region, color in colors.items():
+    legend_html += (
+        f"<span style='margin-right: 40px;'>"
+        f"<span style='display: inline-block; width: 20px; height: 20px; "
+        f"background-color: {color}; border: 1px solid #333; border-radius: 50%; "
+        f"vertical-align: middle; margin-right: 8px;'></span>"
+        f"{region}</span>"
+    )
+legend_html += "</div>"
+
+legend_div = Div(text=legend_html, width=4800, height=80)
+
+# Combine title, grid, and legend using column layout
+final_layout = column(title_div, grid, legend_div)
 
 # Save
 export_png(final_layout, filename="plot.png")

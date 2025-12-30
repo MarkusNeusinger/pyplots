@@ -46,7 +46,7 @@ This file provides guidance to GitHub Copilot when working with code in this rep
 # Install dependencies (uses uv - fast Python package manager)
 uv sync --all-extras
 
-# Run all tests (unit + integration)
+# Run all tests (unit + integration + e2e)
 uv run pytest
 
 # Run only unit tests
@@ -55,13 +55,16 @@ uv run pytest tests/unit
 # Run only integration tests (uses SQLite in-memory)
 uv run pytest tests/integration
 
-# Check code formatting and linting
+# Run only E2E tests (requires DATABASE_URL)
+uv run pytest tests/e2e
+
+# Linting (required for CI)
 uv run ruff check .
 
-# Auto-fix issues
+# Auto-fix linting issues
 uv run ruff check . --fix
 
-# Format code
+# Formatting (required for CI)
 uv run ruff format .
 ```
 
@@ -164,9 +167,9 @@ Examples: `scatter-basic`, `scatter-color-mapped`, `bar-grouped-horizontal`, `he
 - **Naming**: `test_{what_it_does}`
 - **Fixtures**: Use pytest fixtures in `tests/conftest.py`
 - **Test Types**:
-  - **Unit tests** (`tests/unit/`): Fast, isolated, mocked dependencies - run in CI
-  - **Integration tests** (`tests/integration/`): Real database with SQLite in-memory - run in CI
-  - **E2E tests** (`tests/e2e/`): Full stack with FastAPI TestClient - not yet in CI
+  - **Unit tests** (`tests/unit/`): Fast, isolated, mocked dependencies
+  - **Integration tests** (`tests/integration/`): SQLite in-memory for API tests
+  - **E2E tests** (`tests/e2e/`): Real PostgreSQL with isolated `test_e2e` schema (skipped if DATABASE_URL not set)
 - **Markers**: Use `@pytest.mark.unit`, `@pytest.mark.integration`, `@pytest.mark.e2e`
 
 ### Plot Implementation Style (KISS)

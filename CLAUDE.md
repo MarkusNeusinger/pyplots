@@ -129,7 +129,7 @@ uv run alembic upgrade head
 ### Testing
 
 ```bash
-# Run all tests (unit + integration)
+# Run all tests (unit + integration + e2e)
 uv run pytest
 
 # Run only unit tests
@@ -137,6 +137,9 @@ uv run pytest tests/unit
 
 # Run only integration tests (uses SQLite in-memory)
 uv run pytest tests/integration
+
+# Run only E2E tests (requires DATABASE_URL)
+uv run pytest tests/e2e
 
 # Run with coverage
 uv run pytest --cov=. --cov-report=html
@@ -149,22 +152,27 @@ uv run pytest tests/unit/api/test_routers.py::test_get_specs
 ```
 
 **Test Infrastructure**:
-- **Unit tests** (`tests/unit/`): Fast, mocked dependencies, run in CI
-- **Integration tests** (`tests/integration/`): Real database operations with SQLite, run in CI
-- **E2E tests** (`tests/e2e/`): Full stack with FastAPI TestClient, not yet in CI
+- **Unit tests** (`tests/unit/`): Fast, mocked dependencies
+- **Integration tests** (`tests/integration/`): SQLite in-memory for API tests
+- **E2E tests** (`tests/e2e/`): Real PostgreSQL with isolated `test_e2e` schema
 
-**Database for Tests**: Integration tests use SQLite in-memory (via custom types in `core/database/types.py`). Production uses PostgreSQL native types (ARRAY, JSONB, UUID), tests use compatible fallbacks (JSON, String).
+**Database for Tests**:
+- **Unit/Integration**: SQLite in-memory (via custom types in `core/database/types.py`)
+- **E2E**: PostgreSQL with `test_e2e` schema (auto-created, auto-dropped)
+- E2E tests are skipped if `DATABASE_URL` is not set
 
 ### Code Quality
 
+**Both linting and formatting must pass for CI.**
+
 ```bash
-# Check code formatting and linting
+# Linting (required for CI)
 uv run ruff check .
 
-# Auto-fix issues
+# Auto-fix linting issues
 uv run ruff check . --fix
 
-# Format code
+# Formatting (required for CI)
 uv run ruff format .
 ```
 

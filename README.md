@@ -2,7 +2,7 @@
 
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-unittest.yml/badge.svg?branch=main)](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-unittest.yml)
+[![Tests](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-tests.yml/badge.svg?branch=main)](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-tests.yml)
 [![Ruff](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-lint.yml/badge.svg?branch=main)](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-lint.yml)
 [![codecov](https://codecov.io/github/MarkusNeusinger/pyplots/graph/badge.svg?token=4EGPSHH0H0)](https://codecov.io/github/MarkusNeusinger/pyplots)
 

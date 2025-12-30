@@ -25,7 +25,7 @@ WORKFLOWS_DIR = Path(__file__).parent.parent.parent.parent / ".github" / "workfl
 EXPECTED_WORKFLOWS = [
     # CI workflows
     "ci-lint.yml",
-    "ci-unittest.yml",
+    "ci-tests.yml",
     # Specification workflows
     "spec-create.yml",
     "spec-update.yml",
@@ -183,7 +183,7 @@ class TestSecurityBestPractices:
 
     def test_ci_workflows_dont_need_write_permissions(self) -> None:
         """CI workflows should use minimal permissions."""
-        ci_workflows = ["ci-lint.yml", "ci-unittest.yml"]
+        ci_workflows = ["ci-lint.yml", "ci-tests.yml"]
 
         for filename in ci_workflows:
             filepath = WORKFLOWS_DIR / filename
@@ -378,7 +378,7 @@ class TestWorkflowTriggers:
 
     def test_ci_workflows_trigger_on_push_and_pr(self) -> None:
         """CI workflows should run on both push and PR."""
-        ci_workflows = ["ci-lint.yml", "ci-unittest.yml"]
+        ci_workflows = ["ci-lint.yml", "ci-tests.yml"]
 
         for filename in ci_workflows:
             filepath = WORKFLOWS_DIR / filename

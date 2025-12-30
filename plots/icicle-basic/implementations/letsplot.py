@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 icicle-basic: Basic Icicle Chart
 Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-30
+Quality: 90/100 | Created: 2025-12-30
 """
 
 import pandas as pd

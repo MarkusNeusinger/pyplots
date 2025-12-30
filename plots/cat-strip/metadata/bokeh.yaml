@@ -1,0 +1,24 @@
+library: bokeh
+specification_id: cat-strip
+created: '2025-12-30T12:06:30Z'
+updated: '2025-12-30T12:12:49Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20596060367
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/cat-strip/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/cat-strip/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/cat-strip/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent text sizing scaled appropriately for 4800x2700 canvas
+  - Well-implemented jitter using manual x-position offsets
+  - Realistic business context with meaningful category differentiation
+  - Clean, readable code structure following KISS principles
+  - Good use of ColumnDataSource for data management
+  - Proper title format following pyplots.ai conventions
+  weaknesses:
+  - Could add HoverTool for interactivity (Bokeh key strength)
+  - Vertical grid on categorical axis is less useful

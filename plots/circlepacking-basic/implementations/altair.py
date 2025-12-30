@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 circlepacking-basic: Circle Packing Chart
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 55/100 | Created: 2025-12-30
@@ -38,32 +38,106 @@ dept_totals = {}
 for t in teams:
     dept_totals[t["parent"]] = dept_totals.get(t["parent"], 0) + t["value"]
 
-# Department positions in a 2x2 grid (well-separated to avoid overlap)
-dept_positions = {
-    "Engineering": (-200, 150),  # Top-left (largest)
-    "Sales": (200, 150),  # Top-right
-    "Marketing": (-180, -180),  # Bottom-left
-    "Operations": (180, -180),  # Bottom-right (smallest)
-}
-
-# Color palette - different color for each department (colorblind-safe)
+# Color palette - distinct colors for each department (colorblind-safe)
 dept_colors = {
-    "Engineering": "#306998",  # Blue
-    "Sales": "#2ca02c",  # Green
-    "Marketing": "#9467bd",  # Purple
-    "Operations": "#ff7f0e",  # Orange
+    "Engineering": "#4477AA",  # Blue
+    "Sales": "#228833",  # Green
+    "Marketing": "#AA3377",  # Magenta/Pink
+    "Operations": "#EE6677",  # Coral/Red
 }
 
 # Scale value to radius (sqrt for area-proportional sizing)
 max_value = max(t["value"] for t in teams)
-min_radius = 30
-max_radius = 70
+min_radius = 25
+max_radius = 55
 
 
-# Pack children within a department using simple circular arrangement
-# This keeps all children inside the parent circle without overlap
+def get_team_radius(value):
+    """Calculate radius from value using sqrt for area-proportional sizing."""
+    return min_radius + (max_radius - min_radius) * np.sqrt(value / max_value)
+
+
+def pack_circles_in_parent(circles, parent_center, parent_radius):
+    """
+    Pack child circles inside a parent circle using force-directed placement.
+    Returns list of (x, y) positions for each circle.
+    """
+    n = len(circles)
+    if n == 0:
+        return []
+
+    radii = [c["radius"] for c in circles]
+
+    # Start with circular arrangement
+    positions = []
+    if n == 1:
+        positions = [(parent_center[0], parent_center[1])]
+    else:
+        arrangement_r = parent_radius * 0.4
+        for i in range(n):
+            angle = 2 * np.pi * i / n - np.pi / 2
+            x = parent_center[0] + arrangement_r * np.cos(angle)
+            y = parent_center[1] + arrangement_r * np.sin(angle)
+            positions.append((x, y))
+
+    # Force-directed relaxation to remove overlaps
+    for _ in range(100):
+        forces = [(0.0, 0.0) for _ in range(n)]
+
+        # Repulsion between circles
+        for i in range(n):
+            for j in range(i + 1, n):
+                dx = positions[i][0] - positions[j][0]
+                dy = positions[i][1] - positions[j][1]
+                dist = np.sqrt(dx * dx + dy * dy)
+                min_dist = radii[i] + radii[j] + 3  # 3px gap
+
+                if dist < min_dist and dist > 0:
+                    overlap = min_dist - dist
+                    fx = (dx / dist) * overlap * 0.5
+                    fy = (dy / dist) * overlap * 0.5
+                    forces[i] = (forces[i][0] + fx, forces[i][1] + fy)
+                    forces[j] = (forces[j][0] - fx, forces[j][1] - fy)
+
+        # Keep circles inside parent
+        for i in range(n):
+            dx = positions[i][0] - parent_center[0]
+            dy = positions[i][1] - parent_center[1]
+            dist_from_center = np.sqrt(dx * dx + dy * dy)
+            max_dist = parent_radius - radii[i] - 5
+
+            if dist_from_center > max_dist and dist_from_center > 0:
+                scale = max_dist / dist_from_center
+                positions[i] = (parent_center[0] + dx * scale, parent_center[1] + dy * scale)
+
+        # Apply forces
+        positions = [(positions[i][0] + forces[i][0], positions[i][1] + forces[i][1]) for i in range(n)]
+
+    return positions
+
+
+# Build circle packing structure
 circles_data = []
-root_radius = 500  # Outer company circle
+
+# Calculate department radii based on team radii
+dept_radii = {}
+for dept in dept_totals.keys():
+    dept_teams = [t for t in teams if t["parent"] == dept]
+    team_radii = [get_team_radius(t["value"]) for t in dept_teams]
+    # Department radius should contain all teams with padding
+    total_team_area = sum(r * r * np.pi for r in team_radii)
+    dept_radii[dept] = np.sqrt(total_team_area / np.pi) * 1.8 + 20
+
+# Sort departments by radius (largest first for better packing)
+sorted_depts = sorted(dept_radii.keys(), key=lambda d: dept_radii[d], reverse=True)
+
+# Calculate root circle radius
+total_dept_area = sum(r * r * np.pi for r in dept_radii.values())
+root_radius = np.sqrt(total_dept_area / np.pi) * 1.6 + 30
+
+# Position departments inside root circle
+dept_circles = [{"name": dept, "radius": dept_radii[dept]} for dept in sorted_depts]
+dept_positions = pack_circles_in_parent(dept_circles, (0, 0), root_radius)
 
 # Add root circle (Company)
 company_total = sum(t["value"] for t in teams)
@@ -75,57 +149,23 @@ circles_data.append(
         "label": "Company",
         "value": company_total,
         "depth": 0,
-        "color": "#1a3d5c",
+        "color": "#2d4a6f",
         "department": "Company",
     }
 )
 
-# Process each department
-for dept, (dept_x, dept_y) in dept_positions.items():
-    dept_teams = [t for t in teams if t["parent"] == dept]
+# Add departments and their teams
+for i, dept in enumerate(sorted_depts):
+    dept_x, dept_y = dept_positions[i]
+    dept_r = dept_radii[dept]
     dept_value = dept_totals[dept]
-
-    # Calculate team radii
-    team_radii = []
-    for t in dept_teams:
-        r = min_radius + (max_radius - min_radius) * np.sqrt(t["value"] / max_value)
-        team_radii.append(r)
-
-    # Calculate department radius to contain all teams
-    # Use a simple arrangement: place teams in a circle around department center
-    n_teams = len(dept_teams)
-
-    if n_teams == 1:
-        # Single team - place at center
-        positions = [(0, 0)]
-        inner_radius = team_radii[0]
-    else:
-        # Multiple teams - arrange in a circle
-        # Calculate the radius of the arrangement circle
-        max_team_r = max(team_radii)
-        sum_diameters = sum(2 * r for r in team_radii)
-        # Circumference should fit all teams with gaps
-        arrangement_radius = max(sum_diameters / (2 * np.pi) + max_team_r * 0.3, max_team_r * 1.5)
-
-        positions = []
-        angle_offset = np.pi / 2  # Start from top
-        for i in range(n_teams):
-            angle = angle_offset + 2 * np.pi * i / n_teams
-            px = arrangement_radius * np.cos(angle)
-            py = arrangement_radius * np.sin(angle)
-            positions.append((px, py))
-
-        inner_radius = arrangement_radius + max_team_r
-
-    # Department circle radius with padding
-    dept_radius = inner_radius + 25
 
     # Add department circle
     circles_data.append(
         {
             "x": dept_x,
             "y": dept_y,
-            "radius": dept_radius,
+            "radius": dept_r,
             "label": dept,
             "value": dept_value,
             "depth": 1,
@@ -134,14 +174,18 @@ for dept, (dept_x, dept_y) in dept_positions.items():
         }
     )
 
-    # Add team circles
-    for i, t in enumerate(dept_teams):
-        tx, ty = positions[i]
-        team_r = team_radii[i]
+    # Position teams inside department
+    dept_teams = [t for t in teams if t["parent"] == dept]
+    team_circles = [{"name": t["label"], "radius": get_team_radius(t["value"])} for t in dept_teams]
+    team_positions = pack_circles_in_parent(team_circles, (dept_x, dept_y), dept_r)
+
+    for j, t in enumerate(dept_teams):
+        tx, ty = team_positions[j]
+        team_r = get_team_radius(t["value"])
         circles_data.append(
             {
-                "x": dept_x + tx,
-                "y": dept_y + ty,
+                "x": tx,
+                "y": ty,
                 "radius": team_r,
                 "label": t["label"],
                 "value": t["value"],
@@ -165,32 +209,52 @@ df_root = df[df["depth"] == 0].copy()
 df_depts = df[df["depth"] == 1].copy()
 df_teams = df[df["depth"] == 2].copy()
 
-# Calculate size scale (radius squared for area encoding)
-size_domain = [df["radius"].min(), df["radius"].max()]
-size_range = [df["radius"].min() ** 2 * 3, df["radius"].max() ** 2 * 3]
+# Calculate dynamic scales based on actual data
+x_min, x_max = df["x"].min() - df["radius"].max(), df["x"].max() + df["radius"].max()
+y_min, y_max = df["y"].min() - df["radius"].max(), df["y"].max() + df["radius"].max()
 
-# Shared scales for consistent positioning
-x_scale = alt.Scale(domain=[-600, 600])
-y_scale = alt.Scale(domain=[-500, 500])
+# Add padding for legend on the right
+padding = 50
+x_domain = [x_min - padding, x_max + padding + 180]  # Extra space for legend
+y_domain = [y_min - padding, y_max + padding]
+
+# Size scale (radius squared for area encoding)
+size_domain = [df["radius"].min(), df["radius"].max()]
+size_range = [df["radius"].min() ** 2 * 2.5, df["radius"].max() ** 2 * 2.5]
+
+# Shared scales
+x_scale = alt.Scale(domain=list(x_domain))
+y_scale = alt.Scale(domain=list(y_domain))
 size_scale = alt.Scale(domain=size_domain, range=size_range)
 
 # Root circle layer (outermost - Company)
 root_layer = (
     alt.Chart(df_root)
-    .mark_circle(opacity=0.15, stroke="#1a3d5c", strokeWidth=3)
+    .mark_circle(opacity=0.2, stroke="#2d4a6f", strokeWidth=3)
     .encode(
         x=alt.X("x:Q", axis=None, scale=x_scale),
         y=alt.Y("y:Q", axis=None, scale=y_scale),
         size=alt.Size("radius:Q", scale=size_scale, legend=None),
-        color=alt.value("#1a3d5c"),
+        color=alt.value("#2d4a6f"),
         tooltip=[alt.Tooltip("label:N", title="Name"), alt.Tooltip("display_value:N", title="Budget")],
+    )
+)
+
+# Root label
+root_label = (
+    alt.Chart(df_root)
+    .mark_text(color="#2d4a6f", fontWeight="bold", fontSize=20, dy=-root_radius + 30)
+    .encode(
+        x=alt.X("x:Q", axis=None, scale=x_scale),
+        y=alt.Y("y:Q", axis=None, scale=y_scale),
+        text=alt.value("Company Budget"),
     )
 )
 
 # Department circles layer
 dept_layer = (
     alt.Chart(df_depts)
-    .mark_circle(opacity=0.35, stroke="white", strokeWidth=2)
+    .mark_circle(opacity=0.4, stroke="white", strokeWidth=2)
     .encode(
         x=alt.X("x:Q", axis=None, scale=x_scale),
         y=alt.Y("y:Q", axis=None, scale=y_scale),
@@ -203,7 +267,7 @@ dept_layer = (
 # Team circles layer
 team_layer = (
     alt.Chart(df_teams)
-    .mark_circle(opacity=0.85, stroke="white", strokeWidth=2)
+    .mark_circle(opacity=0.9, stroke="white", strokeWidth=1.5)
     .encode(
         x=alt.X("x:Q", axis=None, scale=x_scale),
         y=alt.Y("y:Q", axis=None, scale=y_scale),
@@ -217,32 +281,39 @@ team_layer = (
     )
 )
 
-# Department labels
+# Department labels - positioned at center-top of each department circle
+df_depts_labels = df_depts.copy()
+df_depts_labels["label_y"] = df_depts_labels["y"] + df_depts_labels["radius"] * 0.6
+
 dept_label_layer = (
-    alt.Chart(df_depts)
-    .mark_text(color="white", fontWeight="bold", fontSize=18, dy=-60)
-    .encode(x=alt.X("x:Q", axis=None, scale=x_scale), y=alt.Y("y:Q", axis=None, scale=y_scale), text="label:N")
+    alt.Chart(df_depts_labels)
+    .mark_text(color="white", fontWeight="bold", fontSize=16)
+    .encode(x=alt.X("x:Q", axis=None, scale=x_scale), y=alt.Y("label_y:Q", axis=None, scale=y_scale), text="label:N")
 )
 
 # Team labels
 team_label_layer = (
     alt.Chart(df_teams)
-    .mark_text(color="white", fontWeight="bold", fontSize=12, lineBreak="\n")
+    .mark_text(color="white", fontWeight="bold", fontSize=11, lineBreak="\n")
     .encode(x=alt.X("x:Q", axis=None, scale=x_scale), y=alt.Y("y:Q", axis=None, scale=y_scale), text="display_text:N")
 )
 
-# Legend data
+# Legend positioned inside the visible area (right side)
+legend_x = x_max + 60
+legend_y_start = 80
+legend_spacing = 45
+
 legend_df = pd.DataFrame(
     [
-        {"department": dept, "color": color, "x": 450, "y": 380 - i * 50}
-        for i, (dept, color) in enumerate(dept_colors.items())
+        {"department": dept, "color": dept_colors[dept], "x": legend_x, "y": legend_y_start - i * legend_spacing}
+        for i, dept in enumerate(["Engineering", "Sales", "Marketing", "Operations"])
     ]
 )
 
 # Legend circles
 legend_circles = (
     alt.Chart(legend_df)
-    .mark_circle(size=400, opacity=0.85)
+    .mark_circle(size=350, opacity=0.9, stroke="white", strokeWidth=1)
     .encode(
         x=alt.X("x:Q", axis=None, scale=x_scale),
         y=alt.Y("y:Q", axis=None, scale=y_scale),
@@ -253,13 +324,15 @@ legend_circles = (
 # Legend text
 legend_text = (
     alt.Chart(legend_df)
-    .mark_text(align="left", dx=20, fontSize=14, fontWeight="bold")
+    .mark_text(align="left", dx=18, fontSize=14, fontWeight="bold", color="#333333")
     .encode(x=alt.X("x:Q", axis=None, scale=x_scale), y=alt.Y("y:Q", axis=None, scale=y_scale), text="department:N")
 )
 
 # Combine all layers
 chart = (
-    alt.layer(root_layer, dept_layer, team_layer, dept_label_layer, team_label_layer, legend_circles, legend_text)
+    alt.layer(
+        root_layer, root_label, dept_layer, team_layer, dept_label_layer, team_label_layer, legend_circles, legend_text
+    )
     .properties(
         width=1200,
         height=1200,

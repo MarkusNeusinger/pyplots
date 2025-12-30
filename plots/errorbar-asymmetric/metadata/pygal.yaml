@@ -1,0 +1,26 @@
+library: pygal
+specification_id: errorbar-asymmetric
+created: '2025-12-30T17:48:43Z'
+updated: '2025-12-30T18:17:17Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20602451830
+issue: 0
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/pygal/plot.html
+quality_score: 88
+review:
+  strengths:
+  - Clear visualization of asymmetric error bars using pygal XY chart creatively
+  - Well-labeled axes with units (MPa for strength, Material for x-axis)
+  - Realistic engineering context (material tensile strength testing)
+  - Good demonstration of asymmetric errors with varied patterns across materials
+  - Clean code structure following KISS principles
+  - Proper title format and legend explaining what the percentile ranges represent
+  weaknesses:
+  - Legend symbols do not perfectly match the plot elements (squares in legend vs
+    lines/dots in plot)
+  - Layout has some unused whitespace on the sides
+  - Error bar caps could be more visually prominent

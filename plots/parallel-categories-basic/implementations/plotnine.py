@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 parallel-categories-basic: Basic Parallel Categories Plot
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -76,11 +76,11 @@ path_data = [
 
 path_counts = pd.DataFrame(path_data, columns=["channel", "product", "customer_type", "outcome", "count"])
 
-# Define dimensions and their category orders
+# Define dimensions and their category orders (ordered to minimize ribbon crossings)
 dimensions = [
     {"name": "channel", "label": "Channel", "categories": ["Online", "Store", "Mobile"]},
     {"name": "product", "label": "Product", "categories": ["Electronics", "Clothing", "Home"]},
-    {"name": "customer_type", "label": "Customer", "categories": ["New", "Returning"]},
+    {"name": "customer_type", "label": "Customer", "categories": ["Returning", "New"]},
     {"name": "outcome", "label": "Outcome", "categories": ["Purchased", "Abandoned"]},
 ]
 
@@ -224,7 +224,7 @@ plot = (
         fontweight="bold",
     )
     + scale_fill_manual(values=outcome_colors, name="Outcome", breaks=["Purchased", "Abandoned"])
-    + labs(title="Customer Journey · parallel-categories-basic · plotnine · pyplots.ai", x="", y="")
+    + labs(title="parallel-categories-basic · plotnine · pyplots.ai", x="", y="")
     + coord_cartesian(xlim=(0, 1), ylim=(-0.02, 1.02))
     + theme_minimal()
     + theme(
@@ -252,12 +252,12 @@ for dim_idx, dim in enumerate(dimensions):
         ha="center",
     )
 
-# Add category labels beside each node
+# Add category labels beside each node (all dimensions)
 for (dim_idx, cat), pos in node_positions.items():
     label = str(cat)
     label_y = (pos["y_top"] + pos["y_bottom"]) / 2
 
-    # For first dimension, place label on left
+    # For first dimension, place label on left side of node
     if dim_idx == 0:
         plot = plot + annotate(
             "text",
@@ -269,7 +269,7 @@ for (dim_idx, cat), pos in node_positions.items():
             ha="right",
             va="center",
         )
-    # For last dimension, place label on right
+    # For last dimension, place label on right side of node
     elif dim_idx == n_dims - 1:
         plot = plot + annotate(
             "text",
@@ -280,6 +280,18 @@ for (dim_idx, cat), pos in node_positions.items():
             color="#333333",
             ha="left",
             va="center",
+        )
+    # For middle dimensions, place label below the node
+    else:
+        plot = plot + annotate(
+            "text",
+            x=x_positions[dim_idx],
+            y=pos["y_bottom"] - 0.015,
+            label=label,
+            size=9,
+            color="#333333",
+            ha="center",
+            va="top",
         )
 
 plot.save("plot.png", dpi=300, verbose=False)

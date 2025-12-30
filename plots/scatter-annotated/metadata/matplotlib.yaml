@@ -1,0 +1,23 @@
+library: matplotlib
+specification_id: scatter-annotated
+created: '2025-12-30T17:49:45Z'
+updated: '2025-12-30T18:01:09Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20602450818
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent manual offset positioning for annotations prevents all label overlaps
+  - Connector lines from labels to points add clarity without visual clutter
+  - Realistic tech company data with plausible market cap and revenue figures
+  - Clean, readable code following KISS principles
+  - Proper font sizing for 4800x2700 output resolution
+  weaknesses:
+  - Does not use adjustText or similar library for automatic label placement as suggested
+    in spec (though manual approach works well for this dataset)

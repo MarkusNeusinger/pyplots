@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 polar-bar: Polar Bar Chart (Wind Rose)
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -38,9 +38,9 @@ bars = base.mark_arc(stroke="white", strokeWidth=2).encode(
     color=alt.Color(
         "frequency:Q",
         scale=alt.Scale(scheme="blues"),
-        legend=alt.Legend(title="Frequency", titleFontSize=18, labelFontSize=16, orient="right"),
+        legend=alt.Legend(title="Frequency (days)", titleFontSize=18, labelFontSize=16, orient="right"),
     ),
-    tooltip=[alt.Tooltip("direction:N", title="Direction"), alt.Tooltip("frequency:Q", title="Frequency")],
+    tooltip=[alt.Tooltip("direction:N", title="Direction"), alt.Tooltip("frequency:Q", title="Frequency (days)")],
 )
 
 # Add direction labels around the perimeter
@@ -61,11 +61,12 @@ labels = (
 chart = (
     alt.layer(bars, labels)
     .properties(
-        width=800,
-        height=800,
+        width=900,
+        height=900,
         title=alt.Title(text="polar-bar · altair · pyplots.ai", fontSize=28, anchor="middle", color="#333333"),
     )
     .configure_view(strokeWidth=0)
+    .interactive()
 )
 
 # Save outputs

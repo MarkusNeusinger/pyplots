@@ -1,0 +1,26 @@
+library: letsplot
+specification_id: contour-density
+created: '2025-12-30T09:37:09Z'
+updated: '2025-12-30T09:47:24Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20593405154
+issue: 0
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-density/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-density/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-density/letsplot/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent visualization of three distinct density clusters with clear concentric
+    contour lines
+  - Good use of scatter overlay with low alpha providing context without overwhelming
+    the contours
+  - Proper ggplot2-style grammar with geom_density2d following lets-plot conventions
+  - Axis labels include appropriate units (°C, %) and are descriptive
+  - 'Title follows the exact required format: spec-id · library · pyplots.ai'
+  - Realistic temperature/humidity scenario with sensible data ranges
+  weaknesses:
+  - Scatter point alpha could be slightly lower (0.2) for better contour visibility
+    in dense areas

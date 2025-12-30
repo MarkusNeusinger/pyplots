@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-annotated: Annotated Scatter Plot with Text Labels
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-30
@@ -6,8 +6,13 @@ Quality: 85/100 | Created: 2025-12-30
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
+from adjustText import adjust_text
 
+
+# Set seaborn theme for consistent styling
+sns.set_theme(style="whitegrid", palette="colorblind")
 
 # Data: Technology companies with revenue vs market cap
 np.random.seed(42)
@@ -34,39 +39,63 @@ n_points = len(companies)
 revenue = np.random.uniform(5, 80, n_points)
 market_cap = revenue * np.random.uniform(2, 8, n_points) + np.random.randn(n_points) * 10
 
+# Create DataFrame for seaborn
+df = pd.DataFrame({"company": companies, "revenue": revenue, "market_cap": market_cap})
+
 # Create plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Scatter plot with seaborn
-sns.scatterplot(x=revenue, y=market_cap, s=200, alpha=0.7, color="#306998", edgecolor="white", linewidth=1.5, ax=ax)
+# Use seaborn scatterplot with DataFrame
+sns.scatterplot(
+    data=df,
+    x="revenue",
+    y="market_cap",
+    s=200,
+    alpha=0.7,
+    color=sns.color_palette("colorblind")[0],
+    edgecolor="white",
+    linewidth=1.5,
+    ax=ax,
+)
 
-# Add text annotations with offset to avoid overlap
-for i, company in enumerate(companies):
-    # Offset labels slightly above and to the right
-    offset_x = 1.5
-    offset_y = market_cap[i] * 0.03 + 5
-
-    ax.annotate(
-        company,
-        xy=(revenue[i], market_cap[i]),
-        xytext=(revenue[i] + offset_x, market_cap[i] + offset_y),
+# Create text annotations with initial offset (collect for adjustText)
+texts = []
+for _, row in df.iterrows():
+    # Start labels slightly offset from points
+    offset_x = 3.0
+    offset_y = 12.0
+    text = ax.text(
+        row["revenue"] + offset_x,
+        row["market_cap"] + offset_y,
+        row["company"],
         fontsize=14,
         color="#333333",
         ha="left",
         va="bottom",
-        arrowprops={"arrowstyle": "-", "color": "#999999", "alpha": 0.5, "lw": 1},
     )
+    texts.append(text)
+
+# Use adjustText to prevent label overlaps with connecting lines
+adjust_text(
+    texts,
+    x=df["revenue"].values,
+    y=df["market_cap"].values,
+    arrowprops={"arrowstyle": "-", "color": "#888888", "alpha": 0.6, "lw": 1.0},
+    expand=(1.5, 1.5),
+    force_text=(0.3, 0.3),
+    force_points=(0.3, 0.3),
+    ax=ax,
+)
 
 # Labels and styling
 ax.set_xlabel("Annual Revenue ($ Billion)", fontsize=20)
 ax.set_ylabel("Market Capitalization ($ Billion)", fontsize=20)
 ax.set_title("scatter-annotated · seaborn · pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
-ax.grid(True, alpha=0.3, linestyle="--")
 
 # Adjust axis limits to accommodate labels
 ax.set_xlim(0, max(revenue) + 15)
-ax.set_ylim(min(market_cap) - 20, max(market_cap) + 50)
+ax.set_ylim(min(market_cap) - 30, max(market_cap) + 60)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

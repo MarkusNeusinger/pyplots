@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-sorted: Sorted Bar Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-30
@@ -8,34 +8,31 @@ import pygal
 from pygal.style import Style
 
 
-# Data - Monthly sales by product category (sorted descending)
+# Data - Monthly sales by product category (already sorted descending)
 categories = ["Electronics", "Clothing", "Home & Garden", "Sports", "Books", "Toys", "Beauty", "Food"]
 values = [4850, 3720, 2980, 2450, 1890, 1560, 1240, 980]
 
-# Sort data by values (descending) - already sorted, but making it explicit
-sorted_pairs = sorted(zip(categories, values, strict=True), key=lambda x: x[1], reverse=True)
+# Reverse for pygal HorizontalBar (renders bottom-to-top, so largest should be last)
+categories_reversed = list(reversed(categories))
+values_reversed = list(reversed(values))
 
-# Custom style for 4800x2700 canvas
+# Custom style for 4800x2700 canvas with increased font sizes
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
+    foreground_subtle="#999999",  # Lighter color for grid lines
     colors=("#306998",),  # Python Blue for all bars
-    title_font_size=72,
-    label_font_size=48,
-    major_label_font_size=42,
-    legend_font_size=42,
-    value_font_size=36,
-    value_label_font_size=36,
-    tooltip_font_size=36,
+    title_font_size=84,
+    label_font_size=56,
+    major_label_font_size=50,
+    legend_font_size=50,
+    value_font_size=44,
+    value_label_font_size=44,
+    tooltip_font_size=44,
     stroke_width=2,
 )
-
-# Extract sorted categories and values (reversed for pygal which renders bottom-to-top)
-sorted_categories = [pair[0] for pair in reversed(sorted_pairs)]
-sorted_values = [pair[1] for pair in reversed(sorted_pairs)]
 
 # Create horizontal bar chart (better for category labels)
 chart = pygal.HorizontalBar(
@@ -55,10 +52,10 @@ chart = pygal.HorizontalBar(
 )
 
 # Set category labels on Y-axis (x_labels maps to Y-axis in HorizontalBar)
-chart.x_labels = sorted_categories
+chart.x_labels = categories_reversed
 
 # Add data as single series (no legend needed since x_labels provide categories)
-chart.add("Sales", sorted_values)
+chart.add("Sales", values_reversed)
 
 # Save as PNG and HTML
 chart.render_to_png("plot.png")

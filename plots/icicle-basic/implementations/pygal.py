@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 icicle-basic: Basic Icicle Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -41,8 +41,8 @@ hierarchy_data = [
     ("Photo_3", "Photos", 60),
     ("Screen_1", "Screenshots", 25),
     ("Screen_2", "Screenshots", 25),
-    ("Icon_1", "Icons", 15),
-    ("Icon_2", "Icons", 15),
+    ("Icon_1", "Icons", 35),
+    ("Icon_2", "Icons", 35),
     ("Rock", "Albums", 60),
     ("Jazz", "Albums", 55),
     ("Pop", "Albums", 65),
@@ -252,13 +252,13 @@ legend_items = [
     ("Subcategory", DEPTH_COLORS[2]),
     ("Item", DEPTH_COLORS[3]),
 ]
-legend_x_start = WIDTH / 2 - 400
+legend_x_start = WIDTH / 2 - 550
 
 legend_g = ET.SubElement(svg_root, "g")
 legend_g.set("class", "legend")
 
 for i, (label, color) in enumerate(legend_items):
-    x = legend_x_start + i * 220
+    x = legend_x_start + i * 300
     # Rectangle marker
     marker = ET.SubElement(legend_g, "rect")
     marker.set("x", str(x))

@@ -1,0 +1,25 @@
+library: plotnine
+specification_id: scatter-categorical
+created: '2025-12-30T10:37:18Z'
+updated: '2025-12-30T10:41:59Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20594556837
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-categorical/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-categorical/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent text sizing with all labels clearly readable at target resolution
+  - Clean ggplot2-style grammar of graphics implementation with proper layer composition
+  - Smart use of three distinct data patterns (correlation, high values, scattered)
+    demonstrating categorical differences
+  - Colorblind-safe palette choice with good contrast between categories
+  - Realistic biological scenario (plant species growth vs temperature)
+  weaknesses:
+  - Could leverage more plotnine-specific features like facet_wrap for small multiples
+    or stat_smooth for trend lines
+  - Legend title font size could be slightly larger for consistency with axis titles

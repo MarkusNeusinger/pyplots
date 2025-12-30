@@ -1,0 +1,24 @@
+library: altair
+specification_id: scatter-annotated
+created: '2025-12-30T17:49:20Z'
+updated: '2025-12-30T17:59:04Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20602453376
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent text legibility with appropriate font sizes for high-resolution output
+  - Clean declarative layer composition using Altair's grammar of graphics
+  - Realistic, neutral dataset with recognizable tech companies and accurate financials
+  - Smart label positioning with consistent dx/dy offsets to avoid point overlap
+  - Proper use of tooltips for interactivity in HTML output
+  weaknesses:
+  - Missing connector lines/arrows from labels to points as mentioned in specification
+    notes
+  - Could leverage more Altair-specific features like conditional formatting or selections

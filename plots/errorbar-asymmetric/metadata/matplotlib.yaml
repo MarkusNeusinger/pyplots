@@ -1,0 +1,25 @@
+library: matplotlib
+specification_id: errorbar-asymmetric
+created: '2025-12-30T17:47:26Z'
+updated: '2025-12-30T17:50:38Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20602446751
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 93
+review:
+  strengths:
+  - Clear visualization of asymmetric error bars with visible caps and appropriate
+    thickness
+  - Excellent use of fill_between to show confidence region - enhances visual understanding
+  - Well-chosen realistic business scenario with monthly sales data
+  - Perfect title format and axis labeling with units
+  - Good color choice and overall visual balance
+  weaknesses:
+  - Marker size (15) could be slightly larger for better visibility at full resolution
+  - Legend could better explain what asymmetric bounds represent (the fill region
+    is not explained)

@@ -3,6 +3,9 @@ E2E test fixtures with real PostgreSQL database.
 
 Uses a separate 'test_e2e' schema to isolate test data from production.
 Tests are skipped if DATABASE_URL is not set.
+
+Note: These tests must NOT be run with pytest-xdist parallelization
+as multiple workers would conflict on the shared test_e2e schema.
 """
 
 import os
@@ -42,13 +45,20 @@ async def pg_engine():
     if not database_url:
         pytest.skip("DATABASE_URL not set - skipping PostgreSQL E2E tests")
 
-    engine = create_async_engine(database_url, echo=False)
-
-    # Create test schema and tables
-    async with engine.begin() as conn:
+    # First create schema with a temporary engine (no search_path yet)
+    temp_engine = create_async_engine(database_url, echo=False)
+    async with temp_engine.begin() as conn:
         await conn.execute(text(f"DROP SCHEMA IF EXISTS {TEST_SCHEMA} CASCADE"))
         await conn.execute(text(f"CREATE SCHEMA {TEST_SCHEMA}"))
-        await conn.execute(text(f"SET search_path TO {TEST_SCHEMA}"))
+    await temp_engine.dispose()
+
+    # Create engine with search_path set at connection level (handles pooling correctly)
+    engine = create_async_engine(
+        database_url, echo=False, connect_args={"server_settings": {"search_path": TEST_SCHEMA}}
+    )
+
+    # Create tables in test schema
+    async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
     yield engine
@@ -61,11 +71,9 @@ async def pg_engine():
 
 @pytest_asyncio.fixture
 async def pg_session(pg_engine):
-    """Create session with test schema."""
+    """Create session with test schema (search_path set at engine level)."""
     async_session = async_sessionmaker(pg_engine, class_=AsyncSession, expire_on_commit=False)
     async with async_session() as session:
-        # Ensure we're in test schema
-        await session.execute(text(f"SET search_path TO {TEST_SCHEMA}"))
         yield session
         await session.rollback()
 

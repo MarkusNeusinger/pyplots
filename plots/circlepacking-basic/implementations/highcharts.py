@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 circlepacking-basic: Circle Packing Chart
 Library: highcharts unknown | Python 3.13.11
-Quality: 35/100 | Created: 2025-12-30
+Quality: 62/100 | Created: 2025-12-30
 """
 
 import json

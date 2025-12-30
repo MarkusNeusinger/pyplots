@@ -114,7 +114,7 @@ class TestSettingsProperties:
     def test_is_database_configured_with_neither(self) -> None:
         """Should return False when no database config is set."""
         with patch.dict(os.environ, {}, clear=True):
-            settings = Settings()
+            settings = Settings(_env_file=None)
             assert settings.is_database_configured is False
 
     def test_has_google_cloud_with_credentials(self) -> None:
@@ -126,7 +126,7 @@ class TestSettingsProperties:
     def test_has_google_cloud_without_credentials(self) -> None:
         """Should return False when google cloud credentials are not set."""
         with patch.dict(os.environ, {}, clear=True):
-            settings = Settings()
+            settings = Settings(_env_file=None)
             assert settings.has_google_cloud is False
 
 

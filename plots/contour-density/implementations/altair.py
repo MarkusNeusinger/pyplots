@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-density: Density Contour Plot
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -30,121 +30,55 @@ humidity3 = np.random.normal(75, 8, n3)
 temperature = np.concatenate([temp1, temp2, temp3])
 humidity = np.concatenate([humidity1, humidity2, humidity3])
 
-# Compute 2D KDE for contour lines
+# Compute 2D KDE for density estimation
 xy = np.vstack([temperature, humidity])
 kde = gaussian_kde(xy)
 
-# Create grid for density estimation (80x80 for smooth contours)
-n_grid = 80
+# Create grid for density estimation
+n_grid = 60
 x_grid = np.linspace(temperature.min() - 5, temperature.max() + 5, n_grid)
 y_grid = np.linspace(humidity.min() - 5, humidity.max() + 5, n_grid)
 xx, yy = np.meshgrid(x_grid, y_grid)
 positions = np.vstack([xx.ravel(), yy.ravel()])
 z = kde(positions).reshape(xx.shape)
 
-
-# Marching squares algorithm for contour line extraction
-def extract_contours(Z, level, x_coords, y_coords):
-    """Extract contour line segments using marching squares."""
-    rows, cols = Z.shape
-    segments = []
-
-    for i in range(rows - 1):
-        for j in range(cols - 1):
-            z00, z01, z10, z11 = Z[i, j], Z[i, j + 1], Z[i + 1, j], Z[i + 1, j + 1]
-            x0, x1 = x_coords[j], x_coords[j + 1]
-            y0, y1 = y_coords[i], y_coords[i + 1]
-
-            case = sum([1 << k for k, v in enumerate([z00, z01, z10, z11]) if v >= level])
-            if case in (0, 15):
-                continue
-
-            def interp(v1, v2, c1, c2):
-                if abs(v2 - v1) < 1e-10:
-                    return (c1 + c2) / 2
-                t = (level - v1) / (v2 - v1)
-                return c1 + t * (c2 - c1)
-
-            edges = {
-                "top": (interp(z00, z01, x0, x1), y0),
-                "bottom": (interp(z10, z11, x0, x1), y1),
-                "left": (x0, interp(z00, z10, y0, y1)),
-                "right": (x1, interp(z01, z11, y0, y1)),
-            }
-
-            cases = {
-                1: [("left", "top")],
-                2: [("top", "right")],
-                3: [("left", "right")],
-                4: [("bottom", "left")],
-                5: [("top", "bottom")],
-                6: [("top", "left"), ("bottom", "right")]
-                if (z00 + z11) / 2 >= level
-                else [("top", "right"), ("bottom", "left")],
-                7: [("bottom", "right")],
-                8: [("right", "bottom")],
-                9: [("left", "bottom"), ("right", "top")]
-                if (z00 + z11) / 2 >= level
-                else [("left", "top"), ("right", "bottom")],
-                10: [("top", "bottom")],
-                11: [("left", "bottom")],
-                12: [("left", "right")],
-                13: [("top", "right")],
-                14: [("left", "top")],
-            }
-
-            for e1, e2 in cases.get(case, []):
-                segments.append(
-                    {"x1": edges[e1][0], "y1": edges[e1][1], "x2": edges[e2][0], "y2": edges[e2][1], "level": level}
-                )
-
-    return segments
-
-
-# Create filled density background with discrete levels
-n_levels = 12
+# Create filled contour visualization using binned density levels
+n_levels = 10
 z_min, z_max = z.min(), z.max()
 levels = np.linspace(z_min, z_max, n_levels + 1)
 z_binned = np.digitize(z, levels) - 1
 z_binned = np.clip(z_binned, 0, n_levels - 1)
-level_centers = (levels[:-1] + levels[1:]) / 2
-z_discrete = level_centers[z_binned]
 
-step = x_grid[1] - x_grid[0]
-half_step = step / 2
+# Create grid cell data for filled contours
+step_x = x_grid[1] - x_grid[0]
+step_y = y_grid[1] - y_grid[0]
 
-df_fill = pd.DataFrame(
-    {
-        "x": xx.ravel() - half_step,
-        "x2": xx.ravel() + half_step,
-        "y": yy.ravel() - half_step,
-        "y2": yy.ravel() + half_step,
-        "density": z_discrete.ravel(),
-    }
-)
+grid_data = pd.DataFrame({"x": xx.ravel(), "y": yy.ravel(), "density_level": z_binned.ravel()})
 
-# Extract contour lines at multiple density levels
-contour_levels = np.linspace(z.max() * 0.1, z.max() * 0.9, 8)
-all_segments = []
-for lvl in contour_levels:
-    all_segments.extend(extract_contours(z, lvl, x_grid, y_grid))
+# Create filled contour chart using mark_rect with binning
+x_domain = [float(temperature.min() - 6), float(temperature.max() + 6)]
+y_domain = [float(humidity.min() - 6), float(humidity.max() + 6)]
 
-contour_df = pd.DataFrame(all_segments)
-
-# Filled density background
-x_domain = [x_grid.min() - 1, x_grid.max() + 1]
-y_domain = [y_grid.min() - 1, y_grid.max() + 1]
-
-filled = (
-    alt.Chart(df_fill)
+filled_contours = (
+    alt.Chart(grid_data)
     .mark_rect()
     .encode(
-        x=alt.X("x:Q", scale=alt.Scale(domain=x_domain), title="Temperature (°C)"),
-        x2="x2:Q",
-        y=alt.Y("y:Q", scale=alt.Scale(domain=y_domain), title="Humidity (%)"),
-        y2="y2:Q",
+        x=alt.X(
+            "x:Q",
+            bin=alt.Bin(step=step_x),
+            scale=alt.Scale(domain=x_domain),
+            title="Temperature (°C)",
+            axis=alt.Axis(labelFontSize=18, titleFontSize=22, grid=True, gridOpacity=0.3),
+        ),
+        y=alt.Y(
+            "y:Q",
+            bin=alt.Bin(step=step_y),
+            scale=alt.Scale(domain=y_domain),
+            title="Humidity (%)",
+            axis=alt.Axis(labelFontSize=18, titleFontSize=22, grid=True, gridOpacity=0.3),
+        ),
         color=alt.Color(
-            "density:Q",
+            "mean(density_level):Q",
             scale=alt.Scale(scheme="blues"),
             title="Density",
             legend=alt.Legend(titleFontSize=20, labelFontSize=16, gradientLength=400, gradientThickness=25),
@@ -152,31 +86,34 @@ filled = (
     )
 )
 
-# Contour lines using mark_rule for crisp isolines
-contour_lines = (
-    alt.Chart(contour_df)
-    .mark_rule(strokeWidth=2, opacity=0.8, color="#1a4d80")
-    .encode(
-        x=alt.X("x1:Q", scale=alt.Scale(domain=x_domain)),
-        y=alt.Y("y1:Q", scale=alt.Scale(domain=y_domain)),
-        x2="x2:Q",
-        y2="y2:Q",
-    )
-)
+# Add contour line effect by layering darker outlines at level boundaries
+contour_data = []
+for i in range(n_grid - 1):
+    for j in range(n_grid - 1):
+        current = z_binned[i, j]
+        # Check if adjacent cells have different levels (boundary)
+        if i < n_grid - 1 and z_binned[i + 1, j] != current:
+            contour_data.append({"x": x_grid[j], "y": (y_grid[i] + y_grid[i + 1]) / 2, "level": current})
+        if j < n_grid - 1 and z_binned[i, j + 1] != current:
+            contour_data.append({"x": (x_grid[j] + x_grid[j + 1]) / 2, "y": y_grid[i], "level": current})
 
-# Combine filled background with contour lines
-chart = (
-    alt.layer(filled, contour_lines)
-    .properties(
-        width=1400,
-        height=800,
-        title=alt.Title(text="contour-density · altair · pyplots.ai", fontSize=28, anchor="middle"),
+if contour_data:
+    contour_df = pd.DataFrame(contour_data)
+    contour_points = (
+        alt.Chart(contour_df)
+        .mark_circle(size=8, opacity=0.6, color="#1a4d80")
+        .encode(x=alt.X("x:Q", scale=alt.Scale(domain=x_domain)), y=alt.Y("y:Q", scale=alt.Scale(domain=y_domain)))
     )
-    .configure_axis(labelFontSize=18, titleFontSize=22, grid=True, gridColor="#cccccc", gridOpacity=0.3)
-    .configure_view(strokeWidth=0)
-)
+    chart = alt.layer(filled_contours, contour_points)
+else:
+    chart = filled_contours
 
-# Save as PNG (1400 * 3 = 4200, 800 * 3 = 2400 - close to target)
+# Configure the chart with proper sizing
+chart = chart.properties(
+    width=1600, height=900, title=alt.Title(text="contour-density · altair · pyplots.ai", fontSize=28, anchor="middle")
+).configure_view(strokeWidth=0)
+
+# Save as PNG (1600 * 3 = 4800, 900 * 3 = 2700)
 chart.save("plot.png", scale_factor=3.0)
 
 # Save as interactive HTML

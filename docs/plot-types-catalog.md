@@ -14,7 +14,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### scatter-color-mapped ✅
 **Description:** Scatter plot with a third variable encoded as color using a colormap. Includes colorbar for reference.
 
-### scatter-categorical 📋
+### scatter-categorical ✅
 **Description:** Scatter plot with points colored by category. Distinct colors for each group with legend.
 
 ### scatter-regression-linear ✅
@@ -39,16 +39,16 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### line-multi ✅
 **Description:** A line plot showing multiple data series on the same axes for direct comparison with a legend.
 
-### line-styled 📋
+### line-styled ✅
 **Description:** Line plot with different line styles (solid, dashed, dotted) for black-and-white printing.
 
-### line-markers 📋
+### line-markers ✅
 **Description:** Line plot with visible markers at data points, helpful for sparse data.
 
 ### line-timeseries ✅
 **Description:** Line plot with datetime x-axis and proper date formatting.
 
-### line-stepwise 📋
+### line-stepwise ✅
 **Description:** Step function plot with horizontal then vertical transitions.
 
 ### step-basic ✅
@@ -113,7 +113,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### histogram-overlapping ✅
 **Description:** Multiple overlapping histograms for comparison.
 
-### histogram-stacked 📋
+### histogram-stacked ✅
 **Description:** Stacked histograms showing combined distribution.
 
 ### histogram-stepwise 📋
@@ -883,7 +883,7 @@ Druckbare Vorlagen und spielerische Visualisierungen.
 ## Statistics
 
 - **Total Plot Types:** 235+
-- **Implemented:** 123 ✅
+- **Implemented:** 128 ✅
 - **Planned:** 120+ 📋
 - **Categories:** 31
 

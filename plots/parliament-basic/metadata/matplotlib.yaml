@@ -1,0 +1,29 @@
+library: matplotlib
+specification_id: parliament-basic
+created: '2025-12-30T00:03:27Z'
+updated: '2025-12-30T00:19:26Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20585399690
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Clean semicircular layout algorithm with proper seat distribution across 8 concentric
+    rows
+  - Excellent colorblind-safe palette using established accessible colors
+  - Party arrangement from left to right matches political convention
+  - Individual seats clearly visible with white borders providing visual separation
+  - Legend includes seat counts in parentheses for quick reference
+  - Majority threshold annotation adds context without cluttering the visualization
+  weaknesses:
+  - Legend ncol=3 creates uneven distribution (2-2-1 parties per row); ncol=2 or ncol=5
+    would be more balanced
+  - Party names still reference political spectrum (Progressive, Conservative) rather
+    than completely neutral names like colors or regions
+  - Could use matplotlib patches/collections for more efficient rendering of many
+    similar shapes

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-annotated: Annotated Scatter Plot with Text Labels
-Library: lets-plot | Python 3.13
-Quality: pending | Created: 2025-12-30
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-30
 """
 
 import numpy as np

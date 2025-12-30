@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 icicle-basic: Basic Icicle Chart
 Library: highcharts unknown | Python 3.13.11
-Quality: 72/100 | Created: 2025-12-30
+Quality: 78/100 | Created: 2025-12-30
 """
 
 import json

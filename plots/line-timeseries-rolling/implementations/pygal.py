@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-timeseries-rolling: Time Series with Rolling Average Overlay
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -45,7 +45,7 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998", "#FFD43B"),  # Python Blue for raw, Yellow for rolling avg
+    colors=("#306998", "#E67E22"),  # Python Blue for raw, Orange for rolling avg (better visibility)
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
@@ -68,6 +68,8 @@ chart = pygal.Line(
     x_label_rotation=45,
     show_legend=True,
     legend_at_bottom=True,
+    legend_at_bottom_columns=2,  # Keep legend items together in 2 columns
+    legend_box_size=24,  # Larger legend box for visibility
     truncate_legend=-1,
     show_dots=False,
     stroke_style={"width": 4},

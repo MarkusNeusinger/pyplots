@@ -1,0 +1,25 @@
+library: plotly
+specification_id: bar-sorted
+created: '2025-12-30T09:30:41Z'
+updated: '2025-12-30T09:37:56Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20593348157
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent horizontal bar orientation choice for category labels readability
+  - Clean sorting implementation with numpy argsort
+  - Professional appearance with Python Blue color scheme and subtle borders
+  - Proper use of Plotly graph_objects for fine-grained control
+  - Value labels positioned outside bars improve readability
+  - Correct title format following pyplots.ai standards
+  - Both PNG and HTML outputs generated for maximum utility
+  weaknesses:
+  - 'Minor: Grid lines could be slightly more subtle (current alpha 0.1 is good but
+    gridwidth=1 makes them slightly prominent)'

@@ -136,6 +136,7 @@ jobs:
     if: inputs.dry_run == false && needs.build-matrix.outputs.count != '0'
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       actions: write
     strategy:
       matrix: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
@@ -143,17 +144,51 @@ jobs:
       fail-fast: false
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            plots/${{ matrix.specification_id }}/specification.yaml
+
+      - name: Read issue number from specification.yaml
+        id: spec
+        run: |
+          SPEC_YAML="plots/${{ matrix.specification_id }}/specification.yaml"
+          if [ -f "$SPEC_YAML" ]; then
+            # Extract issue number using yq for robust YAML parsing
+            ISSUE=$(yq '.issue' "$SPEC_YAML" 2>/dev/null || echo "")
+            if [ -n "$ISSUE" ] && [ "$ISSUE" != "null" ]; then
+              echo "issue_number=$ISSUE" >> $GITHUB_OUTPUT
+              echo "::notice::Found issue #$ISSUE for ${{ matrix.specification_id }}"
+            else
+              echo "issue_number=" >> $GITHUB_OUTPUT
+              echo "::warning::No issue number in $SPEC_YAML"
+            fi
+          else
+            echo "issue_number=" >> $GITHUB_OUTPUT
+            echo "::warning::$SPEC_YAML not found"
+          fi
+
       - name: Trigger impl-generate for ${{ matrix.specification_id }} / ${{ matrix.library }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ steps.spec.outputs.issue_number }}
         run: |
           echo "Triggering impl-generate.yml for ${{ matrix.specification_id }} / ${{ matrix.library }}"
-          gh workflow run impl-generate.yml \
-            --repo ${{ github.repository }} \
-            -f specification_id="${{ matrix.specification_id }}" \
-            -f library="${{ matrix.library }}"
 
-          echo "::notice::Dispatched impl-generate for ${{ matrix.specification_id }} / ${{ matrix.library }}"
+          # Run workflow with optional issue_number (avoid eval for security)
+          if [ -n "$ISSUE" ]; then
+            gh workflow run impl-generate.yml --repo ${{ github.repository }} \
+              -f specification_id="${{ matrix.specification_id }}" \
+              -f library="${{ matrix.library }}" \
+              -f issue_number="$ISSUE"
+          else
+            gh workflow run impl-generate.yml --repo ${{ github.repository }} \
+              -f specification_id="${{ matrix.specification_id }}" \
+              -f library="${{ matrix.library }}"
+          fi
+
+          echo "::notice::Dispatched impl-generate for ${{ matrix.specification_id }} / ${{ matrix.library }} (issue: ${ISSUE:-none})"
 
   # ============================================================================
   # Summary

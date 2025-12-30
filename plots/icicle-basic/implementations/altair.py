@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 icicle-basic: Basic Icicle Chart
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -8,7 +8,8 @@ import altair as alt
 import pandas as pd
 
 
-# Data: File system hierarchy with sizes
+# Data: File system hierarchy with sizes (in MB)
+# Structure designed with balanced folder sizes for better visibility
 data = [
     # Root
     {"name": "root", "parent": None, "value": 0},
@@ -22,88 +23,82 @@ data = [
     # Level 2: Media subfolders
     {"name": "Images", "parent": "Media", "value": 0},
     {"name": "Videos", "parent": "Media", "value": 0},
-    {"name": "Audio", "parent": "Media", "value": 0},
     # Level 2: Projects subfolders
     {"name": "WebApp", "parent": "Projects", "value": 0},
-    {"name": "DataPipeline", "parent": "Projects", "value": 0},
-    # Level 3: Leaf nodes with actual sizes (in MB)
-    {"name": "Q1_Report.pdf", "parent": "Reports", "value": 45},
-    {"name": "Q2_Report.pdf", "parent": "Reports", "value": 52},
-    {"name": "Annual.pdf", "parent": "Reports", "value": 78},
-    {"name": "Sales.pptx", "parent": "Presentations", "value": 35},
-    {"name": "Strategy.pptx", "parent": "Presentations", "value": 42},
-    {"name": "photo1.jpg", "parent": "Images", "value": 28},
-    {"name": "photo2.jpg", "parent": "Images", "value": 32},
-    {"name": "banner.png", "parent": "Images", "value": 15},
-    {"name": "tutorial.mp4", "parent": "Videos", "value": 450},
-    {"name": "demo.mp4", "parent": "Videos", "value": 380},
-    {"name": "podcast.mp3", "parent": "Audio", "value": 95},
-    {"name": "music.mp3", "parent": "Audio", "value": 85},
-    {"name": "app.js", "parent": "WebApp", "value": 25},
-    {"name": "style.css", "parent": "WebApp", "value": 12},
-    {"name": "index.html", "parent": "WebApp", "value": 8},
-    {"name": "pipeline.py", "parent": "DataPipeline", "value": 55},
-    {"name": "config.yaml", "parent": "DataPipeline", "value": 5},
+    {"name": "DataScience", "parent": "Projects", "value": 0},
+    # Level 3: Leaf nodes with sizes balanced for better visual representation
+    {"name": "Q1_Report.pdf", "parent": "Reports", "value": 120},
+    {"name": "Q2_Report.pdf", "parent": "Reports", "value": 95},
+    {"name": "Annual_Review.pdf", "parent": "Reports", "value": 150},
+    {"name": "Sales_Deck.pptx", "parent": "Presentations", "value": 85},
+    {"name": "Strategy.pptx", "parent": "Presentations", "value": 110},
+    {"name": "photo_album.jpg", "parent": "Images", "value": 180},
+    {"name": "banner.png", "parent": "Images", "value": 75},
+    {"name": "tutorial.mp4", "parent": "Videos", "value": 350},
+    {"name": "demo.mp4", "parent": "Videos", "value": 280},
+    {"name": "frontend.js", "parent": "WebApp", "value": 65},
+    {"name": "backend.py", "parent": "WebApp", "value": 120},
+    {"name": "styles.css", "parent": "WebApp", "value": 45},
+    {"name": "analysis.ipynb", "parent": "DataScience", "value": 95},
+    {"name": "model.pkl", "parent": "DataScience", "value": 180},
 ]
 
 df = pd.DataFrame(data)
 
-# Build tree structure: calculate cumulative values and positions
+# Build tree structure using iterative approach (KISS - no helper functions)
 name_to_idx = {row["name"]: i for i, row in enumerate(data)}
 children = {row["name"]: [] for row in data}
 for row in data:
     if row["parent"]:
         children[row["parent"]].append(row["name"])
 
-
-# Calculate cumulative values (sum of children for non-leaf nodes)
-def calc_value(name):
-    if children[name]:
-        return sum(calc_value(child) for child in children[name])
-    return data[name_to_idx[name]]["value"]
-
+# Calculate levels (depth) iteratively
+levels = {"root": 0}
+queue = ["root"]
+while queue:
+    current = queue.pop(0)
+    for child in children[current]:
+        levels[child] = levels[current] + 1
+        queue.append(child)
 
 for row in data:
-    row["total_value"] = calc_value(row["name"])
+    row["level"] = levels[row["name"]]
 
+# Calculate cumulative values bottom-up (leaf to root)
+max_level = max(levels.values())
+for level in range(max_level, -1, -1):
+    for row in data:
+        if row["level"] == level:
+            if children[row["name"]]:
+                row["total_value"] = sum(data[name_to_idx[c]]["total_value"] for c in children[row["name"]])
+            else:
+                row["total_value"] = row["value"]
 
-# Calculate level (depth) for each node
-def calc_level(name, level=0):
-    data[name_to_idx[name]]["level"] = level
-    for child in children[name]:
-        calc_level(child, level + 1)
-
-
-calc_level("root")
-
-# Calculate x positions (horizontal placement based on value)
-# Each node gets a portion of the parent's width
-
-
-def calc_positions(name, x_start=0, x_end=1):
-    idx = name_to_idx[name]
-    data[idx]["x_start"] = x_start
-    data[idx]["x_end"] = x_end
-
-    if children[name]:
-        total = sum(data[name_to_idx[c]]["total_value"] for c in children[name])
+# Calculate x positions iteratively (horizontal placement based on value)
+positions = {"root": (0, 1)}
+queue = ["root"]
+while queue:
+    current = queue.pop(0)
+    x_start, x_end = positions[current]
+    child_list = children[current]
+    if child_list:
+        total = sum(data[name_to_idx[c]]["total_value"] for c in child_list)
         if total > 0:
             current_x = x_start
-            for child in children[name]:
+            for child in child_list:
                 child_val = data[name_to_idx[child]]["total_value"]
                 child_width = (x_end - x_start) * child_val / total
-                calc_positions(child, current_x, current_x + child_width)
+                positions[child] = (current_x, current_x + child_width)
                 current_x += child_width
+                queue.append(child)
 
-
-calc_positions("root")
+for row in data:
+    row["x_start"], row["x_end"] = positions[row["name"]]
 
 # Prepare data for Altair rectangles
 rect_data = []
-max_level = max(row["level"] for row in data)
-
 for row in data:
-    if row["total_value"] > 0:  # Only include nodes with values
+    if row["total_value"] > 0:
         rect_data.append(
             {
                 "name": row["name"],
@@ -119,8 +114,9 @@ for row in data:
 
 rect_df = pd.DataFrame(rect_data)
 
-# Color scale by level
-level_colors = ["#306998", "#4A89B8", "#6BA3C8", "#8CBDD8", "#FFD43B"]
+# Color scale with stronger contrast between adjacent levels
+# Using distinct hues for better visual separation
+level_colors = ["#1a5276", "#f39c12", "#27ae60", "#8e44ad", "#e74c3c"]
 
 # Create icicle chart with mark_rect
 chart = (
@@ -163,7 +159,7 @@ text = (
         x_mid="(datum.x_start + datum.x_end) / 2",
         y_mid="(datum.y_start + datum.y_end) / 2",
         width="datum.x_end - datum.x_start",
-        label="datum.width > 0.06 ? datum.name : ''",
+        label="datum.width > 0.05 ? datum.name : ''",
     )
 )
 

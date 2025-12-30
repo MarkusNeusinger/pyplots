@@ -1,0 +1,26 @@
+library: bokeh
+specification_id: facet-grid
+created: '2025-12-30T16:31:18Z'
+updated: '2025-12-30T16:49:58Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20601058721
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/facet-grid/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/facet-grid/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/facet-grid/bokeh/plot.html
+quality_score: 90
+review:
+  strengths:
+  - Well-organized 4×3 grid layout that clearly shows patterns across regions and
+    seasons
+  - Excellent use of colorblind-safe color palette (blue/orange/teal)
+  - Good text sizing throughout - all labels are clearly readable
+  - Realistic business scenario with meaningful variation in the data
+  - Clean, reproducible code structure following KISS principles
+  weaknesses:
+  - HTML-based legend (Div element) does not render in PNG export - only small colored
+    artifacts appear in subplot corners
+  - No use of Bokeh distinctive interactive features (hover tooltips, linked brushing,
+    pan/zoom tools)

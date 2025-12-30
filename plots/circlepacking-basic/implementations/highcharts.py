@@ -1,6 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 circlepacking-basic: Circle Packing Chart
-Library: highcharts unknown | Python 3.13.11
+Library: highcharts 1.10.3 | Python 3.13.11
 Quality: 62/100 | Created: 2025-12-30
 """
 
@@ -63,11 +63,13 @@ highcharts_config = f"""{{
         type: 'packedbubble',
         width: 3600,
         height: 3600,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        spacing: [60, 60, 60, 60]
     }},
     title: {{
         text: 'circlepacking-basic · highcharts · pyplots.ai',
-        style: {{ fontSize: '56px', fontWeight: 'bold', color: '#333333' }}
+        style: {{ fontSize: '56px', fontWeight: 'bold', color: '#333333' }},
+        margin: 40
     }},
     subtitle: {{
         text: 'Software Project Structure by Lines of Code',
@@ -76,12 +78,20 @@ highcharts_config = f"""{{
     credits: {{ enabled: false }},
     legend: {{
         enabled: true,
-        itemStyle: {{ fontSize: '32px' }},
-        symbolRadius: 20,
-        symbolHeight: 30,
-        symbolWidth: 30,
-        itemMarginTop: 15,
-        itemMarginBottom: 15
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'middle',
+        x: -40,
+        itemStyle: {{ fontSize: '36px', fontWeight: '600' }},
+        symbolRadius: 24,
+        symbolHeight: 36,
+        symbolWidth: 36,
+        itemMarginTop: 20,
+        itemMarginBottom: 20,
+        backgroundColor: 'rgba(255,255,255,0.9)',
+        borderWidth: 2,
+        borderColor: '#cccccc',
+        padding: 20
     }},
     tooltip: {{
         useHTML: true,
@@ -90,21 +100,22 @@ highcharts_config = f"""{{
     }},
     plotOptions: {{
         packedbubble: {{
-            minSize: '20%',
-            maxSize: '100%',
+            minSize: '30%',
+            maxSize: '80%',
             zMin: 0,
             zMax: 10000,
             layoutAlgorithm: {{
-                gravitationalConstant: 0.05,
+                gravitationalConstant: 0.02,
                 splitSeries: true,
                 seriesInteraction: false,
                 dragBetweenSeries: false,
                 parentNodeLimit: true,
+                bubblePadding: 15,
                 parentNodeOptions: {{
                     marker: {{
                         fillColor: null,
-                        fillOpacity: 0.2,
-                        lineWidth: 4,
+                        fillOpacity: 0.15,
+                        lineWidth: 5,
                         lineColor: null
                     }}
                 }}
@@ -114,18 +125,18 @@ highcharts_config = f"""{{
                 format: '{{point.name}}',
                 style: {{
                     color: 'white',
-                    textOutline: '2px #333333',
-                    fontWeight: '600',
-                    fontSize: '28px'
+                    textOutline: '3px #333333',
+                    fontWeight: '700',
+                    fontSize: '32px'
                 }},
                 filter: {{
                     property: 'value',
                     operator: '>',
-                    value: 1500
+                    value: 2000
                 }}
             }},
             marker: {{
-                fillOpacity: 0.8,
+                fillOpacity: 0.85,
                 lineWidth: 3,
                 lineColor: '#ffffff'
             }}

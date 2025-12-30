@@ -1,0 +1,11 @@
+spec_id: cat-strip
+title: Categorical Strip Plot
+created: '2025-12-30T12:00:00Z'
+updated: '2025-12-30T12:00:00Z'
+issue: 2694
+suggested: claude-code
+tags:
+  plot_type: [strip, scatter, categorical]
+  domain: [statistics, general]
+  features: [jitter, distribution, points]
+  data_type: [categorical, numeric]

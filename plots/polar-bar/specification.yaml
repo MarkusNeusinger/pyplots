@@ -1,0 +1,11 @@
+spec_id: polar-bar
+title: Polar Bar Chart (Wind Rose)
+created: '2025-12-30T12:00:00Z'
+updated: '2025-12-30T12:00:00Z'
+issue: 2693
+suggested: claude-code
+tags:
+  plot_type: [polar, bar, windrose]
+  domain: [meteorology, science]
+  features: [circular, directional, radial]
+  data_type: [categorical, numeric]

@@ -1,0 +1,27 @@
+library: highcharts
+specification_id: contour-density
+created: '2025-12-30T09:37:47Z'
+updated: '2025-12-30T09:54:30Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20593358403
+issue: 0
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-density/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-density/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-density/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of KDE-based density contours using a custom marching
+    squares algorithm
+  - Outstanding colorblind-safe viridis-inspired color palette for density gradient
+    visualization
+  - Effective combination of scatter overlay with contour lines for context
+  - Well-designed legend with density scale representation
+  - Proper use of Highcharts annotations for inline contour level labels
+  - Clean data generation showing three distinct clusters of varying densities
+  weaknesses:
+  - Grid lines could be more subtle (currently using Dot style which is adequate but
+    slightly prominent)
+  - Scatter points are somewhat small relative to the contour line thickness

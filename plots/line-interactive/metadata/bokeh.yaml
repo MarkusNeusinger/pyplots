@@ -1,0 +1,29 @@
+library: bokeh
+specification_id: line-interactive
+created: '2025-12-30T17:50:19Z'
+updated: '2025-12-30T18:03:47Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20602452572
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-interactive/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-interactive/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-interactive/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of Bokeh interactive tools (WheelZoom, BoxZoom, PanTool, ResetTool)
+    with wheel zoom as default active scroll
+  - Well-configured HoverTool with vline mode and formatted date/temperature display
+  - Appropriate text sizing for 4800x2700 canvas with readable fonts throughout
+  - Realistic seasonal temperature data pattern demonstrating time series characteristics
+  - Clean code structure following KISS principles with proper ColumnDataSource usage
+  - Dual output (HTML for interactivity, PNG for preview) is best practice for Bokeh
+  weaknesses:
+  - Legend placement in top_left overlaps with data peaks in winter months - consider
+    top_right or outside placement
+  - Missing RangeSlider or RangeTool widget for quick time range navigation as specified
+    in requirements
+  - Marker size could be reduced to 6-8 with alpha 0.6 for 365 data points to reduce
+    visual clutter

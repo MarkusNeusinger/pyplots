@@ -1,0 +1,24 @@
+library: letsplot
+specification_id: scatter-annotated
+created: '2025-12-30T17:53:28Z'
+updated: '2025-12-30T18:05:30Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20602455677
+issue: 0
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/letsplot/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Clean, readable visualization with all 15 company labels clearly visible
+  - Good use of geom_text with nudge_y for label positioning
+  - Appropriate point size and alpha for data density
+  - Realistic business scenario with meaningful outliers (startup high-growth, mature
+    low-growth)
+  - Correct title format and axis labels with units
+  weaknesses:
+  - Some label pairs are close together (ByteWorks/SmartScale, DataSys/LogiCore/CloudNet
+    region) - could benefit from adjustText-like positioning if available in lets-plot

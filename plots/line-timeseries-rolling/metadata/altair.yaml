@@ -1,0 +1,25 @@
+library: altair
+specification_id: line-timeseries-rolling
+created: '2025-12-30T17:49:27Z'
+updated: '2025-12-30T17:59:24Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20602450785
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/altair/plot.html
+quality_score: 93
+review:
+  strengths:
+  - Excellent use of Altair declarative grammar with conditional encoding for strokeWidth
+    and opacity
+  - Clean data transformation using pd.melt for tidy/long format suitable for Altair
+  - 'Well-chosen color scheme (#306998 blue, #FFD43B yellow) that is colorblind-safe'
+  - Realistic temperature data scenario with clear seasonal trend
+  - Proper use of centered rolling window (center=True) for accurate moving average
+    alignment
+  weaknesses:
+  - Legend placement overlaps slightly with data points in the upper-right corner;
+    could use orient=bottom or place outside the plot area

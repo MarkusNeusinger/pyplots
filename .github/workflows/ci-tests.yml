@@ -23,9 +23,6 @@ jobs:
 
     env:
       ENVIRONMENT: test
-      # Note: E2E tests require DATABASE_URL or Cloud SQL access
-      # Currently skipped in CI (async Cloud SQL Connector has event loop issues)
-      # E2E tests run locally via DATABASE_URL
 
     steps:
     - uses: actions/checkout@v6
@@ -71,6 +68,28 @@ jobs:
     - name: Install dependencies
       if: steps.check.outputs.should_test == 'true'
       run: uv sync --extra test
+
+    - name: Setup GCP authentication
+      if: steps.check.outputs.should_test == 'true'
+      uses: google-github-actions/auth@v3
+      with:
+        credentials_json: ${{ secrets.GCS_CREDENTIALS }}
+
+    - name: Start Cloud SQL Proxy
+      if: steps.check.outputs.should_test == 'true'
+      run: |
+        # Download Cloud SQL Proxy
+        curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.14.3/cloud-sql-proxy.linux.amd64
+        chmod +x cloud-sql-proxy
+
+        # Start proxy in background (localhost:5432 -> Cloud SQL)
+        ./cloud-sql-proxy --port 5432 ${{ secrets.INSTANCE_CONNECTION_NAME }} &
+
+        # Wait for proxy to be ready
+        sleep 5
+
+        # Set DATABASE_URL for tests
+        echo "DATABASE_URL=postgresql+asyncpg://${{ secrets.DB_USER }}:${{ secrets.DB_PASS }}@localhost:5432/${{ secrets.DB_NAME }}" >> $GITHUB_ENV
 
     - name: Run all tests with coverage
       if: steps.check.outputs.should_test == 'true'

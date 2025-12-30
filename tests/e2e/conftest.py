@@ -2,11 +2,11 @@
 E2E test fixtures with real PostgreSQL database.
 
 Uses a separate 'test_e2e' schema to isolate test data from production.
-Supports two connection modes:
-1. Cloud SQL Connector (CI) - uses INSTANCE_CONNECTION_NAME
-2. Direct connection (local) - uses DATABASE_URL
+Tests are skipped if DATABASE_URL is not set or database is unreachable.
 
-Tests are skipped if neither is configured or database is unreachable.
+Connection modes:
+- Local: Direct DATABASE_URL from .env
+- CI: DATABASE_URL via Cloud SQL Proxy (localhost:5432 -> Cloud SQL)
 
 Note: These tests must NOT be run with pytest-xdist parallelization
 as multiple workers would conflict on the shared test_e2e schema.
@@ -30,86 +30,24 @@ CONNECTION_TIMEOUT = 10  # seconds - skip tests if DB unreachable
 TEST_IMAGE_URL = "https://storage.googleapis.com/pyplots-images/test/plot.png"
 TEST_THUMB_URL = "https://storage.googleapis.com/pyplots-images/test/thumb.png"
 
-# Store Cloud SQL connectors for cleanup (can't attach to engine objects)
-_connectors = []
 
-
-def _get_connection_config():
-    """Get database connection config.
-
-    Prefers DATABASE_URL for local development (simpler, no event loop issues).
-    Falls back to Cloud SQL Connector for CI environments.
-    """
+def _get_database_url():
+    """Get DATABASE_URL from environment, loading .env if needed."""
     from dotenv import load_dotenv
 
     load_dotenv()
 
-    # Prefer DATABASE_URL for local development
     database_url = os.environ.get("DATABASE_URL")
-    if database_url:
-        # Ensure async driver
-        if database_url.startswith("postgresql://"):
-            database_url = database_url.replace("postgresql://", "postgresql+asyncpg://")
-        elif database_url.startswith("postgres://"):
-            database_url = database_url.replace("postgres://", "postgresql+asyncpg://")
-        return {"mode": "direct", "url": database_url}
+    if not database_url:
+        return None
 
-    # Fall back to Cloud SQL Connector (for CI)
-    instance_conn = os.environ.get("INSTANCE_CONNECTION_NAME")
-    db_user = os.environ.get("DB_USER")
-    db_pass = os.environ.get("DB_PASS")
-    db_name = os.environ.get("DB_NAME")
+    # Ensure async driver
+    if database_url.startswith("postgresql://"):
+        database_url = database_url.replace("postgresql://", "postgresql+asyncpg://")
+    elif database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql+asyncpg://")
 
-    if instance_conn and db_user and db_pass and db_name:
-        return {
-            "mode": "cloud_sql",
-            "instance": instance_conn,
-            "user": db_user,
-            "password": db_pass,
-            "database": db_name,
-        }
-
-    return None
-
-
-async def _create_cloud_sql_engine(config, search_path=None):
-    """Create async engine using Cloud SQL Connector with asyncpg."""
-    from google.cloud.sql.connector import Connector, IPTypes
-
-    connector = Connector()
-    _connectors.append(connector)  # Store for cleanup
-
-    async def getconn():
-        conn = await connector.connect_async(
-            config["instance"],
-            "asyncpg",
-            user=config["user"],
-            password=config["password"],
-            db=config["database"],
-            ip_type=IPTypes.PUBLIC,
-        )
-        if search_path:
-            await conn.execute(f"SET search_path TO {search_path}")
-        return conn
-
-    return create_async_engine("postgresql+asyncpg://", async_creator=getconn, echo=False)
-
-
-async def _create_direct_engine(url, search_path=None):
-    """Create async engine using direct DATABASE_URL connection."""
-    connect_args = {"timeout": CONNECTION_TIMEOUT}
-    if search_path:
-        connect_args["server_settings"] = {"search_path": search_path}
-
-    return create_async_engine(url, echo=False, connect_args=connect_args)
-
-
-async def _cleanup_connectors():
-    """Clean up all Cloud SQL connectors."""
-    global _connectors
-    for connector in _connectors:
-        await connector.close_async()
-    _connectors = []
+    return database_url
 
 
 @pytest_asyncio.fixture(scope="function")
@@ -121,36 +59,31 @@ async def pg_engine():
     The schema is dropped and recreated for each test.
     Skips tests if database is unreachable.
     """
-    config = _get_connection_config()
-    if not config:
-        pytest.skip("No database configured - skipping PostgreSQL E2E tests")
+    database_url = _get_database_url()
+    if not database_url:
+        pytest.skip("DATABASE_URL not set - skipping PostgreSQL E2E tests")
 
     # Create temporary engine for schema setup
+    temp_engine = create_async_engine(database_url, echo=False, connect_args={"timeout": CONNECTION_TIMEOUT})
     try:
-        if config["mode"] == "cloud_sql":
-            temp_engine = await _create_cloud_sql_engine(config)
-        else:
-            temp_engine = await _create_direct_engine(config["url"])
-
         async with asyncio.timeout(CONNECTION_TIMEOUT + 2):
             async with temp_engine.begin() as conn:
                 await conn.execute(text(f"DROP SCHEMA IF EXISTS {TEST_SCHEMA} CASCADE"))
                 await conn.execute(text(f"CREATE SCHEMA {TEST_SCHEMA}"))
-
         await temp_engine.dispose()
-
     except (TimeoutError, asyncio.TimeoutError, OSError) as e:
-        await _cleanup_connectors()
+        await temp_engine.dispose()
         pytest.skip(f"Database unreachable (timeout) - skipping E2E tests: {e}")
     except Exception as e:
-        await _cleanup_connectors()
+        await temp_engine.dispose()
         pytest.skip(f"Database connection failed - skipping E2E tests: {e}")
 
-    # Create main engine with search_path set
-    if config["mode"] == "cloud_sql":
-        engine = await _create_cloud_sql_engine(config, search_path=TEST_SCHEMA)
-    else:
-        engine = await _create_direct_engine(config["url"], search_path=TEST_SCHEMA)
+    # Create main engine with search_path set at connection level
+    engine = create_async_engine(
+        database_url,
+        echo=False,
+        connect_args={"server_settings": {"search_path": TEST_SCHEMA}, "timeout": CONNECTION_TIMEOUT},
+    )
 
     # Create tables in test schema
     async with engine.begin() as conn:
@@ -161,9 +94,7 @@ async def pg_engine():
     # Cleanup: Drop entire test schema
     async with engine.begin() as conn:
         await conn.execute(text(f"DROP SCHEMA IF EXISTS {TEST_SCHEMA} CASCADE"))
-
     await engine.dispose()
-    await _cleanup_connectors()
 
 
 @pytest_asyncio.fixture

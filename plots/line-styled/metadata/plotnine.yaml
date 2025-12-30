@@ -1,0 +1,27 @@
+library: plotnine
+specification_id: line-styled
+created: '2025-12-30T10:37:24Z'
+updated: '2025-12-30T10:43:48Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20594558248
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-styled/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-styled/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of all four standard line styles (solid, dashed, dotted, dash-dot)
+    as specified
+  - Clean, readable code following KISS principles with proper ggplot2-style layered
+    construction
+  - Good color palette with distinct colors for each product line
+  - Proper title format and descriptive axis labels with units
+  - Well-structured data preparation in long format for plotnine
+  weaknesses:
+  - Grid lines are too faint (alpha=0.3 and 0.2) - should be more visible for readability
+  - Yellow line (Product B) has reduced contrast against the light background
+  - X-axis shows decimal quarters (2.5, 5.0, etc.) rather than meaningful labels like
+    Q1 2022

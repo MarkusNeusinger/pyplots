@@ -1,0 +1,27 @@
+library: plotly
+specification_id: contour-density
+created: '2025-12-30T09:31:21Z'
+updated: '2025-12-30T09:39:11Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20593351187
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-density/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-density/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-density/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of filled contours with custom colorscale transitioning from transparent
+    white to yellow to blue
+  - Smart combination of density contours with scatter point overlay provides context
+    as recommended in spec
+  - Three distinct clusters effectively demonstrate the plot purpose of finding density
+    patterns
+  - Clean code structure following KISS principles
+  - Proper font sizing for 4800x2700 output (scale=3)
+  weaknesses:
+  - Axis labels are generic (X Variable, Y Variable) rather than tied to a realistic
+    context
+  - Grid lines are too subtle (alpha 0.1) - consider alpha 0.2-0.3 for better visibility

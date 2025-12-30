@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 subplot-grid: Subplot Grid Layout
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -53,9 +53,11 @@ chart1.options.chart = {
 }
 chart1.options.title = {"text": "Stock Price Trend", "style": {"fontSize": "32px", "fontWeight": "bold"}}
 chart1.options.x_axis = {
-    "categories": dates[::10],
     "title": {"text": "Trading Day", "style": {"fontSize": "24px"}},
-    "labels": {"style": {"fontSize": "18px"}, "step": 1},
+    "labels": {"style": {"fontSize": "20px"}, "format": "Day {value}"},
+    "tickInterval": 10,
+    "min": 0,
+    "max": days - 1,
 }
 chart1.options.y_axis = {
     "title": {"text": "Price ($)", "style": {"fontSize": "24px"}},
@@ -63,7 +65,19 @@ chart1.options.y_axis = {
     "gridLineWidth": 1,
     "gridLineColor": "#e0e0e0",
 }
-chart1.options.legend = {"enabled": True, "itemStyle": {"fontSize": "20px"}}
+chart1.options.legend = {
+    "enabled": True,
+    "itemStyle": {"fontSize": "20px"},
+    "align": "right",
+    "verticalAlign": "top",
+    "layout": "vertical",
+    "x": -20,
+    "y": 60,
+    "floating": True,
+    "backgroundColor": "rgba(255,255,255,0.9)",
+    "borderWidth": 1,
+    "borderColor": "#e0e0e0",
+}
 chart1.options.plot_options = {"line": {"lineWidth": 4, "marker": {"radius": 0}}}
 
 price_series = LineSeries()
@@ -92,9 +106,11 @@ chart2.options.chart = {
 }
 chart2.options.title = {"text": "Trading Volume", "style": {"fontSize": "32px", "fontWeight": "bold"}}
 chart2.options.x_axis = {
-    "categories": dates[::10],
     "title": {"text": "Trading Day", "style": {"fontSize": "24px"}},
-    "labels": {"style": {"fontSize": "18px"}, "step": 1},
+    "labels": {"style": {"fontSize": "20px"}, "format": "Day {value}"},
+    "tickInterval": 10,
+    "min": 0,
+    "max": days - 1,
 }
 chart2.options.y_axis = {
     "title": {"text": "Volume (shares)", "style": {"fontSize": "24px"}},
@@ -106,7 +122,7 @@ chart2.options.legend = {"enabled": False}
 chart2.options.plot_options = {"column": {"borderWidth": 0, "pointPadding": 0.1}}
 
 volume_series = ColumnSeries()
-volume_series.data = [float(v) for v in volumes]
+volume_series.data = [{"x": i, "y": float(v)} for i, v in enumerate(volumes)]
 volume_series.name = "Volume"
 volume_series.color = "#306998"
 chart2.add_series(volume_series)
@@ -131,7 +147,7 @@ chart3.options.title = {"text": "Daily Returns Distribution", "style": {"fontSiz
 chart3.options.x_axis = {
     "categories": bin_labels,
     "title": {"text": "Return (%)", "style": {"fontSize": "24px"}},
-    "labels": {"style": {"fontSize": "16px"}},
+    "labels": {"style": {"fontSize": "18px"}, "rotation": 0},
 }
 chart3.options.y_axis = {
     "title": {"text": "Frequency", "style": {"fontSize": "24px"}},

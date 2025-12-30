@@ -1,0 +1,26 @@
+# Specification-level metadata for bar-3d
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: bar-3d
+title: 3D Bar Chart
+
+# Specification tracking
+created: 2025-12-30T23:43:33Z
+updated: null
+issue: 2857
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - bar
+  data_type:
+    - categorical
+    - numeric
+  domain:
+    - general
+    - business
+  features:
+    - 3d
+    - comparison

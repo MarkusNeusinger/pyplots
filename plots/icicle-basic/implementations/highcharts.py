@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 icicle-basic: Basic Icicle Chart
 Library: highcharts unknown | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-30
@@ -17,231 +17,258 @@ from selenium.webdriver.chrome.options import Options
 
 # Data - File system hierarchy with folders and files
 # Hierarchical structure showing directories and file sizes (KB)
-# Color-coded by top-level directory with colorblind-safe palette
-data = [
-    # Root - explicitly visible at top (gray background)
-    {"id": "root", "name": "Project Files", "color": "#5A5A5A", "value": 2000},
-    # Level 1 - Main directories (each with distinct color)
-    {"id": "src", "name": "src", "parent": "root", "color": "#306998"},
-    {"id": "docs", "name": "docs", "parent": "root", "color": "#FFD43B"},
-    {"id": "tests", "name": "tests", "parent": "root", "color": "#9467BD"},
-    {"id": "assets", "name": "assets", "parent": "root", "color": "#17BECF"},
-    # Level 2 - src subdirectories (inherit src color)
-    {"id": "components", "name": "components", "parent": "src", "color": "#306998"},
-    {"id": "utils", "name": "utils", "parent": "src", "color": "#306998"},
-    {"id": "api", "name": "api", "parent": "src", "color": "#306998"},
-    # Level 2 - docs files (inherit docs color, leaf nodes with values)
-    {"name": "README.md", "parent": "docs", "value": 45, "color": "#FFD43B"},
-    {"name": "guide.md", "parent": "docs", "value": 120, "color": "#FFD43B"},
-    {"name": "api.md", "parent": "docs", "value": 85, "color": "#FFD43B"},
-    # Level 2 - tests files (inherit tests color)
-    {"name": "test_main.py", "parent": "tests", "value": 65, "color": "#9467BD"},
-    {"name": "test_utils.py", "parent": "tests", "value": 48, "color": "#9467BD"},
-    {"name": "test_api.py", "parent": "tests", "value": 72, "color": "#9467BD"},
-    # Level 2 - assets subdirectories (inherit assets color)
-    {"id": "images", "name": "images", "parent": "assets", "color": "#17BECF"},
-    {"id": "styles", "name": "styles", "parent": "assets", "color": "#17BECF"},
-    # Level 3 - components files (lighter shade of src blue)
-    {"name": "Header.tsx", "parent": "components", "value": 95, "color": "#4A7FB0"},
-    {"name": "Footer.tsx", "parent": "components", "value": 55, "color": "#4A7FB0"},
-    {"name": "Sidebar.tsx", "parent": "components", "value": 110, "color": "#4A7FB0"},
-    {"name": "Modal.tsx", "parent": "components", "value": 78, "color": "#4A7FB0"},
-    # Level 3 - utils files
-    {"name": "helpers.ts", "parent": "utils", "value": 42, "color": "#4A7FB0"},
-    {"name": "constants.ts", "parent": "utils", "value": 28, "color": "#4A7FB0"},
-    {"name": "validators.ts", "parent": "utils", "value": 65, "color": "#4A7FB0"},
-    # Level 3 - api files
-    {"name": "client.ts", "parent": "api", "value": 88, "color": "#4A7FB0"},
-    {"name": "endpoints.ts", "parent": "api", "value": 56, "color": "#4A7FB0"},
-    {"name": "types.ts", "parent": "api", "value": 34, "color": "#4A7FB0"},
-    # Level 3 - images files (lighter shade of assets cyan)
-    {"name": "logo.png", "parent": "images", "value": 125, "color": "#4DCCE5"},
-    {"name": "banner.jpg", "parent": "images", "value": 280, "color": "#4DCCE5"},
-    {"name": "icons.svg", "parent": "images", "value": 45, "color": "#4DCCE5"},
-    # Level 3 - styles files
-    {"name": "main.css", "parent": "styles", "value": 92, "color": "#4DCCE5"},
-    {"name": "theme.css", "parent": "styles", "value": 68, "color": "#4DCCE5"},
-]
+# For icicle chart: root at top, children stacked below in rows
+hierarchy = {
+    "Project Files": {
+        "src": {
+            "components": {"Header.tsx": 95, "Footer.tsx": 55, "Sidebar.tsx": 110, "Modal.tsx": 78},
+            "utils": {"helpers.ts": 42, "constants.ts": 28, "validators.ts": 65},
+            "api": {"client.ts": 88, "endpoints.ts": 56, "types.ts": 34},
+        },
+        "docs": {"README.md": 45, "guide.md": 120, "api.md": 85},
+        "tests": {"test_main.py": 65, "test_utils.py": 48, "test_api.py": 72},
+        "assets": {
+            "images": {"logo.png": 125, "banner.jpg": 280, "icons.svg": 45},
+            "styles": {"main.css": 92, "theme.css": 68},
+        },
+    }
+}
 
-data_json = json.dumps(data)
 
-# Highcharts configuration for icicle chart using treemap with sliceAndDice layout
-# sliceAndDice creates adjacent rectangles that show parent-child relationships
-# through spatial adjacency - the defining characteristic of icicle charts
+# Colorblind-safe palette for directory categories
+colors = {"Project Files": "#5A5A5A", "src": "#306998", "docs": "#FFD43B", "tests": "#9467BD", "assets": "#17BECF"}
+
+
+def get_color(name, parent_chain):
+    """Get color based on top-level parent category."""
+    if name in colors:
+        return colors[name]
+    for p in parent_chain:
+        if p in colors:
+            base = colors[p]
+            # Lighter shade for deeper levels
+            if len(parent_chain) >= 2:
+                return base + "CC"  # Add transparency for lighter appearance
+            return base
+    return "#888888"
+
+
+def calc_size(node):
+    """Calculate total size of a node (sum of all descendants)."""
+    if isinstance(node, (int, float)):
+        return node
+    return sum(calc_size(v) for v in node.values())
+
+
+def build_rectangles(node, x, y, width, height, level, parent_chain, rects, level_height):
+    """Recursively build rectangles for icicle chart."""
+    if isinstance(node, (int, float)):
+        return
+
+    total = calc_size(node)
+    if total == 0:
+        return
+
+    current_x = x
+
+    for name, child in node.items():
+        child_size = calc_size(child)
+        child_width = (child_size / total) * width if total > 0 else 0
+
+        if child_width > 0:
+            color = get_color(name, parent_chain)
+            rect = {
+                "name": name,
+                "x": current_x,
+                "y": y,
+                "width": child_width,
+                "height": level_height,
+                "color": color.replace("CC", ""),  # Remove transparency suffix
+                "level": level,
+                "size": child_size,
+                "is_leaf": isinstance(child, (int, float)),
+            }
+            rects.append(rect)
+
+            # Recurse for children
+            if not isinstance(child, (int, float)):
+                build_rectangles(
+                    child,
+                    current_x,
+                    y + level_height,
+                    child_width,
+                    height - level_height,
+                    level + 1,
+                    parent_chain + [name],
+                    rects,
+                    level_height,
+                )
+
+        current_x += child_width
+
+
+# Build all rectangles
+# Chart dimensions (leaving margins for title and legend)
+chart_x = 100
+chart_y = 200
+chart_width = 4600
+chart_height = 2000
+level_height = 400  # Fixed height per level (5 levels max)
+
+rectangles = []
+build_rectangles(hierarchy, chart_x, chart_y, chart_width, chart_height, 0, [], rectangles, level_height)
+
+# Generate SVG rectangles for Highcharts renderer
+svg_elements = []
+for rect in rectangles:
+    # Determine font size based on level and rectangle size
+    if rect["level"] == 0:
+        font_size = 52
+    elif rect["level"] == 1:
+        font_size = 40
+    elif rect["level"] == 2:
+        font_size = 32
+    else:
+        font_size = 28
+
+    # Only show label if rectangle is wide enough
+    min_width_for_label = font_size * len(rect["name"]) * 0.5
+    show_label = rect["width"] >= min_width_for_label and rect["height"] >= font_size + 10
+
+    svg_elements.append(
+        {
+            "x": rect["x"],
+            "y": rect["y"],
+            "width": rect["width"],
+            "height": rect["height"],
+            "color": rect["color"],
+            "name": rect["name"],
+            "size": rect["size"],
+            "is_leaf": rect["is_leaf"],
+            "font_size": font_size,
+            "show_label": show_label,
+        }
+    )
+
+# Convert to JavaScript array
+rects_json = json.dumps(svg_elements)
+
+# Highcharts renderer to draw custom icicle chart
 chart_config = f"""
-Highcharts.chart('container', {{
-    chart: {{
-        width: 4800,
-        height: 2700,
-        backgroundColor: '#ffffff',
-        marginTop: 180,
-        marginBottom: 250,
-        marginLeft: 80,
-        marginRight: 80
-    }},
-    title: {{
-        text: 'icicle-basic · highcharts · pyplots.ai',
-        style: {{
-            fontSize: '56px',
-            fontWeight: 'bold'
-        }}
-    }},
-    subtitle: {{
-        text: 'File System Structure - Directory hierarchy showing file sizes (KB)',
-        style: {{
-            fontSize: '36px'
-        }}
-    }},
-    legend: {{
-        enabled: true,
-        align: 'center',
-        verticalAlign: 'bottom',
-        layout: 'horizontal',
-        itemStyle: {{
-            fontSize: '32px',
-            fontWeight: 'normal'
-        }},
-        symbolHeight: 28,
-        symbolWidth: 28,
-        symbolRadius: 4,
-        itemMarginBottom: 10,
-        itemMarginTop: 20,
-        y: 30
-    }},
-    tooltip: {{
-        style: {{
-            fontSize: '32px'
-        }},
-        formatter: function() {{
-            if (this.point.value) {{
-                return '<b>' + this.point.name + '</b><br/>Size: ' + this.point.value + ' KB';
+(function() {{
+    var rects = {rects_json};
+
+    // Create chart with renderer
+    var chart = Highcharts.chart('container', {{
+        chart: {{
+            width: 4800,
+            height: 2700,
+            backgroundColor: '#ffffff',
+            events: {{
+                load: function() {{
+                    var ren = this.renderer;
+
+                    // Draw rectangles
+                    rects.forEach(function(r) {{
+                        // Draw rectangle
+                        ren.rect(r.x, r.y, r.width - 3, r.height - 3, 2)
+                            .attr({{
+                                fill: r.color,
+                                stroke: '#ffffff',
+                                'stroke-width': 3,
+                                zIndex: 1
+                            }})
+                            .add();
+
+                        // Draw label if there's room
+                        if (r.show_label) {{
+                            var labelText = r.name;
+                            if (r.is_leaf) {{
+                                labelText = r.name + ' (' + r.size + ' KB)';
+                            }}
+
+                            // Truncate if too long for rectangle
+                            var maxChars = Math.floor(r.width / (r.font_size * 0.55));
+                            if (labelText.length > maxChars) {{
+                                labelText = labelText.substring(0, maxChars - 2) + '...';
+                            }}
+
+                            ren.text(labelText, r.x + r.width / 2, r.y + r.height / 2 + r.font_size / 3)
+                                .attr({{
+                                    zIndex: 2
+                                }})
+                                .css({{
+                                    color: r.color === '#FFD43B' ? '#333333' : '#ffffff',
+                                    fontSize: r.font_size + 'px',
+                                    fontWeight: r.font_size >= 40 ? 'bold' : 'normal',
+                                    textAnchor: 'middle',
+                                    textShadow: r.color === '#FFD43B' ? 'none' : '2px 2px 3px rgba(0,0,0,0.5)'
+                                }})
+                                .add();
+                        }}
+                    }});
+
+                    // Draw legend at bottom
+                    var legendY = 2450;
+                    var legendItems = [
+                        {{ name: 'src', color: '#306998' }},
+                        {{ name: 'docs', color: '#FFD43B' }},
+                        {{ name: 'tests', color: '#9467BD' }},
+                        {{ name: 'assets', color: '#17BECF' }}
+                    ];
+                    var legendX = 1600;
+                    var legendSpacing = 400;
+
+                    legendItems.forEach(function(item, i) {{
+                        // Legend color box
+                        ren.rect(legendX + i * legendSpacing, legendY, 40, 40, 4)
+                            .attr({{
+                                fill: item.color,
+                                stroke: '#333333',
+                                'stroke-width': 2,
+                                zIndex: 3
+                            }})
+                            .add();
+
+                        // Legend text
+                        ren.text(item.name, legendX + i * legendSpacing + 55, legendY + 30)
+                            .css({{
+                                color: '#333333',
+                                fontSize: '36px',
+                                fontWeight: 'normal'
+                            }})
+                            .add();
+                    }});
+                }}
             }}
-            return '<b>' + this.point.name + '</b>';
-        }}
-    }},
-    series: [{{
-        type: 'treemap',
-        name: 'File Size',
-        layoutAlgorithm: 'sliceAndDice',
-        layoutStartingDirection: 'horizontal',
-        alternateStartingDirection: false,
-        allowTraversingTree: true,
-        animationLimit: 1000,
-        borderWidth: 4,
-        borderColor: '#ffffff',
-        dataLabels: {{
-            enabled: true,
+        }},
+        title: {{
+            text: 'icicle-basic · highcharts · pyplots.ai',
             style: {{
-                fontSize: '26px',
-                fontWeight: 'normal',
-                textOutline: '3px white'
+                fontSize: '56px',
+                fontWeight: 'bold'
             }},
-            formatter: function() {{
-                // Hide labels for very small rectangles
-                if (this.point.shapeArgs && this.point.shapeArgs.width < 80) {{
-                    return '';
-                }}
-                return this.point.name;
-            }}
+            y: 60
         }},
-        levels: [{{
-            level: 1,
-            dataLabels: {{
-                enabled: true,
-                align: 'center',
-                verticalAlign: 'middle',
-                style: {{
-                    fontSize: '52px',
-                    fontWeight: 'bold',
-                    textOutline: '4px white'
-                }}
+        subtitle: {{
+            text: 'File System Structure - Directory sizes shown in KB (root at top, children below)',
+            style: {{
+                fontSize: '36px'
             }},
-            borderWidth: 6,
-            borderColor: '#ffffff'
-        }}, {{
-            level: 2,
-            dataLabels: {{
-                enabled: true,
-                style: {{
-                    fontSize: '40px',
-                    fontWeight: 'bold',
-                    textOutline: '3px white'
-                }}
-            }},
-            borderWidth: 5,
-            borderColor: '#ffffff'
-        }}, {{
-            level: 3,
-            dataLabels: {{
-                enabled: true,
-                style: {{
-                    fontSize: '32px',
-                    fontWeight: 'normal',
-                    textOutline: '3px white'
-                }}
-            }},
-            borderWidth: 4,
-            borderColor: '#ffffff'
-        }}, {{
-            level: 4,
-            dataLabels: {{
-                enabled: true,
-                style: {{
-                    fontSize: '26px',
-                    fontWeight: 'normal',
-                    textOutline: '2px white'
-                }}
-            }},
-            borderWidth: 3,
-            borderColor: '#ffffff'
-        }}],
-        data: {data_json}
-    }}, {{
-        // Empty series for legend entries
-        type: 'line',
-        name: 'src',
-        color: '#306998',
-        showInLegend: true,
-        data: [],
-        marker: {{ enabled: true, symbol: 'square', radius: 14 }},
-        lineWidth: 0
-    }}, {{
-        type: 'line',
-        name: 'docs',
-        color: '#FFD43B',
-        showInLegend: true,
-        data: [],
-        marker: {{ enabled: true, symbol: 'square', radius: 14 }},
-        lineWidth: 0
-    }}, {{
-        type: 'line',
-        name: 'tests',
-        color: '#9467BD',
-        showInLegend: true,
-        data: [],
-        marker: {{ enabled: true, symbol: 'square', radius: 14 }},
-        lineWidth: 0
-    }}, {{
-        type: 'line',
-        name: 'assets',
-        color: '#17BECF',
-        showInLegend: true,
-        data: [],
-        marker: {{ enabled: true, symbol: 'square', radius: 14 }},
-        lineWidth: 0
-    }}]
-}});
+            y: 120
+        }},
+        credits: {{
+            enabled: false
+        }}
+    }});
+}})();
 """
 
-# Download Highcharts JS and treemap module
+# Download Highcharts JS
 highcharts_url = "https://code.highcharts.com/highcharts.js"
-treemap_url = "https://code.highcharts.com/modules/treemap.js"
 
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
-
-with urllib.request.urlopen(treemap_url, timeout=30) as response:
-    treemap_js = response.read().decode("utf-8")
 
 # Generate HTML with inline scripts
 html_content = f"""<!DOCTYPE html>
@@ -249,7 +276,6 @@ html_content = f"""<!DOCTYPE html>
 <head>
     <meta charset="utf-8">
     <script>{highcharts_js}</script>
-    <script>{treemap_js}</script>
 </head>
 <body style="margin:0; padding:0; background:#ffffff;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
@@ -265,7 +291,6 @@ with open("plot.html", "w", encoding="utf-8") as f:
     <meta charset="utf-8">
     <title>icicle-basic · highcharts · pyplots.ai</title>
     <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/treemap.js"></script>
     <style>
         body {{ margin: 0; padding: 20px; font-family: sans-serif; background: #ffffff; }}
         #container {{ width: 100%; height: 90vh; min-height: 600px; }}

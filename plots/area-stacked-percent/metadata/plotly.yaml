@@ -1,0 +1,26 @@
+library: plotly
+specification_id: area-stacked-percent
+created: '2025-12-30T11:22:20Z'
+updated: '2025-12-30T11:31:18Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20595336832
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Plotly stackgroup with groupnorm=percent for proper 100% stacking
+  - Clean professional visual appearance with well-sized fonts
+  - Realistic energy market share scenario showing energy transition story
+  - Good use of hovertemplate for informative tooltips
+  - Both PNG and HTML outputs generated for interactivity
+  - Proper normalization logic in data preparation
+  weaknesses:
+  - Legend order reversed from visual stacking order - Hydro first in legend but at
+    top of stack
+  - Two green shades (Hydro olive and Wind bright) may be difficult to distinguish
+    for colorblind users

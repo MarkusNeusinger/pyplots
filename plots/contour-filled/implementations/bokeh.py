@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-filled: Filled Contour Plot
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 86/100 | Created: 2025-12-30
@@ -6,7 +6,7 @@ Quality: 86/100 | Created: 2025-12-30
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import BasicTicker, ColorBar, LinearColorMapper
+from bokeh.models import BasicTicker, ColorBar, HoverTool, LinearColorMapper
 from bokeh.palettes import Viridis256
 from bokeh.plotting import figure
 from contourpy import contour_generator
@@ -29,14 +29,14 @@ Z = (
 # Scale to realistic elevation values (0-2000 meters)
 Z = (Z - Z.min()) / (Z.max() - Z.min()) * 2000
 
-# Create figure at 4800x2700 px
+# Create figure at 4800x2700 px with interactive tools
 p = figure(
     width=4800,
     height=2700,
     title="contour-filled · bokeh · pyplots.ai",
     x_range=(x.min(), x.max()),
     y_range=(y.min(), y.max()),
-    tools="",
+    tools="pan,wheel_zoom,box_zoom,reset,save",
 )
 
 # Explicitly set axis labels after figure creation
@@ -86,17 +86,39 @@ p.yaxis.axis_label_text_font_size = "22pt"
 p.xaxis.major_label_text_font_size = "18pt"
 p.yaxis.major_label_text_font_size = "18pt"
 
-# Grid styling - use level="overlay" to draw on top of image with high contrast
+# Grid styling - subtle overlay grid (reduced alpha per review feedback)
 p.xgrid.grid_line_color = "white"
 p.ygrid.grid_line_color = "white"
-p.xgrid.grid_line_alpha = 0.6
-p.ygrid.grid_line_alpha = 0.6
+p.xgrid.grid_line_alpha = 0.3
+p.ygrid.grid_line_alpha = 0.3
 p.xgrid.grid_line_width = 2
 p.ygrid.grid_line_width = 2
 p.xgrid.grid_line_dash = [8, 4]
 p.ygrid.grid_line_dash = [8, 4]
 p.xgrid.level = "overlay"
 p.ygrid.level = "overlay"
+
+# Add hover tool for interactive elevation display
+# Create a grid of hover points for better interactivity
+hover_x, hover_y, hover_z = [], [], []
+step = 4  # Sample every 4th point for responsive hovering
+for i in range(0, len(x), step):
+    for j in range(0, len(y), step):
+        hover_x.append(x[i])
+        hover_y.append(y[j])
+        hover_z.append(round(Z[j, i], 1))
+
+# Add invisible scatter points for hover detection
+hover_renderer = p.scatter(hover_x, hover_y, size=30, fill_alpha=0, line_alpha=0, name="hover_points")
+hover_renderer.data_source.data["elevation"] = hover_z
+
+# Configure hover tool to show elevation values
+hover = HoverTool(
+    renderers=[hover_renderer],
+    tooltips=[("Location", "(@x{0.0} km E, @y{0.0} km N)"), ("Elevation", "@elevation{0} m")],
+    mode="mouse",
+)
+p.add_tools(hover)
 
 # Background
 p.background_fill_color = None
@@ -105,6 +127,6 @@ p.border_fill_color = None
 # Save as PNG and HTML
 export_png(p, filename="plot.png")
 
-# Also save as HTML for interactive viewing
+# Also save as HTML for interactive viewing with hover tooltips
 output_file("plot.html")
 save(p)

@@ -5,7 +5,7 @@ Quality: pending | Created: 2025-12-30
 """
 
 import numpy as np
-from bokeh.io import export_png
+from bokeh.io import export_png, output_file, save
 from bokeh.models import ColumnDataSource, Legend
 from bokeh.plotting import figure
 
@@ -39,35 +39,36 @@ categories = cat_a + cat_b + cat_c
 # Define colors for each category (Python Blue, Python Yellow, colorblind-safe red)
 color_map = {"Product A": "#306998", "Product B": "#FFD43B", "Product C": "#E74C3C"}
 
-# Create figure
+# Create figure with interactive tools
 p = figure(
     width=4800,
     height=2700,
     title="scatter-categorical · bokeh · pyplots.ai",
     x_axis_label="Marketing Spend ($K)",
     y_axis_label="Customer Engagement Score",
+    tools="pan,wheel_zoom,box_zoom,reset,hover,save",
+    tooltips=[("Category", "@cat"), ("X", "@x{0.1}"), ("Y", "@y{0.1}")],
 )
 
 # Plot each category separately for legend
 legend_items = []
 
 for cat, color in color_map.items():
-    cat_source = ColumnDataSource(
-        data={
-            "x": [x[i] for i in range(len(x)) if categories[i] == cat],
-            "y": [y[i] for i in range(len(y)) if categories[i] == cat],
-        }
-    )
-    r = p.scatter(x="x", y="y", source=cat_source, size=30, color=color, alpha=0.7)
+    mask = [categories[i] == cat for i in range(len(categories))]
+    cat_x = [x[i] for i in range(len(x)) if mask[i]]
+    cat_y = [y[i] for i in range(len(y)) if mask[i]]
+    cat_source = ColumnDataSource(data={"x": cat_x, "y": cat_y, "cat": [cat] * len(cat_x)})
+    r = p.scatter(x="x", y="y", source=cat_source, size=25, color=color, alpha=0.7, line_color="white", line_width=1)
     legend_items.append((cat, [r]))
 
 # Add legend
 legend = Legend(items=legend_items, location="top_right")
-legend.label_text_font_size = "36pt"
-legend.glyph_height = 50
-legend.glyph_width = 50
-legend.spacing = 15
-legend.padding = 20
+legend.label_text_font_size = "28pt"
+legend.glyph_height = 40
+legend.glyph_width = 40
+legend.spacing = 12
+legend.padding = 15
+legend.background_fill_alpha = 0.8
 p.add_layout(legend)
 
 # Title styling
@@ -93,5 +94,9 @@ p.background_fill_color = "#fafafa"
 p.axis.axis_line_width = 2
 p.axis.major_tick_line_width = 2
 
-# Save
+# Save PNG
 export_png(p, filename="plot.png")
+
+# Save interactive HTML
+output_file("plot.html", title="scatter-categorical · bokeh · pyplots.ai")
+save(p)

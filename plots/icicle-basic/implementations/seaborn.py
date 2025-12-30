@@ -1,21 +1,21 @@
-""" pyplots.ai
+"""pyplots.ai
 icicle-basic: Basic Icicle Chart
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-30
 """
 
 import matplotlib.pyplot as plt
-import numpy as np
+import pandas as pd
 import seaborn as sns
-from matplotlib.patches import Patch
+from matplotlib.patches import Patch, Rectangle
 
 
 # Set seaborn style for consistent appearance
-sns.set_style("white")
-sns.set_context("talk", font_scale=1.2)
+sns.set_style("whitegrid")
+sns.set_context("poster", font_scale=0.9)
 
 # Hierarchical data: File system structure
-# Format: (name, parent, value)
+# Format: (name, parent, value in MB)
 hierarchy_data = [
     ("Root", None, 1000),
     ("Documents", "Root", 350),
@@ -49,7 +49,7 @@ for name, parent, _value in hierarchy_data:
     if parent and parent in nodes:
         nodes[parent]["children"].append(name)
 
-# Calculate levels inline (no helper functions - KISS principle)
+# Calculate levels inline (KISS principle)
 levels = {}
 for name in nodes:
     level = 0
@@ -95,90 +95,88 @@ while stack:
             stack.append((child, current_x, current_x + child_width, level + 1))
             current_x += child_width
 
-# Create heatmap matrix for icicle visualization using seaborn
-# Grid resolution for the heatmap
-grid_cols = 200
-grid_rows = (max_level + 1) * 5  # 5 rows per level for visual clarity
-heatmap_data = np.full((grid_rows, grid_cols), np.nan)
-annotations = {}
-
-# Fill heatmap grid based on rectangle positions
-for rect in rectangles:
-    col_start = int(rect["x"] * grid_cols)
-    col_end = int((rect["x"] + rect["width"]) * grid_cols)
-    row_start = int((1 - rect["y"] - rect["height"]) * grid_rows)
-    row_end = int((1 - rect["y"]) * grid_rows)
-
-    # Leave gaps between rectangles
-    col_start = min(col_start + 1, col_end - 1) if col_end - col_start > 2 else col_start
-    col_end = max(col_end - 1, col_start + 1) if col_end - col_start > 2 else col_end
-    row_end = max(row_end - 1, row_start + 1)
-
-    # Use level as value for coloring
-    heatmap_data[row_start:row_end, col_start:col_end] = rect["level"]
-
-    # Store annotation position for labels
-    if rect["width"] > 0.035:
-        annotations[rect["name"]] = {
-            "col": (col_start + col_end) / 2,
-            "row": (row_start + row_end) / 2,
-            "width": col_end - col_start,
-            "level": rect["level"],
-        }
-
-# Create figure with optimal size
-fig, ax = plt.subplots(figsize=(16, 10))
-
-# Use seaborn heatmap to create the icicle chart visualization
+# Create DataFrame for seaborn color mapping
+rect_df = pd.DataFrame(rectangles)
 n_levels = max_level + 1
-cmap = sns.color_palette("Blues_r", n_colors=n_levels + 2, as_cmap=False)
-cmap_full = sns.blend_palette(cmap[1:-1], n_colors=n_levels, as_cmap=True)
 
-sns.heatmap(
-    heatmap_data,
-    ax=ax,
-    cmap=cmap_full,
-    vmin=0,
-    vmax=max_level,
-    cbar=False,
-    xticklabels=False,
-    yticklabels=False,
-    linewidths=0,
-    square=False,
-)
+# Use seaborn to create color palette based on hierarchy level
+palette = sns.color_palette("Blues_r", n_colors=n_levels + 2)[1:-1]
+level_colors = {i: palette[i] for i in range(n_levels)}
 
-# Add text labels for larger rectangles
-for name, pos in annotations.items():
-    level = pos["level"]
-    fontsize = 11 if level <= 1 else (10 if level == 2 else 9)
-    text_color = "white" if level < 2 else "#2c3e50"
+# Create figure
+fig, ax = plt.subplots(figsize=(16, 9))
 
-    display_text = name
-    max_chars = max(8, int(pos["width"] / 8))
-    if len(display_text) > max_chars:
-        display_text = display_text[: max_chars - 2] + ".."
+# Draw rectangles using matplotlib with seaborn-derived colors
+gap = 0.005
+for _, rect in rect_df.iterrows():
+    x = rect["x"] + gap
+    y = rect["y"] + gap
+    w = max(rect["width"] - 2 * gap, 0.001)
+    h = max(rect["height"] - 2 * gap, 0.001)
+    level = int(rect["level"])
+    color = level_colors[level]
+
+    patch = Rectangle((x, y), w, h, facecolor=color, edgecolor="white", linewidth=2)
+    ax.add_patch(patch)
+
+# Add text labels with values for rectangles
+for _, rect in rect_df.iterrows():
+    level = int(rect["level"])
+    # Only label if rectangle is wide enough
+    if rect["width"] < 0.04:
+        continue
+
+    # Position in center of rectangle
+    cx = rect["x"] + rect["width"] / 2
+    cy = rect["y"] + rect["height"] / 2
+
+    # Choose font size based on level and available space
+    fontsize = 14 if level <= 1 else (12 if level == 2 else 10)
+    text_color = "white" if level < 2 else "#1a3a5c"
+
+    # Smart label truncation - preserve meaningful parts
+    name = rect["name"]
+    max_chars = max(6, int(rect["width"] * 80))
+    if len(name) > max_chars:
+        # For file extensions, keep the extension
+        if "." in name and len(name.split(".")[-1]) <= 4:
+            ext = "." + name.split(".")[-1]
+            name = name[: max_chars - len(ext) - 1] + ".." + ext
+        else:
+            name = name[: max_chars - 1] + "…"
+
+    # Format value display (in MB)
+    value = int(rect["value"])
+    if value >= 1000:
+        value_str = f"{value / 1000:.1f} GB"
+    else:
+        value_str = f"{value} MB"
+
+    # Display name and value
+    display_text = f"{name}\n{value_str}"
 
     ax.text(
-        pos["col"],
-        pos["row"],
+        cx,
+        cy,
         display_text,
         ha="center",
         va="center",
         fontsize=fontsize,
         fontweight="bold",
         color=text_color,
+        linespacing=1.2,
     )
 
 # Configure axes
-ax.set_xlim(0, grid_cols)
-ax.set_ylim(grid_rows, 0)
+ax.set_xlim(0, 1)
+ax.set_ylim(0, 1)
+ax.set_aspect("auto")
 ax.axis("off")
 
-# Title with correct format: spec-id first
-ax.set_title("icicle-basic · File System Structure · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
+# Title with exact spec format: {spec-id} · {library} · pyplots.ai
+ax.set_title("icicle-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
 
-# Add legend for hierarchy levels
-palette = sns.color_palette("Blues_r", n_colors=n_levels + 2)[1:-1]
+# Add legend for hierarchy levels using seaborn palette
 legend_labels = ["Root", "Category", "Subcategory", "Files"][:n_levels]
 legend_patches = [
     Patch(facecolor=palette[i], edgecolor="white", linewidth=1.5, label=legend_labels[i]) for i in range(n_levels)
@@ -192,6 +190,9 @@ ax.legend(
     title_fontsize=16,
     edgecolor="#cccccc",
 )
+
+# Use seaborn's despine for clean appearance
+sns.despine(left=True, bottom=True)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")

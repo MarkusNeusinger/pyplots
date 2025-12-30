@@ -1,11 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 line-interactive: Interactive Line Chart with Hover and Zoom
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
 """
 
 import matplotlib.pyplot as plt
-import mplcursors
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -38,18 +37,19 @@ for idx in cold_snap_indices:
 # Create DataFrame for seaborn
 df = pd.DataFrame({"Date": dates, "Temperature": temperature, "Day": np.arange(n_points)})
 
-# Set seaborn style
-sns.set_theme(style="whitegrid")
+# Set seaborn style (white, not whitegrid - we'll add custom subtle grid)
+sns.set_theme(style="white")
 
-# Create the figure
-fig, ax = plt.subplots(figsize=(16, 9))
+# Create the figure with two axes: main plot and range selector
+fig, (ax, ax_range) = plt.subplots(2, 1, figsize=(16, 9), height_ratios=[5, 1], sharex=False)
+fig.subplots_adjust(hspace=0.15)
 
 # Main line plot using seaborn
 sns.lineplot(data=df, x="Date", y="Temperature", color="#306998", linewidth=2.5, ax=ax, label="Daily Temperature")
 
 # Add scatter points for hover targets (every 10th point)
 scatter_df = df.iloc[::10].copy()
-scatter = sns.scatterplot(
+sns.scatterplot(
     data=scatter_df,
     x="Date",
     y="Temperature",
@@ -63,24 +63,29 @@ scatter = sns.scatterplot(
     label="Data Points",
 )
 
-# Get scatter path collection for mplcursors
-scatter_collection = ax.collections[-1]
+# Range selector subplot - simplified overview of the data
+sns.lineplot(data=df, x="Date", y="Temperature", color="#306998", linewidth=1.5, ax=ax_range, legend=False)
+ax_range.set_ylabel("")
+ax_range.set_xlabel("Drag to Select Range", fontsize=14)
+ax_range.tick_params(axis="y", labelsize=10)
+ax_range.tick_params(axis="x", labelsize=12)
+ax_range.set_title("Range Selector", fontsize=14, fontweight="bold", loc="left")
 
-# Setup mplcursors for interactive hover tooltips
-cursor = mplcursors.cursor(scatter_collection, hover=True)
-
-
-@cursor.connect("add")
-def on_add(sel):
-    """Format hover tooltip with date and temperature."""
-    idx = sel.index * 10  # Map back to original index
-    date_str = dates[idx].strftime("%b %d, %Y")
-    temp = temperature[idx]
-    sel.annotation.set_text(f"Date: {date_str}\nTemp: {temp:.1f}°C")
-    sel.annotation.get_bbox_patch().set(facecolor="#FFD43B", alpha=0.95)
-    sel.annotation.set_fontsize(14)
-    sel.annotation.set_fontweight("bold")
-
+# Add span selector for range selection (demonstrates interactive range selection)
+# Highlight current selection on the range selector
+selected_start, selected_end = 40, 100
+ax_range.axvspan(dates[selected_start], dates[selected_end], alpha=0.3, color="#FFD43B", zorder=2)
+ax_range.annotate(
+    "Selected Range",
+    xy=(dates[(selected_start + selected_end) // 2], ax_range.get_ylim()[1]),
+    xytext=(0, -5),
+    textcoords="offset points",
+    fontsize=11,
+    ha="center",
+    va="top",
+    color="#306998",
+    fontweight="bold",
+)
 
 # Highlight heat wave with visible markers and annotation
 heat_wave_df = df.iloc[heat_wave_indices]
@@ -136,19 +141,6 @@ ax.annotate(
 avg_temp = np.mean(temperature)
 ax.axhline(y=avg_temp, color="#808080", linestyle="--", linewidth=2, alpha=0.7, label=f"Average: {avg_temp:.1f}°C")
 
-# Highlight zoom region to demonstrate range selection
-zoom_start, zoom_end = 50, 80
-ax.axvspan(dates[zoom_start], dates[zoom_end], alpha=0.15, color="#2A9D8F", zorder=1)
-ax.annotate(
-    "Zoom Region\n(scroll/drag)",
-    xy=(dates[65], ax.get_ylim()[0] + 2),
-    fontsize=12,
-    ha="center",
-    va="bottom",
-    color="#2A9D8F",
-    fontweight="bold",
-)
-
 # Style the plot
 ax.set_xlabel("Date", fontsize=20)
 ax.set_ylabel("Temperature (°C)", fontsize=20)
@@ -160,8 +152,9 @@ ax.tick_params(axis="both", labelsize=16)
 # Format x-axis for better date display
 fig.autofmt_xdate(rotation=30)
 
-# Customize grid (seaborn whitegrid, but more subtle)
+# Add subtle grid (using white theme, so no double grid effect)
 ax.grid(True, alpha=0.25, linestyle="--")
+ax_range.grid(True, alpha=0.2, linestyle="-")
 
 # Add legend
 ax.legend(fontsize=14, loc="upper right", framealpha=0.95)

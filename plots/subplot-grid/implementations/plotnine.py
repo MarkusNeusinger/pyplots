@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 subplot-grid: Subplot Grid Layout
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-30
@@ -64,15 +64,15 @@ colors = ["#306998", "#FFD43B"]
 
 # Shared theme for all plots - sized for 4800x2700 canvas
 base_theme = theme_minimal() + theme(
-    plot_title=element_text(size=24, face="bold", ha="center"),
-    axis_title=element_text(size=20),
-    axis_text=element_text(size=16),
-    legend_text=element_text(size=16),
-    legend_title=element_text(size=18),
+    plot_title=element_text(size=22, face="bold", ha="center", margin={"b": 15}),
+    axis_title=element_text(size=18),
+    axis_text=element_text(size=14),
+    legend_text=element_text(size=14),
+    legend_title=element_text(size=16, face="bold"),
     panel_grid_major=element_line(color="#cccccc", alpha=0.3),
     panel_grid_minor=element_line(color="#eeeeee", alpha=0.2),
     panel_background=element_rect(fill="white"),
-    plot_margin=0.05,  # Add margin around plots
+    plot_margin=0.02,
 )
 
 # Plot 1: Sales trend over time (Line chart)
@@ -121,10 +121,12 @@ top_row = p1 | p2
 bottom_row = p3 | p4
 grid = top_row / bottom_row
 
-# Draw the grid and add a main figure title using matplotlib's text
+# Draw the grid and add a main figure title using matplotlib's suptitle
 fig = grid.draw()
-# Resize figure to make room for title (original is 16x9, add 1.2 inch at top)
-fig.set_size_inches(16, 10.2)
-# Add title using text at figure coordinates (0.5 = center, 1.0 = top)
-fig.text(0.5, 0.96, "subplot-grid · plotnine · pyplots.ai", fontsize=28, fontweight="bold", ha="center", va="bottom")
+# Resize figure with extra height for the main title (16:9 base + title space)
+fig.set_size_inches(16, 11)
+# Compress subplots significantly to make room for the main title at the top
+fig.subplots_adjust(top=0.76, bottom=0.08, hspace=0.40, wspace=0.25)
+# Add main title using suptitle positioned well above all subplot titles
+fig.suptitle("subplot-grid · plotnine · pyplots.ai", fontsize=28, fontweight="bold", y=0.90)
 fig.savefig("plot.png", dpi=300, bbox_inches="tight")

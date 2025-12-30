@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 parallel-categories-basic: Basic Parallel Categories Plot
 Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-30
+Quality: 90/100 | Created: 2025-12-30
 """
 
 import sys

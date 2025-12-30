@@ -1,0 +1,28 @@
+library: plotly
+specification_id: cat-strip
+created: '2025-12-30T16:28:55Z'
+updated: '2025-12-30T16:33:21Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20601055911
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/cat-strip/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/cat-strip/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/cat-strip/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent data scenario with plant growth across soil types - realistic and scientifically
+    relevant
+  - Good use of colorblind-safe palette starting with Python Blue/Yellow
+  - Clean implementation of jitter using numpy random uniform
+  - Custom hover templates enhance interactivity
+  - Proper output in both PNG and HTML formats
+  - Different distributions per category (varying means and standard deviations) plus
+    explicit outliers demonstrate strip plot capabilities well
+  weaknesses:
+  - Legend is redundant with x-axis labels (both show Clay, Sandy, Loam, Peat, Chalk)
+    - consider removing legend or using it for a different variable
+  - Grid alpha at 0.1 is perhaps too subtle - 0.2-0.3 would be more visible while
+    still unobtrusive

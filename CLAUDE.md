@@ -43,8 +43,14 @@ uv run alembic upgrade head
 ### Testing
 
 ```bash
-# Run all tests
+# Run all tests (unit + integration)
 uv run pytest
+
+# Run only unit tests
+uv run pytest tests/unit
+
+# Run only integration tests (uses SQLite in-memory)
+uv run pytest tests/integration
 
 # Run with coverage
 uv run pytest --cov=. --cov-report=html
@@ -55,6 +61,13 @@ uv run pytest tests/unit/api/test_routers.py
 # Run a single test
 uv run pytest tests/unit/api/test_routers.py::test_get_specs
 ```
+
+**Test Infrastructure**:
+- **Unit tests** (`tests/unit/`): Fast, mocked dependencies, run in CI
+- **Integration tests** (`tests/integration/`): Real database operations with SQLite, run in CI
+- **E2E tests** (`tests/e2e/`): Full stack with FastAPI TestClient, not yet in CI
+
+**Database for Tests**: Integration tests use SQLite in-memory (via custom types in `core/database/types.py`). Production uses PostgreSQL native types (ARRAY, JSONB, UUID), tests use compatible fallbacks (JSON, String).
 
 ### Code Quality
 

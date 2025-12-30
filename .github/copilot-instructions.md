@@ -58,13 +58,13 @@ uv run pytest tests/integration
 # Run only E2E tests (requires DATABASE_URL)
 uv run pytest tests/e2e
 
-# Check code formatting and linting
+# Linting (required for CI)
 uv run ruff check .
 
-# Auto-fix issues
+# Auto-fix linting issues
 uv run ruff check . --fix
 
-# Format code
+# Formatting (required for CI)
 uv run ruff format .
 ```
 

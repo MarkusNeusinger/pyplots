@@ -163,14 +163,16 @@ uv run pytest tests/unit/api/test_routers.py::test_get_specs
 
 ### Code Quality
 
+**Both linting and formatting must pass for CI.**
+
 ```bash
-# Check code formatting and linting
+# Linting (required for CI)
 uv run ruff check .
 
-# Auto-fix issues
+# Auto-fix linting issues
 uv run ruff check . --fix
 
-# Format code
+# Formatting (required for CI)
 uv run ruff format .
 ```
 

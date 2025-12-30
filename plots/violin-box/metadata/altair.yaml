@@ -1,0 +1,27 @@
+library: altair
+specification_id: violin-box
+created: '2025-12-30T11:22:21Z'
+updated: '2025-12-30T11:29:59Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20595338513
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-box/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-box/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-box/altair/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Altair declarative layering to combine violin (mark_area with
+    transform_density) and box plot layers
+  - Realistic and varied data showing different distribution shapes (exponential,
+    normal, tight normal, bimodal)
+  - Clean faceted layout with independent x-scales for proper violin centering
+  - Good color palette that is colorblind-accessible
+  - Proper title format and clear axis labeling with units
+  weaknesses:
+  - Box plot median line could have higher contrast against the gray box for better
+    visibility
+  - Legend placement in top-right leaves some empty space; could be integrated more
+    tightly

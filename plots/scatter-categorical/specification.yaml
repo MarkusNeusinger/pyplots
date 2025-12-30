@@ -1,0 +1,11 @@
+spec_id: scatter-categorical
+title: Categorical Scatter Plot
+created: '2025-12-30T10:30:00Z'
+updated: '2025-12-30T10:30:00Z'
+issue: 2597
+suggested: claude-code
+tags:
+  plot_type: [scatter, categorical]
+  domain: [statistics, general]
+  features: [grouped, color-coded, legend]
+  data_type: [numeric, categorical]

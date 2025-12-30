@@ -126,8 +126,8 @@ jobs:
         run: |
           SPEC_YAML="plots/${SPEC_ID}/specification.yaml"
           if [ -f "$SPEC_YAML" ]; then
-            # Extract issue number from specification.yaml
-            ISSUE=$(grep -E "^issue:" "$SPEC_YAML" | awk '{print $2}' | tr -d '\r\n')
+            # Extract issue number using yq for robust YAML parsing
+            ISSUE=$(yq '.issue' "$SPEC_YAML" 2>/dev/null || echo "")
             if [ -n "$ISSUE" ] && [ "$ISSUE" != "null" ]; then
               echo "issue_number=$ISSUE" >> $GITHUB_OUTPUT
               echo "::notice::Found issue #$ISSUE from specification.yaml"

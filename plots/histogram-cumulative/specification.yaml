@@ -1,0 +1,11 @@
+spec_id: histogram-cumulative
+title: Cumulative Histogram
+created: '2025-12-30T09:06:00Z'
+updated: '2025-12-30T09:06:00Z'
+issue: 2549
+suggested: claude-code
+tags:
+  plot_type: [histogram, distribution, cumulative]
+  domain: [statistics, probability]
+  features: [cumulative, frequency, cdf]
+  data_type: [numeric, continuous]

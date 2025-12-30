@@ -1,6 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-filled: Filled Contour Plot
-Library: altair 6.0.0 | Python 3.13.11
+Library: altair 6.0.0 | Python 3.13
 Quality: 85/100 | Created: 2025-12-30
 """
 
@@ -24,8 +24,8 @@ Z = (
     + 0.2 * np.sin(X * 2) * np.cos(Y * 2)  # Subtle ripples
 )
 
-# Create discrete contour levels (12 levels for appropriate detail)
-n_levels = 12
+# Create discrete contour levels (8 levels for better visual distinction)
+n_levels = 8
 z_min, z_max = Z.min(), Z.max()
 levels = np.linspace(z_min, z_max, n_levels + 1)
 
@@ -73,7 +73,7 @@ filled_contour = (
         y2="y2:Q",
         color=alt.Color(
             "z:Q",
-            title="f(x, y)",
+            title="Intensity",
             scale=alt.Scale(scheme="viridis"),
             legend=alt.Legend(titleFontSize=20, labelFontSize=16, gradientLength=400, gradientThickness=25),
         ),
@@ -96,10 +96,10 @@ for level_val in levels[1:-1]:  # Skip min/max levels
 
 contour_df = pd.DataFrame(contour_lines_data)
 
-# Add contour line markers as small points along level boundaries
+# Add contour line markers as prominent points along level boundaries
 contour_overlay = (
     alt.Chart(contour_df)
-    .mark_point(size=3, opacity=0.4, color="white")
+    .mark_point(size=12, opacity=0.7, color="white", filled=True)
     .encode(x=alt.X("x:Q", scale=alt.Scale(domain=[-3.1, 3.1])), y=alt.Y("y:Q", scale=alt.Scale(domain=[-3.1, 3.1])))
 )
 

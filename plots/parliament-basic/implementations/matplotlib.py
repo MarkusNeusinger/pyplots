@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 parliament-basic: Parliament Seat Chart
 Library: matplotlib 3.10.8 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -11,7 +11,7 @@ import numpy as np
 # Data - fictional parliament with 5 parties (400 total seats)
 parties = ["Progressive Alliance", "Liberty Union", "Green Future", "Conservative Party", "Reform Movement"]
 seats = [145, 110, 45, 80, 20]
-colors = ["#306998", "#FFD43B", "#2E8B57", "#8B4513", "#9932CC"]
+colors = ["#E69F00", "#56B4E9", "#009E73", "#D55E00", "#CC79A7"]  # Colorblind-safe palette
 total_seats = sum(seats)
 
 # Parliament layout parameters
@@ -68,7 +68,7 @@ all_y = np.array(all_y)
 fig, ax = plt.subplots(figsize=(16, 9))
 
 # Plot seats as circles
-ax.scatter(all_x, all_y, c=all_colors, s=120, edgecolors="white", linewidths=0.5, zorder=2)
+ax.scatter(all_x, all_y, c=all_colors, s=160, edgecolors="white", linewidths=0.8, zorder=2)
 
 # Create legend entries with seat counts
 legend_elements = []
@@ -79,10 +79,9 @@ for party, seat_count, color in zip(parties, seats, colors, strict=True):
 
 ax.legend(handles=legend_elements, loc="lower center", ncol=3, fontsize=14, framealpha=0.9, bbox_to_anchor=(0.5, -0.02))
 
-# Add majority threshold line (200.5 seats for 400 total)
-majority = total_seats / 2
-ax.axhline(y=0, color="gray", linestyle="--", linewidth=1.5, alpha=0.5, zorder=1)
-ax.text(0, -0.8, f"Majority: {int(majority) + 1} seats", ha="center", fontsize=14, color="gray")
+# Add majority threshold annotation (text only - clearer than misleading line)
+majority = total_seats // 2 + 1
+ax.text(0, -0.6, f"Majority threshold: {majority} seats", ha="center", fontsize=14, color="#555555", style="italic")
 
 # Styling
 ax.set_xlim(-8.5, 8.5)

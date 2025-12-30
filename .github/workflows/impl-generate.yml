@@ -111,12 +111,46 @@ jobs:
           echo "issue_number=$ISSUE" >> $GITHUB_OUTPUT
           echo "deps=$DEPS" >> $GITHUB_OUTPUT
 
-          echo "::notice::Generating $LIBRARY for $SPEC_ID"
+          echo "::notice::Generating $LIBRARY for $SPEC_ID (issue: ${ISSUE:-none})"
 
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
+      - name: Read issue number from specification.yaml (fallback)
+        id: spec_issue
+        if: steps.inputs.outputs.issue_number == ''
+        env:
+          SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
+        run: |
+          SPEC_YAML="plots/${SPEC_ID}/specification.yaml"
+          if [ -f "$SPEC_YAML" ]; then
+            # Extract issue number from specification.yaml
+            ISSUE=$(grep -E "^issue:" "$SPEC_YAML" | awk '{print $2}' | tr -d '\r\n')
+            if [ -n "$ISSUE" ] && [ "$ISSUE" != "null" ]; then
+              echo "issue_number=$ISSUE" >> $GITHUB_OUTPUT
+              echo "::notice::Found issue #$ISSUE from specification.yaml"
+            else
+              echo "issue_number=" >> $GITHUB_OUTPUT
+              echo "::warning::No issue number in specification.yaml"
+            fi
+          else
+            echo "issue_number=" >> $GITHUB_OUTPUT
+            echo "::warning::specification.yaml not found"
+          fi
+
+      # Consolidate issue number from inputs or fallback
+      - name: Set final issue number
+        id: issue
+        run: |
+          ISSUE="${{ steps.inputs.outputs.issue_number || steps.spec_issue.outputs.issue_number }}"
+          echo "number=$ISSUE" >> $GITHUB_OUTPUT
+          if [ -n "$ISSUE" ]; then
+            echo "::notice::Using issue #$ISSUE for tracking"
+          else
+            echo "::warning::No issue number available - PR will not have Parent Issue link"
+          fi
 
       - name: Validate specification exists
         env:
@@ -128,20 +162,20 @@ jobs:
           fi
 
       - name: Reopen issue if closed
-        if: steps.inputs.outputs.issue_number != ''
+        if: steps.issue.outputs.number != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE: ${{ steps.inputs.outputs.issue_number }}
+          ISSUE: ${{ steps.issue.outputs.number }}
         run: |
           # Reopen issue so it's visible during implementation
           gh issue reopen "$ISSUE" 2>/dev/null || true
 
       - name: Add pending label
-        if: steps.inputs.outputs.issue_number != ''
+        if: steps.issue.outputs.number != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LIBRARY: ${{ steps.inputs.outputs.library }}
-          ISSUE: ${{ steps.inputs.outputs.issue_number }}
+          ISSUE: ${{ steps.issue.outputs.number }}
         run: |
           gh issue edit "$ISSUE" --add-label "impl:${LIBRARY}:pending" 2>/dev/null || true
 
@@ -368,7 +402,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
           LIBRARY: ${{ steps.inputs.outputs.library }}
-          ISSUE: ${{ steps.inputs.outputs.issue_number }}
+          ISSUE: ${{ steps.issue.outputs.number }}
           BRANCH: ${{ steps.branch.outputs.branch }}
         run: |
           # Save plot files before git operations (they are not committed and would be lost)
@@ -521,7 +555,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
           LIBRARY: ${{ steps.inputs.outputs.library }}
-          ISSUE: ${{ steps.inputs.outputs.issue_number }}
+          ISSUE: ${{ steps.issue.outputs.number }}
           BRANCH: ${{ steps.branch.outputs.branch }}
         run: |
           # Check if PR already exists
@@ -619,12 +653,12 @@ jobs:
       # Post preview and trigger review
       # ========================================================================
       - name: Post preview to issue
-        if: steps.inputs.outputs.issue_number != '' && steps.gcs.outputs.uploaded == 'true'
+        if: steps.issue.outputs.number != '' && steps.gcs.outputs.uploaded == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
           LIBRARY: ${{ steps.inputs.outputs.library }}
-          ISSUE: ${{ steps.inputs.outputs.issue_number }}
+          ISSUE: ${{ steps.issue.outputs.number }}
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
         run: |
           # Use versioned production URLs (permanent, in history/ folder)
@@ -682,12 +716,12 @@ jobs:
       # Failure handling: Track failures and clean up labels
       # ========================================================================
       - name: Handle generation failure
-        if: failure() && steps.inputs.outputs.issue_number != ''
+        if: failure() && steps.issue.outputs.number != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
           LIBRARY: ${{ steps.inputs.outputs.library }}
-          ISSUE: ${{ steps.inputs.outputs.issue_number }}
+          ISSUE: ${{ steps.issue.outputs.number }}
         run: |
           echo "::notice::Handling generation failure for $LIBRARY/$SPEC_ID"
 

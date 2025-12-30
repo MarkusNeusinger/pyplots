@@ -1,0 +1,29 @@
+library: seaborn
+specification_id: scatter-categorical
+created: '2025-12-30T10:38:26Z'
+updated: '2025-12-30T10:46:52Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20594554074
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-categorical/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-categorical/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 95
+review:
+  strengths:
+  - Excellent use of the Iris flower dataset context - classic, well-understood scientific
+    scenario
+  - Perfect text sizing with 24pt title, 20pt labels, 16pt ticks - all highly readable
+  - Custom colorblind-safe palette with good color contrast between categories
+  - Clean KISS code structure with proper seed for reproducibility
+  - Good marker sizing (s=200) and transparency (alpha=0.7) for 150 data points
+  - White edge borders on markers improve visibility and separation
+  - Three distinct clusters clearly demonstrate categorical grouping
+  weaknesses:
+  - Grid uses dashed linestyle which is slightly more distracting than solid with
+    low alpha
+  - Does not utilize seaborn's style parameter to vary marker shapes by category as
+    suggested in spec
+  - Could use seaborn's built-in 'colorblind' palette instead of custom colors

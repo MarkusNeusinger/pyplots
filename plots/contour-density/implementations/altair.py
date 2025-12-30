@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-density: Density Contour Plot
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -17,18 +17,18 @@ np.random.seed(42)
 # Create three distinct clusters representing different climate conditions
 # Cluster 1: Cool and dry (morning/winter measurements)
 n1 = 150
-temp1 = np.random.normal(25, 5, n1)
-humidity1 = np.random.normal(35, 8, n1)
+temp1 = np.random.normal(15, 4, n1)
+humidity1 = np.random.normal(30, 8, n1)
 
 # Cluster 2: Moderate temperature and humidity (typical day conditions)
 n2 = 200
-temp2 = np.random.normal(50, 7, n2)
+temp2 = np.random.normal(25, 5, n2)
 humidity2 = np.random.normal(55, 10, n2)
 
 # Cluster 3: Warm and humid (afternoon/summer measurements)
 n3 = 150
-temp3 = np.random.normal(75, 6, n3)
-humidity3 = np.random.normal(72, 8, n3)
+temp3 = np.random.normal(38, 4, n3)
+humidity3 = np.random.normal(75, 8, n3)
 
 # Combine data
 temperature = np.concatenate([temp1, temp2, temp3])
@@ -61,14 +61,14 @@ heatmap = (
         x=alt.X(
             "Temperature:Q",
             bin=alt.Bin(maxbins=100),
-            title="Temperature (\u00b0C)",
-            axis=alt.Axis(labelFontSize=18, titleFontSize=22, grid=True, gridOpacity=0.3, tickCount=10),
+            title="Temperature (°C)",
+            axis=alt.Axis(labelFontSize=18, titleFontSize=22, tickMinStep=10),
         ),
         y=alt.Y(
             "Humidity:Q",
             bin=alt.Bin(maxbins=100),
             title="Humidity (%)",
-            axis=alt.Axis(labelFontSize=18, titleFontSize=22, grid=True, gridOpacity=0.3, tickCount=10),
+            axis=alt.Axis(labelFontSize=18, titleFontSize=22, tickMinStep=10),
         ),
         color=alt.Color(
             "mean(Density):Q",
@@ -80,29 +80,12 @@ heatmap = (
     )
 )
 
-# Create scatter point overlay (original data points for context)
-scatter_df = pd.DataFrame({"Temperature": temperature, "Humidity": humidity})
-
-scatter = (
-    alt.Chart(scatter_df)
-    .mark_point(size=30, opacity=0.4, color="#306998", filled=True)
-    .encode(
-        x=alt.X("Temperature:Q"),
-        y=alt.Y("Humidity:Q"),
-        tooltip=[
-            alt.Tooltip("Temperature:Q", title="Temp (\u00b0C)", format=".1f"),
-            alt.Tooltip("Humidity:Q", title="Humidity (%)", format=".1f"),
-        ],
-    )
-)
-
-# Layer the charts
+# Configure the chart (removing invisible scatter overlay - density heatmap is sufficient)
 chart = (
-    alt.layer(heatmap, scatter)
-    .properties(
+    heatmap.properties(
         width=1600,
         height=900,
-        title=alt.Title(text="contour-density \u00b7 altair \u00b7 pyplots.ai", fontSize=28, anchor="middle"),
+        title=alt.Title(text="contour-density · altair · pyplots.ai", fontSize=28, anchor="middle"),
     )
     .configure_view(strokeWidth=0)
     .configure_axis(labelFontSize=16, titleFontSize=22)

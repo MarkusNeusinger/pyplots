@@ -1,0 +1,27 @@
+library: pygal
+specification_id: scatter-annotated
+created: '2025-12-30T18:37:02Z'
+updated: '2025-12-30T18:39:14Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20603305140
+issue: 0
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/pygal/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of individual series per company to achieve distinct colors for
+    each data point
+  - Clean annotation placement with company names displayed directly on the chart
+    using print_values and formatter
+  - Good use of pygal custom Style for consistent theming with appropriate font sizes
+  - Well-chosen business context (tech companies market cap vs revenue) that is realistic
+    and neutral
+  - Proper canvas size (4800x2700) with appropriately scaled fonts
+  weaknesses:
+  - Legend at bottom is redundant with on-chart annotations and appears very small/hard
+    to read
+  - Some color pairs are similar (two purples, two greens) which could cause confusion

@@ -1,7 +1,7 @@
 """ pyplots.ai
 circlepacking-basic: Circle Packing Chart
 Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 82/100 | Created: 2025-12-30
+Quality: 85/100 | Created: 2025-12-30
 """
 
 import numpy as np

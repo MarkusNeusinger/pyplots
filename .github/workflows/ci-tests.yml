@@ -22,9 +22,10 @@ jobs:
       contents: read
 
     env:
-      # E2E tests use isolated test_e2e schema (production data unaffected)
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
       ENVIRONMENT: test
+      # Note: E2E tests require DATABASE_URL or Cloud SQL access
+      # Currently skipped in CI (async Cloud SQL Connector has event loop issues)
+      # E2E tests run locally via DATABASE_URL
 
     steps:
     - uses: actions/checkout@v6

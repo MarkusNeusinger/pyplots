@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 circlepacking-basic: Circle Packing Chart
 Library: plotly 6.5.0 | Python 3.13.11
-Quality: 85/100 | Created: 2025-12-30
+Quality: 88/100 | Created: 2025-12-30
 """
 
 import numpy as np

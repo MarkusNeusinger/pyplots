@@ -1,0 +1,29 @@
+library: bokeh
+specification_id: scatter-categorical
+created: '2025-12-30T11:40:30Z'
+updated: '2025-12-30T11:42:42Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20594556498
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-categorical/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-categorical/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-categorical/bokeh/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent text sizing for the large canvas (48pt title, 36pt axis labels, 28pt
+    tick labels)
+  - Clean three-cluster visualization with distinct, colorblind-safe colors
+  - Good use of Bokeh interactive tools (hover tooltips with formatted values)
+  - Proper use of ColumnDataSource for data management
+  - Realistic business context (marketing spend vs engagement)
+  - Saves both PNG and interactive HTML output
+  weaknesses:
+  - Legend placement could be better integrated with the plot (currently appears slightly
+    isolated in top-right)
+  - Could demonstrate alpha transparency more effectively by having some overlapping
+    points between categories
+  - Library features usage is good but not exceptional (could use linked selections
+    or custom hover styling)

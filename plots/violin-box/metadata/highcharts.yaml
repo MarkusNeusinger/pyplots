@@ -1,0 +1,25 @@
+library: highcharts
+specification_id: violin-box
+created: '2025-12-30T11:29:43Z'
+updated: '2025-12-30T11:37:05Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20595341717
+issue: 0
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-box/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-box/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-box/highcharts/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent implementation of a complex visualization using polygon primitives
+  - Creative approach building violin shapes from KDE using scipy and PolygonSeries
+  - 'Diverse data showcasing all features: bimodal distribution, outliers, different
+    spreads'
+  - Colorblind-safe palette
+  - 'All spec requirements met: violin KDE, embedded box plot, median markers, whiskers,
+    outliers'
+  weaknesses:
+  - No grid lines visible, which would improve value readability
+  - Some unused whitespace at top of plot area

@@ -1,0 +1,27 @@
+library: seaborn
+specification_id: histogram-stacked
+created: '2025-12-30T10:38:34Z'
+updated: '2025-12-30T10:47:22Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20594557807
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of seaborn histplot with multiple=stack for native stacked histogram
+    support
+  - Clean realistic data scenario with server response times that clearly demonstrates
+    the plot type
+  - Perfect title format and professional styling with appropriate font sizes
+  - Good color palette with white edge lines providing clear segment separation
+  - Proper use of hue_order to control logical stacking order
+  weaknesses:
+  - Legend could be positioned outside the plot area to avoid any potential overlap
+    with tall bars
+  - Color palette could use a more colorblind-optimized palette like colorblind or
+    Set2

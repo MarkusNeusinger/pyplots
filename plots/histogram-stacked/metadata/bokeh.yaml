@@ -1,0 +1,25 @@
+library: bokeh
+specification_id: histogram-stacked
+created: '2025-12-30T10:40:06Z'
+updated: '2025-12-30T10:50:22Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20594559186
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent text sizing scaled appropriately for 4800x2700 canvas
+  - Clean stacking implementation with proper bottom/top calculations
+  - White line separators between segments improve readability
+  - Realistic educational scenario with meaningful group differences
+  - Proper use of consistent bin edges across all groups
+  weaknesses:
+  - 'Two blue colors (dark #306998 and light #4B8BBE) may cause confusion for colorblind
+    users; consider using more distinct hues'
+  - Does not use ColumnDataSource which is idiomatic Bokeh practice
+  - Some test scores exceed 100 points which is atypical for standard tests

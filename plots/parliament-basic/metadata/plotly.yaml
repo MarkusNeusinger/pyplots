@@ -1,0 +1,27 @@
+library: plotly
+specification_id: parliament-basic
+created: '2025-12-30T00:04:08Z'
+updated: '2025-12-30T00:11:57Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20585399554
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/plotly/plot.html
+quality_score: 93
+review:
+  strengths:
+  - Excellent semicircular seat arrangement algorithm that properly distributes seats
+    across concentric arcs
+  - Clean visual design with white marker borders that distinguish individual seats
+  - Proper horizontal legend with seat counts for each party
+  - Smart use of Plotly hover templates for interactivity
+  - Majority threshold line adds context as specified
+  - Total seats annotation at center is a nice touch
+  - Neutral fictional party names avoid political controversy
+  - Both PNG and interactive HTML outputs generated
+  weaknesses:
+  - The majority threshold dashed line is quite faint (rgba 0.3 alpha); could be slightly
+    more visible while remaining subtle

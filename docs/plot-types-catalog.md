@@ -398,7 +398,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### contour-basic ✅
 **Description:** A contour plot displays isolines (level curves) of a 2D scalar field, connecting points of equal value across a surface.
 
-### contour-filled 📋
+### contour-filled ✅
 **Description:** Filled contour regions.
 
 ### contour-density 📋
@@ -451,10 +451,10 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### dendrogram-basic ✅
 **Description:** A dendrogram visualizes hierarchical clustering by showing how data points or clusters merge at different distance levels.
 
-### icicle-basic 📋
+### icicle-basic ✅
 **Description:** Rectangular hierarchy visualization with stacked rectangles.
 
-### circle-packing 📋
+### circle-packing ✅
 **Description:** Nested circles showing hierarchy.
 
 ---
@@ -464,7 +464,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### waffle-basic ✅
 **Description:** A waffle chart displays proportions using a grid of equal-sized squares where colored squares represent parts of a whole.
 
-### parliament-basic 📋
+### parliament-basic ✅
 **Description:** Semicircular parliament seat chart.
 
 ### gauge-basic ✅
@@ -552,7 +552,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### parallel-basic ✅
 **Description:** A parallel coordinates plot visualizes multivariate data by representing each variable as a vertical axis and each observation as a line connecting values across all axes.
 
-### parallel-categories 📋
+### parallel-categories ✅
 **Description:** Parallel coordinates for categorical data.
 
 ### andrews-curves 📋
@@ -883,8 +883,8 @@ Druckbare Vorlagen und spielerische Visualisierungen.
 ## Statistics
 
 - **Total Plot Types:** 235+
-- **Implemented:** 113 ✅
-- **Planned:** 125+ 📋
+- **Implemented:** 118 ✅
+- **Planned:** 120+ 📋
 - **Categories:** 31
 
 ---

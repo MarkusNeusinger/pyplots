@@ -1,0 +1,25 @@
+library: altair
+specification_id: contour-filled
+created: '2025-12-30T00:04:22Z'
+updated: '2025-12-30T00:30:22Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20585401768
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-filled/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-filled/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-filled/altair/plot.html
+quality_score: 86
+review:
+  strengths:
+  - Excellent use of viridis colormap for colorblind accessibility
+  - Good filled contour visualization using mark_rect with discrete color bands
+  - Proper title format following spec-id · library · pyplots.ai convention
+  - Well-structured data with two Gaussian peaks and a valley showing variation
+  - Clean KISS code structure with reproducible seed
+  weaknesses:
+  - Contour line overlay using white points is unconventional and does not provide
+    clear level identification as specified
+  - The white point markers for contour lines create visual noise rather than clean
+    isolines

@@ -1,0 +1,26 @@
+library: seaborn
+specification_id: icicle-basic
+created: '2025-12-30T00:03:13Z'
+updated: '2025-12-30T00:30:12Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20585399018
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/icicle-basic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/icicle-basic/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 82
+review:
+  strengths:
+  - Excellent hierarchical visualization with clear parent-child spatial relationships
+  - Blues_r color palette creates intuitive gradient showing depth (dark=root, light=leaves)
+  - Clean whitegrid style and proper font scaling with sns.set_context("poster")
+  - Well-structured legend explaining hierarchy levels
+  - Realistic file system data with appropriate MB values
+  weaknesses:
+  - 'Title format incorrect: should be exactly "{spec-id} · {library} · pyplots.ai"
+    without extra description'
+  - Value labels (MB sizes) not displayed in rectangles - spec emphasizes size represents
+    value
+  - Some labels are truncated (Docume.., Templa..) reducing readability

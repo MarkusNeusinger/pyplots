@@ -1,7 +1,7 @@
 library: pygal
 specification_id: bar-sorted
 created: '2025-12-30T09:32:30Z'
-updated: '2025-12-30T09:43:59Z'
+updated: '2025-12-30T09:49:47Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20593352116
 issue: 0
@@ -10,19 +10,18 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/pygal/plot.html
-quality_score: 78
+quality_score: 72
 review:
   strengths:
-  - Clean descending sort implementation with explicit sorting code
-  - Correct title format following pyplots.ai conventions
-  - Good use of custom Style with appropriate font sizes for 4800x2700 canvas
-  - Realistic business scenario with plausible sales data
-  - Proper use of HorizontalBar chart type for category readability
-  - Value formatter configured for currency display
+  - Clean code structure following KISS principles
+  - Good use of pygal custom Style for sizing
+  - Realistic business data scenario (monthly sales by category)
+  - Proper descending sort order for the bar chart
+  - Uses value_formatter for currency display
+  - Horizontal orientation is appropriate for category labels
   weaknesses:
-  - Category labels are only shown in legend, not on Y-axis of the bars; users must
-    cross-reference legend to identify each bar
-  - Each category added as separate series creates redundant legend instead of using
-    x_labels for category names
-  - Value labels on bars (print_values) are disabled despite spec notes recommending
-    them for readability
+  - Category labels not appearing on Y-axis next to bars - viewers must match bars
+    to legend at bottom
+  - Value labels (print_values=True) not rendering on the bars despite being configured
+  - Legend displays even though show_legend=False is set in the code
+  - Title includes extra text before the required format

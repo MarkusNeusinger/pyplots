@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 subplot-grid: Subplot Grid Layout
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 84/100 | Created: 2025-12-30
@@ -62,26 +62,29 @@ df_scatter = pd.DataFrame({"units": units, "margin": margin})
 # Define colors
 colors = ["#306998", "#FFD43B"]
 
-# Shared theme for all plots
+# Shared theme for all plots - sized for 4800x2700 canvas
 base_theme = theme_minimal() + theme(
-    plot_title=element_text(size=14, face="bold", ha="center"),
-    axis_title=element_text(size=12),
-    axis_text=element_text(size=10),
+    plot_title=element_text(size=24, face="bold", ha="center"),
+    axis_title=element_text(size=20),
+    axis_text=element_text(size=16),
+    legend_text=element_text(size=16),
+    legend_title=element_text(size=18),
     panel_grid_major=element_line(color="#cccccc", alpha=0.3),
     panel_grid_minor=element_line(color="#eeeeee", alpha=0.2),
     panel_background=element_rect(fill="white"),
+    plot_margin=0.05,  # Add margin around plots
 )
 
 # Plot 1: Sales trend over time (Line chart)
 p1 = (
     ggplot(df_timeseries, aes(x="day_num", y="sales", color="product"))
-    + geom_line(size=1.0)
-    + geom_point(size=2, alpha=0.7)
-    + stat_smooth(method="lm", se=False, linetype="dashed", size=0.7)
+    + geom_line(size=1.5)
+    + geom_point(size=3, alpha=0.7)
+    + stat_smooth(method="lm", se=False, linetype="dashed", size=1.0)
     + scale_color_manual(values=colors)
-    + labs(title="Sales Trend", x="Day", y="Sales", color="")
+    + labs(title="Sales Trend", x="Day", y="Sales (Units)", color="Product")
     + base_theme
-    + theme(legend_position="right", legend_title=element_text(size=10), legend_text=element_text(size=9))
+    + theme(legend_position="right")
 )
 
 # Plot 2: Revenue by category (Bar chart)
@@ -89,7 +92,7 @@ p2 = (
     ggplot(df_category, aes(x="category", y="revenue", fill="category"))
     + geom_bar(stat="identity", width=0.7, show_legend=False)
     + scale_fill_manual(values=["#306998", "#4A8BBF", "#6BA3D6", "#FFD43B"])
-    + labs(title="Revenue (k$)", x="Quarter", y="Revenue")
+    + labs(title="Quarterly Revenue", x="Quarter", y="Revenue (k$)")
     + base_theme
 )
 
@@ -99,16 +102,16 @@ p3 = (
     ggplot(df_hist, aes(x="sales"))
     + geom_histogram(bins=10, fill="#306998", color="white", alpha=0.8)
     + scale_x_continuous(breaks=[90, 105, 120])
-    + labs(title="Distribution", x="Sales", y="Count")
+    + labs(title="Sales Distribution (Product A)", x="Sales (Units)", y="Frequency")
     + base_theme
 )
 
 # Plot 4: Units vs Margin scatter plot
 p4 = (
     ggplot(df_scatter, aes(x="units", y="margin"))
-    + geom_point(size=2.5, color="#306998", alpha=0.7)
+    + geom_point(size=4, color="#306998", alpha=0.7)
     + stat_smooth(method="lm", color="#FFD43B", se=True, fill="#FFD43B", alpha=0.2)
-    + labs(title="Units vs Margin", x="Units", y="Margin (%)")
+    + labs(title="Units vs Margin", x="Units Sold", y="Profit Margin (%)")
     + base_theme
 )
 
@@ -118,5 +121,10 @@ top_row = p1 | p2
 bottom_row = p3 | p4
 grid = top_row / bottom_row
 
-# Save the composed figure
-grid.save("plot.png", width=16, height=9, dpi=300, verbose=False)
+# Draw the grid and add a main figure title using matplotlib's text
+fig = grid.draw()
+# Resize figure to make room for title (original is 16x9, add 1.2 inch at top)
+fig.set_size_inches(16, 10.2)
+# Add title using text at figure coordinates (0.5 = center, 1.0 = top)
+fig.text(0.5, 0.96, "subplot-grid · plotnine · pyplots.ai", fontsize=28, fontweight="bold", ha="center", va="bottom")
+fig.savefig("plot.png", dpi=300, bbox_inches="tight")

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 parliament-basic: Parliament Seat Chart
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 72/100 | Created: 2025-12-30
+Quality: 90/100 | Created: 2025-12-30
 """
 
 import matplotlib.pyplot as plt

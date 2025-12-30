@@ -2,12 +2,13 @@
 E2E test fixtures with real PostgreSQL database.
 
 Uses a separate 'test_e2e' schema to isolate test data from production.
-Tests are skipped if DATABASE_URL is not set.
+Tests are skipped if DATABASE_URL is not set or database is unreachable.
 
 Note: These tests must NOT be run with pytest-xdist parallelization
 as multiple workers would conflict on the shared test_e2e schema.
 """
 
+import asyncio
 import os
 
 import pytest
@@ -19,6 +20,7 @@ from core.database.models import Base
 
 
 TEST_SCHEMA = "test_e2e"
+CONNECTION_TIMEOUT = 5  # seconds - skip tests if DB unreachable
 
 # Test data constants
 TEST_IMAGE_URL = "https://storage.googleapis.com/pyplots-images/test/plot.png"
@@ -40,21 +42,33 @@ async def pg_engine():
 
     Creates a separate 'test_e2e' schema to isolate tests from production data.
     The schema is dropped and recreated for each test.
+    Skips tests if database is unreachable (e.g., in CI without DB access).
     """
     database_url = _get_database_url()
     if not database_url:
         pytest.skip("DATABASE_URL not set - skipping PostgreSQL E2E tests")
 
     # First create schema with a temporary engine (no search_path yet)
-    temp_engine = create_async_engine(database_url, echo=False)
-    async with temp_engine.begin() as conn:
-        await conn.execute(text(f"DROP SCHEMA IF EXISTS {TEST_SCHEMA} CASCADE"))
-        await conn.execute(text(f"CREATE SCHEMA {TEST_SCHEMA}"))
+    # Use timeout to skip tests if DB is unreachable (e.g., CI without DB access)
+    temp_engine = create_async_engine(database_url, echo=False, connect_args={"timeout": CONNECTION_TIMEOUT})
+    try:
+        async with asyncio.timeout(CONNECTION_TIMEOUT + 2):
+            async with temp_engine.begin() as conn:
+                await conn.execute(text(f"DROP SCHEMA IF EXISTS {TEST_SCHEMA} CASCADE"))
+                await conn.execute(text(f"CREATE SCHEMA {TEST_SCHEMA}"))
+    except (TimeoutError, asyncio.TimeoutError, OSError) as e:
+        await temp_engine.dispose()
+        pytest.skip(f"Database unreachable (timeout) - skipping E2E tests: {e}")
+    except Exception as e:
+        await temp_engine.dispose()
+        pytest.skip(f"Database connection failed - skipping E2E tests: {e}")
     await temp_engine.dispose()
 
     # Create engine with search_path set at connection level (handles pooling correctly)
     engine = create_async_engine(
-        database_url, echo=False, connect_args={"server_settings": {"search_path": TEST_SCHEMA}}
+        database_url,
+        echo=False,
+        connect_args={"server_settings": {"search_path": TEST_SCHEMA}, "timeout": CONNECTION_TIMEOUT},
     )
 
     # Create tables in test schema

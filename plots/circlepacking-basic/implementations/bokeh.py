@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 circlepacking-basic: Circle Packing Chart
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -6,7 +6,7 @@ Quality: 88/100 | Created: 2025-12-30
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColumnDataSource, LabelSet
+from bokeh.models import ColumnDataSource, HoverTool, LabelSet, Legend, LegendItem
 from bokeh.plotting import figure
 
 
@@ -15,28 +15,23 @@ np.random.seed(42)
 # Build hierarchical data: Technology company budget allocation (in millions)
 hierarchy = [
     {"id": "TechCorp", "parent": None, "value": 0, "label": "TechCorp"},
-    # Level 1: Divisions
     {"id": "Engineering", "parent": "TechCorp", "value": 0, "label": "Engineering"},
     {"id": "Sales", "parent": "TechCorp", "value": 0, "label": "Sales"},
     {"id": "Operations", "parent": "TechCorp", "value": 0, "label": "Operations"},
-    # Level 2: Engineering teams
     {"id": "Frontend", "parent": "Engineering", "value": 45, "label": "Frontend"},
     {"id": "Backend", "parent": "Engineering", "value": 60, "label": "Backend"},
     {"id": "DevOps", "parent": "Engineering", "value": 35, "label": "DevOps"},
     {"id": "Mobile", "parent": "Engineering", "value": 40, "label": "Mobile"},
-    # Level 2: Sales teams
     {"id": "Enterprise", "parent": "Sales", "value": 75, "label": "Enterprise"},
     {"id": "SMB", "parent": "Sales", "value": 45, "label": "SMB"},
     {"id": "Partners", "parent": "Sales", "value": 30, "label": "Partners"},
-    # Level 2: Operations teams
     {"id": "HR", "parent": "Operations", "value": 25, "label": "HR"},
     {"id": "Finance", "parent": "Operations", "value": 30, "label": "Finance"},
     {"id": "Legal", "parent": "Operations", "value": 20, "label": "Legal"},
 ]
 
 # Build tree structure
-nodes = {item["id"]: {**item, "children": [], "x": 0, "y": 0, "r": 0, "depth": 0} for item in hierarchy}
-
+nodes = {item["id"]: {**item, "children": [], "x": 0.0, "y": 0.0, "r": 0.0, "depth": 0} for item in hierarchy}
 root = None
 for _node_id, node in nodes.items():
     if node["parent"] is None:
@@ -48,236 +43,222 @@ for _node_id, node in nodes.items():
 
 scale_factor = 15
 
-
-def enclose_circles(circles):
-    """Find the minimum enclosing circle for a set of positioned circles."""
-    if not circles:
-        return 0, 0, 0
-    if len(circles) == 1:
-        return circles[0]["x"], circles[0]["y"], circles[0]["r"]
-
-    # Welzl's algorithm is complex; use bounding approach
-    min_x = min(c["x"] - c["r"] for c in circles)
-    max_x = max(c["x"] + c["r"] for c in circles)
-    min_y = min(c["y"] - c["r"] for c in circles)
-    max_y = max(c["y"] + c["r"] for c in circles)
-
-    cx = (min_x + max_x) / 2
-    cy = (min_y + max_y) / 2
-    r = max(np.sqrt((c["x"] - cx) ** 2 + (c["y"] - cy) ** 2) + c["r"] for c in circles)
-
-    return cx, cy, r
-
-
-def pack_siblings(circles):
-    """Pack sibling circles using a front-chain algorithm."""
-    if not circles:
-        return
-
-    # Sort by radius descending for better packing
-    circles.sort(key=lambda c: -c["r"])
-
-    n = len(circles)
-    if n == 1:
-        circles[0]["x"] = 0
-        circles[0]["y"] = 0
-        return
-
-    # Place first two circles
-    c0, c1 = circles[0], circles[1]
-    c0["x"] = 0
-    c0["y"] = 0
-    c1["x"] = c0["r"] + c1["r"]
-    c1["y"] = 0
-
-    if n == 2:
-        return
-
-    # Place third circle tangent to first two
-    c2 = circles[2]
-    d01 = c0["r"] + c1["r"]
-    d02 = c0["r"] + c2["r"]
-    d12 = c1["r"] + c2["r"]
-    # c2 is tangent to c0 at distance d02 and to c1 at distance d12
-    # c0 is at origin, c1 is at (d01, 0)
-    x2 = (d02**2 - d12**2 + d01**2) / (2 * d01)
-    y2_sq = d02**2 - x2**2
-    y2 = np.sqrt(max(0, y2_sq))
-    c2["x"] = x2
-    c2["y"] = y2
-
-    if n == 3:
-        return
-
-    # Place remaining circles using front chain
-    front = [0, 1, 2]  # indices forming the front chain
-
-    for i in range(3, n):
-        ci = circles[i]
-        best_score = float("inf")
-        best_pos = (0, 0)
-        best_insert = 0
-
-        # Try placing tangent to each adjacent pair in the front
-        for f_idx in range(len(front)):
-            j = front[f_idx]
-            k = front[(f_idx + 1) % len(front)]
-            cj, ck = circles[j], circles[k]
-
-            # Find position tangent to cj and ck
-            positions = find_tangent_pos(cj, ck, ci["r"])
-
-            for px, py in positions:
-                # Check no overlap with existing circles
-                valid = True
-                for m in range(i):
-                    cm = circles[m]
-                    dist = np.sqrt((px - cm["x"]) ** 2 + (py - cm["y"]) ** 2)
-                    if dist < ci["r"] + cm["r"] - 1e-6:
-                        valid = False
-                        break
-
-                if valid:
-                    # Score: distance from centroid (prefer compact)
-                    cx = sum(circles[m]["x"] for m in range(i)) / i
-                    cy = sum(circles[m]["y"] for m in range(i)) / i
-                    score = np.sqrt((px - cx) ** 2 + (py - cy) ** 2)
-
-                    if score < best_score:
-                        best_score = score
-                        best_pos = (px, py)
-                        best_insert = f_idx + 1
-
-        ci["x"], ci["y"] = best_pos
-        front.insert(best_insert, i)
-
-
-def find_tangent_pos(c1, c2, r):
-    """Find positions for circle of radius r tangent to c1 and c2."""
-    dx = c2["x"] - c1["x"]
-    dy = c2["y"] - c1["y"]
-    d = np.sqrt(dx**2 + dy**2)
-
-    if d < 1e-10:
-        return []
-
-    r1 = c1["r"] + r
-    r2 = c2["r"] + r
-
-    if d > r1 + r2 + 1e-6:
-        return []
-    if d < abs(r1 - r2) - 1e-6:
-        return []
-
-    a = (r1**2 - r2**2 + d**2) / (2 * d)
-    h_sq = r1**2 - a**2
-    if h_sq < 0:
-        return []
-
-    h = np.sqrt(h_sq)
-    mx = c1["x"] + a * dx / d
-    my = c1["y"] + a * dy / d
-
-    return [(mx - h * dy / d, my + h * dx / d), (mx + h * dy / d, my - h * dx / d)]
-
-
-def compute_layout(node):
-    """Recursively compute layout using bottom-up packing."""
+# Compute layout bottom-up using stack-based iteration (no recursion/functions)
+# First pass: compute radii for leaves
+for node in nodes.values():
     if not node["children"]:
         node["r"] = np.sqrt(node["value"]) * scale_factor
-        return
 
-    # First layout all children
-    for child in node["children"]:
-        compute_layout(child)
+# Process nodes level by level, bottom-up
+# Get max depth
+max_depth = max(n["depth"] for n in nodes.values())
 
-    # Pack children
-    pack_siblings(node["children"])
+# Process from bottom to top
+for current_depth in range(max_depth, -1, -1):
+    nodes_at_depth = [n for n in nodes.values() if n["depth"] == current_depth and n["children"]]
 
-    # Find enclosing circle
-    cx, cy, r = enclose_circles(node["children"])
+    for node in nodes_at_depth:
+        children = node["children"]
 
-    # Center children around (0, 0)
-    for child in node["children"]:
-        child["x"] -= cx
-        child["y"] -= cy
+        # Pack siblings using simple algorithm
+        children.sort(key=lambda c: -c["r"])
+        n_children = len(children)
 
-    node["r"] = r + 30  # padding
+        if n_children == 1:
+            children[0]["x"] = 0.0
+            children[0]["y"] = 0.0
+        elif n_children >= 2:
+            c0, c1 = children[0], children[1]
+            c0["x"] = 0.0
+            c0["y"] = 0.0
+            c1["x"] = c0["r"] + c1["r"]
+            c1["y"] = 0.0
 
+            if n_children >= 3:
+                c2 = children[2]
+                d01 = c0["r"] + c1["r"]
+                d02 = c0["r"] + c2["r"]
+                d12 = c1["r"] + c2["r"]
+                x2 = (d02**2 - d12**2 + d01**2) / (2 * d01)
+                y2_sq = d02**2 - x2**2
+                c2["x"] = x2
+                c2["y"] = np.sqrt(max(0, y2_sq))
 
-def position_children(node, px, py):
-    """Recursively position children relative to parent."""
-    node["x"] = px
-    node["y"] = py
-    for child in node["children"]:
-        # Child positions are relative to parent center
-        position_children(child, px + child["x"], py + child["y"])
+                # Place remaining circles
+                for i in range(3, n_children):
+                    ci = children[i]
+                    best_score = float("inf")
+                    best_pos = (0.0, 0.0)
 
+                    # Try placing tangent to each pair
+                    for j in range(i):
+                        for k in range(j + 1, i):
+                            cj, ck = children[j], children[k]
+                            dx = ck["x"] - cj["x"]
+                            dy = ck["y"] - cj["y"]
+                            d = np.sqrt(dx**2 + dy**2)
 
-# Compute layout
-compute_layout(root)
-position_children(root, 0, 0)
+                            if d < 1e-10:
+                                continue
+
+                            r1 = cj["r"] + ci["r"]
+                            r2 = ck["r"] + ci["r"]
+
+                            if d > r1 + r2 + 1e-6 or d < abs(r1 - r2) - 1e-6:
+                                continue
+
+                            a = (r1**2 - r2**2 + d**2) / (2 * d)
+                            h_sq = r1**2 - a**2
+                            if h_sq < 0:
+                                continue
+
+                            h = np.sqrt(h_sq)
+                            mx = cj["x"] + a * dx / d
+                            my = cj["y"] + a * dy / d
+
+                            for px, py in [(mx - h * dy / d, my + h * dx / d), (mx + h * dy / d, my - h * dx / d)]:
+                                valid = True
+                                for m in range(i):
+                                    cm = children[m]
+                                    dist = np.sqrt((px - cm["x"]) ** 2 + (py - cm["y"]) ** 2)
+                                    if dist < ci["r"] + cm["r"] - 1e-6:
+                                        valid = False
+                                        break
+
+                                if valid:
+                                    cx = sum(children[m]["x"] for m in range(i)) / i
+                                    cy = sum(children[m]["y"] for m in range(i)) / i
+                                    score = np.sqrt((px - cx) ** 2 + (py - cy) ** 2)
+                                    if score < best_score:
+                                        best_score = score
+                                        best_pos = (px, py)
+
+                    ci["x"], ci["y"] = best_pos
+
+        # Find enclosing circle
+        if children:
+            min_x = min(c["x"] - c["r"] for c in children)
+            max_x = max(c["x"] + c["r"] for c in children)
+            min_y = min(c["y"] - c["r"] for c in children)
+            max_y = max(c["y"] + c["r"] for c in children)
+            cx = (min_x + max_x) / 2
+            cy = (min_y + max_y) / 2
+            enc_r = max(np.sqrt((c["x"] - cx) ** 2 + (c["y"] - cy) ** 2) + c["r"] for c in children)
+
+            # Center children
+            for child in children:
+                child["x"] -= cx
+                child["y"] -= cy
+
+            node["r"] = enc_r + 30
+
+# Position children relative to parent (top-down)
+stack = [(root, 0.0, 0.0)]
+while stack:
+    current, px, py = stack.pop()
+    current["x"] = px
+    current["y"] = py
+    for child in current["children"]:
+        stack.append((child, px + child["x"], py + child["y"]))
 
 # Collect all nodes for plotting
 all_circles = []
-
-
-def collect_circles(node):
-    all_circles.append(node)
-    for child in node["children"]:
-        collect_circles(child)
-
-
-collect_circles(root)
+stack = [root]
+while stack:
+    current = stack.pop()
+    all_circles.append(current)
+    stack.extend(current["children"])
 
 # Prepare data for plotting
 x_vals = [n["x"] for n in all_circles]
 y_vals = [n["y"] for n in all_circles]
 radii = [n["r"] for n in all_circles]
 depths = [n["depth"] for n in all_circles]
+labels = [n["label"] for n in all_circles]
+values = [n["value"] for n in all_circles]
 
 # Color palette by depth
 depth_colors = ["#306998", "#FFD43B", "#4ECDC4"]
 colors = [depth_colors[min(d, 2)] for d in depths]
+depth_names = ["Root (Company)", "Division", "Team"]
+depth_labels = [depth_names[min(d, 2)] for d in depths]
 
-# Create figure (square aspect)
-p = figure(width=3600, height=3600, title="circlepacking-basic · bokeh · pyplots.ai", match_aspect=True)
+# Create figure (square aspect, no toolbar)
+p = figure(
+    width=3600,
+    height=3600,
+    title="circlepacking-basic · bokeh · pyplots.ai",
+    match_aspect=True,
+    toolbar_location=None,
+    tools="",
+)
 
 # Sort by depth and radius for proper layering (draw outer first)
 sorted_indices = sorted(range(len(all_circles)), key=lambda i: (depths[i], -radii[i]))
 
-# Draw circles
-for idx in sorted_indices:
-    alpha = 0.6 if depths[idx] == 0 else (0.65 if depths[idx] == 1 else 0.75)
-    line_w = 3 if depths[idx] == 0 else 2
-    p.circle(
-        x=x_vals[idx],
-        y=y_vals[idx],
-        radius=radii[idx],
-        fill_color=colors[idx],
-        fill_alpha=alpha,
-        line_color="#333333",
-        line_width=line_w,
-    )
+# Draw circles with ColumnDataSource for hover
+circle_data = {
+    "x": [x_vals[i] for i in sorted_indices],
+    "y": [y_vals[i] for i in sorted_indices],
+    "radius": [radii[i] for i in sorted_indices],
+    "color": [colors[i] for i in sorted_indices],
+    "alpha": [0.6 if depths[i] == 0 else (0.65 if depths[i] == 1 else 0.75) for i in sorted_indices],
+    "line_width": [3 if depths[i] == 0 else 2 for i in sorted_indices],
+    "label": [labels[i] for i in sorted_indices],
+    "depth_label": [depth_labels[i] for i in sorted_indices],
+    "value": [values[i] for i in sorted_indices],
+}
+circle_source = ColumnDataSource(data=circle_data)
 
-# Prepare labels - only for leaf nodes
+circles_glyph = p.circle(
+    x="x",
+    y="y",
+    radius="radius",
+    fill_color="color",
+    fill_alpha="alpha",
+    line_color="#333333",
+    line_width="line_width",
+    source=circle_source,
+)
+
+# Add HoverTool for interactivity
+hover = HoverTool(
+    tooltips=[("Name", "@label"), ("Level", "@depth_label"), ("Budget", "@value{0} M$")],
+    renderers=[circles_glyph],
+    mode="mouse",
+)
+p.add_tools(hover)
+
+# Create legend for depth colors
+legend_items = []
+for color, name in zip(depth_colors, depth_names, strict=True):
+    # Create a dummy circle for the legend
+    dummy_source = ColumnDataSource(data={"x": [-99999], "y": [-99999], "r": [10]})
+    dummy_circle = p.circle(
+        x="x", y="y", radius="r", fill_color=color, fill_alpha=0.7, line_color="#333333", source=dummy_source
+    )
+    legend_items.append(LegendItem(label=name, renderers=[dummy_circle]))
+
+legend = Legend(items=legend_items, location="top_right", label_text_font_size="24pt", glyph_height=40, glyph_width=40)
+legend.background_fill_alpha = 0.8
+legend.border_line_color = "#333333"
+legend.padding = 15
+legend.spacing = 10
+p.add_layout(legend)
+
+# Prepare labels - for leaf nodes and divisions
 label_data = {"x": [], "y": [], "label": []}
 for node in all_circles:
     if not node["children"] and node["r"] >= 50:
         label_data["x"].append(node["x"])
         label_data["y"].append(node["y"])
         label_data["label"].append(node["label"])
-
-# Also add division labels (level 1)
-for node in all_circles:
-    if node["depth"] == 1:
-        # Position label at top of the division circle
+    elif node["depth"] == 1:
         label_data["x"].append(node["x"])
         label_data["y"].append(node["y"] + node["r"] * 0.7)
         label_data["label"].append(node["label"])
 
 label_source = ColumnDataSource(data=label_data)
-
 label_set = LabelSet(
     x="x",
     y="y",

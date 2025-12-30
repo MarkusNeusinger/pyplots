@@ -1,21 +1,17 @@
-""" pyplots.ai
+"""pyplots.ai
 box-horizontal: Horizontal Box Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 62/100 | Created: 2025-12-30
 """
 
 import numpy as np
-from pygal.graph.box import Box
-from pygal.graph.horizontal import HorizontalGraph
+import pygal
 from pygal.style import Style
 
 
-# Create HorizontalBox class (not built into pygal, but uses its mixin pattern)
-class HorizontalBox(HorizontalGraph, Box):
-    """Horizontal variant of the Box chart using pygal's horizontal mixin."""
-
-    pass
-
+# Create HorizontalBox dynamically (pygal doesn't include it natively)
+# This uses pygal's standard mixin pattern for horizontal chart variants
+HorizontalBox = type("HorizontalBox", (pygal.graph.horizontal.HorizontalGraph, pygal.graph.box.Box), {})
 
 # Data - Response times for different service types (in milliseconds)
 np.random.seed(42)
@@ -55,15 +51,23 @@ chart = HorizontalBox(
     style=custom_style,
     title="box-horizontal · pygal · pyplots.ai",
     x_title="Response Time (ms)",
-    y_title="Service Type",
     show_legend=True,
     legend_at_bottom=True,
+    legend_at_bottom_columns=5,
     legend_box_size=24,
     show_y_guides=True,
     show_x_guides=False,
     margin=50,
+    margin_left=350,
+    margin_bottom=180,
+    spacing=80,
     box_mode="tukey",
+    truncate_label=-1,
+    truncate_legend=-1,
 )
+
+# Set category labels (in horizontal mode, x_labels appear on the y-axis)
+chart.x_labels = categories
 
 # Add data for each category
 for category in categories:

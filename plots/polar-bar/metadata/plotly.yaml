@@ -1,0 +1,27 @@
+library: plotly
+specification_id: polar-bar
+created: '2025-12-30T16:29:47Z'
+updated: '2025-12-30T16:35:48Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20601055131
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-bar/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-bar/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/polar-bar/plotly/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent wind rose visualization with properly stacked bars for three wind speed
+    categories
+  - Clean polar layout with N correctly positioned at top using rotation=90 and clockwise
+    direction
+  - Good color scheme with white bar separators enhancing readability
+  - Proper use of Plotly Barpolar trace for polar bar charts
+  - Realistic coastal wind pattern data with believable directional distribution
+  weaknesses:
+  - Radial axis tick labels are slightly small and angled, could be larger for better
+    legibility
+  - Does not leverage Plotly interactive features like custom hover templates
+  - Legend text could benefit from slightly better styling to match overall polish

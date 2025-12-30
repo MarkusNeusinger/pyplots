@@ -1,0 +1,21 @@
+library: altair
+specification_id: scatter-categorical
+created: '2025-12-30T10:38:39Z'
+updated: '2025-12-30T10:49:22Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20594556298
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-categorical/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-categorical/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-categorical/altair/plot.html
+quality_score: 100
+review:
+  strengths:
+  - Perfect use of redundant encoding (color + shape) for maximum accessibility
+  - Well-chosen Iris-inspired data with three clearly separable clusters
+  - Excellent font sizing across all text elements (title, axes, legend)
+  - Good use of Altair declarative features including tooltips for interactivity
+  - Clean code structure following KISS principles
+  weaknesses: []

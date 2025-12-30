@@ -1,0 +1,28 @@
+library: plotly
+specification_id: subplot-grid
+created: '2025-12-30T17:49:58Z'
+updated: '2025-12-30T18:01:57Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20602446641
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent demonstration of Plotly's make_subplots capability with different chart
+    types in each cell
+  - Well-chosen financial dashboard scenario that naturally requires multiple visualization
+    types
+  - Clean color scheme using Python blue (#306998) and yellow (#FFD43B) consistently
+  - Proper use of specs parameter to define chart types per cell
+  - Good axis labeling with units throughout
+  - Interactive HTML export alongside static PNG
+  weaknesses:
+  - Missing grid lines would improve readability of individual subplots (add gridcolor
+    and showgrid to axes)
+  - Scatter markers in bottom-right subplot could be slightly larger (12-14 instead
+    of 10) for better visibility

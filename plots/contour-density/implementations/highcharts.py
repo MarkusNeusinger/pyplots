@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 contour-density: Density Contour Plot
 Library: highcharts unknown | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-30
+Quality: 91/100 | Created: 2025-12-30
 """
 
 import base64

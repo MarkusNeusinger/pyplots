@@ -107,6 +107,8 @@ jobs:
   preview:
     needs: build-matrix
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Preview generation plan

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 parliament-basic: Parliament Seat Chart
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-30
@@ -6,14 +6,20 @@ Quality: 72/100 | Created: 2025-12-30
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 
 
-# Data: Generic parliament with 6 parties (neutral naming)
-parties = ["Party A", "Party B", "Party C", "Party D", "Party E", "Party F"]
+# Set random seed for reproducibility
+np.random.seed(42)
+
+# Data: Corporate board composition by department (neutral context)
+groups = ["Engineering", "Operations", "Finance", "Marketing", "Research", "Legal"]
 seats = [85, 72, 45, 38, 22, 18]
-colors = ["#306998", "#FFD43B", "#2ECC71", "#E74C3C", "#9B59B6", "#F39C12"]
 total_seats = sum(seats)
+
+# Use seaborn's colorblind-safe palette
+colors = sns.color_palette("colorblind", n_colors=len(groups))
 
 # Set seaborn style
 sns.set_style("white")
@@ -35,24 +41,40 @@ for row_idx, n_seats_row in enumerate(seats_per_row):
     radius = 0.4 + row_idx * 0.15
     angles = np.linspace(np.pi, 0, n_seats_row)
     for angle in angles:
-        all_positions.append((radius * np.cos(angle), radius * np.sin(angle)))
+        all_positions.append((radius * np.cos(angle), radius * np.sin(angle), row_idx))
 
-# Sort positions left to right for natural party ordering
+# Sort positions left to right for natural group ordering
 all_positions.sort(key=lambda p: (p[0], -p[1]))
 
-# Assign seats to parties and collect coordinates
-x_coords, y_coords, seat_colors = [], [], []
+# Build DataFrame for seaborn plotting
+x_coords, y_coords, group_labels = [], [], []
 seat_idx = 0
-for party_idx, n_seats in enumerate(seats):
+for group_idx, n_seats in enumerate(seats):
     for _ in range(n_seats):
         if seat_idx < len(all_positions):
             x_coords.append(all_positions[seat_idx][0])
             y_coords.append(all_positions[seat_idx][1])
-            seat_colors.append(colors[party_idx])
+            group_labels.append(groups[group_idx])
             seat_idx += 1
 
-# Plot seats using scatter (seaborn styling applied via set_style/set_context)
-ax.scatter(x_coords, y_coords, c=seat_colors, s=350, edgecolors="white", linewidths=1.5, zorder=2)
+# Create DataFrame for seaborn
+df = pd.DataFrame({"x": x_coords, "y": y_coords, "group": group_labels})
+
+# Plot seats using seaborn scatterplot (uses hue for grouping)
+sns.scatterplot(
+    data=df,
+    x="x",
+    y="y",
+    hue="group",
+    hue_order=groups,
+    palette="colorblind",
+    s=350,
+    edgecolor="white",
+    linewidth=1.5,
+    legend=False,
+    ax=ax,
+    zorder=2,
+)
 
 # Add majority threshold line
 majority = total_seats // 2 + 1
@@ -61,8 +83,8 @@ ax.text(0.85, 0.02, f"Majority: {majority} seats", fontsize=14, color="#666666",
 
 # Create legend with seat counts
 legend_elements = [
-    plt.scatter([], [], c=color, s=200, label=f"{party}: {seat_count}")
-    for party, seat_count, color in zip(parties, seats, colors, strict=True)
+    plt.scatter([], [], c=[colors[i]], s=200, label=f"{group}: {seat_count}")
+    for i, (group, seat_count) in enumerate(zip(groups, seats, strict=True))
 ]
 ax.legend(
     handles=legend_elements,
@@ -71,7 +93,7 @@ ax.legend(
     frameon=True,
     facecolor="white",
     edgecolor="lightgray",
-    title="Parties",
+    title="Departments",
     title_fontsize=16,
 )
 

@@ -1,0 +1,23 @@
+library: plotly
+specification_id: line-stepwise
+created: '2025-12-30T10:38:26Z'
+updated: '2025-12-30T10:46:33Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20594557620
+issue: 0
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/plotly/plot.html
+quality_score: 98
+review:
+  strengths:
+  - Perfect implementation of step function using Plotly shape=hv parameter
+  - Excellent realistic data scenario (server response time monitoring over 24 hours)
+  - Clean code following KISS principles with proper font sizes for 4800x2700 output
+  - Interactive HTML output with custom hover template showing hour and response time
+  - Well-balanced layout with good canvas utilization
+  weaknesses:
+  - 'Minor: Grid/legend criterion loses 2 points due to disabled legend, though acceptable
+    for single-series plots'

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-box: Violin Plot with Embedded Box Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -18,6 +18,19 @@ data = {
     "Operations": np.random.normal(65, 10, 200),
 }
 
+# Color palette: 4 violin colors + white for boxes + dark gray for whiskers/median/outliers
+# Pattern per category: violin, box, whisker*4, median, outliers = 8 series
+# 4 categories = 32 series, colors cycle through
+violin_colors = ["#306998", "#FFD43B", "#4CAF50", "#FF5722"]
+box_color = "#FFFFFF"  # White fill for box - improves internal contrast
+line_color = "#333333"  # Dark gray for whiskers, median, outliers
+
+# Build color sequence: for each violin, we need violin color, then white for box,
+# then dark gray for lines (whisker, cap, median, outliers)
+colors_list = []
+for vc in violin_colors:
+    colors_list.extend([vc, box_color, line_color, line_color, line_color, line_color, line_color, line_color])
+
 # Custom style for 4800x2700 px canvas
 custom_style = Style(
     background="white",
@@ -25,14 +38,14 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998", "#FFD43B", "#4CAF50", "#FF5722", "#666666", "#999999", "#333333"),
+    colors=tuple(colors_list),
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
     legend_font_size=36,
     value_font_size=36,
-    opacity=0.6,
-    opacity_hover=0.8,
+    opacity=0.7,
+    opacity_hover=0.9,
 )
 
 # Create XY chart for violin plot with embedded box
@@ -42,8 +55,9 @@ chart = pygal.XY(
     style=custom_style,
     title="violin-box · pygal · pyplots.ai",
     x_title="Department",
-    y_title="Performance Score",
-    show_legend=False,
+    y_title="Performance Score (0-100 scale)",
+    show_legend=True,
+    legend_at_bottom=False,
     stroke=True,
     fill=True,
     dots_size=0,
@@ -117,13 +131,25 @@ for i, (category, values) in enumerate(data.items()):
         (center_x - box_width, q1),
     ]
     chart.add(
-        "Box" if i == 0 else "", quartile_box, stroke=True, fill=True, show_dots=False, stroke_style=box_stroke_style
+        "IQR Box (Q1-Q3)" if i == 0 else "",
+        quartile_box,
+        stroke=True,
+        fill=True,
+        show_dots=False,
+        stroke_style=box_stroke_style,
     )
 
     # Whisker lines (vertical lines from box to whisker ends)
     lower_whisker_line = [(center_x, q1), (center_x, lower_whisker)]
     upper_whisker_line = [(center_x, q3), (center_x, upper_whisker)]
-    chart.add("", lower_whisker_line, stroke=True, fill=False, show_dots=False, stroke_style=whisker_stroke_style)
+    chart.add(
+        "Whiskers (1.5×IQR)" if i == 0 else "",
+        lower_whisker_line,
+        stroke=True,
+        fill=False,
+        show_dots=False,
+        stroke_style=whisker_stroke_style,
+    )
     chart.add("", upper_whisker_line, stroke=True, fill=False, show_dots=False, stroke_style=whisker_stroke_style)
 
     # Whisker caps (horizontal lines at ends)
@@ -136,7 +162,7 @@ for i, (category, values) in enumerate(data.items()):
     # Median line (thicker, contrasting)
     median_line = [(center_x - box_width * 1.2, median), (center_x + box_width * 1.2, median)]
     chart.add(
-        "Median" if i == 0 else "",
+        "Median Line" if i == 0 else "",
         median_line,
         stroke=True,
         fill=False,

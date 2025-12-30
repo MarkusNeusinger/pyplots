@@ -1,0 +1,28 @@
+library: matplotlib
+specification_id: line-markers
+created: '2025-12-30T10:38:02Z'
+updated: '2025-12-30T10:45:06Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20594555710
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-markers/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-markers/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 94
+review:
+  strengths:
+  - Excellent marker visibility with white edge borders creating strong contrast against
+    lines
+  - Three distinct marker shapes (circle, square, triangle) for easy series differentiation
+  - Realistic weather station scenario with plausible temperature ranges
+  - Clean, readable code following KISS principles
+  - Perfect title format and axis labels with units
+  weaknesses:
+  - Could demonstrate filled vs unfilled markers as suggested in spec notes for additional
+    distinction
+  - Legend placement inside plot area could potentially overlap with data in edge
+    cases
+  - Does not leverage more distinctive matplotlib features like annotations or custom
+    styling

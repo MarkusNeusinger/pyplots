@@ -244,10 +244,10 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### polar-scatter ✅
 **Description:** Scatter plot in polar coordinates.
 
-### polar-line 📋
+### polar-line ✅
 **Description:** Line plot in polar coordinates.
 
-### polar-bar 📋
+### polar-bar ✅
 **Description:** Bar chart arranged in a circle (wind rose).
 
 ### rose-basic ✅
@@ -300,17 +300,17 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### point-basic ✅
 **Description:** Point estimates with confidence intervals.
 
-### cat-strip 📋
+### cat-strip ✅
 **Description:** Categorical scatter plot.
 
-### cat-box-strip 📋
+### cat-box-strip ✅
 **Description:** Combined box plot with overlaid strip plot.
 
 ---
 
 ## 12. Matrix & Grid Plots
 
-### facet-grid 📋
+### facet-grid ✅
 **Description:** Grid of plots split by categorical variables.
 
 ### pair-plot 📋
@@ -883,7 +883,7 @@ Druckbare Vorlagen und spielerische Visualisierungen.
 ## Statistics
 
 - **Total Plot Types:** 235+
-- **Implemented:** 133 ✅
+- **Implemented:** 138 ✅
 - **Planned:** 120+ 📋
 - **Categories:** 31
 

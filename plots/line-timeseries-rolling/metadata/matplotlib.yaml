@@ -1,0 +1,28 @@
+library: matplotlib
+specification_id: line-timeseries-rolling
+created: '2025-12-30T17:48:15Z'
+updated: '2025-12-30T17:55:37Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20602448619
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent dual-layer visualization with clear contrast between raw data and rolling
+    average
+  - Realistic seasonal temperature data that effectively demonstrates the rolling
+    average smoothing effect
+  - Proper use of alpha transparency for raw data line making the rolling average
+    prominent
+  - Clean KISS code structure following matplotlib best practices
+  - Well-formatted date axis with appropriate rotation for readability
+  weaknesses:
+  - Raw data line could be slightly thinner (linewidth=1 instead of 1.5) for even
+    better contrast with rolling average
+  - Consider adding a subtle shaded region between raw and rolling average to emphasize
+    the smoothing effect

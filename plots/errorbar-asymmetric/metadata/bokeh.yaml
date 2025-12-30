@@ -1,0 +1,26 @@
+library: bokeh
+specification_id: errorbar-asymmetric
+created: '2025-12-30T17:49:00Z'
+updated: '2025-12-30T17:58:36Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20602449307
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent asymmetric error bar visualization with clear visual distinction between
+    upper and lower bounds
+  - Professional financial forecasting context that perfectly demonstrates asymmetric
+    uncertainty
+  - Clean code structure following KISS principles with proper use of ColumnDataSource
+  - Good color contrast between yellow markers and blue error bars
+  - Appropriate use of Bokeh's Whisker model for error bar rendering
+  weaknesses:
+  - Legend text appears smaller than optimal relative to the large canvas size
+  - Manual cap implementation could leverage Bokeh's built-in Whisker head customization
+    more elegantly

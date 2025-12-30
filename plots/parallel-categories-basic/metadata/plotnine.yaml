@@ -1,0 +1,27 @@
+library: plotnine
+specification_id: parallel-categories-basic
+created: '2025-12-30T21:54:08Z'
+updated: '2025-12-30T22:02:46Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20606634555
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 90
+review:
+  strengths:
+  - Creative implementation of parallel categories using plotnine basic geoms (geom_polygon,
+    geom_rect)
+  - Smooth cubic interpolation for ribbon curves creates professional appearance
+  - Clear visual distinction between outcomes with yellow/blue color scheme
+  - Effective use of transparency (alpha=0.5) for overlapping ribbons
+  - Well-organized data structure with explicit path counts
+  - Category labels positioned intelligently based on dimension position
+  - Counts displayed inside nodes for quantitative reference
+  weaknesses:
+  - Middle dimension category labels positioned below nodes are slightly smaller (9pt)
+    and could be harder to read
+  - Some imports may be unused (coord_cartesian could be replaced with theme settings)

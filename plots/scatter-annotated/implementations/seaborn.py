@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-annotated: Annotated Scatter Plot with Text Labels
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 85/100 | Created: 2025-12-30
+Quality: 91/100 | Created: 2025-12-30
 """
 
 import matplotlib.pyplot as plt

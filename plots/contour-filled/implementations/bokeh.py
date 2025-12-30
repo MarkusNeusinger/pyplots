@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-filled: Filled Contour Plot
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-30
@@ -34,12 +34,14 @@ p = figure(
     width=4800,
     height=2700,
     title="contour-filled · bokeh · pyplots.ai",
-    x_axis_label="Distance East (km)",
-    y_axis_label="Distance North (km)",
     x_range=(x.min(), x.max()),
     y_range=(y.min(), y.max()),
     tools="",
 )
+
+# Explicitly set axis labels after figure creation
+p.xaxis.axis_label = "Distance East (km)"
+p.yaxis.axis_label = "Distance North (km)"
 
 # Color mapper for the filled surface
 color_mapper = LinearColorMapper(palette=Viridis256, low=Z.min(), high=Z.max())
@@ -54,23 +56,26 @@ contour_levels = np.linspace(Z.min(), Z.max(), n_contour_lines + 2)[1:-1]
 # Create contour generator
 cont_gen = contour_generator(x=X, y=Y, z=Z)
 
-# Draw contour lines
+# Draw contour lines with high contrast (white with dark outline effect)
 for level in contour_levels:
     lines = cont_gen.lines(level)
     for line in lines:
-        p.line(line[:, 0], line[:, 1], line_width=2.5, color="#1a1a1a", alpha=0.75)
+        # Draw white line for visibility on dark backgrounds
+        p.line(line[:, 0], line[:, 1], line_width=4, color="white", alpha=0.9)
+        # Draw thinner dark line on top for contrast on light backgrounds
+        p.line(line[:, 0], line[:, 1], line_width=1.5, color="#1a1a1a", alpha=0.8)
 
-# Add colorbar
+# Add colorbar with terrain context
 color_bar = ColorBar(
     color_mapper=color_mapper,
     ticker=BasicTicker(desired_num_ticks=10),
-    label_standoff=20,
-    title="Elevation (m)",
-    title_text_font_size="20pt",
-    title_standoff=15,
-    major_label_text_font_size="16pt",
-    width=40,
-    padding=30,
+    label_standoff=25,
+    title="Terrain Elevation (m)",
+    title_text_font_size="22pt",
+    title_standoff=20,
+    major_label_text_font_size="18pt",
+    width=50,
+    padding=40,
 )
 p.add_layout(color_bar, "right")
 
@@ -81,15 +86,15 @@ p.yaxis.axis_label_text_font_size = "22pt"
 p.xaxis.major_label_text_font_size = "18pt"
 p.yaxis.major_label_text_font_size = "18pt"
 
-# Grid styling - draw above the image for visibility
+# Grid styling - use level="overlay" to draw on top of image with high contrast
 p.xgrid.grid_line_color = "white"
 p.ygrid.grid_line_color = "white"
-p.xgrid.grid_line_alpha = 0.4
-p.ygrid.grid_line_alpha = 0.4
+p.xgrid.grid_line_alpha = 0.6
+p.ygrid.grid_line_alpha = 0.6
 p.xgrid.grid_line_width = 2
 p.ygrid.grid_line_width = 2
-p.xgrid.grid_line_dash = "dashed"
-p.ygrid.grid_line_dash = "dashed"
+p.xgrid.grid_line_dash = [8, 4]
+p.ygrid.grid_line_dash = [8, 4]
 p.xgrid.level = "overlay"
 p.ygrid.level = "overlay"
 

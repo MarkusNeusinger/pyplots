@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 parallel-categories-basic: Basic Parallel Categories Plot
 Library: matplotlib 3.10.8 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -30,8 +30,8 @@ dim_categories = {
     "Outcome": ["Purchased", "Returned", "Abandoned"],
 }
 
-# Color palette for the first dimension (source)
-colors = {"Online": "#306998", "Store": "#FFD43B", "Mobile": "#4B8BBE"}
+# Color palette for the first dimension (source) - distinct colors for clear differentiation
+colors = {"Online": "#1F77B4", "Store": "#FF7F0E", "Mobile": "#2CA02C"}
 
 # Create figure
 fig, ax = plt.subplots(figsize=(16, 9))

@@ -1,0 +1,31 @@
+library: matplotlib
+specification_id: facet-grid
+created: '2025-12-30T16:30:15Z'
+updated: '2025-12-30T16:38:05Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20601057118
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/facet-grid/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/facet-grid/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent two-way faceting implementation with clear row and column structure
+  - Realistic temperature vs energy consumption scenario that varies meaningfully
+    across regions and seasons
+  - Clean KISS code structure with appropriate use of pandas for data management
+  - Good color palette that distinguishes regions while remaining colorblind-accessible
+  - Proper use of shared axes (sharex=True, sharey=True) for easy comparison across
+    facets
+  - Effective use of supxlabel/supylabel for shared axis labels
+  - White edge on markers improves visibility when points overlap
+  weaknesses:
+  - Grid and legend score could be improved by adding a small legend explaining region
+    colors
+  - Row labels positioned with xy=(1.05, 0.5) are functional but tight_layout rect
+    may clip them slightly
+  - South summer temperatures reaching ~50°C are on the extreme end for realistic
+    data

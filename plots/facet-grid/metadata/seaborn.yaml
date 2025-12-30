@@ -1,0 +1,26 @@
+library: seaborn
+specification_id: facet-grid
+created: '2025-12-30T16:29:26Z'
+updated: '2025-12-30T16:35:21Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20601057090
+issue: 0
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/facet-grid/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/facet-grid/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of seaborn FacetGrid for creating a 3×4 grid layout with row and
+    column faceting
+  - Clean, realistic business data scenario (marketing spend vs sales revenue)
+  - Good marker sizing and transparency for the data density
+  - Proper title format and descriptive axis labels with units
+  - Systematic variation in data relationships across regions and quarters
+  weaknesses:
+  - Y-axis label repeats on every row when shared axes could display it only once
+    on the left edge
+  - Could benefit from regression lines (lmplot or regplot) to highlight the varying
+    relationships across facets

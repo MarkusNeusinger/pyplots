@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 icicle-basic: Basic Icicle Chart
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -111,26 +111,40 @@ rect_df["x_center"] = (rect_df["xmin"] + rect_df["xmax"]) / 2
 rect_df["y_center"] = (rect_df["ymin"] + rect_df["ymax"]) / 2
 
 # Labels: show name + value for wide rectangles, name only for medium, hide for very narrow
+# Lowered threshold to ensure more labels show value (fix for truncated labels)
 rect_df["label"] = rect_df.apply(
-    lambda r: f"{r['name']}\n({int(r['value'])} MB)"
-    if r["width"] > 0.08
-    else (r["name"] if r["width"] > 0.025 else ""),
+    lambda r: f"{r['name']}\n({int(r['value'])} MB)" if r["width"] > 0.05 else (r["name"] if r["width"] > 0.02 else ""),
     axis=1,
 )
 
-# Separate dataframes for text coloring (white on dark, black on light)
+# Convert depth to categorical with proper labels for legend
+level_labels = {0: "Level 0 (Root)", 1: "Level 1", 2: "Level 2", 3: "Level 3", 4: "Level 4 (Leaf)"}
+rect_df["depth_label"] = pd.Categorical(
+    rect_df["depth"].map(level_labels), categories=list(level_labels.values()), ordered=True
+)
+
+# Also update dark_bg and light_bg with labels
 dark_bg = rect_df[rect_df["depth"].isin([0, 1, 3])]
 light_bg = rect_df[rect_df["depth"].isin([2, 4])]
 
 # Create plot using plotnine grammar of graphics
 plot = (
     ggplot(rect_df)
-    + geom_rect(aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="factor(depth)"), color="white", size=1.5)
+    + geom_rect(aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="depth_label"), color="white", size=1.5)
     + geom_text(aes(x="x_center", y="y_center", label="label"), data=dark_bg, size=11, color="white", fontweight="bold")
     + geom_text(
         aes(x="x_center", y="y_center", label="label"), data=light_bg, size=11, color="black", fontweight="bold"
     )
-    + scale_fill_manual(values=["#306998", "#4B8BBE", "#FFD43B", "#8B4513", "#90B4CE"], name="Hierarchy Level")
+    + scale_fill_manual(
+        values={
+            "Level 0 (Root)": "#306998",
+            "Level 1": "#4B8BBE",
+            "Level 2": "#FFD43B",
+            "Level 3": "#8B4513",
+            "Level 4 (Leaf)": "#90B4CE",
+        },
+        name="Hierarchy Level",
+    )
     + labs(title="icicle-basic · plotnine · pyplots.ai")
     + theme_void()
     + theme(

@@ -1,0 +1,27 @@
+library: highcharts
+specification_id: survival-kaplan-meier
+created: '2025-12-29T22:57:27Z'
+updated: '2025-12-29T23:12:17Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584330823
+issue: 0
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Inline Kaplan-Meier calculation with Greenwood formula for CI (KISS principle
+    followed)
+  - Excellent colorblind-safe blue/yellow color scheme with good contrast
+  - 'Proper step function implementation using Highcharts step: left option'
+  - Confidence interval bands correctly implemented with AreaRangeSeries and appropriate
+    transparency
+  - Censored observation markers now visible as diamond shapes on the curves
+  - Realistic clinical trial data with meaningful difference between treatment groups
+  weaknesses:
+  - Legend positioned in middle-left area potentially overlapping with data visualization
+    region
+  - Censored markers could be slightly larger for better visibility at the high resolution

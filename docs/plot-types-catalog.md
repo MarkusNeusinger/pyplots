@@ -107,7 +107,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### histogram-basic ✅
 **Description:** A histogram displays the distribution of a single continuous variable by dividing the data range into bins and showing the frequency of observations in each bin.
 
-### histogram-normalized 📋
+### histogram-normalized ✅
 **Description:** Histogram normalized to show density instead of count.
 
 ### histogram-overlapping ✅
@@ -526,11 +526,11 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### gantt-basic ✅
 **Description:** Project timeline Gantt chart with horizontal task bars.
 
-### timeline-basic 📋
-**Description:** Zeitleiste mit Events und Zeitpunkten.
+### timeline-basic ✅
+**Description:** A timeline visualization showing events and milestones along a temporal axis.
 
-### venn-basic 📋
-**Description:** Venn-Diagramm zeigt überlappende Mengen (2-3 Kreise).
+### venn-basic ✅
+**Description:** Venn diagram showing overlapping sets (2-3 circles) with intersection areas.
 
 ---
 
@@ -756,7 +756,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### lift-curve ✅
 **Description:** Lift chart showing model performance compared to random baseline for marketing/churn prediction.
 
-### gain-curve 📋
+### gain-curve ✅
 **Description:** Cumulative gains chart for evaluating classification model effectiveness.
 
 ### shap-summary 📋
@@ -814,7 +814,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### skewt-basic 📋
 **Description:** A Skew-T Log-P diagram displays atmospheric thermodynamic profiles with logarithmic pressure axis and 45-degree skewed temperature isotherms.
 
-### survival-curve 📋
+### survival-curve ✅
 **Description:** Kaplan-Meier survival analysis plot.
 
 ### forest-basic ✅
@@ -883,8 +883,8 @@ Druckbare Vorlagen und spielerische Visualisierungen.
 ## Statistics
 
 - **Total Plot Types:** 235+
-- **Implemented:** 108 ✅
-- **Planned:** 130+ 📋
+- **Implemented:** 113 ✅
+- **Planned:** 125+ 📋
 - **Categories:** 31
 
 ---

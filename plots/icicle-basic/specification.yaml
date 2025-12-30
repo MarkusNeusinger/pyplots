@@ -1,0 +1,29 @@
+# Specification-level metadata for icicle-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: icicle-basic
+title: Basic Icicle Chart
+
+# Specification tracking
+created: 2025-12-29T23:55:18Z
+updated: 2025-12-29T23:55:18Z
+issue: 2497
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - icicle
+    - hierarchical
+  data_type:
+    - hierarchical
+    - categorical
+    - numeric
+  domain:
+    - general
+    - business
+    - technology
+  features:
+    - basic
+    - hierarchical
+    - proportional

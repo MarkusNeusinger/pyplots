@@ -1,0 +1,26 @@
+library: altair
+specification_id: venn-basic
+created: '2025-12-29T23:24:23Z'
+updated: '2025-12-29T23:43:44Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20584841639
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/venn-basic/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/venn-basic/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/venn-basic/altair/plot.html
+quality_score: 88
+review:
+  strengths:
+  - Excellent creative implementation of Venn diagram using Altair point marks and
+    layering
+  - Clear visual hierarchy with transparent fills and solid outlines
+  - All seven regions properly labeled with counts
+  - Proportional circle sizing based on set sizes
+  - Good colorblind-accessible color choices
+  - Realistic research disciplines data context
+  weaknesses:
+  - Diagram positioned in upper portion of canvas leaving substantial whitespace below
+  - Some overlapping region colors appear muddy due to color blending
+  - Code uses many manual position calculations that increase complexity

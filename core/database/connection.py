@@ -83,14 +83,18 @@ def _create_direct_engine():
     # Use NullPool for testing to avoid connection issues
     poolclass = NullPool if ENVIRONMENT == "test" else None
 
-    engine = create_async_engine(
-        url,
-        poolclass=poolclass,
-        pool_size=5 if not poolclass else None,
-        max_overflow=10 if not poolclass else None,
-        pool_pre_ping=True if not poolclass else False,
-        echo=ENVIRONMENT == "development",
-    )
+    # Build engine kwargs - NullPool doesn't support pool_size/max_overflow
+    engine_kwargs = {
+        "echo": ENVIRONMENT == "development",
+    }
+    if poolclass:
+        engine_kwargs["poolclass"] = poolclass
+    else:
+        engine_kwargs["pool_size"] = 5
+        engine_kwargs["max_overflow"] = 10
+        engine_kwargs["pool_pre_ping"] = True
+
+    engine = create_async_engine(url, **engine_kwargs)
 
     # Log without exposing password
     safe_url = url.split("@")[-1] if "@" in url else "local"

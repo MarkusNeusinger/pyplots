@@ -1,0 +1,25 @@
+library: bokeh
+specification_id: polar-bar
+created: '2025-12-30T16:30:56Z'
+updated: '2025-12-30T16:39:50Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20601057120
+issue: 0
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-bar/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-bar/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/polar-bar/bokeh/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Bokeh wedge glyph to create authentic polar bars
+  - Clean mathematical transformation from compass directions to Bokeh angle system
+  - Professional styling with Python blue (#306998) color scheme throughout
+  - Good use of ColumnDataSource for data organization
+  - Reference circles and radial lines provide clear visual guides
+  - Color intensity mapping to frequency adds extra visual dimension
+  weaknesses:
+  - Scale labels show percent symbol but data represents raw frequency counts, which
+    is semantically inconsistent
+  - No legend or annotation explaining what the colors and values represent

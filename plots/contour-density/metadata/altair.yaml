@@ -1,0 +1,25 @@
+library: altair
+specification_id: contour-density
+created: '2025-12-30T09:33:23Z'
+updated: '2025-12-30T10:27:05Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20593353049
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-density/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-density/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-density/altair/plot.html
+quality_score: 88
+review:
+  strengths:
+  - Good visual design with blues color scheme providing clear density gradient
+  - Proper axis labels with units (Temperature °C, Humidity %)
+  - Realistic climate data with three distinct clusters demonstrating density patterns
+  - Well-proportioned layout with balanced margins and proper legend placement
+  - Correct title format following pyplots.ai convention
+  weaknesses:
+  - Contour lines (mark_rule) are not visible in the output - the filled density background
+    renders but the isoline overlay does not appear
+  - Code violates KISS principle by using custom extract_contours function instead
+    of simpler approach

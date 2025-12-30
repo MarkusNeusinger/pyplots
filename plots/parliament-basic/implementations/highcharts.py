@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 parliament-basic: Parliament Seat Chart
-Library: highcharts unknown | Python 3.13
-Quality: null | Created: 2025-12-30
+Library: highcharts unknown | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-30
 """
 
 import math

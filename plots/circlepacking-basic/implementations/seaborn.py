@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 circlepacking-basic: Circle Packing Chart
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-30
@@ -61,10 +61,10 @@ for node in data:
 
 # Category positions in quadrants - spread out to minimize category overlap
 cat_positions = {
-    "electronics": (0.45, 0.40),
-    "clothing": (-0.45, 0.40),
-    "home": (-0.45, -0.42),
-    "sports": (0.45, -0.42),
+    "electronics": (0.42, 0.38),
+    "clothing": (-0.42, 0.38),
+    "home": (-0.42, -0.40),
+    "sports": (0.42, -0.40),
 }
 
 # Calculate radii proportional to value (using area scaling)
@@ -72,7 +72,8 @@ cat_positions = {
 max_cat_value = max(cat_totals.values())
 cat_radii = {}
 for cat_id, total in cat_totals.items():
-    cat_radii[cat_id] = 0.38 * np.sqrt(total / max_cat_value) + 0.10
+    # Larger base radius for better containment
+    cat_radii[cat_id] = 0.45 * np.sqrt(total / max_cat_value) + 0.14
 
 # Build circle data for plotting
 circles = []
@@ -100,17 +101,17 @@ for node in data:
         idx = next(i for i, s in enumerate(siblings) if s["id"] == node["id"])
         n_siblings = len(siblings)
 
-        # Calculate subcircle radius - much smaller relative to parent
+        # Calculate subcircle radius - keep small relative to parent for strict containment
         max_sub_value = max(s["value"] for s in siblings)
-        # Make subcircles smaller - max radius is 1/4 of parent
-        sub_r = parent_r * 0.22 * np.sqrt(node["value"] / max_sub_value) + 0.015
+        # Subcircle radius: max is ~1/7 of parent radius for proper nesting
+        sub_r = parent_r * 0.12 * np.sqrt(node["value"] / max_sub_value) + 0.025
 
         # Position inside parent with strict containment
         angle = 2 * np.pi * idx / n_siblings + np.pi / 4
-        # Distance from parent center - strictly ensure subcircle stays inside
-        # Use parent_r * 0.55 as max distance, and subtract subcircle radius
-        max_allowed_dist = parent_r - sub_r - 0.03  # Generous margin
-        dist = min(parent_r * 0.55, max_allowed_dist)
+        # Distance from parent center - strict formula: never allow subcircle to extend outside
+        # Place subcircles at 50% of (parent_radius - subcircle_radius) to ensure containment
+        max_dist = (parent_r - sub_r) * 0.5
+        dist = max(0.05, max_dist)
 
         sub_x = parent_pos[0] + dist * np.cos(angle)
         sub_y = parent_pos[1] + dist * np.sin(angle)
@@ -121,14 +122,14 @@ for node in data:
 df = pd.DataFrame(circles)
 
 # Map depth to hierarchy level names for hue
-depth_names = {0: "Root (All Products)", 1: "Categories", 2: "Subcategories"}
+depth_names = {0: "All Products", 1: "Categories", 2: "Subcategories"}
 df["level"] = df["depth"].map(depth_names)
 
 # Create figure - square for circle packing
 fig, ax = plt.subplots(figsize=(12, 12))
 
 # Color palette using seaborn
-palette = {"Root (All Products)": "#306998", "Categories": "#FFD43B", "Subcategories": "#4ECDC4"}
+palette = {"All Products": "#306998", "Categories": "#FFD43B", "Subcategories": "#4ECDC4"}
 
 # Calculate marker sizes in points^2 that map correctly to data coordinates
 # With figsize=(12,12) and xlim/ylim=[-1.15, 1.15], the data range is 2.3 units
@@ -209,7 +210,7 @@ ax.set_title("circlepacking-basic · seaborn · pyplots.ai", fontsize=28, fontwe
 
 # Add legend for hierarchy levels
 legend_elements = [
-    mpatches.Patch(facecolor="#306998", edgecolor="white", label="Root (All Products)"),
+    mpatches.Patch(facecolor="#306998", edgecolor="white", label="All Products"),
     mpatches.Patch(facecolor="#FFD43B", edgecolor="white", label="Categories"),
     mpatches.Patch(facecolor="#4ECDC4", edgecolor="white", label="Subcategories"),
 ]

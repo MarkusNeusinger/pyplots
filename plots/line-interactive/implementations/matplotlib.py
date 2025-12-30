@@ -1,6 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 line-interactive: Interactive Line Chart with Hover and Zoom
-Library: matplotlib 3.10.8 | Python 3.13.11
+Library: matplotlib 3.10.8 | Python 3.13
 Quality: 88/100 | Created: 2025-12-30
 """
 
@@ -46,7 +46,7 @@ scatter = ax.scatter(
     edgecolors="white",
     linewidths=1.5,
     zorder=3,
-    label="Data Points (hover enabled)",
+    label="Data Points",
 )
 
 # Setup mplcursors for interactive hover tooltips on scatter points
@@ -121,11 +121,11 @@ ax.tick_params(axis="both", labelsize=16)
 # Format x-axis for better date display
 fig.autofmt_xdate(rotation=30)
 
-# Add subtle grid
-ax.grid(True, alpha=0.3, linestyle="--", zorder=1)
+# Add subtle grid (reduced alpha for busy chart)
+ax.grid(True, alpha=0.2, linestyle="--", zorder=1)
 
-# Add legend with interactivity note
-ax.legend(fontsize=14, loc="upper left", framealpha=0.95, title="mplcursors enabled", title_fontsize=12)
+# Add compact legend
+ax.legend(fontsize=14, loc="upper left", framealpha=0.95)
 
 # Add toolbar hint for navigation
 fig.text(
@@ -140,9 +140,9 @@ fig.text(
     bbox=dict(boxstyle="round,pad=0.4", facecolor="#f0f0f0", alpha=0.9, edgecolor="#cccccc"),
 )
 
-# Ensure proper layout
+# Ensure proper layout with extra bottom margin for footer
 plt.tight_layout()
-plt.subplots_adjust(bottom=0.12)
+plt.subplots_adjust(bottom=0.15)
 
 # Simulate a hover state by programmatically adding an annotation at one point
 # This demonstrates the hover tooltip that mplcursors provides

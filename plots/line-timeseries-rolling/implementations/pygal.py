@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-timeseries-rolling: Time Series with Rolling Average Overlay
-Library: pygal | Python 3.13
-Quality: pending | Created: 2025-12-30
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 88/100 | Created: 2025-12-30
 """
 
 import random

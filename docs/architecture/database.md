@@ -45,6 +45,25 @@ pyplots uses **PostgreSQL** (Cloud SQL) to store metadata about plots, specs, an
 
 ## Database Schema
 
+### Type Compatibility (PostgreSQL & SQLite)
+
+The database models use **custom SQLAlchemy types** (`core/database/types.py`) that work with both PostgreSQL (production) and SQLite (tests):
+
+| Field Type | PostgreSQL (Prod) | SQLite (Tests) | Custom Type |
+|------------|-------------------|----------------|-------------|
+| String arrays | `ARRAY(String)` | JSON text | `StringArray` |
+| JSON fields | `JSONB` | `JSON` | `UniversalJSON` |
+| UUIDs | `UUID` | `String(36)` | `UniversalUUID` |
+
+**Benefits**:
+- ✅ Production uses optimized PostgreSQL native types
+- ✅ Integration tests run with SQLite in-memory (no PostgreSQL needed in CI)
+- ✅ Same code/tests work in both environments
+
+**See**: `core/database/types.py` for implementation details.
+
+---
+
 ### Tables
 
 ```sql

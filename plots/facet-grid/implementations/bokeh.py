@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 facet-grid: Faceted Grid Plot
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 82/100 | Created: 2025-12-30
+Quality: 90/100 | Created: 2025-12-30
 """
 
 import numpy as np

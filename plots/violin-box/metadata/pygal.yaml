@@ -1,0 +1,26 @@
+library: pygal
+specification_id: violin-box
+created: '2025-12-30T11:28:49Z'
+updated: '2025-12-30T11:54:03Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20595341267
+issue: 0
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-box/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-box/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-box/pygal/plot.html
+quality_score: 88
+review:
+  strengths:
+  - Excellent manual KDE implementation using Gaussian kernel with Silverman's rule
+    for bandwidth selection
+  - Creative approach using XY chart to draw custom violin shapes since pygal lacks
+    native violin support
+  - Good visual distinction between categories with colorblind-safe palette
+  - 'Complete box plot components: median, quartiles, whiskers, and outliers all present'
+  - Proper legend entries distinguish between categories and statistical components
+  weaknesses:
+  - Y-axis range extends to 140 despite data being clipped to 0-100, wasting vertical
+    space
+  - Legend mixes category names with box plot element names, creating visual complexity

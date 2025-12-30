@@ -1,6 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 icicle-basic: Basic Icicle Chart
-Library: seaborn 0.13.2 | Python 3.13.11
+Library: seaborn 0.13.2 | Python 3.13
 Quality: 82/100 | Created: 2025-12-30
 """
 
@@ -123,7 +123,7 @@ for _, rect in rect_df.iterrows():
 for _, rect in rect_df.iterrows():
     level = int(rect["level"])
     # Only label if rectangle is wide enough
-    if rect["width"] < 0.04:
+    if rect["width"] < 0.03:
         continue
 
     # Position in center of rectangle
@@ -134,17 +134,6 @@ for _, rect in rect_df.iterrows():
     fontsize = 14 if level <= 1 else (12 if level == 2 else 10)
     text_color = "white" if level < 2 else "#1a3a5c"
 
-    # Smart label truncation - preserve meaningful parts
-    name = rect["name"]
-    max_chars = max(6, int(rect["width"] * 80))
-    if len(name) > max_chars:
-        # For file extensions, keep the extension
-        if "." in name and len(name.split(".")[-1]) <= 4:
-            ext = "." + name.split(".")[-1]
-            name = name[: max_chars - len(ext) - 1] + ".." + ext
-        else:
-            name = name[: max_chars - 1] + "…"
-
     # Format value display (in MB)
     value = int(rect["value"])
     if value >= 1000:
@@ -152,8 +141,30 @@ for _, rect in rect_df.iterrows():
     else:
         value_str = f"{value} MB"
 
-    # Display name and value
-    display_text = f"{name}\n{value_str}"
+    # Determine available characters based on rectangle width
+    name = rect["name"]
+    available_chars = max(6, int(rect["width"] * 120))
+
+    # Decide what to display based on available space
+    if len(name) <= available_chars:
+        # Full name fits
+        display_text = f"{name}\n{value_str}"
+    elif available_chars >= 10:
+        # Medium space: abbreviate name smartly
+        if "." in name and len(name.split(".")[-1]) <= 4:
+            # Preserve file extension
+            ext = "." + name.split(".")[-1]
+            base_chars = available_chars - len(ext) - 2
+            if base_chars > 0:
+                name = name[:base_chars] + ".." + ext
+            else:
+                name = name[: available_chars - 2] + "…"
+        else:
+            name = name[: available_chars - 1] + "…"
+        display_text = f"{name}\n{value_str}"
+    else:
+        # Small: just show value
+        display_text = value_str
 
     ax.text(
         cx,

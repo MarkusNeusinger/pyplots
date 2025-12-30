@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-interactive: Interactive Line Chart with Hover and Zoom
 Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 87/100 | Created: 2025-12-30
+Quality: 88/100 | Created: 2025-12-30
 """
 
 import numpy as np

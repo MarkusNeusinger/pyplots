@@ -1,0 +1,24 @@
+library: altair
+specification_id: bar-sorted
+created: '2025-12-30T09:31:28Z'
+updated: '2025-12-30T09:40:53Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20593350168
+issue: 0
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of Altair declarative grammar with sort=-x for automatic sorting
+  - Horizontal orientation improves label readability (follows spec recommendation)
+  - Clean professional appearance with subtle grid styling
+  - Proper font sizing for high-resolution output (4800x2700 target)
+  - Interactive HTML version with tooltips enhances usability
+  - Rounded bar corners add visual polish
+  weaknesses:
+  - Grid styling (dashed lines) is slightly more prominent than ideal; solid lines
+    with lower opacity might be cleaner

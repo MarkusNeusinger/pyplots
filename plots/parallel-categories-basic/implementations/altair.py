@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 parallel-categories-basic: Basic Parallel Categories Plot
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 83/100 | Created: 2025-12-30
@@ -20,10 +20,12 @@ outcomes = np.random.choice(["Purchase", "Abandon", "Browse"], n_customers, p=[0
 df = pd.DataFrame({"Channel": channels, "Category": categories, "Outcome": outcomes})
 agg_df = df.groupby(["Channel", "Category", "Outcome"]).size().reset_index(name="count")
 
-# Dimension x-positions and colors
+# Dimension x-positions and colors for all dimensions
 x_pos = {"Channel": 0, "Category": 250, "Outcome": 500}
 channel_colors = {"Direct": "#306998", "Search": "#FFD43B", "Social": "#4B8BBE", "Email": "#7B68A2"}
-scale_factor = 3
+category_colors = {"Electronics": "#E57373", "Clothing": "#81C784", "Home": "#64B5F6", "Sports": "#FFB74D"}
+outcome_colors = {"Purchase": "#4CAF50", "Abandon": "#F44336", "Browse": "#9E9E9E"}
+scale_factor = 3.5
 
 # Calculate y-positions for each category in each dimension
 channel_totals = agg_df.groupby("Channel")["count"].sum().sort_values(ascending=False)
@@ -34,19 +36,19 @@ channel_pos, y = {}, 0
 for cat in channel_totals.index:
     h = channel_totals[cat] * scale_factor
     channel_pos[cat] = {"y0": y, "y1": y + h, "total": channel_totals[cat]}
-    y += h + 8
+    y += h + 12
 
 category_pos, y = {}, 0
 for cat in category_totals.index:
     h = category_totals[cat] * scale_factor
     category_pos[cat] = {"y0": y, "y1": y + h, "total": category_totals[cat]}
-    y += h + 8
+    y += h + 12
 
 outcome_pos, y = {}, 0
 for cat in outcome_totals.index:
     h = outcome_totals[cat] * scale_factor
     outcome_pos[cat] = {"y0": y, "y1": y + h, "total": outcome_totals[cat]}
-    y += h + 8
+    y += h + 12
 
 # Build flow connections
 ch_offsets = dict.fromkeys(channel_pos, 0)
@@ -66,11 +68,11 @@ for _, row in ch_cat_flows.iterrows():
     cat_left_offsets[cat] += height
     flow_lines.append(
         {
-            "x0": x_pos["Channel"] + 40,
+            "x0": x_pos["Channel"] + 50,
             "y0": src_y,
-            "x1": x_pos["Category"] - 10,
+            "x1": x_pos["Category"],
             "y1": tgt_y,
-            "strokeWidth": max(2, cnt * 1.5),
+            "strokeWidth": max(4, cnt * 2.0),
             "color": channel_colors[ch],
         }
     )
@@ -86,11 +88,11 @@ for _, row in cat_out_flows.iterrows():
     out_offsets[out] += height
     flow_lines.append(
         {
-            "x0": x_pos["Category"] + 40,
+            "x0": x_pos["Category"] + 50,
             "y0": src_y,
-            "x1": x_pos["Outcome"] - 10,
+            "x1": x_pos["Outcome"],
             "y1": tgt_y,
-            "strokeWidth": max(2, cnt * 1.5),
+            "strokeWidth": max(4, cnt * 2.0),
             "color": channel_colors[dom_ch],
         }
     )
@@ -98,11 +100,11 @@ for _, row in cat_out_flows.iterrows():
 # Create bezier curve points for smooth ribbons
 bezier_pts = []
 for flow_id, fl in enumerate(flow_lines):
-    for t in np.linspace(0, 1, 15):
+    for t in np.linspace(0, 1, 20):
         x = (
             fl["x0"] * (1 - t) ** 3
-            + (fl["x0"] + 50) * 3 * (1 - t) ** 2 * t
-            + (fl["x1"] - 50) * 3 * (1 - t) * t**2
+            + (fl["x0"] + 60) * 3 * (1 - t) ** 2 * t
+            + (fl["x1"] - 60) * 3 * (1 - t) * t**2
             + fl["x1"] * t**3
         )
         y = fl["y0"] * (1 - t) + fl["y1"] * t
@@ -112,33 +114,34 @@ for flow_id, fl in enumerate(flow_lines):
 
 bezier_df = pd.DataFrame(bezier_pts)
 
-# Create category box data
+# Create category box data with distinct colors for each dimension
 box_data = []
+color_maps = {"Channel": channel_colors, "Category": category_colors, "Outcome": outcome_colors}
 for dim, pos_dict in [("Channel", channel_pos), ("Category", category_pos), ("Outcome", outcome_pos)]:
     for cat, pos in pos_dict.items():
         box_data.append(
             {
                 "category": cat,
                 "x": x_pos[dim],
-                "x2": x_pos[dim] + 40,
+                "x2": x_pos[dim] + 50,
                 "y0": pos["y0"],
                 "y1": pos["y1"],
                 "y_mid": (pos["y0"] + pos["y1"]) / 2,
                 "total": pos["total"],
-                "color": channel_colors.get(cat, "#666666"),
+                "color": color_maps[dim].get(cat, "#666666"),
             }
         )
 
 box_df = pd.DataFrame(box_data)
-max_y = box_df["y1"].max() + 50
+max_y = box_df["y1"].max() + 80
 
 # Visualization layers
 flows = (
     alt.Chart(bezier_df)
-    .mark_line(opacity=0.5, strokeCap="round")
+    .mark_line(opacity=0.6, strokeCap="round")
     .encode(
-        x=alt.X("x:Q", axis=None, scale=alt.Scale(domain=[-30, 620])),
-        y=alt.Y("y:Q", axis=None, scale=alt.Scale(domain=[-40, max_y])),
+        x=alt.X("x:Q", axis=None, scale=alt.Scale(domain=[-50, 680])),
+        y=alt.Y("y:Q", axis=None, scale=alt.Scale(domain=[-70, max_y])),
         detail="flow_id:N",
         order="order:Q",
         color=alt.Color("color:N", scale=None),
@@ -148,7 +151,7 @@ flows = (
 
 boxes = (
     alt.Chart(box_df)
-    .mark_rect(stroke="white", strokeWidth=2, cornerRadius=3)
+    .mark_rect(stroke="white", strokeWidth=2, cornerRadius=4)
     .encode(
         x=alt.X("x:Q", axis=None),
         x2="x2:Q",
@@ -160,37 +163,61 @@ boxes = (
 
 labels = (
     alt.Chart(box_df)
-    .mark_text(align="left", baseline="middle", fontSize=18, fontWeight="bold", dx=50)
+    .mark_text(align="left", baseline="middle", fontSize=18, fontWeight="bold", dx=58)
     .encode(x="x:Q", y="y_mid:Q", text="category:N", color=alt.value("#333333"))
 )
 
 counts = (
     alt.Chart(box_df)
-    .mark_text(align="left", baseline="middle", fontSize=14, dx=50, dy=22)
-    .encode(x="x:Q", y="y_mid:Q", text=alt.Text("total:Q", format="d"), color=alt.value("#666666"))
+    .mark_text(align="left", baseline="middle", fontSize=16, dx=58, dy=22)
+    .encode(x="x:Q", y="y_mid:Q", text=alt.Text("total:Q", format="d"), color=alt.value("#555555"))
 )
 
+# Headers positioned well above the boxes
 headers_df = pd.DataFrame(
     {
-        "x": [x_pos["Channel"] + 20, x_pos["Category"] + 20, x_pos["Outcome"] + 20],
-        "y": [-25, -25, -25],
-        "title": ["Channel", "Category", "Outcome"],
+        "x": [x_pos["Channel"] + 25, x_pos["Category"] + 25, x_pos["Outcome"] + 25],
+        "y": [-45, -45, -45],
+        "header": ["Channel", "Category", "Outcome"],
     }
 )
 headers = (
     alt.Chart(headers_df)
-    .mark_text(fontSize=22, fontWeight="bold")
-    .encode(x="x:Q", y="y:Q", text="title:N", color=alt.value("#306998"))
+    .mark_text(fontSize=24, fontWeight="bold")
+    .encode(x="x:Q", y="y:Q", text="header:N", color=alt.value("#306998"))
+)
+
+# Legend for Channel colors (flow color coding) using square marks
+legend_items = []
+for i, (ch, color) in enumerate(channel_colors.items()):
+    legend_items.append({"label": ch, "color": color, "x": 600, "y": i * 32 + 10})
+legend_df = pd.DataFrame(legend_items)
+
+legend_marks = (
+    alt.Chart(legend_df).mark_square(size=400).encode(x="x:Q", y="y:Q", color=alt.Color("color:N", scale=None))
+)
+
+legend_labels = (
+    alt.Chart(legend_df)
+    .mark_text(align="left", baseline="middle", fontSize=16, dx=18)
+    .encode(x="x:Q", y="y:Q", text="label:N", color=alt.value("#333333"))
+)
+
+legend_title_df = pd.DataFrame({"x": [600], "y": [-25], "text": ["Flow Colors"]})
+legend_title = (
+    alt.Chart(legend_title_df)
+    .mark_text(fontSize=18, fontWeight="bold", align="left")
+    .encode(x="x:Q", y="y:Q", text="text:N", color=alt.value("#306998"))
 )
 
 # Combine layers
 chart = (
-    alt.layer(flows, boxes, labels, counts, headers)
+    alt.layer(flows, boxes, labels, counts, headers, legend_title, legend_marks, legend_labels)
     .properties(
         width=1600,
         height=900,
         title=alt.Title(
-            "parallel-categories-basic · altair · pyplots.ai", fontSize=28, anchor="middle", color="#333333", offset=25
+            "parallel-categories-basic · altair · pyplots.ai", fontSize=28, anchor="middle", color="#333333", offset=30
         ),
     )
     .configure_view(strokeWidth=0)

@@ -1,0 +1,74 @@
+"""pyplots.ai
+box-horizontal: Horizontal Box Plot
+Library: pygal | Python 3.13
+Quality: pending | Created: 2025-12-30
+"""
+
+import numpy as np
+from pygal.graph.box import Box
+from pygal.graph.horizontal import HorizontalGraph
+from pygal.style import Style
+
+
+# Create HorizontalBox class (not built into pygal, but uses its mixin pattern)
+class HorizontalBox(HorizontalGraph, Box):
+    """Horizontal variant of the Box chart using pygal's horizontal mixin."""
+
+    pass
+
+
+# Data - Response times for different service types (in milliseconds)
+np.random.seed(42)
+categories = ["Database Query", "API Gateway", "Authentication", "File Upload", "Image Processing"]
+data = {
+    "Database Query": np.random.lognormal(3.5, 0.8, 80),
+    "API Gateway": np.random.lognormal(3.2, 0.5, 80),
+    "Authentication": np.random.lognormal(3.8, 0.6, 80),
+    "File Upload": np.random.lognormal(4.5, 0.9, 80),
+    "Image Processing": np.random.lognormal(5.0, 0.7, 80),
+}
+
+# Add some outliers to demonstrate box plot features
+data["Database Query"] = np.append(data["Database Query"], [500, 600, 800])
+data["File Upload"] = np.append(data["File Upload"], [1500, 2000])
+data["Image Processing"] = np.append(data["Image Processing"], [2500, 3000, 3500])
+
+# Custom style using PyPlots colors - scaled for 4800x2700 canvas
+custom_style = Style(
+    background="white",
+    plot_background="white",
+    foreground="#333333",
+    foreground_strong="#333333",
+    foreground_subtle="#666666",
+    colors=("#306998", "#FFD43B", "#4CAF50", "#FF5722", "#9C27B0"),
+    title_font_size=60,
+    label_font_size=40,
+    major_label_font_size=36,
+    legend_font_size=36,
+    value_font_size=32,
+)
+
+# Create horizontal box chart
+chart = HorizontalBox(
+    width=4800,
+    height=2700,
+    style=custom_style,
+    title="box-horizontal · pygal · pyplots.ai",
+    x_title="Response Time (ms)",
+    y_title="Service Type",
+    show_legend=True,
+    legend_at_bottom=True,
+    legend_box_size=24,
+    show_y_guides=True,
+    show_x_guides=False,
+    margin=50,
+    box_mode="tukey",
+)
+
+# Add data for each category
+for category in categories:
+    chart.add(category, data[category].tolist())
+
+# Save outputs
+chart.render_to_file("plot.html")
+chart.render_to_png("plot.png")

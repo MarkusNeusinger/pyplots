@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 parallel-categories-basic: Basic Parallel Categories Plot
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -93,32 +93,29 @@ for channel, product, size, outcome, count in data:
 
 total_flow = sum(count for _, _, _, _, count in data)
 
-# Layout parameters
-x_positions = [0.12, 0.37, 0.63, 0.88]
-node_width = 0.035
-node_gap = 0.025
+# Layout parameters - increased spacing for better label readability
+x_positions = [0.10, 0.37, 0.63, 0.90]
+node_width = 0.030
+node_gap = 0.035
 
-
-# Calculate node positions for each dimension
-def calculate_node_positions(dim_idx):
+# Calculate node positions for all dimensions (flat structure)
+node_positions = []
+for dim_idx in range(len(dimensions)):
     dim = dimensions[dim_idx]
     positions = {}
-    y_offset = 0.08
+    y_offset = 0.10
     for cat in categories[dim]:
-        height = dimension_totals[dim].get(cat, 0) / total_flow * 0.78
+        height = dimension_totals[dim].get(cat, 0) / total_flow * 0.72
         positions[cat] = {"y0": y_offset, "y1": y_offset + height, "x": x_positions[dim_idx]}
         y_offset += height + node_gap
-    return positions
-
-
-node_positions = [calculate_node_positions(i) for i in range(len(dimensions))]
+    node_positions.append(positions)
 
 # Build flow polygons between adjacent dimensions
 flow_data = []
 
-
-def add_flows_between_dimensions(dim_from_idx, dim_to_idx):
-    """Add flows between two adjacent dimensions."""
+# Process each pair of adjacent dimensions
+for dim_from_idx in range(len(dimensions) - 1):
+    dim_to_idx = dim_from_idx + 1
     dim_from = dimensions[dim_from_idx]
     dim_to = dimensions[dim_to_idx]
 
@@ -128,7 +125,7 @@ def add_flows_between_dimensions(dim_from_idx, dim_to_idx):
         values = {"Channel": channel, "Product": product, "Size": size, "Outcome": outcome}
         from_cat = values[dim_from]
         to_cat = values[dim_to]
-        source_channel = channel  # For coloring by first dimension
+        source_channel = channel
         key = (from_cat, to_cat, source_channel)
         flow_counts[key] = flow_counts.get(key, 0) + count
 
@@ -153,7 +150,7 @@ def add_flows_between_dimensions(dim_from_idx, dim_to_idx):
     )
 
     for (from_cat, to_cat, source_channel), count in sorted_flows:
-        flow_height = count / total_flow * 0.78
+        flow_height = count / total_flow * 0.72
 
         src_y0 = from_positions[from_cat]["y0"] + from_offsets[from_cat]
         src_y1 = src_y0 + flow_height
@@ -163,7 +160,7 @@ def add_flows_between_dimensions(dim_from_idx, dim_to_idx):
         tgt_y1 = tgt_y0 + flow_height
         to_offsets[to_cat] += flow_height
 
-        # Create smooth curve polygon
+        # Create smooth curve polygon with easing
         n_points = 30
         x_vals_top = []
         y_vals_top = []
@@ -173,7 +170,6 @@ def add_flows_between_dimensions(dim_from_idx, dim_to_idx):
         for i in range(n_points + 1):
             t = i / n_points
             x = x_left + t * (x_right - x_left)
-            # Smooth easing function
             ease = t * t * (3 - 2 * t)
             y_top = src_y1 + ease * (tgt_y1 - src_y1)
             y_bottom = src_y0 + ease * (tgt_y0 - src_y0)
@@ -192,11 +188,6 @@ def add_flows_between_dimensions(dim_from_idx, dim_to_idx):
             flow_data.append(
                 {"x": x, "y": y, "flow_id": flow_id, "channel": source_channel, "from_cat": from_cat, "to_cat": to_cat}
             )
-
-
-# Add flows between all adjacent dimension pairs
-for i in range(len(dimensions) - 1):
-    add_flows_between_dimensions(i, i + 1)
 
 df_flows = pd.DataFrame(flow_data)
 
@@ -223,27 +214,33 @@ labels = []
 
 # Dimension headers at top
 for i, dim in enumerate(dimensions):
-    labels.append({"x": x_positions[i], "y": 0.97, "label": dim, "type": "header", "hjust": 0.5})
+    labels.append({"x": x_positions[i], "y": 0.96, "label": dim, "type": "header", "hjust": 0.5})
 
-# Category labels with counts
+# Category labels with counts - positioned with more spacing
 for dim_idx, dim in enumerate(dimensions):
     for cat in categories[dim]:
         pos = node_positions[dim_idx][cat]
         count = dimension_totals[dim][cat]
 
-        # Position labels on alternating sides to avoid overlap
-        if dim_idx % 2 == 0:
-            x_label = pos["x"] - node_width / 2 - 0.015
+        # Position labels on outer sides for first/last dimensions, alternating for middle
+        if dim_idx == 0:
+            x_label = pos["x"] - node_width / 2 - 0.02
+            hjust = 1
+        elif dim_idx == len(dimensions) - 1:
+            x_label = pos["x"] + node_width / 2 + 0.02
+            hjust = 0
+        elif dim_idx % 2 == 0:
+            x_label = pos["x"] - node_width / 2 - 0.02
             hjust = 1
         else:
-            x_label = pos["x"] + node_width / 2 + 0.015
+            x_label = pos["x"] + node_width / 2 + 0.02
             hjust = 0
 
         labels.append(
             {
                 "x": x_label,
                 "y": (pos["y0"] + pos["y1"]) / 2,
-                "label": f"{cat}\n({count})",
+                "label": f"{cat} ({count})",
                 "type": "category",
                 "hjust": hjust,
             }
@@ -267,13 +264,13 @@ plot = (
     + geom_text(
         aes(x="x", y="y", label="label"),
         data=df_labels[df_labels["type"] == "header"],
-        size=16,
+        size=18,
         hjust=0.5,
         fontface="bold",
         color="#1A1A1A",
     )
     + geom_text(
-        aes(x="x", y="y", label="label"), data=df_labels[df_labels["type"] == "category"], size=11, color="#333333"
+        aes(x="x", y="y", label="label"), data=df_labels[df_labels["type"] == "category"], size=14, color="#333333"
     )
     + scale_fill_manual(
         values={
@@ -283,7 +280,7 @@ plot = (
         },
         name="Acquisition Channel",
     )
-    + labs(title="Customer Journey · parallel-categories-basic · letsplot · pyplots.ai")
+    + labs(title="parallel-categories-basic · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(
         plot_title=element_text(size=26, face="bold"),
@@ -296,7 +293,7 @@ plot = (
         legend_position="bottom",
     )
     + scale_x_continuous(limits=[-0.02, 1.02])
-    + scale_y_continuous(limits=[-0.02, 1.05])
+    + scale_y_continuous(limits=[-0.02, 1.02])
     + ggsize(1600, 900)
 )
 

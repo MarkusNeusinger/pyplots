@@ -25,6 +25,7 @@ TEST_THUMB_URL = "https://storage.googleapis.com/pyplots-images/test/thumb.png"
 def _get_database_url():
     """Get DATABASE_URL from environment, loading .env if needed."""
     from dotenv import load_dotenv
+
     load_dotenv()
     return os.environ.get("DATABASE_URL")
 

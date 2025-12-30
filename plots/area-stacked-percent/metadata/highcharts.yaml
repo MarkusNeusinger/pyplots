@@ -1,0 +1,27 @@
+library: highcharts
+specification_id: area-stacked-percent
+created: '2025-12-30T11:29:03Z'
+updated: '2025-12-30T11:36:58Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20595341909
+issue: 0
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/highcharts/plot.html
+quality_score: 92
+review:
+  strengths:
+  - 'Excellent implementation of 100% stacked area chart using Highcharts native stacking:
+    percent feature'
+  - Colorblind-safe palette with good contrast between all three areas
+  - Well-configured tooltip showing percentage values for interactive use
+  - Realistic market share scenario that perfectly demonstrates the chart purpose
+  - Good canvas utilization with appropriate margins and text sizing
+  - Clean, readable code following KISS principles
+  weaknesses:
+  - No visible grid lines on the chart area, which could help readers trace values
+    more precisely
+  - 'Legend symbols use symbolRadius: 0 (squares) which is fine but circular markers
+    might match the data point markers better'

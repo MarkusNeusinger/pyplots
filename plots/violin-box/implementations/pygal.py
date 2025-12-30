@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-box: Violin Plot with Embedded Box Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-30
@@ -9,14 +9,16 @@ import pygal
 from pygal.style import Style
 
 
-# Data - Generate distributions for different categories
+# Data - Generate distributions for different categories with scores constrained to 0-100
 np.random.seed(42)
-data = {
-    "Engineering": np.random.normal(85, 12, 200),
-    "Marketing": np.random.normal(72, 18, 200),
-    "Sales": np.random.normal(78, 22, 200),
-    "Operations": np.random.normal(65, 10, 200),
+raw_data = {
+    "Engineering": np.random.normal(75, 10, 200),
+    "Marketing": np.random.normal(62, 12, 200),
+    "Sales": np.random.normal(68, 14, 200),
+    "Operations": np.random.normal(55, 8, 200),
 }
+# Clip all values to 0-100 range
+data = {k: np.clip(v, 0, 100) for k, v in raw_data.items()}
 
 # Color palette: 4 violin colors + white for boxes + dark gray for whiskers/median/outliers
 # Pattern per category: violin, box, whisker*4, median, outliers = 8 series
@@ -63,7 +65,7 @@ chart = pygal.XY(
     dots_size=0,
     show_x_guides=False,
     show_y_guides=True,
-    range=(0, 140),
+    range=(0, 110),
     xrange=(0, 6),
     margin=50,
 )
@@ -77,6 +79,11 @@ box_stroke_style = {"width": 4, "dasharray": ""}
 median_stroke_style = {"width": 6, "dasharray": ""}
 whisker_stroke_style = {"width": 3, "dasharray": ""}
 
+# Track if legend entries have been added (only add once for first occurrence)
+added_box_legend = False
+added_median_legend = False
+added_outlier_legend = False
+
 # Add violins with embedded box plots for each category
 for i, (category, values) in enumerate(data.items()):
     center_x = i + 1.5
@@ -89,7 +96,7 @@ for i, (category, values) in enumerate(data.items()):
 
     # Create range of y values for density
     y_min, y_max = values.min(), values.max()
-    y_range = np.linspace(y_min - 10, y_max + 10, n_points)
+    y_range = np.linspace(max(0, y_min - 5), min(100, y_max + 5), n_points)
 
     # Gaussian kernel density estimation
     density = np.zeros_like(y_range)
@@ -130,50 +137,36 @@ for i, (category, values) in enumerate(data.items()):
         (center_x + box_width, q1),
         (center_x - box_width, q1),
     ]
-    chart.add(
-        "IQR Box (Q1-Q3)" if i == 0 else "",
-        quartile_box,
-        stroke=True,
-        fill=True,
-        show_dots=False,
-        stroke_style=box_stroke_style,
-    )
+    # Only add legend entry for box once
+    box_label = "Box (Q1-Q3)" if not added_box_legend else None
+    chart.add(box_label, quartile_box, stroke=True, fill=True, show_dots=False, stroke_style=box_stroke_style)
+    added_box_legend = True
 
-    # Whisker lines (vertical lines from box to whisker ends)
+    # Whisker lines (vertical lines from box to whisker ends) - no legend
     lower_whisker_line = [(center_x, q1), (center_x, lower_whisker)]
     upper_whisker_line = [(center_x, q3), (center_x, upper_whisker)]
-    chart.add(
-        "Whiskers (1.5×IQR)" if i == 0 else "",
-        lower_whisker_line,
-        stroke=True,
-        fill=False,
-        show_dots=False,
-        stroke_style=whisker_stroke_style,
-    )
-    chart.add("", upper_whisker_line, stroke=True, fill=False, show_dots=False, stroke_style=whisker_stroke_style)
+    chart.add(None, lower_whisker_line, stroke=True, fill=False, show_dots=False, stroke_style=whisker_stroke_style)
+    chart.add(None, upper_whisker_line, stroke=True, fill=False, show_dots=False, stroke_style=whisker_stroke_style)
 
-    # Whisker caps (horizontal lines at ends)
+    # Whisker caps (horizontal lines at ends) - no legend
     cap_width = box_width * 0.8
     lower_cap = [(center_x - cap_width, lower_whisker), (center_x + cap_width, lower_whisker)]
     upper_cap = [(center_x - cap_width, upper_whisker), (center_x + cap_width, upper_whisker)]
-    chart.add("", lower_cap, stroke=True, fill=False, show_dots=False, stroke_style=whisker_stroke_style)
-    chart.add("", upper_cap, stroke=True, fill=False, show_dots=False, stroke_style=whisker_stroke_style)
+    chart.add(None, lower_cap, stroke=True, fill=False, show_dots=False, stroke_style=whisker_stroke_style)
+    chart.add(None, upper_cap, stroke=True, fill=False, show_dots=False, stroke_style=whisker_stroke_style)
 
     # Median line (thicker, contrasting)
     median_line = [(center_x - box_width * 1.2, median), (center_x + box_width * 1.2, median)]
-    chart.add(
-        "Median Line" if i == 0 else "",
-        median_line,
-        stroke=True,
-        fill=False,
-        show_dots=False,
-        stroke_style=median_stroke_style,
-    )
+    median_label = "Median" if not added_median_legend else None
+    chart.add(median_label, median_line, stroke=True, fill=False, show_dots=False, stroke_style=median_stroke_style)
+    added_median_legend = True
 
-    # Outliers as points
+    # Outliers as points - larger dots for better visibility
     if len(outliers) > 0:
         outlier_points = [(center_x, float(o)) for o in outliers]
-        chart.add("Outliers" if i == 0 else "", outlier_points, stroke=False, fill=False, show_dots=True, dots_size=10)
+        outlier_label = "Outliers" if not added_outlier_legend else None
+        chart.add(outlier_label, outlier_points, stroke=False, fill=False, show_dots=True, dots_size=18)
+        added_outlier_legend = True
 
 # X-axis labels at violin positions
 chart.x_labels = ["", "Engineering", "Marketing", "Sales", "Operations", ""]

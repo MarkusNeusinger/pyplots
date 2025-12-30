@@ -1,0 +1,25 @@
+library: plotnine
+specification_id: line-stepwise
+created: '2025-12-30T10:37:30Z'
+updated: '2025-12-30T10:43:58Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20594559603
+issue: 0
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of geom_step with direction="hv" for proper step function visualization
+  - Realistic and relatable CPU utilization scenario that perfectly demonstrates discrete
+    state changes
+  - Clean grammar of graphics implementation following plotnine best practices
+  - Well-balanced layout with appropriate text sizing for 4800x2700 output
+  - Data shows clear daily pattern with morning ramp-up, business hours peak, and
+    evening wind-down
+  weaknesses:
+  - 'Minor: panel_grid_major and panel_grid_minor use element_text() instead of element_line()
+    - this does not cause visible issues but is technically incorrect for grid styling'

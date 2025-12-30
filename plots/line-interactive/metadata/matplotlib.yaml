@@ -1,0 +1,16 @@
+library: matplotlib
+specification_id: line-interactive
+created: '2025-12-30T17:49:35Z'
+updated: '2025-12-30T18:28:44Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20602449294
+issue: 0
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-interactive/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-interactive/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 88
+review:
+  strengths: []
+  weaknesses: []

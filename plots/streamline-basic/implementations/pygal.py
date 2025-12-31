@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 streamline-basic: Basic Streamline Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 75/100 | Created: 2025-12-31
@@ -14,12 +14,12 @@ from pygal.style import Style
 np.random.seed(42)
 
 # Trace streamlines inline - KISS structure (no helper functions)
-# Starting points distributed at outer radii only to avoid center clutter
+# Starting points distributed at different radii to show flow structure
 streamlines = []
 
-# Use only outer radii (1.0, 1.5, 2.0, 2.5) to avoid center congestion
-radii = [1.0, 1.5, 2.0, 2.5]
-points_per_radius = 6
+# Use 4 radii to show different orbital distances
+radii = [0.8, 1.3, 1.8, 2.3]
+points_per_radius = 5
 
 for radius in radii:
     for angle_idx in range(points_per_radius):
@@ -60,9 +60,11 @@ for radius in radii:
             streamlines.append((points, radius))
 
 # Group streamlines by radial distance for coloring
-# 4 color bins matching 4 radii - using high contrast colors
-bin_colors = ["#1e3a5f", "#2a9d8f", "#e9c46a", "#e76f51"]
-bin_labels = ["Slow Flow (r=1.0)", "Medium Flow (r=1.5)", "Fast Flow (r=2.0)", "Fastest Flow (r=2.5)"]
+# 4 distinct high-contrast colors for different radii
+# Labels describe orbit radius, not "speed" - for vortex flow, all orbits have same
+# angular velocity so inner orbits have lower linear speed
+bin_colors = ["#d62728", "#2ca02c", "#1f77b4", "#9467bd"]
+bin_labels = ["Inner Orbit (r=0.8)", "Mid-Inner Orbit (r=1.3)", "Mid-Outer Orbit (r=1.8)", "Outer Orbit (r=2.3)"]
 
 binned_streamlines = {i: [] for i in range(4)}
 for points, radius in streamlines:
@@ -91,7 +93,7 @@ chart = pygal.XY(
     width=4800,
     height=2700,
     stroke=True,
-    stroke_style={"width": 6},
+    stroke_style={"width": 10},
     show_dots=False,
     show_legend=True,
     legend_at_bottom=True,

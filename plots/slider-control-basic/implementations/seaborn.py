@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 slider-control-basic: Interactive Plot with Slider Control
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 86/100 | Created: 2025-12-31
@@ -91,11 +91,11 @@ def update_plot(val):
 # Connect slider to update function
 year_slider.on_changed(update_plot)
 
-# Add annotation about interactivity
+# Add instructional text for slider interaction
 fig.text(
     0.5,
     0.015,
-    "Drag slider to explore sales data from 2018-2024",
+    "Drag the slider to explore monthly sales data from 2018-2024",
     ha="center",
     fontsize=16,
     style="italic",

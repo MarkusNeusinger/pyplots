@@ -1,0 +1,27 @@
+library: highcharts
+specification_id: spectrogram-basic
+created: '2025-12-31T05:36:53Z'
+updated: '2025-12-31T06:07:15Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612809126
+issue: 2927
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Clear visualization of the chirp signal with frequency increasing over time (diagonal
+    yellow band is unmistakable)
+  - Excellent use of viridis colormap for colorblind accessibility
+  - Proper dB scale labeling on colorbar with actual dB values (-100 to -10 dB range)
+  - Clean code structure with scipy spectrogram computation
+  - Both PNG and interactive HTML outputs generated
+  - Appropriate downsampling for Highcharts heatmap performance
+  weaknesses:
+  - No grid lines on the heatmap area (would improve readability at specific time/frequency
+    points)
+  - Y-axis shows frequencies up to ~469 Hz but the chirp only goes to 200 Hz (wasted
+    vertical space showing noise)

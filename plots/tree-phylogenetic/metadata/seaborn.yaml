@@ -1,0 +1,26 @@
+library: seaborn
+specification_id: tree-phylogenetic
+created: '2025-12-31T13:54:59Z'
+updated: '2025-12-31T14:24:15Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20620332761
+issue: 3070
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent visual presentation with clear clade-based color coding throughout branches
+    and labels
+  - Biologically accurate evolutionary distance matrix for primate species
+  - Professional typography with proper font sizes and weights for all text elements
+  - Thoughtful color palette using distinct, colorblind-safe colors for 5 clades
+  - Clean layout with appropriate use of seaborn aesthetic styling
+  weaknesses:
+  - Contains a helper function (get_link_color) which violates KISS principle - inline
+    logic preferred
+  - Title format includes Primate Evolution prefix before spec-id which deviates from
+    standard format

@@ -1,0 +1,27 @@
+library: plotnine
+specification_id: volcano-basic
+created: '2025-12-31T05:32:18Z'
+updated: '2025-12-31T05:40:21Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612783423
+issue: 2924
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of the volcano plot specification with all required features
+    (threshold lines, color coding, gene labels)
+  - Clean grammar of graphics approach using plotnine ggplot2-style syntax
+  - Good data simulation that realistically represents differential gene expression
+    results
+  - Text sizes properly configured for 4800x2700 output
+  - Proper use of categorical coloring with meaningful significance categories
+  weaknesses:
+  - Minor label overlap between Gene_469 and Gene_478 on the right side of the plot
+  - Could use colorblind-safe palette instead of red-blue (consider using orange or
+    different saturation)
+  - Grid lines not visible (theme_minimal removes them) which could aid reading values

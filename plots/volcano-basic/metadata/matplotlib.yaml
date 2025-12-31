@@ -1,0 +1,29 @@
+library: matplotlib
+specification_id: volcano-basic
+created: '2025-12-31T05:31:28Z'
+updated: '2025-12-31T05:37:53Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612778978
+issue: 2924
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of all spec requirements including threshold lines, color
+    coding, and gene annotations
+  - Scientifically accurate data simulation with p-values correlated to fold change
+    magnitude
+  - Clean, readable code following KISS principles
+  - Proper axis formatting with subscript notation (Log₂, Log₁₀)
+  - Symmetric axis limits for better visual interpretation
+  - Good alpha transparency for handling overlapping points
+  weaknesses:
+  - Marker sizes could be larger (s=100-200 recommended for 2000 points density)
+  - No use of distinctive matplotlib features like PathEffects for label backgrounds
+    or custom colormaps
+  - Legend placement in upper right could potentially overlap with high-significance
+    up-regulated points

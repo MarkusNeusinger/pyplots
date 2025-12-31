@@ -1,0 +1,25 @@
+library: plotnine
+specification_id: andrews-curves
+created: '2025-12-30T23:58:00Z'
+updated: '2025-12-31T00:19:42Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608507134
+issue: 2859
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 94
+review:
+  strengths:
+  - Excellent implementation of Andrews curves Fourier transformation with correct
+    formula
+  - Perfect use of StandardScaler for data normalization as specified
+  - Clear visual separation of setosa species from versicolor/virginica clusters
+  - Proper alpha transparency (0.4) for 150 overlapping curves revealing density patterns
+  - Clean ggplot2 grammar with appropriate geom_line grouping by observation
+  - Professional text sizing and theme configuration for high-resolution output
+  weaknesses:
+  - Color palette could be more distinct - the green and blue can appear similar in
+    dense curve regions; consider using a more divergent palette

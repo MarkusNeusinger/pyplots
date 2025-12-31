@@ -1,11 +1,11 @@
-""" pyplots.ai
+"""pyplots.ai
 tree-phylogenetic: Phylogenetic Tree Diagram
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
 """
 
 from bokeh.io import export_png
-from bokeh.models import ColumnDataSource, Label
+from bokeh.models import ColumnDataSource, HoverTool, Label, Legend, LegendItem
 from bokeh.plotting import figure, output_file, save
 
 
@@ -17,17 +17,17 @@ from bokeh.plotting import figure, output_file, save
 # Node positions (x = evolutionary distance, y = vertical position)
 species = ["Human", "Chimpanzee", "Gorilla", "Orangutan", "Gibbon"]
 
-# Leaf node positions (x based on cumulative branch lengths, y evenly spaced)
+# Leaf node positions - shifted left to better center the tree
 leaf_y = [5, 4, 3, 2, 1]
-leaf_x = [0.95, 0.95, 0.85, 0.65, 0.45]
+leaf_x = [0.75, 0.75, 0.65, 0.45, 0.25]
 
-# Internal node positions
-# Node 1: Human-Chimp ancestor (x=0.80, y=4.5)
-# Node 2: Node1-Gorilla ancestor (x=0.60, y=3.75)
-# Node 3: Node2-Orangutan ancestor (x=0.40, y=2.875)
-# Node 4: Root - Node3-Gibbon ancestor (x=0.20, y=1.9375)
+# Internal node positions - shifted left to match
+# Node 1: Human-Chimp ancestor
+# Node 2: Node1-Gorilla ancestor
+# Node 3: Node2-Orangutan ancestor
+# Node 4: Root - Node3-Gibbon ancestor
 
-internal_x = [0.80, 0.60, 0.40, 0.20]
+internal_x = [0.60, 0.40, 0.20, 0.00]
 internal_y = [4.5, 3.75, 2.875, 1.9375]
 
 # Branch lines (horizontal and vertical segments)
@@ -71,14 +71,14 @@ v_branch_y = [
     [internal_y[2], leaf_y[4]],  # Root vertical
 ]
 
-# Create figure
+# Create figure with better centered x_range
 p = figure(
     width=4800,
     height=2700,
     title="Primate Evolution · tree-phylogenetic · bokeh · pyplots.ai",
     x_axis_label="Evolutionary Distance (substitutions per site)",
     y_axis_label="",
-    x_range=(-0.05, 1.25),
+    x_range=(-0.15, 1.05),
     y_range=(0.3, 5.7),
 )
 
@@ -98,13 +98,38 @@ for hx, hy in zip(h_branch_x, h_branch_y, strict=True):
 for vx, vy in zip(v_branch_x, v_branch_y, strict=True):
     p.line(vx, vy, line_width=4, line_color="#306998")
 
-# Draw leaf nodes
-leaf_source = ColumnDataSource(data={"x": leaf_x, "y": leaf_y, "species": species})
-p.scatter("x", "y", source=leaf_source, size=20, color="#FFD43B", line_color="#306998", line_width=3)
+# Draw leaf nodes with hover tooltips
+leaf_source = ColumnDataSource(
+    data={
+        "x": leaf_x,
+        "y": leaf_y,
+        "species": species,
+        "type": ["Leaf Node"] * len(species),
+        "info": [
+            "Modern human (Homo sapiens)",
+            "Chimpanzee (Pan troglodytes)",
+            "Western gorilla (Gorilla gorilla)",
+            "Bornean orangutan (Pongo pygmaeus)",
+            "White-handed gibbon (Hylobates lar)",
+        ],
+    }
+)
+leaf_scatter = p.scatter(
+    "x", "y", source=leaf_source, size=24, color="#FFD43B", line_color="#306998", line_width=3, name="leaf_nodes"
+)
 
-# Draw internal nodes
-internal_source = ColumnDataSource(data={"x": internal_x, "y": internal_y})
-p.scatter("x", "y", source=internal_source, size=16, color="#306998")
+# Draw internal nodes with hover tooltips
+internal_names = ["Human-Chimp Ancestor", "Great Ape Ancestor", "Hominid Ancestor", "Root (Common Ancestor)"]
+internal_source = ColumnDataSource(
+    data={"x": internal_x, "y": internal_y, "type": ["Internal Node"] * len(internal_x), "info": internal_names}
+)
+internal_scatter = p.scatter("x", "y", source=internal_source, size=18, color="#306998", name="internal_nodes")
+
+# Add hover tool for interactivity
+hover = HoverTool(
+    renderers=[leaf_scatter, internal_scatter], tooltips=[("Type", "@type"), ("Info", "@info")], mode="mouse"
+)
+p.add_tools(hover)
 
 # Add species labels
 for i, sp in enumerate(species):
@@ -121,11 +146,11 @@ scale_label = Label(
 )
 p.add_layout(scale_label)
 
-# Add clade annotations
+# Add clade annotations with more prominent styling
 clade_labels = [
-    {"x": 0.78, "y": 4.5, "text": "Hominini"},
-    {"x": 0.58, "y": 3.75, "text": "Homininae"},
-    {"x": 0.38, "y": 2.875, "text": "Hominidae"},
+    {"x": 0.58, "y": 4.5, "text": "Hominini"},
+    {"x": 0.38, "y": 3.75, "text": "Homininae"},
+    {"x": 0.18, "y": 2.875, "text": "Hominidae"},
 ]
 
 for clade in clade_labels:
@@ -133,12 +158,26 @@ for clade in clade_labels:
         x=clade["x"] - 0.15,
         y=clade["y"],
         text=clade["text"],
-        text_font_size="16pt",
+        text_font_size="20pt",
         text_font_style="italic",
-        text_color="#666666",
+        text_color="#444444",
         text_baseline="middle",
     )
     p.add_layout(bracket_label)
+
+# Add legend for node types
+legend = Legend(
+    items=[
+        LegendItem(label="Extant Species (Leaf Nodes)", renderers=[leaf_scatter]),
+        LegendItem(label="Ancestral Nodes (Internal)", renderers=[internal_scatter]),
+    ],
+    location="top_right",
+    label_text_font_size="18pt",
+    spacing=10,
+    padding=15,
+    background_fill_alpha=0.8,
+)
+p.add_layout(legend)
 
 # Save PNG
 export_png(p, filename="plot.png")

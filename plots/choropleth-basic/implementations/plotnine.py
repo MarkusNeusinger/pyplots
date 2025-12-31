@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 choropleth-basic: Choropleth Map with Regional Coloring
 Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 82/100 | Created: 2025-12-31
+Quality: 91/100 | Created: 2025-12-31
 """
 
 import numpy as np

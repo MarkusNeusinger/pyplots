@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 circos-basic: Circos Plot
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -65,7 +65,7 @@ p = figure(
 )
 
 # Styling
-p.title.text_font_size = "32pt"
+p.title.text_font_size = "48pt"
 p.title.align = "center"
 p.xaxis.visible = False
 p.yaxis.visible = False
@@ -111,7 +111,7 @@ for i, (start, end) in enumerate(segment_angles):
         x=[label_x],
         y=[label_y],
         text=[regions[i]],
-        text_font_size="20pt",
+        text_font_size="28pt",
         text_align="center",
         text_baseline="middle",
         text_color="#333333",
@@ -253,8 +253,9 @@ for i, region in enumerate(regions):
         text_color="#333333",
     )
 
-# Add title for track
-p.text(x=[-1.35], y=[-1.35], text=["Inner track: GDP Growth (%)"], text_font_size="14pt", text_color="#666666")
+# Add title for track (positioned near the inner track for clarity)
+p.text(x=[-0.45], y=[-0.45], text=["Inner track:"], text_font_size="20pt", text_color="#666666", text_align="center")
+p.text(x=[-0.45], y=[-0.55], text=["GDP Growth (%)"], text_font_size="20pt", text_color="#666666", text_align="center")
 
 # Save outputs
 export_png(p, filename="plot.png")

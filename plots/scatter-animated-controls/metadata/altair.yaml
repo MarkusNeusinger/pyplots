@@ -1,0 +1,27 @@
+library: altair
+specification_id: scatter-animated-controls
+created: '2025-12-31T13:51:00Z'
+updated: '2025-12-31T13:54:38Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20620303747
+issue: 3067
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-animated-controls/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-animated-controls/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-animated-controls/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent adaptation of animated concept to static faceted view, following spec
+    guidance for libraries without animation
+  - Clean Gapminder-inspired data with realistic development metrics across multiple
+    decades
+  - Good use of Altair declarative grammar with proper encoding types (Q, N, O)
+  - Effective use of size encoding for population and color for regions
+  - Proper scale domains ensure consistent axes across all facets for easy comparison
+  weaknesses:
+  - Year labels at top of facets could be slightly larger for emphasis
+  - Legend placement creates slight right-margin crowding; could benefit from more
+    padding
+  - Missing interactive() call for HTML output which would enable zoom/pan exploration

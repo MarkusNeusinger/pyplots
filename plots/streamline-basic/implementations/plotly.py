@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 streamline-basic: Basic Streamline Plot
 Library: plotly 6.5.0 | Python 3.13.11
-Quality: 78/100 | Created: 2025-12-31
+Quality: 82/100 | Created: 2025-12-31
 """
 
 import numpy as np

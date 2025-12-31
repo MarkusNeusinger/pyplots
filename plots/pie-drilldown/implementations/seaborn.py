@@ -1,12 +1,15 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-drilldown: Drilldown Pie Chart with Click Navigation
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-31
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
 
+
+np.random.seed(42)
 
 # Set seaborn style for consistent theming
 sns.set_theme(style="whitegrid", palette="colorblind")
@@ -41,9 +44,9 @@ _, _, autotexts1 = ax1.pie(
     colors=main_colors,
     autopct=lambda pct: f"{pct:.1f}%\n(${int(pct * main_total / 100):,})",
     explode=explode_main,
-    startangle=90,
-    pctdistance=0.6,
-    labeldistance=1.15,
+    startangle=140,
+    pctdistance=0.55,
+    labeldistance=1.18,
     wedgeprops={"edgecolor": "white", "linewidth": 2},
     textprops={"fontsize": 14},
 )
@@ -77,9 +80,9 @@ _, _, autotexts2 = ax2.pie(
     labels=drill_labels,
     colors=drill_colors,
     autopct=lambda pct: f"{pct:.1f}%\n(${int(pct * drill_total / 100):,})",
-    startangle=90,
-    pctdistance=0.65,
-    labeldistance=1.12,
+    startangle=45,
+    pctdistance=0.55,
+    labeldistance=1.20,
     wedgeprops={"edgecolor": "white", "linewidth": 2},
     textprops={"fontsize": 14},
 )

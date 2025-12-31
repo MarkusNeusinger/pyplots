@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-drilldown: Drilldown Pie Chart with Click Navigation
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-31
@@ -60,58 +60,57 @@ hierarchy = {
     "social": {"name": "Social Media", "parent": "digital", "value": 120000},
 }
 
-
-def get_value(node_id):
-    """Calculate total value for a node (sum of children if not leaf)."""
-    node = hierarchy[node_id]
-    if "value" in node:
-        return node["value"]
-    return sum(get_value(child) for child in node.get("children", []))
-
-
-def get_level_data(parent_id):
-    """Get data for displaying children of a parent node."""
-    node = hierarchy[parent_id]
-    children = node.get("children", [])
-    if not children:
-        return [], [], [], [], [], []
-
-    names = []
-    values = []
-    ids = []
-    has_children = []
-
-    for child_id in children:
-        child = hierarchy[child_id]
-        names.append(child["name"])
-        values.append(get_value(child_id))
-        ids.append(child_id)
-        has_children.append("children" in child)
-
-    return names, values, ids, has_children
-
-
-# Color palette - Python Blue variants and complementary colors
+# Color palette - high contrast, colorblind-safe colors
 colors = [
     "#306998",  # Python Blue
     "#FFD43B",  # Python Yellow
-    "#4B8BBE",  # Light Python Blue
-    "#646464",  # Gray
-    "#3776AB",  # Another Blue
-    "#FF6B6B",  # Coral
-    "#4ECDC4",  # Teal
-    "#45B7D1",  # Sky Blue
+    "#E74C3C",  # Red
+    "#2ECC71",  # Green
+    "#9B59B6",  # Purple
+    "#F39C12",  # Orange
+    "#1ABC9C",  # Teal
+    "#3498DB",  # Light Blue
 ]
 
-# Get initial data (root level)
-names, values, ids, has_children = get_level_data("root")
+# Calculate values for root level children (inline, no helper functions)
+root_children = hierarchy["root"]["children"]
+names = []
+values = []
+ids = []
+has_children_list = []
+
+for child_id in root_children:
+    child = hierarchy[child_id]
+    names.append(child["name"])
+    ids.append(child_id)
+    has_children_list.append("children" in child)
+    # Calculate value: sum of all descendants
+    if "value" in child:
+        values.append(child["value"])
+    else:
+        # Sum values of all descendants
+        stack = list(child.get("children", []))
+        total_val = 0
+        while stack:
+            node_id = stack.pop()
+            node = hierarchy[node_id]
+            if "value" in node:
+                total_val += node["value"]
+            elif "children" in node:
+                stack.extend(node["children"])
+        values.append(total_val)
+
 total = sum(values)
 percentages = [v / total * 100 for v in values]
 
-# Calculate angles for pie wedges
+# Calculate angles for pie wedges (counter-clockwise from 12 o'clock)
+# Start from pi/2 (12 o'clock position) and go counter-clockwise
 angles = [v / total * 2 * pi for v in values]
-start_angles = [sum(angles[:i]) for i in range(len(angles))]
-end_angles = [sum(angles[: i + 1]) for i in range(len(angles))]
+start_angles = [pi / 2 + sum(angles[:i]) for i in range(len(angles))]
+end_angles = [pi / 2 + sum(angles[: i + 1]) for i in range(len(angles))]
+
+# Assign colors to each slice
+slice_colors = colors[: len(names)]
 
 # Create source data
 source = ColumnDataSource(
@@ -119,10 +118,10 @@ source = ColumnDataSource(
         "names": names,
         "values": values,
         "ids": ids,
-        "has_children": has_children,
+        "has_children": has_children_list,
         "start_angle": start_angles,
         "end_angle": end_angles,
-        "color": colors[: len(names)],
+        "color": slice_colors,
         "percentage": percentages,
         "label": [f"{n}\n${v / 1000:.0f}K\n({p:.1f}%)" for n, v, p in zip(names, values, percentages, strict=True)],
     }
@@ -130,9 +129,9 @@ source = ColumnDataSource(
 
 # Label source for the center of each wedge
 mid_angles = [(s + e) / 2 for s, e in zip(start_angles, end_angles, strict=True)]
-label_radius = 0.6
-label_x = [label_radius * np.cos(a - pi / 2 + pi) for a in mid_angles]
-label_y = [label_radius * np.sin(a - pi / 2 + pi) for a in mid_angles]
+label_radius = 0.55
+label_x = [label_radius * np.cos(a) for a in mid_angles]
+label_y = [label_radius * np.sin(a) for a in mid_angles]
 
 label_source = ColumnDataSource(
     data={
@@ -154,7 +153,7 @@ p = figure(
 )
 
 # Style the figure
-p.title.text_font_size = "36pt"
+p.title.text_font_size = "48pt"
 p.title.align = "center"
 p.title.text_color = "#306998"
 p.axis.visible = False
@@ -162,29 +161,26 @@ p.grid.visible = False
 p.outline_line_color = None
 p.background_fill_color = "#fafafa"
 
-# Draw pie wedges
-wedges = p.wedge(
-    x=0,
-    y=0,
-    radius=0.9,
-    start_angle="start_angle",
-    end_angle="end_angle",
-    color="color",
-    source=source,
-    line_color="white",
-    line_width=3,
-    direction="clock",
-    start_angle_units="rad",
-    end_angle_units="rad",
-)
+# Draw individual wedges with explicit colors (no direction='clock' to avoid rendering bug)
+for i in range(len(names)):
+    p.wedge(
+        x=0,
+        y=0,
+        radius=0.9,
+        start_angle=start_angles[i],
+        end_angle=end_angles[i],
+        fill_color=slice_colors[i],
+        line_color="white",
+        line_width=4,
+    )
 
-# Add labels
+# Add labels with larger font size for 3600x3600 canvas
 labels = p.text(
     x="x",
     y="y",
     text="text",
     source=label_source,
-    text_font_size="18pt",
+    text_font_size="28pt",
     text_align="center",
     text_baseline="middle",
     text_color="white",
@@ -193,20 +189,20 @@ labels = p.text(
 
 # Breadcrumb navigation div
 breadcrumb = Div(
-    text='<div style="font-size: 24pt; font-family: Arial, sans-serif; color: #306998; '
+    text='<div style="font-size: 32pt; font-family: Arial, sans-serif; color: #306998; '
     'padding: 20px; text-align: center;">'
     '<span style="cursor: pointer; color: #306998; font-weight: bold;">📊 Total Expenses</span>'
     '<span style="color: #999; margin: 0 10px;"> | Click a slice to drill down</span>'
     "</div>",
     width=3600,
-    height=80,
+    height=100,
 )
 
 # Store hierarchy data as JSON for JavaScript
 hierarchy_json = json.dumps(hierarchy)
 colors_json = json.dumps(colors)
 
-# JavaScript callback for drilling down on click
+# JavaScript callback for drilling down on click (uses main source for interactivity)
 callback = CustomJS(
     args={
         "source": source,
@@ -232,7 +228,6 @@ callback = CustomJS(
 
     // Check if node has children (can drill down)
     if (!clicked_node.children || clicked_node.children.length === 0) {
-        // Leaf node - show message
         return;
     }
 
@@ -252,11 +247,11 @@ callback = CustomJS(
     const percentages = values.map(v => v / total * 100);
     const has_children = children.map(id => hierarchy[id].children !== undefined);
 
-    // Calculate angles
+    // Calculate angles (counter-clockwise from 12 o'clock)
     const angles = values.map(v => v / total * 2 * Math.PI);
     const start_angles = [];
     const end_angles = [];
-    let cumsum = 0;
+    let cumsum = Math.PI / 2;
     for (let i = 0; i < angles.length; i++) {
         start_angles.push(cumsum);
         cumsum += angles[i];
@@ -278,9 +273,9 @@ callback = CustomJS(
 
     // Update label positions
     const mid_angles = start_angles.map((s, i) => (s + end_angles[i]) / 2);
-    const label_radius = 0.6;
-    label_source.data['x'] = mid_angles.map(a => label_radius * Math.cos(a - Math.PI/2 + Math.PI));
-    label_source.data['y'] = mid_angles.map(a => label_radius * Math.sin(a - Math.PI/2 + Math.PI));
+    const label_radius = 0.55;
+    label_source.data['x'] = mid_angles.map(a => label_radius * Math.cos(a));
+    label_source.data['y'] = mid_angles.map(a => label_radius * Math.sin(a));
     label_source.data['text'] = names.map((n, i) =>
         n + '\\n$' + (values[i]/1000).toFixed(0) + 'K\\n(' + percentages[i].toFixed(1) + '%)'
     );
@@ -289,7 +284,7 @@ callback = CustomJS(
     window.nav_path.push(clicked_id);
 
     // Update breadcrumb
-    let breadcrumb_html = '<div style="font-size: 24pt; font-family: Arial, sans-serif; color: #306998; padding: 20px; text-align: center;">';
+    let breadcrumb_html = '<div style="font-size: 32pt; font-family: Arial, sans-serif; color: #306998; padding: 20px; text-align: center;">';
     for (let i = 0; i < window.nav_path.length; i++) {
         const node_id = window.nav_path[i];
         const node = hierarchy[node_id];
@@ -308,10 +303,6 @@ callback = CustomJS(
 # Add tap tool with callback
 p.select(type=TapTool).callback = callback
 
-# Add hover effect by using selection
-wedges.selection_glyph = wedges.glyph
-wedges.nonselection_glyph = wedges.glyph
-
 # Create layout
 layout = column(breadcrumb, p)
 
@@ -319,4 +310,4 @@ layout = column(breadcrumb, p)
 save(layout, filename="plot.html", resources=INLINE, title="pie-drilldown · bokeh · pyplots.ai")
 
 # Export static PNG (shows initial state)
-export_png(p, filename="plot.png")
+export_png(p, filename="plot.png", timeout=30)

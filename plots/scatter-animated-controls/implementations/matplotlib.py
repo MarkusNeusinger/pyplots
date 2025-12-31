@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-animated-controls: Animated Scatter Plot with Play Controls
 Library: matplotlib 3.10.8 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -41,8 +41,8 @@ for i in range(n_countries):
         life_data[i, t] = min(85, base_life[i] + life_growth[i] * t + noise_life)
         pop_data[i, t] = base_pop[i] * (1 + pop_growth[i]) ** t
 
-# Colors for countries (colorblind-safe palette)
-colors = ["#306998", "#FFD43B", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00"]
+# Colors for countries (colorblind-safe palette - avoiding similar yellows)
+colors = ["#306998", "#E69F00", "#CC79A7", "#56B4E9", "#009E73", "#D55E00", "#0072B2", "#882255"]
 
 # Select 4 key time points to show evolution
 key_years_idx = [0, 6, 13, 19]  # 2000, 2006, 2013, 2019
@@ -98,12 +98,12 @@ for idx, (ax, year_idx) in enumerate(zip(axes, key_years_idx, strict=True)):
     )
 
     # Panel title
-    ax.set_title(f"Year {year}", fontsize=18, fontweight="bold")
+    ax.set_title(f"Year {year}", fontsize=20, fontweight="bold")
 
     # Axis labels
-    ax.set_xlabel("GDP per Capita (thousands $)", fontsize=14)
-    ax.set_ylabel("Life Expectancy (years)", fontsize=14)
-    ax.tick_params(axis="both", labelsize=12)
+    ax.set_xlabel("GDP per Capita (thousands $)", fontsize=20)
+    ax.set_ylabel("Life Expectancy (years)", fontsize=20)
+    ax.tick_params(axis="both", labelsize=16)
 
     # Consistent axis limits across all panels
     ax.set_xlim(0, 80)
@@ -140,18 +140,31 @@ fig.legend(
     bbox_to_anchor=(0.5, -0.02),
 )
 
-# Add annotation about animation controls
-fig.text(
-    0.98,
-    0.02,
-    "▶ Play | || Pause | ◀━━━━━━━━━━━━━━▶ Timeline",
-    ha="right",
-    va="bottom",
-    fontsize=11,
-    color="#306998",
-    fontweight="bold",
-    bbox={"boxstyle": "round,pad=0.3", "facecolor": "#FFD43B", "alpha": 0.7, "edgecolor": "none"},
-)
+# Add prominent animation control panel
+control_box = fig.add_axes([0.3, 0.01, 0.4, 0.035])
+control_box.set_xlim(0, 10)
+control_box.set_ylim(0, 1)
+control_box.axis("off")
+
+# Play button
+control_box.add_patch(plt.Rectangle((0.2, 0.15), 0.8, 0.7, facecolor="#306998", edgecolor="#1a3d5c", linewidth=2))
+control_box.text(0.6, 0.5, "▶", ha="center", va="center", fontsize=16, color="white", fontweight="bold")
+
+# Pause button
+control_box.add_patch(plt.Rectangle((1.2, 0.15), 0.8, 0.7, facecolor="#666666", edgecolor="#444444", linewidth=2))
+control_box.text(1.6, 0.5, "||", ha="center", va="center", fontsize=14, color="white", fontweight="bold")
+
+# Timeline slider
+control_box.add_patch(plt.Rectangle((2.5, 0.35), 7, 0.3, facecolor="#E0E0E0", edgecolor="#999999", linewidth=1))
+# Progress indicator
+control_box.add_patch(plt.Rectangle((2.5, 0.35), 5.25, 0.3, facecolor="#306998", edgecolor="none"))
+# Slider handle
+control_box.add_patch(plt.Circle((7.75, 0.5), 0.25, facecolor="white", edgecolor="#306998", linewidth=2))
+
+# Year labels on timeline
+control_box.text(2.5, 0.1, "2000", ha="center", va="top", fontsize=10, color="#666666")
+control_box.text(9.5, 0.1, "2019", ha="center", va="top", fontsize=10, color="#666666")
+control_box.text(7.75, 0.9, "2015", ha="center", va="bottom", fontsize=11, color="#306998", fontweight="bold")
 
 plt.tight_layout(rect=[0, 0.05, 1, 0.92])
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

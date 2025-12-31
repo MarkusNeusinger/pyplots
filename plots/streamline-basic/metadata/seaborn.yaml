@@ -1,0 +1,25 @@
+library: seaborn
+specification_id: streamline-basic
+created: '2025-12-31T00:48:49Z'
+updated: '2025-12-31T01:07:48Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20609206863
+issue: 2861
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/streamline-basic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/streamline-basic/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent visual clarity with well-sized streamlines and viridis color encoding
+  - Creative solution using seaborn lineplot with units parameter to render individual
+    streamlines
+  - Proper Euler integration for tracing streamlines through the vector field
+  - Clean vortex pattern demonstrates the circular flow field effectively
+  - Arrowheads correctly indicate flow direction
+  - Good use of seaborn theming (sns.set_theme, sns.set_context, sns.despine)
+  weaknesses:
+  - Colorbar label missing units in rendered output
+  - Axis labels in rendered image missing units despite being in code

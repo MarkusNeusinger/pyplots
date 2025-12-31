@@ -1,0 +1,27 @@
+library: plotly
+specification_id: network-directed
+created: '2025-12-30T23:56:01Z'
+updated: '2025-12-31T00:02:42Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608483175
+issue: 2858
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/network-directed/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-directed/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/network-directed/plotly/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent circular layout algorithm that positions nodes evenly and prevents overlap
+  - Clear arrow direction implementation using Plotly annotations with appropriate
+    sizing
+  - Well-chosen color scheme that distinguishes module groups effectively and is colorblind-accessible
+  - Good use of Plotly hover template for interactive exploration
+  - Title follows the exact spec-id format required
+  - Realistic software dependency scenario that matches the spec example perfectly
+  weaknesses:
+  - Some longer node labels (middleware, validators, schemas) appear slightly cramped
+    within their circular markers
+  - The graph does not include bidirectional edges to demonstrate curved edge handling
+    mentioned in spec notes

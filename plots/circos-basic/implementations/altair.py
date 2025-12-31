@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 circos-basic: Circos Plot
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -63,9 +63,9 @@ center_y = height / 2
 # Circle parameters
 outer_radius = 400
 inner_radius = 360
-track_outer_radius = 350
-track_inner_radius = 300
-ribbon_radius = 295
+track_outer_radius = 340
+track_inner_radius = 280
+ribbon_radius = 270
 
 # Calculate segment positions
 gap = 0.05  # Gap between segments in radians
@@ -170,8 +170,8 @@ for source, target, value in connections:
     mid1 = (arc1["start"] + arc1["end"]) / 2
     mid2 = (arc2["start"] + arc2["end"]) / 2
 
-    # Ribbon width proportional to value
-    width_factor = value / max_value * 0.12
+    # Ribbon width proportional to value (minimum 0.04 for visibility)
+    width_factor = max(0.04, value / max_value * 0.12)
 
     # Points for source segment
     angle1_start = mid1 - width_factor
@@ -247,7 +247,7 @@ labels_data = []
 for name in segments:
     arc = segment_arcs[name]
     mid_angle = (arc["start"] + arc["end"]) / 2
-    label_radius = outer_radius + 35
+    label_radius = outer_radius + 45
 
     labels_data.append(
         {
@@ -276,15 +276,29 @@ outer_ring_chart = (
     )
 )
 
-# Create inner track chart
+# Define darker shades for inner track (to distinguish from outer ring)
+inner_colors = {
+    "Core": "#1E4A6E",  # Darker Python Blue
+    "API": "#C4A12B",  # Darker Python Yellow
+    "Database": "#1E6B42",  # Darker Sea Green
+    "Auth": "#A01030",  # Darker Crimson
+    "Cache": "#6A4AAB",  # Darker Medium Purple
+    "Queue": "#18877D",  # Darker Light Sea Green
+    "Logger": "#C46B00",  # Darker Dark Orange
+    "Config": "#505A64",  # Darker Slate Gray
+}
+
+# Create inner track chart with distinct styling
 inner_track_chart = (
     alt.Chart(inner_track_df)
-    .mark_line(filled=True, strokeWidth=0, opacity=0.6)
+    .mark_line(filled=True, strokeWidth=2, stroke="#333333", opacity=0.85)
     .encode(
         x=alt.X("x:Q", scale=alt.Scale(domain=[0, width]), axis=None),
         y=alt.Y("y:Q", scale=alt.Scale(domain=[0, height]), axis=None),
         color=alt.Color(
-            "segment:N", scale=alt.Scale(domain=list(colors.keys()), range=list(colors.values())), legend=None
+            "segment:N",
+            scale=alt.Scale(domain=list(inner_colors.keys()), range=list(inner_colors.values())),
+            legend=None,
         ),
         detail="segment:N",
         order="order:Q",
@@ -311,10 +325,10 @@ ribbons_chart = (
     )
 )
 
-# Create labels chart
+# Create labels chart with larger font for 3600px canvas
 labels_chart = (
     alt.Chart(labels_df)
-    .mark_text(fontSize=16, fontWeight="bold")
+    .mark_text(fontSize=22, fontWeight="bold")
     .encode(
         x=alt.X("x:Q", scale=alt.Scale(domain=[0, width])),
         y=alt.Y("y:Q", scale=alt.Scale(domain=[0, height])),
@@ -334,7 +348,17 @@ chart = (
         title=alt.Title(text="circos-basic · altair · pyplots.ai", fontSize=28, anchor="middle"),
     )
     .configure_view(strokeWidth=0)
-    .configure_legend(padding=10, cornerRadius=5, fillColor="#FFFFFF", strokeColor="#DDDDDD")
+    .configure_legend(
+        padding=15,
+        cornerRadius=5,
+        fillColor="#FFFFFF",
+        strokeColor="#CCCCCC",
+        strokeWidth=1,
+        titleFontSize=20,
+        labelFontSize=16,
+        symbolSize=250,
+        offset=20,
+    )
 )
 
 # Save as PNG (3600x3600 px with scale_factor=3.0)

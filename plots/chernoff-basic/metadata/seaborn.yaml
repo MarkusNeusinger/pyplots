@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: chernoff-basic
 created: '2025-12-31T21:36:50Z'
-updated: '2025-12-31T21:51:32Z'
+updated: '2025-12-31T21:57:25Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20627533498
 issue: 3003
@@ -10,19 +10,17 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/chernoff-basic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/chernoff-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 81
+quality_score: 82
 review:
   strengths:
-  - Clear visual differentiation between species through distinct face colors (Set2
-    palette)
-  - Effective feature mapping clearly documented at bottom of plot
-  - Well-organized 3x5 grid layout with species grouped by row for easy comparison
-  - Title correctly formatted as spec-id · library · pyplots.ai
-  - Uses seaborn heatmap (from original code) and styling features appropriately
+  - Excellent use of the Iris dataset with intelligent sample selection to maximize
+    visible variation within each species
+  - Good colorblind-safe palette (Set2) with clear species differentiation
+  - Comprehensive facial feature mappings with wide parameter ranges for visible variation
+  - Clean feature mapping explanation at the bottom helps interpretation
+  - Species labels on each face aid identification
   weaknesses:
-  - Heatmap shown in code is missing from the rendered output - only faces grid is
-    visible
-  - Face sizes and shapes appear very similar within species despite intentional diverse
-    sample selection
-  - Setosa faces all have sad/frowning expressions while Virginica all have happy
-    expressions - limited variation visible within species
+  - The heatmap (coded at lines 86-101) does not appear in the rendered output image,
+    reducing the complementary value
+  - Within-species normalization makes cross-species comparisons less intuitive (Setosa
+    faces look similar to Virginica despite different actual values)

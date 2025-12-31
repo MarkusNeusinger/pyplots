@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 tree-phylogenetic: Phylogenetic Tree Diagram
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-31
@@ -11,49 +11,50 @@ from pygal.style import Style
 
 # Primate phylogenetic tree based on mitochondrial DNA divergence (simplified)
 # Tree structure: ((((Human, Chimpanzee), Gorilla), Orangutan), (Gibbon, Macaque))
-# Using wider y-spacing for better vertical distribution
+# Scaled to use more canvas width - multiply x positions to spread tree wider
+scale_factor = 1.35
 species_data = [
-    ("Human", 0.70, 0),
-    ("Chimpanzee", 0.70, 1.5),
-    ("Gorilla", 0.60, 3),
-    ("Orangutan", 0.45, 5),
-    ("Gibbon", 0.70, 7),
-    ("Macaque", 0.70, 8.5),
+    ("Human", 0.95 * scale_factor, 0),
+    ("Chimpanzee", 0.95 * scale_factor, 1.5),
+    ("Gorilla", 0.82 * scale_factor, 3),
+    ("Orangutan", 0.62 * scale_factor, 5),
+    ("Gibbon", 0.95 * scale_factor, 7),
+    ("Macaque", 0.95 * scale_factor, 8.5),
 ]
 
-# Y positions from species data (now with wider spacing)
+# Y positions from species data
 species_y = {name: y for name, _, y in species_data}
 species_x = {name: x for name, x, _ in species_data}
 
-# Define tree connections with improved spacing
+# Define tree connections
 tree_segments = []
 
-# Human-Chimpanzee clade (most recent common ancestor at x=0.60)
-hc_ancestor_x = 0.60
+# Human-Chimpanzee clade (most recent common ancestor)
+hc_ancestor_x = 0.82 * scale_factor
 hc_ancestor_y = (species_y["Human"] + species_y["Chimpanzee"]) / 2
-tree_segments.append([(hc_ancestor_x, species_y["Human"]), (0.70, species_y["Human"])])
-tree_segments.append([(hc_ancestor_x, species_y["Chimpanzee"]), (0.70, species_y["Chimpanzee"])])
+tree_segments.append([(hc_ancestor_x, species_y["Human"]), (species_x["Human"], species_y["Human"])])
+tree_segments.append([(hc_ancestor_x, species_y["Chimpanzee"]), (species_x["Chimpanzee"], species_y["Chimpanzee"])])
 tree_segments.append([(hc_ancestor_x, species_y["Human"]), (hc_ancestor_x, species_y["Chimpanzee"])])
 
-# Human-Chimp-Gorilla clade (ancestor at x=0.45)
-hcg_ancestor_x = 0.45
+# Human-Chimp-Gorilla clade
+hcg_ancestor_x = 0.62 * scale_factor
 hcg_ancestor_y = (hc_ancestor_y + species_y["Gorilla"]) / 2
 tree_segments.append([(hcg_ancestor_x, hc_ancestor_y), (hc_ancestor_x, hc_ancestor_y)])
-tree_segments.append([(hcg_ancestor_x, species_y["Gorilla"]), (0.60, species_y["Gorilla"])])
+tree_segments.append([(hcg_ancestor_x, species_y["Gorilla"]), (species_x["Gorilla"], species_y["Gorilla"])])
 tree_segments.append([(hcg_ancestor_x, hc_ancestor_y), (hcg_ancestor_x, species_y["Gorilla"])])
 
-# Great apes clade including Orangutan (ancestor at x=0.30)
-great_apes_x = 0.30
+# Great apes clade including Orangutan
+great_apes_x = 0.41 * scale_factor
 great_apes_y = (hcg_ancestor_y + species_y["Orangutan"]) / 2
 tree_segments.append([(great_apes_x, hcg_ancestor_y), (hcg_ancestor_x, hcg_ancestor_y)])
-tree_segments.append([(great_apes_x, species_y["Orangutan"]), (0.45, species_y["Orangutan"])])
+tree_segments.append([(great_apes_x, species_y["Orangutan"]), (species_x["Orangutan"], species_y["Orangutan"])])
 tree_segments.append([(great_apes_x, hcg_ancestor_y), (great_apes_x, species_y["Orangutan"])])
 
-# Gibbon-Macaque clade (ancestor at x=0.50)
-gm_ancestor_x = 0.50
+# Gibbon-Macaque clade
+gm_ancestor_x = 0.68 * scale_factor
 gm_ancestor_y = (species_y["Gibbon"] + species_y["Macaque"]) / 2
-tree_segments.append([(gm_ancestor_x, species_y["Gibbon"]), (0.70, species_y["Gibbon"])])
-tree_segments.append([(gm_ancestor_x, species_y["Macaque"]), (0.70, species_y["Macaque"])])
+tree_segments.append([(gm_ancestor_x, species_y["Gibbon"]), (species_x["Gibbon"], species_y["Gibbon"])])
+tree_segments.append([(gm_ancestor_x, species_y["Macaque"]), (species_x["Macaque"], species_y["Macaque"])])
 tree_segments.append([(gm_ancestor_x, species_y["Gibbon"]), (gm_ancestor_x, species_y["Macaque"])])
 
 # Root: connects great apes and gibbon-macaque clades (x=0)
@@ -100,11 +101,11 @@ chart = pygal.XY(
     show_dots=False,
     stroke_style={"width": 6},
     fill=False,
-    show_x_guides=True,
+    show_x_guides=False,
     show_y_guides=False,
     show_y_labels=False,
     range=(-1.5, 10),
-    xrange=(-0.05, 1.0),
+    xrange=(-0.05, 1.45),
     print_values=False,
 )
 
@@ -123,35 +124,30 @@ for i, (_name, x_pos, y_pos) in enumerate(species_data):
 svg_content = chart.render().decode("utf-8")
 
 # Calculate pixel positions for species labels
-# Plot area: x ranges from ~180 to ~4620 for data range -0.05 to 1.0
-# y ranges from ~100 to ~2500 for data range -1.5 to 10
+# Plot area bounds for coordinate conversion
 plot_x_min, plot_x_max = 180, 4620
 plot_y_min, plot_y_max = 100, 2500
-data_x_min, data_x_max = -0.05, 1.0
+data_x_min, data_x_max = -0.05, 1.45
 data_y_min, data_y_max = -1.5, 10
-
-
-def data_to_pixel(x_data, y_data):
-    """Convert data coordinates to pixel coordinates."""
-    px = plot_x_min + (x_data - data_x_min) / (data_x_max - data_x_min) * (plot_x_max - plot_x_min)
-    # Y is inverted in SVG (top is 0)
-    py = plot_y_max - (y_data - data_y_min) / (data_y_max - data_y_min) * (plot_y_max - plot_y_min)
-    return px, py
-
 
 # Generate species label SVG elements positioned directly next to leaf nodes
 species_labels_svg = '<g class="species-labels">\n'
 for i, (name, x_pos, y_pos) in enumerate(species_data):
-    px, py = data_to_pixel(x_pos, y_pos)
+    # Inline coordinate conversion (data to pixel)
+    px = plot_x_min + (x_pos - data_x_min) / (data_x_max - data_x_min) * (plot_x_max - plot_x_min)
+    py = plot_y_max - (y_pos - data_y_min) / (data_y_max - data_y_min) * (plot_y_max - plot_y_min)
     color = species_colors[i % len(species_colors)]
     # Position label to the right of the marker
     species_labels_svg += f'  <text x="{px + 50}" y="{py + 12}" font-size="42" fill="{color}" '
     species_labels_svg += f'font-family="sans-serif" font-weight="bold">{name}</text>\n'
 species_labels_svg += "</g>\n"
 
-# Add scale bar with label
-scale_px, scale_py = data_to_pixel(0.0, -1.0)
-scale_end_px, _ = data_to_pixel(0.1, -1.0)
+# Add scale bar with label - inline coordinate conversion
+scale_x_data, scale_y_data = 0.0, -1.0
+scale_px = plot_x_min + (scale_x_data - data_x_min) / (data_x_max - data_x_min) * (plot_x_max - plot_x_min)
+scale_py = plot_y_max - (scale_y_data - data_y_min) / (data_y_max - data_y_min) * (plot_y_max - plot_y_min)
+scale_end_x_data = 0.1
+scale_end_px = plot_x_min + (scale_end_x_data - data_x_min) / (data_x_max - data_x_min) * (plot_x_max - plot_x_min)
 scale_width = scale_end_px - scale_px
 
 scale_bar_svg = f"""

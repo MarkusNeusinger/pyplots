@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 candlestick-volume: Stock Candlestick Chart with Volume
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 48/100 | Created: 2025-12-31
@@ -44,6 +44,7 @@ bullish = close_prices > open_prices
 # Colors for bullish (green) and bearish (red)
 bullish_color = "#2E7D32"  # Dark green
 bearish_color = "#C62828"  # Dark red
+wick_color = "#555555"  # Gray for wicks
 
 # Custom style for the OHLC price chart (upper pane ~75%)
 price_style = Style(
@@ -52,80 +53,82 @@ price_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=(bullish_color, bearish_color, "#888888", "#888888"),
+    colors=(wick_color, bullish_color, bearish_color),
     title_font_size=56,
     label_font_size=32,
     major_label_font_size=28,
     legend_font_size=28,
     value_font_size=24,
-    stroke_width=3,
-    opacity=0.9,
+    stroke_width=2,
+    opacity=1.0,
     opacity_hover=1.0,
 )
 
-# Create a chart showing OHLC as range bars (using min-max for each day)
-# Pygal StackedBar can show ranges by stacking from baseline
-# We use a custom approach: Line chart with high/low as filled range
-chart = pygal.Line(
+# Use XY scatter for OHLC representation
+# For candlestick approximation we show:
+# - High-low wicks as a thin line connecting high and low
+# - Open-close body as dots: green for bullish, red for bearish
+chart = pygal.XY(
     width=4800,
     height=2025,  # 75% of 2700 for price pane
     style=price_style,
     title="candlestick-volume · pygal · pyplots.ai",
     x_title="Trading Day",
     y_title="Price ($)",
-    show_dots=True,
-    dots_size=8,
-    stroke_style={"width": 4},
     show_legend=True,
     legend_at_bottom=True,
     legend_box_size=28,
-    fill=False,
-    range=(int(min(low_prices) - 5), int(max(high_prices) + 5)),
+    show_dots=True,
+    dots_size=10,
+    stroke=True,
+    stroke_style={"width": 2},
     show_y_guides=True,
     show_x_guides=False,
-    x_label_rotation=45,
-    truncate_label=10,
     margin=60,
-    spacing=25,
-    interpolate=None,  # No interpolation - connect with straight lines
+    spacing=20,
+    x_label_rotation=45,
+    range=(int(min(low_prices) - 5), int(max(high_prices) + 5)),
 )
 
-# Create separate series for bullish and bearish days to show color differentiation
-# For candlestick approximation, we show:
-# - High line (dashed gray) - shows the upper wick
-# - Low line (dashed gray) - shows the lower wick
-# - Close (bullish days) - solid green dots
-# - Close (bearish days) - solid red dots
-# - Open line for reference
+# Create data series for wicks (vertical lines from low to high)
+# We'll create individual wick lines for each day
+wick_data = []
+for i in range(n_days):
+    day = i + 1
+    # Add low point and high point to draw wick
+    wick_data.append((day, round(low_prices[i], 2)))
+    wick_data.append((day, round(high_prices[i], 2)))
+    # Add None to break line between days
+    wick_data.append(None)
 
-bullish_close = []
-bearish_close = []
+# Create separate data for bullish and bearish close prices (body markers)
+bullish_close_data = []
+bearish_close_data = []
+bullish_open_data = []
+bearish_open_data = []
 
 for i in range(n_days):
+    day = i + 1
     if bullish[i]:
-        bullish_close.append({"value": round(close_prices[i], 2), "color": bullish_color})
-        bearish_close.append(None)
+        bullish_close_data.append((day, round(close_prices[i], 2)))
+        bullish_open_data.append((day, round(open_prices[i], 2)))
+        bearish_close_data.append(None)
+        bearish_open_data.append(None)
     else:
-        bullish_close.append(None)
-        bearish_close.append({"value": round(close_prices[i], 2), "color": bearish_color})
+        bearish_close_data.append((day, round(close_prices[i], 2)))
+        bearish_open_data.append((day, round(open_prices[i], 2)))
+        bullish_close_data.append(None)
+        bullish_open_data.append(None)
 
-# Add series - using dots to show close prices with color coding
-chart.add("Bullish Close", bullish_close, stroke_style={"width": 0}, dots_size=12, show_dots=True)
-chart.add("Bearish Close", bearish_close, stroke_style={"width": 0}, dots_size=12, show_dots=True)
-# Add high/low as subtle reference lines
-chart.add(
-    "High",
-    [round(p, 2) for p in high_prices],
-    stroke_style={"width": 2, "dasharray": "5,5"},
-    dots_size=3,
-    show_dots=True,
-)
-chart.add(
-    "Low", [round(p, 2) for p in low_prices], stroke_style={"width": 2, "dasharray": "5,5"}, dots_size=3, show_dots=True
-)
+# Add wicks first (background)
+chart.add("High-Low Range", wick_data, stroke_style={"width": 3}, dots_size=0, show_dots=False)
 
-# X-axis labels - show every 10th day for readability
-chart.x_labels = [f"Day {i + 1}" if i % 10 == 0 else "" for i in range(n_days)]
+# Add bullish markers (green) - larger dots for close, smaller for open
+chart.add("Bullish Close", bullish_close_data, stroke=False, dots_size=16, show_dots=True)
+chart.add("Bearish Close", bearish_close_data, stroke=False, dots_size=16, show_dots=True)
+
+# X-axis labels
+chart.x_labels = [str(i + 1) if i % 10 == 0 else "" for i in range(n_days)]
 
 # Volume chart (lower pane ~25%)
 volume_style = Style(
@@ -141,7 +144,7 @@ volume_style = Style(
     legend_font_size=24,
     value_font_size=20,
     stroke_width=1,
-    opacity=0.8,
+    opacity=0.85,
     opacity_hover=1.0,
 )
 

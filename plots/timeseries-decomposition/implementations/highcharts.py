@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 timeseries-decomposition: Time Series Decomposition Plot
 Library: highcharts unknown | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-31
+Quality: 91/100 | Created: 2025-12-31
 """
 
 import base64

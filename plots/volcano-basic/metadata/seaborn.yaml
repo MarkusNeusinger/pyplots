@@ -1,0 +1,29 @@
+library: seaborn
+specification_id: volcano-basic
+created: '2025-12-31T05:31:24Z'
+updated: '2025-12-31T05:37:02Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612779597
+issue: 2924
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of the classic volcano plot pattern with clear visual
+    separation of significance categories
+  - Proper threshold annotations (p=0.05, FC=2, FC=0.5) provide context for the significance
+    cutoffs
+  - Clean data generation with realistic bimodal distribution for differentially expressed
+    genes
+  - Good use of seaborn hue parameter with custom palette matching the specification
+    colors
+  - Sorting mechanism ensures significant points are plotted on top and remain visible
+  weaknesses:
+  - Color palette could be more colorblind-friendly (consider using blue-orange instead
+    of blue-red)
+  - Missing optional gene labels for top significant features mentioned in the spec
+    notes

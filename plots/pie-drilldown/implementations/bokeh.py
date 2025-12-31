@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 pie-drilldown: Drilldown Pie Chart with Click Navigation
-Library: bokeh | Python 3.13
-Quality: pending | Created: 2025-12-31
+Library: bokeh 3.8.1 | Python 3.13.11
+Quality: 72/100 | Created: 2025-12-31
 """
 
 import json

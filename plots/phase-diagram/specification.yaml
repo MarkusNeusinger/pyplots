@@ -1,0 +1,31 @@
+# Specification-level metadata for phase-diagram
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: phase-diagram
+title: Phase Diagram (State Space Plot)
+
+# Specification tracking
+created: 2025-12-31T10:44:42Z
+updated: 2025-12-31T10:44:42Z
+issue: 3004
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - line
+    - trajectory
+    - phase-portrait
+  data_type:
+    - numeric
+    - continuous
+    - timeseries
+  domain:
+    - science
+    - physics
+    - engineering
+  features:
+    - basic
+    - dynamical-systems
+    - state-space

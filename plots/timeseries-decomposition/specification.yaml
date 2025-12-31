@@ -1,0 +1,34 @@
+# Specification-level metadata for timeseries-decomposition
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: timeseries-decomposition
+title: Time Series Decomposition Plot
+
+# Specification tracking
+created: 2025-12-31T10:25:56Z
+updated: null
+issue: 2992
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - line
+    - timeseries
+    - decomposition
+  data_type:
+    - timeseries
+    - datetime
+    - numeric
+  domain:
+    - general
+    - statistics
+    - finance
+    - science
+  features:
+    - multi-panel
+    - trend
+    - seasonal
+    - residual
+    - analysis

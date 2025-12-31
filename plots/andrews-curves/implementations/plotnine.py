@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 andrews-curves: Andrews Curves for Multivariate Data
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 89/100 | Created: 2025-12-30
@@ -22,35 +22,29 @@ target_names = iris.target_names
 scaler = StandardScaler()
 X_normalized = scaler.fit_transform(X)
 
-
-# Andrews curve function
-def andrews_transform(row, t_values):
-    """Transform a single observation into Andrews curve values."""
-    n = len(row)
-    result = row[0] / np.sqrt(2)
-    for i in range(1, n):
-        if i % 2 == 1:
-            result = result + row[i] * np.sin((i // 2 + 1) * t_values)
-        else:
-            result = result + row[i] * np.cos((i // 2) * t_values)
-    return result
-
-
 # Generate t values for the curve
 t = np.linspace(-np.pi, np.pi, 100)
 
-# Create data for plotting
+# Create data for plotting with inlined Andrews curve transformation
 plot_data = []
 for idx in range(len(X_normalized)):
-    curve_values = andrews_transform(X_normalized[idx], t)
+    row = X_normalized[idx]
+    n = len(row)
+    # Andrews curve Fourier transformation: x1/sqrt(2) + x2*sin(t) + x3*cos(t) + x4*sin(2t) + ...
+    curve_values = row[0] / np.sqrt(2)
+    for i in range(1, n):
+        if i % 2 == 1:
+            curve_values = curve_values + row[i] * np.sin((i // 2 + 1) * t)
+        else:
+            curve_values = curve_values + row[i] * np.cos((i // 2) * t)
     species = target_names[y[idx]]
     for t_val, curve_val in zip(t, curve_values, strict=True):
         plot_data.append({"t": t_val, "value": curve_val, "species": species, "observation": idx})
 
 df = pd.DataFrame(plot_data)
 
-# Python colors for the three species
-colors = ["#306998", "#FFD43B", "#4B8BBE"]
+# Distinct colors for the three species (blue, orange, green - colorblind-safe)
+colors = ["#1f77b4", "#ff7f0e", "#2ca02c"]
 
 # Create plot
 plot = (

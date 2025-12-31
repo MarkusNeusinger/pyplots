@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 andrews-curves: Andrews Curves for Multivariate Data
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 84/100 | Created: 2025-12-31
@@ -56,10 +56,9 @@ X_scaled = (X - X_mean) / X_std
 # Andrews curve function: f(t) = x1/sqrt(2) + x2*sin(t) + x3*cos(t) + x4*sin(2t) + ...
 t_values = np.linspace(-np.pi, np.pi, 100)
 
-# Colors for 3 species - each repeated 15 times for 15 curves per species
-species_colors = ["#306998", "#E67E22", "#9B59B6"]  # Blue, Orange, Purple (high contrast)
+# Colors for 3 species - colorblind-safe palette (blue, orange, purple)
+species_colors = ("#306998", "#E67E22", "#9B59B6")
 n_curves_per_species = 15
-all_colors = tuple(color for color in species_colors for _ in range(n_curves_per_species))
 
 # Custom style for large canvas with increased font sizes for readability
 custom_style = Style(
@@ -68,7 +67,7 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=all_colors,
+    colors=species_colors,
     title_font_size=96,
     label_font_size=64,
     major_label_font_size=56,
@@ -100,7 +99,7 @@ chart = pygal.XY(
     js=["https://kozea.github.io/pygal.js/2.0.x/pygal-tooltips.min.js"],
 )
 
-# Plot curves for each species with interactive tooltips
+# Plot curves for each species - group all curves into single series per species
 for species_idx in range(3):
     species_mask = y == species_idx
     species_data = X_scaled[species_mask]
@@ -109,7 +108,9 @@ for species_idx in range(3):
     # Sample curves per species for clarity
     indices = np.random.choice(len(species_data), n_curves_per_species, replace=False)
 
-    for i, idx in enumerate(indices):
+    # Collect all points for this species into a single series
+    all_points = []
+    for curve_num, idx in enumerate(indices):
         row = species_data[idx]
         orig = original_data[idx]
         # Andrews transform: f(t) = x1/sqrt(2) + x2*sin(t) + x3*cos(t) + x4*sin(2t)
@@ -117,16 +118,19 @@ for species_idx in range(3):
             row[0] / np.sqrt(2) + row[1] * np.sin(t_values) + row[2] * np.cos(t_values) + row[3] * np.sin(2 * t_values)
         )
         # Create points with metadata for interactive tooltips
-        tooltip = f"Sepal: {orig[0]:.1f}×{orig[1]:.1f}cm, Petal: {orig[2]:.1f}×{orig[3]:.1f}cm"
+        tooltip = (
+            f"{species_names[species_idx]}: Sepal {orig[0]:.1f}×{orig[1]:.1f}cm, Petal {orig[2]:.1f}×{orig[3]:.1f}cm"
+        )
         points = [
             {"value": (float(t), float(v)), "label": tooltip} for t, v in zip(t_values, curve_values, strict=True)
         ]
+        all_points.extend(points)
+        # Add None to create a break between curves (discontinuity)
+        if curve_num < len(indices) - 1:
+            all_points.append(None)
 
-        # Add series name only for first curve of each species (others show in legend as empty)
-        if i == 0:
-            chart.add(species_names[species_idx], points, show_dots=False)
-        else:
-            chart.add("", points, show_dots=False)
+    # Add single series per species - clean legend with only 3 entries
+    chart.add(species_names[species_idx], all_points, show_dots=False)
 
 # Save outputs
 chart.render_to_file("plot.html")

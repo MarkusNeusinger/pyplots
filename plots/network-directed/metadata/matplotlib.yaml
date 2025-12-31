@@ -1,0 +1,26 @@
+library: matplotlib
+specification_id: network-directed
+created: '2025-12-30T23:57:08Z'
+updated: '2025-12-31T00:04:41Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608483162
+issue: 2858
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/network-directed/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-directed/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent directed graph visualization with clear arrow directions showing import
+    dependencies
+  - Colorblind-safe palette with good distinction between Core (blue), Api (yellow),
+    Utils (green), and Tests (purple) groups
+  - Well-positioned nodes using manual layout that minimizes edge crossings
+  - Curved arrows effectively handle overlapping paths and clearly show direction
+  - Proper title format following spec-id · library · pyplots.ai convention
+  - Clean KISS code structure with no functions or classes
+  weaknesses:
+  - Some node labels are slightly cramped within circles (e.g., validators, test_routes)
+  - Node radius could be slightly larger to better accommodate longer labels

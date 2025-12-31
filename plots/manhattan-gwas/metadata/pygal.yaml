@@ -1,0 +1,29 @@
+library: pygal
+specification_id: manhattan-gwas
+created: '2025-12-31T05:37:41Z'
+updated: '2025-12-31T15:21:52Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612794558
+issue: 2925
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas/pygal/plot.html
+quality_score: 82
+review:
+  strengths:
+  - Excellent alternating blue/gray color scheme for chromosome distinction that is
+    colorblind-friendly
+  - Both genome-wide significance (p=5×10⁻⁸) and suggestive (p=1×10⁻⁵) threshold lines
+    are clearly visible
+  - Good use of pygal's tooltip system with informative labels showing chromosome,
+    position, and p-value
+  - Significant SNPs are properly highlighted in red as a separate series
+  - Clean chromosome labeling at midpoints with all 22 chromosomes visible
+  weaknesses:
+  - Contains a helper function (format_x_label) which violates the KISS principle
+    requiring flat script structure
+  - Data point markers are somewhat small for the 11,000+ point dataset; larger dots_size
+    would improve visibility
+  - Legend at bottom takes substantial vertical space; could be more compact

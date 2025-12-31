@@ -1,0 +1,27 @@
+library: altair
+specification_id: pie-drilldown
+created: '2025-12-31T14:08:47Z'
+updated: '2025-12-31T15:04:59Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20620543876
+issue: 3072
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/altair/plot.html
+quality_score: 84
+review:
+  strengths:
+  - Excellent visual layout with central main pie and surrounding drilldown charts
+  - Creative solution to show drilldown concept statically with all levels visible
+  - Good use of color consistency (shades within each department breakdown)
+  - Rich tooltips with department, budget, and percentage information
+  - Clean breadcrumb and instructional text
+  - Interactive highlighting via selection parameter
+  - Proper title format in subtitle
+  weaknesses:
+  - Does not implement true click-to-drill navigation (shows all levels simultaneously
+    instead of one level at a time with click to reveal)
+  - Uses helper function violating KISS principle (no functions/classes rule)
+  - Minor text truncation on DevOps label in Engineering drilldown

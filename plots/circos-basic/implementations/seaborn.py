@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 circos-basic: Circos Plot
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-31
@@ -195,7 +195,7 @@ for source, target, value in connections:
 
     # Combine vertices and draw polygon
     vertices = np.vstack([arc1, curve1, arc2, curve2[::-1]])
-    polygon = plt.Polygon(vertices, facecolor=colors[source], edgecolor="none", alpha=0.55, zorder=1)
+    polygon = plt.Polygon(vertices, facecolor=colors[source], edgecolor="none", alpha=0.45, zorder=1)
     ax.add_patch(polygon)
 
 # Configure axes
@@ -203,24 +203,14 @@ ax.set_xlim(-1.7, 1.7)
 ax.set_ylim(-1.7, 1.7)
 ax.axis("off")
 
-# Title with proper format: primary title line with subtitle below
-ax.set_title("circos-basic · seaborn · pyplots.ai", fontsize=28, fontweight="bold", pad=25)
-ax.text(
-    0.5,
-    1.02,
-    "Global Trade Flows Between Regions",
-    transform=ax.transAxes,
-    fontsize=20,
-    ha="center",
-    va="bottom",
-    style="italic",
-)
+# Title with proper format: spec-id · library · pyplots.ai
+ax.set_title("circos-basic · seaborn · pyplots.ai", fontsize=28, fontweight="bold", pad=20)
 
 # Add legend explaining the visualization
 legend_elements = [
     mpatches.Patch(facecolor=colors[0], alpha=0.85, label="Outer ring: Region (arc size ∝ total trade)"),
     mpatches.Patch(facecolor=colors[0], alpha=0.5, label="Inner track: Trade volume (bar height)"),
-    mpatches.Patch(facecolor=colors[0], alpha=0.55, label="Ribbons: Trade flow (width ∝ value)"),
+    mpatches.Patch(facecolor=colors[0], alpha=0.45, label="Ribbons: Trade flow (width ∝ value)"),
 ]
 ax.legend(handles=legend_elements, loc="lower center", bbox_to_anchor=(0.5, -0.08), ncol=1, fontsize=16, frameon=False)
 

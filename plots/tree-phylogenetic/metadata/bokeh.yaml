@@ -1,0 +1,26 @@
+library: bokeh
+specification_id: tree-phylogenetic
+created: '2025-12-31T13:54:21Z'
+updated: '2025-12-31T14:22:11Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20620334569
+issue: 3070
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of Bokeh interactive features including HoverTool with informative
+    tooltips showing scientific names
+  - Clean, professional visual design with appropriate color scheme (Python blue/yellow)
+  - Well-structured clade annotations with italic styling for taxonomic names
+  - Scale bar properly indicates evolutionary distance units
+  - Comprehensive legend explaining node types
+  weaknesses:
+  - Legend positioned in far top-right corner could be closer to the tree for better
+    visual association
+  - Title format includes descriptive prefix instead of strictly following spec-id
+    format

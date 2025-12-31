@@ -1,0 +1,25 @@
+library: matplotlib
+specification_id: tree-phylogenetic
+created: '2025-12-31T13:56:05Z'
+updated: '2025-12-31T14:07:51Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20620332010
+issue: 3070
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent clade coloring with three distinct, colorblind-safe colors (blue, yellow,
+    green) representing apes, monkeys, and prosimians
+  - Clean, readable phylogenetic tree structure with proper proportional branch lengths
+  - Well-formatted title following exact spec convention
+  - Scale bar included for reference (0.05 units)
+  - Scientifically accurate primate phylogeny with correct evolutionary groupings
+  - Clean code structure with pre-computed coordinates for clarity
+  weaknesses:
+  - Missing legend to explain the meaning of the three clade colors (blue=apes, yellow=monkeys,
+    green=prosimians)

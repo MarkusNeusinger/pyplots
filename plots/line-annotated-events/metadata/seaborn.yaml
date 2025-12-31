@@ -1,0 +1,25 @@
+library: seaborn
+specification_id: line-annotated-events
+created: '2025-12-31T10:54:41Z'
+updated: '2025-12-31T10:59:41Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20617488740
+issue: 2997
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-annotated-events/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-annotated-events/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of alternating label heights to prevent overlap with dense events
+  - 'Clear visual hierarchy: blue data line, yellow event markers create strong contrast'
+  - Comprehensive data generation with realistic trend, seasonality, and noise
+  - Proper handling of event markers on the actual data line with scatter points
+  - Well-sized text elements for readability at high resolution
+  weaknesses:
+  - No legend or key explaining the event marker style (spec mentions including a
+    subtle legend or key)
+  - Realistic context score could be higher with more domain-specific context (e.g.,
+    actual product category mentioned in labels)

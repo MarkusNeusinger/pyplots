@@ -1,0 +1,29 @@
+library: highcharts
+specification_id: volcano-basic
+created: '2025-12-31T05:35:59Z'
+updated: '2025-12-31T05:48:29Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612783941
+issue: 2924
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent colorblind-safe palette with blue (#306998), orange (#E07B00), and gray
+    (#999999)
+  - All three threshold lines (horizontal p-value, two vertical fold change) are clearly
+    labeled with annotations
+  - Legend includes count of points in each category, enhancing interpretability
+  - Realistic differential gene expression data with appropriate distribution of significant
+    vs non-significant genes
+  - Proper use of Highcharts annotations module for threshold labels
+  - Interactive HTML version also generated for web viewing
+  weaknesses:
+  - Marker opacity/transparency not implemented (spec mentions using alpha transparency
+    for overlapping points)
+  - Code structure is lengthy due to Selenium screenshot approach, but this is inherent
+    to Highcharts

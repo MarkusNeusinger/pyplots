@@ -1,0 +1,25 @@
+library: bokeh
+specification_id: spectrogram-basic
+created: '2025-12-31T05:36:31Z'
+updated: '2025-12-31T05:49:59Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612805934
+issue: 2927
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/bokeh/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of viridis colormap for perceptually uniform and colorblind-accessible
+    visualization
+  - Clean implementation with proper dB scale conversion for power spectral density
+  - Clear chirp signal demonstrates time-frequency analysis effectively
+  - Proper scipy.signal integration for spectrogram computation
+  - Well-sized text for the 4800x2700 canvas
+  weaknesses:
+  - Grid lines (dashed) are somewhat distracting over the heatmap image; consider
+    disabling or reducing opacity
+  - Could leverage Bokeh interactive hover tools to show frequency/time/power values

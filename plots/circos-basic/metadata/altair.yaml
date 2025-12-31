@@ -1,0 +1,27 @@
+library: altair
+specification_id: circos-basic
+created: '2025-12-31T21:35:04Z'
+updated: '2025-12-31T21:44:02Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20627531457
+issue: 3005
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/circos-basic/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/circos-basic/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/circos-basic/altair/plot.html
+quality_score: 90
+review:
+  strengths:
+  - Excellent circular layout with proper segment proportions and gaps
+  - Creative use of Altair mark_line with filled=True to create arc shapes
+  - Well-implemented Bezier curves for ribbon connections
+  - Good color palette that maintains segment identity throughout
+  - Inner track provides additional data dimension with darker shades
+  - Clean readable code structure with clear data definitions
+  - Tooltips added to ribbons for interactivity
+  weaknesses:
+  - Some ribbons in the center appear slightly congested making individual connections
+    harder to trace
+  - Inner track bars could have more visible separation from each other
+  - Legend shows segment colors but not inner track or ribbon meaning

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pdp-basic: Partial Dependence Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 81/100 | Created: 2025-12-31
@@ -20,12 +20,12 @@ model.fit(X, y)
 
 # Calculate partial dependence for feature 0 (Room Size)
 feature_idx = 0
-pdp_result = partial_dependence(model, X, features=[feature_idx], kind="average", grid_resolution=50)
+pdp_result = partial_dependence(model, X, features=[feature_idx], kind="average", grid_resolution=100)
 feature_values = pdp_result["grid_values"][0]
 pd_values = pdp_result["average"][0]
 
 # Calculate confidence interval using individual predictions
-pdp_individual = partial_dependence(model, X, features=[feature_idx], kind="individual", grid_resolution=50)
+pdp_individual = partial_dependence(model, X, features=[feature_idx], kind="individual", grid_resolution=100)
 individual_preds = pdp_individual["individual"][0]
 pd_std = np.std(individual_preds, axis=0)
 ci_lower = pd_values - 1.96 * pd_std / np.sqrt(len(X))
@@ -38,7 +38,7 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998", "#FFD43B", "#4A90D9", "#888888"),
+    colors=("#306998", "#2E7D32", "#1565C0", "#D32F2F"),
     font_family="sans-serif",
     title_font_size=72,
     label_font_size=48,
@@ -59,14 +59,15 @@ chart = pygal.XY(
     y_title="Partial Dependence",
     show_legend=True,
     legend_at_bottom=True,
-    legend_at_bottom_columns=3,
+    legend_at_bottom_columns=4,
+    legend_box_size=30,
     show_dots=False,
     stroke_style={"width": 6},
     show_x_guides=True,
     show_y_guides=True,
     dots_size=8,
     margin=50,
-    margin_bottom=150,
+    margin_bottom=200,
 )
 
 # Create XY data points for main PDP line
@@ -87,7 +88,7 @@ rug_indices = np.random.choice(len(X), size=min(40, len(X)), replace=False)
 rug_x_values = X[rug_indices, feature_idx]
 y_min = float(np.min(pd_values) - 0.15 * (np.max(pd_values) - np.min(pd_values)))
 rug_points = [(float(x), y_min) for x in sorted(rug_x_values)]
-chart.add("Training Data (rug)", rug_points, stroke=False, dots_size=18)
+chart.add("Training Data (rug)", rug_points, stroke=False, dots_size=25)
 
 # Save as PNG and HTML
 chart.render_to_png("plot.png")

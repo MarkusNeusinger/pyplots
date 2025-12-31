@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 pie-drilldown: Drilldown Pie Chart with Click Navigation
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 82/100 | Created: 2025-12-31
+Quality: 84/100 | Created: 2025-12-31
 """
 
 import altair as alt

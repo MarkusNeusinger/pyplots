@@ -1,0 +1,31 @@
+# Specification-level metadata for shap-summary
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: shap-summary
+title: SHAP Summary Plot
+
+# Specification tracking
+created: 2025-12-31T05:23:41Z
+updated: null
+issue: 2923
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - shap
+    - strip
+    - swarm
+  data_type:
+    - numeric
+    - categorical
+  domain:
+    - machine-learning
+    - statistics
+    - general
+  features:
+    - interpretability
+    - color-mapped
+    - distribution
+    - ranking

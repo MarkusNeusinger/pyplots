@@ -1,0 +1,24 @@
+library: pygal
+specification_id: andrews-curves
+created: '2025-12-31T21:35:14Z'
+updated: '2025-12-31T21:53:53Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20627536627
+issue: 2859
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/pygal/plot.html
+quality_score: 88
+review:
+  strengths:
+  - Excellent colorblind-safe color palette (blue/orange/purple)
+  - Proper data normalization (z-score standardization) as recommended in spec
+  - Interactive tooltips showing original iris measurements for each curve
+  - Clean legend with only 3 entries (one per species) rather than per-curve
+  - Correct Andrews curve formula implementation
+  - Good use of pygal custom Style for large canvas sizing
+  weaknesses:
+  - Grid lines could be slightly more subtle (alpha/opacity could be reduced)
+  - Some individual curves are hard to trace due to overlapping in the middle region

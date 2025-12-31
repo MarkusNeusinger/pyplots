@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 circos-basic: Circos Plot
-Library: plotly | Python 3.13
-Quality: pending | Created: 2025-12-31
+Library: plotly 6.5.0 | Python 3.13.11
+Quality: 88/100 | Created: 2025-12-31
 """
 
 import numpy as np

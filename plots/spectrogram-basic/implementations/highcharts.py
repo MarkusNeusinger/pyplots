@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 spectrogram-basic: Spectrogram Time-Frequency Heatmap
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -40,10 +40,9 @@ frequencies, times, Sxx = signal.spectrogram(combined_signal, fs=sample_rate, np
 # Convert to dB scale for better visualization
 Sxx_db = 10 * np.log10(Sxx + 1e-10)
 
-# Normalize to 0-100 range for colormap
-Sxx_min = Sxx_db.min()
-Sxx_max = Sxx_db.max()
-Sxx_normalized = (Sxx_db - Sxx_min) / (Sxx_max - Sxx_min) * 100
+# Get dB range for colorbar (use actual dB values, not normalized)
+Sxx_min = float(Sxx_db.min())
+Sxx_max = float(Sxx_db.max())
 
 # Downsample for Highcharts heatmap performance
 max_time_bins = 80
@@ -54,7 +53,7 @@ freq_step = max(1, len(frequencies) // max_freq_bins)
 
 times_ds = times[::time_step]
 frequencies_ds = frequencies[::freq_step]
-Sxx_ds = Sxx_normalized[::freq_step, ::time_step]
+Sxx_ds = Sxx_db[::freq_step, ::time_step]
 
 # Create heatmap data points as [x, y, value]
 heatmap_data = []
@@ -72,16 +71,21 @@ chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "marginTop": 120,
+    "marginTop": 160,  # Increased for subtitle
     "marginBottom": 250,
     "marginLeft": 200,
-    "marginRight": 220,
+    "marginRight": 320,  # Increased for legend title spacing
 }
 
-# Title
+# Title and subtitle
 chart.options.title = {
     "text": "spectrogram-basic · highcharts · pyplots.ai",
     "style": {"fontSize": "48px", "fontWeight": "bold"},
+}
+
+chart.options.subtitle = {
+    "text": "Linear chirp signal (10-200 Hz) with linear frequency axis",
+    "style": {"fontSize": "32px", "color": "#666666"},
 }
 
 # X-axis (time)
@@ -102,10 +106,10 @@ chart.options.y_axis = {
     "reversed": False,
 }
 
-# Color axis (legend for heatmap intensity)
+# Color axis (legend for heatmap intensity) - use actual dB values
 chart.options.color_axis = {
-    "min": 0,
-    "max": 100,
+    "min": Sxx_min,
+    "max": Sxx_max,
     "stops": [
         [0, "#440154"],  # viridis dark purple
         [0.25, "#3b528b"],  # blue
@@ -113,7 +117,7 @@ chart.options.color_axis = {
         [0.75, "#5ec962"],  # green
         [1, "#fde725"],  # yellow
     ],
-    "labels": {"style": {"fontSize": "24px"}},
+    "labels": {"style": {"fontSize": "24px"}, "format": "{value:.0f} dB"},
 }
 
 # Legend
@@ -123,13 +127,14 @@ chart.options.legend = {
     "verticalAlign": "middle",
     "symbolHeight": 800,
     "symbolWidth": 40,
-    "title": {"text": "Power (dB, normalized)", "style": {"fontSize": "28px"}},
+    "x": -20,  # Shift legend left to avoid edge cramping
+    "title": {"text": "Power (dB)", "style": {"fontSize": "28px"}},
 }
 
-# Tooltip
+# Tooltip - show actual dB values
 chart.options.tooltip = {
     "headerFormat": "",
-    "pointFormat": "<b>Time:</b> {point.x_label} s<br><b>Frequency:</b> {point.y_label} Hz<br><b>Power:</b> {point.value}",
+    "pointFormat": "<b>Time:</b> {point.x_label} s<br><b>Frequency:</b> {point.y_label} Hz<br><b>Power:</b> {point.value:.1f} dB",
     "style": {"fontSize": "20px"},
 }
 

@@ -1,0 +1,31 @@
+library: bokeh
+specification_id: pie-drilldown
+created: '2025-12-31T14:08:22Z'
+updated: '2025-12-31T15:05:37Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20620528667
+issue: 3072
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/bokeh/plot.html
+quality_score: 72
+review:
+  strengths:
+  - Good canvas utilization with large 3600x3600 square format - pie chart fills significant
+    portion of canvas
+  - Clear hierarchical data structure representing realistic company expense breakdown
+    (Operations, Marketing, Research, HR)
+  - Labels are legible with white text on colored slices showing name, value, and
+    percentage
+  - Includes breadcrumb navigation text and click indicator for interactive functionality
+  - Uses colorblind-friendly palette with good contrast between adjacent slices
+  - Correct title format following spec-id · library · pyplots.ai convention
+  weaknesses:
+  - Only two colors visible (green and red) - the yellow from the color palette is
+    not appearing, limiting color differentiation between categories
+  - Red and green adjacency is not ideal for colorblind users despite being different
+    shades
+  - The Human Resources slice label text is partially difficult to read due to smaller
+    slice size and label positioning

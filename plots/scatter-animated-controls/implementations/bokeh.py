@@ -1,7 +1,7 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-animated-controls: Animated Scatter Plot with Play Controls
 Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 85/100 | Created: 2025-12-31
+Created: 2025-12-31
 """
 
 import numpy as np
@@ -140,6 +140,12 @@ p.grid.grid_line_dash = [6, 4]
 # Background
 p.background_fill_color = "#fafafa"
 
+# Add margins to prevent legend clipping
+p.min_border_left = 120
+p.min_border_right = 120
+p.min_border_top = 100
+p.min_border_bottom = 100
+
 # Add scatter plot with legend_field for native legend in PNG export
 scatter = p.scatter(
     x="x",
@@ -153,16 +159,19 @@ scatter = p.scatter(
     legend_field="region",
 )
 
-# Configure legend for visibility in PNG export
+# Configure legend for visibility in PNG export - positioned inside plot with large fonts
 p.legend.location = "top_left"
 p.legend.title = "Region"
-p.legend.title_text_font_size = "28pt"
-p.legend.label_text_font_size = "24pt"
-p.legend.glyph_height = 40
-p.legend.glyph_width = 40
-p.legend.spacing = 10
-p.legend.padding = 20
-p.legend.background_fill_alpha = 0.8
+p.legend.title_text_font_size = "36pt"
+p.legend.label_text_font_size = "32pt"
+p.legend.glyph_height = 60
+p.legend.glyph_width = 60
+p.legend.spacing = 15
+p.legend.padding = 30
+p.legend.margin = 40
+p.legend.background_fill_alpha = 0.9
+p.legend.border_line_color = "#aaaaaa"
+p.legend.border_line_width = 2
 
 # Add hover tool
 hover = HoverTool(

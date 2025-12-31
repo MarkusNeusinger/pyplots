@@ -1,0 +1,27 @@
+library: altair
+specification_id: timeseries-decomposition
+created: '2025-12-31T10:55:23Z'
+updated: '2025-12-31T11:05:44Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20617482042
+issue: 2992
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of Altair declarative faceting to create vertically stacked subplots
+    with independent y-scales
+  - Clean professional color scheme with distinct colorblind-accessible colors for
+    each component
+  - Proper use of statsmodels seasonal_decompose for authentic decomposition
+  - Component labels prominently displayed using facet headers with good font styling
+  - Appropriate data coverage with 96 monthly points over 8 years for meaningful decomposition
+  - Code follows KISS principles with clear linear flow
+  weaknesses:
+  - Missing light grid lines that specification explicitly requests
+  - Y-axis labels all say generic Value rather than being component-specific
+  - Could leverage Altair interactivity features like .interactive() or tooltips

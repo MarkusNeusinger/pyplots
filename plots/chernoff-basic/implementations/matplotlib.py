@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 chernoff-basic: Chernoff Faces for Multivariate Data
-Library: matplotlib | Python 3.13
-Quality: pending | Created: 2025-12-31
+Library: matplotlib 3.10.8 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-31
 """
 
 import matplotlib.patches as patches

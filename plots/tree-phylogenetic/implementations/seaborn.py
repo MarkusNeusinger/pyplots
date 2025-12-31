@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 tree-phylogenetic: Phylogenetic Tree Diagram
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -51,7 +51,7 @@ linkage_matrix = linkage(condensed_distances, method="average")
 fig, ax = plt.subplots(figsize=(16, 9))
 
 # Define colors using Python palette and colorblind-safe colors
-# Color different clades
+# Assign each species to a clade index for consistent coloring
 clade_colors = {
     "Human": "#306998",  # Python Blue - Great Apes
     "Chimpanzee": "#306998",
@@ -65,16 +65,51 @@ clade_colors = {
     "Tarsier": "#E74C3C",
 }
 
-# Plot dendrogram (phylogenetic tree)
+# Define link colors based on cluster membership
+# Map each leaf to its clade color for dendrogram branches
+leaf_colors = [clade_colors[s] for s in species]
+
+# Create a color mapping function for dendrogram links
+# Links below leaves inherit the leaf color, higher links use a neutral color
+n = len(species)
+
+
+def get_link_color(link_id):
+    """Return color for dendrogram link based on cluster composition."""
+    if link_id < n:
+        return leaf_colors[link_id]
+    # For internal nodes, get the cluster members
+    cluster_idx = int(link_id - n)
+    left_child = int(linkage_matrix[cluster_idx, 0])
+    right_child = int(linkage_matrix[cluster_idx, 1])
+
+    # Get colors of both children
+    left_color = get_link_color(left_child)
+    right_color = get_link_color(right_child)
+
+    # If both children have same color, use that color
+    if left_color == right_color:
+        return left_color
+    # Otherwise use neutral gray for mixed clades
+    return "#808080"
+
+
+# Build link color list for all links in dendrogram
+link_colors = [get_link_color(i + n) for i in range(len(linkage_matrix))]
+
+# Plot dendrogram (phylogenetic tree) with custom clade colors
 dendro = dendrogram(
     linkage_matrix,
     labels=species,
     orientation="left",
     ax=ax,
     leaf_font_size=18,
-    color_threshold=20,
-    above_threshold_color="#808080",
+    link_color_func=lambda k: link_colors[k - n] if k >= n else leaf_colors[k],
 )
+
+# Make branch lines thicker for improved visibility
+for line_collection in ax.collections:
+    line_collection.set_linewidth(3)
 
 # Style the dendrogram with seaborn aesthetics
 ax.set_xlabel("Evolutionary Distance (Million Years)", fontsize=20, fontweight="bold")

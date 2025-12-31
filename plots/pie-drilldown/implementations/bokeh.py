@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-drilldown: Drilldown Pie Chart with Click Navigation
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-31
@@ -60,16 +60,17 @@ hierarchy = {
     "social": {"name": "Social Media", "parent": "digital", "value": 120000},
 }
 
-# Color palette - high contrast, colorblind-safe colors
+# Color palette - colorblind-safe (no red-green adjacency), high contrast
+# Using IBM's colorblind-safe palette and tableau-inspired colors
 colors = [
-    "#306998",  # Python Blue
-    "#FFD43B",  # Python Yellow
-    "#E74C3C",  # Red
-    "#2ECC71",  # Green
-    "#9B59B6",  # Purple
-    "#F39C12",  # Orange
-    "#1ABC9C",  # Teal
-    "#3498DB",  # Light Blue
+    "#0072B2",  # Strong Blue (Operations)
+    "#E69F00",  # Orange/Amber (Marketing)
+    "#CC79A7",  # Pink/Magenta (Research)
+    "#56B4E9",  # Sky Blue (HR)
+    "#009E73",  # Teal Green
+    "#D55E00",  # Vermillion
+    "#F0E442",  # Yellow
+    "#0072B2",  # Blue (repeat for deeper levels)
 ]
 
 # Calculate values for root level children (inline, no helper functions)
@@ -128,18 +129,23 @@ source = ColumnDataSource(
 )
 
 # Label source for the center of each wedge
+# Use dynamic label radius - larger slices get inner labels, smaller ones get outer labels
 mid_angles = [(s + e) / 2 for s, e in zip(start_angles, end_angles, strict=True)]
-label_radius = 0.55
-label_x = [label_radius * np.cos(a) for a in mid_angles]
-label_y = [label_radius * np.sin(a) for a in mid_angles]
+# Increase base radius so labels are more readable, especially for smaller slices
+label_radius_values = [0.55 if p >= 15 else 0.65 for p in percentages]
+label_x = [r * np.cos(a) for r, a in zip(label_radius_values, mid_angles, strict=True)]
+label_y = [r * np.sin(a) for r, a in zip(label_radius_values, mid_angles, strict=True)]
 
-label_source = ColumnDataSource(
-    data={
-        "x": label_x,
-        "y": label_y,
-        "text": [f"{n}\n${v / 1000:.0f}K\n({p:.1f}%)" for n, v, p in zip(names, values, percentages, strict=True)],
-    }
-)
+# Create more compact labels for smaller slices
+label_texts = []
+for n, v, p in zip(names, values, percentages, strict=True):
+    if p >= 15:
+        label_texts.append(f"{n}\n${v / 1000:.0f}K\n({p:.1f}%)")
+    else:
+        # Compact format for smaller slices
+        label_texts.append(f"{n}\n${v / 1000:.0f}K ({p:.1f}%)")
+
+label_source = ColumnDataSource(data={"x": label_x, "y": label_y, "text": label_texts})
 
 # Create figure with extended y_range to fit breadcrumb and instruction text
 p = figure(
@@ -174,13 +180,28 @@ wedges = p.wedge(
     source=source,
 )
 
+# Add text shadow/outline for better readability on lighter slices
+# First layer: dark outline for contrast
+label_shadow = p.text(
+    x="x",
+    y="y",
+    text="text",
+    source=label_source,
+    text_font_size="30pt",
+    text_align="center",
+    text_baseline="middle",
+    text_color="#222222",
+    text_font_style="bold",
+    text_outline_color="#222222",
+)
+
 # Add labels with larger font size for 3600x3600 canvas
 labels = p.text(
     x="x",
     y="y",
     text="text",
     source=label_source,
-    text_font_size="28pt",
+    text_font_size="30pt",
     text_align="center",
     text_baseline="middle",
     text_color="white",
@@ -296,13 +317,16 @@ callback = CustomJS(
         n + '\\n$' + (values[i]/1000).toFixed(0) + 'K\\n(' + percentages[i].toFixed(1) + '%)'
     );
 
-    // Update label positions
+    // Update label positions with dynamic radius for smaller slices
     const mid_angles = start_angles.map((s, i) => (s + end_angles[i]) / 2);
-    const label_radius = 0.55;
-    label_source.data['x'] = mid_angles.map(a => label_radius * Math.cos(a));
-    label_source.data['y'] = mid_angles.map(a => label_radius * Math.sin(a));
+    const label_radii = percentages.map(p => p >= 15 ? 0.55 : 0.65);
+    label_source.data['x'] = mid_angles.map((a, i) => label_radii[i] * Math.cos(a));
+    label_source.data['y'] = mid_angles.map((a, i) => label_radii[i] * Math.sin(a));
+    // Compact format for smaller slices
     label_source.data['text'] = names.map((n, i) =>
-        n + '\\n$' + (values[i]/1000).toFixed(0) + 'K\\n(' + percentages[i].toFixed(1) + '%)'
+        percentages[i] >= 15
+            ? n + '\\n$' + (values[i]/1000).toFixed(0) + 'K\\n(' + percentages[i].toFixed(1) + '%)'
+            : n + '\\n$' + (values[i]/1000).toFixed(0) + 'K (' + percentages[i].toFixed(1) + '%)'
     );
 
     // Update navigation path

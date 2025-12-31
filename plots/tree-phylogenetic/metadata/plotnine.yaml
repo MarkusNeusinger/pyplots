@@ -1,0 +1,27 @@
+library: plotnine
+specification_id: tree-phylogenetic
+created: '2025-12-31T13:53:27Z'
+updated: '2025-12-31T14:15:44Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20620335890
+issue: 3070
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 90
+review:
+  strengths:
+  - Excellent use of plotnine grammar of graphics with proper layering of geom_segment
+    for tree branches
+  - Well-designed clade color scheme that effectively differentiates evolutionary
+    groups
+  - Scale bar with proper units (substitutions/site) as required by specification
+  - Clean, publication-quality layout using theme_void appropriate for tree diagrams
+  - Scientifically accurate primate phylogeny based on real evolutionary relationships
+  weaknesses:
+  - Title format includes extra text ("Primate Phylogeny") before the spec-id; should
+    be just "tree-phylogenetic · plotnine · pyplots.ai"
+  - Some clade colors (Homininae, Gorillini, Hominini) are identical yellow, making
+    it hard to distinguish these clades in the legend

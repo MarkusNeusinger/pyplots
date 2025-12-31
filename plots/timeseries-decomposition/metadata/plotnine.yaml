@@ -1,0 +1,29 @@
+library: plotnine
+specification_id: timeseries-decomposition
+created: '2025-12-31T10:56:56Z'
+updated: '2025-12-31T11:15:24Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20617482775
+issue: 2992
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of plotnine facet_wrap for creating the four-panel decomposition
+    layout
+  - Clean implementation using statsmodels seasonal_decompose for proper time series
+    analysis
+  - Good color choice (#306998) that is accessible and professional
+  - Proper handling of NaN values from decomposition edges
+  - Correct categorical ordering of components using pd.Categorical
+  - Title follows the exact required format
+  - 12 years of monthly data provides meaningful decomposition
+  weaknesses:
+  - Y-axis tick labels in the Original panel appear slightly crowded with multiple
+    values stacked
+  - Panel spacing could be reduced to make better use of vertical canvas space
+  - Grid alpha at 0.5 could be more subtle (0.3 would be better)

@@ -1,0 +1,27 @@
+library: bokeh
+specification_id: phase-diagram
+created: '2025-12-31T11:10:12Z'
+updated: '2025-12-31T11:20:48Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20617651777
+issue: 3004
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/phase-diagram/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/phase-diagram/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/phase-diagram/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent physics simulation showing damped harmonic oscillator behavior
+  - Beautiful Viridis color gradient effectively shows time evolution
+  - Multiple trajectories from different initial conditions demonstrate basin of attraction
+  - Clear marking of equilibrium point and zero velocity line
+  - Good use of Bokeh ColumnDataSource and ColorBar features
+  - Appropriate text sizing for the 4800x2700 canvas
+  - Proper legend identifying all plot elements
+  weaknesses:
+  - Title format includes extra Damped Pendulum prefix instead of just {spec-id} ·
+    {library} · pyplots.ai
+  - Legend text appears small in the rendered output despite font size settings
+  - Could add HoverTool for interactivity to show time/position on hover

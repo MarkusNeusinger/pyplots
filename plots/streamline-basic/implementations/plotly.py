@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 streamline-basic: Basic Streamline Plot
 Library: plotly 6.5.0 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-31
@@ -6,11 +6,9 @@ Quality: 78/100 | Created: 2025-12-31
 
 import numpy as np
 import plotly.figure_factory as ff
-import plotly.graph_objects as go
 
 
 # Data - Create a grid for the vector field
-np.random.seed(42)
 x = np.linspace(-3, 3, 30)
 y = np.linspace(-3, 3, 30)
 
@@ -24,36 +22,14 @@ u = -Y / R + X / (R**2)
 v = X / R + Y / (R**2)
 
 # Normalize velocity for consistent line density
-magnitude = np.sqrt(u**2 + v**2)
-u_norm = u / magnitude
-v_norm = v / magnitude
+speed = np.sqrt(u**2 + v**2)
+u_norm = u / speed
+v_norm = v / speed
 
 # Create streamline plot
 fig = ff.create_streamline(x, y, u_norm, v_norm, density=1.5, arrow_scale=0.08, line={"width": 2.5, "color": "#306998"})
 
-# Add colorbar trace for velocity magnitude (hidden points with color encoding)
-scatter = go.Scatter(
-    x=[None],
-    y=[None],
-    mode="markers",
-    marker={
-        "size": 0,
-        "color": [0, np.max(magnitude)],
-        "colorscale": [[0, "#306998"], [1, "#FFD43B"]],
-        "colorbar": {
-            "title": {"text": "Velocity<br>Magnitude", "font": {"size": 18}},
-            "tickfont": {"size": 16},
-            "len": 0.6,
-            "thickness": 25,
-        },
-        "showscale": True,
-    },
-    showlegend=False,
-    hoverinfo="skip",
-)
-fig.add_trace(scatter)
-
-# Update layout for large canvas
+# Update layout for large canvas with symmetric axis ranges
 fig.update_layout(
     title={"text": "streamline-basic · plotly · pyplots.ai", "font": {"size": 28}, "x": 0.5, "xanchor": "center"},
     xaxis={
@@ -65,6 +41,7 @@ fig.update_layout(
         "zeroline": True,
         "zerolinewidth": 2,
         "zerolinecolor": "rgba(0,0,0,0.3)",
+        "range": [-3.5, 3.5],
     },
     yaxis={
         "title": {"text": "Y Position", "font": {"size": 22}},
@@ -75,11 +52,12 @@ fig.update_layout(
         "zeroline": True,
         "zerolinewidth": 2,
         "zerolinecolor": "rgba(0,0,0,0.3)",
+        "range": [-3.5, 3.5],
         "scaleanchor": "x",
         "scaleratio": 1,
     },
     template="plotly_white",
-    margin={"l": 100, "r": 120, "t": 100, "b": 100},
+    margin={"l": 100, "r": 100, "t": 100, "b": 100},
     plot_bgcolor="white",
     showlegend=False,
 )

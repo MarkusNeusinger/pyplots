@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 spectrogram-basic: Spectrogram Time-Frequency Heatmap
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -120,6 +120,31 @@ class SpectrogramHeatmap(Graph):
                 rect.set("fill", color)
                 rect.set("stroke", "none")
 
+        # Draw subtle grid lines to help read values
+        grid_alpha = 0.25
+        n_grid_x = 6
+        n_grid_y = 6
+
+        # Vertical grid lines
+        for i in range(1, n_grid_x):
+            grid_x = x_offset + (i / n_grid_x) * available_width
+            grid_line = self.svg.node(
+                spec_group, "line", x1=grid_x, y1=y_offset, x2=grid_x, y2=y_offset + available_height
+            )
+            grid_line.set("stroke", "#ffffff")
+            grid_line.set("stroke-width", "2")
+            grid_line.set("opacity", str(grid_alpha))
+
+        # Horizontal grid lines
+        for i in range(1, n_grid_y):
+            grid_y = y_offset + (i / n_grid_y) * available_height
+            grid_line = self.svg.node(
+                spec_group, "line", x1=x_offset, y1=grid_y, x2=x_offset + available_width, y2=grid_y
+            )
+            grid_line.set("stroke", "#ffffff")
+            grid_line.set("stroke-width", "2")
+            grid_line.set("opacity", str(grid_alpha))
+
         # Draw axes border
         border = self.svg.node(
             spec_group, "rect", x=x_offset, y=y_offset, width=available_width, height=available_height
@@ -226,12 +251,24 @@ class SpectrogramHeatmap(Graph):
             stroke="#333333",
         )
 
-        # Colorbar labels
+        # Colorbar labels - 6 tick marks for more granular scale
         cb_label_size = 36
-        cb_labels = [max_val, (max_val + min_val) / 2, min_val]
-        cb_positions = [0, 0.5, 1]
-        for val, pos in zip(cb_labels, cb_positions, strict=True):
+        n_cb_ticks = 6
+        cb_positions = [i / (n_cb_ticks - 1) for i in range(n_cb_ticks)]
+        cb_values = [max_val - (max_val - min_val) * pos for pos in cb_positions]
+        for val, pos in zip(cb_values, cb_positions, strict=True):
             text_y = colorbar_y + pos * colorbar_height + cb_label_size * 0.35
+            # Add tick line on colorbar
+            tick_line = self.svg.node(
+                spec_group,
+                "line",
+                x1=colorbar_x + colorbar_width,
+                y1=colorbar_y + pos * colorbar_height,
+                x2=colorbar_x + colorbar_width + 10,
+                y2=colorbar_y + pos * colorbar_height,
+            )
+            tick_line.set("stroke", "#333333")
+            tick_line.set("stroke-width", "2")
             text_node = self.svg.node(spec_group, "text", x=colorbar_x + colorbar_width + 20, y=text_y)
             text_node.set("fill", "#333333")
             text_node.set("style", f"font-size:{cb_label_size}px;font-family:sans-serif")
@@ -285,9 +322,9 @@ frequencies, times, Sxx = signal.spectrogram(chirp_signal, fs=sample_rate, npers
 Sxx_db = 10 * np.log10(Sxx + 1e-10)
 
 # Downsample for visualization (pygal renders individual cells)
-# Keep enough resolution to show the chirp pattern clearly
-freq_step = max(1, len(frequencies) // 64)
-time_step = max(1, len(times) // 100)
+# Higher resolution for smoother appearance while maintaining performance
+freq_step = max(1, len(frequencies) // 80)
+time_step = max(1, len(times) // 128)
 
 freq_subset = frequencies[::freq_step]
 time_subset = times[::time_step]

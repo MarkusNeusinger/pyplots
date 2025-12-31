@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 network-directed: Directed Network Graph
 Library: highcharts unknown | Python 3.13.11
-Quality: 78/100 | Created: 2025-12-30
+Quality: 90/100 | Created: 2025-12-30
 """
 
 import json

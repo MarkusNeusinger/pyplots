@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 slider-control-basic: Interactive Plot with Slider Control
 Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 35/100 | Created: 2025-12-31
+Quality: 55/100 | Created: 2025-12-31
 """
 
 import numpy as np

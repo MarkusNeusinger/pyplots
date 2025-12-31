@@ -1,0 +1,29 @@
+library: seaborn
+specification_id: slider-control-basic
+created: '2025-12-31T13:53:48Z'
+updated: '2025-12-31T14:27:35Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20620342647
+issue: 3071
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/slider-control-basic/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/slider-control-basic/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 90
+review:
+  strengths:
+  - Excellent implementation of slider interactivity using matplotlib.widgets.Slider
+    with seaborn bar plot
+  - Clean data generation with realistic seasonal sales patterns and year-over-year
+    growth
+  - Value labels above each bar provide excellent data readability
+  - Proper font sizing throughout (24pt title, 20pt axis labels, 16pt ticks, 18pt
+    slider labels)
+  - Y-axis formatted with dollar signs and K notation for clarity
+  - Instructional text helps users understand the interactive functionality
+  - Good use of seaborn whitegrid style for professional appearance
+  weaknesses:
+  - Grid/legend score slightly reduced as whitegrid could be more subtle for a bar
+    chart
+  - Layout has extra bottom margin for slider which slightly reduces plot area proportion

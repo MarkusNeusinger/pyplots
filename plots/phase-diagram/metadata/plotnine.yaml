@@ -1,0 +1,28 @@
+library: plotnine
+specification_id: phase-diagram
+created: '2025-12-31T11:06:50Z'
+updated: '2025-12-31T11:16:03Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20617670372
+issue: 3004
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/phase-diagram/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/phase-diagram/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 93
+review:
+  strengths:
+  - Excellent visualization of damped harmonic oscillator phase portrait with clear
+    spiral convergence to equilibrium
+  - Effective use of color gradient to show time evolution (blue to yellow)
+  - Well-marked start and end points with distinct markers (circle and square)
+  - Reference lines at x=0 and dx/dt=0 help identify equilibrium and zero-crossing
+    points
+  - Clean, professional appearance with proper plotnine grammar of graphics implementation
+  - Mathematically correct derivative calculation for damped oscillator
+  weaknesses:
+  - Axis labels could include physical units (e.g., Position x (m), Velocity dx/dt
+    (m/s))
+  - Only single trajectory shown; spec notes that multiple trajectories from different
+    initial conditions could reveal basin of attraction structure

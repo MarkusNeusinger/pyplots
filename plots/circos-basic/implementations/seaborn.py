@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 circos-basic: Circos Plot
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2025-12-31
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 72/100 | Created: 2025-12-31
 """
 
 import matplotlib.pyplot as plt

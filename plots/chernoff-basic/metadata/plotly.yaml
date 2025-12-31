@@ -1,0 +1,28 @@
+library: plotly
+specification_id: chernoff-basic
+created: '2025-12-31T10:58:56Z'
+updated: '2025-12-31T11:22:36Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20617518105
+issue: 3003
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/chernoff-basic/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/chernoff-basic/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/chernoff-basic/plotly/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent grid layout organizing faces by species with clear row and column labels
+  - Outstanding feature mapping legend explaining what each facial feature represents
+  - Good use of colorblind-friendly palette (blue, yellow, green) to distinguish species
+  - Proper data normalization (0-1) before mapping to facial features
+  - Includes both PNG and interactive HTML output leveraging Plotly interactivity
+  - All facial features (face shape, eyes, pupils, eyebrows, nose, mouth) are clearly
+    rendered
+  - Title follows correct format with spec-id, library, and pyplots.ai
+  weaknesses:
+  - Within-species facial variation is subtle, especially for Setosa - faces look
+    very similar within each row making it hard to see individual differences
+  - Title includes Iris Dataset prefix which deviates slightly from the pure spec-id
+    format

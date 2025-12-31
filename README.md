@@ -1,5 +1,7 @@
 <img src="app/public/logo.svg" alt="pyplots.ai" width="250">
 
+**→ [pyplots.ai](https://pyplots.ai)**
+
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Tests](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-tests.yml/badge.svg?branch=main)](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-tests.yml)
@@ -205,7 +207,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 <div align="center">
 
-**Made with ❤️ by the data science community**
+**Built by [Markus Neusinger](https://linkedin.com/in/markus-neusinger/)**
 
 [⭐ Star us on GitHub](https://github.com/MarkusNeusinger/pyplots) • [🐛 Report Bug](https://github.com/MarkusNeusinger/pyplots/issues) • [💡 Request Feature](https://github.com/MarkusNeusinger/pyplots/issues)
 

@@ -1,0 +1,29 @@
+library: letsplot
+specification_id: spectrogram-basic
+created: '2025-12-31T05:34:45Z'
+updated: '2025-12-31T05:46:48Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612811020
+issue: 2927
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/letsplot/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of scipy.signal.spectrogram for proper FFT-based spectrogram computation
+  - Viridis colormap is perceptually uniform and colorblind-safe as recommended in
+    spec
+  - dB scale conversion (10 * log10) provides better dynamic range visualization
+  - Clean chirp signal generation with appropriate parameters demonstrates frequency
+    sweep clearly
+  - Proper axis labels with units (seconds, Hz, dB) as specified
+  - Correct title format following pyplots.ai conventions
+  - Good text sizing for legibility at 4800x2700 resolution
+  - Interactive HTML output also generated
+  weaknesses:
+  - No grid lines to help read values at specific time-frequency points
+  - Y-axis shows 0-500 Hz but chirp only goes to 200 Hz, wasting some visual space
+  - Could benefit from minor grid for easier value reading on the heatmap

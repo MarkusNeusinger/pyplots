@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 volcano-basic: Volcano Plot for Statistical Significance
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-31
@@ -44,17 +44,27 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#888888", "#c0392b", "#2980b9"),  # Gray, Red, Blue
+    colors=(
+        "#888888",
+        "#c0392b",
+        "#2980b9",
+        "#555555",
+        "#555555",
+        "#555555",
+    ),  # Gray, Red, Blue, then neutral for lines
     title_font_size=48,
     label_font_size=32,
     major_label_font_size=28,
-    legend_font_size=28,
+    legend_font_size=36,
     value_font_size=20,
     stroke_width=2,
     opacity=0.7,
     opacity_hover=1.0,
     font_family="DejaVu Sans",
 )
+
+# Calculate y-axis range (ensure minimum at 0)
+y_max = max(neg_log10_pval) + 0.5
 
 # Create XY chart (scatter plot)
 chart = pygal.XY(
@@ -66,13 +76,14 @@ chart = pygal.XY(
     y_title="-Log₁₀(p-value)",
     show_legend=True,
     legend_at_bottom=False,
-    legend_box_size=24,
+    legend_box_size=28,
     dots_size=8,
     stroke=False,
     show_x_guides=True,
     show_y_guides=True,
     x_label_rotation=0,
     range=(-5, 5),
+    yrange=(0, y_max),
     y_labels_major_count=6,
     x_labels_major_count=11,
     truncate_legend=-1,
@@ -90,16 +101,16 @@ chart.add("Not Significant", not_sig_points)
 chart.add("Up-regulated", up_points)
 chart.add("Down-regulated", down_points)
 
-# Add threshold lines as separate series
+# Add threshold lines as separate series (hidden from legend)
 # Horizontal line at p-value threshold (y = 1.3)
 h_line = [{"value": (-5, pval_threshold)}, {"value": (5, pval_threshold)}]
-chart.add("p = 0.05", h_line, stroke=True, show_dots=False, stroke_style={"width": 3, "dasharray": "10, 5"})
+chart.add(None, h_line, stroke=True, show_dots=False, stroke_style={"width": 3, "dasharray": "10, 5"})
 
 # Vertical lines at fold change thresholds (x = ±1)
-v_line_pos = [{"value": (fc_threshold, 0)}, {"value": (fc_threshold, 8)}]
-v_line_neg = [{"value": (-fc_threshold, 0)}, {"value": (-fc_threshold, 8)}]
-chart.add("FC = 2", v_line_pos, stroke=True, show_dots=False, stroke_style={"width": 3, "dasharray": "10, 5"})
-chart.add("FC = 0.5", v_line_neg, stroke=True, show_dots=False, stroke_style={"width": 3, "dasharray": "10, 5"})
+v_line_pos = [{"value": (fc_threshold, 0)}, {"value": (fc_threshold, y_max)}]
+v_line_neg = [{"value": (-fc_threshold, 0)}, {"value": (-fc_threshold, y_max)}]
+chart.add(None, v_line_pos, stroke=True, show_dots=False, stroke_style={"width": 3, "dasharray": "10, 5"})
+chart.add(None, v_line_neg, stroke=True, show_dots=False, stroke_style={"width": 3, "dasharray": "10, 5"})
 
 # Save as PNG and HTML
 chart.render_to_png("plot.png")

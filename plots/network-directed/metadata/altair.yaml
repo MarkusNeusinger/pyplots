@@ -1,7 +1,7 @@
 library: altair
 specification_id: network-directed
 created: '2025-12-30T23:54:55Z'
-updated: '2025-12-31T00:01:03Z'
+updated: '2025-12-31T00:11:25Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20608486085
 issue: 2858
@@ -10,17 +10,22 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/network-directed/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-directed/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/network-directed/altair/plot.html
-quality_score: 87
+quality_score: 90
 review:
   strengths:
-  - Excellent implementation of directed network graph using Altair's declarative
-    approach with layered charts
-  - Smart hierarchical layout algorithm that positions nodes based on dependency depth
-  - Clean arrow implementation using triangular points with angle encoding
-  - Good color scheme with distinct colors for each module type
-  - Proper use of tooltips for interactivity
+  - Excellent hierarchical layout algorithm that calculates node depths based on topological
+    ordering
+  - Clever handling of bidirectional edges using curved bezier paths to avoid overlap
+  - Clean color palette with five distinct, colorblind-safe colors for module groupings
+  - Proper use of Altair layered chart composition (edges + curved edges + arrows
+    + nodes + labels)
+  - Thoughtful arrow positioning using angle encoding for correct orientation along
+    edges
+  - Interactive tooltips showing node label and group on hover
   weaknesses:
-  - Node labels (fontSize=14) could be slightly larger (16-18) for better legibility
-    at full resolution
-  - Data does not include bidirectional edges to demonstrate curved edge handling
-    mentioned in spec
+  - Edge lines are relatively thin (strokeWidth=2) making some dependency paths harder
+    to follow in the dense central area
+  - Layout results in vertical clustering at certain depth levels creating visual
+    congestion
+  - Does not utilize Altair built-in interactivity features like selection highlighting
+    or zoom/pan that would help explore the network

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-decision-boundary: Decision Boundary Classifier Visualization
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -30,7 +30,7 @@ Z = Z.reshape(xx.shape)
 
 # Create DataFrame for background regions (decision boundary)
 mesh_df = pd.DataFrame(
-    {"X1": xx.ravel(), "X2": yy.ravel(), "Predicted Class": ["Class A" if z == 0 else "Class B" for z in Z.ravel()]}
+    {"X1": xx.ravel(), "X2": yy.ravel(), "Class": ["Class A" if z == 0 else "Class B" for z in Z.ravel()]}
 )
 
 # Create DataFrame for training points
@@ -40,9 +40,7 @@ train_df = pd.DataFrame(
 
 # Add prediction for training points to show misclassified
 train_predictions = clf.predict(X)
-train_df["Correctly Classified"] = [
-    "Correct" if p == t else "Incorrect" for p, t in zip(train_predictions, y, strict=True)
-]
+train_df["Classification"] = ["Correct" if p == t else "Incorrect" for p, t in zip(train_predictions, y, strict=True)]
 
 # Decision boundary background using rect marks
 background = (
@@ -52,45 +50,69 @@ background = (
         x=alt.X("X1:Q", bin=alt.Bin(maxbins=150), title="Feature X1"),
         y=alt.Y("X2:Q", bin=alt.Bin(maxbins=150), title="Feature X2"),
         color=alt.Color(
-            "Predicted Class:N",
+            "Class:N",
             scale=alt.Scale(domain=["Class A", "Class B"], range=["#306998", "#FFD43B"]),
-            legend=alt.Legend(title="Decision Region", titleFontSize=18, labelFontSize=16, orient="right"),
+            legend=alt.Legend(title="Class", titleFontSize=18, labelFontSize=16, orient="right"),
         ),
     )
 )
 
-# Training points with outline to show classification status
-points = (
-    alt.Chart(train_df)
-    .mark_circle(size=250, strokeWidth=3)
+# Correctly classified points (circles)
+correct_points = (
+    alt.Chart(train_df[train_df["Classification"] == "Correct"])
+    .mark_circle(size=250, strokeWidth=2)
     .encode(
         x=alt.X("X1:Q"),
         y=alt.Y("X2:Q"),
         fill=alt.Color(
-            "Class:N",
-            scale=alt.Scale(domain=["Class A", "Class B"], range=["#306998", "#FFD43B"]),
-            legend=alt.Legend(title="True Class", titleFontSize=18, labelFontSize=16, orient="right"),
+            "Class:N", scale=alt.Scale(domain=["Class A", "Class B"], range=["#306998", "#FFD43B"]), legend=None
         ),
-        stroke=alt.Stroke(
-            "Correctly Classified:N",
-            scale=alt.Scale(domain=["Correct", "Incorrect"], range=["#333333", "#E63946"]),
+        stroke=alt.value("#333333"),
+        tooltip=["X1:Q", "X2:Q", "Class:N", "Classification:N"],
+    )
+)
+
+# Incorrectly classified points (triangles with red stroke)
+incorrect_points = (
+    alt.Chart(train_df[train_df["Classification"] == "Incorrect"])
+    .mark_point(shape="triangle", size=350, strokeWidth=3, filled=True)
+    .encode(
+        x=alt.X("X1:Q"),
+        y=alt.Y("X2:Q"),
+        fill=alt.Color(
+            "Class:N", scale=alt.Scale(domain=["Class A", "Class B"], range=["#306998", "#FFD43B"]), legend=None
+        ),
+        stroke=alt.value("#E63946"),
+        tooltip=["X1:Q", "X2:Q", "Class:N", "Classification:N"],
+    )
+)
+
+# Create a separate legend for shapes (classification status)
+shape_legend_df = pd.DataFrame({"Classification": ["Correct (●)", "Incorrect (▲)"], "x": [0, 0], "y": [0, 1]})
+shape_legend = (
+    alt.Chart(shape_legend_df)
+    .mark_point(size=0, opacity=0)
+    .encode(
+        x=alt.X("x:Q"),
+        y=alt.Y("y:Q"),
+        shape=alt.Shape(
+            "Classification:N",
+            scale=alt.Scale(domain=["Correct (●)", "Incorrect (▲)"], range=["circle", "triangle"]),
             legend=alt.Legend(title="Classification", titleFontSize=18, labelFontSize=16, orient="right"),
         ),
-        tooltip=["X1:Q", "X2:Q", "Class:N", "Correctly Classified:N"],
     )
 )
 
 # Combine layers
 chart = (
-    alt.layer(background, points)
+    alt.layer(background, correct_points, incorrect_points, shape_legend)
     .properties(
         width=1600,
         height=900,
-        title=alt.Title("contour-decision-boundary · altair · pyplots.ai", fontSize=28, anchor="middle"),
+        title=alt.Title("contour-decision-boundary \u00b7 altair \u00b7 pyplots.ai", fontSize=28, anchor="middle"),
     )
     .configure_axis(labelFontSize=18, titleFontSize=22, gridOpacity=0.3)
     .configure_view(strokeWidth=0)
-    .resolve_scale(color="independent")
 )
 
 # Save outputs

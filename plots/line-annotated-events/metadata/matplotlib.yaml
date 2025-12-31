@@ -1,0 +1,26 @@
+library: matplotlib
+specification_id: line-annotated-events
+created: '2025-12-31T10:55:32Z'
+updated: '2025-12-31T11:04:51Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20617489492
+issue: 2997
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-annotated-events/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-annotated-events/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of the spec with clear event annotations using axvline
+    and annotate
+  - Smart use of alternating heights to prevent annotation overlap
+  - Professional styling with white background boxes and arrow connections
+  - Realistic stock price data with quarterly earnings context
+  - Clean KISS code structure with proper seed for reproducibility
+  weaknesses:
+  - Legend entry for Event Marker uses alpha=0 trick which creates an invisible line
+    in the legend - consider using a Line2D proxy artist instead
+  - Could utilize more distinctive matplotlib features like ConnectionPatch for arrows
+    or custom box styles

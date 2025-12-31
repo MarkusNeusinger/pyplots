@@ -1,0 +1,26 @@
+library: pygal
+specification_id: phase-diagram
+created: '2025-12-31T11:12:39Z'
+updated: '2025-12-31T11:20:54Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20617709332
+issue: 3004
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/phase-diagram/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/phase-diagram/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/phase-diagram/pygal/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent demonstration of phase space concepts with both damped and undamped
+    trajectories
+  - Clean visual distinction between the spiral (damped) and closed loop (limit cycle)
+    behaviors
+  - Well-chosen colorblind-safe color scheme (blue and yellow)
+  - Proper mathematical implementation of damped harmonic oscillator using Euler integration
+  - Good use of pygal custom styling for large canvas rendering
+  weaknesses:
+  - The equilibrium point marker at origin is quite small and could be more prominent
+  - The undamped oscillator trajectory shows some numerical drift (not a perfect ellipse
+    due to Euler method)

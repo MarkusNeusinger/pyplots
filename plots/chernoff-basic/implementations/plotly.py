@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 chernoff-basic: Chernoff Faces for Multivariate Data
 Library: plotly 6.5.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-31
@@ -18,10 +18,26 @@ feature_names = iris.feature_names
 target_names = iris.target_names
 
 # Select subset for clear visualization (5 samples per species = 15 faces)
+# Choose samples with maximum variation within species by selecting spread across range
 indices = []
 for species in range(3):
-    species_indices = np.where(y == species)[0][:5]
-    indices.extend(species_indices)
+    species_mask = y == species
+    species_data = X[species_mask]
+    species_indices_all = np.where(species_mask)[0]
+    # Calculate variance score for each sample and select diverse ones
+    mean_vals = species_data.mean(axis=0)
+    distances = np.sum((species_data - mean_vals) ** 2, axis=1)
+    # Select min, max distance and 3 evenly spaced others
+    sorted_idx = np.argsort(distances)
+    selected = [
+        sorted_idx[0],
+        sorted_idx[len(sorted_idx) // 4],
+        sorted_idx[len(sorted_idx) // 2],
+        sorted_idx[3 * len(sorted_idx) // 4],
+        sorted_idx[-1],
+    ]
+    indices.extend([species_indices_all[i] for i in selected])
+
 X_subset = X[indices]
 y_subset = y[indices]
 
@@ -31,54 +47,64 @@ X_norm = (X_subset - X_subset.min(axis=0)) / (X_subset.max(axis=0) - X_subset.mi
 # Colors for each species
 colors = ["#306998", "#FFD43B", "#2CA02C"]  # Python Blue, Python Yellow, Green
 
+# Create figure
+fig = go.Figure()
 
-def create_face_shape(cx, cy, radius, data, color):
-    """
-    Create a Chernoff face at position (cx, cy) with given radius.
-    data: normalized values [0-1] for 4 features
-    Feature mapping:
-      - sepal_length -> face width
-      - sepal_width -> face height
-      - petal_length -> eye size
-      - petal_width -> mouth curvature
-    """
-    shapes = []
+# Grid layout: 3 rows (species) x 5 columns (samples)
+n_cols = 5
+n_rows = 3
+spacing = 2.2
+radius = 0.95
 
-    # Unpack features
-    face_width_factor = 0.7 + data[0] * 0.6  # 0.7-1.3
-    face_height_factor = 0.8 + data[1] * 0.4  # 0.8-1.2
-    eye_size = 0.08 + data[2] * 0.12  # 0.08-0.2
-    mouth_curve = data[3] * 0.15  # 0-0.15 (smile amount)
+all_shapes = []
 
-    # Face outline (ellipse approximated by path)
+# Create all faces inline (KISS - no functions)
+for i, (data, species) in enumerate(zip(X_norm, y_subset)):
+    row = i // n_cols
+    col = i % n_cols
+
+    cx = col * spacing + spacing / 2
+    cy = (n_rows - 1 - row) * spacing + spacing / 2
+
+    color = colors[species]
+
+    # Feature mapping with increased variation:
+    #   - sepal_length (data[0]) -> face width
+    #   - sepal_width (data[1]) -> face height
+    #   - petal_length (data[2]) -> eye size
+    #   - petal_width (data[3]) -> mouth curvature
+    face_width_factor = 0.6 + data[0] * 0.8  # 0.6-1.4 (wider range)
+    face_height_factor = 0.7 + data[1] * 0.6  # 0.7-1.3 (wider range)
+    eye_size = 0.06 + data[2] * 0.18  # 0.06-0.24 (more variation)
+    mouth_curve = -0.3 + data[3] * 0.6  # -0.3 to +0.3 (frown to big smile)
+
+    # Face outline (ellipse)
     face_w = radius * face_width_factor
     face_h = radius * face_height_factor
-
-    # Create ellipse path for face
     theta = np.linspace(0, 2 * np.pi, 50)
     face_x = cx + face_w * np.cos(theta)
     face_y = cy + face_h * np.sin(theta)
 
-    shapes.append(
+    all_shapes.append(
         dict(
             type="path",
             path="M " + " L ".join([f"{x},{y}" for x, y in zip(face_x, face_y)]) + " Z",
             fillcolor=color,
             line=dict(color="#333333", width=2),
-            opacity=0.3,
+            opacity=0.35,
         )
     )
 
     # Eyes
     eye_offset_x = face_w * 0.35
-    eye_offset_y = face_h * 0.2
+    eye_offset_y = face_h * 0.22
     eye_r = radius * eye_size
+    eye_theta = np.linspace(0, 2 * np.pi, 30)
 
     # Left eye
-    eye_theta = np.linspace(0, 2 * np.pi, 30)
     left_eye_x = (cx - eye_offset_x) + eye_r * np.cos(eye_theta)
     left_eye_y = (cy + eye_offset_y) + eye_r * 0.7 * np.sin(eye_theta)
-    shapes.append(
+    all_shapes.append(
         dict(
             type="path",
             path="M " + " L ".join([f"{x},{y}" for x, y in zip(left_eye_x, left_eye_y)]) + " Z",
@@ -91,7 +117,7 @@ def create_face_shape(cx, cy, radius, data, color):
     pupil_r = eye_r * 0.5
     pupil_x = (cx - eye_offset_x) + pupil_r * np.cos(eye_theta)
     pupil_y = (cy + eye_offset_y) + pupil_r * np.sin(eye_theta)
-    shapes.append(
+    all_shapes.append(
         dict(
             type="path",
             path="M " + " L ".join([f"{x},{y}" for x, y in zip(pupil_x, pupil_y)]) + " Z",
@@ -103,7 +129,7 @@ def create_face_shape(cx, cy, radius, data, color):
     # Right eye
     right_eye_x = (cx + eye_offset_x) + eye_r * np.cos(eye_theta)
     right_eye_y = (cy + eye_offset_y) + eye_r * 0.7 * np.sin(eye_theta)
-    shapes.append(
+    all_shapes.append(
         dict(
             type="path",
             path="M " + " L ".join([f"{x},{y}" for x, y in zip(right_eye_x, right_eye_y)]) + " Z",
@@ -115,7 +141,7 @@ def create_face_shape(cx, cy, radius, data, color):
     # Right pupil
     pupil_x = (cx + eye_offset_x) + pupil_r * np.cos(eye_theta)
     pupil_y = (cy + eye_offset_y) + pupil_r * np.sin(eye_theta)
-    shapes.append(
+    all_shapes.append(
         dict(
             type="path",
             path="M " + " L ".join([f"{x},{y}" for x, y in zip(pupil_x, pupil_y)]) + " Z",
@@ -128,40 +154,28 @@ def create_face_shape(cx, cy, radius, data, color):
     nose_h = face_h * 0.15
     nose_w = face_w * 0.1
     nose_y_center = cy
-    nose_top = f"M {cx},{nose_y_center + nose_h * 0.5}"
-    nose_left = f"L {cx - nose_w},{nose_y_center - nose_h * 0.5}"
-    nose_right = f"L {cx + nose_w},{nose_y_center - nose_h * 0.5}"
-    shapes.append(
-        dict(
-            type="path",
-            path=f"{nose_top} {nose_left} {nose_right} Z",
-            fillcolor="#333333",
-            line=dict(color="#333333", width=1),
-            opacity=0.5,
-        )
+    nose_path = f"M {cx},{nose_y_center + nose_h * 0.5} L {cx - nose_w},{nose_y_center - nose_h * 0.5} L {cx + nose_w},{nose_y_center - nose_h * 0.5} Z"
+    all_shapes.append(
+        dict(type="path", path=nose_path, fillcolor="#333333", line=dict(color="#333333", width=1), opacity=0.5)
     )
 
-    # Mouth (curved line based on mouth_curve)
-    mouth_y = cy - face_h * 0.35
+    # Mouth (curved line with much more variation)
+    mouth_y_base = cy - face_h * 0.35
     mouth_width = face_w * 0.5
     mouth_points = 20
     mouth_x_vals = np.linspace(cx - mouth_width, cx + mouth_width, mouth_points)
-    # Parabolic curve for smile - positive curve = smile, negative = frown
-    # Map from 0-1 to -0.15 to +0.15 for frown to smile
-    smile_amount = (mouth_curve - 0.075) * 2  # Center around neutral
-    mouth_y_vals = mouth_y + smile_amount * (1 - ((mouth_x_vals - cx) / mouth_width) ** 2) * radius * 0.3
-
-    # Create mouth as a thick line using path
+    # Parabolic curve: positive = smile, negative = frown
+    mouth_y_vals = mouth_y_base + mouth_curve * (1 - ((mouth_x_vals - cx) / mouth_width) ** 2) * radius * 0.5
     mouth_path = "M " + " L ".join([f"{x},{y}" for x, y in zip(mouth_x_vals, mouth_y_vals)])
-    shapes.append(dict(type="path", path=mouth_path, line=dict(color="#333333", width=3)))
+    all_shapes.append(dict(type="path", path=mouth_path, line=dict(color="#333333", width=3)))
 
-    # Eyebrows (angled based on features)
+    # Eyebrows (angled based on face width feature)
     brow_offset_y = eye_offset_y + eye_r + face_h * 0.1
     brow_width = eye_r * 1.2
-    brow_angle = (data[0] - 0.5) * 0.15  # Slight angle variation
+    brow_angle = (data[0] - 0.5) * 0.2  # More angle variation
 
     # Left eyebrow
-    shapes.append(
+    all_shapes.append(
         dict(
             type="line",
             x0=cx - eye_offset_x - brow_width,
@@ -173,7 +187,7 @@ def create_face_shape(cx, cy, radius, data, color):
     )
 
     # Right eyebrow
-    shapes.append(
+    all_shapes.append(
         dict(
             type="line",
             x0=cx + eye_offset_x - brow_width,
@@ -183,31 +197,6 @@ def create_face_shape(cx, cy, radius, data, color):
             line=dict(color="#333333", width=3),
         )
     )
-
-    return shapes
-
-
-# Create figure
-fig = go.Figure()
-
-# Grid layout: 3 rows (species) x 5 columns (samples)
-n_cols = 5
-n_rows = 3
-spacing = 2.5
-radius = 0.9
-
-all_shapes = []
-
-for i, (data, species) in enumerate(zip(X_norm, y_subset)):
-    row = i // n_cols
-    col = i % n_cols
-
-    cx = col * spacing + spacing / 2
-    cy = (n_rows - 1 - row) * spacing + spacing / 2  # Invert row for top-to-bottom
-
-    color = colors[species]
-    face_shapes = create_face_shape(cx, cy, radius, data, color)
-    all_shapes.extend(face_shapes)
 
 # Add invisible scatter for axis setup
 fig.add_trace(go.Scatter(x=[0], y=[0], mode="markers", marker=dict(opacity=0), showlegend=False))
@@ -229,7 +218,7 @@ for i, (name, color) in enumerate(zip(target_names, colors)):
 for i, name in enumerate(target_names):
     row_y = (n_rows - 1 - i) * spacing + spacing / 2
     fig.add_annotation(
-        x=-0.8,
+        x=-0.6,
         y=row_y,
         text=f"<b>{name.capitalize()}</b>",
         showarrow=False,
@@ -242,7 +231,7 @@ for col in range(n_cols):
     col_x = col * spacing + spacing / 2
     fig.add_annotation(
         x=col_x,
-        y=n_rows * spacing + 0.3,
+        y=n_rows * spacing + 0.2,
         text=f"Sample {col + 1}",
         showarrow=False,
         font=dict(size=16, color="#666666"),
@@ -257,7 +246,7 @@ mapping_text = (
     "Smile: Petal Width"
 )
 fig.add_annotation(
-    x=n_cols * spacing + 0.5,
+    x=n_cols * spacing + 0.3,
     y=n_rows * spacing / 2,
     text=mapping_text,
     showarrow=False,
@@ -270,18 +259,15 @@ fig.add_annotation(
     borderpad=10,
 )
 
-# Update layout
+# Update layout - optimized for better space utilization
 fig.update_layout(
     title=dict(
-        text="Iris Dataset · chernoff-basic · plotly · pyplots.ai",
-        font=dict(size=28, color="#333333"),
-        x=0.5,
-        xanchor="center",
+        text="chernoff-basic · plotly · pyplots.ai", font=dict(size=28, color="#333333"), x=0.5, xanchor="center"
     ),
     shapes=all_shapes,
-    xaxis=dict(range=[-1.5, n_cols * spacing + 3.5], showgrid=False, zeroline=False, showticklabels=False, title=""),
+    xaxis=dict(range=[-1.2, n_cols * spacing + 3.0], showgrid=False, zeroline=False, showticklabels=False, title=""),
     yaxis=dict(
-        range=[-0.5, n_rows * spacing + 1],
+        range=[-0.3, n_rows * spacing + 0.6],
         showgrid=False,
         zeroline=False,
         showticklabels=False,
@@ -300,7 +286,7 @@ fig.update_layout(
         bordercolor="#cccccc",
         borderwidth=1,
     ),
-    margin=dict(l=120, r=200, t=100, b=50),
+    margin=dict(l=100, r=180, t=80, b=40),
     plot_bgcolor="white",
 )
 

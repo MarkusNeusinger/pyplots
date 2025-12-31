@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 slider-control-basic: Interactive Plot with Slider Control
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -7,7 +7,7 @@ Quality: 88/100 | Created: 2025-12-31
 import numpy as np
 from bokeh.io import export_png, save
 from bokeh.layouts import column
-from bokeh.models import ColumnDataSource, CustomJS, Slider
+from bokeh.models import ColumnDataSource, CustomJS, Label, Legend, LegendItem, Slider
 from bokeh.plotting import figure
 
 
@@ -51,7 +51,7 @@ p.xaxis.major_label_text_font_size = "24pt"
 p.yaxis.major_label_text_font_size = "24pt"
 
 # Add bar chart
-p.vbar(
+bars = p.vbar(
     x="months",
     top="sales",
     source=source,
@@ -63,10 +63,10 @@ p.vbar(
 )
 
 # Add line connecting the bars
-p.line(x="months", y="sales", source=source, line_width=4, line_color="#FFD43B", line_alpha=0.9)
+trend_line = p.line(x="months", y="sales", source=source, line_width=4, line_color="#FFD43B", line_alpha=0.9)
 
 # Add scatter points on top of bars
-p.scatter(
+trend_points = p.scatter(
     x="months",
     y="sales",
     source=source,
@@ -77,6 +77,20 @@ p.scatter(
     fill_alpha=1.0,
 )
 
+# Add legend
+legend = Legend(
+    items=[
+        LegendItem(label="Monthly Sales", renderers=[bars]),
+        LegendItem(label="Trend Line", renderers=[trend_line, trend_points]),
+    ],
+    location="top_left",
+    label_text_font_size="24pt",
+    spacing=20,
+    padding=20,
+    background_fill_alpha=0.8,
+)
+p.add_layout(legend, "right")
+
 # Style grid
 p.xgrid.grid_line_color = None
 p.ygrid.grid_line_alpha = 0.3
@@ -86,10 +100,23 @@ p.ygrid.grid_line_dash = [6, 4]
 p.background_fill_color = "#fafafa"
 p.border_fill_color = "#ffffff"
 
-# Create slider
-slider = Slider(start=2018, end=2024, value=2024, step=1, title="Select Year", width=800, bar_color="#306998")
+# Create slider with width proportional to plot (4800 * 0.8 = 3840)
+slider = Slider(
+    start=2018, end=2024, value=2024, step=1, title="Select Year (2018-2024)", width=3840, bar_color="#306998"
+)
 
-# Slider styling is limited - title font size cannot be changed directly
+# Add annotation to indicate interactive functionality (visible in static PNG context)
+interactive_note = Label(
+    x=3800,
+    y=170,
+    x_units="screen",
+    y_units="data",
+    text="[Interactive] Use slider to change year (2018-2024)",
+    text_font_size="22pt",
+    text_color="#666666",
+    text_align="right",
+)
+p.add_layout(interactive_note)
 
 # Prepare data for JavaScript callback
 all_data_js = {str(k): v for k, v in all_data.items()}

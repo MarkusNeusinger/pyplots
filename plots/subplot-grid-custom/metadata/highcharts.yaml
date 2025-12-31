@@ -1,0 +1,28 @@
+library: highcharts
+specification_id: subplot-grid-custom
+created: '2025-12-30T23:54:24Z'
+updated: '2025-12-31T00:11:24Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608472991
+issue: 2856
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent custom grid layout with CSS Grid demonstrating colspan/rowspan effectively
+  - Dashboard-style visualization with a large main chart (2x2) and 4 detail views
+    (1x1 each)
+  - Perfect colorblind-safe palette with 5 distinct colors
+  - All text is highly legible with appropriately sized fonts for the 4800x2700 canvas
+  - Realistic financial data scenario with coherent relationships between charts
+  - Clean KISS code structure with proper random seed
+  weaknesses:
+  - Legend text sizes are disproportionately small compared to the chart titles and
+    should be increased for better readability
+  - Does not use the highcharts-core Python library API (Chart, HighchartsOptions
+    classes) as recommended in the library guidelines; instead manually constructs
+    JavaScript configurations

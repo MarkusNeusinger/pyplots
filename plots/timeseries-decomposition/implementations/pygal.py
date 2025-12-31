@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 timeseries-decomposition: Time Series Decomposition Plot
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 87/100 | Created: 2025-12-31
+Quality: 90/100 | Created: 2025-12-31
 """
 
 from io import BytesIO

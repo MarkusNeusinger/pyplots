@@ -1,0 +1,27 @@
+library: bokeh
+specification_id: choropleth-basic
+created: '2025-12-31T21:33:44Z'
+updated: '2025-12-31T21:41:36Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20627498185
+issue: 3069
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/choropleth-basic/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/choropleth-basic/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/choropleth-basic/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of Bokeh-specific features including LogColorMapper for better differentiation
+    of low-density states
+  - Smart contrast handling with dynamic text colors (white on dark, blue on light
+    backgrounds)
+  - Good missing data handling demonstrated with DC shown in gray
+  - Clean tile grid approach that fits all 50 states + DC in a readable layout
+  - Well-implemented color bar with logarithmic scale and clear labeling
+  weaknesses:
+  - Title format should be exactly "choropleth-basic · bokeh · pyplots.ai" without
+    the "US Population Density" prefix
+  - Tile grid approach, while creative and readable, differs from traditional geographic
+    projection that spec mentions (Robinson for world, Albers for US)

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 subplot-mosaic: Mosaic Subplot Layout with Varying Sizes
-Library: lets-plot | Python 3.13
-Quality: pending | Created: 2025-12-31
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 88/100 | Created: 2025-12-31
 """
 
 import os

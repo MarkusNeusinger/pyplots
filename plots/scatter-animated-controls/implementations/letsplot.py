@@ -65,13 +65,13 @@ df_key["year_label"] = df_key["year"].astype(str)
 # Create the faceted plot showing temporal evolution
 plot = (
     ggplot(df_key, aes(x="gdp_per_capita", y="life_expectancy"))
-    + geom_point(aes(color="country", size="population"), alpha=0.8)
-    + scale_size(range=[3, 15], name="Population (M)")
+    + geom_point(aes(color="country", size="population"), alpha=0.85)
+    + scale_size(range=[6, 20], name="Population (M)")
     + scale_color_brewer(palette="Paired", name="Country")
     + scale_x_log10()
     + facet_wrap("year_label", ncol=5)
     + labs(
-        title="scatter-animated-controls \u00b7 letsplot \u00b7 pyplots.ai",
+        title="scatter-animated-controls \u00b7 lets-plot \u00b7 pyplots.ai",
         x="GDP per Capita (log scale, USD)",
         y="Life Expectancy (years)",
     )

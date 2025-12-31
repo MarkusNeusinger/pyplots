@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 streamline-basic: Basic Streamline Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 75/100 | Created: 2025-12-31
@@ -60,9 +60,9 @@ for radius in radii:
             streamlines.append((points, radius))
 
 # Group streamlines by radial distance for coloring
-# 4 color bins matching 4 radii
-bin_colors = ["#306998", "#5ab4dc", "#e6a020", "#FFD43B"]
-bin_labels = ["Inner (r=1.0)", "Mid-Inner (r=1.5)", "Mid-Outer (r=2.0)", "Outer (r=2.5)"]
+# 4 color bins matching 4 radii - using high contrast colors
+bin_colors = ["#1e3a5f", "#2a9d8f", "#e9c46a", "#e76f51"]
+bin_labels = ["Slow Flow (r=1.0)", "Medium Flow (r=1.5)", "Fast Flow (r=2.0)", "Fastest Flow (r=2.5)"]
 
 binned_streamlines = {i: [] for i in range(4)}
 for points, radius in streamlines:

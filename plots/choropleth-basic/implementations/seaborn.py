@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 choropleth-basic: Choropleth Map with Regional Coloring
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 72/100 | Created: 2025-12-31
+Quality: 88/100 | Created: 2025-12-31
 """
 
 import matplotlib.patches as mpatches

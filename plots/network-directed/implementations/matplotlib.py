@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 network-directed: Directed Network Graph
-Library: matplotlib | Python 3.13
-Quality: pending | Created: 2025-12-30
+Library: matplotlib 3.10.8 | Python 3.13.11
+Quality: 92/100 | Created: 2025-12-30
 """
 
 import matplotlib.patches as mpatches

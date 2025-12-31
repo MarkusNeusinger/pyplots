@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 circos-basic: Circos Plot
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2025-12-31
+Library: highcharts unknown | Python 3.13.11
+Quality: 85/100 | Created: 2025-12-31
 """
 
 import json

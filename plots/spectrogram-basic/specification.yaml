@@ -1,0 +1,30 @@
+# Specification-level metadata for spectrogram-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: spectrogram-basic
+title: Spectrogram Time-Frequency Heatmap
+
+# Specification tracking
+created: 2025-12-31T05:13:04Z
+updated: 2025-12-31T05:13:04Z
+issue: 2927
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - spectrogram
+    - heatmap
+  data_type:
+    - timeseries
+    - numeric
+    - continuous
+  domain:
+    - general
+    - science
+    - engineering
+  features:
+    - basic
+    - time-frequency
+    - signal-processing

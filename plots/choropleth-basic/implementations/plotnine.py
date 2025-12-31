@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 choropleth-basic: Choropleth Map with Regional Coloring
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-31
@@ -42,9 +42,11 @@ countries = {
     "Switzerland": [(3, 1), (5, 0), (6, 1), (5, 2), (4, 2), (3, 2)],
     "Portugal": [(-4, -2), (-3, -3), (-2, -1), (-3, 0), (-4, 0)],
     "Denmark": [(5, 6), (7, 5), (8, 6), (7, 7), (5, 7)],
+    "Czechia": [(7, 3), (9, 3), (10, 4), (9, 5), (7, 5), (6, 4)],  # Added for missing data demo
 }
 
 # Population density data (people per sq km) - realistic values for 2024
+# Czechia has None to demonstrate missing data handling (shown in gray)
 population_density = {
     "France": 119,
     "Germany": 238,
@@ -61,6 +63,7 @@ population_density = {
     "Switzerland": 219,
     "Portugal": 111,
     "Denmark": 137,
+    "Czechia": None,  # Missing data - will be displayed in gray
 }
 
 # Build polygon dataframe
@@ -73,21 +76,48 @@ for country, coords in countries.items():
 
 df = pd.DataFrame(polygon_data)
 
-# Calculate centroids for country labels
+# Calculate centroids for country labels with manual adjustments to avoid overlap
+# Adjustments for crowded central Europe region (Netherlands, Belgium, Germany, Denmark)
+label_offsets = {
+    "Netherlands": (0.5, 1.0),  # Move label up-right to avoid Belgium overlap
+    "Belgium": (-0.8, -0.5),  # Move label down-left
+    "Germany": (0.5, -0.5),  # Move label slightly down-right
+    "Denmark": (0.5, 0.5),  # Move label up-right
+    "Czechia": (0, -0.5),  # Move label down (missing data country)
+}
+
 centroids = []
 for country, coords in countries.items():
     cx = np.mean([c[0] for c in coords])
     cy = np.mean([c[1] for c in coords])
-    centroids.append({"country": country, "x": cx, "y": cy, "density": population_density[country]})
+    # Apply offset if defined for this country
+    if country in label_offsets:
+        cx += label_offsets[country][0]
+        cy += label_offsets[country][1]
+    density = population_density[country]
+    centroids.append({"country": country, "x": cx, "y": cy, "density": density})
 
 df_centroids = pd.DataFrame(centroids)
+
+# Separate data with and without values for missing data handling
+df_with_data = df[df["density"].notna()].copy()
+df_missing = df[df["density"].isna()].copy()
 
 # Create the choropleth map
 plot = (
     ggplot()
-    + geom_polygon(df, aes(x="x", y="y", group="country", fill="density"), color="#444444", size=0.6, alpha=0.95)
+    # First layer: countries with missing data (gray fill)
+    + geom_polygon(
+        df_missing, aes(x="x", y="y", group="country"), fill="#cccccc", color="#444444", size=0.6, alpha=0.95
+    )
+    # Second layer: countries with data (colored by density)
+    + geom_polygon(
+        df_with_data, aes(x="x", y="y", group="country", fill="density"), color="#444444", size=0.6, alpha=0.95
+    )
     + geom_text(df_centroids, aes(x="x", y="y", label="country"), size=8, color="#222222", fontweight="bold")
-    + scale_fill_cmap(cmap_name="Blues", name="Population\nDensity\n(per km²)")
+    + scale_fill_cmap(
+        cmap_name="Blues", name="Population\nDensity\n(per km²)", limits=(0, 550)
+    )  # Max set to 550 to encompass Netherlands (521)
     + coord_fixed(ratio=1.0)
     + labs(title="choropleth-basic · plotnine · pyplots.ai")
     + theme(

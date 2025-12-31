@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 tree-phylogenetic: Phylogenetic Tree Diagram
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-31
@@ -10,22 +10,21 @@ from pygal.style import Style
 
 # Primate phylogenetic tree based on mitochondrial DNA divergence (simplified)
 # Tree structure: ((((Human, Chimpanzee), Gorilla), Orangutan), (Gibbon, Macaque))
+# Using wider y-spacing for better vertical distribution
 species_data = [
-    ("Human", 0.70),
-    ("Chimpanzee", 0.70),
-    ("Gorilla", 0.60),
-    ("Orangutan", 0.45),
-    ("Gibbon", 0.70),
-    ("Macaque", 0.70),
+    ("Human", 0.70, 0),
+    ("Chimpanzee", 0.70, 1.5),
+    ("Gorilla", 0.60, 3),
+    ("Orangutan", 0.45, 5),
+    ("Gibbon", 0.70, 7),
+    ("Macaque", 0.70, 8.5),
 ]
 
-# Tree structure with internal nodes (y positions for species, x = evolutionary distance)
-# Y positions: spread species vertically
-n_species = len(species_data)
-species_y = {name: i for i, (name, _) in enumerate(species_data)}
+# Y positions from species data (now with wider spacing)
+species_y = {name: y for name, _, y in species_data}
+species_x = {name: x for name, x, _ in species_data}
 
-# Define tree connections: each internal node connects to its children
-# Format: (x_position, y_center, children_y_positions)
+# Define tree connections with improved spacing
 tree_segments = []
 
 # Human-Chimpanzee clade (most recent common ancestor at x=0.60)
@@ -64,21 +63,20 @@ tree_segments.append([(root_x, gm_ancestor_y), (gm_ancestor_x, gm_ancestor_y)])
 tree_segments.append([(root_x, great_apes_y), (root_x, gm_ancestor_y)])
 
 # Custom style for pyplots - larger fonts for 4800x2700 canvas
-# Use single color for consistent branch appearance
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333",
     foreground_strong="#333",
     foreground_subtle="#999",
-    colors=("#306998",),  # Python Blue for all branches
+    colors=("#306998",),
     title_font_size=56,
-    label_font_size=40,
-    major_label_font_size=36,
-    legend_font_size=32,
-    value_font_size=28,
-    tooltip_font_size=24,
-    stroke_width=5,
+    label_font_size=44,
+    major_label_font_size=40,
+    legend_font_size=36,
+    value_font_size=32,
+    tooltip_font_size=28,
+    stroke_width=6,
     opacity=1.0,
     guide_stroke_color="#ddd",
 )
@@ -91,48 +89,53 @@ chart = pygal.XY(
     title="Primate Evolution · tree-phylogenetic · pygal · pyplots.ai",
     x_title="Evolutionary Distance (substitutions per site)",
     y_title="",
-    show_legend=True,
-    legend_at_bottom=True,
-    legend_at_bottom_columns=8,
+    show_legend=False,
     show_dots=False,
-    stroke_style={"width": 5},
+    stroke_style={"width": 6},
     fill=False,
     show_x_guides=True,
     show_y_guides=False,
     show_y_labels=False,
-    range=(-0.8, n_species - 0.5),
-    xrange=(-0.05, 0.85),
+    range=(-1.5, 10),
+    xrange=(-0.05, 1.05),
     print_values=False,
 )
 
-# Add all tree branches as unnamed series (all use Python Blue)
+# Add all tree branches as unnamed series
 for seg in tree_segments:
-    chart.add(None, seg, show_dots=False, stroke_style={"width": 5})
+    chart.add(None, seg, show_dots=False, stroke_style={"width": 6})
 
-# Add species markers at the tips
-# Use colorblind-friendly colors for species points
+# Add species markers with labels at the tips
+# Colorblind-friendly palette
 species_colors = ["#E63946", "#457B9D", "#2A9D8F", "#E9C46A", "#F4A261", "#9C6644"]
-for i, (name, x_pos) in enumerate(species_data):
-    y_pos = species_y[name]
+
+# Add species as points and label points slightly to the right
+for i, (name, x_pos, y_pos) in enumerate(species_data):
     color = species_colors[i % len(species_colors)]
+    # Add larger species marker dot
     chart.add(
-        name,
-        [{"value": (x_pos, y_pos), "label": name, "color": color}],
+        None,
+        [{"value": (x_pos, y_pos), "color": color}],
         show_dots=True,
-        dots_size=16,
+        dots_size=24,
         stroke_style={"width": 0},
         color=color,
     )
+    # Add species name label as a text point to the right of the marker
+    chart.add(
+        None,
+        [{"value": (x_pos + 0.02, y_pos), "label": name}],
+        show_dots=False,
+        stroke_style={"width": 0},
+        print_labels=True,
+    )
 
-# Add scale bar below the plot area
-scale_bar_y = -0.6
-chart.add(
-    "Scale: 0.1 subs/site",
-    [(0.35, scale_bar_y), (0.45, scale_bar_y)],
-    show_dots=False,
-    stroke_style={"width": 8},
-    color="#333",
-)
+# Add scale bar as standalone annotation at bottom
+scale_bar_y = -1.0
+# Scale bar line
+chart.add(None, [(0.0, scale_bar_y), (0.1, scale_bar_y)], show_dots=False, stroke_style={"width": 10}, color="#333")
+# Scale bar label
+chart.add(None, [{"value": (0.05, scale_bar_y - 0.4), "label": "0.1"}], show_dots=False, print_labels=True)
 
 # Save outputs
 chart.render_to_file("plot.html")

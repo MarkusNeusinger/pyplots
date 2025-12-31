@@ -1,0 +1,30 @@
+# Specification-level metadata for tree-phylogenetic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: tree-phylogenetic
+title: Phylogenetic Tree Diagram
+
+# Specification tracking
+created: 2025-12-31T13:39:29Z
+updated: 2025-12-31T13:39:29Z
+issue: 3070
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - tree
+    - dendrogram
+    - hierarchy
+  data_type:
+    - hierarchical
+    - categorical
+  domain:
+    - science
+    - biology
+    - bioinformatics
+  features:
+    - basic
+    - proportional
+    - evolutionary

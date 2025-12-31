@@ -1,0 +1,26 @@
+library: pygal
+specification_id: bar-permutation-importance
+created: '2025-12-31T10:57:04Z'
+updated: '2025-12-31T11:36:32Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20617502897
+issue: 2998
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-permutation-importance/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-permutation-importance/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-permutation-importance/pygal/plot.html
+quality_score: 83
+review:
+  strengths:
+  - Creative use of HorizontalStackedBar to simulate error bars by stacking std on
+    mean values
+  - Excellent viridis color gradient implementation for visual emphasis of importance
+    hierarchy
+  - Clean realistic housing prediction scenario with appropriate feature names
+  - Properly sorted bars from highest to lowest importance
+  weaknesses:
+  - Legend appears cut off at bottom of the visible plot area
+  - Contains a helper function (get_viridis_color) violating KISS structure requirement
+  - Missing vertical reference line at x=0 as suggested in spec
+  - X-axis label lacks units

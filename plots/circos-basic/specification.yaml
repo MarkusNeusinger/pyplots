@@ -1,0 +1,32 @@
+# Specification-level metadata for circos-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: circos-basic
+title: Circos Plot
+
+# Specification tracking
+created: 2025-12-31T10:44:45Z
+updated: null
+issue: 3005
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - circos
+    - circular
+    - chord
+  data_type:
+    - categorical
+    - numeric
+    - relational
+  domain:
+    - general
+    - science
+    - bioinformatics
+  features:
+    - basic
+    - multi-track
+    - flow-visualization
+    - proportional

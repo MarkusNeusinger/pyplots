@@ -1,0 +1,27 @@
+library: bokeh
+specification_id: candlestick-volume
+created: '2025-12-31T13:52:49Z'
+updated: '2025-12-31T13:59:16Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20620313325
+issue: 3068
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/candlestick-volume/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/candlestick-volume/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/candlestick-volume/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent dual-pane layout with proper 70/30 split as specified
+  - Shared x-range between candlestick and volume charts works perfectly
+  - CrosshairTool added for both panes as requested in spec
+  - Color scheme is colorblind-accessible (blue/yellow instead of red/green)
+  - Volume bars correctly color-coded to match candlestick up/down days
+  - Text sizes well-scaled for 4800×2700 output
+  - Clean, readable code following KISS principles
+  weaknesses:
+  - Grid styling could be more subtle (current alpha 0.3 is slightly prominent)
+  - Volume bar colors appear more muted compared to candlesticks - consider matching
+    fill_alpha
+  - Missing HoverTool which would enhance Bokeh interactive capabilities

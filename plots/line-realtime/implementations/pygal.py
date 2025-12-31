@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-realtime: Real-Time Updating Line Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -15,18 +15,21 @@ from pygal.style import Style
 np.random.seed(42)
 n_points = 60  # 60 seconds of data at 1-second intervals
 
-# Generate realistic CPU usage pattern with some spikes
-base_cpu = 35  # Base CPU usage
-trend = np.linspace(0, 10, n_points)  # Slight upward trend
-noise = np.random.normal(0, 8, n_points)  # Random fluctuations
+# Generate realistic CPU usage pattern with spikes crossing the warning threshold
+base_cpu = 45  # Base CPU usage
+trend = np.linspace(0, 15, n_points)  # Upward trend approaching warning zone
+noise = np.random.normal(0, 6, n_points)  # Random fluctuations
 spikes = np.zeros(n_points)
-spike_positions = [15, 28, 42, 55]  # Add some load spikes
-for pos in spike_positions:
+# Add load spikes - one major spike crossing the 80% warning threshold
+spike_positions = [15, 28, 42]
+spike_magnitudes = [20, 45, 25]  # Second spike will push above 80%
+for pos, mag in zip(spike_positions, spike_magnitudes, strict=True):
     if pos < n_points:
-        spikes[pos : min(pos + 3, n_points)] = np.array([25, 15, 8])[: min(3, n_points - pos)]
+        decay = np.array([mag, mag * 0.6, mag * 0.3])[: min(3, n_points - pos)]
+        spikes[pos : min(pos + 3, n_points)] = decay
 
 cpu_usage = base_cpu + trend + noise + spikes
-cpu_usage = np.clip(cpu_usage, 0, 100)  # Keep in valid range
+cpu_usage = np.clip(cpu_usage, 5, 98)  # Keep in valid range with headroom
 
 # Create timestamps for x-axis labels (showing sliding window)
 end_time = datetime(2025, 12, 31, 14, 30, 0)
@@ -47,7 +50,7 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#1a1a1a",
     foreground_subtle="#666666",
-    colors=("#306998", "#FFD43B", "#e74c3c"),  # Primary colors + accent for current value
+    colors=("#a0a0a0", "#306998", "#FFD43B", "#e74c3c"),  # Faded gray, primary, warning, live indicator
     title_font_size=72,
     label_font_size=42,
     major_label_font_size=38,
@@ -93,8 +96,17 @@ chart = pygal.Line(
 # Set x-axis labels
 chart.x_labels = x_labels
 
-# Add main CPU usage line
-chart.add("CPU Usage", list(cpu_usage), stroke_style={"width": 6})
+# Add faded trailing edge (older data) to indicate scrolling direction
+# First 10 points shown with reduced opacity to create fade effect
+fade_end = 10
+fade_values = list(cpu_usage[:fade_end]) + [None] * (n_points - fade_end)
+chart.add(
+    "← Older Data", fade_values, stroke_style={"width": 4, "opacity": 0.35}, dots_size=4, fill=False, show_dots=True
+)
+
+# Add main CPU usage line (without faded portion for visual clarity)
+main_values = [None] * (fade_end - 1) + list(cpu_usage[fade_end - 1 :])
+chart.add("CPU Usage", main_values, stroke_style={"width": 6})
 
 # Get current value for display in legend
 current_value = cpu_usage[-1]
@@ -102,16 +114,12 @@ current_value = cpu_usage[-1]
 # Add a horizontal reference line at warning threshold (80%)
 warning_threshold = [80] * n_points
 chart.add(
-    "Warning Threshold (80%)",
-    warning_threshold,
-    stroke_style={"width": 4, "dasharray": "20, 10"},
-    show_dots=False,
-    fill=False,
+    "Warning 80%", warning_threshold, stroke_style={"width": 4, "dasharray": "20, 10"}, show_dots=False, fill=False
 )
 
-# Add current value indicator (last 3 points highlighted)
-highlight_values = [None] * (n_points - 3) + list(cpu_usage[-3:])
-chart.add(f"Current: {current_value:.1f}%", highlight_values, stroke_style={"width": 8}, dots_size=16, fill=False)
+# Add current value indicator (last 5 points highlighted) with "LIVE" indicator
+highlight_values = [None] * (n_points - 5) + list(cpu_usage[-5:])
+chart.add(f"LIVE → {current_value:.1f}%", highlight_values, stroke_style={"width": 8}, dots_size=16, fill=False)
 
 # Save as PNG
 chart.render_to_png("plot.png")

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 candlestick-volume: Stock Candlestick Chart with Volume
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-31
@@ -10,6 +10,16 @@ from lets_plot import *
 
 
 LetsPlot.setup_html()
+
+
+# Format volume as human-readable (e.g., 5.0M instead of 5000000)
+def format_volume(val):
+    if val >= 1_000_000:
+        return f"{val / 1_000_000:.1f}M"
+    elif val >= 1_000:
+        return f"{val / 1_000:.0f}K"
+    return str(int(val))
+
 
 # Data - 60 trading days of synthetic stock data
 np.random.seed(42)
@@ -32,10 +42,8 @@ volatility = np.abs(close_prices - open_prices) / open_prices
 volume = base_volume * (1 + volatility * 10 + np.random.uniform(-0.3, 0.3, n_days))
 volume = volume.astype(int)
 
-# Determine up/down days for coloring
-direction = [
-    "Up Day (Close ≥ Open)" if c >= o else "Down Day (Close < Open)" for c, o in zip(close_prices, open_prices)
-]
+# Determine up/down days for coloring (shorter labels to avoid truncation)
+direction = ["Up Day" if c >= o else "Down Day" for c, o in zip(close_prices, open_prices)]
 
 # Create date labels for x-axis (show every 10th trading day)
 date_labels = [d.strftime("%b %d") for d in dates]
@@ -67,35 +75,44 @@ candle_plot = (
     + geom_segment(aes(x="date_idx", xend="date_idx", y="low", yend="high", color="direction"), size=1.0)
     # Bodies (open-close rectangles)
     + geom_segment(aes(x="date_idx", xend="date_idx", y="open", yend="close", color="direction"), size=5.0)
-    + scale_color_manual(
-        values={"Up Day (Close ≥ Open)": color_up, "Down Day (Close < Open)": color_down}, name="Trading Day"
-    )
+    + scale_color_manual(values={"Up Day": color_up, "Down Day": color_down}, name="Direction")
     + scale_x_continuous(breaks=date_breaks, labels=date_tick_labels)
     + labs(title="candlestick-volume · letsplot · pyplots.ai", y="Price ($)", x="")
+    # Enable crosshair cursor for precise reading
+    + coord_cartesian()
     + theme_minimal()
     + theme(
         plot_title=element_text(size=24),
         axis_title_y=element_text(size=20),
         axis_text_y=element_text(size=16),
         axis_text_x=element_blank(),
-        legend_position="top",
+        legend_position=[0.5, 0.98],
+        legend_justification=[0.5, 1.0],
+        legend_direction="horizontal",
         legend_title=element_text(size=18),
         legend_text=element_text(size=16),
         panel_grid_major=element_line(color="#E5E7EB", size=0.5),
         panel_grid_minor=element_blank(),
+        plot_margin=[40, 20, 5, 10],
     )
     + ggsize(1600, 630)
 )
+
+# Create volume breaks and labels for human-readable format
+vol_min, vol_max = df["volume"].min(), df["volume"].max()
+vol_breaks = [int(vol_min), int((vol_min + vol_max) / 2), int(vol_max)]
+vol_labels = [format_volume(v) for v in vol_breaks]
 
 # Volume chart (lower pane)
 volume_plot = (
     ggplot(df)
     + geom_bar(aes(x="date_idx", y="volume", fill="direction"), stat="identity", width=0.8)
-    + scale_fill_manual(
-        values={"Up Day (Close ≥ Open)": color_up, "Down Day (Close < Open)": color_down}, name="Trading Day"
-    )
+    + scale_fill_manual(values={"Up Day": color_up, "Down Day": color_down}, name="Direction")
     + scale_x_continuous(breaks=date_breaks, labels=date_tick_labels)
-    + labs(x="Date (2024)", y="Volume")
+    + scale_y_continuous(breaks=vol_breaks, labels=vol_labels)
+    + labs(x="Date (2024)", y="Volume (shares)")
+    # Enable crosshair cursor for precise reading (interactive HTML)
+    + coord_cartesian()
     + theme_minimal()
     + theme(
         axis_title=element_text(size=20),

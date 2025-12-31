@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 circos-basic: Circos Plot
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 78/100 | Created: 2025-12-31
+Quality: 82/100 | Created: 2025-12-31
 """
 
 import matplotlib.patches as mpatches

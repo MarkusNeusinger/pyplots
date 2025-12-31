@@ -1,0 +1,28 @@
+library: pygal
+specification_id: pie-drilldown
+created: '2025-12-31T14:11:12Z'
+updated: '2025-12-31T14:27:34Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20620564803
+issue: 3072
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/pygal/plot.html
+quality_score: 90
+review:
+  strengths:
+  - Excellent hierarchical data structure with company budget breakdown across departments
+    and sub-categories
+  - Colorblind-friendly palette with distinct blue, yellow, coral, and green colors
+  - Full interactive HTML implementation with breadcrumb navigation and drill-down
+    functionality
+  - Good use of pygal native SVG capabilities with xlink attributes
+  - Clean donut chart design with inner_radius creating visual appeal
+  - Value formatter showing dollar amounts on slices
+  weaknesses:
+  - Title format includes Company Budget prefix instead of strict spec-id library
+    pyplots.ai format
+  - PNG preview shows only dollar values not percentages as specified in spec
+  - Slice category labels appear small relative to the large canvas size

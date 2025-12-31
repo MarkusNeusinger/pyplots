@@ -1,0 +1,30 @@
+library: pygal
+specification_id: volcano-basic
+created: '2025-12-31T05:31:07Z'
+updated: '2025-12-31T06:01:32Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612783052
+issue: 2924
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/pygal/plot.html
+quality_score: 75
+review:
+  strengths:
+  - Clean three-category color coding (gray/red/blue) clearly distinguishes significance
+    groups
+  - Good use of pygal custom Style with appropriate font sizes for large canvas
+  - Realistic gene expression data scenario with proper statistical distributions
+  - Tooltips include gene names for interactivity in HTML output
+  - Proper scientific notation in axis labels (subscript formatting)
+  weaknesses:
+  - Threshold lines (horizontal at p=0.05, vertical at FC=±2) are not visible in the
+    rendered output despite being coded
+  - Y-axis range extends to -5 when all data is positive (0 to ~4), wasting half the
+    vertical canvas
+  - Legend positioned in top-left corner instead of near the data or at bottom as
+    configured
+  - Red/blue color scheme is not colorblind-safe; consider using colorblind-friendly
+    palette

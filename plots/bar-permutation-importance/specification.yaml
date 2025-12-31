@@ -1,0 +1,30 @@
+# Specification-level metadata for bar-permutation-importance
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: bar-permutation-importance
+title: Permutation Feature Importance Plot
+
+# Specification tracking
+created: 2025-12-31T10:26:42Z
+updated: 2025-12-31T10:26:42Z
+issue: 2998
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - bar
+    - horizontal
+  data_type:
+    - numeric
+    - categorical
+  domain:
+    - general
+    - machine-learning
+    - statistics
+  features:
+    - horizontal
+    - error-bars
+    - ranking
+    - model-interpretability

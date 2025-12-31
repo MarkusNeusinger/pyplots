@@ -1,0 +1,29 @@
+# Specification-level metadata for slider-control-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: slider-control-basic
+title: Interactive Plot with Slider Control
+
+# Specification tracking
+created: 2025-12-31T13:39:19Z
+updated: 2025-12-31T13:39:19Z
+issue: 3071
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - scatter
+    - line
+  data_type:
+    - numeric
+    - timeseries
+  domain:
+    - general
+    - business
+  features:
+    - interactive
+    - basic
+    - widget
+    - filtering

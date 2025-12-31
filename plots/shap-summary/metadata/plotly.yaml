@@ -1,0 +1,29 @@
+library: plotly
+specification_id: shap-summary
+created: '2025-12-31T05:48:02Z'
+updated: '2025-12-31T05:59:08Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612920841
+issue: 2923
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/shap-summary/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/shap-summary/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/shap-summary/plotly/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of the SHAP summary visualization concept with proper
+    beeswarm-style jittering
+  - Correct blue-to-red diverging colorscale (RdBu_r) for feature values as specified
+  - Clear vertical reference line at x=0 separating positive/negative impacts
+  - Well-organized code with realistic breast cancer dataset feature names
+  - Appropriate marker sizing and transparency for 200 data points
+  - Interactive hover templates provide additional information on interaction
+  weaknesses:
+  - Hover template shows normalized feature value (0-1) instead of actual feature
+    values which would be more informative
+  - The grid styling is functional but could use slightly more prominent styling for
+    the zero line
+  - Feature importance distribution is relatively uniform - could show more dramatic
+    differences between important and less important features

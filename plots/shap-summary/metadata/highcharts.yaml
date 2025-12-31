@@ -1,0 +1,30 @@
+library: highcharts
+specification_id: shap-summary
+created: '2025-12-31T06:10:37Z'
+updated: '2025-12-31T09:04:07Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612964334
+issue: 2923
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/shap-summary/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/shap-summary/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/shap-summary/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of SHAP summary plot using scatter series with color-coded
+    bins
+  - Well-chosen realistic context (house price prediction) with meaningful feature
+    names
+  - Proper sorting of features by mean absolute SHAP value (most important at top)
+  - Clear visual separation using vertical line at x=0
+  - Good use of jittering to reduce point overlap
+  - Correct title format and professional subtitle
+  - Properly saves both PNG and interactive HTML versions
+  weaknesses:
+  - Blue-red color scheme, while conventional for SHAP, is not optimal for colorblind
+    accessibility (consider viridis or plasma alternatives in future)
+  - All features show similar linear correlation patterns - more diverse SHAP distributions
+    (e.g., some features with non-linear effects, clustered values) would better demonstrate
+    the plot type capabilities

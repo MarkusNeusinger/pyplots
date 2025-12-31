@@ -1,0 +1,27 @@
+library: bokeh
+specification_id: slider-control-basic
+created: '2025-12-31T13:56:20Z'
+updated: '2025-12-31T14:24:16Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20620344869
+issue: 3071
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/slider-control-basic/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/slider-control-basic/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/slider-control-basic/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of interactive slider control with CustomJS callback
+    for client-side updates
+  - Clean visual design with professional color scheme (Python blue/yellow)
+  - Proper title format including dynamic year update in callback
+  - Good use of ColumnDataSource pattern for data management
+  - Generates both static PNG and interactive HTML outputs appropriately
+  - Seasonal sales pattern adds realistic data variation
+  weaknesses:
+  - Legend area shows some visual artifacts/rendering issues on the right side
+  - Missing HoverTool which would enhance the interactive experience by showing exact
+    values on hover
+  - The interactive note annotation could be more visually integrated

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-permutation-importance: Permutation Feature Importance Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-31
@@ -33,42 +33,31 @@ importance_mean = np.array([0.002, 0.008, 0.015, 0.024, 0.032, 0.048, 0.067, 0.0
 # Standard deviation across 10 permutation repetitions
 importance_std = np.array([0.003, 0.005, 0.008, 0.011, 0.014, 0.018, 0.022, 0.028, 0.035, 0.042])
 
-# Generate sequential color gradient based on importance values (viridis-like)
-# Colors from low (purple) to high (yellow) importance
+# Generate sequential color gradient (viridis-inspired) inline
 min_imp = importance_mean.min()
 max_imp = importance_mean.max()
 imp_range = max_imp - min_imp if max_imp != min_imp else 1.0
 
+# Viridis color stops: purple (0) -> teal (0.5) -> yellow (1)
+viridis_stops = [(0.0, 68, 1, 84), (0.25, 58, 82, 139), (0.5, 32, 144, 140), (0.75, 94, 201, 97), (1.0, 253, 231, 36)]
 
-def importance_to_color(imp):
-    """Map importance value to a viridis-like color gradient."""
+bar_colors = []
+for imp in importance_mean:
     t = (imp - min_imp) / imp_range
-    # Viridis-inspired gradient: purple -> blue -> teal -> green -> yellow
-    if t < 0.25:
-        r = int(68 + (58 - 68) * (t / 0.25))
-        g = int(1 + (82 - 1) * (t / 0.25))
-        b = int(84 + (139 - 84) * (t / 0.25))
-    elif t < 0.5:
-        t2 = (t - 0.25) / 0.25
-        r = int(58 + (32 - 58) * t2)
-        g = int(82 + (144 - 82) * t2)
-        b = int(139 + (140 - 139) * t2)
-    elif t < 0.75:
-        t2 = (t - 0.5) / 0.25
-        r = int(32 + (94 - 32) * t2)
-        g = int(144 + (201 - 144) * t2)
-        b = int(140 + (97 - 140) * t2)
+    for j in range(len(viridis_stops) - 1):
+        t0, r0, g0, b0 = viridis_stops[j]
+        t1, r1, g1, b1 = viridis_stops[j + 1]
+        if t0 <= t <= t1:
+            seg_t = (t - t0) / (t1 - t0)
+            r = int(r0 + (r1 - r0) * seg_t)
+            g = int(g0 + (g1 - g0) * seg_t)
+            b = int(b0 + (b1 - b0) * seg_t)
+            bar_colors.append(f"#{r:02x}{g:02x}{b:02x}")
+            break
     else:
-        t2 = (t - 0.75) / 0.25
-        r = int(94 + (253 - 94) * t2)
-        g = int(201 + (231 - 201) * t2)
-        b = int(97 + (36 - 97) * t2)
-    return f"#{r:02x}{g:02x}{b:02x}"
+        bar_colors.append("#fde724")
 
-
-bar_colors = [importance_to_color(imp) for imp in importance_mean]
-
-# Custom style for pyplots
+# Custom style with larger fonts for 4800x2700 canvas
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -76,17 +65,20 @@ custom_style = Style(
     foreground_strong="#333333",
     foreground_subtle="#666666",
     colors=tuple(bar_colors),
-    title_font_size=72,
-    label_font_size=36,
-    major_label_font_size=36,
-    legend_font_size=36,
-    value_font_size=28,
+    title_font_size=84,
+    label_font_size=48,
+    major_label_font_size=48,
+    legend_font_size=44,
+    value_font_size=44,
     stroke_width=2,
     font_family="sans-serif",
 )
 
+# Pre-compute formatted value labels with error bars (mean ± std)
+value_labels = [f"{imp:.3f} ± {std:.3f}" for imp, std in zip(importance_mean, importance_std, strict=True)]
+
 # Create horizontal bar chart
-# Set x_range to include 0 to ensure x=0 reference line is visible
+# Range includes negative values to ensure x=0 reference line is visible
 chart = pygal.HorizontalBar(
     width=4800,
     height=2700,
@@ -96,28 +88,27 @@ chart = pygal.HorizontalBar(
     show_legend=False,
     print_values=True,
     print_values_position="top",
-    value_formatter=lambda x: f"{x:.4f}",
     show_y_guides=True,
     show_x_guides=True,
     truncate_label=-1,
-    spacing=20,
+    spacing=24,
     margin=60,
-    margin_left=350,
-    margin_bottom=120,
-    range=(min(0, importance_mean.min() - 0.01), importance_mean.max() + 0.02),
+    margin_left=420,
+    margin_bottom=140,
+    range=(-0.03, importance_mean.max() + importance_std.max() + 0.03),
     zero=0,
 )
 
-# Set x-axis labels (feature names) - in pygal HorizontalBar these become y-axis labels
+# Set feature labels on y-axis
 chart.x_labels = features
 
-# Add each bar as a separate series to apply individual colors
-# Tooltips show mean ± std to represent error bar information
-for i, (feat, imp, std, color) in enumerate(zip(features, importance_mean, importance_std, bar_colors, strict=True)):
-    # Create data with None for other positions to align bars
+# Add each bar with individual color and value label showing error bar info
+for i, (feat, imp, _std, color, label) in enumerate(
+    zip(features, importance_mean, importance_std, bar_colors, value_labels, strict=True)
+):
     data = [None] * len(features)
-    data[i] = {"value": imp, "label": f"{feat}: {imp:.4f} ± {std:.4f} (std)"}
-    chart.add(feat, data, color=color)
+    data[i] = {"value": imp, "label": f"{feat}: {label}"}
+    chart.add(feat, data, color=color, formatter=lambda x, lbl=label: lbl)
 
 # Save outputs
 chart.render_to_file("plot.html")

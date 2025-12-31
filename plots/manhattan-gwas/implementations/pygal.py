@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 manhattan-gwas: Manhattan Plot for GWAS
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-31
@@ -12,7 +12,6 @@ from pygal.style import Style
 # Seed for reproducibility
 np.random.seed(42)
 
-# Generate simulated GWAS data
 # Chromosome lengths (simplified, in Mb scale)
 chrom_lengths = {
     "1": 249,
@@ -48,19 +47,15 @@ all_cumulative_pos = []
 all_pvalues = []
 
 # Track chromosome boundaries for x-axis labels
-chrom_boundaries = {}
+chrom_midpoints = []
 cumulative_offset = 0
 
 for chrom in chromosomes:
     length = chrom_lengths[chrom]
     positions = np.sort(np.random.uniform(0, length, n_snps_per_chrom))
 
-    # Store chromosome start and midpoint
-    chrom_boundaries[chrom] = {
-        "start": cumulative_offset,
-        "mid": cumulative_offset + length / 2,
-        "end": cumulative_offset + length,
-    }
+    # Store chromosome midpoint for x-axis label
+    chrom_midpoints.append(cumulative_offset + length / 2)
 
     # Generate p-values: mostly uniform with some significant hits
     pvalues = np.random.uniform(0, 1, n_snps_per_chrom)
@@ -90,16 +85,6 @@ neg_log_pvalues = -np.log10(np.array(all_pvalues))
 genome_wide_sig = -np.log10(5e-8)  # ~7.3
 suggestive_sig = 5.0  # -log10(1e-5)
 
-
-# Function to map genomic position to chromosome label
-def position_to_chromosome(pos):
-    """Map genomic position to chromosome number for x-axis display."""
-    for chrom in chromosomes:
-        if chrom_boundaries[chrom]["start"] <= pos < chrom_boundaries[chrom]["end"]:
-            return chrom
-    return chromosomes[-1]
-
-
 # Custom style
 custom_style = Style(
     background="white",
@@ -116,7 +101,7 @@ custom_style = Style(
     title_font_size=56,
     label_font_size=32,
     major_label_font_size=28,
-    legend_font_size=24,
+    legend_font_size=28,
     value_font_size=20,
     font_family="sans-serif",
 )
@@ -127,11 +112,12 @@ chart = pygal.XY(
     height=2700,
     style=custom_style,
     title="manhattan-gwas · pygal · pyplots.ai",
-    x_title="Chromosome (1-22)",
+    x_title="Chromosome",
     y_title="-log₁₀(p-value)",
     show_legend=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=4,
+    legend_box_size=20,
     stroke=False,
     dots_size=6,
     show_x_guides=False,
@@ -145,14 +131,14 @@ chart = pygal.XY(
     explicit_size=True,
     spacing=20,
     margin=40,
-    margin_bottom=100,
-    x_labels_major_every=1,
+    margin_bottom=150,
 )
 
-# Set x-labels at chromosome midpoints with chromosome numbers
-x_label_values = [chrom_boundaries[c]["mid"] for c in chromosomes]
-chart.x_labels = x_label_values
-chart.x_value_formatter = lambda x: str(position_to_chromosome(x)) if x in x_label_values else ""
+# Set x-labels at chromosome midpoints with chromosome numbers (1-22)
+chart.x_labels = chrom_midpoints
+chart.x_labels_major = chrom_midpoints
+x_label_map = dict(zip(chrom_midpoints, chromosomes, strict=True))
+chart.x_value_formatter = lambda x: x_label_map.get(x, "")
 
 # Prepare data by chromosome with alternating colors
 odd_chrom_points = []
@@ -178,21 +164,27 @@ for idx, chrom in enumerate(chromosomes):
 chart.add("Odd chromosomes (1,3,5...)", odd_chrom_points, stroke=False, show_dots=True)
 chart.add("Even chromosomes (2,4,6...)", even_chrom_points, stroke=False, show_dots=True)
 
-# Add genome-wide significance threshold line (y ≈ 7.3)
-n_line_points = 100
-threshold_x = np.linspace(0, cumulative_offset, n_line_points)
-threshold_line = [
-    {"value": (x, genome_wide_sig), "label": f"Genome-wide significance (p=5×10⁻⁸): y={genome_wide_sig:.2f}"}
-    for x in threshold_x
-]
-chart.add("Significance threshold (p=5×10⁻⁸)", threshold_line, stroke=True, show_dots=False, stroke_style={"width": 3})
+# Add genome-wide significance threshold line using dense point approach
+# pygal XY stroke doesn't always render well, so use many closely-spaced points
+threshold_x = np.linspace(0, cumulative_offset, 500)
+threshold_line_gw = [(x, genome_wide_sig) for x in threshold_x]
+chart.add(
+    f"Genome-wide significance (p=5×10⁻⁸, y={genome_wide_sig:.1f})",
+    threshold_line_gw,
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": 4, "dasharray": "10, 5"},
+)
 
-# Add suggestive threshold line (y = 5.0)
-suggestive_line = [
-    {"value": (x, suggestive_sig), "label": f"Suggestive threshold (p=1×10⁻⁵): y={suggestive_sig:.1f}"}
-    for x in threshold_x
-]
-chart.add("Suggestive threshold (p=1×10⁻⁵)", suggestive_line, stroke=True, show_dots=False, stroke_style={"width": 2})
+# Add suggestive threshold line
+suggestive_line = [(x, suggestive_sig) for x in threshold_x]
+chart.add(
+    f"Suggestive threshold (p=1×10⁻⁵, y={suggestive_sig:.1f})",
+    suggestive_line,
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": 3, "dasharray": "5, 3"},
+)
 
 # Save outputs
 chart.render_to_file("plot.html")

@@ -1,9 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 tree-phylogenetic: Phylogenetic Tree Diagram
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-31
 """
 
+import cairosvg
 import pygal
 from pygal.style import Style
 
@@ -62,6 +63,12 @@ tree_segments.append([(root_x, great_apes_y), (great_apes_x, great_apes_y)])
 tree_segments.append([(root_x, gm_ancestor_y), (gm_ancestor_x, gm_ancestor_y)])
 tree_segments.append([(root_x, great_apes_y), (root_x, gm_ancestor_y)])
 
+# Colorblind-friendly palette for species markers
+species_colors = ["#E63946", "#457B9D", "#2A9D8F", "#E9C46A", "#F4A261", "#9C6644"]
+
+# Branch color - pyplots blue
+branch_color = "#306998"
+
 # Custom style for pyplots - larger fonts for 4800x2700 canvas
 custom_style = Style(
     background="white",
@@ -69,12 +76,12 @@ custom_style = Style(
     foreground="#333",
     foreground_strong="#333",
     foreground_subtle="#999",
-    colors=("#306998",),
+    colors=(branch_color,),
     title_font_size=56,
     label_font_size=44,
     major_label_font_size=40,
-    legend_font_size=36,
-    value_font_size=32,
+    legend_font_size=44,
+    value_font_size=36,
     tooltip_font_size=28,
     stroke_width=6,
     opacity=1.0,
@@ -97,7 +104,7 @@ chart = pygal.XY(
     show_y_guides=False,
     show_y_labels=False,
     range=(-1.5, 10),
-    xrange=(-0.05, 1.05),
+    xrange=(-0.05, 1.0),
     print_values=False,
 )
 
@@ -105,38 +112,76 @@ chart = pygal.XY(
 for seg in tree_segments:
     chart.add(None, seg, show_dots=False, stroke_style={"width": 6})
 
-# Add species markers with labels at the tips
-# Colorblind-friendly palette
-species_colors = ["#E63946", "#457B9D", "#2A9D8F", "#E9C46A", "#F4A261", "#9C6644"]
-
-# Add species as points and label points slightly to the right
-for i, (name, x_pos, y_pos) in enumerate(species_data):
+# Add species markers (dots only, labels added via SVG)
+for i, (_name, x_pos, y_pos) in enumerate(species_data):
     color = species_colors[i % len(species_colors)]
-    # Add larger species marker dot
     chart.add(
-        None,
-        [{"value": (x_pos, y_pos), "color": color}],
-        show_dots=True,
-        dots_size=24,
-        stroke_style={"width": 0},
-        color=color,
-    )
-    # Add species name label as a text point to the right of the marker
-    chart.add(
-        None,
-        [{"value": (x_pos + 0.02, y_pos), "label": name}],
-        show_dots=False,
-        stroke_style={"width": 0},
-        print_labels=True,
+        None, [{"value": (x_pos, y_pos), "color": color}], show_dots=True, dots_size=28, stroke_style={"width": 0}
     )
 
-# Add scale bar as standalone annotation at bottom
-scale_bar_y = -1.0
-# Scale bar line
-chart.add(None, [(0.0, scale_bar_y), (0.1, scale_bar_y)], show_dots=False, stroke_style={"width": 10}, color="#333")
-# Scale bar label
-chart.add(None, [{"value": (0.05, scale_bar_y - 0.4), "label": "0.1"}], show_dots=False, print_labels=True)
+# Render to SVG string first
+svg_content = chart.render().decode("utf-8")
 
-# Save outputs
-chart.render_to_file("plot.html")
-chart.render_to_png("plot.png")
+# Calculate pixel positions for species labels
+# Plot area: x ranges from ~180 to ~4620 for data range -0.05 to 1.0
+# y ranges from ~100 to ~2500 for data range -1.5 to 10
+plot_x_min, plot_x_max = 180, 4620
+plot_y_min, plot_y_max = 100, 2500
+data_x_min, data_x_max = -0.05, 1.0
+data_y_min, data_y_max = -1.5, 10
+
+
+def data_to_pixel(x_data, y_data):
+    """Convert data coordinates to pixel coordinates."""
+    px = plot_x_min + (x_data - data_x_min) / (data_x_max - data_x_min) * (plot_x_max - plot_x_min)
+    # Y is inverted in SVG (top is 0)
+    py = plot_y_max - (y_data - data_y_min) / (data_y_max - data_y_min) * (plot_y_max - plot_y_min)
+    return px, py
+
+
+# Generate species label SVG elements positioned directly next to leaf nodes
+species_labels_svg = '<g class="species-labels">\n'
+for i, (name, x_pos, y_pos) in enumerate(species_data):
+    px, py = data_to_pixel(x_pos, y_pos)
+    color = species_colors[i % len(species_colors)]
+    # Position label to the right of the marker
+    species_labels_svg += f'  <text x="{px + 50}" y="{py + 12}" font-size="42" fill="{color}" '
+    species_labels_svg += f'font-family="sans-serif" font-weight="bold">{name}</text>\n'
+species_labels_svg += "</g>\n"
+
+# Add scale bar with label
+scale_px, scale_py = data_to_pixel(0.0, -1.0)
+scale_end_px, _ = data_to_pixel(0.1, -1.0)
+scale_width = scale_end_px - scale_px
+
+scale_bar_svg = f"""
+<g class="scale-bar">
+  <line x1="{scale_px}" y1="{scale_py}" x2="{scale_end_px}" y2="{scale_py}" stroke="#333" stroke-width="10"/>
+  <text x="{scale_px + scale_width / 2}" y="{scale_py + 55}" text-anchor="middle" font-size="40" fill="#333" font-family="sans-serif">0.1 substitutions/site</text>
+</g>
+"""
+
+# Insert labels and scale bar before closing </svg> tag
+svg_content = svg_content.replace("</svg>", species_labels_svg + scale_bar_svg + "</svg>")
+
+# Save SVG
+with open("plot.svg", "w") as f:
+    f.write(svg_content)
+
+# For HTML, use the modified SVG
+html_content = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Phylogenetic Tree - pygal</title>
+    <style>body {{ margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }}</style>
+</head>
+<body>
+{svg_content}
+</body>
+</html>"""
+with open("plot.html", "w") as f:
+    f.write(html_content)
+
+# Convert to PNG using cairosvg
+cairosvg.svg2png(bytestring=svg_content.encode("utf-8"), write_to="plot.png")

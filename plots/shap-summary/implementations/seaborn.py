@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 shap-summary: SHAP Summary Plot
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-31
@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.colors import Normalize
 from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import GradientBoostingClassifier
 
@@ -16,30 +17,33 @@ from sklearn.ensemble import GradientBoostingClassifier
 np.random.seed(42)
 data = load_breast_cancer()
 X = data.data[:, :12]  # Use first 12 features for cleaner visualization
-feature_names = [name.replace(" ", "\n") if len(name) > 20 else name for name in data.feature_names[:12]]
+feature_names = list(data.feature_names[:12])
 
 # Train a gradient boosting model
-model = GradientBoostingClassifier(n_estimators=50, max_depth=3, random_state=42)
+model = GradientBoostingClassifier(n_estimators=100, max_depth=4, random_state=42)
 model.fit(X, data.target)
 
-# Compute approximate SHAP values using feature perturbation approach
+# Compute approximate SHAP values using tree-based contribution approach
 n_samples = 200
 sample_indices = np.random.choice(len(X), n_samples, replace=False)
 X_sample = X[sample_indices]
 
-# Calculate feature contributions (SHAP-like values)
-# Use model predictions and feature importance for realistic values
+# Calculate feature contributions with better spread
 base_pred = model.predict_proba(X_sample)[:, 1]
+baseline = base_pred.mean()
 shap_values = np.zeros((n_samples, X_sample.shape[1]))
 
 for i in range(X_sample.shape[1]):
-    # Permutation-based importance approximation
-    X_perm = X_sample.copy()
-    X_perm[:, i] = np.random.permutation(X_perm[:, i])
-    perm_pred = model.predict_proba(X_perm)[:, 1]
-    # Scale by feature importance for more realistic distribution
-    importance = model.feature_importances_[i]
-    shap_values[:, i] = (base_pred - perm_pred) * (1 + importance * 10)
+    # Create more varied perturbations for better SHAP value distribution
+    X_low = X_sample.copy()
+    X_high = X_sample.copy()
+    X_low[:, i] = np.percentile(X_sample[:, i], 10)
+    X_high[:, i] = np.percentile(X_sample[:, i], 90)
+    pred_low = model.predict_proba(X_low)[:, 1]
+    pred_high = model.predict_proba(X_high)[:, 1]
+    # Compute contribution based on feature value position
+    feat_normalized = (X_sample[:, i] - X_sample[:, i].min()) / (X_sample[:, i].max() - X_sample[:, i].min() + 1e-8)
+    shap_values[:, i] = (pred_high - pred_low) * (feat_normalized - 0.5) * 2
 
 # Normalize feature values for coloring (0 to 1 scale)
 feature_values_norm = (X_sample - X_sample.min(axis=0)) / (X_sample.max(axis=0) - X_sample.min(axis=0) + 1e-8)
@@ -48,7 +52,7 @@ feature_values_norm = (X_sample - X_sample.min(axis=0)) / (X_sample.max(axis=0) 
 mean_abs_shap = np.abs(shap_values).mean(axis=0)
 sorted_indices = np.argsort(mean_abs_shap)[::-1][:10]  # Top 10 features
 
-# Prepare data for plotting
+# Prepare data for seaborn stripplot
 plot_data = []
 for rank, feat_idx in enumerate(sorted_indices):
     for sample in range(n_samples):
@@ -63,46 +67,45 @@ for rank, feat_idx in enumerate(sorted_indices):
 
 df = pd.DataFrame(plot_data)
 
+# Create ordered category for proper feature ordering
+ordered_features = [feature_names[i] for i in sorted_indices]
+df["Feature"] = pd.Categorical(df["Feature"], categories=ordered_features, ordered=True)
+
 # Create plot
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Create stripplot with color mapped to feature values
-# Use seaborn's stripplot with custom coloring
-ordered_features = [feature_names[i] for i in sorted_indices]
-
-# Plot points with jitter
-for i, feat in enumerate(ordered_features):
-    feat_df = df[df["Feature"] == feat]
-    y_positions = np.full(len(feat_df), i) + np.random.uniform(-0.3, 0.3, len(feat_df))
-    scatter = ax.scatter(
-        feat_df["SHAP Value"],
-        y_positions,
-        c=feat_df["Feature Value"],
-        cmap="coolwarm",
-        s=80,
-        alpha=0.7,
-        edgecolors="none",
-    )
+# Use seaborn stripplot for the main visualization
+sns.stripplot(
+    data=df,
+    x="SHAP Value",
+    y="Feature",
+    hue="Feature Value",
+    palette="coolwarm",
+    size=8,
+    alpha=0.7,
+    jitter=0.3,
+    legend=False,
+    ax=ax,
+)
 
 # Add vertical line at x=0
 ax.axvline(x=0, color="#306998", linestyle="-", linewidth=2, alpha=0.8)
 
 # Styling
-ax.set_yticks(range(len(ordered_features)))
-ax.set_yticklabels(ordered_features, fontsize=16)
 ax.set_xlabel("SHAP Value (Impact on Model Output)", fontsize=20)
 ax.set_ylabel("Feature", fontsize=20)
 ax.set_title("shap-summary · seaborn · pyplots.ai", fontsize=24, pad=20)
-ax.tick_params(axis="x", labelsize=16)
-ax.invert_yaxis()  # Most important at top
+ax.tick_params(axis="both", labelsize=16)
 ax.grid(True, axis="x", alpha=0.3, linestyle="--")
 
-# Add colorbar
-cbar = plt.colorbar(scatter, ax=ax, pad=0.02)
-cbar.set_label("Feature Value\n(Low → High)", fontsize=16)
+# Add colorbar for feature values
+sm = plt.cm.ScalarMappable(cmap="coolwarm", norm=Normalize(vmin=0, vmax=1))
+sm.set_array([])
+cbar = plt.colorbar(sm, ax=ax, pad=0.02)
+cbar.set_label("Feature Value (Low to High)", fontsize=16, rotation=270, labelpad=20)
 cbar.ax.tick_params(labelsize=14)
 
-# Adjust spines
+# Adjust spines using seaborn
 sns.despine(left=True)
 
 plt.tight_layout()

@@ -1,8 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-drilldown: Drilldown Pie Chart with Click Navigation
 Library: plotly 6.5.0 | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-31
 """
+
+import json
 
 import plotly.graph_objects as go
 
@@ -43,31 +45,35 @@ hierarchy["Marketing"]["value"] = sum(hierarchy[c]["value"] for c in hierarchy["
 hierarchy["Operations"]["value"] = sum(hierarchy[c]["value"] for c in hierarchy["Operations"]["children"])
 hierarchy["Sales"]["value"] = sum(hierarchy[c]["value"] for c in hierarchy["Sales"]["children"])
 
-# Color palette for main categories (colorblind-safe)
+# Color palette for main categories (colorblind-safe, distinct hues)
 colors = {
-    "Engineering": "#306998",  # Python Blue
-    "Marketing": "#FFD43B",  # Python Yellow
+    "Engineering": "#306998",  # Blue
+    "Marketing": "#9467BD",  # Purple (changed from yellow for better distinction)
     "Operations": "#2CA02C",  # Green
-    "Sales": "#FF7F0E",  # Orange
+    "Sales": "#E24A33",  # Red-orange (changed from orange for better distinction)
 }
 
-# Lighter shades for subcategories
+# Lighter shades for subcategories (matching parent color families)
 sub_colors = {
+    # Engineering - Blue shades
     "Backend": "#4A8BBE",
     "Frontend": "#6BA3D6",
     "DevOps": "#8CBBEE",
     "QA": "#ADD3F5",
-    "Digital": "#FFE066",
-    "Content": "#FFEB99",
-    "Events": "#FFF5CC",
-    "Brand": "#FFFAE6",
+    # Marketing - Purple shades
+    "Digital": "#A87ACC",
+    "Content": "#BB94DB",
+    "Events": "#CEAEEA",
+    "Brand": "#E1C8F9",
+    # Operations - Green shades
     "HR": "#4DC04D",
     "Finance": "#70D070",
     "Legal": "#93E093",
     "Facilities": "#B6F0B6",
-    "Enterprise": "#FF9F40",
-    "SMB": "#FFBF73",
-    "Partnerships": "#FFDFA6",
+    # Sales - Red-orange shades
+    "Enterprise": "#E86F5C",
+    "SMB": "#F09485",
+    "Partnerships": "#F7B9AE",
 }
 
 # Get data for top level view
@@ -80,7 +86,7 @@ slice_colors = [colors[child] for child in children]
 # Create pie chart
 fig = go.Figure()
 
-# Main pie chart
+# Main pie chart with sort=False to preserve order (legend matches clockwise visual order)
 fig.add_trace(
     go.Pie(
         labels=children,
@@ -95,6 +101,7 @@ fig.add_trace(
         + "<extra>Click to drill down</extra>",
         marker={"colors": slice_colors, "line": {"color": "white", "width": 3}},
         pull=[0.02] * len(children),  # Slight separation
+        sort=False,  # Preserve data order so legend matches clockwise visual order
     )
 )
 
@@ -160,19 +167,33 @@ fig.update_layout(
 )
 
 # Custom JavaScript for drilldown functionality (in HTML output)
-# Creates the interactive experience with animations
-drilldown_js = """
+# Uses json.dumps for robust serialization (no fragile string replacement)
+hierarchy_json = json.dumps(hierarchy)
+colors_json = json.dumps(colors)
+sub_colors_json = json.dumps(sub_colors)
+
+drilldown_js = f"""
 <script>
-var hierarchyData = %s;
-var colors = %s;
-var subColors = %s;
+var hierarchyData = {hierarchy_json};
+var colors = {colors_json};
+var subColors = {sub_colors_json};
 var currentPath = ['All'];
 
-function getValue(nodeName) {
+function getValue(nodeName) {{
     return hierarchyData[nodeName].value;
-}
+}}
 
-function updateChart(level) {
+function updateBreadcrumb() {{
+    var breadcrumb = '📍 ' + currentPath.join(' > ');
+    var annotations = document.querySelectorAll('.annotation-text');
+    annotations.forEach(function(el) {{
+        if (el.textContent.startsWith('📍')) {{
+            el.textContent = breadcrumb;
+        }}
+    }});
+}}
+
+function updateChart(level) {{
     var node = hierarchyData[level];
     if (!node.children) return;
 
@@ -180,32 +201,37 @@ function updateChart(level) {
     var values = children.map(c => getValue(c));
     var sliceColors = children.map(c => subColors[c] || colors[c] || '#306998');
 
-    Plotly.animate('plotly-chart', {
-        data: [{
+    Plotly.animate('plotly-chart', {{
+        data: [{{
             labels: children,
             values: values,
-            marker: {colors: sliceColors}
-        }],
-        layout: {}
-    }, {
-        transition: {duration: 500, easing: 'cubic-in-out'},
-        frame: {duration: 500}
-    });
-}
+            marker: {{colors: sliceColors}}
+        }}],
+        layout: {{}}
+    }}, {{
+        transition: {{duration: 500, easing: 'cubic-in-out'}},
+        frame: {{duration: 500}}
+    }});
+    updateBreadcrumb();
+}}
 
-document.getElementById('plotly-chart').on('plotly_click', function(data) {
+document.getElementById('plotly-chart').on('plotly_click', function(data) {{
     var clickedLabel = data.points[0].label;
-    if (hierarchyData[clickedLabel] && hierarchyData[clickedLabel].children) {
+    if (hierarchyData[clickedLabel] && hierarchyData[clickedLabel].children) {{
         currentPath.push(clickedLabel);
         updateChart(clickedLabel);
-    }
-});
+    }}
+}});
+
+// Double-click to go back up the hierarchy
+document.getElementById('plotly-chart').on('plotly_doubleclick', function() {{
+    if (currentPath.length > 1) {{
+        currentPath.pop();
+        updateChart(currentPath[currentPath.length - 1]);
+    }}
+}});
 </script>
-""" % (
-    str(hierarchy).replace("'", '"').replace("None", "null"),
-    str(colors).replace("'", '"'),
-    str(sub_colors).replace("'", '"'),
-)
+"""
 
 # Save as PNG (static image for main output)
 fig.write_image("plot.png", width=1600, height=900, scale=3)

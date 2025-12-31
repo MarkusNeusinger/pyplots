@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 circos-basic: Circos Plot
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -51,8 +51,8 @@ segments = list(dict.fromkeys([f[0] for f in flows] + [f[1] for f in flows]))
 colors = {
     "Asia": "#306998",  # Python Blue
     "Europe": "#FFD43B",  # Python Yellow
-    "North America": "#4ECDC4",  # Teal
-    "South America": "#95E1D3",  # Light Teal
+    "North America": "#2ECC71",  # Green (more distinct from South America)
+    "South America": "#E67E22",  # Orange (clearly different from North America)
     "Middle East": "#E74C3C",  # Red
     "Africa": "#9B59B6",  # Purple
 }
@@ -272,14 +272,15 @@ plot = (
     + scale_fill_manual(values=colors, name="Region")
     # Equal aspect ratio for proper circles
     + coord_fixed(ratio=1)
-    + scale_x_continuous(limits=(-1.5, 1.5))
-    + scale_y_continuous(limits=(-1.5, 1.5))
+    + scale_x_continuous(limits=(-1.6, 1.6), expand=(0, 0))
+    + scale_y_continuous(limits=(-1.5, 1.6), expand=(0, 0))
     # Title
-    + labs(title="Trade Flows Between Regions · circos-basic · plotnine · pyplots.ai")
+    + labs(title="circos-basic · plotnine · pyplots.ai")
     # Clean theme for circular plot
     + theme(
         figure_size=(12, 12),
-        plot_title=element_text(size=24, ha="center", fontweight="bold"),
+        plot_title=element_text(size=24, ha="center", fontweight="bold", margin={"b": 20}),
+        plot_margin=0.08,
         axis_title=element_blank(),
         axis_text=element_blank(),
         axis_ticks=element_blank(),

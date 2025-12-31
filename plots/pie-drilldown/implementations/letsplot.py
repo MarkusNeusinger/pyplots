@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-drilldown: Drilldown Pie Chart with Click Navigation
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-31
@@ -101,21 +101,23 @@ df["category"] = pd.Categorical(df["category"], categories=categories, ordered=T
 # Define colors in order
 slice_colors = [colors[cat] for cat in categories]
 
+# Create percentage label column for proper formatting
+df["pct_label"] = [f"{p:.1f}%" for p in percentages]
+
 # Create main pie chart for static PNG with improved canvas utilization
 plot = (
     ggplot(df)  # noqa: F405
     + geom_pie(  # noqa: F405
         aes(slice="value", fill="category"),  # noqa: F405
         stat="identity",
-        size=50,  # Larger pie to better fill canvas
+        size=55,  # Balanced size to fit labels without clipping
         hole=0.35,  # Donut style
         stroke=2,  # White borders between slices
         color="white",  # Border color
         labels=layer_labels()  # noqa: F405
         .line("@category")
-        .line("@value_label (@pct)")
-        .format("pct", ".1f%")
-        .size(22),  # Larger labels for readability
+        .line("@value_label (@pct_label)")
+        .size(24),  # Larger labels for readability
     )
     + scale_fill_manual(values=slice_colors)  # noqa: F405
     + labs(  # noqa: F405
@@ -126,12 +128,12 @@ plot = (
     + ggsize(1200, 1200)  # noqa: F405
     + theme_void()  # noqa: F405
     + theme(  # noqa: F405
-        plot_title=element_text(size=28, hjust=0.5, face="bold"),  # noqa: F405
-        plot_subtitle=element_text(size=18, hjust=0.5, color="#666666"),  # noqa: F405
-        legend_title=element_text(size=20),  # noqa: F405
-        legend_text=element_text(size=18),  # noqa: F405
-        legend_position="right",  # Legend on right to reduce vertical whitespace
-        plot_margin=[20, 20, 20, 20],  # Tighter margins
+        plot_title=element_text(size=32, hjust=0.5, face="bold"),  # noqa: F405
+        plot_subtitle=element_text(size=20, hjust=0.5, color="#666666"),  # noqa: F405
+        legend_title=element_text(size=22),  # noqa: F405
+        legend_text=element_text(size=20),  # noqa: F405
+        legend_position="bottom",  # Move legend to bottom to better center chart
+        plot_margin=[50, 80, 50, 80],  # Extra horizontal margins for labels
     )
 )
 

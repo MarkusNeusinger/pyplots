@@ -60,6 +60,9 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### line-confidence ✅
 **Description:** Line plot with confidence interval band around the mean.
 
+### line-annotated-events ✅
+**Description:** A line plot with annotations marking significant events or milestones along the time series.
+
 ### line-interactive 📋
 **Description:** Line plot with hover tooltips and zoom capability.
 
@@ -319,8 +322,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### subplot-grid 📋
 **Description:** Custom grid of different plot types.
 
-### mosaic-layout 📋
-**Description:** Complex subplot layout with varying sizes.
+### subplot-mosaic ✅
+**Description:** A mosaic subplot layout allowing complex arrangements of axes with varying sizes using string-based or nested list specifications.
 
 ---
 
@@ -332,8 +335,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### timeseries-multi 📋
 **Description:** Multiple time series for comparison.
 
-### timeseries-decomposition 📋
-**Description:** Trend, seasonal, residual components.
+### timeseries-decomposition ✅
+**Description:** A time series decomposition plot showing the original series broken down into trend, seasonal, and residual components.
 
 ### timeseries-rolling 📋
 **Description:** Time series with rolling average overlay.
@@ -357,8 +360,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ## 14. Geographic & Spatial
 
-### map-choropleth 📋
-**Description:** Map with regions colored by value.
+### choropleth-basic ✅
+**Description:** A choropleth map displays data values on a geographic map where regions are colored according to a data variable.
 
 ### map-scatter 📋
 **Description:** Points plotted on geographic map.
@@ -483,14 +486,14 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### animation-line 📋
 **Description:** Animated line plot building over time.
 
-### animation-scatter 📋
-**Description:** Animated scatter with play button.
+### scatter-animated-controls ✅
+**Description:** An animated scatter plot with play/pause controls, showing data evolution over time with smooth transitions.
 
 ### animation-bar 📋
 **Description:** Bar chart race animation.
 
-### slider-basic 📋
-**Description:** Plot with slider control.
+### slider-control-basic ✅
+**Description:** An interactive plot with slider controls allowing users to dynamically adjust parameters and see the visualization update in real-time.
 
 ### brush-zoom 📋
 **Description:** Plot with brush selection and zoom.
@@ -558,15 +561,15 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### andrews-curves 📋
 **Description:** Multivariate data as Fourier curves.
 
-### chernoff-basic 📋
+### chernoff-basic ✅
 **Description:** Chernoff faces map multivariate data to facial features (eyes, mouth, nose), leveraging human face recognition ability for pattern detection.
 
 ---
 
 ## 24. Financial Charts
 
-### stock-candlestick 📋
-**Description:** Professional candlestick chart for stock prices with volume.
+### candlestick-volume ✅
+**Description:** A professional stock candlestick chart with volume bars in a synchronized lower pane, showing OHLC price data with trading volume.
 
 ### stock-area 📋
 **Description:** Area chart for stock price history with range selector.
@@ -691,8 +694,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ## 27. Drilldown & Interactive
 
-### drilldown-pie 📋
-**Description:** Pie chart with click-to-drill functionality.
+### pie-drilldown ✅
+**Description:** A pie chart with drilldown functionality allowing users to click on slices to reveal detailed breakdowns of the data.
 
 ### drilldown-bar 📋
 **Description:** Bar chart with drilldown to details.
@@ -716,8 +719,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ## 28. Real-Time & Streaming
 
-### realtime-line 📋
-**Description:** Line chart updating with live data.
+### line-realtime ✅
+**Description:** A real-time line chart that updates dynamically with new data points, commonly used for monitoring dashboards and live metrics.
 
 ### realtime-gauge 📋
 **Description:** Gauge updating in real-time.
@@ -765,8 +768,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### partial-dependence 📋
 **Description:** Partial dependence plot showing marginal effect of features on predicted outcome.
 
-### permutation-importance 📋
-**Description:** Permutation feature importance showing decrease in model score when feature is shuffled.
+### bar-permutation-importance ✅
+**Description:** A bar chart showing permutation feature importance, displaying the decrease in model score when each feature is randomly shuffled.
 
 ### elbow-curve ✅
 **Description:** Elbow curve showing within-cluster sum of squares vs number of clusters for optimal k selection in k-means.
@@ -793,8 +796,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### spectrogram 📋
 **Description:** Time-frequency heatmap for audio/signals.
 
-### phase-diagram 📋
-**Description:** Phase space plot (x vs dx/dt).
+### phase-diagram ✅
+**Description:** A phase diagram displaying the trajectory of a dynamical system in phase space, plotting one variable against its derivative or another related variable.
 
 ### quiver-basic ✅
 **Description:** A quiver plot displays vector fields using arrows positioned at grid points. Each arrow represents a vector at that location, with direction indicating the vector's angle and length proportional to its magnitude.
@@ -826,11 +829,11 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### manhattan-plot 📋
 **Description:** Genome-wide association study visualization.
 
-### circos-plot 📋
-**Description:** Circular genome or relationship visualization.
+### circos-basic ✅
+**Description:** A Circos plot displays data in a circular layout, showing relationships between entities or genome features with arcs, segments, and tracks.
 
-### phylogenetic-tree 📋
-**Description:** Evolutionary tree diagram.
+### tree-phylogenetic ✅
+**Description:** A phylogenetic tree diagram showing evolutionary relationships between species or sequences, with branches representing divergence over time.
 
 ### bubble-basic ✅
 **Description:** A bubble chart extending scatter plots by adding a third dimension through bubble size.
@@ -883,8 +886,8 @@ Druckbare Vorlagen und spielerische Visualisierungen.
 ## Statistics
 
 - **Total Plot Types:** 235+
-- **Implemented:** 138 ✅
-- **Planned:** 120+ 📋
+- **Implemented:** 171 ✅
+- **Planned:** 90+ 📋
 - **Categories:** 31
 
 ---

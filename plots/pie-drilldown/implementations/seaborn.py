@@ -1,83 +1,122 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-drilldown: Drilldown Pie Chart with Click Navigation
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-31
 """
 
 import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
 
+
+# Set seaborn style
+sns.set_theme(style="whitegrid", palette="colorblind")
 
 # Data - Sales hierarchy: Region -> Category breakdown
 # Main level (regions)
-main_categories = ["North America", "Europe", "Asia Pacific", "Latin America"]
-main_values = [45000, 32000, 28000, 15000]
+main_data = pd.DataFrame(
+    {"region": ["North America", "Europe", "Asia Pacific", "Latin America"], "sales": [45000, 32000, 28000, 15000]}
+)
+main_data["percentage"] = main_data["sales"] / main_data["sales"].sum() * 100
 
 # Drilldown data for "North America" (shown as example)
-drilldown_categories = ["Electronics", "Clothing", "Home & Garden", "Sports", "Books"]
-drilldown_values = [18000, 12000, 8000, 4500, 2500]
+drilldown_data = pd.DataFrame(
+    {
+        "category": ["Electronics", "Clothing", "Home & Garden", "Sports", "Books"],
+        "sales": [18000, 12000, 8000, 4500, 2500],
+    }
+)
+drilldown_data["percentage"] = drilldown_data["sales"] / drilldown_data["sales"].sum() * 100
 
-# Colors - Python palette
+# Colors
 main_colors = ["#306998", "#4B8BBE", "#FFD43B", "#FFE873"]
 drilldown_colors = ["#306998", "#4B8BBE", "#5A9FD4", "#FFD43B", "#FFE873"]
 
-# Create figure with two pie charts showing drilldown concept
+# Create figure with two subplots showing drilldown concept
 fig, axes = plt.subplots(1, 2, figsize=(16, 9))
 
-# Left pie - Main level (all regions)
+# Left chart - Main level (all regions) using seaborn barplot
 ax1 = axes[0]
-wedges1, texts1, autotexts1 = ax1.pie(
-    main_values,
-    labels=main_categories,
-    colors=main_colors,
-    autopct=lambda pct: f"{pct:.1f}%\n(${int(pct / 100 * sum(main_values)):,})",
-    startangle=90,
-    explode=[0.05, 0, 0, 0],  # Highlight North America
-    textprops={"fontsize": 14, "fontweight": "bold"},
-    wedgeprops={"linewidth": 2, "edgecolor": "white"},
-    pctdistance=0.6,
+sns.barplot(
+    data=main_data,
+    x="region",
+    y="sales",
+    hue="region",
+    palette=main_colors,
+    ax=ax1,
+    legend=False,
+    edgecolor="white",
+    linewidth=2,
 )
-ax1.set_title("All Regions", fontsize=22, fontweight="bold", pad=20)
 
-# Style percentage labels
-for autotext in autotexts1:
-    autotext.set_fontsize(12)
-    autotext.set_color("white")
-    autotext.set_fontweight("bold")
+# Add value labels on bars
+for i, (_idx, row) in enumerate(main_data.iterrows()):
+    ax1.text(
+        i,
+        row["sales"] + 1000,
+        f"${row['sales']:,}\n({row['percentage']:.1f}%)",
+        ha="center",
+        fontsize=14,
+        fontweight="bold",
+    )
 
-# Add annotation showing this is clickable
+# Highlight North America with annotation
 ax1.annotate(
-    "Click to drill down →",
-    xy=(0.3, 0.4),
-    xytext=(0.8, 0.8),
+    "Click to\ndrill down →",
+    xy=(0, main_data.iloc[0]["sales"]),
+    xytext=(0.8, 40000),
     fontsize=12,
     arrowprops={"arrowstyle": "->", "color": "#306998", "lw": 2},
     bbox={"boxstyle": "round,pad=0.3", "facecolor": "#FFD43B", "edgecolor": "#306998", "alpha": 0.9},
 )
 
-# Right pie - Drilldown view (North America breakdown)
-ax2 = axes[1]
-wedges2, texts2, autotexts2 = ax2.pie(
-    drilldown_values,
-    labels=drilldown_categories,
-    colors=drilldown_colors,
-    autopct=lambda pct: f"{pct:.1f}%\n(${int(pct / 100 * sum(drilldown_values)):,})",
-    startangle=90,
-    textprops={"fontsize": 14, "fontweight": "bold"},
-    wedgeprops={"linewidth": 2, "edgecolor": "white"},
-    pctdistance=0.6,
-)
-ax2.set_title("North America Breakdown", fontsize=22, fontweight="bold", pad=20)
+ax1.set_title("All Regions", fontsize=22, fontweight="bold", pad=20)
+ax1.set_xlabel("Region", fontsize=18)
+ax1.set_ylabel("Sales ($)", fontsize=18)
+ax1.tick_params(axis="both", labelsize=14)
+ax1.set_ylim(0, 55000)
 
-# Style percentage labels
-for autotext in autotexts2:
-    autotext.set_fontsize(12)
-    autotext.set_color("white")
-    autotext.set_fontweight("bold")
+# Rotate x-axis labels for better readability
+plt.setp(ax1.get_xticklabels(), rotation=15, ha="right")
+
+# Right chart - Drilldown view (North America breakdown) using seaborn barplot
+ax2 = axes[1]
+sns.barplot(
+    data=drilldown_data,
+    x="category",
+    y="sales",
+    hue="category",
+    palette=drilldown_colors,
+    ax=ax2,
+    legend=False,
+    edgecolor="white",
+    linewidth=2,
+)
+
+# Add value labels on bars
+for i, (_idx, row) in enumerate(drilldown_data.iterrows()):
+    ax2.text(
+        i,
+        row["sales"] + 400,
+        f"${row['sales']:,}\n({row['percentage']:.1f}%)",
+        ha="center",
+        fontsize=14,
+        fontweight="bold",
+    )
+
+ax2.set_title("North America Breakdown", fontsize=22, fontweight="bold", pad=20)
+ax2.set_xlabel("Category", fontsize=18)
+ax2.set_ylabel("Sales ($)", fontsize=18)
+ax2.tick_params(axis="both", labelsize=14)
+ax2.set_ylim(0, 22000)
+
+# Rotate x-axis labels for better readability
+plt.setp(ax2.get_xticklabels(), rotation=15, ha="right")
 
 # Add breadcrumb trail above drilldown chart
 ax2.annotate(
     "All > North America",
-    xy=(0, 1.15),
+    xy=(0.7, 1.12),
     xycoords="axes fraction",
     fontsize=14,
     ha="center",
@@ -87,7 +126,7 @@ ax2.annotate(
 # Add back button indicator
 ax2.annotate(
     "← Back",
-    xy=(-0.3, 1.15),
+    xy=(0.1, 1.12),
     xycoords="axes fraction",
     fontsize=12,
     ha="center",

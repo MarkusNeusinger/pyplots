@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 pie-drilldown: Drilldown Pie Chart with Click Navigation
 Library: plotly 6.5.0 | Python 3.13.11
-Quality: 87/100 | Created: 2025-12-31
+Quality: 91/100 | Created: 2025-12-31
 """
 
 import json

@@ -1,0 +1,28 @@
+library: altair
+specification_id: line-annotated-events
+created: '2025-12-31T10:54:27Z'
+updated: '2025-12-31T10:59:34Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20617491440
+issue: 2997
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-annotated-events/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-annotated-events/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-annotated-events/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of alternating y-positions for event labels to prevent overlap
+  - Clean layered chart composition with separate charts for line, rules, markers,
+    and labels
+  - Good color scheme with Python blue (#306998) and contrasting yellow (#FFD43B)
+  - Realistic stock price data with appropriate volatility
+  - Proper use of Altair encoding types (:T, :Q, :N)
+  - Both PNG and interactive HTML outputs generated
+  weaknesses:
+  - Missing legend/key for event types as suggested in spec notes
+  - Vertical rules use hardcoded y2=alt.value(900) which may not align with actual
+    chart height
+  - No tooltips on event markers for interactivity (missed opportunity for Altair's
+    strength)

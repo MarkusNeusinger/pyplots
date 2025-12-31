@@ -1,0 +1,28 @@
+library: altair
+specification_id: andrews-curves
+created: '2025-12-30T23:57:49Z'
+updated: '2025-12-31T00:17:13Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608497564
+issue: 2859
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Correct Fourier series implementation for Andrews curves transformation
+  - Clear visual separation between iris species demonstrating the clustering capability
+  - Proper data normalization using StandardScaler as recommended in spec
+  - Clean, declarative Altair code with appropriate encoding types
+  - Title format follows the required spec-id · library · pyplots.ai pattern with
+    informative subtitle
+  - Good use of transparency (opacity=0.4) for overlapping curves as recommended
+  weaknesses:
+  - Legend could benefit from a semi-transparent background for better contrast against
+    the curves
+  - Yellow color (#FFD43B) could be slightly less bright for better visibility on
+    white background
+  - Could add tooltips to enable interactive exploration of individual observations

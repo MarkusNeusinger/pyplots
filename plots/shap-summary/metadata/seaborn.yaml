@@ -1,0 +1,23 @@
+library: seaborn
+specification_id: shap-summary
+created: '2025-12-31T05:47:51Z'
+updated: '2025-12-31T06:06:33Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612920953
+issue: 2923
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/shap-summary/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/shap-summary/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 90
+review:
+  strengths:
+  - Good use of seaborn stripplot with jitter for SHAP value distribution visualization
+  - Correct coolwarm diverging colormap from blue (low) to red (high) feature values
+  - Features properly sorted by importance with most important at top
+  - Clean vertical reference line at x=0 clearly separates positive and negative impacts
+  - Well-placed colorbar with clear labeling for feature value interpretation
+  weaknesses:
+  - Consider using slightly larger marker size (s=10-12) for better visibility of
+    individual points

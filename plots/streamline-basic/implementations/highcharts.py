@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 streamline-basic: Basic Streamline Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-31
@@ -20,74 +20,76 @@ from selenium.webdriver.chrome.options import Options
 # Data: Create a vortex flow field
 np.random.seed(42)
 grid_size = 30
-x = np.linspace(-3, 3, grid_size)
-y = np.linspace(-3, 3, grid_size)
-X, Y = np.meshgrid(x, y)
+x_grid = np.linspace(-3, 3, grid_size)
+y_grid = np.linspace(-3, 3, grid_size)
+X, Y = np.meshgrid(x_grid, y_grid)
 
 # Vortex flow: u = -y, v = x (circular flow around origin)
 U = -Y
 V = X
 
-
-# Function to trace a streamline from a starting point
-def trace_streamline(x0, y0, u_field, v_field, x_grid, y_grid, max_steps=100, dt=0.05):
-    """Trace a streamline using simple Euler integration."""
-    points = [(x0, y0)]
-    x_curr, y_curr = x0, y0
-
-    x_min, x_max = x_grid.min(), x_grid.max()
-    y_min, y_max = y_grid.min(), y_grid.max()
-
-    for _ in range(max_steps):
-        # Find grid indices
-        xi = int((x_curr - x_min) / (x_max - x_min) * (len(x_grid) - 1))
-        yi = int((y_curr - y_min) / (y_max - y_min) * (len(y_grid) - 1))
-
-        # Check bounds
-        if xi < 0 or xi >= len(x_grid) - 1 or yi < 0 or yi >= len(y_grid) - 1:
-            break
-
-        # Get velocity (bilinear interpolation simplified)
-        u = u_field[yi, xi]
-        v = v_field[yi, xi]
-
-        # Normalize velocity for consistent step size
-        speed = np.sqrt(u**2 + v**2)
-        if speed < 1e-6:
-            break
-
-        u_norm = u / speed
-        v_norm = v / speed
-
-        # Step forward
-        x_new = x_curr + u_norm * dt
-        y_new = y_curr + v_norm * dt
-
-        # Check if out of bounds
-        if x_new < x_min or x_new > x_max or y_new < y_min or y_new > y_max:
-            break
-
-        points.append((x_new, y_new))
-        x_curr, y_curr = x_new, y_new
-
-    return points
-
-
-# Generate streamlines from distributed starting points
+# Generate streamlines from distributed starting points at varying radii
 streamlines = []
+streamline_speeds = []  # Track average speed for color encoding
 
-# Start from a grid of points
-start_points = []
-for sx in np.linspace(-2.5, 2.5, 6):
-    for sy in np.linspace(-2.5, 2.5, 6):
-        # Skip points too close to origin (singularity)
-        if np.sqrt(sx**2 + sy**2) > 0.3:
-            start_points.append((sx, sy))
+# Use different radii for varied circular patterns
+radii = [0.5, 1.0, 1.5, 2.0, 2.5]
+angles_per_radius = [4, 5, 6, 7, 8]
 
-for x0, y0 in start_points:
-    line = trace_streamline(x0, y0, U, V, x, y, max_steps=150, dt=0.08)
-    if len(line) > 5:  # Only keep meaningful streamlines
-        streamlines.append(line)
+x_min, x_max = x_grid.min(), x_grid.max()
+y_min, y_max = y_grid.min(), y_grid.max()
+
+for radius, n_angles in zip(radii, angles_per_radius, strict=False):
+    for angle in np.linspace(0, 2 * np.pi, n_angles, endpoint=False):
+        # Starting point at given radius
+        x0 = radius * np.cos(angle)
+        y0 = radius * np.sin(angle)
+
+        # Trace streamline using inline Euler integration
+        points = [(x0, y0)]
+        speeds = []
+        x_curr, y_curr = x0, y0
+        max_steps = 150
+        dt = 0.08
+
+        for _ in range(max_steps):
+            # Find grid indices
+            xi = int((x_curr - x_min) / (x_max - x_min) * (grid_size - 1))
+            yi = int((y_curr - y_min) / (y_max - y_min) * (grid_size - 1))
+
+            # Check bounds
+            if xi < 0 or xi >= grid_size - 1 or yi < 0 or yi >= grid_size - 1:
+                break
+
+            # Get velocity
+            u = U[yi, xi]
+            v = V[yi, xi]
+
+            # Calculate speed for color encoding
+            speed = np.sqrt(u**2 + v**2)
+            if speed < 1e-6:
+                break
+            speeds.append(speed)
+
+            # Normalize velocity for consistent step size
+            u_norm = u / speed
+            v_norm = v / speed
+
+            # Step forward
+            x_new = x_curr + u_norm * dt
+            y_new = y_curr + v_norm * dt
+
+            # Check if out of bounds
+            if x_new < x_min or x_new > x_max or y_new < y_min or y_new > y_max:
+                break
+
+            points.append((x_new, y_new))
+            x_curr, y_curr = x_new, y_new
+
+        # Only keep meaningful streamlines
+        if len(points) > 5:
+            streamlines.append(points)
+            streamline_speeds.append(np.mean(speeds) if speeds else 0)
 
 # Create Highcharts chart
 chart = Chart(container="container")
@@ -113,14 +115,17 @@ chart.options.title = {
 }
 
 # Subtitle describing the vortex
-chart.options.subtitle = {"text": "Vortex Flow Field: u = -y, v = x", "style": {"fontSize": "40px", "color": "#666666"}}
+chart.options.subtitle = {
+    "text": "Vortex Flow Field: u = -y, v = x (color indicates velocity magnitude)",
+    "style": {"fontSize": "40px", "color": "#666666"},
+}
 
-# Axes
+# Axes with extended range to prevent clipping
 chart.options.x_axis = {
     "title": {"text": "X Position", "style": {"fontSize": "42px"}},
     "labels": {"style": {"fontSize": "32px"}},
-    "min": -3.5,
-    "max": 3.5,
+    "min": -4.0,
+    "max": 4.0,
     "tickInterval": 1,
     "gridLineWidth": 1,
     "gridLineColor": "#e0e0e0",
@@ -131,8 +136,8 @@ chart.options.x_axis = {
 chart.options.y_axis = {
     "title": {"text": "Y Position", "style": {"fontSize": "42px"}},
     "labels": {"style": {"fontSize": "32px"}},
-    "min": -3.5,
-    "max": 3.5,
+    "min": -4.0,
+    "max": 4.0,
     "tickInterval": 1,
     "gridLineWidth": 1,
     "gridLineColor": "#e0e0e0",
@@ -140,8 +145,13 @@ chart.options.y_axis = {
     "lineColor": "#333333",
 }
 
-# Color palette for streamlines
-colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF", "#8C564B", "#E377C2", "#7F7F7F", "#BCBD22"]
+# Color palette based on velocity magnitude (viridis-like colorblind-safe)
+speed_min = min(streamline_speeds) if streamline_speeds else 0
+speed_max = max(streamline_speeds) if streamline_speeds else 1
+speed_range = speed_max - speed_min if speed_max > speed_min else 1
+
+# Viridis-inspired colors: dark purple -> blue -> teal -> green
+viridis_colors = ["#440154", "#3B528B", "#21918C", "#5DC863"]
 
 # Plot options
 chart.options.plot_options = {"line": {"lineWidth": 5, "marker": {"enabled": False}, "enableMouseTracking": False}}
@@ -149,12 +159,23 @@ chart.options.plot_options = {"line": {"lineWidth": 5, "marker": {"enabled": Fal
 # Legend
 chart.options.legend = {"enabled": False}
 
-# Add streamlines as series
-for i, streamline in enumerate(streamlines):
+# Add streamlines as series with velocity-based colors
+for i, (streamline, avg_speed) in enumerate(zip(streamlines, streamline_speeds, strict=False)):
     series = LineSeries()
     series.data = [[round(pt[0], 4), round(pt[1], 4)] for pt in streamline]
-    series.name = f"Streamline {i + 1}"
-    series.color = colors[i % len(colors)]
+    series.name = f"Streamline {i + 1} (v={avg_speed:.2f})"
+
+    # Inline color selection based on normalized speed
+    t = (avg_speed - speed_min) / speed_range
+    if t < 0.25:
+        series.color = viridis_colors[0]  # Dark purple (low speed)
+    elif t < 0.5:
+        series.color = viridis_colors[1]  # Blue
+    elif t < 0.75:
+        series.color = viridis_colors[2]  # Teal
+    else:
+        series.color = viridis_colors[3]  # Green (high speed)
+
     series.line_width = 5
     chart.add_series(series)
 

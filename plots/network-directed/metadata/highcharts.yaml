@@ -1,0 +1,26 @@
+library: highcharts
+specification_id: network-directed
+created: '2025-12-30T23:56:36Z'
+updated: '2025-12-31T00:13:39Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608487760
+issue: 2858
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/network-directed/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-directed/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/network-directed/highcharts/plot.html
+quality_score: 90
+review:
+  strengths:
+  - Clear hierarchical layout showing software module dependencies in logical layers
+  - Properly implemented directional arrows using custom SVG rendering
+  - Good colorblind-safe color scheme (yellow nodes, blue edges)
+  - Fixed node positions ensure reproducibility across runs
+  - Correct title format following spec requirements
+  - Realistic software architecture example that demonstrates practical use case
+  weaknesses:
+  - Node labels are readable but slightly small for the 4800x2700 canvas; increasing
+    font size would improve legibility
+  - Significant empty space on left and right margins - nodes could be spread wider
+    to better utilize canvas

@@ -1,0 +1,27 @@
+library: bokeh
+specification_id: circos-basic
+created: '2025-12-31T11:12:52Z'
+updated: '2025-12-31T11:28:09Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20617695887
+issue: 3005
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/circos-basic/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/circos-basic/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/circos-basic/bokeh/plot.html
+quality_score: 90
+review:
+  strengths:
+  - Excellent circular layout with proper segment sizing proportional to total trade
+    volume
+  - Well-implemented bezier ribbons connecting regions with appropriate transparency
+  - Good use of inner track to display additional GDP growth data
+  - Realistic trade flow scenario with sensible numeric values
+  - Clean legend placement and region labeling with proper text rotation
+  - Both PNG and HTML outputs generated for static and interactive viewing
+  weaknesses:
+  - Inner track annotation positioned at bottom-left is quite small and easy to miss
+  - Title font at 48pt appears relatively small for the 3600x3600 canvas size
+  - Some ribbon colors could use slightly more differentiation when many overlap in
+    the center

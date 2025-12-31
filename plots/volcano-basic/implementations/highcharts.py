@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 volcano-basic: Volcano Plot for Statistical Significance
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2025-12-31
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-31
 """
 
 import tempfile

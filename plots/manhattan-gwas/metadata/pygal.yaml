@@ -1,7 +1,7 @@
 library: pygal
 specification_id: manhattan-gwas
 created: '2025-12-31T05:37:41Z'
-updated: '2025-12-31T05:51:23Z'
+updated: '2025-12-31T06:02:13Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20612794558
 issue: 2925
@@ -13,18 +13,18 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas
 quality_score: 78
 review:
   strengths:
-  - Clean KISS code structure with reproducible seed
-  - Effective alternating blue/gray color scheme for chromosome distinction
-  - Correct data generation with realistic chromosome lengths and significant peaks
+  - Correctly implements alternating blue/gray color scheme for odd/even chromosomes
+  - Uses pygal interactive tooltip feature with detailed SNP information (position,
+    -log10 p-value)
+  - Good custom styling with appropriate font sizes for the 4800x2700 canvas
+  - Proper data generation with realistic GWAS simulation including significant peaks
     on specific chromosomes
-  - Proper title format following spec-id · library · pyplots.ai convention
-  - Good use of custom Style for font sizes appropriate to 4800x2700 canvas
+  - Title follows the correct format specification
   weaknesses:
-  - Missing horizontal threshold lines at -log10(5×10⁻⁸) ≈ 7.3 for genome-wide significance
-    and at 5.0 for suggestive threshold (spec requirement)
-  - Missing chromosome labels centered below each chromosome region on x-axis (spec
-    requirement)
-  - Y-axis label encodes threshold values as text rather than showing visual reference
-    lines
-  - Legend is completely hidden rather than showing chromosome color key
-  - No use of pygal distinctive features like tooltips or interactivity
+  - Threshold lines (genome-wide significance at 7.3 and suggestive at 5.0) are not
+    visible as horizontal lines in the rendered plot
+  - X-axis shows numeric genomic position (Mb) instead of chromosome labels (1-22)
+    centered below each chromosome region as specified
+  - Legend is not visible in the PNG output
+  - Contains a helper function position_to_chromosome() which violates the KISS principle
+    of no functions/classes

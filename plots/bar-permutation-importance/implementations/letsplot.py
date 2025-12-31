@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-permutation-importance: Permutation Feature Importance Plot
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-31
@@ -9,16 +9,18 @@ import pandas as pd
 from lets_plot import (
     LetsPlot,
     aes,
+    coord_flip,
+    element_line,
     element_text,
+    geom_bar,
     geom_errorbar,
-    geom_point,
     geom_vline,
     ggplot,
     ggsave,
     ggsize,
     labs,
-    scale_color_gradient,
-    scale_y_discrete,
+    scale_fill_gradient,
+    scale_x_discrete,
     theme,
     theme_minimal,
 )
@@ -63,26 +65,27 @@ df = df.sort_values("importance_mean", ascending=True).reset_index(drop=True)
 df["feature"] = pd.Categorical(df["feature"], categories=df["feature"].tolist(), ordered=True)
 
 # Calculate error bar positions
-df["xmin"] = df["importance_mean"] - df["importance_std"]
-df["xmax"] = df["importance_mean"] + df["importance_std"]
+df["ymin"] = df["importance_mean"] - df["importance_std"]
+df["ymax"] = df["importance_mean"] + df["importance_std"]
 
-# Create the plot
+# Create the plot with horizontal bars using geom_bar + coord_flip
 plot = (
-    ggplot(df, aes(x="importance_mean", y="feature", color="importance_mean"))
+    ggplot(df, aes(x="feature", y="importance_mean", fill="importance_mean"))
+    + geom_bar(stat="identity", width=0.7, alpha=0.9)
+    + geom_errorbar(aes(ymin="ymin", ymax="ymax"), width=0.25, size=0.8, color="#333333")
     + geom_vline(xintercept=0, color="#888888", size=0.8, linetype="dashed")
-    + geom_errorbar(aes(xmin="xmin", xmax="xmax"), width=0.3, size=1.2, color="#666666")
-    + geom_point(size=6, alpha=0.9)
-    + scale_color_gradient(low="#FFD43B", high="#306998", name="Importance")
-    + scale_y_discrete()
-    + labs(x="Mean Decrease in Model Score", y="Feature", title="bar-permutation-importance · letsplot · pyplots.ai")
+    + coord_flip()
+    + scale_fill_gradient(low="#FFD43B", high="#306998", guide="none")
+    + scale_x_discrete()
+    + labs(x="Feature", y="Mean Decrease in Model Score", title="bar-permutation-importance · letsplot · pyplots.ai")
     + theme_minimal()
     + theme(
         plot_title=element_text(size=24),
         axis_title=element_text(size=20),
         axis_text=element_text(size=16),
         axis_text_y=element_text(size=14),
-        legend_title=element_text(size=16),
-        legend_text=element_text(size=14),
+        panel_grid_major_x=element_line(color="#CCCCCC", size=0.5),
+        panel_grid_minor_x=element_line(color="#EEEEEE", size=0.3),
     )
     + ggsize(1600, 900)
 )

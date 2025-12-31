@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 tree-phylogenetic: Phylogenetic Tree Diagram
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -10,6 +10,8 @@ from plotnine import (
     aes,
     annotate,
     coord_cartesian,
+    element_blank,
+    element_rect,
     element_text,
     geom_point,
     geom_segment,
@@ -374,8 +376,8 @@ plot = (
     + geom_text(df_leaves, aes(x="x", y="y", label="species"), ha="left", nudge_x=0.02, size=14, color="#222222")
     + scale_color_manual(values=clade_colors)
     # Scale bar annotation
-    + annotate("segment", x=0.0, xend=0.1, y=-0.8, yend=-0.8, size=2, color="#333333")
-    + annotate("text", x=0.05, y=-1.2, label="0.1 substitutions/site", size=12, color="#333333")
+    + annotate("segment", x=0.0, xend=0.1, y=-0.8, yend=-0.8, size=2.5, color="#333333")
+    + annotate("text", x=0.05, y=-1.3, label="0.1 substitutions/site", size=16, color="#333333")
     + labs(
         title="Primate Phylogeny · tree-phylogenetic · plotnine · pyplots.ai",
         x="Evolutionary Distance (substitutions per site)",
@@ -385,9 +387,14 @@ plot = (
     + theme(
         figure_size=(16, 9),
         plot_title=element_text(size=24, ha="center", weight="bold"),
-        legend_position="none",
+        legend_position=(0.88, 0.75),
+        legend_title=element_text(size=14, weight="bold"),
+        legend_text=element_text(size=12),
+        legend_background=element_rect(fill="white", alpha=0.8),
+        legend_key=element_blank(),
         plot_margin=0.05,
     )
+    + labs(color="Clade")
 )
 
 # Save the plot

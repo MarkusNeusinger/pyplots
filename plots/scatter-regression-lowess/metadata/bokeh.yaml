@@ -1,0 +1,28 @@
+library: bokeh
+specification_id: scatter-regression-lowess
+created: '2025-12-30T23:53:54Z'
+updated: '2025-12-30T23:58:02Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608462380
+issue: 2855
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-lowess/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-lowess/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-lowess/bokeh/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent biological data example (enzyme activity curve) that perfectly demonstrates
+    LOWESS smoothing on non-linear data
+  - Clean color contrast between blue points and yellow LOWESS curve makes the relationship
+    immediately clear
+  - Proper use of ColumnDataSource pattern for data management
+  - Text sizing scaled appropriately for 4800x2700 canvas
+  - Correctly uses statsmodels LOWESS with appropriate smoothing fraction (0.4)
+  - Generates both static PNG and interactive HTML output
+  weaknesses:
+  - Legend text could be larger to match the canvas scale (currently 22pt vs 28pt
+    axis labels)
+  - Could add HoverTool to show individual point values in interactive version
+  - Grid dashed style may be unnecessary - solid subtle lines would be cleaner

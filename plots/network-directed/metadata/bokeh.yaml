@@ -1,0 +1,25 @@
+library: bokeh
+specification_id: network-directed
+created: '2025-12-30T23:56:47Z'
+updated: '2025-12-31T00:04:46Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608485361
+issue: 2858
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/network-directed/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-directed/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/network-directed/bokeh/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent circular layout with proper scaling for the 4800x2700 canvas
+  - Clean, readable node labels positioned inside circles with bold text
+  - Proper use of Bokeh Arrow and NormalHead for directed edges
+  - Well-implemented legend with background box for clarity
+  - Realistic software dependency scenario matching spec application
+  - Both static PNG and interactive HTML outputs leverage Bokeh capabilities
+  weaknesses:
+  - Edge shortening calculations could be improved for more consistent arrow-to-node
+    spacing
+  - No curved edges for potential bidirectional relationships

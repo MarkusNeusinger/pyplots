@@ -29,6 +29,15 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### scatter-matrix ✅
 **Description:** Grid of scatter plots for all variable pairs in a dataset with histograms on diagonal.
 
+### scatter-annotated ✅
+**Description:** Annotated scatter plot with text labels on selected data points for highlighting key observations.
+
+### scatter-regression-lowess ✅
+**Description:** Scatter plot with LOWESS (Locally Weighted Scatterplot Smoothing) regression curve.
+
+### scatter-regression-polynomial ✅
+**Description:** Scatter plot with polynomial regression curve fit to the data.
+
 ---
 
 ## 2. Line Plots
@@ -65,6 +74,12 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ### line-interactive 📋
 **Description:** Line plot with hover tooltips and zoom capability.
+
+### line-loss-training ✅
+**Description:** Training loss curve showing model loss over epochs during neural network training.
+
+### line-timeseries-rolling ✅
+**Description:** Time series plot with rolling average overlay for trend smoothing.
 
 ---
 
@@ -103,6 +118,9 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### bar-interactive 📋
 **Description:** Bar chart with hover details and click interactions.
 
+### bar-feature-importance ✅
+**Description:** Feature importance bar chart showing the relative importance of features in a machine learning model.
+
 ---
 
 ## 4. Histograms
@@ -133,6 +151,9 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ### histogram-cumulative ✅
 **Description:** Cumulative distribution function as histogram.
+
+### histogram-density ✅
+**Description:** Density histogram showing probability density instead of raw counts, with area under curve summing to 1.
 
 ---
 
@@ -287,11 +308,17 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### bland-altman ✅
 **Description:** Agreement plot between two measurements with limits of agreement.
 
+### bland-altman-basic ✅
+**Description:** Bland-Altman agreement plot comparing two measurement methods with mean difference and limits of agreement.
+
 ### errorbar-basic ✅
 **Description:** An error bar plot displays data points with associated uncertainty or variability represented by bars extending above and below each point.
 
-### error-asymmetric 📋
+### error-asymmetric ✅
 **Description:** Error bars with different upper/lower bounds.
+
+### errorbar-asymmetric ✅
+**Description:** Asymmetric error bars plot with different upper and lower error values for each data point.
 
 ---
 
@@ -319,8 +346,11 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### pair-plot 📋
 **Description:** All pairwise relationships in dataset.
 
-### subplot-grid 📋
+### subplot-grid ✅
 **Description:** Custom grid of different plot types.
+
+### subplot-grid-custom ✅
+**Description:** Custom subplot grid layout with flexible arrangement of axes.
 
 ### subplot-mosaic ✅
 **Description:** A mosaic subplot layout allowing complex arrangements of axes with varying sizes using string-based or nested list specifications.
@@ -338,7 +368,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### timeseries-decomposition ✅
 **Description:** A time series decomposition plot showing the original series broken down into trend, seasonal, and residual components.
 
-### timeseries-rolling 📋
+### timeseries-rolling ✅
 **Description:** Time series with rolling average overlay.
 
 ### candlestick-basic ✅
@@ -388,7 +418,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### contour-3d 📋
 **Description:** 3D contour plot.
 
-### bar-3d 📋
+### bar-3d ✅
 **Description:** 3D bar chart.
 
 ### line-3d 📋
@@ -459,6 +489,9 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ### circle-packing ✅
 **Description:** Nested circles showing hierarchy.
+
+### circlepacking-basic ✅
+**Description:** Circle packing chart displaying hierarchical data as nested circles.
 
 ---
 
@@ -542,7 +575,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### wordcloud-basic ✅
 **Description:** A word cloud displays text data where word size represents frequency or importance.
 
-### annotated-scatter 📋
+### annotated-scatter ✅
 **Description:** Scatter plot with text labels on points.
 
 ### annotated-line 📋
@@ -558,7 +591,10 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### parallel-categories ✅
 **Description:** Parallel coordinates for categorical data.
 
-### andrews-curves 📋
+### parallel-categories-basic ✅
+**Description:** Basic parallel categories plot for visualizing flows between categorical variables.
+
+### andrews-curves ✅
 **Description:** Multivariate data as Fourier curves.
 
 ### chernoff-basic ✅
@@ -750,6 +786,9 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### learning-curve ✅
 **Description:** Learning curve showing model performance (training and validation scores) vs training set size for bias-variance diagnosis.
 
+### learning-curve-basic ✅
+**Description:** Model learning curve showing training and validation performance across different training set sizes.
+
 ### feature-importance ✅
 **Description:** Horizontal bar chart showing feature importances from machine learning models, sorted by importance value.
 
@@ -765,8 +804,11 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### shap-summary 📋
 **Description:** SHAP (SHapley Additive exPlanations) summary plot showing feature impact on model predictions.
 
-### partial-dependence 📋
+### partial-dependence ✅
 **Description:** Partial dependence plot showing marginal effect of features on predicted outcome.
+
+### pdp-basic ✅
+**Description:** Partial dependence plot showing the marginal effect of a feature on model predictions.
 
 ### bar-permutation-importance ✅
 **Description:** A bar chart showing permutation feature importance, displaying the decrease in model score when each feature is randomly shuffled.
@@ -780,8 +822,11 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### residual-plot ✅
 **Description:** Residual plot displaying difference between observed and predicted values for regression model diagnostics.
 
-### decision-boundary 📋
+### decision-boundary ✅
 **Description:** Decision boundary visualization showing classifier regions in 2D feature space.
+
+### contour-decision-boundary ✅
+**Description:** Decision boundary classifier visualization using contour plot to show classification regions.
 
 ### loss-curve 📋
 **Description:** Training and validation loss curves over epochs for neural network training monitoring.
@@ -790,11 +835,17 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ## 30. Scientific & Domain-Specific
 
-### spectrum-plot 📋
+### spectrum-plot ✅
 **Description:** Frequency spectrum visualization.
 
-### spectrogram 📋
+### spectrum-basic ✅
+**Description:** Frequency spectrum plot showing signal power or amplitude across frequencies.
+
+### spectrogram ✅
 **Description:** Time-frequency heatmap for audio/signals.
+
+### spectrogram-basic ✅
+**Description:** Spectrogram time-frequency heatmap showing signal intensity over time and frequency.
 
 ### phase-diagram ✅
 **Description:** A phase diagram displaying the trajectory of a dynamical system in phase space, plotting one variable against its derivative or another related variable.
@@ -820,14 +871,23 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### survival-curve ✅
 **Description:** Kaplan-Meier survival analysis plot.
 
+### survival-kaplan-meier ✅
+**Description:** Kaplan-Meier survival plot showing probability of survival over time with censored data.
+
 ### forest-basic ✅
 **Description:** Meta-analysis effect sizes with confidence intervals.
 
-### volcano-plot 📋
+### volcano-plot ✅
 **Description:** Statistical significance vs fold change.
 
-### manhattan-plot 📋
+### volcano-basic ✅
+**Description:** Volcano plot for statistical significance showing -log10(p-value) vs fold change.
+
+### manhattan-plot ✅
 **Description:** Genome-wide association study visualization.
+
+### manhattan-gwas ✅
+**Description:** Manhattan plot for genome-wide association studies showing chromosomal positions vs -log10(p-values).
 
 ### circos-basic ✅
 **Description:** A Circos plot displays data in a circular layout, showing relationships between entities or genome features with arcs, segments, and tracks.
@@ -885,9 +945,9 @@ Druckbare Vorlagen und spielerische Visualisierungen.
 
 ## Statistics
 
-- **Total Plot Types:** 235+
-- **Implemented:** 171 ✅
-- **Planned:** 90+ 📋
+- **Total Plot Types:** 255+
+- **Implemented:** 191 ✅
+- **Planned:** 64+ 📋
 - **Categories:** 31
 
 ---

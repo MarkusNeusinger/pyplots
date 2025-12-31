@@ -10,9 +10,24 @@ import CircularProgress from '@mui/material/CircularProgress';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 import type { PlotImage } from '../types';
 import { BATCH_SIZE, type ImageSize } from '../constants';
 import { useCodeFetch } from '../hooks';
+
+// Library abbreviations for compact mode
+const LIBRARY_ABBR: Record<string, string> = {
+  matplotlib: 'mpl',
+  seaborn: 'sns',
+  plotly: 'ply',
+  bokeh: 'bok',
+  altair: 'alt',
+  plotnine: 'p9',
+  pygal: 'pyg',
+  highcharts: 'hc',
+  letsplot: 'lp',
+};
 
 interface ImageCardProps {
   image: PlotImage;
@@ -43,9 +58,21 @@ export const ImageCard = memo(function ImageCard({
   onClick,
   onTrackEvent,
 }: ImageCardProps) {
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down('sm')); // < 600px
+  const isSm = useMediaQuery(theme.breakpoints.between('sm', 'md')); // 600-900px
+
   const labelFontSize = imageSize === 'compact' ? '0.65rem' : '0.8rem';
+  const labelLetterSpacing = isXs ? '-0.03em' : 'normal';
   const { fetchCode } = useCodeFetch();
   const [copyState, setCopyState] = useState<'idle' | 'loading' | 'copied'>('idle');
+
+  // Library display: in compact mode - hidden on xs, abbreviated otherwise
+  // In normal mode - always show full name
+  const showLibrary = imageSize === 'normal' || !isXs;
+  const libraryDisplay = imageSize === 'compact'
+    ? (LIBRARY_ABBR[image.library] || image.library)
+    : image.library;
 
   // Stable click handler - calls onClick with image
   const handleClick = useCallback(() => {
@@ -193,7 +220,8 @@ export const ImageCard = memo(function ImageCard({
               }
             }}
             sx={{
-              fontSize: '0.8rem',
+              fontSize: labelFontSize,
+              letterSpacing: labelLetterSpacing,
               fontWeight: 600,
               fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
               color: isSpecTooltipOpen ? '#3776AB' : '#9ca3af',
@@ -208,75 +236,80 @@ export const ImageCard = memo(function ImageCard({
           </Typography>
         </Tooltip>
 
-        <Typography sx={{ color: '#d1d5db', fontSize: labelFontSize }}>·</Typography>
+        {showLibrary && (
+          <>
+            <Typography sx={{ color: '#d1d5db', fontSize: labelFontSize }}>·</Typography>
 
-        {/* Clickable Library */}
-        <Tooltip
-          title={
-            <Box>
-              <Typography sx={{ fontSize: '0.8rem', mb: 1 }}>
-                {libraryDescription || 'No description available'}
-              </Typography>
-              {libraryDocUrl && (
-                <Link
-                  href={libraryDocUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 0.5,
-                    fontSize: '0.75rem',
-                    color: '#90caf9',
-                    textDecoration: 'underline',
-                    '&:hover': { color: '#fff' },
-                  }}
-                >
-                  {libraryDocUrl.replace(/^https?:\/\//, '')} <OpenInNewIcon sx={{ fontSize: 12 }} />
-                </Link>
-              )}
-            </Box>
-          }
-          arrow
-          placement="bottom"
-          open={isLibTooltipOpen}
-          disableFocusListener
-          disableHoverListener
-          disableTouchListener
-          slotProps={{
-            tooltip: {
-              sx: {
-                maxWidth: { xs: '80vw', sm: 400 },
-                fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
-                fontSize: labelFontSize,
-              },
-            },
-          }}
-        >
-          <Typography
-            data-description-btn
-            onClick={(e) => {
-              e.stopPropagation();
-              onTooltipToggle(isLibTooltipOpen ? null : libTooltipId);
-              if (!isLibTooltipOpen) {
-                onTrackEvent?.('description_lib', { library: image.library });
+            {/* Clickable Library */}
+            <Tooltip
+              title={
+                <Box>
+                  <Typography sx={{ fontSize: '0.8rem', mb: 1 }}>
+                    {libraryDescription || 'No description available'}
+                  </Typography>
+                  {libraryDocUrl && (
+                    <Link
+                      href={libraryDocUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      sx={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 0.5,
+                        fontSize: '0.75rem',
+                        color: '#90caf9',
+                        textDecoration: 'underline',
+                        '&:hover': { color: '#fff' },
+                      }}
+                    >
+                      {libraryDocUrl.replace(/^https?:\/\//, '')} <OpenInNewIcon sx={{ fontSize: 12 }} />
+                    </Link>
+                  )}
+                </Box>
               }
-            }}
-            sx={{
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
-              color: isLibTooltipOpen ? '#3776AB' : '#9ca3af',
-              textTransform: 'lowercase',
-              cursor: 'pointer',
-              '&:hover': {
-                color: '#3776AB',
-              },
-            }}
-          >
-            {image.library}
-          </Typography>
-        </Tooltip>
+              arrow
+              placement="bottom"
+              open={isLibTooltipOpen}
+              disableFocusListener
+              disableHoverListener
+              disableTouchListener
+              slotProps={{
+                tooltip: {
+                  sx: {
+                    maxWidth: { xs: '80vw', sm: 400 },
+                    fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
+                    fontSize: labelFontSize,
+                  },
+                },
+              }}
+            >
+              <Typography
+                data-description-btn
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onTooltipToggle(isLibTooltipOpen ? null : libTooltipId);
+                  if (!isLibTooltipOpen) {
+                    onTrackEvent?.('description_lib', { library: image.library });
+                  }
+                }}
+                sx={{
+                  fontSize: labelFontSize,
+                  letterSpacing: labelLetterSpacing,
+                  fontWeight: 600,
+                  fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
+                  color: isLibTooltipOpen ? '#3776AB' : '#9ca3af',
+                  textTransform: 'lowercase',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    color: '#3776AB',
+                  },
+                }}
+              >
+                {libraryDisplay}
+              </Typography>
+            </Tooltip>
+          </>
+        )}
       </Box>
     </Box>
   );

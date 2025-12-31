@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Alert from '@mui/material/Alert';
+import Fab from '@mui/material/Fab';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 import type { PlotImage, LibraryInfo, SpecInfo } from './types';
 import { API_URL, type ImageSize } from './constants';
@@ -62,6 +64,7 @@ function App() {
     const stored = localStorage.getItem('imageSize');
     return stored === 'normal' || stored === 'compact' ? stored : 'normal';
   });
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   // Refs
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -70,6 +73,15 @@ function App() {
   useEffect(() => {
     localStorage.setItem('imageSize', imageSize);
   }, [imageSize]);
+
+  // Show/hide scroll-to-top button based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Handle card click - open modal
   const handleCardClick = useCallback(
@@ -214,6 +226,25 @@ function App() {
         onClose={() => setModalImage(null)}
         onTrackEvent={trackEvent}
       />
+
+      {/* Floating scroll-to-top button */}
+      <Fab
+        size="small"
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        sx={{
+          position: 'fixed',
+          bottom: 24,
+          right: 24,
+          bgcolor: '#f3f4f6',
+          color: '#6b7280',
+          opacity: showScrollTop ? 1 : 0,
+          visibility: showScrollTop ? 'visible' : 'hidden',
+          transition: 'opacity 0.3s, visibility 0.3s',
+          '&:hover': { bgcolor: '#e5e7eb', color: '#3776AB' },
+        }}
+      >
+        <KeyboardArrowUpIcon />
+      </Fab>
     </Box>
   );
 }

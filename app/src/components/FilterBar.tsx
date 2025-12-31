@@ -12,6 +12,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import ViewAgendaIcon from '@mui/icons-material/ViewAgenda';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 import type { FilterCategory, ActiveFilters, FilterCounts } from '../types';
 import { FILTER_LABELS, FILTER_CATEGORIES } from '../types';
@@ -51,6 +53,37 @@ export function FilterBar({
   onRemoveGroup,
   onTrackEvent,
 }: FilterBarProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  // Scroll percentage - estimate based on total plots, not just loaded ones
+  const [scrollPercent, setScrollPercent] = useState(0);
+
+  useEffect(() => {
+    const calculatePercent = () => {
+      const scrollY = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight;
+      const windowHeight = window.innerHeight;
+
+      // Estimate total height based on ratio of loaded vs total plots
+      const loadRatio = displayedCount > 0 && currentTotal > 0
+        ? currentTotal / displayedCount
+        : 1;
+      const estimatedTotalHeight = (docHeight - windowHeight) * loadRatio;
+
+      const percent = Math.round((scrollY / estimatedTotalHeight) * 100);
+      setScrollPercent(Math.min(100, Math.max(0, percent || 0)));
+    };
+    calculatePercent();
+    window.addEventListener('scroll', calculatePercent);
+    const resizeObserver = new ResizeObserver(calculatePercent);
+    resizeObserver.observe(document.body);
+    return () => {
+      window.removeEventListener('scroll', calculatePercent);
+      resizeObserver.disconnect();
+    };
+  }, [displayedCount, currentTotal]);
+
   // Search/dropdown state
   const [searchQuery, setSearchQuery] = useState('');
   const [dropdownAnchor, setDropdownAnchor] = useState<HTMLElement | null>(null);
@@ -260,11 +293,11 @@ export function FilterBar({
           gap: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          position: 'relative',
+          position: { xs: 'static', md: 'relative' },
         }}
       >
-        {/* Progress counter - absolute left */}
-        {currentTotal > 0 && (
+        {/* Progress counter - absolute left (desktop only) */}
+        {!isMobile && currentTotal > 0 && (
           <Typography
             sx={{
               position: 'absolute',
@@ -275,31 +308,33 @@ export function FilterBar({
               whiteSpace: 'nowrap',
             }}
           >
-            {Math.min(displayedCount, currentTotal)} / {currentTotal}
+            {scrollPercent}% · {currentTotal}
           </Typography>
         )}
-        {/* Grid size toggle - absolute right */}
-        <Box
-          onClick={() => onImageSizeChange(imageSize === 'normal' ? 'compact' : 'normal')}
-          sx={{
-            position: 'absolute',
-            right: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 32,
-            height: 32,
-            cursor: 'pointer',
-            color: '#9ca3af',
-            '&:hover': { color: '#3776AB' },
-          }}
-        >
-          {imageSize === 'normal' ? (
-            <ViewAgendaIcon sx={{ fontSize: '1.25rem' }} />
-          ) : (
-            <ViewModuleIcon sx={{ fontSize: '1.25rem' }} />
-          )}
-        </Box>
+        {/* Grid size toggle - absolute right (desktop only) */}
+        {!isMobile && (
+          <Box
+            onClick={() => onImageSizeChange(imageSize === 'normal' ? 'compact' : 'normal')}
+            sx={{
+              position: 'absolute',
+              right: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 32,
+              height: 32,
+              cursor: 'pointer',
+              color: '#9ca3af',
+              '&:hover': { color: '#3776AB' },
+            }}
+          >
+            {imageSize === 'normal' ? (
+              <ViewAgendaIcon sx={{ fontSize: '1.25rem' }} />
+            ) : (
+              <ViewModuleIcon sx={{ fontSize: '1.25rem' }} />
+            )}
+          </Box>
+        )}
         {/* Active filter chips */}
       {activeFilters.map((group, index) => {
         const isAnimating = randomAnimation?.index === index;
@@ -363,8 +398,8 @@ export function FilterBar({
             gap: 0.5,
             px: isSearchExpanded ? 1.5 : 0,
             height: 32,
-            width: isSearchExpanded ? 'auto' : 32,
-            minWidth: isSearchExpanded ? 120 : 32,
+            width: isSearchExpanded ? { xs: 80, sm: 160, md: 'auto' } : 32,
+            minWidth: isSearchExpanded ? { xs: 80, sm: 160, md: 120 } : 32,
             border: isSearchExpanded ? '1px dashed #9ca3af' : 'none',
             borderRadius: '16px',
             bgcolor: isDropdownOpen ? '#f9fafb' : 'transparent',
@@ -440,6 +475,52 @@ export function FilterBar({
         </Box>
       )}
       </Box>
+
+      {/* Counter and toggle row (mobile only) */}
+      {isMobile && (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mt: 1,
+          }}
+        >
+          {currentTotal > 0 ? (
+            <Typography
+              sx={{
+                fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
+                fontSize: '0.75rem',
+                color: '#9ca3af',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {scrollPercent}% · {currentTotal}
+            </Typography>
+          ) : (
+            <Box />
+          )}
+          <Box
+            onClick={() => onImageSizeChange(imageSize === 'normal' ? 'compact' : 'normal')}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 32,
+              height: 32,
+              cursor: 'pointer',
+              color: '#9ca3af',
+              '&:hover': { color: '#3776AB' },
+            }}
+          >
+            {imageSize === 'normal' ? (
+              <ViewAgendaIcon sx={{ fontSize: '1.25rem' }} />
+            ) : (
+              <ViewModuleIcon sx={{ fontSize: '1.25rem' }} />
+            )}
+          </Box>
+        </Box>
+      )}
 
       {/* Dropdown menu */}
       <Menu

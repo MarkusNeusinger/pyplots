@@ -15,7 +15,8 @@ interface HeaderProps {
 
 export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isXs = useMediaQuery(theme.breakpoints.down('sm'));
+  const isSm = useMediaQuery(theme.breakpoints.between('sm', 'md'));
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [pinned, setPinned] = useState(false);  // true = opened via click, stays open
   const tooltipText = stats
@@ -52,7 +53,7 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
           fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
           mb: { xs: 2, md: 3 },
           letterSpacing: '-0.02em',
-          fontSize: { xs: '2rem', md: '3.75rem' },
+          fontSize: { xs: '2rem', sm: '2.75rem', md: '3.75rem' },
         }}
       >
         <Link
@@ -119,7 +120,7 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
           fontSize: { xs: '0.875rem', md: '1rem' },
         }}
       >
-        {isMobile ? 'ai-powered python plots' : 'library-agnostic, ai-powered python plotting examples.'}
+        {isXs ? 'ai-powered python plots' : isSm ? 'library-agnostic, ai-powered python plotting.' : 'library-agnostic, ai-powered python plotting examples.'}
       </Typography>
       <Typography
         variant="body1"
@@ -184,7 +185,7 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
             ✦
           </Box>
         )}
-        {isMobile ? '. copy. create.' : '. grab the code. make it yours.'}
+        {isXs ? '. copy. create.' : '. grab the code. make it yours.'}
       </Typography>
     </Box>
   );

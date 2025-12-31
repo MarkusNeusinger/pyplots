@@ -1,0 +1,29 @@
+library: bokeh
+specification_id: contour-decision-boundary
+created: '2025-12-31T06:00:00Z'
+updated: '2025-12-31T15:04:38Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612922189
+issue: 2921
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent visual clarity with well-chosen Python blue/yellow color scheme that
+    provides strong contrast
+  - Effective use of Bokeh HoverTool providing detailed information on hover (coordinates,
+    class, classification status)
+  - Clean implementation of misclassified point highlighting with distinct red X markers
+  - Proper use of ColumnDataSource pattern for data management
+  - Good decision boundary rendering using image with LinearColorMapper
+  - Appropriate font sizing for the 4800x2700 canvas
+  - Clean, linear code structure following KISS principles
+  weaknesses:
+  - Legend is placed outside the plot area which creates slight visual separation
+    from the main chart
+  - The Misclassified legend entry glyph could be more prominent to match the visual
+    weight of the X markers in the plot

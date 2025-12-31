@@ -1,0 +1,28 @@
+library: matplotlib
+specification_id: subplot-grid-custom
+created: '2025-12-30T23:55:41Z'
+updated: '2025-12-31T00:01:42Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608469966
+issue: 2856
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent GridSpec layout with main panel spanning 2 rows and 2 columns, demonstrating
+    the core spec feature
+  - Professional financial dashboard aesthetic with consistent color scheme (Python
+    blue/yellow)
+  - 'Good use of matplotlib-specific features: GridSpec with height_ratios, fill_between,
+    mdates formatting'
+  - All text is clearly legible with appropriate font sizes
+  - Realistic financial data scenario with time series, volume, returns distribution,
+    and summary statistics
+  weaknesses:
+  - Bottom row subplots appear slightly cramped compared to the main panel proportions
+  - Library features score could be improved by using shared axes between related
+    plots (e.g., dates) or constrained_layout

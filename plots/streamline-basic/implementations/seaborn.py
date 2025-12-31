@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 streamline-basic: Basic Streamline Plot
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.patches import FancyArrowPatch
 
 
 # Set seed for reproducibility
@@ -18,6 +19,7 @@ np.random.seed(42)
 
 # Generate streamlines using Euler integration
 streamlines_data = []
+arrow_data = []  # Store arrow positions for flow direction indicators
 streamline_id = 0
 
 # Starting points at different radii - fewer inner streamlines to reduce overlap
@@ -33,6 +35,7 @@ for r in radii:
         angle = 2 * np.pi * i / n_per_radius + (r * 0.15)
         x = r * np.cos(angle)
         y = r * np.sin(angle)
+        streamline_points = []
 
         # Trace streamline using Euler integration
         for step in range(max_steps):
@@ -59,15 +62,23 @@ for r in radii:
                     "velocity": float(vel_mag),
                 }
             )
+            streamline_points.append((x, y, u, v, vel_mag))
 
             # Normalize and step
             x = x + dt * u / speed
             y = y + dt * v / speed
 
+        # Store arrow position at midpoint of each streamline
+        if len(streamline_points) > 20:
+            mid_idx = len(streamline_points) // 2
+            px, py, pu, pv, pvel = streamline_points[mid_idx]
+            arrow_data.append({"x": px, "y": py, "u": pu, "v": pv, "velocity": pvel, "radius": r})
+
         streamline_id += 1
 
 # Create DataFrame
 df = pd.DataFrame(streamlines_data)
+arrows_df = pd.DataFrame(arrow_data)
 
 # Compute average velocity per streamline for color encoding
 avg_velocity = df.groupby("streamline_id")["velocity"].mean().reset_index()
@@ -79,7 +90,7 @@ sns.set_theme(style="whitegrid")
 sns.set_context("talk", font_scale=1.2)
 
 # Create square figure to better utilize canvas for equal aspect ratio plot
-fig, ax = plt.subplots(figsize=(10, 10))
+fig, ax = plt.subplots(figsize=(12, 12))
 
 # Plot streamlines using seaborn's lineplot with hue for velocity
 # Each streamline is a separate unit, colored by average velocity
@@ -98,8 +109,29 @@ sns.lineplot(
     ax=ax,
 )
 
-# Add colorbar manually (seaborn lineplot doesn't auto-create one for continuous hue)
+# Add arrowheads to show flow direction
+cmap = plt.cm.viridis
 norm = plt.Normalize(df["avg_velocity"].min(), df["avg_velocity"].max())
+for _, arrow in arrows_df.iterrows():
+    px, py = arrow["x"], arrow["y"]
+    pu, pv = arrow["u"], arrow["v"]
+    speed = np.sqrt(pu**2 + pv**2)
+    # Normalize direction
+    dx = 0.15 * pu / speed
+    dy = 0.15 * pv / speed
+    color = cmap(norm(arrow["velocity"]))
+    arrow_patch = FancyArrowPatch(
+        (px - dx / 2, py - dy / 2),
+        (px + dx / 2, py + dy / 2),
+        arrowstyle="->,head_width=4,head_length=4",
+        color=color,
+        linewidth=2,
+        mutation_scale=1,
+        zorder=10,
+    )
+    ax.add_patch(arrow_patch)
+
+# Add colorbar manually (seaborn lineplot doesn't auto-create one for continuous hue)
 sm = plt.cm.ScalarMappable(cmap="viridis", norm=norm)
 sm.set_array([])
 cbar = fig.colorbar(sm, ax=ax, shrink=0.8, aspect=20)

@@ -1,6 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-drilldown: Drilldown Pie Chart with Click Navigation
-Library: letsplot 4.8.2 | Python 3.13.11
+Library: letsplot 4.8.2 | Python 3.13
 Quality: 78/100 | Created: 2025-12-31
 """
 
@@ -84,9 +84,14 @@ colors = {
 }
 
 # Create data for root level (main departments)
+# Order slices so labels are distributed around the circle without overlap
+# Large slices get their labels far apart, small slices fill gaps
 root_children = hierarchy_data["root"]["children"]
-categories = [hierarchy_data[child_id]["name"] for child_id in root_children]
-values = [hierarchy_data[child_id]["value"] for child_id in root_children]
+# Order by size descending, then interleave to spread labels
+# Eng (45%), Mkt (28%), Ops (18%), HR (9%) - put largest at top, smallest at bottom
+reordered_children = ["engineering", "marketing", "operations", "hr"]
+categories = [hierarchy_data[child_id]["name"] for child_id in reordered_children]
+values = [hierarchy_data[child_id]["value"] for child_id in reordered_children]
 total = sum(values)
 percentages = [(v / total) * 100 for v in values]
 
@@ -104,40 +109,50 @@ slice_colors = [colors[cat] for cat in categories]
 # Create percentage label column for proper formatting
 df["pct_label"] = [f"{p:.1f}%" for p in percentages]
 
-# Create main pie chart for static PNG with improved canvas utilization
+# Create combined label with category name, value, and percentage on one line
+df["combined_label"] = [
+    f"{cat}: {lbl} ({pct:.0f}%)" for cat, lbl, pct in zip(categories, value_labels, percentages, strict=True)
+]
+
+# Create main pie chart for static PNG
+# Use pie labels inside the slices to avoid overlap issues
 plot = (
     ggplot(df)  # noqa: F405
     + geom_pie(  # noqa: F405
         aes(slice="value", fill="category"),  # noqa: F405
         stat="identity",
-        size=55,  # Balanced size to fit labels without clipping
+        size=50,  # Good size for visibility
         hole=0.35,  # Donut style
-        stroke=2,  # White borders between slices
+        stroke=3,  # White borders between slices
         color="white",  # Border color
+        spacer_width=0.3,  # Small gaps between slices
         labels=layer_labels()  # noqa: F405
-        .line("@category")
-        .line("@value_label (@pct_label)")
-        .size(24),  # Larger labels for readability
+        .line("@{pct_label}")  # Only show percentage inside
+        .size(18),
     )
     + scale_fill_manual(values=slice_colors)  # noqa: F405
     + labs(  # noqa: F405
         title="pie-drilldown · letsplot · pyplots.ai",
-        subtitle="Click slice to drill down (interactive HTML)",
-        fill="Department",
+        subtitle="Company Budget Breakdown · Click slice to drill down (HTML)",
+        fill="",  # No legend title needed
     )
-    + ggsize(1200, 1200)  # noqa: F405
+    + ggsize(1600, 900)  # noqa: F405 - Landscape format
+    + guides(fill=guide_legend(ncol=1))  # noqa: F405 - Single column legend
+    + scale_fill_manual(  # noqa: F405
+        values=slice_colors, labels=[f"{cat} - {lbl}" for cat, lbl in zip(categories, value_labels, strict=True)]
+    )
     + theme_void()  # noqa: F405
     + theme(  # noqa: F405
         plot_title=element_text(size=32, hjust=0.5, face="bold"),  # noqa: F405
-        plot_subtitle=element_text(size=20, hjust=0.5, color="#666666"),  # noqa: F405
-        legend_title=element_text(size=22),  # noqa: F405
+        plot_subtitle=element_text(size=18, hjust=0.5, color="#666666"),  # noqa: F405
+        legend_title=element_text(size=20),  # noqa: F405
         legend_text=element_text(size=20),  # noqa: F405
-        legend_position="bottom",  # Move legend to bottom to better center chart
-        plot_margin=[50, 80, 50, 80],  # Extra horizontal margins for labels
+        legend_position="right",
+        plot_margin=[40, 60, 40, 60],
     )
 )
 
-# Save static PNG (scale 3 for 3600x3600)
+# Save static PNG (scale 3 for 4800x2700)
 export_ggsave(plot, filename="plot.png", path=".", scale=3)
 
 

@@ -1,0 +1,25 @@
+library: altair
+specification_id: tree-phylogenetic
+created: '2025-12-31T13:53:39Z'
+updated: '2025-12-31T14:01:14Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20620334905
+issue: 3070
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent visual clarity with proper text sizing and no overlap
+  - Scientifically accurate primate phylogeny with realistic branch lengths
+  - Good use of Altair layered composition for complex tree structure
+  - Proper scale bar with units for interpreting evolutionary distances
+  - Interactive tooltips enhance exploration of the tree
+  - Colorblind-safe Python Blue/Yellow color scheme
+  weaknesses:
+  - Code uses helper functions instead of preferred flat KISS structure
+  - Missing clade color-coding which was mentioned in specification notes
+  - Internal nodes could be slightly larger for better visibility

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 circos-basic: Circos Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -18,7 +18,7 @@ from selenium.webdriver.chrome.options import Options
 # Data - Simulating trade flows between 8 regions
 np.random.seed(42)
 
-regions = ["N. America", "S. America", "Europe", "Africa", "Mid. East", "S. Asia", "E. Asia", "Oceania"]
+regions = ["N.America", "S.America", "Europe", "Africa", "MidEast", "S.Asia", "E.Asia", "Oceania"]
 
 # Generate flow matrix - inter-regional trade flows
 n_regions = len(regions)
@@ -54,7 +54,7 @@ colors = [
     "#17BECF",  # Cyan - Africa
     "#8C564B",  # Brown - Mid. East
     "#E377C2",  # Pink - S. Asia
-    "#7F7F7F",  # Gray - E. Asia
+    "#2CA02C",  # Green - E. Asia
     "#BCBD22",  # Olive - Oceania
 ]
 
@@ -70,8 +70,14 @@ region_full_names = [
     "Oceania",
 ]
 
+# Generate inner track data (regional GDP representation as percentage)
+gdp_data = [26.0, 4.5, 22.0, 3.5, 5.0, 8.0, 28.0, 3.0]  # Approximate world GDP share %
+
 # Create nodes with colors
 nodes = [{"id": regions[i], "color": colors[i]} for i in range(n_regions)]
+
+# Create inner track pie chart data (GDP representation)
+inner_track_data = [{"name": region_full_names[i], "y": gdp_data[i], "color": colors[i]} for i in range(n_regions)]
 
 # Create Highcharts configuration directly
 chart_config = {
@@ -80,27 +86,28 @@ chart_config = {
         "width": 3600,
         "height": 3600,
         "backgroundColor": "#ffffff",
-        "marginRight": 350,
+        "marginRight": 420,
     },
-    "title": {"text": "circos-basic · highcharts · pyplots.ai", "style": {"fontSize": "48px", "fontWeight": "bold"}},
-    "subtitle": {"text": "Global Trade Flows Between Regions", "style": {"fontSize": "32px"}},
+    "title": {"text": "circos-basic · highcharts · pyplots.ai", "style": {"fontSize": "52px", "fontWeight": "bold"}},
+    "subtitle": {"text": "Global Trade Flows Between Regions (with GDP Inner Track)", "style": {"fontSize": "36px"}},
     "accessibility": {"enabled": False},
     "credits": {"enabled": False},
-    "tooltip": {"style": {"fontSize": "24px"}},
+    "tooltip": {"style": {"fontSize": "28px"}},
     "legend": {
         "enabled": True,
         "align": "right",
         "verticalAlign": "middle",
         "layout": "vertical",
-        "itemStyle": {"fontSize": "24px", "fontWeight": "normal"},
-        "symbolHeight": 20,
-        "symbolWidth": 20,
-        "symbolRadius": 10,
-        "itemMarginTop": 12,
-        "itemMarginBottom": 12,
-        "x": -20,
+        "itemStyle": {"fontSize": "32px", "fontWeight": "normal"},
+        "symbolHeight": 28,
+        "symbolWidth": 28,
+        "symbolRadius": 14,
+        "itemMarginTop": 18,
+        "itemMarginBottom": 18,
+        "x": -30,
+        "title": {"text": "Regions", "style": {"fontSize": "36px", "fontWeight": "bold"}},
     },
-    "plotOptions": {"dependencywheel": {"showInLegend": False}},
+    "plotOptions": {"dependencywheel": {"showInLegend": False}, "pie": {"showInLegend": False}},
     "series": [
         {
             "type": "dependencywheel",
@@ -108,17 +115,33 @@ chart_config = {
             "keys": ["from", "to", "weight"],
             "data": connections,
             "nodes": nodes,
-            "size": "80%",
-            "center": ["45%", "50%"],
+            "size": "78%",
+            "center": ["42%", "50%"],
             "dataLabels": {
                 "enabled": True,
-                "style": {"fontSize": "36px", "fontWeight": "bold", "textOutline": "4px white"},
-                "distance": 40,
+                "style": {"fontSize": "40px", "fontWeight": "bold", "textOutline": "5px white"},
+                "distance": 50,
                 "rotationMode": "circular",
-                "padding": 5,
+                "padding": 8,
             },
-            "nodeWidth": 40,
-        }
+            "nodeWidth": 45,
+        },
+        {
+            "type": "pie",
+            "name": "GDP Share",
+            "data": inner_track_data,
+            "size": "28%",
+            "innerSize": "20%",
+            "center": ["42%", "50%"],
+            "showInLegend": False,
+            "dataLabels": {
+                "enabled": True,
+                "format": "{point.percentage:.0f}%",
+                "distance": -25,
+                "style": {"fontSize": "22px", "fontWeight": "bold", "color": "#ffffff", "textOutline": "2px #333333"},
+            },
+            "tooltip": {"pointFormat": "<b>{point.name}</b>: {point.y}% of World GDP"},
+        },
     ]
     + [
         {

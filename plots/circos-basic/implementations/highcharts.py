@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 circos-basic: Circos Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-31
@@ -18,7 +18,7 @@ from selenium.webdriver.chrome.options import Options
 # Data - Simulating trade flows between 8 regions
 np.random.seed(42)
 
-regions = ["North America", "South America", "Europe", "Africa", "Middle East", "South Asia", "East Asia", "Oceania"]
+regions = ["N. America", "S. America", "Europe", "Africa", "Mid. East", "S. Asia", "E. Asia", "Oceania"]
 
 # Generate flow matrix - inter-regional trade flows
 n_regions = len(regions)
@@ -48,14 +48,26 @@ for i in range(n_regions):
 
 # Colorblind-safe colors for each region
 colors = [
-    "#306998",  # Python Blue - North America
-    "#FFD43B",  # Python Yellow - South America
+    "#306998",  # Python Blue - N. America
+    "#FFD43B",  # Python Yellow - S. America
     "#9467BD",  # Purple - Europe
     "#17BECF",  # Cyan - Africa
-    "#8C564B",  # Brown - Middle East
-    "#E377C2",  # Pink - South Asia
-    "#7F7F7F",  # Gray - East Asia
+    "#8C564B",  # Brown - Mid. East
+    "#E377C2",  # Pink - S. Asia
+    "#7F7F7F",  # Gray - E. Asia
     "#BCBD22",  # Olive - Oceania
+]
+
+# Full region names for legend
+region_full_names = [
+    "North America",
+    "South America",
+    "Europe",
+    "Africa",
+    "Middle East",
+    "South Asia",
+    "East Asia",
+    "Oceania",
 ]
 
 # Create nodes with colors
@@ -63,12 +75,32 @@ nodes = [{"id": regions[i], "color": colors[i]} for i in range(n_regions)]
 
 # Create Highcharts configuration directly
 chart_config = {
-    "chart": {"type": "dependencywheel", "width": 3600, "height": 3600, "backgroundColor": "#ffffff"},
+    "chart": {
+        "type": "dependencywheel",
+        "width": 3600,
+        "height": 3600,
+        "backgroundColor": "#ffffff",
+        "marginRight": 350,
+    },
     "title": {"text": "circos-basic · highcharts · pyplots.ai", "style": {"fontSize": "48px", "fontWeight": "bold"}},
     "subtitle": {"text": "Global Trade Flows Between Regions", "style": {"fontSize": "32px"}},
     "accessibility": {"enabled": False},
     "credits": {"enabled": False},
     "tooltip": {"style": {"fontSize": "24px"}},
+    "legend": {
+        "enabled": True,
+        "align": "right",
+        "verticalAlign": "middle",
+        "layout": "vertical",
+        "itemStyle": {"fontSize": "24px", "fontWeight": "normal"},
+        "symbolHeight": 20,
+        "symbolWidth": 20,
+        "symbolRadius": 10,
+        "itemMarginTop": 12,
+        "itemMarginBottom": 12,
+        "x": -20,
+    },
+    "plotOptions": {"dependencywheel": {"showInLegend": False}},
     "series": [
         {
             "type": "dependencywheel",
@@ -76,14 +108,28 @@ chart_config = {
             "keys": ["from", "to", "weight"],
             "data": connections,
             "nodes": nodes,
-            "size": "90%",
+            "size": "80%",
+            "center": ["45%", "50%"],
             "dataLabels": {
                 "enabled": True,
-                "style": {"fontSize": "28px", "fontWeight": "bold", "textOutline": "2px white"},
-                "distance": 20,
+                "style": {"fontSize": "36px", "fontWeight": "bold", "textOutline": "4px white"},
+                "distance": 40,
+                "rotationMode": "circular",
+                "padding": 5,
             },
-            "nodeWidth": 30,
+            "nodeWidth": 40,
         }
+    ]
+    + [
+        {
+            "type": "pie",
+            "name": region_full_names[i],
+            "data": [{"name": region_full_names[i], "y": 1, "color": colors[i]}],
+            "size": 0,
+            "showInLegend": True,
+            "dataLabels": {"enabled": False},
+        }
+        for i in range(n_regions)
     ],
 }
 

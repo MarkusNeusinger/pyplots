@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-decision-boundary: Decision Boundary Classifier Visualization
 Library: highcharts unknown | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-31
@@ -11,8 +11,6 @@ import urllib.request
 from pathlib import Path
 
 import numpy as np
-from highcharts_core.chart import Chart
-from highcharts_core.options import HighchartsOptions
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from sklearn.datasets import make_moons
@@ -30,24 +28,28 @@ classifier.fit(X, y)
 # Create mesh grid for decision boundary
 x_min, x_max = X[:, 0].min() - 0.5, X[:, 0].max() + 0.5
 y_min, y_max = X[:, 1].min() - 0.5, X[:, 1].max() + 0.5
-resolution = 100
+resolution = 80
+
 xx, yy = np.meshgrid(np.linspace(x_min, x_max, resolution), np.linspace(y_min, y_max, resolution))
 
 # Predict class probabilities on mesh grid
 mesh_points = np.c_[xx.ravel(), yy.ravel()]
-Z_proba = classifier.predict_proba(mesh_points)[:, 1]  # Probability of class 1
+Z_proba = classifier.predict_proba(mesh_points)[:, 1]
 Z = Z_proba.reshape(xx.shape)
 
-# Prepare heatmap data for decision regions
-# Format: [[x_index, y_index, value], ...]
+# Prepare heatmap data with actual coordinate values [x, y, value]
 heatmap_data = []
+x_step = (x_max - x_min) / resolution
+y_step = (y_max - y_min) / resolution
 for i in range(resolution):
     for j in range(resolution):
-        heatmap_data.append([j, i, round(Z[i, j], 3)])
+        x_val = round(xx[i, j], 4)
+        y_val = round(yy[i, j], 4)
+        heatmap_data.append([x_val, y_val, round(Z[i, j], 3)])
 
 # Prepare scatter data for training points
-class_0_points = [[float(X[i, 0]), float(X[i, 1])] for i in range(len(y)) if y[i] == 0]
-class_1_points = [[float(X[i, 0]), float(X[i, 1])] for i in range(len(y)) if y[i] == 1]
+class_0_points = [[round(float(X[i, 0]), 4), round(float(X[i, 1]), 4)] for i in range(len(y)) if y[i] == 0]
+class_1_points = [[round(float(X[i, 0]), 4), round(float(X[i, 1]), 4)] for i in range(len(y)) if y[i] == 1]
 
 # Download Highcharts JS and heatmap module
 highcharts_url = "https://code.highcharts.com/highcharts.js"
@@ -59,125 +61,87 @@ with urllib.request.urlopen(highcharts_url, timeout=30) as response:
 with urllib.request.urlopen(heatmap_url, timeout=30) as response:
     heatmap_js = response.read().decode("utf-8")
 
-# Create chart
-chart = Chart(container="container")
-chart.options = HighchartsOptions()
-
-# Chart options
-chart.options.chart = {
-    "width": 4800,
-    "height": 2700,
-    "backgroundColor": "#ffffff",
-    "marginBottom": 150,
-    "marginLeft": 150,
-    "marginRight": 200,
-}
-
-# Title
-chart.options.title = {
-    "text": "contour-decision-boundary · highcharts · pyplots.ai",
-    "style": {"fontSize": "48px", "fontWeight": "bold"},
-}
-
-# Subtitle
-chart.options.subtitle = {"text": "KNN Classifier on Moon-shaped Data", "style": {"fontSize": "32px"}}
-
-# X-axis for heatmap (categories for grid indices, but we'll overlay scatter with actual values)
-x_categories = [str(round(v, 2)) for v in np.linspace(x_min, x_max, resolution)]
-y_categories = [str(round(v, 2)) for v in np.linspace(y_min, y_max, resolution)]
-
-# Color axis for heatmap (decision probability)
-chart.options.color_axis = {
-    "min": 0,
-    "max": 1,
-    "stops": [
-        [0, "#306998"],  # Python Blue for class 0
-        [0.5, "#f5f5f5"],  # Light gray at boundary
-        [1, "#FFD43B"],  # Python Yellow for class 1
-    ],
-    "labels": {"style": {"fontSize": "24px"}},
-}
-
-# Build complete options as dict for complex multi-series chart
+# Build complete options as dict
 options_dict = {
     "chart": {
         "width": 4800,
         "height": 2700,
         "backgroundColor": "#ffffff",
         "marginBottom": 280,
-        "marginLeft": 280,
-        "marginRight": 400,
-        "marginTop": 180,
+        "marginLeft": 220,
+        "marginRight": 420,
+        "marginTop": 200,
     },
     "title": {
         "text": "contour-decision-boundary · highcharts · pyplots.ai",
         "style": {"fontSize": "56px", "fontWeight": "bold"},
     },
     "subtitle": {"text": "KNN Classifier Decision Boundary on Moon-shaped Data", "style": {"fontSize": "38px"}},
-    "xAxis": [
-        {
-            "categories": x_categories,
-            "title": {"text": "Feature X1", "style": {"fontSize": "38px", "fontWeight": "bold"}},
-            "labels": {"style": {"fontSize": "24px"}, "step": 20},
-            "tickInterval": 20,
-        },
-        {"min": x_min, "max": x_max, "title": {"text": None}, "labels": {"enabled": False}, "visible": False},
-    ],
-    "yAxis": [
-        {
-            "categories": y_categories,
-            "title": {"text": "Feature X2", "style": {"fontSize": "38px", "fontWeight": "bold"}},
-            "labels": {"style": {"fontSize": "24px"}, "step": 20},
-            "tickInterval": 20,
-            "reversed": False,
-        },
-        {"min": y_min, "max": y_max, "title": {"text": None}, "labels": {"enabled": False}, "visible": False},
-    ],
+    "xAxis": {
+        "min": x_min,
+        "max": x_max,
+        "title": {"text": "Feature X1", "style": {"fontSize": "42px", "fontWeight": "bold"}},
+        "labels": {"style": {"fontSize": "32px"}, "format": "{value:.1f}"},
+        "tickInterval": 0.5,
+        "gridLineWidth": 1,
+        "gridLineColor": "#cccccc",
+    },
+    "yAxis": {
+        "min": y_min,
+        "max": y_max,
+        "title": {"text": "Feature X2", "style": {"fontSize": "42px", "fontWeight": "bold"}, "margin": 30},
+        "labels": {"style": {"fontSize": "32px"}, "format": "{value:.1f}"},
+        "tickInterval": 0.5,
+        "gridLineWidth": 1,
+        "gridLineColor": "#cccccc",
+    },
     "colorAxis": {
         "min": 0,
         "max": 1,
         "stops": [[0, "#306998"], [0.5, "#E8E8E8"], [1, "#FFD43B"]],
-        "labels": {"style": {"fontSize": "28px"}},
+        "labels": {"style": {"fontSize": "28px"}, "format": "{value:.1f}"},
+        "title": {"text": "Probability", "style": {"fontSize": "28px", "fontWeight": "bold"}},
+        "layout": "vertical",
+        "reversed": False,
+        "showInLegend": False,
     },
     "legend": {
         "enabled": True,
         "align": "right",
         "verticalAlign": "middle",
         "layout": "vertical",
-        "itemStyle": {"fontSize": "32px", "fontWeight": "normal"},
-        "symbolRadius": 6,
-        "symbolHeight": 20,
-        "symbolWidth": 20,
+        "itemStyle": {"fontSize": "34px", "fontWeight": "normal"},
+        "symbolRadius": 12,
+        "symbolHeight": 32,
+        "symbolWidth": 32,
+        "itemMarginBottom": 30,
+        "x": -20,
+        "y": 0,
+        "width": 340,
+        "title": {"text": "Training Data", "style": {"fontSize": "32px", "fontWeight": "bold"}},
     },
     "plotOptions": {
-        "heatmap": {"borderWidth": 0, "colsize": 1, "rowsize": 1},
-        "scatter": {"marker": {"radius": 18, "lineWidth": 4, "lineColor": "#333333"}},
-    },
-    "series": [
-        {
-            "type": "heatmap",
-            "name": "Decision Region",
-            "data": heatmap_data,
-            "xAxis": 0,
-            "yAxis": 0,
-            "showInLegend": False,
+        "heatmap": {"borderWidth": 0, "colsize": x_step, "rowsize": y_step, "nullColor": "#E8E8E8"},
+        "scatter": {
+            "marker": {"radius": 22, "lineWidth": 5, "lineColor": "#222222"},
+            "states": {"hover": {"enabled": True, "lineWidth": 0}},
         },
+    },
+    "tooltip": {"enabled": True, "style": {"fontSize": "24px"}},
+    "series": [
+        {"type": "heatmap", "name": "Decision Region", "data": heatmap_data, "showInLegend": False},
         {
             "type": "scatter",
             "name": "Class 0 (Moon A)",
             "data": class_0_points,
-            "xAxis": 1,
-            "yAxis": 1,
-            "color": "#1a4971",
+            "color": "#306998",
             "marker": {"symbol": "circle", "fillColor": "#306998"},
         },
         {
             "type": "scatter",
             "name": "Class 1 (Moon B)",
             "data": class_1_points,
-            "xAxis": 1,
-            "yAxis": 1,
-            "color": "#cc9a00",
+            "color": "#FFD43B",
             "marker": {"symbol": "diamond", "fillColor": "#FFD43B"},
         },
     ],

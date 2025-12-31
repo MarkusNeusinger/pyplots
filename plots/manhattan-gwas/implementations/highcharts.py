@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 manhattan-gwas: Manhattan Plot for GWAS
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2025-12-31
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-31
 """
 
 import json

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-animated-controls: Animated Scatter Plot with Play Controls
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -11,6 +11,7 @@ from bokeh.layouts import column, row
 from bokeh.models import Button, ColumnDataSource, CustomJS, Div, HoverTool, Label, Slider
 from bokeh.plotting import figure
 from bokeh.resources import CDN
+from bokeh.transform import factor_cmap
 
 
 # Data: Simulated country metrics over 20 years (Gapminder-style)
@@ -40,15 +41,6 @@ countries = [
 
 regions = ["North", "South", "East", "West", "Central"]
 country_regions = [regions[i % 5] for i in range(n_countries)]
-
-# Region colors (colorblind-safe)
-region_colors = {
-    "North": "#306998",  # Python Blue
-    "South": "#FFD43B",  # Python Yellow
-    "East": "#E15759",  # Red
-    "West": "#76B7B2",  # Teal
-    "Central": "#59A14F",  # Green
-}
 
 # Generate time-series data for each country
 data_frames = []
@@ -84,7 +76,6 @@ for i, country in enumerate(countries):
                 "gdp_per_capita": gdp[j],
                 "life_expectancy": life_exp[j],
                 "population": population[j],
-                "color": region_colors[country_regions[i]],
             }
         )
 
@@ -94,7 +85,7 @@ df = pd.DataFrame(data_frames)
 initial_year = years[0]
 initial_data = df[df["year"] == initial_year].copy()
 
-# Create ColumnDataSource
+# Create ColumnDataSource (color is handled by factor_cmap based on region)
 source = ColumnDataSource(
     data={
         "x": initial_data["gdp_per_capita"].values,
@@ -103,11 +94,10 @@ source = ColumnDataSource(
         "country": initial_data["country"].values,
         "region": initial_data["region"].values,
         "population": initial_data["population"].values,
-        "color": initial_data["color"].values,
     }
 )
 
-# Store all data for animation
+# Store all data for animation (color is handled by factor_cmap based on region)
 all_data = {}
 for year in years:
     year_data = df[df["year"] == year]
@@ -118,8 +108,11 @@ for year in years:
         "country": year_data["country"].tolist(),
         "region": year_data["region"].tolist(),
         "population": year_data["population"].tolist(),
-        "color": year_data["color"].tolist(),
     }
+
+# Define regions list and color palette for factor_cmap
+regions_list = ["North", "South", "East", "West", "Central"]
+color_palette = ["#306998", "#FFD43B", "#E15759", "#76B7B2", "#59A14F"]
 
 # Create figure
 p = figure(
@@ -133,12 +126,12 @@ p = figure(
     tools="pan,wheel_zoom,box_zoom,reset,save",
 )
 
-# Style the figure
-p.title.text_font_size = "42pt"
-p.xaxis.axis_label_text_font_size = "32pt"
-p.yaxis.axis_label_text_font_size = "32pt"
-p.xaxis.major_label_text_font_size = "24pt"
-p.yaxis.major_label_text_font_size = "24pt"
+# Style the figure - increased font sizes for better readability at 4800x2700
+p.title.text_font_size = "48pt"
+p.xaxis.axis_label_text_font_size = "36pt"
+p.yaxis.axis_label_text_font_size = "36pt"
+p.xaxis.major_label_text_font_size = "28pt"
+p.yaxis.major_label_text_font_size = "28pt"
 
 # Grid styling
 p.grid.grid_line_alpha = 0.3
@@ -147,10 +140,29 @@ p.grid.grid_line_dash = [6, 4]
 # Background
 p.background_fill_color = "#fafafa"
 
-# Add scatter plot
+# Add scatter plot with legend_field for native legend in PNG export
 scatter = p.scatter(
-    x="x", y="y", size="size", color="color", alpha=0.7, line_color="white", line_width=2, source=source
+    x="x",
+    y="y",
+    size="size",
+    color=factor_cmap("region", palette=color_palette, factors=regions_list),
+    alpha=0.7,
+    line_color="white",
+    line_width=2,
+    source=source,
+    legend_field="region",
 )
+
+# Configure legend for visibility in PNG export
+p.legend.location = "top_left"
+p.legend.title = "Region"
+p.legend.title_text_font_size = "28pt"
+p.legend.label_text_font_size = "24pt"
+p.legend.glyph_height = 40
+p.legend.glyph_width = 40
+p.legend.spacing = 10
+p.legend.padding = 20
+p.legend.background_fill_alpha = 0.8
 
 # Add hover tool
 hover = HoverTool(
@@ -165,12 +177,12 @@ hover = HoverTool(
 )
 p.add_tools(hover)
 
-# Add year label (large background text)
+# Add year label (large background text) - increased size for better visibility
 year_label = Label(
     x=70000,
     y=50,
     text=str(initial_year),
-    text_font_size="120pt",
+    text_font_size="150pt",
     text_color="#cccccc",
     text_alpha=0.5,
     text_align="right",
@@ -196,7 +208,7 @@ legend_html = """
 """
 legend_div = Div(text=legend_html, width=800)
 
-# JavaScript callback for slider
+# JavaScript callback for slider (region drives color via factor_cmap)
 slider_callback = CustomJS(
     args={"source": source, "all_data": all_data, "year_label": year_label},
     code="""
@@ -209,7 +221,6 @@ slider_callback = CustomJS(
     source.data['country'] = data['country'];
     source.data['region'] = data['region'];
     source.data['population'] = data['population'];
-    source.data['color'] = data['color'];
     source.change.emit();
 
     year_label.text = year;
@@ -270,7 +281,7 @@ save(layout, filename="plot.html", title="Animated Scatter Plot", resources=CDN)
 middle_year = years[len(years) // 2]
 middle_data = df[df["year"] == middle_year]
 
-# Update source for static export
+# Update source for static export (color via factor_cmap based on region)
 source.data = {
     "x": middle_data["gdp_per_capita"].values,
     "y": middle_data["life_expectancy"].values,
@@ -278,7 +289,6 @@ source.data = {
     "country": middle_data["country"].values,
     "region": middle_data["region"].values,
     "population": middle_data["population"].values,
-    "color": middle_data["color"].values,
 }
 year_label.text = str(middle_year)
 

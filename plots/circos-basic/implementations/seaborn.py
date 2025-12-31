@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 circos-basic: Circos Plot
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-31
@@ -17,44 +17,49 @@ sns.set_theme(style="white", context="poster", font_scale=1.3)
 np.random.seed(42)
 
 # Define segments (regions) with their sizes (trade volume in billion USD)
+# Reordered to ensure adjacent regions have distinct colors
 segments = [
     "North America",
-    "Europe",
     "East Asia",
-    "Southeast Asia",
+    "Europe",
     "South Asia",
     "Middle East",
+    "Southeast Asia",
     "Africa",
-    "South America",
     "Oceania",
+    "South America",
     "Central Asia",
 ]
 n_segments = len(segments)
 
-# Segment sizes represent total trade volume (billion USD)
-segment_sizes = np.array([250, 320, 280, 150, 120, 100, 80, 90, 60, 50])
+# Segment sizes represent total trade volume (billion USD) - reordered
+segment_sizes = np.array([250, 280, 320, 120, 100, 150, 80, 60, 90, 50])
 
 # Create connection data (source, target, value in billion USD)
+# Updated indices for reordered segments:
+# 0=North America, 1=East Asia, 2=Europe, 3=South Asia, 4=Middle East,
+# 5=Southeast Asia, 6=Africa, 7=Oceania, 8=South America, 9=Central Asia
 connections = [
-    (0, 1, 85),
-    (0, 2, 120),
-    (1, 2, 95),
-    (1, 5, 60),
-    (2, 3, 70),
-    (2, 4, 45),
-    (3, 4, 35),
-    (1, 6, 40),
-    (0, 7, 55),
-    (2, 8, 50),
-    (5, 4, 30),
-    (5, 6, 25),
-    (1, 9, 20),
-    (2, 9, 28),
-    (0, 3, 38),
+    (0, 2, 85),  # North America - Europe
+    (0, 1, 120),  # North America - East Asia
+    (2, 1, 95),  # Europe - East Asia
+    (2, 4, 60),  # Europe - Middle East
+    (1, 5, 70),  # East Asia - Southeast Asia
+    (1, 3, 45),  # East Asia - South Asia
+    (5, 3, 35),  # Southeast Asia - South Asia
+    (2, 6, 40),  # Europe - Africa
+    (0, 8, 55),  # North America - South America
+    (1, 7, 50),  # East Asia - Oceania
+    (4, 3, 30),  # Middle East - South Asia
+    (4, 6, 25),  # Middle East - Africa
+    (2, 9, 20),  # Europe - Central Asia
+    (1, 9, 28),  # East Asia - Central Asia
+    (0, 5, 38),  # North America - Southeast Asia
 ]
 
-# Create color palette using seaborn's husl palette
-colors = sns.color_palette("husl", n_colors=n_segments)
+# Use seaborn's diverging color palette for better distinction between adjacent segments
+# tab10 provides 10 distinct colors that work well for categorical data
+colors = sns.color_palette("tab10", n_colors=n_segments)
 
 # Create square figure for circular symmetry (3600x3600 at 300 dpi = 12x12 inches)
 fig, ax = plt.subplots(figsize=(12, 12))
@@ -136,12 +141,17 @@ for i, (start, end) in enumerate(angles):
 # Draw ribbons (connections between segments) - inline bezier curve calculation
 ribbon_radius = inner_track_inner - 0.05
 max_value = max(c[2] for c in connections)
+min_value = min(c[2] for c in connections)
 ctrl_radius = ribbon_radius * 0.1
 n_points = 50
 t = np.linspace(0, 1, n_points)
 
 for source, target, value in connections:
-    width_fraction = value / max_value * 0.6 + 0.1
+    # Improved width calculation: ensure minimum visibility for smaller values
+    # Map values from min-max to 0.25-0.7 range for better distinction
+    normalized_value = (value - min_value) / (max_value - min_value)
+    width_fraction = 0.25 + normalized_value * 0.45
+
     start1, end1 = angles[source]
     start2, end2 = angles[target]
     seg1_span = (start1 - end1) * width_fraction * 0.4
@@ -185,7 +195,7 @@ for source, target, value in connections:
 
     # Combine vertices and draw polygon
     vertices = np.vstack([arc1, curve1, arc2, curve2[::-1]])
-    polygon = plt.Polygon(vertices, facecolor=colors[source], edgecolor="none", alpha=0.5, zorder=1)
+    polygon = plt.Polygon(vertices, facecolor=colors[source], edgecolor="none", alpha=0.55, zorder=1)
     ax.add_patch(polygon)
 
 # Configure axes
@@ -193,20 +203,24 @@ ax.set_xlim(-1.7, 1.7)
 ax.set_ylim(-1.7, 1.7)
 ax.axis("off")
 
-# Title with larger font
-ax.set_title(
-    "circos-basic · seaborn · pyplots.ai\nGlobal Trade Flows Between Regions", fontsize=28, fontweight="bold", pad=25
+# Title with proper format: primary title line with subtitle below
+ax.set_title("circos-basic · seaborn · pyplots.ai", fontsize=28, fontweight="bold", pad=25)
+ax.text(
+    0.5,
+    1.02,
+    "Global Trade Flows Between Regions",
+    transform=ax.transAxes,
+    fontsize=20,
+    ha="center",
+    va="bottom",
+    style="italic",
 )
 
 # Add legend explaining the visualization
 legend_elements = [
-    mpatches.Patch(
-        facecolor=sns.color_palette("husl", 1)[0], alpha=0.85, label="Outer ring: Region (arc size ∝ total trade)"
-    ),
-    mpatches.Patch(
-        facecolor=sns.color_palette("husl", 1)[0], alpha=0.5, label="Inner track: Trade volume (bar height)"
-    ),
-    mpatches.Patch(facecolor=sns.color_palette("husl", 1)[0], alpha=0.5, label="Ribbons: Trade flow (width ∝ value)"),
+    mpatches.Patch(facecolor=colors[0], alpha=0.85, label="Outer ring: Region (arc size ∝ total trade)"),
+    mpatches.Patch(facecolor=colors[0], alpha=0.5, label="Inner track: Trade volume (bar height)"),
+    mpatches.Patch(facecolor=colors[0], alpha=0.55, label="Ribbons: Trade flow (width ∝ value)"),
 ]
 ax.legend(handles=legend_elements, loc="lower center", bbox_to_anchor=(0.5, -0.08), ncol=1, fontsize=16, frameon=False)
 

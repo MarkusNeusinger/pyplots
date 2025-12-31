@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 candlestick-volume: Stock Candlestick Chart with Volume
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 86/100 | Created: 2025-12-31
@@ -126,25 +126,14 @@ price_max = df["high"].max()
 price_padding = (price_max - price_min) * 0.05
 ax1.set_ylim(price_min - price_padding, price_max + price_padding)
 
-# === Lower pane: Volume bars using seaborn barplot ===
-# Use seaborn barplot with hue for consistent coloring - single bar per day
-sns.barplot(
-    data=df,
-    x="day_idx",
-    y="volume",
-    hue="direction",
-    hue_order=["Bullish", "Bearish"],
-    palette={"Bullish": BULLISH_COLOR, "Bearish": BEARISH_COLOR},
-    dodge=False,
-    width=0.7,
-    alpha=0.9,
-    legend=False,
-    ax=ax2,
-    zorder=2,
-)
+# === Lower pane: Volume bars ===
+# Draw volume bars directly with matplotlib to ensure single bar per day
+# Colors match the candlestick bullish/bearish scheme
+bar_colors = [BULLISH_COLOR if b else BEARISH_COLOR for b in df["bullish"]]
+ax2.bar(df["day_idx"], df["volume"], color=bar_colors, width=0.7, alpha=0.9, zorder=2)
 
-# Style the volume axis
-ax2.set_ylabel("Volume", fontsize=20)
+# Style the volume axis with units
+ax2.set_ylabel("Volume (M shares)", fontsize=20)
 ax2.set_xlabel("Date", fontsize=20)
 ax2.tick_params(axis="both", labelsize=16)
 
@@ -172,39 +161,59 @@ ax1.legend(handles=legend_elements, loc="upper left", fontsize=14, framealpha=0.
 
 # === Add crosshair cursor spanning both panes ===
 # Draw static crosshair lines at a representative position to show the feature
-# Using the middle of the chart as reference point
-mid_idx = len(df) // 2
-mid_price = (df.iloc[mid_idx]["high"] + df.iloc[mid_idx]["low"]) / 2
-mid_volume = df.iloc[mid_idx]["volume"]
+# Using a position at approximately 2/3 of the chart for good visibility
+crosshair_idx = int(len(df) * 0.65)
+crosshair_price = (df.iloc[crosshair_idx]["high"] + df.iloc[crosshair_idx]["low"]) / 2
+crosshair_volume = df.iloc[crosshair_idx]["volume"]
 
-# Vertical crosshair line spanning both panes
+# Vertical crosshair line spanning both panes - more prominent styling
+crosshair_color = "#E63946"  # Red for high visibility
 for ax in [ax1, ax2]:
-    ax.axvline(x=mid_idx, color="#666666", linestyle=":", linewidth=1.5, alpha=0.7, zorder=5)
+    ax.axvline(x=crosshair_idx, color=crosshair_color, linestyle="--", linewidth=2, alpha=0.8, zorder=5)
 
 # Horizontal crosshair lines in both panes for precise reading
-ax1.axhline(y=mid_price, color="#666666", linestyle=":", linewidth=1.5, alpha=0.7, zorder=5)
-ax2.axhline(y=mid_volume, color="#666666", linestyle=":", linewidth=1.5, alpha=0.7, zorder=5)
+ax1.axhline(y=crosshair_price, color=crosshair_color, linestyle="--", linewidth=2, alpha=0.8, zorder=5)
+ax2.axhline(y=crosshair_volume, color=crosshair_color, linestyle="--", linewidth=2, alpha=0.8, zorder=5)
 
-# Add crosshair label annotation for price pane
+# Add crosshair label annotation for price pane with arrow
 ax1.annotate(
-    f"${mid_price:.2f}",
-    xy=(mid_idx, mid_price),
-    xytext=(mid_idx + 3, mid_price),
-    fontsize=12,
-    color="#444444",
+    f"${crosshair_price:.2f}",
+    xy=(crosshair_idx, crosshair_price),
+    xytext=(crosshair_idx + 5, crosshair_price + (price_max - price_min) * 0.08),
+    fontsize=14,
+    fontweight="bold",
+    color=crosshair_color,
     va="center",
-    bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "#cccccc", "alpha": 0.9},
+    arrowprops={"arrowstyle": "->", "color": crosshair_color, "lw": 1.5},
+    bbox={"boxstyle": "round,pad=0.4", "facecolor": "white", "edgecolor": crosshair_color, "alpha": 0.95},
 )
 
-# Add crosshair label annotation for volume pane
+# Add crosshair label annotation for volume pane with arrow
 ax2.annotate(
-    f"{mid_volume / 1e6:.1f}M",
-    xy=(mid_idx, mid_volume),
-    xytext=(mid_idx + 3, mid_volume),
-    fontsize=12,
-    color="#444444",
+    f"{crosshair_volume / 1e6:.1f}M shares",
+    xy=(crosshair_idx, crosshair_volume),
+    xytext=(crosshair_idx + 5, crosshair_volume * 1.15),
+    fontsize=14,
+    fontweight="bold",
+    color=crosshair_color,
     va="center",
-    bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "#cccccc", "alpha": 0.9},
+    arrowprops={"arrowstyle": "->", "color": crosshair_color, "lw": 1.5},
+    bbox={"boxstyle": "round,pad=0.4", "facecolor": "white", "edgecolor": crosshair_color, "alpha": 0.95},
+)
+
+# Add date label at crosshair position
+crosshair_date = df.iloc[crosshair_idx]["date"].strftime("%b %d, %Y")
+ax2.annotate(
+    crosshair_date,
+    xy=(crosshair_idx, 0),
+    xytext=(crosshair_idx, -ax2.get_ylim()[1] * 0.15),
+    fontsize=12,
+    fontweight="bold",
+    color=crosshair_color,
+    ha="center",
+    va="top",
+    bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": crosshair_color, "alpha": 0.95},
+    annotation_clip=False,
 )
 
 # Adjust layout and save

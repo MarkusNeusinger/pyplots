@@ -1,0 +1,26 @@
+library: letsplot
+specification_id: timeseries-decomposition
+created: '2025-12-31T10:57:55Z'
+updated: '2025-12-31T11:08:49Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20617485300
+issue: 2992
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/letsplot/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of gggrid() to create vertically stacked decomposition panels
+  - Clean, colorblind-safe color palette with distinct colors for each component
+  - Proper use of statsmodels seasonal_decompose for actual decomposition
+  - Good realistic temperature scenario with clear seasonal patterns
+  - Correct title format following pyplots.ai conventions
+  - Properly handles NaN values from decomposition by using dropna()
+  weaknesses:
+  - Grid lines are too subtle and barely visible - could increase alpha for better
+    readability
+  - File handling requires moving files from lets-plot-images subdirectory (workaround
+    needed)

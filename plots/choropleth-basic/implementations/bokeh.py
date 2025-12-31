@@ -1,11 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 choropleth-basic: Choropleth Map with Regional Coloring
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
 """
 
+import math
+
 from bokeh.io import export_png
-from bokeh.models import ColorBar, ColumnDataSource, LabelSet, LinearColorMapper
+from bokeh.models import ColorBar, ColumnDataSource, LabelSet, LogColorMapper
 from bokeh.palettes import Blues9
 from bokeh.plotting import figure
 
@@ -131,11 +133,11 @@ abbrevs = []
 abbrev_x = []
 abbrev_y = []
 
-# Color mapping
-min_val = min(density_values.values())
+# Color mapping - use log scale to better differentiate low-density states
+min_val = max(1, min(density_values.values()))  # Log scale needs min > 0
 max_val = max(density_values.values())
 palette = list(reversed(Blues9))
-color_mapper = LinearColorMapper(palette=palette, low=min_val, high=max_val, nan_color="#d0d0d0")
+color_mapper = LogColorMapper(palette=palette, low=min_val, high=max_val, nan_color="#d0d0d0")
 
 # Process each region - rect is centered, so adjust coords to center of tile
 for abbrev, (col, row) in regions.items():
@@ -151,8 +153,11 @@ for abbrev, (col, row) in regions.items():
 
     if abbrev in density_values:
         density = density_values[abbrev]
-        # Map to color index
-        norm = (density - min_val) / (max_val - min_val)
+        # Map to color index using log scale for better low-value differentiation
+        log_min = math.log10(min_val)
+        log_max = math.log10(max_val)
+        log_val = math.log10(max(density, 1))  # Ensure positive for log
+        norm = (log_val - log_min) / (log_max - log_min)
         idx = min(int(norm * (len(palette) - 1)), len(palette) - 1)
         colors.append(palette[idx])
     else:
@@ -162,14 +167,17 @@ for abbrev, (col, row) in regions.items():
 # Create data sources
 rect_source = ColumnDataSource(data={"x": xs, "y": ys, "width": widths, "height": heights, "fill_color": colors})
 
-# Determine text colors based on background
+# Determine text colors based on background (using log scale)
 text_colors = []
+log_min = math.log10(min_val)
+log_max = math.log10(max_val)
 for abbrev in abbrevs:
     if abbrev not in density_values:
         text_colors.append("#333333")
     else:
         density = density_values[abbrev]
-        norm = (density - min_val) / (max_val - min_val)
+        log_val = math.log10(max(density, 1))
+        norm = (log_val - log_min) / (log_max - log_min)
         text_colors.append("white" if norm > 0.5 else "#306998")
 
 label_source = ColumnDataSource(data={"x": abbrev_x, "y": abbrev_y, "text": abbrevs, "text_color": text_colors})
@@ -178,7 +186,7 @@ label_source = ColumnDataSource(data={"x": abbrev_x, "y": abbrev_y, "text": abbr
 p = figure(
     width=4800,
     height=2700,
-    title="US Population Density · choropleth-basic · bokeh · pyplots.ai",
+    title="choropleth-basic · bokeh · pyplots.ai",
     x_axis_location=None,
     y_axis_location=None,
     tools="",
@@ -224,17 +232,18 @@ p.add_layout(labels)
 p.title.text_font_size = "32pt"
 p.title.align = "center"
 
-# Color bar for legend
+# Color bar for legend - made larger for prominence
 color_bar = ColorBar(
     color_mapper=color_mapper,
-    width=40,
-    height=800,
+    width=60,
+    height=1200,
     location=(0, 0),
     title="Population Density (per sq mile)",
-    title_text_font_size="20pt",
-    major_label_text_font_size="16pt",
-    title_standoff=15,
-    padding=20,
+    title_text_font_size="24pt",
+    major_label_text_font_size="20pt",
+    title_standoff=20,
+    padding=30,
+    margin=40,
 )
 p.add_layout(color_bar, "right")
 

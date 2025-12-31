@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 slider-control-basic: Interactive Plot with Slider Control
-Library: pygal | Python 3.13
-Quality: pending | Created: 2025-12-31
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 45/100 | Created: 2025-12-31
 """
 
 import numpy as np

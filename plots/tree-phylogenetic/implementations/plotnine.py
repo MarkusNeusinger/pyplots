@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 tree-phylogenetic: Phylogenetic Tree Diagram
 Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-31
+Quality: 90/100 | Created: 2025-12-31
 """
 
 import numpy as np

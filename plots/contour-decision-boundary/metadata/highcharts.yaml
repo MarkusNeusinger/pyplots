@@ -1,0 +1,29 @@
+library: highcharts
+specification_id: contour-decision-boundary
+created: '2025-12-31T05:51:30Z'
+updated: '2025-12-31T15:12:41Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612962959
+issue: 2921
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/highcharts/plot.html
+quality_score: 90
+review:
+  strengths:
+  - Excellent decision boundary visualization with clear separation between blue and
+    yellow regions
+  - Good use of different marker shapes (circles for Class 0, diamonds for Class 1)
+    to distinguish classes
+  - Proper colorblind-safe palette using blue (#306998) and yellow (#FFD43B)
+  - 'Title follows correct format: contour-decision-boundary · highcharts · pyplots.ai'
+  - Clean heatmap implementation showing probability gradients through the decision
+    space
+  weaknesses:
+  - X-axis label (Feature X1) is missing - only Y-axis label (Feature X2) is visible
+  - Color axis legend on right side shows truncated values (1.0 and 0.0 partially
+    visible)
+  - Legend box with Training Data title and class names is not visible in the rendered
+    image

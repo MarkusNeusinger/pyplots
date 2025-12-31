@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 andrews-curves: Andrews Curves for Multivariate Data
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-30
@@ -10,6 +10,9 @@ import pandas as pd
 from sklearn.datasets import load_iris
 from sklearn.preprocessing import StandardScaler
 
+
+# Set random seed for reproducibility
+np.random.seed(42)
 
 # Load and prepare data
 iris = load_iris()
@@ -61,14 +64,19 @@ chart = (
             "species:N",
             title="Species",
             scale=alt.Scale(domain=["Setosa", "Versicolor", "Virginica"], range=species_colors),
-            legend=alt.Legend(titleFontSize=20, labelFontSize=18),
+            legend=alt.Legend(titleFontSize=22, labelFontSize=20),
         ),
         detail="observation:N",
     )
     .properties(
         width=1600,
         height=900,
-        title=alt.Title("Iris Classification · andrews-curves · altair · pyplots.ai", fontSize=28),
+        title=alt.Title(
+            "Iris Classification · andrews-curves · altair · pyplots.ai",
+            fontSize=28,
+            subtitle="Fourier series transformation of multivariate data for visual pattern comparison",
+            subtitleFontSize=18,
+        ),
     )
     .configure_axis(labelFontSize=18, titleFontSize=22)
     .configure_view(strokeWidth=0)

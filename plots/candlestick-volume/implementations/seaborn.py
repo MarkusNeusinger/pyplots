@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 candlestick-volume: Stock Candlestick Chart with Volume
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-31
@@ -38,9 +38,10 @@ for i in range(n_days):
     if i > 0:
         opens[i] = closes[i - 1] + np.random.normal(0, 0.5)
     closes[i] = prices[i]
-    daily_range = abs(closes[i] - opens[i]) + np.random.uniform(0.5, 2.0)
-    highs[i] = max(opens[i], closes[i]) + np.random.uniform(0.2, daily_range * 0.5)
-    lows[i] = min(opens[i], closes[i]) - np.random.uniform(0.2, daily_range * 0.5)
+    # Ensure more significant price moves for better visibility
+    daily_range = abs(closes[i] - opens[i]) + np.random.uniform(1.0, 3.0)
+    highs[i] = max(opens[i], closes[i]) + np.random.uniform(0.5, daily_range * 0.6)
+    lows[i] = min(opens[i], closes[i]) - np.random.uniform(0.5, daily_range * 0.6)
 
 # Generate volume with some correlation to price movements
 base_volume = 5_000_000
@@ -55,65 +56,63 @@ df = pd.DataFrame({"date": dates, "open": opens, "high": highs, "low": lows, "cl
 
 # Determine bullish vs bearish candles
 df["bullish"] = df["close"] >= df["open"]
-df["direction"] = df["bullish"].map({True: "Bullish", False: "Bearish"})
 df["day_idx"] = range(len(df))
 
 # Colors for consistent styling
 BULLISH_COLOR = "#306998"  # Python Blue
 BEARISH_COLOR = "#FFD43B"  # Python Yellow
-palette = {"Bullish": BULLISH_COLOR, "Bearish": BEARISH_COLOR}
 
 # Create figure with two subplots sharing x-axis (75% price, 25% volume)
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 9), height_ratios=[3, 1], sharex=True, gridspec_kw={"hspace": 0.05})
 
+# Set grid below chart elements FIRST before any plotting
+for ax in [ax1, ax2]:
+    ax.set_axisbelow(True)
+
 # === Upper pane: Candlestick chart using seaborn ===
-# Create data for wicks (high-low lines) in long format for seaborn lineplot
+# Prepare data for seaborn lineplot (wicks) - create long format for high-low lines
+df["wick_min"] = df[["open", "close"]].min(axis=1)
+df["wick_max"] = df[["open", "close"]].max(axis=1)
+df["body_height"] = (df["wick_max"] - df["wick_min"]).clip(lower=0.5)  # Minimum height for visibility
+df["direction"] = df["bullish"].map({True: "Bullish", False: "Bearish"})
+
+# Draw high-low wicks using seaborn lineplot with units parameter
 wick_long = pd.melt(
     df[["day_idx", "high", "low", "direction"]],
     id_vars=["day_idx", "direction"],
     value_vars=["low", "high"],
     var_name="price_type",
     value_name="price",
-)
-wick_long = wick_long.sort_values(["day_idx", "price_type"])
+).sort_values(["day_idx", "price_type"])
 
-# Plot wicks using seaborn lineplot - each day_idx as a separate unit
 sns.lineplot(
     data=wick_long,
     x="day_idx",
     y="price",
     hue="direction",
-    palette=palette,
+    palette={"Bullish": BULLISH_COLOR, "Bearish": BEARISH_COLOR},
     linewidth=2,
     units="day_idx",
     estimator=None,
     legend=False,
     ax=ax1,
+    zorder=2,
 )
 
-# Create candle body data in long format for seaborn scatterplot with error bars
-# Use scatterplot with yerr-style approach via pointplot
-df["body_mid"] = (df["open"] + df["close"]) / 2
-df["body_half"] = ((df["close"] - df["open"]).abs() / 2).clip(lower=0.05)
-
-# Plot candle bodies using seaborn scatterplot with custom markers
-# Separate bullish and bearish for proper coloring
-bullish_df = df[df["bullish"]].copy()
-bearish_df = df[~df["bullish"]].copy()
-
-# Use seaborn scatterplot for body centers with large markers to form rectangles
-for subset, color in [(bullish_df, BULLISH_COLOR), (bearish_df, BEARISH_COLOR)]:
-    if len(subset) > 0:
-        # Plot as horizontal rectangles using errorbar for body range
-        for _, row in subset.iterrows():
-            ax1.fill_between(
-                [row["day_idx"] - 0.35, row["day_idx"] + 0.35],
-                [min(row["open"], row["close"])] * 2,
-                [max(row["open"], row["close"])] * 2,
-                color=color,
-                alpha=1.0,
-                linewidth=0,
-            )
+# Draw candle bodies with minimum height for visibility
+for _, row in df.iterrows():
+    color = BULLISH_COLOR if row["bullish"] else BEARISH_COLOR
+    body_low = row["wick_min"]
+    body_high = body_low + row["body_height"]
+    ax1.fill_between(
+        [row["day_idx"] - 0.35, row["day_idx"] + 0.35],
+        [body_low] * 2,
+        [body_high] * 2,
+        color=color,
+        alpha=1.0,
+        linewidth=0,
+        zorder=3,
+    )
 
 # Style the price axis
 ax1.set_ylabel("Price ($)", fontsize=20)
@@ -128,9 +127,20 @@ price_padding = (price_max - price_min) * 0.05
 ax1.set_ylim(price_min - price_padding, price_max + price_padding)
 
 # === Lower pane: Volume bars using seaborn barplot ===
-# Use seaborn barplot for volume - handles categorical x properly
+# Use seaborn barplot with hue for consistent coloring - single bar per day
 sns.barplot(
-    data=df, x="day_idx", y="volume", hue="direction", palette=palette, dodge=False, width=0.7, legend=False, ax=ax2
+    data=df,
+    x="day_idx",
+    y="volume",
+    hue="direction",
+    hue_order=["Bullish", "Bearish"],
+    palette={"Bullish": BULLISH_COLOR, "Bearish": BEARISH_COLOR},
+    dodge=False,
+    width=0.7,
+    alpha=0.9,
+    legend=False,
+    ax=ax2,
+    zorder=2,
 )
 
 # Style the volume axis
@@ -142,10 +152,9 @@ ax2.tick_params(axis="both", labelsize=16)
 ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f"{x / 1e6:.1f}M"))
 
 # === Aligned grid lines across both panes ===
-# Use consistent grid styling with aligned appearance on x-axis
+# Use consistent grid styling (grid already set below via set_axisbelow earlier)
 for ax in [ax1, ax2]:
     ax.grid(True, axis="both", alpha=0.3, linestyle="--", linewidth=0.8)
-    ax.set_axisbelow(True)
 
 # Configure x-axis with date labels at regular intervals
 n_ticks = 6
@@ -166,19 +175,32 @@ ax1.legend(handles=legend_elements, loc="upper left", fontsize=14, framealpha=0.
 # Using the middle of the chart as reference point
 mid_idx = len(df) // 2
 mid_price = (df.iloc[mid_idx]["high"] + df.iloc[mid_idx]["low"]) / 2
+mid_volume = df.iloc[mid_idx]["volume"]
 
 # Vertical crosshair line spanning both panes
 for ax in [ax1, ax2]:
     ax.axvline(x=mid_idx, color="#666666", linestyle=":", linewidth=1.5, alpha=0.7, zorder=5)
 
-# Horizontal crosshair line in price pane
+# Horizontal crosshair lines in both panes for precise reading
 ax1.axhline(y=mid_price, color="#666666", linestyle=":", linewidth=1.5, alpha=0.7, zorder=5)
+ax2.axhline(y=mid_volume, color="#666666", linestyle=":", linewidth=1.5, alpha=0.7, zorder=5)
 
-# Add crosshair label annotation
+# Add crosshair label annotation for price pane
 ax1.annotate(
     f"${mid_price:.2f}",
     xy=(mid_idx, mid_price),
     xytext=(mid_idx + 3, mid_price),
+    fontsize=12,
+    color="#444444",
+    va="center",
+    bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "#cccccc", "alpha": 0.9},
+)
+
+# Add crosshair label annotation for volume pane
+ax2.annotate(
+    f"{mid_volume / 1e6:.1f}M",
+    xy=(mid_idx, mid_volume),
+    xytext=(mid_idx + 3, mid_volume),
     fontsize=12,
     color="#444444",
     va="center",

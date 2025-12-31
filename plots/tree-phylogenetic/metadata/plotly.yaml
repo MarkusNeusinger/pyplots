@@ -1,0 +1,25 @@
+library: plotly
+specification_id: tree-phylogenetic
+created: '2025-12-31T13:53:32Z'
+updated: '2025-12-31T14:01:02Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20620332029
+issue: 3070
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Plotly annotation system with arrows to label taxonomic clades
+  - Scientifically accurate primate phylogeny with correct topology and plausible
+    branch lengths
+  - Clean rectangular phylogram layout with proportional branch lengths
+  - Scale bar with proper units enhances scientific communication
+  - Interactive hover tooltips showing species name and evolutionary distance
+  - Appropriate colorblind-safe color scheme (Python blue/yellow)
+  weaknesses:
+  - Grid lines extend into the tree area which could be cleaner
+  - No legend present, though this is standard for phylogenetic trees

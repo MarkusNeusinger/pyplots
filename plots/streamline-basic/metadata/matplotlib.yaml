@@ -1,0 +1,26 @@
+library: matplotlib
+specification_id: streamline-basic
+created: '2025-12-31T00:07:17Z'
+updated: '2025-12-31T00:11:24Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608630642
+issue: 2861
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/streamline-basic/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/streamline-basic/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 93
+review:
+  strengths:
+  - Excellent use of matplotlib's streamplot with color-mapped velocity magnitude
+  - Clean, readable code following KISS principles
+  - Viridis colormap ensures colorblind accessibility
+  - Proper title format and well-sized text elements
+  - Vortex flow pattern clearly demonstrates streamline concept
+  - Good use of equal aspect ratio for proper visualization of circular flow
+  weaknesses:
+  - Axis labels lack units (could be "X Position (m)" or similar)
+  - Grid linestyle dashed is slightly more visible than needed
+  - Could use linewidth varying with speed for additional visual encoding
+  - Flow field could be more complex (e.g., dipole) to show more features

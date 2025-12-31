@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 timeseries-decomposition: Time Series Decomposition Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 86/100 | Created: 2025-12-31
@@ -42,19 +42,23 @@ x_labels = [d.strftime("%Y-%m") if i % 6 == 0 else "" for i, d in enumerate(date
 components = [
     ("Original Series (CO2 ppm)", observed, "#306998", (405, 437), "CO₂ (ppm)"),
     ("Trend Component", trend_component, "#FFD43B", (405, 435), "Trend (ppm)"),
-    ("Seasonal Component", seasonal_component, "#44AA44", (-5, 5), "Deviation (ppm)"),
+    ("Seasonal Component", seasonal_component, "#44AA44", (-5, 5), "Seasonal (ppm)"),
     ("Residual Component", residual_component, "#E74C3C", (-3, 3), "Residual (ppm)"),
 ]
 
 # Target: 4800 x 2700 px total (4 vertically stacked charts)
-title_height = 120
-chart_width = 4800
-chart_height = (2700 - title_height) // 4  # Each chart gets equal height
+# Reserve left margin for y-axis labels drawn manually
+title_height = 140
+y_label_width = 180
+chart_width = 4800 - y_label_width
+chart_height = (2700 - title_height) // 4
 
 charts = []
+y_labels_list = []
 for idx, (label, data, color, y_range, y_label) in enumerate(components):
     # Replace NaN with None for pygal
     clean_data = [None if np.isnan(v) else float(v) for v in data]
+    y_labels_list.append(y_label)
 
     # Create custom style with component color and larger fonts for 4800x2700
     component_style = Style(
@@ -65,12 +69,12 @@ for idx, (label, data, color, y_range, y_label) in enumerate(components):
         foreground_subtle="#666666",
         colors=(color,),
         font_family="sans-serif",
-        title_font_size=42,
-        label_font_size=32,
-        major_label_font_size=28,
-        legend_font_size=28,
-        value_font_size=22,
-        stroke_width=4,
+        title_font_size=52,
+        label_font_size=40,
+        major_label_font_size=36,
+        legend_font_size=36,
+        value_font_size=28,
+        stroke_width=5,
     )
 
     chart = pygal.Line(
@@ -78,16 +82,16 @@ for idx, (label, data, color, y_range, y_label) in enumerate(components):
         height=chart_height,
         style=component_style,
         title=label,
-        x_title="Date" if idx == 3 else "",  # Only bottom chart has x-axis title
-        y_title=y_label,
+        x_title="Date" if idx == 3 else "",
         show_legend=False,
         show_y_guides=True,
         show_x_guides=True,
         show_dots=False,
-        stroke_style={"width": 4},
+        stroke_style={"width": 5},
         range=y_range,
         truncate_label=-1,
         x_label_rotation=35 if idx == 3 else 0,
+        margin_left=20,
     )
 
     # Only show x-labels on the bottom chart
@@ -113,24 +117,43 @@ total_height = 2700
 
 combined = Image.new("RGB", (total_width, total_height), "white")
 
-# Add main title
-draw = ImageDraw.Draw(combined)
-
+# Load fonts
 try:
-    title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 72)
+    title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 80)
+    y_label_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 42)
 except OSError:
     title_font = ImageFont.load_default()
+    y_label_font = ImageFont.load_default()
 
+# Add main title
+draw = ImageDraw.Draw(combined)
 title_text = "timeseries-decomposition · pygal · pyplots.ai"
 bbox = draw.textbbox((0, 0), title_text, font=title_font)
 title_width = bbox[2] - bbox[0]
 title_x = (total_width - title_width) // 2
-draw.text((title_x, 35), title_text, fill="#333333", font=title_font)
+draw.text((title_x, 40), title_text, fill="#333333", font=title_font)
 
-# Paste charts vertically
+# Paste charts vertically with space for y-axis labels
 for idx, img in enumerate(images):
     y_position = title_height + idx * chart_height
-    combined.paste(img, (0, y_position))
+    combined.paste(img, (y_label_width, y_position))
+
+    # Draw rotated y-axis label on the left side
+    y_label_text = y_labels_list[idx]
+    label_img = Image.new("RGBA", (400, 100), (255, 255, 255, 0))
+    label_draw = ImageDraw.Draw(label_img)
+    label_draw.text((0, 0), y_label_text, fill="#333333", font=y_label_font)
+
+    # Crop to text bounds and rotate
+    label_bbox = label_img.getbbox()
+    if label_bbox:
+        label_img = label_img.crop(label_bbox)
+    label_img = label_img.rotate(90, expand=True)
+
+    # Center the rotated label vertically in the chart area
+    label_x = (y_label_width - label_img.width) // 2
+    label_y = y_position + (chart_height - label_img.height) // 2
+    combined.paste(label_img, (label_x, label_y), label_img)
 
 # Save final image
 combined.save("plot.png", dpi=(300, 300))

@@ -1,0 +1,28 @@
+library: altair
+specification_id: line-loss-training
+created: '2025-12-31T00:11:50Z'
+updated: '2025-12-31T00:16:02Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608675031
+issue: 2860
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-loss-training/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-loss-training/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-loss-training/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of overfitting visualization with validation loss diverging
+    from training loss after epoch 25
+  - Clean use of Altair's layered composition with separate chart objects for lines,
+    points, and annotations
+  - Red diamond marker with annotation clearly indicates the optimal stopping point
+    at minimum validation loss
+  - Colorblind-safe color scheme with strong contrast between blue training and yellow
+    validation curves
+  - Proper title format and axis labeling including loss function type as specified
+  weaknesses:
+  - Legend title "Curve Type" is generic; could be more descriptive
+  - Points on every epoch (50 points per curve) add visual noise; could use opacity
+    or fewer markers

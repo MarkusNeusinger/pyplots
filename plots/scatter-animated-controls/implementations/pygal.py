@@ -1,13 +1,16 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-animated-controls: Animated Scatter Plot with Play Controls
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
 """
 
+import io
 import json
 
+import cairosvg
 import numpy as np
 import pygal
+from PIL import Image, ImageDraw, ImageFont
 from pygal.style import Style
 
 
@@ -52,8 +55,11 @@ regions = [
     "Region 2",
 ]
 
-# Generate data for each year
+# Generate data for each year with population-based marker sizes
 data_by_year = {}
+# Scale population to reasonable dot sizes (min 8, max 40)
+pop_min, pop_max = population.min(), population.max()
+
 for year_idx, year in enumerate(years):
     data_by_year[year] = {"Region 1": [], "Region 2": [], "Region 3": []}
     for i, country in enumerate(countries):
@@ -64,10 +70,15 @@ for year_idx, year in enumerate(years):
         life_exp = min(85, base_life[i] + life_improvement)
         pop = population[i] * (1 + year_idx * 0.02)
 
+        # Calculate dot size based on population (scaled 8-40)
+        pop_normalized = (population[i] - pop_min) / (pop_max - pop_min)
+        dot_size = 8 + pop_normalized * 32
+
         region = regions[i]
         data_by_year[year][region].append(
             {
                 "value": (round(gdp, 1), round(life_exp, 1)),
+                "node": {"r": dot_size},  # pygal node radius for size encoding
                 "label": f"{country}: GDP ${round(gdp, 1)}k, Life {round(life_exp, 1)}y, Pop {round(pop, 0)}M",
             }
         )
@@ -329,10 +340,27 @@ with open("plot.html", "w", encoding="utf-8") as f:
     f.write(final_html)
 
 # Create PNG showing year 2021 (most recent) as the static preview
+# Custom style with year watermark for PNG
+png_style = Style(
+    background="white",
+    plot_background="white",
+    foreground="#333333",
+    foreground_strong="#333333",
+    foreground_subtle="#666666",
+    colors=("#306998", "#FFD43B", "#6B8E23"),
+    title_font_size=72,
+    label_font_size=48,
+    major_label_font_size=42,
+    legend_font_size=48,
+    value_font_size=36,
+    tooltip_font_size=36,
+    stroke_width=2,
+)
+
 png_chart = pygal.XY(
     width=4800,
     height=2700,
-    style=custom_style,
+    style=png_style,
     title="scatter-animated-controls · pygal · pyplots.ai",
     x_title="GDP per Capita (thousands USD)",
     y_title="Life Expectancy (years)",
@@ -356,5 +384,35 @@ for region in ["Region 1", "Region 2", "Region 3"]:
     points = data_by_year[2021][region]
     png_chart.add(region, points)
 
-# Save PNG
-png_chart.render_to_png("plot.png")
+# Render PNG and add year watermark
+# Get SVG and convert to PNG
+svg_data = png_chart.render()
+png_bytes = cairosvg.svg2png(bytestring=svg_data, output_width=4800, output_height=2700)
+
+# Open as PIL image and add year watermark
+img = Image.open(io.BytesIO(png_bytes)).convert("RGBA")
+draw = ImageDraw.Draw(img)
+
+# Large year watermark in center-right of plot area
+year_text = "2021"
+# Use default font at large size (no external font file needed)
+try:
+    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 400)
+except OSError:
+    font = ImageFont.load_default()
+
+# Position: center-right area, semi-transparent
+text_bbox = draw.textbbox((0, 0), year_text, font=font)
+text_width = text_bbox[2] - text_bbox[0]
+text_height = text_bbox[3] - text_bbox[1]
+x_pos = 4800 - text_width - 300  # Right side with padding
+y_pos = (2700 - text_height) // 2 - 100  # Vertically centered, slightly up
+
+# Draw semi-transparent year watermark
+watermark = Image.new("RGBA", img.size, (255, 255, 255, 0))
+watermark_draw = ImageDraw.Draw(watermark)
+watermark_draw.text((x_pos, y_pos), year_text, font=font, fill=(48, 105, 152, 40))  # Light blue, very transparent
+img = Image.alpha_composite(img, watermark)
+
+# Save final PNG
+img.convert("RGB").save("plot.png")

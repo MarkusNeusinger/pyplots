@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 chernoff-basic: Chernoff Faces for Multivariate Data
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 81/100 | Created: 2025-12-31
@@ -17,20 +17,27 @@ data = iris_df[feature_cols].values
 species_map = {"setosa": 0, "versicolor": 1, "virginica": 2}
 target = iris_df["species"].map(species_map).values
 
-# Select subset of samples with MORE variation within species (5 per species = 15 total faces)
-# Choose samples that span the full range of variation within each species
+# Select subset of samples with maximum variation within each species (5 per species = 15 total)
 np.random.seed(42)
 indices = []
 for species in range(3):
     species_indices = np.where(target == species)[0]
     species_data = data[species_indices]
-    # Compute distance from mean to select diverse samples
+    # For each feature, find samples with min and max values to maximize visible variation
+    # Then add centroid sample
+    selected = set()
+    for feat_idx in range(4):
+        feat_values = species_data[:, feat_idx]
+        min_idx = species_indices[np.argmin(feat_values)]
+        max_idx = species_indices[np.argmax(feat_values)]
+        selected.add(min_idx)
+        selected.add(max_idx)
+    # Add sample closest to mean
     mean_vals = species_data.mean(axis=0)
     distances = np.sum((species_data - mean_vals) ** 2, axis=1)
-    # Select: 1 closest to mean, 2 with smallest values, 2 with largest values
-    sorted_by_dist = species_indices[np.argsort(distances)]
-    sorted_by_sum = species_indices[np.argsort(species_data.sum(axis=1))]
-    selected = list({sorted_by_dist[0], sorted_by_sum[0], sorted_by_sum[1], sorted_by_sum[-1], sorted_by_sum[-2]})
+    selected.add(species_indices[np.argmin(distances)])
+    # Convert to list and take first 5
+    selected = list(selected)[:5]
     while len(selected) < 5:
         for idx in species_indices:
             if idx not in selected:
@@ -43,10 +50,22 @@ subset_data = data[indices]
 subset_target = target[indices]
 species_names = ["Setosa", "Versicolor", "Virginica"]
 
-# Normalize data to 0-1 range using GLOBAL min/max for better within-species variation
+# Global normalization for heatmap (shows species differences)
 data_min = data.min(axis=0)
 data_max = data.max(axis=0)
-normalized_data = (subset_data - data_min) / (data_max - data_min + 1e-8)
+heatmap_normalized = (subset_data - data_min) / (data_max - data_min + 1e-8)
+
+# WITHIN-species normalization for faces (maximizes visible variation within each species)
+# This ensures each species shows its full range of variation in facial features
+normalized_data = np.zeros_like(subset_data)
+for species in range(3):
+    species_mask = subset_target == species
+    species_subset = subset_data[species_mask]
+    for feat_idx in range(4):
+        feat_min = species_subset[:, feat_idx].min()
+        feat_max = species_subset[:, feat_idx].max()
+        feat_range = feat_max - feat_min if feat_max > feat_min else 1.0
+        normalized_data[species_mask, feat_idx] = (species_subset[:, feat_idx] - feat_min) / feat_range
 
 # Set seaborn style
 sns.set_style("white")
@@ -62,11 +81,10 @@ fig = plt.figure(figsize=(16, 9))
 # Create grid layout: heatmap on left, faces on right
 gs = fig.add_gridspec(3, 7, width_ratios=[1.5, 1, 1, 1, 1, 1, 0.1], hspace=0.25, wspace=0.15)
 
-# Add heatmap showing feature values on left side using seaborn
+# Add heatmap showing feature values on left side using seaborn (global normalization)
 ax_heatmap = fig.add_subplot(gs[:, 0])
-heatmap_data = normalized_data  # Samples x Features (15 x 4)
 sns.heatmap(
-    heatmap_data,
+    heatmap_normalized,
     ax=ax_heatmap,
     cmap="YlOrRd",
     cbar=False,
@@ -91,16 +109,16 @@ for idx in range(15):
     features = normalized_data[idx]
     color = face_colors[idx]
 
-    # Map features to facial characteristics
-    # Feature 0: sepal_length -> face width (0.6 to 1.0)
-    # Feature 1: sepal_width -> face height (0.7 to 1.1)
-    # Feature 2: petal_length -> eye size (0.06 to 0.14)
-    # Feature 3: petal_width -> mouth curvature (-0.25 to 0.25)
+    # Map features to facial characteristics with WIDER ranges for visible variation
+    # Feature 0: sepal_length -> face width (0.45 to 1.0)
+    # Feature 1: sepal_width -> face height (0.55 to 1.1)
+    # Feature 2: petal_length -> eye size (0.04 to 0.16)
+    # Feature 3: petal_width -> mouth curvature (-0.35 to 0.35)
 
-    face_width = 0.55 + features[0] * 0.4
-    face_height = 0.65 + features[1] * 0.4
-    eye_size = 0.06 + features[2] * 0.08
-    mouth_curve = -0.25 + features[3] * 0.5
+    face_width = 0.45 + features[0] * 0.55
+    face_height = 0.55 + features[1] * 0.55
+    eye_size = 0.04 + features[2] * 0.12
+    mouth_curve = -0.35 + features[3] * 0.7
 
     # Draw face outline (ellipse)
     face = mpatches.Ellipse((0.5, 0.5), face_width, face_height, facecolor=color, edgecolor="black", linewidth=2.5)

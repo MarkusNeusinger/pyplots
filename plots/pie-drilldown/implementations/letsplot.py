@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-drilldown: Drilldown Pie Chart with Click Navigation
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-31
@@ -90,7 +90,10 @@ values = [hierarchy_data[child_id]["value"] for child_id in root_children]
 total = sum(values)
 percentages = [(v / total) * 100 for v in values]
 
-df = pd.DataFrame({"category": categories, "value": values, "pct": percentages})
+# Format value labels with dollar amounts (e.g., "$450K")
+value_labels = [f"${v // 1000}K" for v in values]
+
+df = pd.DataFrame({"category": categories, "value": values, "pct": percentages, "value_label": value_labels})
 
 # Preserve category order
 df["category"] = pd.Categorical(df["category"], categories=categories, ordered=True)
@@ -98,20 +101,21 @@ df["category"] = pd.Categorical(df["category"], categories=categories, ordered=T
 # Define colors in order
 slice_colors = [colors[cat] for cat in categories]
 
-# Create main pie chart for static PNG
+# Create main pie chart for static PNG with improved canvas utilization
 plot = (
     ggplot(df)  # noqa: F405
     + geom_pie(  # noqa: F405
         aes(slice="value", fill="category"),  # noqa: F405
         stat="identity",
-        size=40,  # Much larger pie to fill canvas
+        size=50,  # Larger pie to better fill canvas
         hole=0.35,  # Donut style
         stroke=2,  # White borders between slices
         color="white",  # Border color
         labels=layer_labels()  # noqa: F405
-        .line("@category\n@pct")
-        .format("pct", "{.1f}%")
-        .size(20),  # Larger labels
+        .line("@category")
+        .line("@value_label (@pct)")
+        .format("pct", ".1f%")
+        .size(22),  # Larger labels for readability
     )
     + scale_fill_manual(values=slice_colors)  # noqa: F405
     + labs(  # noqa: F405
@@ -126,7 +130,8 @@ plot = (
         plot_subtitle=element_text(size=18, hjust=0.5, color="#666666"),  # noqa: F405
         legend_title=element_text(size=20),  # noqa: F405
         legend_text=element_text(size=18),  # noqa: F405
-        legend_position="bottom",  # Legend at bottom to give more space to pie
+        legend_position="right",  # Legend on right to reduce vertical whitespace
+        plot_margin=[20, 20, 20, 20],  # Tighter margins
     )
 )
 
@@ -134,31 +139,22 @@ plot = (
 export_ggsave(plot, filename="plot.png", path=".", scale=3)
 
 
-# Generate interactive HTML with JavaScript drilldown
-def create_pie_data(level_id):
-    """Create DataFrame for a specific level."""
-    level_data = hierarchy_data[level_id]
-    if "children" not in level_data:
-        return None
-    children_ids = level_data["children"]
-    cats = [hierarchy_data[cid]["name"] for cid in children_ids]
-    vals = [hierarchy_data[cid]["value"] for cid in children_ids]
-    tot = sum(vals)
-    pcts = [(v / tot) * 100 for v in vals]
-    return {"categories": cats, "values": vals, "percentages": pcts, "total": tot}
-
-
-# Prepare data for all levels as JSON
+# Prepare data for all levels as JSON (inline, no function)
 levels_data = {}
 for level_id in ["root", "engineering", "marketing", "operations", "hr"]:
-    data = create_pie_data(level_id)
-    if data:
+    level_data = hierarchy_data[level_id]
+    if "children" in level_data:
+        children_ids = level_data["children"]
+        cats = [hierarchy_data[cid]["name"] for cid in children_ids]
+        vals = [hierarchy_data[cid]["value"] for cid in children_ids]
+        tot = sum(vals)
+        pcts = [(v / tot) * 100 for v in vals]
         levels_data[level_id] = {
             "name": hierarchy_data[level_id]["name"],
-            "categories": data["categories"],
-            "values": data["values"],
-            "percentages": data["percentages"],
-            "colors": [colors.get(cat, "#306998") for cat in data["categories"]],
+            "categories": cats,
+            "values": vals,
+            "percentages": pcts,
+            "colors": [colors.get(cat, "#306998") for cat in cats],
             "children": hierarchy_data[level_id].get("children", []),
             "parent": hierarchy_data[level_id].get("parent"),
         }

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 shap-summary: SHAP Summary Plot
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2025-12-31
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 87/100 | Created: 2025-12-31
 """
 
 import matplotlib.pyplot as plt

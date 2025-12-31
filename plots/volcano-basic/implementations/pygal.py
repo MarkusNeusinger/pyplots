@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 volcano-basic: Volcano Plot for Statistical Significance
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 75/100 | Created: 2025-12-31
@@ -40,18 +40,18 @@ up_regulated = (log2_fc > fc_threshold) & (neg_log10_pval > pval_threshold)
 down_regulated = (log2_fc < -fc_threshold) & (neg_log10_pval > pval_threshold)
 not_significant = ~(up_regulated | down_regulated)
 
-# Custom style for large canvas with larger legend
+# Colorblind-safe palette: gray, orange, blue, dark gray for threshold lines
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#888888", "#c0392b", "#2980b9", "#333333"),  # Gray, Red, Blue, Dark gray for threshold lines
+    colors=("#888888", "#E69F00", "#0072B2", "#555555", "#555555", "#555555"),  # Gray, Orange, Blue, Dark gray x3
     title_font_size=56,
     label_font_size=36,
     major_label_font_size=32,
-    legend_font_size=44,
+    legend_font_size=40,
     value_font_size=24,
     stroke_width=2,
     opacity=0.7,
@@ -59,13 +59,13 @@ custom_style = Style(
     font_family="DejaVu Sans",
 )
 
-# Calculate y-axis range - start from 0 (not negative) to use full canvas
-y_min = 0
-y_max = max(neg_log10_pval) + 0.5
+# Calculate axis ranges - tight fitting to data (y starts at 0)
+y_max = float(np.ceil(max(neg_log10_pval) + 0.3))
+x_min = float(np.floor(min(log2_fc) - 0.3))
+x_max = float(np.ceil(max(log2_fc) + 0.3))
 
-# Calculate x-axis range based on data
-x_min = min(log2_fc) - 0.5
-x_max = max(log2_fc) + 0.5
+# Generate y-axis labels from 0 to max (positive only)
+y_labels = [i * 0.5 for i in range(int(y_max / 0.5) + 2)]
 
 # Create XY chart (scatter plot)
 chart = pygal.XY(
@@ -77,18 +77,23 @@ chart = pygal.XY(
     y_title="-Log₁₀(p-value)",
     show_legend=True,
     legend_at_bottom=True,
-    legend_box_size=36,
+    legend_box_size=32,
     dots_size=10,
     stroke=False,
     show_x_guides=True,
     show_y_guides=True,
     x_label_rotation=0,
     range=(x_min, x_max),
-    yrange=(y_min, y_max),
-    y_labels_major_count=6,
-    x_labels_major_count=9,
+    include_x_axis=True,
+    explicit_size=True,
     truncate_legend=-1,
+    spacing=40,
+    margin=30,
+    margin_bottom=120,
 )
+
+# Set y-axis labels to start from 0 (all data is positive)
+chart.y_labels = y_labels
 
 # Prepare data points for each category with gene labels for tooltips
 not_sig_points = [
@@ -112,16 +117,17 @@ chart.add("Not Significant", not_sig_points)
 chart.add("Up-regulated", up_points)
 chart.add("Down-regulated", down_points)
 
-# Add threshold lines as separate series with prominent styling
+# Add threshold lines as line series (dashed lines for significance cutoffs)
 # Horizontal line at p-value threshold (y = 1.3)
-h_line = [{"value": (x_min, pval_threshold)}, {"value": (x_max, pval_threshold)}]
-chart.add("p=0.05 threshold", h_line, stroke=True, show_dots=False, stroke_style={"width": 5, "dasharray": "15, 8"})
+h_line_points = [(x_min, pval_threshold), (x_max, pval_threshold)]
+chart.add("p=0.05", h_line_points, stroke=True, show_dots=False, stroke_style={"width": 4, "dasharray": "12, 6"})
 
-# Vertical lines at fold change thresholds (x = ±1)
-v_line_pos = [{"value": (fc_threshold, y_min)}, {"value": (fc_threshold, y_max)}]
-v_line_neg = [{"value": (-fc_threshold, y_min)}, {"value": (-fc_threshold, y_max)}]
-chart.add("FC=±2 threshold", v_line_pos, stroke=True, show_dots=False, stroke_style={"width": 5, "dasharray": "15, 8"})
-chart.add(None, v_line_neg, stroke=True, show_dots=False, stroke_style={"width": 5, "dasharray": "15, 8"})
+# Vertical lines at fold change thresholds (x = ±1, representing 2-fold change)
+# Each vertical line as separate series to avoid diagonal connections
+v_line_neg = [(float(-fc_threshold), 0.0), (float(-fc_threshold), float(y_max))]
+v_line_pos = [(float(fc_threshold), 0.0), (float(fc_threshold), float(y_max))]
+chart.add("FC=-2", v_line_neg, stroke=True, show_dots=False, stroke_style={"width": 4, "dasharray": "12, 6"})
+chart.add("FC=+2", v_line_pos, stroke=True, show_dots=False, stroke_style={"width": 4, "dasharray": "12, 6"})
 
 # Save as PNG and HTML
 chart.render_to_png("plot.png")

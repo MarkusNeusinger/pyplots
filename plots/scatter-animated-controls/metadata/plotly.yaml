@@ -1,0 +1,30 @@
+library: plotly
+specification_id: scatter-animated-controls
+created: '2025-12-31T13:51:22Z'
+updated: '2025-12-31T13:54:25Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20620300949
+issue: 3067
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-animated-controls/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-animated-controls/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-animated-controls/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - 'Excellent Gapminder-style visualization with all key elements: play/pause controls,
+    timeline slider, year watermark'
+  - Clean code structure with realistic simulated country data showing growth over
+    20 years
+  - Proper use of Plotly animation features including smooth transitions (cubic-in-out
+    easing)
+  - Good accessibility with distinct colors and proper font sizing throughout
+  - Both PNG and HTML outputs generated for static and interactive viewing
+  weaknesses:
+  - Some bubble overlap in the lower-left cluster makes individual countries harder
+    to distinguish in year 2000
+  - Legend positioned inside the plot area could potentially overlap with data points
+    in some frames
+  - Year watermark annotation shows static 2000 and does not update with animation
+    frames

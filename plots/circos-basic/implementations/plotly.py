@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 circos-basic: Circos Plot
 Library: plotly 6.5.0 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -36,6 +36,18 @@ connections = np.array(
 
 # Colors for each segment
 colors = ["#306998", "#FFD43B", "#E34234", "#2ECC71", "#9B59B6", "#E67E22", "#1ABC9C", "#3498DB"]
+
+
+# Helper to blend two hex colors
+def blend_colors(c1, c2, ratio=0.5):
+    """Blend two hex colors. ratio=0 gives c1, ratio=1 gives c2."""
+    r1, g1, b1 = int(c1[1:3], 16), int(c1[3:5], 16), int(c1[5:7], 16)
+    r2, g2, b2 = int(c2[1:3], 16), int(c2[3:5], 16), int(c2[5:7], 16)
+    r = int(r1 * (1 - ratio) + r2 * ratio)
+    g = int(g1 * (1 - ratio) + g2 * ratio)
+    b = int(b1 * (1 - ratio) + b2 * ratio)
+    return f"#{r:02x}{g:02x}{b:02x}"
+
 
 # Calculate segment positions on the circle
 gap = 2  # Gap between segments in degrees
@@ -92,14 +104,29 @@ for i in range(n_segments):
 
     # Add label for segment
     mid_angle = np.radians((theta_start + theta_end) / 2)
-    label_r = outer_r + 0.08
+    label_r = outer_r + 0.12
     label_x = label_r * np.cos(mid_angle)
     label_y = label_r * np.sin(mid_angle)
 
-    # Rotate text based on position
+    # Rotate text based on position for better readability
     text_angle = (theta_start + theta_end) / 2
     if 90 < text_angle < 270:
         text_angle = text_angle - 180
+
+    # Adjust text anchor based on position for less cramping
+    mid_deg = (theta_start + theta_end) / 2
+    if 45 < mid_deg < 135:
+        xanchor = "center"
+        yanchor = "bottom"
+    elif 225 < mid_deg < 315:
+        xanchor = "center"
+        yanchor = "top"
+    elif mid_deg <= 45 or mid_deg >= 315:
+        xanchor = "left"
+        yanchor = "middle"
+    else:
+        xanchor = "right"
+        yanchor = "middle"
 
     fig.add_annotation(
         x=label_x,
@@ -108,6 +135,8 @@ for i in range(n_segments):
         showarrow=False,
         font=dict(size=16, color="#333333"),
         textangle=-text_angle,
+        xanchor=xanchor,
+        yanchor=yanchor,
     )
 
 # Draw ribbons (connections between segments)
@@ -173,17 +202,18 @@ for i in range(n_segments):
             x_ribbon = np.concatenate([x_src, curve1_x, x_tgt, curve2_x, [x_src[0]]])
             y_ribbon = np.concatenate([y_src, curve1_y, y_tgt, curve2_y, [y_src[0]]])
 
-            # Mix colors from both segments
+            # Blend colors from source and target segments for better visual connection
+            ribbon_color = blend_colors(colors[i], colors[j], 0.5)
             fig.add_trace(
                 go.Scatter(
                     x=x_ribbon,
                     y=y_ribbon,
                     fill="toself",
-                    fillcolor=colors[i],
+                    fillcolor=ribbon_color,
                     opacity=0.5,
                     line=dict(color="white", width=0.5),
                     hoverinfo="text",
-                    hovertext=f"{segments[i]} → {segments[j]}: {connections[i, j]}",
+                    hovertext=f"{segments[i]} ↔ {segments[j]}: {connections[i, j]}",
                     showlegend=False,
                 )
             )
@@ -227,12 +257,7 @@ for i in range(n_segments):
 
 # Update layout
 fig.update_layout(
-    title=dict(
-        text="Regional Trade Flows · circos-basic · plotly · pyplots.ai",
-        font=dict(size=28, color="#333333"),
-        x=0.5,
-        xanchor="center",
-    ),
+    title=dict(text="circos-basic · plotly · pyplots.ai", font=dict(size=28, color="#333333"), x=0.5, xanchor="center"),
     showlegend=True,
     legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5, font=dict(size=14)),
     xaxis=dict(showgrid=False, zeroline=False, showticklabels=False, range=[-1.5, 1.5], scaleanchor="y", scaleratio=1),

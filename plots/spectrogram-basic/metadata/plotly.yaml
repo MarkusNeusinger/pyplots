@@ -1,0 +1,27 @@
+library: plotly
+specification_id: spectrogram-basic
+created: '2025-12-31T05:35:16Z'
+updated: '2025-12-31T05:47:16Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612803590
+issue: 2927
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/plotly/plot.html
+quality_score: 93
+review:
+  strengths:
+  - Excellent visual clarity with the Viridis colormap showing the chirp signal frequency
+    sweep distinctly
+  - Proper use of dB scale for power representation as recommended in spec
+  - Clean well-structured code following KISS principles
+  - Interactive hovertemplate provides detailed time/frequency/power information on
+    mouseover
+  - Correct title format and axis labeling with appropriate units
+  weaknesses:
+  - Missing grid lines (though acceptable for heatmap, subtle grid could help with
+    time/frequency reading)
+  - Could utilize more Plotly-specific interactive features like range sliders or
+    animation controls

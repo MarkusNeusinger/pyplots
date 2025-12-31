@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 chernoff-basic: Chernoff Faces for Multivariate Data
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-31
@@ -40,24 +40,31 @@ data = pd.DataFrame(
 species_colors = {"setosa": "#306998", "versicolor": "#FFD43B", "virginica": "#4B8BBE"}
 data["color"] = data["species"].map(species_colors)
 
-# Grid positions for 12 faces (3 columns x 4 rows for larger faces)
-data["col"] = [i % 3 for i in range(12)]
-data["row"] = [i // 3 for i in range(12)]
-data["x_center"] = data["col"] * 250 + 180
-data["y_center"] = (3 - data["row"]) * 180 + 80
+# Create descriptive labels including species name
+data["label"] = [f"{obs} ({sp})" for obs, sp in zip(data["observation"], data["species"], strict=True)]
 
-# Calculate face feature dimensions based on variables
+# Grid positions for 12 faces (4 columns x 3 rows for better canvas utilization)
+data["col"] = [i % 4 for i in range(12)]
+data["row"] = [i // 4 for i in range(12)]
+data["x_center"] = data["col"] * 200 + 130
+data["y_center"] = (2 - data["row"]) * 240 + 160
+
+# Calculate face feature dimensions based on variables with more pronounced variation
 # face_width: sepal_length, face_height: sepal_width
 # eye_size: petal_length, mouth_width: petal_width
 # eyebrow_slant: derived from petal_length (maps to eyebrow angle)
-data["face_width"] = 50 + data["sepal_length"] * 45  # 50-95
-data["face_height"] = 60 + data["sepal_width"] * 45  # 60-105
-data["eye_size"] = 8 + data["petal_length"] * 18  # 8-26
-data["mouth_width"] = 18 + data["petal_width"] * 28  # 18-46
-data["eyebrow_slant"] = -12 + data["petal_length"] * 24  # -12 to 12 (angle offset)
+# Using wider ranges for more visible differentiation
+data["face_width"] = 40 + data["sepal_length"] * 70  # 40-110 (more variation)
+data["face_height"] = 50 + data["sepal_width"] * 80  # 50-130 (more variation)
+data["eye_size"] = 6 + data["petal_length"] * 22  # 6-28
+data["mouth_width"] = 15 + data["petal_width"] * 35  # 15-50
+data["eyebrow_slant"] = -15 + data["petal_length"] * 30  # -15 to 15 (more pronounced)
 
 # Build face components using layered shapes
+# Use ellipse marks for face shape to show width/height variation
 face_records = []
+ellipse_records = []
+
 for _, r in data.iterrows():
     xc, yc = r["x_center"], r["y_center"]
     fw, fh = r["face_width"], r["face_height"]
@@ -65,30 +72,16 @@ for _, r in data.iterrows():
     mw = r["mouth_width"]
     eb_slant = r["eyebrow_slant"]
 
-    # Face border (slightly larger, darker)
-    face_records.append(
+    # Face shape stored separately for ellipse rendering
+    ellipse_records.append(
         {
             "x": xc,
             "y": yc,
-            "size": fw * fh * 3.2,
-            "color": "#2C3E50",
-            "part": "border",
-            "observation": r["observation"],
-            "species": r["species"],
-            "opacity": 0.2,
-        }
-    )
-    # Face outline (large point)
-    face_records.append(
-        {
-            "x": xc,
-            "y": yc,
-            "size": fw * fh * 3.0,
+            "width": fw * 1.8,
+            "height": fh * 1.5,
             "color": r["color"],
-            "part": "face",
-            "observation": r["observation"],
+            "label": r["label"],
             "species": r["species"],
-            "opacity": 0.45,
         }
     )
     # Left eyebrow (line represented by two points)
@@ -226,62 +219,153 @@ for _, r in data.iterrows():
         )
 
 face_df = pd.DataFrame(face_records)
+ellipse_df = pd.DataFrame(ellipse_records)
 
-# Reorder so borders draw first, then faces, then features
-part_order = {"border": 0, "face": 1, "eyebrow": 2, "nose": 3, "mouth": 4, "eye": 5, "pupil": 6}
+# Reorder facial features drawing order
+part_order = {"eyebrow": 0, "nose": 1, "mouth": 2, "eye": 3, "pupil": 4}
 face_df["order"] = face_df["part"].map(part_order)
 face_df = face_df.sort_values("order")
 
-# Create labels for each face - positioned below faces
-label_df = data[["x_center", "y_center", "observation", "face_height"]].copy()
-label_df["y_label"] = label_df["y_center"] - label_df["face_height"] * 0.6 - 25
+# Create labels for each face - positioned below faces with descriptive text
+label_df = data[["x_center", "y_center", "label", "face_height"]].copy()
+label_df["y_label"] = label_df["y_center"] - label_df["face_height"] * 0.7 - 35
 
-# Face components chart
-faces = (
+# Build face shapes using multiple overlaid circles to create ellipse effect
+# This shows face width/height variation more visibly
+face_shape_records = []
+for _, r in ellipse_df.iterrows():
+    xc, yc = r["x"], r["y"]
+    w, h = r["width"], r["height"]
+    # Calculate size based on width*height for overall face area
+    base_size = w * h * 0.5
+
+    # Main face (larger oval effect through aspect ratio simulation)
+    face_shape_records.append(
+        {
+            "x": xc,
+            "y": yc,
+            "size": base_size,
+            "color": r["color"],
+            "label": r["label"],
+            "species": r["species"],
+            "part": "face",
+            "opacity": 0.45,
+        }
+    )
+    # Top extension for taller faces
+    if h > w * 0.8:
+        face_shape_records.append(
+            {
+                "x": xc,
+                "y": yc + (h - w) * 0.15,
+                "size": base_size * 0.6,
+                "color": r["color"],
+                "label": r["label"],
+                "species": r["species"],
+                "part": "face_ext",
+                "opacity": 0.4,
+            }
+        )
+        face_shape_records.append(
+            {
+                "x": xc,
+                "y": yc - (h - w) * 0.15,
+                "size": base_size * 0.6,
+                "color": r["color"],
+                "label": r["label"],
+                "species": r["species"],
+                "part": "face_ext",
+                "opacity": 0.4,
+            }
+        )
+    # Side extensions for wider faces
+    if w > h * 0.8:
+        face_shape_records.append(
+            {
+                "x": xc + (w - h) * 0.12,
+                "y": yc,
+                "size": base_size * 0.5,
+                "color": r["color"],
+                "label": r["label"],
+                "species": r["species"],
+                "part": "face_ext",
+                "opacity": 0.4,
+            }
+        )
+        face_shape_records.append(
+            {
+                "x": xc - (w - h) * 0.12,
+                "y": yc,
+                "size": base_size * 0.5,
+                "color": r["color"],
+                "label": r["label"],
+                "species": r["species"],
+                "part": "face_ext",
+                "opacity": 0.4,
+            }
+        )
+
+face_shape_df = pd.DataFrame(face_shape_records)
+
+# Face shapes chart
+face_shapes = (
+    alt.Chart(face_shape_df)
+    .mark_point(filled=True)
+    .encode(
+        x=alt.X("x:Q", axis=None, scale=alt.Scale(domain=[0, 900])),
+        y=alt.Y("y:Q", axis=None, scale=alt.Scale(domain=[0, 800])),
+        size=alt.Size("size:Q", legend=None, scale=alt.Scale(range=[500, 12000])),
+        color=alt.Color("color:N", legend=None, scale=None),
+        opacity=alt.Opacity("opacity:Q", legend=None),
+        tooltip=["label:N", "species:N"],
+    )
+)
+
+# Face features (eyes, nose, mouth, eyebrows)
+features = (
     alt.Chart(face_df)
     .mark_point(filled=True)
     .encode(
         x=alt.X("x:Q", axis=None, scale=alt.Scale(domain=[0, 900])),
-        y=alt.Y("y:Q", axis=None, scale=alt.Scale(domain=[0, 850])),
-        size=alt.Size("size:Q", legend=None, scale=alt.Scale(range=[40, 18000])),
+        y=alt.Y("y:Q", axis=None, scale=alt.Scale(domain=[0, 800])),
+        size=alt.Size("size:Q", legend=None, scale=alt.Scale(range=[40, 1600])),
         color=alt.Color("color:N", legend=None, scale=None),
         opacity=alt.Opacity("opacity:Q", legend=None),
         order="order:O",
-        tooltip=["observation:N", "species:N"],
+        tooltip=["label:N", "species:N"],
     )
 )
 
-# Labels
+# Labels with species info
 labels = (
     alt.Chart(label_df)
-    .mark_text(fontSize=15, fontWeight="bold", color="#2C3E50")
-    .encode(x=alt.X("x_center:Q", axis=None), y=alt.Y("y_label:Q", axis=None), text="observation:N")
+    .mark_text(fontSize=13, fontWeight="bold", color="#2C3E50")
+    .encode(x=alt.X("x_center:Q", axis=None), y=alt.Y("y_label:Q", axis=None), text="label:N")
 )
 
-# Legend for species (positioned in top right corner to avoid overlap)
+# Legend for species (positioned in right side)
 legend_data = pd.DataFrame(
     {
         "species": ["setosa", "versicolor", "virginica"],
-        "x": [830, 830, 830],
-        "y": [800, 760, 720],
+        "x": [850, 850, 850],
+        "y": [750, 700, 650],
         "color": ["#306998", "#FFD43B", "#4B8BBE"],
     }
 )
 
-# Legend with matching face-like appearance (translucent, larger)
 legend_points = (
     alt.Chart(legend_data)
-    .mark_point(filled=True, size=800, opacity=0.45)
+    .mark_point(filled=True, size=600, opacity=0.5)
     .encode(x=alt.X("x:Q", axis=None), y=alt.Y("y:Q", axis=None), color=alt.Color("color:N", scale=None, legend=None))
 )
 
 legend_text = (
     alt.Chart(legend_data)
-    .mark_text(align="right", fontSize=14, dx=-30, fontWeight="bold")
+    .mark_text(align="right", fontSize=14, dx=-25, fontWeight="bold")
     .encode(x="x:Q", y="y:Q", text="species:N")
 )
 
-# Feature mapping explanation (moved to bottom left to avoid label overlap)
+# Feature mapping explanation
 mapping_data = pd.DataFrame(
     {
         "text": [
@@ -293,19 +377,19 @@ mapping_data = pd.DataFrame(
             "Eyebrow slant ← petal length",
         ],
         "x": [50, 50, 50, 50, 50, 50],
-        "y": [95, 75, 55, 35, 15, -5],
+        "y": [120, 95, 70, 45, 20, -5],
     }
 )
 
 mapping_text = (
     alt.Chart(mapping_data)
-    .mark_text(align="left", fontSize=12, color="#34495E")
+    .mark_text(align="left", fontSize=13, color="#34495E")
     .encode(x="x:Q", y="y:Q", text="text:N")
 )
 
-# Combine all layers
+# Combine all layers: face shapes first, then features, then labels and legends
 chart = (
-    (faces + labels + legend_points + legend_text + mapping_text)
+    (face_shapes + features + labels + legend_points + legend_text + mapping_text)
     .properties(
         width=1600,
         height=900,

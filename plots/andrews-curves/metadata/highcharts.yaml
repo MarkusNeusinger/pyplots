@@ -1,0 +1,25 @@
+library: highcharts
+specification_id: andrews-curves
+created: '2025-12-31T00:08:21Z'
+updated: '2025-12-31T00:13:07Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608527516
+issue: 2859
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/highcharts/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent colorblind-safe palette choice (blue/yellow/purple)
+  - Clear cluster separation visible - Setosa distinctly separated from Versicolor/Virginica
+  - Proper use of transparency (0.5 opacity) to show overlapping curve density
+  - Well-implemented Andrews curve transformation following Fourier series formula
+  - Good canvas utilization with appropriate margins
+  - Interactive HTML version also generated
+  - Normalized data using StandardScaler as recommended in spec
+  weaknesses:
+  - Helper function andrews_curve() deviates from pure KISS structure (minor)
+  - Y-axis label f(t) could be more descriptive for general audience

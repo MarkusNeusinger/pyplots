@@ -1,0 +1,28 @@
+library: plotnine
+specification_id: streamline-basic
+created: '2025-12-31T00:15:01Z'
+updated: '2025-12-31T00:25:15Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608708992
+issue: 2861
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/streamline-basic/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/streamline-basic/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 90
+review:
+  strengths:
+  - Excellent vortex flow visualization with concentric circular streamlines that
+    clearly demonstrate field topology
+  - Effective color gradient (blue to yellow) encoding flow speed with values increasing
+    toward the outer regions
+  - Arrow markers positioned along streamlines clearly indicate counter-clockwise
+    flow direction
+  - Well-balanced 1:1 aspect ratio canvas that perfectly suits circular streamline
+    patterns
+  - Good use of plotnine grammar of graphics with geom_path for streamlines and geom_point
+    for directional arrows
+  weaknesses:
+  - Axis labels could include units or more descriptive context (e.g., meters, arbitrary
+    units)

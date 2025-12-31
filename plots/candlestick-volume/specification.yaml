@@ -1,0 +1,31 @@
+# Specification-level metadata for candlestick-volume
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: candlestick-volume
+title: Stock Candlestick Chart with Volume
+
+# Specification tracking
+created: 2025-12-31T13:39:18Z
+updated: null
+issue: 3068
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/concepts/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - candlestick
+    - bar
+    - subplot
+  data_type:
+    - timeseries
+    - numeric
+    - ohlc
+  domain:
+    - finance
+    - trading
+  features:
+    - multi-pane
+    - volume
+    - synchronized
+    - interactive

@@ -1,0 +1,25 @@
+library: plotly
+specification_id: choropleth-basic
+created: '2025-12-31T13:56:19Z'
+updated: '2025-12-31T14:08:32Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20620322406
+issue: 3069
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/choropleth-basic/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/choropleth-basic/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/choropleth-basic/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent choice of realistic European GDP data with proper ISO-3 country codes
+  - Clean Viridis colorblind-safe color palette with appropriate value range
+  - Well-formatted title following the required naming convention
+  - Good use of Plotly geographic features (scope, projection, coastlines, ocean coloring)
+  - Generates both PNG and interactive HTML output
+  - Missing data countries shown gracefully in gray
+  weaknesses:
+  - Title format includes extra prefix before the spec-id pattern
+  - Country border lines could be slightly thicker for better boundary visibility
+  - Could add hover templates to enhance interactive HTML with formatted GDP values

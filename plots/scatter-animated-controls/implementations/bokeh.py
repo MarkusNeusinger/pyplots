@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-animated-controls: Animated Scatter Plot with Play Controls
 Library: bokeh 3.8.1 | Python 3.13.11
-Created: 2025-12-31
+Quality: 91/100 | Created: 2025-12-31
 """
 
 import numpy as np

@@ -1,0 +1,26 @@
+library: plotly
+specification_id: streamline-basic
+created: '2025-12-31T00:10:14Z'
+updated: '2025-12-31T00:30:31Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608632439
+issue: 2861
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/streamline-basic/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/streamline-basic/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/streamline-basic/plotly/plot.html
+quality_score: 85
+review:
+  strengths:
+  - Clean vortex flow pattern clearly demonstrates streamline visualization
+  - Good use of plotly figure_factory for streamline generation
+  - Appropriate density parameter (1.5) creates balanced streamline distribution
+  - Correct title format and good font sizing throughout
+  - Interactive HTML output leverages plotly strength
+  - Equal aspect ratio (scaleanchor) preserves circular pattern correctly
+  weaknesses:
+  - Colorbar appears in rendered output despite multiple attempts to hide it in code
+    - creates visual clutter and misleading Velocity Magnitude label for uniform-colored
+    streamlines
+  - Layout asymmetry due to unwanted colorbar taking space on right side

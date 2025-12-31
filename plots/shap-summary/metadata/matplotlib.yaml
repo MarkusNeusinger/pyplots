@@ -1,0 +1,29 @@
+library: matplotlib
+specification_id: shap-summary
+created: '2025-12-31T05:46:32Z'
+updated: '2025-12-31T05:57:33Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612920921
+issue: 2923
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/shap-summary/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/shap-summary/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of the SHAP summary plot concept with proper sorting
+    by feature importance
+  - Clean, readable code structure following KISS principles
+  - Good use of jittering to reduce point overlap within feature rows
+  - Appropriate colormap (blue-gray-red) that is colorblind-accessible
+  - Realistic house price prediction context makes the visualization immediately understandable
+  - Correct title format following project standards
+  weaknesses:
+  - X-axis label lacks units (SHAP values are unitless but could clarify they represent
+    log-odds or similar for clarity)
+  - Marker size (s=80) is slightly on the smaller side for the data density; s=100-120
+    would improve visibility
+  - Could show more diverse SHAP patterns (e.g., features where both high and low
+    values push predictions the same direction)

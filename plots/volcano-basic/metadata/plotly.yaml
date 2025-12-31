@@ -1,0 +1,29 @@
+library: plotly
+specification_id: volcano-basic
+created: '2025-12-31T05:32:16Z'
+updated: '2025-12-31T05:42:24Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612779383
+issue: 2924
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent implementation of volcano plot with all required threshold lines and
+    color coding
+  - Proper use of Plotly hover templates showing gene name, fold change, and p-value
+  - Clean three-color scheme (gray/blue/orange) that is colorblind accessible
+  - Appropriate marker sizing and alpha transparency for the data density
+  - Gene annotations with arrows for top significant hits
+  - Both PNG and HTML outputs generated correctly
+  weaknesses:
+  - Legend includes threshold line entries (p = 0.05, log2FC = 1.0) which adds visual
+    clutter; threshold lines are self-explanatory from context
+  - Some overlap in the dense central gray point cluster could benefit from slightly
+    smaller markers or more transparency
+  - Could utilize more Plotly-specific features like updatemenus or rangeslider for
+    enhanced interactivity

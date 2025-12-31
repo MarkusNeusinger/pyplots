@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 andrews-curves: Andrews Curves for Multivariate Data
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 76/100 | Created: 2025-12-31
@@ -56,19 +56,24 @@ X_scaled = (X - X_mean) / X_std
 # Andrews curve function: f(t) = x1/sqrt(2) + x2*sin(t) + x3*cos(t) + x4*sin(2t) + ...
 t_values = np.linspace(-np.pi, np.pi, 100)
 
-# Custom style for large canvas
+# Colors for 3 species - each repeated 15 times for 15 curves per species
+species_colors = ["#306998", "#E67E22", "#9B59B6"]  # Blue, Orange, Purple (high contrast)
+n_curves_per_species = 15
+all_colors = tuple(color for color in species_colors for _ in range(n_curves_per_species))
+
+# Custom style for large canvas with increased font sizes for readability
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998", "#FFD43B", "#E74C3C"),  # Blue, Yellow, Red for 3 species
-    title_font_size=48,
-    label_font_size=32,
-    major_label_font_size=28,
-    legend_font_size=28,
-    value_font_size=24,
+    colors=all_colors,
+    title_font_size=72,
+    label_font_size=48,
+    major_label_font_size=40,
+    legend_font_size=48,
+    value_font_size=36,
     stroke_width=2,
     opacity=0.4,
     opacity_hover=0.6,
@@ -91,14 +96,13 @@ chart = pygal.XY(
     truncate_legend=-1,
 )
 
-# Plot curves for each species (sample 15 per species for clarity)
+# Plot curves for each species
 for species_idx in range(3):
     species_mask = y == species_idx
     species_data = X_scaled[species_mask]
 
-    # Sample 15 observations per species
-    n_samples = 15
-    indices = np.random.choice(len(species_data), n_samples, replace=False)
+    # Sample curves per species for clarity
+    indices = np.random.choice(len(species_data), n_curves_per_species, replace=False)
 
     for i, idx in enumerate(indices):
         row = species_data[idx]
@@ -108,11 +112,11 @@ for species_idx in range(3):
         )
         points = [(float(t), float(v)) for t, v in zip(t_values, curve_values, strict=True)]
 
-        # Add series name only for first curve of each species
+        # Add series name only for first curve of each species (others show in legend as empty)
         if i == 0:
             chart.add(species_names[species_idx], points, show_dots=False)
         else:
-            chart.add(None, points, show_dots=False, stroke=custom_style.colors[species_idx])
+            chart.add("", points, show_dots=False)
 
 # Save outputs
 chart.render_to_file("plot.html")

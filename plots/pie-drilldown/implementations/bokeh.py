@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-drilldown: Drilldown Pie Chart with Click Navigation
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 68/100 | Created: 2025-12-31
@@ -10,7 +10,7 @@ from math import pi
 import numpy as np
 from bokeh.io import export_png, save
 from bokeh.layouts import column
-from bokeh.models import ColumnDataSource, CustomJS, Div, TapTool
+from bokeh.models import ColumnDataSource, CustomJS, Div, Label, TapTool
 from bokeh.plotting import figure
 from bokeh.resources import INLINE
 
@@ -103,16 +103,16 @@ for child_id in root_children:
 total = sum(values)
 percentages = [v / total * 100 for v in values]
 
-# Calculate angles for pie wedges (counter-clockwise from 12 o'clock)
-# Start from pi/2 (12 o'clock position) and go counter-clockwise
+# Calculate angles for pie wedges (clockwise from 12 o'clock)
+# Start from pi/2 (12 o'clock position) and go clockwise (negative direction)
 angles = [v / total * 2 * pi for v in values]
-start_angles = [pi / 2 + sum(angles[:i]) for i in range(len(angles))]
-end_angles = [pi / 2 + sum(angles[: i + 1]) for i in range(len(angles))]
+start_angles = [pi / 2 - sum(angles[:i]) for i in range(len(angles))]
+end_angles = [pi / 2 - sum(angles[: i + 1]) for i in range(len(angles))]
 
 # Assign colors to each slice
 slice_colors = colors[: len(names)]
 
-# Create source data
+# Create source data for wedges
 source = ColumnDataSource(
     data={
         "names": names,
@@ -141,7 +141,7 @@ label_source = ColumnDataSource(
     }
 )
 
-# Create figure
+# Create figure with extended y_range to fit breadcrumb and instruction text
 p = figure(
     width=3600,
     height=3600,
@@ -149,7 +149,7 @@ p = figure(
     tools="tap,reset",
     toolbar_location=None,
     x_range=(-1.5, 1.5),
-    y_range=(-1.5, 1.5),
+    y_range=(-1.6, 1.7),
 )
 
 # Style the figure
@@ -161,18 +161,18 @@ p.grid.visible = False
 p.outline_line_color = None
 p.background_fill_color = "#fafafa"
 
-# Draw individual wedges with explicit colors (no direction='clock' to avoid rendering bug)
-for i in range(len(names)):
-    p.wedge(
-        x=0,
-        y=0,
-        radius=0.9,
-        start_angle=start_angles[i],
-        end_angle=end_angles[i],
-        fill_color=slice_colors[i],
-        line_color="white",
-        line_width=4,
-    )
+# Draw wedges using ColumnDataSource for proper color rendering
+wedges = p.wedge(
+    x=0,
+    y=0,
+    radius=0.9,
+    start_angle="start_angle",
+    end_angle="end_angle",
+    fill_color="color",
+    line_color="white",
+    line_width=4,
+    source=source,
+)
 
 # Add labels with larger font size for 3600x3600 canvas
 labels = p.text(
@@ -187,11 +187,36 @@ labels = p.text(
     text_font_style="bold",
 )
 
-# Breadcrumb navigation div
+# Add breadcrumb navigation label (visible in static PNG)
+breadcrumb_label = Label(
+    x=0,
+    y=1.45,
+    text="Total Expenses",
+    text_font_size="36pt",
+    text_font_style="bold",
+    text_color="#306998",
+    text_align="center",
+    text_baseline="middle",
+)
+p.add_layout(breadcrumb_label)
+
+# Add clickable indicator text (visible in static PNG)
+click_indicator = Label(
+    x=0,
+    y=-1.35,
+    text="Click a slice to drill down",
+    text_font_size="28pt",
+    text_color="#666666",
+    text_align="center",
+    text_baseline="middle",
+)
+p.add_layout(click_indicator)
+
+# Breadcrumb navigation div for HTML version
 breadcrumb = Div(
     text='<div style="font-size: 32pt; font-family: Arial, sans-serif; color: #306998; '
     'padding: 20px; text-align: center;">'
-    '<span style="cursor: pointer; color: #306998; font-weight: bold;">📊 Total Expenses</span>'
+    '<span style="cursor: pointer; color: #306998; font-weight: bold;">Total Expenses</span>'
     '<span style="color: #999; margin: 0 10px;"> | Click a slice to drill down</span>'
     "</div>",
     width=3600,
@@ -247,14 +272,14 @@ callback = CustomJS(
     const percentages = values.map(v => v / total * 100);
     const has_children = children.map(id => hierarchy[id].children !== undefined);
 
-    // Calculate angles (counter-clockwise from 12 o'clock)
+    // Calculate angles (clockwise from 12 o'clock)
     const angles = values.map(v => v / total * 2 * Math.PI);
     const start_angles = [];
     const end_angles = [];
     let cumsum = Math.PI / 2;
     for (let i = 0; i < angles.length; i++) {
         start_angles.push(cumsum);
-        cumsum += angles[i];
+        cumsum -= angles[i];
         end_angles.push(cumsum);
     }
 

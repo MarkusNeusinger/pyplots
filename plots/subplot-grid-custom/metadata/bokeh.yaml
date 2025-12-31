@@ -1,0 +1,30 @@
+library: bokeh
+specification_id: subplot-grid-custom
+created: '2025-12-30T23:54:36Z'
+updated: '2025-12-30T23:59:23Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608471124
+issue: 2856
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent dashboard-style layout demonstrating non-uniform subplot sizes with
+    larger main chart and smaller detail panels
+  - Consistent visual styling across all subplots with matching font sizes, grid alpha,
+    and outline styling
+  - Realistic financial dashboard scenario with coherent data story (price, volume,
+    returns analysis)
+  - Clean KISS code structure with proper use of ColumnDataSource for all data
+  - Good color palette using Python blue/yellow theme with accent colors for variety
+  weaknesses:
+  - Bottom row panels have slight width inconsistency (1500+1500+1600 vs top row)
+    creating minor visual imbalance
+  - Does not demonstrate rowspan (tall sidebar plot) which is mentioned in the spec
+    notes
+  - Could leverage more Bokeh-specific interactive features like linked brushing or
+    hover tooltips

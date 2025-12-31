@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 circos-basic: Circos Plot
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-31
+Quality: 90/100 | Created: 2025-12-31
 """
 
 import altair as alt

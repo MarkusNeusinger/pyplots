@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 chernoff-basic: Chernoff Faces for Multivariate Data
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-31
@@ -17,60 +17,75 @@ data = iris_df[feature_cols].values
 species_map = {"setosa": 0, "versicolor": 1, "virginica": 2}
 target = iris_df["species"].map(species_map).values
 
-# Select subset of samples (5 per species = 15 total faces)
+# Select subset of samples with MORE variation within species (5 per species = 15 total faces)
+# Choose samples that span the full range of variation within each species
 np.random.seed(42)
 indices = []
 for species in range(3):
     species_indices = np.where(target == species)[0]
-    selected = np.random.choice(species_indices, 5, replace=False)
-    indices.extend(selected)
+    species_data = data[species_indices]
+    # Compute distance from mean to select diverse samples
+    mean_vals = species_data.mean(axis=0)
+    distances = np.sum((species_data - mean_vals) ** 2, axis=1)
+    # Select: 1 closest to mean, 2 with smallest values, 2 with largest values
+    sorted_by_dist = species_indices[np.argsort(distances)]
+    sorted_by_sum = species_indices[np.argsort(species_data.sum(axis=1))]
+    selected = list({sorted_by_dist[0], sorted_by_sum[0], sorted_by_sum[1], sorted_by_sum[-1], sorted_by_sum[-2]})
+    while len(selected) < 5:
+        for idx in species_indices:
+            if idx not in selected:
+                selected.append(idx)
+                break
+    indices.extend(selected[:5])
 indices = np.array(indices)
 
 subset_data = data[indices]
 subset_target = target[indices]
 species_names = ["Setosa", "Versicolor", "Virginica"]
 
-# Normalize data to 0-1 range for facial feature mapping
-data_min = subset_data.min(axis=0)
-data_max = subset_data.max(axis=0)
+# Normalize data to 0-1 range using GLOBAL min/max for better within-species variation
+data_min = data.min(axis=0)
+data_max = data.max(axis=0)
 normalized_data = (subset_data - data_min) / (data_max - data_min + 1e-8)
 
-# Set seaborn style (no grid for cleaner face display)
+# Set seaborn style
 sns.set_style("white")
-sns.set_context("poster", font_scale=0.9)
+sns.set_context("poster", font_scale=1.0)
 
 # Color palette for species (using seaborn palette)
 palette = sns.color_palette("Set2", 3)
 face_colors = [palette[t] for t in subset_target]
 
-# Create figure with grid layout (3 rows x 5 cols for 15 faces)
-# Using square format for better face display
-fig = plt.figure(figsize=(12, 12))
+# Create figure - 16:9 aspect ratio for 4800x2700 at 300dpi
+fig = plt.figure(figsize=(16, 9))
 
-# Create a main axes for the heatmap showing feature values
-gs = fig.add_gridspec(4, 5, height_ratios=[0.8, 1, 1, 1], hspace=0.3, wspace=0.15)
+# Create grid layout: heatmap on left, faces on right
+gs = fig.add_gridspec(3, 7, width_ratios=[1.5, 1, 1, 1, 1, 1, 0.1], hspace=0.25, wspace=0.15)
 
-# Add heatmap showing raw feature values at top using seaborn
-ax_heatmap = fig.add_subplot(gs[0, :])
-heatmap_data = normalized_data.T  # Features x Samples
+# Add heatmap showing feature values on left side using seaborn
+ax_heatmap = fig.add_subplot(gs[:, 0])
+heatmap_data = normalized_data  # Samples x Features (15 x 4)
 sns.heatmap(
     heatmap_data,
     ax=ax_heatmap,
     cmap="YlOrRd",
-    cbar_kws={"label": "Normalized Value", "shrink": 0.8},
-    xticklabels=[f"{species_names[subset_target[i]][0]}{(i % 5) + 1}" for i in range(15)],
-    yticklabels=["Sepal L.", "Sepal W.", "Petal L.", "Petal W."],
-    linewidths=0.5,
+    cbar=False,
+    xticklabels=["Sepal\nLength", "Sepal\nWidth", "Petal\nLength", "Petal\nWidth"],
+    yticklabels=[f"{species_names[subset_target[i]][0]}{(i % 5) + 1}" for i in range(15)],
+    linewidths=1,
     linecolor="white",
+    annot=True,
+    fmt=".2f",
+    annot_kws={"size": 9},
 )
-ax_heatmap.set_title("Feature Values (mapped to faces below)", fontsize=14, pad=10)
-ax_heatmap.tick_params(axis="x", labelsize=10, rotation=0)
+ax_heatmap.set_title("Feature Values\n(Normalized)", fontsize=16, fontweight="bold", pad=10)
+ax_heatmap.tick_params(axis="x", labelsize=12, rotation=0)
 ax_heatmap.tick_params(axis="y", labelsize=11)
 
-# Draw Chernoff faces in grid below heatmap
+# Draw Chernoff faces in grid (3 rows x 5 cols on the right side)
 for idx in range(15):
-    row = idx // 5 + 1  # Rows 1, 2, 3 (0 is heatmap)
-    col = idx % 5
+    row = idx // 5  # Rows 0, 1, 2
+    col = idx % 5 + 1  # Columns 1-5 (column 0 is heatmap)
     ax = fig.add_subplot(gs[row, col])
 
     features = normalized_data[idx]
@@ -160,16 +175,18 @@ for idx in range(15):
     )
 
 # Add overall title
-fig.suptitle("chernoff-basic · seaborn · pyplots.ai", fontsize=22, fontweight="bold", y=0.98)
+fig.suptitle("chernoff-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", y=0.98)
 
-# Add legend for species
-legend_handles = [mpatches.Patch(color=palette[i], label=species_names[i], ec="black", lw=1) for i in range(3)]
-fig.legend(handles=legend_handles, loc="lower center", ncol=3, fontsize=14, frameon=True, bbox_to_anchor=(0.5, 0.01))
+# Add legend for species (positioned to the right)
+legend_handles = [mpatches.Patch(color=palette[i], label=species_names[i], ec="black", lw=1.5) for i in range(3)]
+fig.legend(
+    handles=legend_handles, loc="center right", fontsize=14, frameon=True, bbox_to_anchor=(0.99, 0.5), title="Species"
+)
 
-# Add feature mapping explanation
+# Add feature mapping explanation at bottom
 feature_text = (
     "Face Width ← Sepal Length  |  Face Height ← Sepal Width  |  Eye Size ← Petal Length  |  Mouth Curve ← Petal Width"
 )
-fig.text(0.5, 0.045, feature_text, ha="center", fontsize=11, style="italic")
+fig.text(0.55, 0.02, feature_text, ha="center", fontsize=12, style="italic")
 
 plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")

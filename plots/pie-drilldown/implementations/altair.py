@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-drilldown: Drilldown Pie Chart with Click Navigation
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-31
@@ -10,7 +10,6 @@ import pandas as pd
 
 # Hierarchical data: Company budget breakdown
 # Structure: id, name, value, parent (following spec's data format)
-# Pre-aggregated values for each level
 hierarchy_data = [
     # Level 1: Departments (children of root)
     {"id": "engineering", "name": "Engineering", "value": 1755000, "parent": "root", "level": 1},
@@ -40,25 +39,30 @@ root_df = df[df["parent"] == "root"].copy()
 root_df["percentage"] = root_df["value"] / root_df["value"].sum() * 100
 root_df["pct_label"] = root_df["percentage"].apply(lambda x: f"{x:.1f}%")
 
-# Define explicit color mapping for consistent legend-to-slice matching
-dept_names = root_df["name"].tolist()
-colors = ["#306998", "#FFD43B", "#4B8BBE", "#C45AEC"]
-color_domain = dept_names
-color_range = colors[: len(dept_names)]
+# Prepare Engineering sub-level data for drilldown display
+eng_df = df[df["parent"] == "engineering"].copy()
+eng_total = eng_df["value"].sum()
+eng_df["percentage"] = eng_df["value"] / eng_total * 100
+eng_df["pct_label"] = eng_df["percentage"].apply(lambda x: f"{x:.1f}%")
 
-# Create selection for click interactivity (highlights slice)
+# Distinct color schemes - use clearly different colors
+dept_colors = {"Engineering": "#306998", "Marketing": "#FFD43B", "Operations": "#2E8B57", "Human Resources": "#9B59B6"}
+
+# Child colors - shades of blue for Engineering teams
+team_colors = {"Frontend": "#5DA5DA", "Backend": "#306998", "DevOps": "#1E4D6B"}
+
+# Selection parameter for click interactivity (highlights slice)
 selection = alt.selection_point(fields=["name"], empty=False)
 
-# Main pie chart using arc mark
-pie = (
+# Main pie chart (Level 1 - Departments)
+main_pie = (
     alt.Chart(root_df)
     .mark_arc(innerRadius=100, outerRadius=350, stroke="#ffffff", strokeWidth=4, cursor="pointer")
     .encode(
         theta=alt.Theta("value:Q", stack=True),
         color=alt.Color(
             "name:N",
-            scale=alt.Scale(domain=color_domain, range=color_range),
-            sort=dept_names,
+            scale=alt.Scale(domain=list(dept_colors.keys()), range=list(dept_colors.values())),
             legend=alt.Legend(
                 title="Departments",
                 titleFontSize=20,
@@ -70,7 +74,7 @@ pie = (
             ),
         ),
         order=alt.Order("value:Q", sort="descending"),
-        opacity=alt.condition(selection, alt.value(1.0), alt.value(0.75)),
+        opacity=alt.condition(selection, alt.value(1.0), alt.value(0.7)),
         tooltip=[
             alt.Tooltip("name:N", title="Department"),
             alt.Tooltip("value:Q", title="Budget ($)", format=",.0f"),
@@ -80,8 +84,8 @@ pie = (
     .add_params(selection)
 )
 
-# Text labels on pie slices
-text_labels = (
+# Department name labels on slices
+main_text = (
     alt.Chart(root_df)
     .mark_text(radius=250, fontSize=18, fontWeight="bold", align="center", baseline="middle")
     .encode(
@@ -92,10 +96,10 @@ text_labels = (
     )
 )
 
-# Percentage labels outside the pie
-pct_labels = (
+# Percentage labels outside main pie
+main_pct = (
     alt.Chart(root_df)
-    .mark_text(radius=400, fontSize=16, align="center", baseline="middle")
+    .mark_text(radius=420, fontSize=16, align="center", baseline="middle")
     .encode(
         theta=alt.Theta("value:Q", stack=True),
         order=alt.Order("value:Q", sort="descending"),
@@ -104,35 +108,74 @@ pct_labels = (
     )
 )
 
-# Combine pie layers
-pie_chart = pie + text_labels + pct_labels
+# Combine main pie layers
+main_chart = main_pie + main_text + main_pct
 
-# Breadcrumb navigation display
-breadcrumb_df = pd.DataFrame(
-    [
-        {"text": "All", "x": 0, "clickable": True},
-        {"text": " > ", "x": 1, "clickable": False},
-        {"text": "Departments", "x": 2, "clickable": False},
-        {"text": " (click to drill down)", "x": 3, "clickable": False},
-    ]
+# Drilldown pie chart (Level 2 - Engineering Teams)
+drill_pie = (
+    alt.Chart(eng_df)
+    .mark_arc(innerRadius=80, outerRadius=280, stroke="#ffffff", strokeWidth=3)
+    .encode(
+        theta=alt.Theta("value:Q", stack=True),
+        color=alt.Color(
+            "name:N",
+            scale=alt.Scale(domain=list(team_colors.keys()), range=list(team_colors.values())),
+            legend=alt.Legend(
+                title="Engineering Teams",
+                titleFontSize=18,
+                labelFontSize=16,
+                orient="right",
+                titlePadding=10,
+                symbolSize=200,
+                offset=10,
+            ),
+        ),
+        order=alt.Order("value:Q", sort="descending"),
+        tooltip=[
+            alt.Tooltip("name:N", title="Team"),
+            alt.Tooltip("value:Q", title="Budget ($)", format=",.0f"),
+            alt.Tooltip("percentage:Q", title="Share (%)", format=".1f"),
+        ],
+    )
 )
 
+# Team name labels on drilldown slices
+drill_text = (
+    alt.Chart(eng_df)
+    .mark_text(radius=190, fontSize=16, fontWeight="bold", align="center", baseline="middle")
+    .encode(
+        theta=alt.Theta("value:Q", stack=True),
+        order=alt.Order("value:Q", sort="descending"),
+        text=alt.Text("name:N"),
+        color=alt.value("#ffffff"),
+    )
+)
+
+# Percentage labels for drilldown
+drill_pct = (
+    alt.Chart(eng_df)
+    .mark_text(radius=330, fontSize=14, align="center", baseline="middle")
+    .encode(
+        theta=alt.Theta("value:Q", stack=True),
+        order=alt.Order("value:Q", sort="descending"),
+        text=alt.Text("pct_label:N"),
+        color=alt.value("#333333"),
+    )
+)
+
+# Combine drilldown layers
+drill_chart = drill_pie + drill_text + drill_pct
+
+# Breadcrumb navigation text
+breadcrumb_df = pd.DataFrame([{"text": "All  ›  Departments  ›  Engineering"}])
 breadcrumb = (
     alt.Chart(breadcrumb_df)
-    .mark_text(fontSize=18, align="left")
-    .encode(
-        x=alt.X("x:O", axis=None, scale=alt.Scale(domain=[0, 1, 2, 3])),
-        text="text:N",
-        color=alt.condition(
-            alt.datum.clickable == True,  # noqa: E712
-            alt.value("#306998"),
-            alt.value("#666666"),
-        ),
-    )
-    .properties(width=600, height=30)
+    .mark_text(fontSize=22, align="center", fontWeight="bold", color="#306998")
+    .encode(text="text:N")
+    .properties(width=1200, height=50)
 )
 
-# Title
+# Title configuration
 title_text = alt.TitleParams(
     text="Company Budget Breakdown",
     subtitle="pie-drilldown · altair · pyplots.ai",
@@ -144,24 +187,32 @@ title_text = alt.TitleParams(
 )
 
 # Instruction text
-instruction_df = pd.DataFrame([{"text": "Click slices to explore | Hover for details | Interactive drilldown in HTML"}])
-
+instruction_df = pd.DataFrame(
+    [{"text": "Click department slices to explore | Hover for details | Drilldown shows Engineering breakdown"}]
+)
 instruction = (
     alt.Chart(instruction_df)
     .mark_text(fontSize=16, color="#888888")
     .encode(text="text:N")
-    .properties(width=600, height=30)
+    .properties(width=1200, height=35)
 )
 
-# Combine main chart with breadcrumb and instruction
-main_chart = (
-    alt.vconcat(breadcrumb, pie_chart, instruction, spacing=10)
+# Combined layout: Main pie (left) + Drilldown pie (right)
+combined_pies = alt.hconcat(
+    main_chart.properties(width=650, height=700, title="All Departments"),
+    drill_chart.properties(width=550, height=550, title="Engineering Breakdown ($1.76M)"),
+    spacing=80,
+)
+
+# Final chart with breadcrumb and instructions
+final_chart = (
+    alt.vconcat(breadcrumb, combined_pies, instruction, spacing=15)
     .properties(title=title_text)
     .configure_view(strokeWidth=0)
     .configure_title(fontSize=32, subtitleFontSize=20)
-    .configure_legend(titleFontSize=20, labelFontSize=18, symbolSize=300)
+    .configure_legend(titleFontSize=18, labelFontSize=16, symbolSize=200)
 )
 
 # Save outputs (target: 4800 x 2700 at scale 3 = 1600 x 900 base)
-main_chart.save("plot.png", scale_factor=3.0)
-main_chart.save("plot.html")
+final_chart.save("plot.png", scale_factor=3.0)
+final_chart.save("plot.html")

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 andrews-curves: Andrews Curves for Multivariate Data
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 84/100 | Created: 2025-12-31
@@ -69,17 +69,18 @@ custom_style = Style(
     foreground_strong="#333333",
     foreground_subtle="#666666",
     colors=all_colors,
-    title_font_size=72,
-    label_font_size=48,
-    major_label_font_size=40,
-    legend_font_size=48,
-    value_font_size=36,
+    title_font_size=96,
+    label_font_size=64,
+    major_label_font_size=56,
+    legend_font_size=64,
+    value_font_size=48,
     stroke_width=2,
     opacity=0.4,
-    opacity_hover=0.6,
+    opacity_hover=0.8,
+    tooltip_font_size=48,
 )
 
-# Create XY chart
+# Create XY chart with interactive features
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -93,24 +94,33 @@ chart = pygal.XY(
     show_y_guides=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=3,
+    legend_box_size=32,
     truncate_legend=-1,
+    tooltip_border_radius=10,
+    js=["https://kozea.github.io/pygal.js/2.0.x/pygal-tooltips.min.js"],
 )
 
-# Plot curves for each species
+# Plot curves for each species with interactive tooltips
 for species_idx in range(3):
     species_mask = y == species_idx
     species_data = X_scaled[species_mask]
+    original_data = X[species_mask]
 
     # Sample curves per species for clarity
     indices = np.random.choice(len(species_data), n_curves_per_species, replace=False)
 
     for i, idx in enumerate(indices):
         row = species_data[idx]
+        orig = original_data[idx]
         # Andrews transform: f(t) = x1/sqrt(2) + x2*sin(t) + x3*cos(t) + x4*sin(2t)
         curve_values = (
             row[0] / np.sqrt(2) + row[1] * np.sin(t_values) + row[2] * np.cos(t_values) + row[3] * np.sin(2 * t_values)
         )
-        points = [(float(t), float(v)) for t, v in zip(t_values, curve_values, strict=True)]
+        # Create points with metadata for interactive tooltips
+        tooltip = f"Sepal: {orig[0]:.1f}×{orig[1]:.1f}cm, Petal: {orig[2]:.1f}×{orig[3]:.1f}cm"
+        points = [
+            {"value": (float(t), float(v)), "label": tooltip} for t, v in zip(t_values, curve_values, strict=True)
+        ]
 
         # Add series name only for first curve of each species (others show in legend as empty)
         if i == 0:

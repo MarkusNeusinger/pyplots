@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 timeseries-decomposition: Time Series Decomposition Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -13,6 +13,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from highcharts_core.chart import Chart
+from highcharts_core.options import HighchartsOptions
+from highcharts_core.options.series.area import LineSeries
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from statsmodels.tsa.seasonal import seasonal_decompose
@@ -45,7 +48,7 @@ trend_data = [[t, float(v) if not np.isnan(v) else None] for t, v in zip(timesta
 seasonal_data = [[t, float(v)] for t, v in zip(timestamps, seasonal_comp, strict=True)]
 residual_data = [[t, float(v) if not np.isnan(v) else None] for t, v in zip(timestamps, residual, strict=True)]
 
-# Colors
+# Colors - colorblind-safe palette
 primary_blue = "#306998"
 secondary_yellow = "#FFD43B"
 purple = "#9467BD"
@@ -61,13 +64,75 @@ highcharts_url = "https://code.highcharts.com/highcharts.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
 
-# Build chart configurations as dictionaries (native Python, not using highcharts-core)
-chart_configs = []
 
-# Chart 1: Observed (Original) - with main title
-chart_configs.append(
-    {
-        "container": "container1",
+def create_chart_config(
+    container_id, title_text, subtitle_text, y_title, data, color, series_name, is_first=False, is_last=False
+):
+    """Create a Highcharts chart configuration using highcharts-core."""
+    chart = Chart(container=container_id)
+    chart.options = HighchartsOptions()
+
+    # Set options via highcharts-core
+    chart.options.chart = {
+        "type": "line",
+        "width": chart_width,
+        "height": subplot_height,
+        "backgroundColor": "#ffffff",
+        "marginLeft": 150,
+        "marginRight": 100,
+        "marginTop": 100 if is_first else 60,
+        "marginBottom": 100 if is_last else 50,
+    }
+
+    if is_first:
+        chart.options.title = {"text": title_text, "style": {"fontSize": "40px", "fontWeight": "bold"}}
+        chart.options.subtitle = {"text": subtitle_text, "style": {"fontSize": "34px"}}
+    else:
+        chart.options.title = {"text": subtitle_text, "style": {"fontSize": "34px", "fontWeight": "bold"}}
+
+    chart.options.x_axis = {
+        "type": "datetime",
+        "labels": {"style": {"fontSize": "20px"}, "format": "{value:%Y-%m}"},
+        "title": {"text": "Date", "style": {"fontSize": "24px", "fontWeight": "bold"}} if is_last else {"text": None},
+        "gridLineWidth": 1,
+        "gridLineColor": "rgba(0,0,0,0.1)",
+        "lineWidth": 2,
+    }
+
+    chart.options.y_axis = {
+        "title": {"text": y_title, "style": {"fontSize": "24px", "fontWeight": "bold"}},
+        "labels": {"style": {"fontSize": "20px"}},
+        "gridLineWidth": 1,
+        "gridLineColor": "rgba(0,0,0,0.15)",
+        "lineWidth": 2,
+    }
+
+    # Enable minimal legend showing component name
+    chart.options.legend = {
+        "enabled": True,
+        "align": "right",
+        "verticalAlign": "top",
+        "layout": "horizontal",
+        "floating": True,
+        "x": -50,
+        "y": 15 if is_first else 5,
+        "itemStyle": {"fontSize": "22px", "fontWeight": "normal"},
+    }
+
+    chart.options.credits = {"enabled": False}
+
+    # Add series using highcharts-core LineSeries
+    series = LineSeries()
+    series.data = data
+    series.name = series_name
+    series.color = color
+    series.line_width = 4
+    series.marker = {"enabled": False}
+    chart.add_series(series)
+
+    # Return config dict for manual JS generation (more reliable for multi-chart)
+    return {
+        "container": container_id,
         "options": {
             "chart": {
                 "type": "line",
@@ -76,175 +141,70 @@ chart_configs.append(
                 "backgroundColor": "#ffffff",
                 "marginLeft": 150,
                 "marginRight": 100,
-                "marginTop": 80,
-                "marginBottom": 50,
+                "marginTop": 100 if is_first else 60,
+                "marginBottom": 100 if is_last else 50,
             },
-            "title": {
-                "text": "timeseries-decomposition · highcharts · pyplots.ai",
-                "style": {"fontSize": "36px", "fontWeight": "bold"},
-            },
-            "subtitle": {"text": "Original Series", "style": {"fontSize": "28px"}},
+            "title": {"text": title_text, "style": {"fontSize": "40px", "fontWeight": "bold"}}
+            if is_first
+            else {"text": subtitle_text, "style": {"fontSize": "34px", "fontWeight": "bold"}},
+            "subtitle": {"text": subtitle_text, "style": {"fontSize": "34px"}} if is_first else None,
             "xAxis": {
                 "type": "datetime",
                 "labels": {"style": {"fontSize": "20px"}, "format": "{value:%Y-%m}"},
-                "title": {"text": None},
+                "title": {"text": "Date", "style": {"fontSize": "24px", "fontWeight": "bold"}}
+                if is_last
+                else {"text": None},
                 "gridLineWidth": 1,
                 "gridLineColor": "rgba(0,0,0,0.1)",
                 "lineWidth": 2,
             },
             "yAxis": {
-                "title": {"text": "Passengers (thousands)", "style": {"fontSize": "24px", "fontWeight": "bold"}},
+                "title": {"text": y_title, "style": {"fontSize": "24px", "fontWeight": "bold"}},
                 "labels": {"style": {"fontSize": "20px"}},
                 "gridLineWidth": 1,
                 "gridLineColor": "rgba(0,0,0,0.15)",
                 "lineWidth": 2,
             },
-            "legend": {"enabled": False},
+            "legend": {
+                "enabled": True,
+                "align": "right",
+                "verticalAlign": "top",
+                "layout": "horizontal",
+                "floating": True,
+                "x": -50,
+                "y": 15 if is_first else 5,
+                "itemStyle": {"fontSize": "22px", "fontWeight": "normal"},
+            },
             "credits": {"enabled": False},
             "series": [
-                {
-                    "name": "Observed",
-                    "data": observed_data,
-                    "color": primary_blue,
-                    "lineWidth": 4,
-                    "marker": {"enabled": False},
-                }
+                {"name": series_name, "data": data, "color": color, "lineWidth": 4, "marker": {"enabled": False}}
             ],
         },
     }
-)
 
-# Chart 2: Trend
-chart_configs.append(
-    {
-        "container": "container2",
-        "options": {
-            "chart": {
-                "type": "line",
-                "width": chart_width,
-                "height": subplot_height,
-                "backgroundColor": "#ffffff",
-                "marginLeft": 150,
-                "marginRight": 100,
-                "marginTop": 50,
-                "marginBottom": 50,
-            },
-            "title": {"text": "Trend Component", "style": {"fontSize": "28px", "fontWeight": "bold"}},
-            "xAxis": {
-                "type": "datetime",
-                "labels": {"style": {"fontSize": "20px"}, "format": "{value:%Y-%m}"},
-                "title": {"text": None},
-                "gridLineWidth": 1,
-                "gridLineColor": "rgba(0,0,0,0.1)",
-                "lineWidth": 2,
-            },
-            "yAxis": {
-                "title": {"text": "Trend", "style": {"fontSize": "24px", "fontWeight": "bold"}},
-                "labels": {"style": {"fontSize": "20px"}},
-                "gridLineWidth": 1,
-                "gridLineColor": "rgba(0,0,0,0.15)",
-                "lineWidth": 2,
-            },
-            "legend": {"enabled": False},
-            "credits": {"enabled": False},
-            "series": [
-                {
-                    "name": "Trend",
-                    "data": trend_data,
-                    "color": secondary_yellow,
-                    "lineWidth": 5,
-                    "marker": {"enabled": False},
-                }
-            ],
-        },
-    }
-)
 
-# Chart 3: Seasonal
-chart_configs.append(
-    {
-        "container": "container3",
-        "options": {
-            "chart": {
-                "type": "line",
-                "width": chart_width,
-                "height": subplot_height,
-                "backgroundColor": "#ffffff",
-                "marginLeft": 150,
-                "marginRight": 100,
-                "marginTop": 50,
-                "marginBottom": 50,
-            },
-            "title": {"text": "Seasonal Component", "style": {"fontSize": "28px", "fontWeight": "bold"}},
-            "xAxis": {
-                "type": "datetime",
-                "labels": {"style": {"fontSize": "20px"}, "format": "{value:%Y-%m}"},
-                "title": {"text": None},
-                "gridLineWidth": 1,
-                "gridLineColor": "rgba(0,0,0,0.1)",
-                "lineWidth": 2,
-            },
-            "yAxis": {
-                "title": {"text": "Seasonal", "style": {"fontSize": "24px", "fontWeight": "bold"}},
-                "labels": {"style": {"fontSize": "20px"}},
-                "gridLineWidth": 1,
-                "gridLineColor": "rgba(0,0,0,0.15)",
-                "lineWidth": 2,
-            },
-            "legend": {"enabled": False},
-            "credits": {"enabled": False},
-            "series": [
-                {
-                    "name": "Seasonal",
-                    "data": seasonal_data,
-                    "color": purple,
-                    "lineWidth": 4,
-                    "marker": {"enabled": False},
-                }
-            ],
-        },
-    }
-)
-
-# Chart 4: Residual - with x-axis title
-chart_configs.append(
-    {
-        "container": "container4",
-        "options": {
-            "chart": {
-                "type": "line",
-                "width": chart_width,
-                "height": subplot_height,
-                "backgroundColor": "#ffffff",
-                "marginLeft": 150,
-                "marginRight": 100,
-                "marginTop": 50,
-                "marginBottom": 80,
-            },
-            "title": {"text": "Residual Component", "style": {"fontSize": "28px", "fontWeight": "bold"}},
-            "xAxis": {
-                "type": "datetime",
-                "labels": {"style": {"fontSize": "20px"}, "format": "{value:%Y-%m}"},
-                "title": {"text": "Date", "style": {"fontSize": "24px", "fontWeight": "bold"}},
-                "gridLineWidth": 1,
-                "gridLineColor": "rgba(0,0,0,0.1)",
-                "lineWidth": 2,
-            },
-            "yAxis": {
-                "title": {"text": "Residual", "style": {"fontSize": "24px", "fontWeight": "bold"}},
-                "labels": {"style": {"fontSize": "20px"}},
-                "gridLineWidth": 1,
-                "gridLineColor": "rgba(0,0,0,0.15)",
-                "lineWidth": 2,
-            },
-            "legend": {"enabled": False},
-            "credits": {"enabled": False},
-            "series": [
-                {"name": "Residual", "data": residual_data, "color": teal, "lineWidth": 3, "marker": {"enabled": False}}
-            ],
-        },
-    }
-)
+# Create all four chart configurations using highcharts-core
+chart_configs = [
+    create_chart_config(
+        "container1",
+        "timeseries-decomposition · highcharts · pyplots.ai",
+        "Original Series",
+        "Passengers (thousands)",
+        observed_data,
+        primary_blue,
+        "Original",
+        is_first=True,
+    ),
+    create_chart_config(
+        "container2", "", "Trend Component", "Trend (thousands)", trend_data, secondary_yellow, "Trend"
+    ),
+    create_chart_config(
+        "container3", "", "Seasonal Component", "Seasonal Effect (thousands)", seasonal_data, purple, "Seasonal"
+    ),
+    create_chart_config(
+        "container4", "", "Residual Component", "Residual (thousands)", residual_data, teal, "Residual", is_last=True
+    ),
+]
 
 # Build HTML with all 4 charts stacked vertically
 containers_html = "\n".join(
@@ -254,7 +214,7 @@ containers_html = "\n".join(
     ]
 )
 
-# Build direct JavaScript calls (no DOMContentLoaded wrapper)
+# Build direct JavaScript calls (no DOMContentLoaded wrapper for headless)
 scripts_js = "\n".join(
     [f"Highcharts.chart('{cfg['container']}', {json.dumps(cfg['options'])});" for cfg in chart_configs]
 )

@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: contour-decision-boundary
 created: '2025-12-31T05:51:30Z'
-updated: '2025-12-31T06:00:38Z'
+updated: '2025-12-31T15:04:45Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20612962959
 issue: 2921
@@ -10,18 +10,17 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/highcharts/plot.html
-quality_score: 72
+quality_score: 80
 review:
   strengths:
-  - Creative approach using dual axes to overlay scatter on heatmap
+  - 'Significant improvement from Attempt 1: axis tick labels are now visible and
+    properly aligned'
   - 'Correct colorblind-safe Python color scheme (blue #306998, yellow #FFD43B)'
-  - Good marker differentiation with circles vs diamonds and dark outlines
-  - Proper KNN classifier implementation with probability-based coloring
-  - Reproducible with fixed random seeds
+  - Good marker differentiation with circles vs diamonds and dark outlines for visibility
+  - Heatmap properly aligned with scatter coordinates using actual x,y values
+  - Clean KISS code structure with proper reproducibility
   weaknesses:
-  - Axis tick labels are mostly missing/invisible - only two values visible at bottom
-    left corner
-  - Legend on right side is cut off or too small to read
-  - Color axis labels (0-1 scale) are barely visible
-  - The dual-axis approach causes alignment issues between heatmap categorical indices
-    and scatter actual values
+  - X-axis title (Feature X1) is missing - only tick labels visible
+  - Training data legend showing class labels is not visible in the rendered image
+  - Color axis legend (probability scale) on right side is too small to be easily
+    readable

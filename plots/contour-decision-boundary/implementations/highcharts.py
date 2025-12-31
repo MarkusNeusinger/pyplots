@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 contour-decision-boundary: Decision Boundary Classifier Visualization
 Library: highcharts unknown | Python 3.13.11
-Quality: 72/100 | Created: 2025-12-31
+Quality: 80/100 | Created: 2025-12-31
 """
 
 import json

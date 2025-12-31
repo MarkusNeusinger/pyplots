@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 candlestick-volume: Stock Candlestick Chart with Volume
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 85/100 | Created: 2025-12-31
@@ -33,12 +33,20 @@ volume = base_volume * (1 + volatility * 10 + np.random.uniform(-0.3, 0.3, n_day
 volume = volume.astype(int)
 
 # Determine up/down days for coloring
-direction = ["up" if c >= o else "down" for c, o in zip(close_prices, open_prices)]
+direction = [
+    "Up Day (Close ≥ Open)" if c >= o else "Down Day (Close < Open)" for c, o in zip(close_prices, open_prices)
+]
+
+# Create date labels for x-axis (show every 10th trading day)
+date_labels = [d.strftime("%b %d") for d in dates]
+date_breaks = list(range(0, n_days, 10))
+date_tick_labels = [date_labels[i] for i in date_breaks]
 
 df = pd.DataFrame(
     {
         "date": dates,
         "date_idx": range(n_days),
+        "date_label": date_labels,
         "open": open_prices,
         "high": high_prices,
         "low": low_prices,
@@ -48,9 +56,9 @@ df = pd.DataFrame(
     }
 )
 
-# Colors for up/down
-color_up = "#22C55E"
-color_down = "#EF4444"
+# Colorblind-safe colors (blue for up, orange for down)
+color_up = "#0077BB"
+color_down = "#EE7733"
 
 # Create candlestick chart (main pane)
 candle_plot = (
@@ -59,7 +67,10 @@ candle_plot = (
     + geom_segment(aes(x="date_idx", xend="date_idx", y="low", yend="high", color="direction"), size=1.0)
     # Bodies (open-close rectangles)
     + geom_segment(aes(x="date_idx", xend="date_idx", y="open", yend="close", color="direction"), size=5.0)
-    + scale_color_manual(values={"up": color_up, "down": color_down})
+    + scale_color_manual(
+        values={"Up Day (Close ≥ Open)": color_up, "Down Day (Close < Open)": color_down}, name="Trading Day"
+    )
+    + scale_x_continuous(breaks=date_breaks, labels=date_tick_labels)
     + labs(title="candlestick-volume · letsplot · pyplots.ai", y="Price ($)", x="")
     + theme_minimal()
     + theme(
@@ -67,7 +78,9 @@ candle_plot = (
         axis_title_y=element_text(size=20),
         axis_text_y=element_text(size=16),
         axis_text_x=element_blank(),
-        legend_position="none",
+        legend_position="top",
+        legend_title=element_text(size=18),
+        legend_text=element_text(size=16),
         panel_grid_major=element_line(color="#E5E7EB", size=0.5),
         panel_grid_minor=element_blank(),
     )
@@ -78,8 +91,11 @@ candle_plot = (
 volume_plot = (
     ggplot(df)
     + geom_bar(aes(x="date_idx", y="volume", fill="direction"), stat="identity", width=0.8)
-    + scale_fill_manual(values={"up": color_up, "down": color_down})
-    + labs(x="Trading Day (Jan-Mar 2024)", y="Volume (M)")
+    + scale_fill_manual(
+        values={"Up Day (Close ≥ Open)": color_up, "Down Day (Close < Open)": color_down}, name="Trading Day"
+    )
+    + scale_x_continuous(breaks=date_breaks, labels=date_tick_labels)
+    + labs(x="Date (2024)", y="Volume")
     + theme_minimal()
     + theme(
         axis_title=element_text(size=20),

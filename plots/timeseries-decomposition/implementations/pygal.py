@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 timeseries-decomposition: Time Series Decomposition Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 87/100 | Created: 2025-12-31
@@ -48,8 +48,8 @@ components = [
 
 # Target: 4800 x 2700 px total (4 vertically stacked charts)
 # Reserve left margin for y-axis labels drawn manually
-title_height = 140
-y_label_width = 180
+title_height = 160
+y_label_width = 220
 chart_width = 4800 - y_label_width
 chart_height = (2700 - title_height) // 4
 
@@ -69,11 +69,11 @@ for idx, (label, data, color, y_range, y_label) in enumerate(components):
         foreground_subtle="#666666",
         colors=(color,),
         font_family="sans-serif",
-        title_font_size=52,
-        label_font_size=40,
-        major_label_font_size=36,
-        legend_font_size=36,
-        value_font_size=28,
+        title_font_size=60,
+        label_font_size=48,
+        major_label_font_size=44,
+        legend_font_size=44,
+        value_font_size=36,
         stroke_width=5,
     )
 
@@ -92,6 +92,8 @@ for idx, (label, data, color, y_range, y_label) in enumerate(components):
         truncate_label=-1,
         x_label_rotation=35 if idx == 3 else 0,
         margin_left=20,
+        y_labels_major_count=6,
+        show_minor_y_labels=False,
     )
 
     # Only show x-labels on the bottom chart
@@ -117,10 +119,10 @@ total_height = 2700
 
 combined = Image.new("RGB", (total_width, total_height), "white")
 
-# Load fonts
+# Load fonts with increased sizes for better readability
 try:
-    title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 80)
-    y_label_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 42)
+    title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 88)
+    y_label_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 52)
 except OSError:
     title_font = ImageFont.load_default()
     y_label_font = ImageFont.load_default()
@@ -140,7 +142,7 @@ for idx, img in enumerate(images):
 
     # Draw rotated y-axis label on the left side
     y_label_text = y_labels_list[idx]
-    label_img = Image.new("RGBA", (400, 100), (255, 255, 255, 0))
+    label_img = Image.new("RGBA", (500, 120), (255, 255, 255, 0))
     label_draw = ImageDraw.Draw(label_img)
     label_draw.text((0, 0), y_label_text, fill="#333333", font=y_label_font)
 

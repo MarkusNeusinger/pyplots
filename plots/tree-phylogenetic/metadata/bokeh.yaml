@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: tree-phylogenetic
 created: '2025-12-31T13:54:21Z'
-updated: '2025-12-31T14:05:06Z'
+updated: '2025-12-31T14:22:11Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20620334569
 issue: 3070
@@ -10,18 +10,17 @@ library_version: 3.8.1
 preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/bokeh/plot.html
-quality_score: 88
+quality_score: 91
 review:
   strengths:
-  - Clean rectangular cladogram layout accurately representing primate evolutionary
-    relationships
-  - Excellent use of scale bar with proper units (substitutions per site)
-  - Clade annotations (Hominini, Homininae, Hominidae) add scientific context
-  - Good color scheme with distinct leaf nodes (yellow) and internal nodes (blue)
-  - Proper title format following pyplots.ai conventions
-  - Both PNG and HTML outputs provided for static and interactive viewing
+  - Excellent use of Bokeh interactive features including HoverTool with informative
+    tooltips showing scientific names
+  - Clean, professional visual design with appropriate color scheme (Python blue/yellow)
+  - Well-structured clade annotations with italic styling for taxonomic names
+  - Scale bar properly indicates evolutionary distance units
+  - Comprehensive legend explaining node types
   weaknesses:
-  - Missing legend to explain node color meanings (leaf vs internal nodes)
-  - Clade labels are somewhat small and could be more prominent
-  - Could add hover tooltips showing species details for better interactivity
-  - Right side of canvas has significant empty space; tree could be better centered
+  - Legend positioned in far top-right corner could be closer to the tree for better
+    visual association
+  - Title format includes descriptive prefix instead of strictly following spec-id
+    format

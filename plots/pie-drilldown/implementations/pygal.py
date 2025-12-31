@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 pie-drilldown: Drilldown Pie Chart with Click Navigation
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 82/100 | Created: 2025-12-31
@@ -53,33 +53,35 @@ data = {
     "hr_development": {"name": "Development", "parent": "hr", "value": 25000},
 }
 
-# Custom style for pyplots
+# Colorblind-friendly palette with more distinct colors (avoid similar blues)
+# Using: blue, yellow, orange, green (distinct from each other)
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    # Extended color palette for categories and subcategories
     colors=(
-        "#306998",
-        "#FFD43B",
-        "#4B8BBE",
-        "#7FB069",
-        "#E07A5F",
-        "#3D5A80",
-        "#EE6C4D",
-        "#98C1D9",
-        "#81B29A",
-        "#F4A261",
+        "#306998",  # Blue (Engineering)
+        "#FFD43B",  # Yellow (Marketing)
+        "#E07A5F",  # Coral/Orange (Operations - distinctly different from blue)
+        "#7FB069",  # Green (HR)
+        "#9B59B6",  # Purple
+        "#3498DB",  # Light blue
+        "#E67E22",  # Orange
+        "#1ABC9C",  # Teal
     ),
-    title_font_size=48,
-    label_font_size=28,
-    major_label_font_size=24,
-    legend_font_size=24,
-    value_font_size=22,
-    tooltip_font_size=22,
+    title_font_size=56,
+    label_font_size=36,
+    major_label_font_size=32,
+    legend_font_size=36,  # Increased for better readability on large canvas
+    value_font_size=28,
+    tooltip_font_size=28,
 )
+
+# Calculate total for percentages
+root_children = data["root"]["children"]
+total_value = sum(data[child_id]["value"] for child_id in root_children)
 
 # Create main pie chart showing top-level departments
 pie_chart = pygal.Pie(
@@ -87,22 +89,30 @@ pie_chart = pygal.Pie(
     height=3600,
     style=custom_style,
     inner_radius=0.35,  # Creates a donut effect for better visual
-    title="Company Budget · pie-drilldown · pygal · pyplots.ai",
+    title="pie-drilldown · pygal · pyplots.ai",  # Correct title format
     legend_at_bottom=True,
-    legend_box_size=28,
+    legend_box_size=36,  # Larger legend boxes
     print_values=True,
     print_labels=True,
-    value_formatter=lambda x: f"${x:,.0f}",
-    margin=60,
+    margin=80,
 )
 
+
+# Custom formatter to show both value and percentage
+def format_value_with_percent(value):
+    percentage = (value / total_value) * 100
+    return f"${value:,.0f} ({percentage:.1f}%)"
+
+
+pie_chart.value_formatter = format_value_with_percent
+
 # Add main category slices with drill-down links via xlink
-root_children = data["root"]["children"]
 for child_id in root_children:
     child_data = data[child_id]
-    # In pygal, we can add interactivity via xlink attribute for SVG
-    # Each slice links to its detail view
-    pie_chart.add(child_data["name"], [{"value": child_data["value"], "label": child_data["name"]}])
+    # Each slice has xlink for SVG interactivity
+    pie_chart.add(
+        child_data["name"], [{"value": child_data["value"], "label": child_data["name"], "xlink": f"#{child_id}"}]
+    )
 
 # Add a subtitle showing breadcrumb
 pie_chart.x_title = "All Departments  |  Click slice to drill down"
@@ -110,7 +120,66 @@ pie_chart.x_title = "All Departments  |  Click slice to drill down"
 # Render to PNG for static preview
 pie_chart.render_to_png("plot.png")
 
-# Create interactive HTML with JavaScript for drilldown functionality
+# Create interactive HTML using pygal's native SVG rendering with JavaScript for drilldown
+# Generate SVG charts for each level using pygal (native pygal rendering)
+
+
+def create_pygal_chart(level_id, level_data):
+    """Create a pygal pie chart for a specific level."""
+    children_ids = level_data.get("children", [])
+    if not children_ids:
+        return None
+
+    total = sum(data[cid]["value"] for cid in children_ids)
+
+    chart = pygal.Pie(
+        width=800,
+        height=600,
+        style=Style(
+            background="transparent",
+            plot_background="transparent",
+            foreground="#333333",
+            foreground_strong="#333333",
+            foreground_subtle="#666666",
+            colors=("#306998", "#FFD43B", "#E07A5F", "#7FB069", "#9B59B6", "#3498DB", "#E67E22", "#1ABC9C"),
+            title_font_size=24,
+            label_font_size=14,
+            legend_font_size=14,
+            value_font_size=12,
+            tooltip_font_size=14,
+        ),
+        inner_radius=0.35,
+        legend_at_bottom=True,
+        legend_box_size=18,
+        print_values=True,
+        print_labels=True,
+        show_legend=True,
+        explicit_size=True,
+    )
+
+    def format_val(value):
+        pct = (value / total) * 100
+        return f"${value:,.0f} ({pct:.1f}%)"
+
+    chart.value_formatter = format_val
+
+    for cid in children_ids:
+        child = data[cid]
+        chart.add(child["name"], [{"value": child["value"], "label": child["name"]}])
+
+    return chart.render(is_unicode=True)
+
+
+# Generate SVG for root level
+root_svg = create_pygal_chart("root", data["root"])
+
+# Generate SVGs for each department
+svg_data = {"root": root_svg}
+for dept_id in data["root"]["children"]:
+    dept_svg = create_pygal_chart(dept_id, data[dept_id])
+    if dept_svg:
+        svg_data[dept_id] = dept_svg
+
 html_content = """<!DOCTYPE html>
 <html>
 <head>
@@ -169,11 +238,14 @@ html_content = """<!DOCTYPE html>
         }
         #chart-container {
             width: 100%;
-            height: 600px;
+            min-height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         #chart-container svg {
-            width: 100%;
-            height: 100%;
+            max-width: 100%;
+            height: auto;
         }
         .back-btn {
             background: #FFD43B;
@@ -200,11 +272,19 @@ html_content = """<!DOCTYPE html>
             margin-top: 15px;
             font-size: 14px;
         }
+        /* Make pygal SVG slices interactive */
+        .slice {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .slice:hover {
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Company Budget · pie-drilldown · pygal · pyplots.ai</h1>
+        <h1>pie-drilldown · pygal · pyplots.ai</h1>
         <div class="breadcrumb">
             <button class="back-btn" id="backBtn" disabled>← Back</button>
             <div id="breadcrumb-path">
@@ -212,14 +292,12 @@ html_content = """<!DOCTYPE html>
             </div>
         </div>
         <div id="chart-container"></div>
-        <p class="hint">💡 Click on a slice to drill down into its subcategories</p>
+        <p class="hint" id="hint">Click on a slice to drill down into its subcategories</p>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <script>
-        // Hierarchical data
-        const data = {
+        // Hierarchical data structure
+        const hierarchyData = {
             root: {
                 name: "All Departments",
                 children: ["engineering", "marketing", "operations", "hr"]
@@ -264,29 +342,20 @@ html_content = """<!DOCTYPE html>
             hr_development: { name: "Development", parent: "hr", value: 25000 }
         };
 
-        const colors = ['#306998', '#FFD43B', '#4B8BBE', '#7FB069', '#E07A5F', '#3D5A80', '#EE6C4D', '#98C1D9'];
+        // Pre-rendered pygal SVG charts (native pygal output)
+        const svgCharts = {
+"""
+
+# Insert SVG data as JavaScript strings
+for level_id, svg_content in svg_data.items():
+    # Escape backticks and backslashes for JavaScript template literal
+    escaped_svg = svg_content.replace("\\", "\\\\").replace("`", "\\`").replace("${", "\\${")
+    html_content += f'            "{level_id}": `{escaped_svg}`,\n'
+
+html_content += """        };
 
         let currentLevel = 'root';
-        let chart = null;
         let history = [];
-
-        Chart.register(ChartDataLabels);
-
-        function formatCurrency(value) {
-            return '$' + value.toLocaleString();
-        }
-
-        function getChildData(parentId) {
-            const parent = data[parentId];
-            if (!parent.children) return [];
-            return parent.children.map((childId, index) => ({
-                id: childId,
-                name: data[childId].name,
-                value: data[childId].value,
-                hasChildren: !!data[childId].children,
-                color: colors[index % colors.length]
-            }));
-        }
 
         function updateBreadcrumb() {
             const pathDiv = document.getElementById('breadcrumb-path');
@@ -300,9 +369,9 @@ html_content = """<!DOCTYPE html>
                     html += '<span class="separator"> > </span>';
                 }
                 if (id === currentLevel) {
-                    html += `<span class="current">${data[id].name}</span>`;
+                    html += `<span class="current">${hierarchyData[id].name}</span>`;
                 } else {
-                    html += `<span onclick="navigateTo('${id}')">${data[id].name}</span>`;
+                    html += `<span onclick="navigateTo('${id}')">${hierarchyData[id].name}</span>`;
                 }
             });
 
@@ -310,118 +379,50 @@ html_content = """<!DOCTYPE html>
             backBtn.disabled = currentLevel === 'root';
         }
 
+        function getChildrenAtLevel(levelId) {
+            return hierarchyData[levelId]?.children || [];
+        }
+
         function renderChart(levelId) {
-            const children = getChildData(levelId);
-            if (children.length === 0) return;
+            const container = document.getElementById('chart-container');
+            const hint = document.getElementById('hint');
 
-            const ctx = document.getElementById('chart-container');
+            if (svgCharts[levelId]) {
+                container.innerHTML = svgCharts[levelId];
 
-            if (chart) {
-                chart.destroy();
-            }
+                // Add click handlers to pygal slices
+                const children = getChildrenAtLevel(levelId);
+                const slices = container.querySelectorAll('.slice');
 
-            const canvas = document.createElement('canvas');
-            ctx.innerHTML = '';
-            ctx.appendChild(canvas);
+                slices.forEach((slice, index) => {
+                    if (index < children.length) {
+                        const childId = children[index];
+                        const childData = hierarchyData[childId];
 
-            const total = children.reduce((sum, c) => sum + c.value, 0);
-
-            chart = new Chart(canvas.getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: children.map(c => c.name),
-                    datasets: [{
-                        data: children.map(c => c.value),
-                        backgroundColor: children.map(c => c.color),
-                        borderColor: 'white',
-                        borderWidth: 3,
-                        hoverOffset: 15
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '40%',
-                    animation: {
-                        animateRotate: true,
-                        duration: 500
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 20,
-                                font: { size: 14, weight: 'bold' },
-                                generateLabels: function(chart) {
-                                    const data = chart.data;
-                                    return data.labels.map((label, i) => ({
-                                        text: `${label}: ${formatCurrency(data.datasets[0].data[i])}`,
-                                        fillStyle: data.datasets[0].backgroundColor[i],
-                                        strokeStyle: 'white',
-                                        lineWidth: 2,
-                                        index: i
-                                    }));
-                                }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const value = context.parsed;
-                                    const percentage = ((value / total) * 100).toFixed(1);
-                                    return `${formatCurrency(value)} (${percentage}%)`;
-                                }
-                            },
-                            titleFont: { size: 16 },
-                            bodyFont: { size: 14 }
-                        },
-                        datalabels: {
-                            color: '#fff',
-                            font: { size: 14, weight: 'bold' },
-                            formatter: function(value, context) {
-                                const percentage = ((value / total) * 100).toFixed(0);
-                                return percentage + '%';
-                            },
-                            textStrokeColor: 'rgba(0,0,0,0.3)',
-                            textStrokeWidth: 2
-                        }
-                    },
-                    onClick: function(event, elements) {
-                        if (elements.length > 0) {
-                            const index = elements[0].index;
-                            const childData = children[index];
-                            if (childData.hasChildren) {
-                                drillDown(childData.id);
-                            }
-                        }
-                    },
-                    onHover: function(event, elements) {
-                        const canvas = event.native.target;
-                        if (elements.length > 0) {
-                            const index = elements[0].index;
-                            if (children[index].hasChildren) {
-                                canvas.style.cursor = 'pointer';
-                            } else {
-                                canvas.style.cursor = 'default';
-                            }
-                        } else {
-                            canvas.style.cursor = 'default';
+                        if (childData && childData.children) {
+                            slice.style.cursor = 'pointer';
+                            slice.classList.add('clickable');
+                            slice.onclick = () => drillDown(childId);
                         }
                     }
-                }
-            });
+                });
 
-            // Update hint based on whether children have sub-children
-            const hint = document.querySelector('.hint');
-            const hasClickableSlices = children.some(c => c.hasChildren);
-            hint.style.display = hasClickableSlices ? 'block' : 'none';
+                // Show/hide hint based on whether there are drillable slices
+                const hasDrillable = children.some(cid => hierarchyData[cid]?.children);
+                hint.style.display = hasDrillable ? 'block' : 'none';
+            } else {
+                container.innerHTML = '<p style="text-align:center;color:#666;">No sub-categories available</p>';
+                hint.style.display = 'none';
+            }
         }
 
         function drillDown(id) {
-            history.push(currentLevel);
-            currentLevel = id;
-            updateBreadcrumb();
-            renderChart(currentLevel);
+            if (svgCharts[id]) {
+                history.push(currentLevel);
+                currentLevel = id;
+                updateBreadcrumb();
+                renderChart(currentLevel);
+            }
         }
 
         function goBack() {

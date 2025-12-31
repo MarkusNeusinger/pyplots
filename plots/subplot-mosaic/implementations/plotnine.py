@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 subplot-mosaic: Mosaic Subplot Layout with Varying Sizes
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2025-12-31
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 88/100 | Created: 2025-12-31
 """
 
 import matplotlib.pyplot as plt

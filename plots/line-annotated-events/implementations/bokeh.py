@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-annotated-events: Annotated Line Plot with Event Markers
-Library: bokeh | Python 3.13
-Quality: pending | Created: 2025-12-31
+Library: bokeh 3.8.1 | Python 3.13.11
+Quality: 91/100 | Created: 2025-12-31
 """
 
 import numpy as np

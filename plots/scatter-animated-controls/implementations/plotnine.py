@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-animated-controls: Animated Scatter Plot with Play Controls
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2025-12-31
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 85/100 | Created: 2025-12-31
 """
 
 import numpy as np

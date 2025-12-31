@@ -1,0 +1,26 @@
+library: seaborn
+specification_id: bar-permutation-importance
+created: '2025-12-31T10:56:07Z'
+updated: '2025-12-31T11:06:35Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20617498003
+issue: 2998
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-permutation-importance/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-permutation-importance/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - 'Excellent implementation of the spec with all required features: sorted bars,
+    error bars, color gradient, and x=0 reference line'
+  - Uses real scikit-learn wine dataset with actual permutation importance calculation
+  - Proper seaborn 0.14+ API usage with hue parameter to apply palette
+  - Text sizing follows guidelines perfectly (24/20/16pt)
+  - Viridis palette provides excellent colorblind accessibility
+  weaknesses:
+  - Error bars added via matplotlib errorbar rather than exploring seaborn native
+    error bar capabilities in barplot
+  - Grid uses dashed style which is slightly more visually distracting than solid
+    with low alpha

@@ -1,0 +1,28 @@
+library: matplotlib
+specification_id: subplot-mosaic
+created: '2025-12-31T10:56:15Z'
+updated: '2025-12-31T11:07:18Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20617508043
+issue: 3002
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent demonstration of plt.subplot_mosaic() with the AAB;AAB;CDE pattern -
+    this is exactly what the spec asked for
+  - Great variety of plot types (line with fill_between, horizontal bar, scatter,
+    histogram, text metrics)
+  - Clean, professional color scheme with accessible blue/yellow palette
+  - Well-structured dashboard layout with clear visual hierarchy (large overview,
+    medium bar chart, small detail panels)
+  - Realistic sales dashboard scenario with appropriate data scales
+  weaknesses:
+  - Scatter plot markers could be larger (s=100 is adequate but s=150 would be more
+    visible for 80 points)
+  - Missing demonstration of empty cells with . placeholder mentioned in spec notes
+  - Metrics panel (E) layout could be tighter - the box has significant internal whitespace

@@ -1,0 +1,26 @@
+library: highcharts
+specification_id: subplot-mosaic
+created: '2025-12-31T10:57:50Z'
+updated: '2025-12-31T11:08:27Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20617512681
+issue: 3002
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/highcharts/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent mosaic layout implementation using CSS Grid with AAB/AAB/CCC pattern
+  - Clean visual hierarchy with larger panel A dominating, supporting panels B and
+    C
+  - Good use of colorblind-safe palette across all panels
+  - Descriptive axis labels with units
+  - Realistic business dashboard scenario
+  - Proper title format and overall professional appearance
+  weaknesses:
+  - Legends in Panel A and C are quite small and could be larger for better visibility
+  - Could use Highcharts built-in dashboard/synchronized chart features for more native
+    implementation

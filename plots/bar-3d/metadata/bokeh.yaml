@@ -1,0 +1,25 @@
+library: bokeh
+specification_id: bar-3d
+created: '2025-12-31T21:36:45Z'
+updated: '2025-12-31T21:45:07Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20627537973
+issue: 2857
+python_version: 3.13.11
+library_version: 3.8.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-3d/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-3d/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-3d/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent 3D isometric projection with proper painter's algorithm for correct
+    face ordering
+  - Semi-transparency (alpha=0.75) effectively reveals occluded bars as spec recommends
+  - Viridis color gradient reinforces z-values for better depth perception per spec
+  - Face shading (top=100%, front=85%, right=70%) provides convincing 3D appearance
+  - Clean axis labels positioned correctly in 3D space
+  - Both PNG and interactive HTML outputs provided
+  - Realistic business scenario with meaningful variation in data
+  weaknesses:
+  - Title format uses hyphens/dashes instead of middle dots as required by SC-06

@@ -23,8 +23,31 @@ export function useInfiniteScroll({
   const stateRef = useRef({ allImages, displayedImages, hasMore });
   stateRef.current = { allImages, displayedImages, hasMore };
 
+  // Track document height to detect layout transitions
+  const lastDocHeightRef = useRef(0);
+  const layoutTransitionRef = useRef(false);
+  const loadBlockedRef = useRef(false);
+
+  // Block loading and reset tracking when data changes (new filter results)
+  useEffect(() => {
+    // Block loading to prevent race conditions during filter change
+    loadBlockedRef.current = true;
+    lastDocHeightRef.current = 0;
+    layoutTransitionRef.current = false;
+
+    // Unblock after state has settled
+    const timer = setTimeout(() => {
+      loadBlockedRef.current = false;
+    }, 150);
+
+    return () => clearTimeout(timer);
+  }, [allImages]);
+
   // Load more images
   const loadMore = useCallback(() => {
+    // Skip if loading is blocked (filter change in progress)
+    if (loadBlockedRef.current) return;
+
     const { allImages: all, displayedImages: displayed, hasMore: more } = stateRef.current;
     if (!more) return;
 
@@ -41,11 +64,28 @@ export function useInfiniteScroll({
 
   // Check if we need to load more based on scroll position
   const checkAndLoad = useCallback(() => {
+    // Skip if loading is blocked (filter change in progress)
+    if (loadBlockedRef.current) return;
+
     const { hasMore: more } = stateRef.current;
     if (!more) return;
 
     const scrollBottom = window.scrollY + window.innerHeight;
     const docHeight = document.documentElement.scrollHeight;
+
+    // Detect layout transitions (significant height changes)
+    const heightDiff = Math.abs(docHeight - lastDocHeightRef.current);
+    if (heightDiff > 500 && lastDocHeightRef.current > 0) {
+      // Layout is transitioning (e.g., compact/normal switch), pause loading
+      layoutTransitionRef.current = true;
+      setTimeout(() => {
+        layoutTransitionRef.current = false;
+      }, 300);
+    }
+    lastDocHeightRef.current = docHeight;
+
+    // Skip loading during layout transitions
+    if (layoutTransitionRef.current) return;
 
     // If within 2500px of bottom, load more
     if (scrollBottom + 2500 > docHeight) {

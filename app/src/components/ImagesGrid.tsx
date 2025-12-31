@@ -50,9 +50,12 @@ export function ImagesGrid({
   void _onImageLoad; // Removed for performance - was causing re-renders per image load
 
   // Grid columns: normal = max 3 cols, compact = max 6 cols
-  const gridColumns = imageSize === 'compact'
-    ? { xs: 6, sm: 6, md: 3, lg: 3, xl: 2 }  // 2→2→4→4→6 cols
-    : { xs: 12, sm: 12, md: 6, lg: 6, xl: 4 }; // 1→1→2→2→3 cols
+  const gridColumns = useMemo(() =>
+    imageSize === 'compact'
+      ? { xs: 6, sm: 6, md: 3, lg: 3, xl: 2 }  // 2→2→4→4→6 cols
+      : { xs: 12, sm: 12, md: 6, lg: 6, xl: 4 }, // 1→1→2→2→3 cols
+    [imageSize]
+  );
 
   // Create O(1) lookup Maps from arrays
   const libraryMap = useMemo(() => {

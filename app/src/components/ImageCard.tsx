@@ -60,7 +60,6 @@ export const ImageCard = memo(function ImageCard({
 }: ImageCardProps) {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down('sm')); // < 600px
-  const isSm = useMediaQuery(theme.breakpoints.between('sm', 'md')); // 600-900px
 
   const labelFontSize = imageSize === 'compact' ? '0.65rem' : '0.8rem';
   const labelLetterSpacing = isXs ? '-0.03em' : 'normal';

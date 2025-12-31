@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 streamline-basic: Basic Streamline Plot
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -33,8 +33,9 @@ streamlines = []
 streamline_speeds = []  # Track average speed for color encoding
 
 # Use different radii for varied circular patterns
-radii = [0.5, 1.0, 1.5, 2.0, 2.5]
-angles_per_radius = [4, 5, 6, 7, 8]
+# Reduce inner streamlines to prevent dense packing that makes paths hard to distinguish
+radii = [0.8, 1.3, 1.8, 2.3, 2.8]
+angles_per_radius = [3, 4, 5, 6, 7]
 
 x_min, x_max = x_grid.min(), x_grid.max()
 y_min, y_max = y_grid.min(), y_grid.max()
@@ -103,7 +104,7 @@ chart.options.chart = {
     "backgroundColor": "#ffffff",
     "marginBottom": 250,
     "marginLeft": 220,
-    "marginRight": 150,
+    "marginRight": 450,
     "marginTop": 180,
     "spacingBottom": 50,
 }
@@ -122,7 +123,7 @@ chart.options.subtitle = {
 
 # Axes with extended range to prevent clipping
 chart.options.x_axis = {
-    "title": {"text": "X Position", "style": {"fontSize": "42px"}},
+    "title": {"text": "X Position (arbitrary units)", "style": {"fontSize": "42px"}},
     "labels": {"style": {"fontSize": "32px"}},
     "min": -4.0,
     "max": 4.0,
@@ -134,7 +135,7 @@ chart.options.x_axis = {
 }
 
 chart.options.y_axis = {
-    "title": {"text": "Y Position", "style": {"fontSize": "42px"}},
+    "title": {"text": "Y Position (arbitrary units)", "style": {"fontSize": "42px"}},
     "labels": {"style": {"fontSize": "32px"}},
     "min": -4.0,
     "max": 4.0,
@@ -156,8 +157,31 @@ viridis_colors = ["#440154", "#3B528B", "#21918C", "#5DC863"]
 # Plot options
 chart.options.plot_options = {"line": {"lineWidth": 5, "marker": {"enabled": False}, "enableMouseTracking": False}}
 
-# Legend
+# Legend - disabled for streamlines, we'll use a custom HTML color scale
 chart.options.legend = {"enabled": False}
+
+# Build color scale legend HTML for the right side
+color_scale_html = f"""
+<div style="position:absolute; right:50px; top:300px; font-family:Arial,sans-serif;">
+    <div style="font-size:32px; font-weight:bold; margin-bottom:20px; color:#333;">Velocity Magnitude</div>
+    <div style="display:flex; align-items:center; margin-bottom:15px;">
+        <div style="width:40px; height:30px; background:{viridis_colors[3]}; margin-right:15px;"></div>
+        <span style="font-size:28px;">High ({speed_max:.1f})</span>
+    </div>
+    <div style="display:flex; align-items:center; margin-bottom:15px;">
+        <div style="width:40px; height:30px; background:{viridis_colors[2]}; margin-right:15px;"></div>
+        <span style="font-size:28px;">Med-High</span>
+    </div>
+    <div style="display:flex; align-items:center; margin-bottom:15px;">
+        <div style="width:40px; height:30px; background:{viridis_colors[1]}; margin-right:15px;"></div>
+        <span style="font-size:28px;">Med-Low</span>
+    </div>
+    <div style="display:flex; align-items:center; margin-bottom:15px;">
+        <div style="width:40px; height:30px; background:{viridis_colors[0]}; margin-right:15px;"></div>
+        <span style="font-size:28px;">Low ({speed_min:.1f})</span>
+    </div>
+</div>
+"""
 
 # Add streamlines as series with velocity-based colors
 for i, (streamline, avg_speed) in enumerate(zip(streamlines, streamline_speeds, strict=False)):
@@ -184,7 +208,7 @@ highcharts_url = "https://code.highcharts.com/highcharts.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
 
-# Generate HTML with inline scripts
+# Generate HTML with inline scripts and color scale legend
 html_str = chart.to_js_literal()
 html_content = f"""<!DOCTYPE html>
 <html>
@@ -192,8 +216,9 @@ html_content = f"""<!DOCTYPE html>
     <meta charset="utf-8">
     <script>{highcharts_js}</script>
 </head>
-<body style="margin:0;">
+<body style="margin:0; position:relative;">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
+    {color_scale_html}
     <script>{html_str}</script>
 </body>
 </html>"""

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 timeseries-decomposition: Time Series Decomposition Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 83/100 | Created: 2025-12-31
@@ -38,12 +38,12 @@ residual_component = decomposition.resid.values
 # Create x-axis labels (show every 6 months for readability)
 x_labels = [d.strftime("%Y-%m") if i % 6 == 0 else "" for i, d in enumerate(dates)]
 
-# Define components with their data, titles, and y-ranges
+# Define components with their data, titles, colors, y-ranges, and y-axis labels
 components = [
-    ("Original Series (CO2 ppm)", observed, "#306998", (405, 437)),
-    ("Trend Component", trend_component, "#FFD43B", (405, 435)),
-    ("Seasonal Component", seasonal_component, "#44AA44", (-5, 5)),
-    ("Residual Component", residual_component, "#E74C3C", (-3, 3)),
+    ("Original Series (CO2 ppm)", observed, "#306998", (405, 437), "CO₂ (ppm)"),
+    ("Trend Component", trend_component, "#FFD43B", (405, 435), "Trend (ppm)"),
+    ("Seasonal Component", seasonal_component, "#44AA44", (-5, 5), "Deviation (ppm)"),
+    ("Residual Component", residual_component, "#E74C3C", (-3, 3), "Residual (ppm)"),
 ]
 
 # Target: 4800 x 2700 px total (4 vertically stacked charts)
@@ -52,11 +52,11 @@ chart_width = 4800
 chart_height = (2700 - title_height) // 4  # Each chart gets equal height
 
 charts = []
-for idx, (label, data, color, y_range) in enumerate(components):
+for idx, (label, data, color, y_range, y_label) in enumerate(components):
     # Replace NaN with None for pygal
     clean_data = [None if np.isnan(v) else float(v) for v in data]
 
-    # Create custom style with component color
+    # Create custom style with component color and larger fonts for 4800x2700
     component_style = Style(
         background="white",
         plot_background="#fafafa",
@@ -65,12 +65,12 @@ for idx, (label, data, color, y_range) in enumerate(components):
         foreground_subtle="#666666",
         colors=(color,),
         font_family="sans-serif",
-        title_font_size=32,
-        label_font_size=22,
-        major_label_font_size=18,
-        legend_font_size=22,
-        value_font_size=16,
-        stroke_width=3,
+        title_font_size=42,
+        label_font_size=32,
+        major_label_font_size=28,
+        legend_font_size=28,
+        value_font_size=22,
+        stroke_width=4,
     )
 
     chart = pygal.Line(
@@ -79,15 +79,15 @@ for idx, (label, data, color, y_range) in enumerate(components):
         style=component_style,
         title=label,
         x_title="Date" if idx == 3 else "",  # Only bottom chart has x-axis title
-        y_title="Value",
+        y_title=y_label,
         show_legend=False,
         show_y_guides=True,
         show_x_guides=True,
         show_dots=False,
-        stroke_style={"width": 3},
+        stroke_style={"width": 4},
         range=y_range,
         truncate_label=-1,
-        x_label_rotation=45 if idx == 3 else 0,
+        x_label_rotation=35 if idx == 3 else 0,
     )
 
     # Only show x-labels on the bottom chart
@@ -117,7 +117,7 @@ combined = Image.new("RGB", (total_width, total_height), "white")
 draw = ImageDraw.Draw(combined)
 
 try:
-    title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 56)
+    title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 72)
 except OSError:
     title_font = ImageFont.load_default()
 

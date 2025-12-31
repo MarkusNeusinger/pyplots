@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 subplot-mosaic: Mosaic Subplot Layout with Varying Sizes
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -46,13 +46,16 @@ df_line["month_num"] = range(len(df_line))
 matrix_data = []
 for row_label in ["Q1", "Q2", "Q3", "Q4"]:
     for col_label in ["Region A", "Region B", "Region C"]:
-        value = np.random.uniform(60, 100)
+        value = int(np.random.uniform(60, 100))
         matrix_data.append({"quarter": row_label, "region": col_label, "value": value})
 df_heatmap = pd.DataFrame(matrix_data)
 
-# Common theme
+# Common theme with subtle grid
 base_theme = theme_minimal() + theme(
-    axis_title=element_text(size=18), axis_text=element_text(size=14), plot_title=element_text(size=20, face="bold")
+    axis_title=element_text(size=18),
+    axis_text=element_text(size=14),
+    plot_title=element_text(size=20, face="bold"),
+    panel_grid=element_line(color="#CCCCCC", size=0.5),
 )
 
 # Create individual plots (without ggsize - will be set in ggbunch regions)
@@ -75,7 +78,7 @@ plot_b = (
     + geom_bar(stat="identity", fill="#FFD43B", color="#306998", size=0.8)
     + labs(x="Product Category", y="Units Sold", title="Sales by Product")
     + base_theme
-    + theme(axis_text_x=element_text(angle=30))
+    + theme(axis_text_x=element_text(angle=45, hjust=1))
 )
 
 # Panel C: Scatter plot (middle row, column 2)

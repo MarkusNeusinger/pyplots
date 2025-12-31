@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-decision-boundary: Decision Boundary Classifier Visualization
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -6,7 +6,7 @@ Quality: 88/100 | Created: 2025-12-31
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColumnDataSource, Legend, LegendItem, LinearColorMapper
+from bokeh.models import ColumnDataSource, HoverTool, Legend, LegendItem, LinearColorMapper
 from bokeh.plotting import figure
 from sklearn.datasets import make_moons
 from sklearn.neighbors import KNeighborsClassifier
@@ -60,10 +60,24 @@ class_1_mask = y == 1
 y_pred = clf.predict(X)
 correct_mask = y == y_pred
 
-# Data sources for each class
-source_class0 = ColumnDataSource(data={"x": X[class_0_mask, 0], "y": X[class_0_mask, 1]})
+# Data sources for each class with hover info
+source_class0 = ColumnDataSource(
+    data={
+        "x": X[class_0_mask, 0],
+        "y": X[class_0_mask, 1],
+        "class": ["Class 0"] * np.sum(class_0_mask),
+        "status": ["Correct" if c else "Misclassified" for c in correct_mask[class_0_mask]],
+    }
+)
 
-source_class1 = ColumnDataSource(data={"x": X[class_1_mask, 0], "y": X[class_1_mask, 1]})
+source_class1 = ColumnDataSource(
+    data={
+        "x": X[class_1_mask, 0],
+        "y": X[class_1_mask, 1],
+        "class": ["Class 1"] * np.sum(class_1_mask),
+        "status": ["Correct" if c else "Misclassified" for c in correct_mask[class_1_mask]],
+    }
+)
 
 # Plot training points
 # Class 0 - circles
@@ -78,22 +92,55 @@ c1_scatter = p.scatter(
 
 # Mark misclassified points with X marker
 misclassified_mask = ~correct_mask
+misclassified_marker = None
 if np.any(misclassified_mask):
-    source_misclassified = ColumnDataSource(data={"x": X[misclassified_mask, 0], "y": X[misclassified_mask, 1]})
+    source_misclassified = ColumnDataSource(
+        data={
+            "x": X[misclassified_mask, 0],
+            "y": X[misclassified_mask, 1],
+            "true_class": [f"Class {c}" for c in y[misclassified_mask]],
+            "pred_class": [f"Class {c}" for c in y_pred[misclassified_mask]],
+        }
+    )
     misclassified_marker = p.scatter(
         x="x", y="y", source=source_misclassified, marker="x", size=35, line_color="#CC3333", line_width=5, alpha=1.0
     )
 
-# Create legend
+# Add HoverTool for interactivity
+hover = HoverTool(
+    tooltips=[("Feature 1", "@x{0.2f}"), ("Feature 2", "@y{0.2f}"), ("Class", "@class"), ("Status", "@status")],
+    renderers=[c0_scatter, c1_scatter],
+)
+p.add_tools(hover)
+
+# Add separate HoverTool for misclassified points
+if misclassified_marker is not None:
+    hover_misclassified = HoverTool(
+        tooltips=[
+            ("Feature 1", "@x{0.2f}"),
+            ("Feature 2", "@y{0.2f}"),
+            ("True Class", "@true_class"),
+            ("Predicted", "@pred_class"),
+        ],
+        renderers=[misclassified_marker],
+    )
+    p.add_tools(hover_misclassified)
+
+# Create legend with misclassified entry
 legend_items = [
     LegendItem(label="Class 0", renderers=[c0_scatter]),
     LegendItem(label="Class 1", renderers=[c1_scatter]),
 ]
+if misclassified_marker is not None:
+    legend_items.append(LegendItem(label="Misclassified", renderers=[misclassified_marker]))
+
 legend = Legend(items=legend_items, location="top_right")
-legend.label_text_font_size = "24pt"
-legend.glyph_height = 30
-legend.glyph_width = 30
+legend.label_text_font_size = "28pt"
+legend.glyph_height = 35
+legend.glyph_width = 35
 legend.background_fill_alpha = 0.8
+legend.padding = 15
+legend.spacing = 10
 p.add_layout(legend, "right")
 
 # Styling

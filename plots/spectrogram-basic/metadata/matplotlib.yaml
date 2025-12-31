@@ -1,0 +1,27 @@
+library: matplotlib
+specification_id: spectrogram-basic
+created: '2025-12-31T05:34:22Z'
+updated: '2025-12-31T05:46:30Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20612803106
+issue: 2927
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent spectrogram visualization with clear chirp signal and tone burst demonstration
+  - Perfect use of viridis colormap which is perceptually uniform and colorblind-safe
+  - Proper dB scale on colorbar with appropriate floor value (-80 dB)
+  - Good NFFT (256) and overlap (200) parameters for reasonable time-frequency resolution
+  - Clean, readable code following KISS principle
+  - Signal combination (chirp + burst + noise) effectively demonstrates time-varying
+    frequency content
+  weaknesses:
+  - Could leverage more matplotlib-specific features such as adding a time-domain
+    plot of the signal above the spectrogram
+  - The burst signal at 500 Hz overlaps visually with the chirp in a way that could
+    be clearer with different timing

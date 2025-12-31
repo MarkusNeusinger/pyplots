@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 timeseries-decomposition: Time Series Decomposition Plot
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-31
@@ -53,7 +53,7 @@ df_plot = pd.DataFrame(
         "value": np.concatenate(
             [df["value"].values, decomposition.trend.values, decomposition.seasonal.values, decomposition.resid.values]
         ),
-        "component": np.repeat(["1. Original", "2. Trend", "3. Seasonal", "4. Residual"], n_months),
+        "component": np.repeat(["Original", "Trend", "Seasonal", "Residual"], n_months),
     }
 )
 
@@ -62,7 +62,7 @@ df_plot = df_plot.dropna()
 
 # Make component a categorical with correct order
 df_plot["component"] = pd.Categorical(
-    df_plot["component"], categories=["1. Original", "2. Trend", "3. Seasonal", "4. Residual"], ordered=True
+    df_plot["component"], categories=["Original", "Trend", "Seasonal", "Residual"], ordered=True
 )
 
 # Create faceted plot with four components
@@ -74,18 +74,19 @@ plot = (
     + labs(title="timeseries-decomposition · plotnine · pyplots.ai", x="Date", y="Value")
     + theme_minimal()
     + theme(
-        figure_size=(16, 12),
+        figure_size=(16, 9),
         plot_title=element_text(size=24, ha="center", weight="bold"),
         axis_title_x=element_text(size=20, margin={"t": 15}),
         axis_title_y=element_text(size=20, margin={"r": 15}),
-        axis_text=element_text(size=14),
+        axis_text_x=element_text(size=14),
+        axis_text_y=element_text(size=12),
         strip_text=element_text(size=16, weight="bold"),
         strip_background=element_rect(fill="#e8e8e8", color=None),
-        panel_spacing_y=0.15,
+        panel_spacing_y=0.08,
         panel_grid_major=element_line(color="#dddddd", size=0.5, alpha=0.5),
         panel_grid_minor=element_blank(),
     )
 )
 
 # Save
-plot.save("plot.png", dpi=300, width=16, height=12)
+plot.save("plot.png", dpi=300, width=16, height=9)

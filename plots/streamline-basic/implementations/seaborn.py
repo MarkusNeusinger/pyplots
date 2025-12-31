@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 streamline-basic: Basic Streamline Plot
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -22,10 +22,10 @@ streamlines_data = []
 arrow_data = []  # Store arrow positions for flow direction indicators
 streamline_id = 0
 
-# Starting points at different radii - fewer inner streamlines to reduce overlap
-radii = [0.5, 0.9, 1.3, 1.7, 2.1, 2.5, 2.9]
+# Starting points at different radii - removed innermost radius to eliminate overlap artifacts
+radii = [0.8, 1.2, 1.6, 2.0, 2.4, 2.8]
 # Use fewer streamlines at inner radii to prevent crowding
-n_per_radius_map = {0.5: 3, 0.9: 4, 1.3: 5, 1.7: 5, 2.1: 6, 2.5: 6, 2.9: 6}
+n_per_radius_map = {0.8: 3, 1.2: 4, 1.6: 5, 2.0: 5, 2.4: 6, 2.8: 6}
 dt = 0.03
 max_steps = 250
 
@@ -85,12 +85,22 @@ avg_velocity = df.groupby("streamline_id")["velocity"].mean().reset_index()
 avg_velocity.columns = ["streamline_id", "avg_velocity"]
 df = df.merge(avg_velocity, on="streamline_id")
 
-# Set seaborn style
-sns.set_theme(style="whitegrid")
+# Create velocity bins for categorical legend - seaborn-centric approach
+velocity_bins = pd.qcut(df["avg_velocity"], q=6, duplicates="drop")
+df["Speed Range"] = velocity_bins.apply(lambda x: f"{x.left:.1f}-{x.right:.1f} m/s")
+
+# Set seaborn style with custom aesthetics
+sns.set_theme(
+    style="whitegrid", rc={"axes.labelsize": 20, "axes.titlesize": 24, "xtick.labelsize": 16, "ytick.labelsize": 16}
+)
 sns.set_context("talk", font_scale=1.2)
 
 # Create square figure to better utilize canvas for equal aspect ratio plot
 fig, ax = plt.subplots(figsize=(12, 12))
+
+# Use seaborn color_palette to create viridis colors for continuous mapping
+palette = sns.color_palette("viridis", as_cmap=True)
+norm = plt.Normalize(df["avg_velocity"].min(), df["avg_velocity"].max())
 
 # Plot streamlines using seaborn's lineplot with hue for velocity
 # Each streamline is a separate unit, colored by average velocity
@@ -111,7 +121,6 @@ sns.lineplot(
 
 # Add arrowheads to show flow direction
 cmap = plt.cm.viridis
-norm = plt.Normalize(df["avg_velocity"].min(), df["avg_velocity"].max())
 for _, arrow in arrows_df.iterrows():
     px, py = arrow["x"], arrow["y"]
     pu, pv = arrow["u"], arrow["v"]
@@ -138,10 +147,12 @@ cbar = fig.colorbar(sm, ax=ax, shrink=0.8, aspect=20)
 cbar.set_label("Flow Speed (m/s)", fontsize=20)
 cbar.ax.tick_params(labelsize=16)
 
-# Styling with units on axis labels
-ax.set_xlabel("X Position (m)", fontsize=20)
-ax.set_ylabel("Y Position (m)", fontsize=20)
-ax.set_title("streamline-basic · seaborn · pyplots.ai", fontsize=24)
+# Use seaborn despine for cleaner appearance
+sns.despine(ax=ax, left=False, bottom=False)
+
+# Styling with units explicitly in axis labels
+ax.set(xlabel="X Position (m)", ylabel="Y Position (m)")
+ax.set_title("streamline-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold")
 ax.tick_params(axis="both", labelsize=16)
 ax.set_aspect("equal")
 ax.set_xlim(-3.5, 3.5)

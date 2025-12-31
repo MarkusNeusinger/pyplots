@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 chernoff-basic: Chernoff Faces for Multivariate Data
 Library: bokeh 3.8.1 | Python 3.13.11
 Quality: 88/100 | Created: 2025-12-31
@@ -6,7 +6,7 @@ Quality: 88/100 | Created: 2025-12-31
 
 import numpy as np
 from bokeh.io import export_png
-from bokeh.models import Label
+from bokeh.models import ColumnDataSource, HoverTool, Label
 from bokeh.plotting import figure
 
 
@@ -56,25 +56,63 @@ data_norm = (data - data.min(axis=0)) / (data.max(axis=0) - data.min(axis=0) + 1
 # Colors for sectors
 colors = ["#306998", "#FFD43B", "#8B4513"]
 
+# Store face center data for hover tooltips using ColumnDataSource
+face_centers_x = []
+face_centers_y = []
+face_labels = []
+face_revenue = []
+face_margin = []
+face_satisfaction = []
+face_market_share = []
 
-def draw_chernoff_face(p, cx, cy, features, color, label, face_size=0.35):
-    """Draw a Chernoff face at position (cx, cy) using normalized features (0-1)."""
-    # features: [revenue_growth, profit_margin, customer_satisfaction, market_share]
-    # Mapping:
-    # - revenue_growth -> face width
-    # - profit_margin -> face height
-    # - customer_satisfaction -> eye size
-    # - market_share -> mouth curvature
+# Create figure with 4x3 grid for 12 faces
+p = figure(
+    width=4800,
+    height=2700,
+    title="chernoff-basic · bokeh · pyplots.ai",
+    x_range=(-0.1, 4.1),
+    y_range=(-0.2, 3.2),
+    tools="",
+)
 
-    face_width = 0.3 + features[0] * 0.3  # 0.3 to 0.6
-    face_height = 0.35 + features[1] * 0.25  # 0.35 to 0.6
-    eye_size = 0.03 + features[2] * 0.05  # 0.03 to 0.08
-    mouth_curve = features[3]  # 0 to 1 (sad to happy)
+# Style
+p.title.text_font_size = "32pt"
+p.title.align = "center"
+p.xaxis.visible = False
+p.yaxis.visible = False
+p.xgrid.visible = False
+p.ygrid.visible = False
+p.outline_line_color = None
+p.background_fill_color = "#FAFAFA"
 
-    # Scale by face_size
-    face_width *= face_size
-    face_height *= face_size
-    eye_size *= face_size
+# Draw faces in a 4x3 grid (inline, no helper function)
+face_size = 0.4
+for i, (features, sec_idx) in enumerate(zip(data_norm, sector_idx, strict=True)):
+    col = i % 4
+    row = 2 - i // 4  # Start from top row
+    cx = col + 0.5
+    cy = row + 0.5
+    color = colors[sec_idx]
+    label_text = f"{sectors[sec_idx]} #{i % 4 + 1}"
+
+    # Store data for hover tooltip
+    face_centers_x.append(cx)
+    face_centers_y.append(cy)
+    face_labels.append(label_text)
+    face_revenue.append(f"{data[i, 0] * 100:.1f}%")
+    face_margin.append(f"{data[i, 1] * 100:.1f}%")
+    face_satisfaction.append(f"{data[i, 2] * 100:.1f}%")
+    face_market_share.append(f"{data[i, 3] * 100:.1f}%")
+
+    # Features mapping:
+    # - revenue_growth (features[0]) -> face width
+    # - profit_margin (features[1]) -> face height
+    # - customer_satisfaction (features[2]) -> eye size
+    # - market_share (features[3]) -> mouth curvature
+    face_width = (0.3 + features[0] * 0.3) * face_size
+    face_height = (0.35 + features[1] * 0.25) * face_size
+    eye_size = (0.03 + features[2] * 0.05) * face_size
+    mouth_curve = features[3]
 
     # Draw face outline (ellipse approximation using patches)
     theta = np.linspace(0, 2 * np.pi, 50)
@@ -85,10 +123,10 @@ def draw_chernoff_face(p, cx, cy, features, color, label, face_size=0.35):
     # Draw eyes
     eye_spacing = face_width * 0.5
     eye_y = cy + face_height * 0.25
+    eye_theta = np.linspace(0, 2 * np.pi, 30)
 
     # Left eye
     left_eye_x = cx - eye_spacing
-    eye_theta = np.linspace(0, 2 * np.pi, 30)
     left_ex = left_eye_x + eye_size * np.cos(eye_theta)
     left_ey = eye_y + eye_size * np.sin(eye_theta)
     p.patch(left_ex, left_ey, fill_color="white", line_color="#333333", line_width=2)
@@ -113,7 +151,7 @@ def draw_chernoff_face(p, cx, cy, features, color, label, face_size=0.35):
     # Draw eyebrows
     brow_y = eye_y + eye_size * 1.8
     brow_width = eye_size * 1.2
-    eyebrow_slant = (features[0] - 0.5) * 0.02 * face_size  # Based on revenue_growth
+    eyebrow_slant = (features[0] - 0.5) * 0.02 * face_size
 
     p.line(
         [left_eye_x - brow_width, left_eye_x + brow_width],
@@ -129,8 +167,7 @@ def draw_chernoff_face(p, cx, cy, features, color, label, face_size=0.35):
     )
 
     # Draw nose
-    nose_length = 0.02 + features[1] * 0.03  # Based on profit_margin
-    nose_length *= face_size
+    nose_length = (0.02 + features[1] * 0.03) * face_size
     nose_y_top = cy + face_height * 0.1
     nose_y_bottom = cy - face_height * 0.1
     p.line([cx, cx], [nose_y_top, nose_y_bottom], line_color="#333333", line_width=2)
@@ -145,51 +182,53 @@ def draw_chernoff_face(p, cx, cy, features, color, label, face_size=0.35):
     mouth_y = cy - face_height * 0.4
     mouth_width = face_width * 0.5
     mouth_x = np.linspace(cx - mouth_width, cx + mouth_width, 20)
-    # mouth_curve: 0=sad (curve down), 1=happy (curve up)
     curve_amount = (mouth_curve - 0.5) * 0.08 * face_size
     mouth_y_curve = mouth_y + curve_amount * (1 - ((mouth_x - cx) / mouth_width) ** 2) * 4
     p.line(mouth_x, mouth_y_curve, line_color="#333333", line_width=3)
 
     # Add label below face
     label_obj = Label(
-        x=cx, y=cy - face_height - 0.1, text=label, text_align="center", text_font_size="20pt", text_color="#333333"
+        x=cx,
+        y=cy - face_height - 0.1,
+        text=label_text,
+        text_align="center",
+        text_font_size="20pt",
+        text_color="#333333",
     )
     p.add_layout(label_obj)
 
-
-# Create figure with 4x3 grid for 12 faces
-p = figure(
-    width=4800,
-    height=2700,
-    title="chernoff-basic \u00b7 bokeh \u00b7 pyplots.ai",
-    x_range=(-0.1, 4.1),
-    y_range=(-0.2, 3.2),
-    tools="",
+# Create ColumnDataSource for hover tooltips (Bokeh-specific feature)
+hover_source = ColumnDataSource(
+    data={
+        "x": face_centers_x,
+        "y": face_centers_y,
+        "label": face_labels,
+        "revenue": face_revenue,
+        "margin": face_margin,
+        "satisfaction": face_satisfaction,
+        "market_share": face_market_share,
+    }
 )
 
-# Style
-p.title.text_font_size = "32pt"
-p.title.align = "center"
-p.xaxis.visible = False
-p.yaxis.visible = False
-p.xgrid.visible = False
-p.ygrid.visible = False
-p.outline_line_color = None
-p.background_fill_color = "#FAFAFA"
+# Add invisible scatter for hover interaction
+hover_renderer = p.scatter("x", "y", source=hover_source, size=80, fill_alpha=0, line_alpha=0)
 
-# Draw faces in a 4x3 grid
-for i, (features, sec_idx) in enumerate(zip(data_norm, sector_idx, strict=True)):
-    col = i % 4
-    row = 2 - i // 4  # Start from top row
-    cx = col + 0.5
-    cy = row + 0.5
-
-    label = f"{sectors[sec_idx]} #{i % 4 + 1}"
-    draw_chernoff_face(p, cx, cy, features, colors[sec_idx], label, face_size=0.4)
+# Add HoverTool for interactivity (distinctive Bokeh feature)
+hover_tool = HoverTool(
+    renderers=[hover_renderer],
+    tooltips=[
+        ("Company", "@label"),
+        ("Revenue Growth", "@revenue"),
+        ("Profit Margin", "@margin"),
+        ("Satisfaction", "@satisfaction"),
+        ("Market Share", "@market_share"),
+    ],
+)
+p.add_tools(hover_tool)
 
 # Add legend manually using patches and labels (positioned below grid)
 legend_y_base = 2.95
-legend_x_positions = [0.5, 1.5, 2.5]  # Spread horizontally
+legend_x_positions = [0.5, 1.5, 2.5]
 for i, (name, color) in enumerate(zip(sectors, colors, strict=True)):
     lx_center = legend_x_positions[i]
     theta = np.linspace(0, 2 * np.pi, 30)
@@ -201,13 +240,13 @@ for i, (name, color) in enumerate(zip(sectors, colors, strict=True)):
     )
     p.add_layout(legend_label)
 
-# Add subtitle with feature mapping explanation
+# Add subtitle with feature mapping explanation (increased font size)
 subtitle = Label(
     x=2.0,
     y=-0.02,
     text="Face width=Revenue Growth, Face height=Profit Margin, Eye size=Satisfaction, Mouth=Market Share",
     text_align="center",
-    text_font_size="18pt",
+    text_font_size="22pt",
     text_color="#666666",
 )
 p.add_layout(subtitle)

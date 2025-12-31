@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-animated-controls: Animated Scatter Plot with Play Controls
-Library: matplotlib | Python 3.13
-Quality: pending | Created: 2025-12-31
+Library: matplotlib 3.10.8 | Python 3.13.11
+Quality: 88/100 | Created: 2025-12-31
 """
 
 import matplotlib.pyplot as plt

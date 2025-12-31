@@ -1,0 +1,26 @@
+library: seaborn
+specification_id: andrews-curves
+created: '2025-12-30T23:57:52Z'
+updated: '2025-12-31T00:05:28Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608490654
+issue: 2859
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent implementation of Andrews curves Fourier transformation algorithm
+  - Perfect use of seaborn lineplot with units parameter to plot individual curves
+    without aggregation
+  - Good choice of colorblind-safe color palette with appropriate transparency
+  - Clean separation of species clusters visible in the visualization
+  - Correct mathematical notation for x-axis labels using π symbols
+  - Well-structured code following KISS principles
+  weaknesses:
+  - Axis labels use mathematical notation only (t, f(t)) without descriptive context
+    for newcomers
+  - Legend could be positioned to avoid any potential overlap with curve endpoints

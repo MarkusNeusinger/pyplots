@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 choropleth-basic: Choropleth Map with Regional Coloring
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 72/100 | Created: 2025-12-31
@@ -6,98 +6,105 @@ Quality: 72/100 | Created: 2025-12-31
 
 import numpy as np
 import pandas as pd
-from plotnine import aes, coord_fixed, element_text, geom_polygon, ggplot, labs, scale_fill_cmap, theme, theme_void
+from plotnine import (
+    aes,
+    coord_fixed,
+    element_blank,
+    element_rect,
+    element_text,
+    geom_polygon,
+    geom_text,
+    ggplot,
+    labs,
+    scale_fill_cmap,
+    theme,
+)
 
 
 # Seed for reproducibility
 np.random.seed(42)
 
-# Create a grid-based choropleth map representing regions
-# Using a hexagonal-style grid layout for clean visualization
-regions_data = []
+# Simplified European country boundaries (approximate polygon coordinates)
+# Using stylized country shapes for a clean visualization
+countries = {
+    "France": [(0, 0), (3, 0), (4, 2), (3, 4), (1, 4), (0, 2)],
+    "Germany": [(4, 2), (7, 1), (8, 3), (7, 5), (4, 5), (3, 4)],
+    "Spain": [(-3, -3), (1, -3), (2, -1), (0, 0), (-2, 0), (-3, -1)],
+    "Italy": [(5, -2), (7, -3), (9, -1), (8, 2), (6, 1), (5, 0)],
+    "Poland": [(8, 3), (12, 2), (13, 5), (11, 6), (8, 5), (7, 5)],
+    "UK": [(-2, 4), (1, 4), (2, 6), (1, 8), (-1, 8), (-2, 6)],
+    "Sweden": [(7, 7), (10, 6), (11, 9), (10, 12), (8, 11), (7, 9)],
+    "Norway": [(5, 9), (7, 7), (8, 11), (7, 14), (5, 13), (4, 11)],
+    "Finland": [(11, 9), (14, 8), (15, 12), (13, 14), (11, 12), (10, 12)],
+    "Austria": [(6, 1), (8, 0), (10, 1), (9, 3), (7, 3), (6, 2)],
+    "Netherlands": [(2, 5), (4, 5), (5, 6), (4, 7), (2, 7), (1, 6)],
+    "Belgium": [(1, 4), (3, 4), (4, 5), (2, 5), (1, 5)],
+    "Switzerland": [(3, 1), (5, 0), (6, 1), (5, 2), (4, 2), (3, 2)],
+    "Portugal": [(-4, -2), (-3, -3), (-2, -1), (-3, 0), (-4, 0)],
+    "Denmark": [(5, 6), (7, 5), (8, 6), (7, 7), (5, 7)],
+}
 
-# Define a 6x4 grid of regions (24 regions total)
-# Each region is a cell in the grid representing different areas
-region_names = [
-    "Region A1",
-    "Region A2",
-    "Region A3",
-    "Region A4",
-    "Region A5",
-    "Region A6",
-    "Region B1",
-    "Region B2",
-    "Region B3",
-    "Region B4",
-    "Region B5",
-    "Region B6",
-    "Region C1",
-    "Region C2",
-    "Region C3",
-    "Region C4",
-    "Region C5",
-    "Region C6",
-    "Region D1",
-    "Region D2",
-    "Region D3",
-    "Region D4",
-    "Region D5",
-    "Region D6",
-]
+# Population density data (people per sq km) - realistic values for 2024
+population_density = {
+    "France": 119,
+    "Germany": 238,
+    "Spain": 94,
+    "Italy": 201,
+    "Poland": 123,
+    "UK": 277,
+    "Sweden": 25,
+    "Norway": 15,
+    "Finland": 18,
+    "Austria": 109,
+    "Netherlands": 521,
+    "Belgium": 383,
+    "Switzerland": 219,
+    "Portugal": 111,
+    "Denmark": 137,
+}
 
-# Grid dimensions
-n_cols = 6
-n_rows = 4
-cell_width = 10
-cell_height = 8
-gap = 0.5  # Small gap between cells for visibility
+# Build polygon dataframe
+polygon_data = []
+for country, coords in countries.items():
+    # Close the polygon
+    closed_coords = coords + [coords[0]]
+    for i, (x, y) in enumerate(closed_coords):
+        polygon_data.append({"country": country, "x": x, "y": y, "order": i, "density": population_density[country]})
 
-# Create polygon vertices for each region
-for idx, region_name in enumerate(region_names):
-    row = idx // n_cols
-    col = idx % n_cols
+df = pd.DataFrame(polygon_data)
 
-    # Calculate cell corners with gaps
-    x_min = col * (cell_width + gap)
-    x_max = x_min + cell_width
-    y_min = row * (cell_height + gap)
-    y_max = y_min + cell_height
+# Calculate centroids for country labels
+centroids = []
+for country, coords in countries.items():
+    cx = np.mean([c[0] for c in coords])
+    cy = np.mean([c[1] for c in coords])
+    centroids.append({"country": country, "x": cx, "y": cy, "density": population_density[country]})
 
-    # Four corners (counter-clockwise for proper fill)
-    corners = [
-        (x_min, y_min),
-        (x_max, y_min),
-        (x_max, y_max),
-        (x_min, y_max),
-        (x_min, y_min),  # Close the polygon
-    ]
-    for x, y in corners:
-        regions_data.append({"region": region_name, "x": x, "y": y})
+df_centroids = pd.DataFrame(centroids)
 
-df_polygons = pd.DataFrame(regions_data)
-
-# Create data values for each region (e.g., temperature anomaly index)
-region_values = pd.DataFrame({"region": region_names, "value": np.random.uniform(10, 100, len(region_names))})
-
-# Merge polygon data with values
-df = df_polygons.merge(region_values, on="region")
-
-# Create the choropleth plot
+# Create the choropleth map
 plot = (
-    ggplot(df, aes(x="x", y="y", group="region", fill="value"))
-    + geom_polygon(color="#333333", size=0.8, alpha=0.9)
-    + scale_fill_cmap(cmap_name="Blues", name="Value\nIndex")
+    ggplot()
+    + geom_polygon(df, aes(x="x", y="y", group="country", fill="density"), color="#444444", size=0.6, alpha=0.95)
+    + geom_text(df_centroids, aes(x="x", y="y", label="country"), size=8, color="#222222", fontweight="bold")
+    + scale_fill_cmap(cmap_name="Blues", name="Population\nDensity\n(per km²)")
     + coord_fixed(ratio=1.0)
     + labs(title="choropleth-basic · plotnine · pyplots.ai")
-    + theme_void()
     + theme(
         figure_size=(16, 9),
-        plot_title=element_text(size=28, ha="center", weight="bold"),
-        legend_title=element_text(size=20),
-        legend_text=element_text(size=16),
+        plot_title=element_text(size=28, ha="center", weight="bold", margin={"b": 20}),
+        legend_title=element_text(size=18),
+        legend_text=element_text(size=14),
         legend_position="right",
-        legend_key_width=30,
-        legend_key_height=180,
+        legend_key_width=25,
+        legend_key_height=150,
+        legend_background=element_rect(fill="white", alpha=0.9),
+        panel_background=element_rect(fill="#f0f5fa"),
+        plot_background=element_rect(fill="white"),
+        axis_text=element_blank(),
+        axis_title=element_blank(),
+        axis_ticks=element_blank(),
+        panel_grid=element_blank(),
     )
 )
 

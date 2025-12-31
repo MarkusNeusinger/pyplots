@@ -1,0 +1,25 @@
+library: plotly
+specification_id: subplot-grid-custom
+created: '2025-12-30T23:54:54Z'
+updated: '2025-12-31T00:01:09Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20608469691
+issue: 2856
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent implementation of custom subplot grid with colspan specification
+  - Clean, well-structured code following KISS principles
+  - Realistic financial dashboard scenario with coherent data story
+  - Proper title format and good use of Python blue/yellow color scheme
+  - All subplots have clear, descriptive titles and axis labels with units
+  - Good use of plotly make_subplots with specs parameter for non-uniform grid
+  weaknesses:
+  - No rowspan demonstration (spec mentions both colspan AND rowspan)
+  - Grid lines not visible (could add subtle grid for better readability)
+  - Scatter plot markers could be slightly larger for the data density (50 points)

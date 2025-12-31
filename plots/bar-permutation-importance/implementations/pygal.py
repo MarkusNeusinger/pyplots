@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-permutation-importance: Permutation Feature Importance Plot
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2025-12-31
@@ -41,9 +41,9 @@ imp_range = max_imp - min_imp if max_imp != min_imp else 1.0
 # Viridis color stops: purple (0) -> teal (0.5) -> yellow (1)
 viridis_stops = [(0.0, 68, 1, 84), (0.25, 58, 82, 139), (0.5, 32, 144, 140), (0.75, 94, 201, 97), (1.0, 253, 231, 36)]
 
-bar_colors = []
-for imp in importance_mean:
-    t = (imp - min_imp) / imp_range
+
+def get_viridis_color(t):
+    """Interpolate viridis color for normalized value t in [0, 1]."""
     for j in range(len(viridis_stops) - 1):
         t0, r0, g0, b0 = viridis_stops[j]
         t1, r1, g1, b1 = viridis_stops[j + 1]
@@ -52,63 +52,79 @@ for imp in importance_mean:
             r = int(r0 + (r1 - r0) * seg_t)
             g = int(g0 + (g1 - g0) * seg_t)
             b = int(b0 + (b1 - b0) * seg_t)
-            bar_colors.append(f"#{r:02x}{g:02x}{b:02x}")
-            break
-    else:
-        bar_colors.append("#fde724")
+            return f"#{r:02x}{g:02x}{b:02x}"
+    return "#fde724"
 
-# Custom style with larger fonts for 4800x2700 canvas
+
+bar_colors = [get_viridis_color((imp - min_imp) / imp_range) for imp in importance_mean]
+
+# Custom style with larger fonts for 4800x2700 canvas and subtle guides
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
+    foreground_subtle="#999999",
+    guide_stroke_color="#cccccc",
+    major_guide_stroke_color="#cccccc",
     colors=tuple(bar_colors),
     title_font_size=84,
     label_font_size=48,
     major_label_font_size=48,
     legend_font_size=44,
-    value_font_size=44,
+    value_font_size=40,
     stroke_width=2,
     font_family="sans-serif",
+    opacity=0.95,
+    guide_stroke_dasharray="4,4",
 )
 
-# Pre-compute formatted value labels with error bars (mean ± std)
-value_labels = [f"{imp:.3f} ± {std:.3f}" for imp, std in zip(importance_mean, importance_std, strict=True)]
-
-# Create horizontal bar chart
-# Range includes negative values to ensure x=0 reference line is visible
-chart = pygal.HorizontalBar(
+# Create horizontal stacked bar chart for error bar visualization
+# First stack: mean value (solid), Second stack: +std (semi-transparent for error bar effect)
+chart = pygal.HorizontalStackedBar(
     width=4800,
     height=2700,
     style=custom_style,
     title="bar-permutation-importance · pygal · pyplots.ai",
-    x_title="Mean Decrease in Accuracy",
-    show_legend=False,
+    x_title="Mean Decrease in R² Score",
+    show_legend=True,
+    legend_at_bottom=True,
+    legend_at_bottom_columns=2,
+    legend_box_size=36,
     print_values=True,
     print_values_position="top",
-    show_y_guides=True,
+    show_y_guides=False,
     show_x_guides=True,
     truncate_label=-1,
-    spacing=24,
-    margin=60,
+    spacing=28,
+    margin=80,
     margin_left=420,
-    margin_bottom=140,
-    range=(-0.03, importance_mean.max() + importance_std.max() + 0.03),
+    margin_bottom=200,
+    range=(-0.02, importance_mean.max() + importance_std.max() + 0.02),
     zero=0,
 )
 
 # Set feature labels on y-axis
 chart.x_labels = features
 
-# Add each bar with individual color and value label showing error bar info
-for i, (feat, imp, _std, color, label) in enumerate(
-    zip(features, importance_mean, importance_std, bar_colors, value_labels, strict=True)
-):
-    data = [None] * len(features)
-    data[i] = {"value": imp, "label": f"{feat}: {label}"}
-    chart.add(feat, data, color=color, formatter=lambda x, lbl=label: lbl)
+# Create data series: main bars (mean values) and error extensions (+std)
+mean_data = list(importance_mean)
+std_data = list(importance_std)
+
+# Add mean importance bars with viridis colors
+chart.add(
+    "Mean Importance",
+    [{"value": v, "color": c} for v, c in zip(mean_data, bar_colors, strict=True)],
+    formatter=lambda x: f"{x:.3f}" if x else "",
+)
+
+# Add error bar extensions (std values) with semi-transparent styling
+error_color = "rgba(100, 100, 100, 0.35)"
+chart.add(
+    "± Std Dev (Error Range)",
+    [{"value": v, "color": error_color} for v in std_data],
+    formatter=lambda x: f"±{x:.3f}" if x else "",
+)
 
 # Save outputs
 chart.render_to_file("plot.html")

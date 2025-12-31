@@ -1,0 +1,26 @@
+library: letsplot
+specification_id: tree-phylogenetic
+created: '2025-12-31T13:55:48Z'
+updated: '2025-12-31T14:07:03Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20620338760
+issue: 3070
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/letsplot/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of rectangular phylogenetic tree using lets-plot grammar
+    of graphics
+  - Custom Newick parser handles complex nested structure correctly
+  - Color-coded clades (great apes, lesser apes, Old World monkeys) add visual interest
+  - Branch lengths accurately reflect evolutionary distances with proportional x-axis
+    positioning
+  - Clean tree layout with horizontal and vertical segments properly connected
+  - Good use of theme_minimal with customized axis and grid settings
+  weaknesses:
+  - Missing legend to explain the three clade color groups (blue/yellow/green)
+  - No scale bar to indicate branch length units

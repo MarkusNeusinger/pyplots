@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: tree-phylogenetic
 created: '2025-12-31T14:01:02Z'
-updated: '2025-12-31T14:12:22Z'
+updated: '2025-12-31T14:25:59Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20620338253
 issue: 3070
@@ -10,22 +10,24 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/highcharts/plot.html
-quality_score: 72
+quality_score: 78
 review:
   strengths:
-  - Excellent use of Highcharts organization chart module with proper hierarchical
-    data structure
-  - Clean color-coded level differentiation (dark blue → medium blue → light blue
-    → yellow for species)
-  - Good title format following spec-id convention
-  - Informative tooltips with taxonomic rank information
-  - Proper use of inverted chart for top-down tree layout
-  - Realistic primate phylogeny data with correct taxonomic relationships
+  - Excellent use of Highcharts organization chart module creating a clean hierarchical
+    visualization
+  - Proper color-coded level differentiation with consistent blue gradient leading
+    to yellow species nodes
+  - All 9 species now correctly positioned in the bottom row (fixed from previous
+    attempt)
+  - Informative subtitle and footer explaining the data source and scale concept
+  - Clean curved connectors between hierarchical levels
+  - Tooltips provide additional taxonomic rank information on hover
+  - Correct title format following pyplots.ai convention
   weaknesses:
-  - Two species (Hylobates lar, Symphalangus) are incorrectly positioned at the subfamily
-    level instead of the bottom species row
-  - Missing branch lengths proportional to evolutionary distance as specified
-  - Missing scale bar to indicate evolutionary distance units
-  - Text on yellow species nodes could be larger for better legibility
-  - Does not parse Newick format as suggested in spec (uses manual node/edge definition
-    instead)
+  - Missing visual representation of branch lengths proportional to evolutionary distance
+    (specification requirement)
+  - No scale bar indicating evolutionary distance units (e.g., substitutions per site
+    or MYA)
+  - Species node labels are slightly small relative to the overall plot size
+  - Footer text about branch lengths is misleading since branch lengths are not actually
+    proportional in this organization chart layout

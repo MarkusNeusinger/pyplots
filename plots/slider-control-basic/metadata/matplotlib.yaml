@@ -1,0 +1,25 @@
+library: matplotlib
+specification_id: slider-control-basic
+created: '2026-01-01T21:27:53Z'
+updated: '2026-01-01T21:29:58Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20645833176
+issue: 3071
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/slider-control-basic/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/slider-control-basic/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of matplotlib Slider widget with proper update callback
+  - 'Beautiful visual design with Python colors (blue #306998, yellow #FFD43B)'
+  - Prominent year indicator badge makes current parameter value immediately visible
+  - Realistic seasonal temperature pattern with subtle warming trend across years
+  - Good use of fill_between for visual emphasis
+  - Well-proportioned layout with slider positioned at bottom
+  weaknesses:
+  - Update function uses global fill variable which is not ideal but acceptable for
+    widget callbacks
+  - Play/pause animation feature mentioned in spec is not implemented

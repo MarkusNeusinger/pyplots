@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 candlestick-volume: Stock Candlestick Chart with Volume
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2026-01-01
+Library: highcharts unknown | Python 3.13.11
+Quality: 90/100 | Created: 2026-01-01
 """
 
 import json

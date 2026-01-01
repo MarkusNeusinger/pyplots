@@ -694,41 +694,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ---
 
-## 26. SVG & Minimal Charts
-
-### svg-line 📋
-**Description:** Clean SVG line chart for web embedding.
-
-### svg-bar 📋
-**Description:** SVG bar chart with smooth animations.
-
-### svg-pie 📋
-**Description:** Interactive SVG pie chart.
-
-### svg-radar 📋
-**Description:** SVG radar/spider chart.
-
-### svg-dot 📋
-**Description:** Dot matrix chart in SVG.
-
-### svg-gauge 📋
-**Description:** Gauge chart in SVG format.
-
-### svg-funnel 📋
-**Description:** SVG funnel chart.
-
-### svg-box 📋
-**Description:** SVG box plot.
-
-### svg-treemap 📋
-**Description:** SVG treemap visualization.
-
-### svg-worldmap 📋
-**Description:** Simple SVG world map.
-
----
-
-## 27. Drilldown & Interactive
+## 26. Drilldown & Interactive
 
 ### pie-drilldown ✅
 **Description:** A pie chart with drilldown functionality allowing users to click on slices to reveal detailed breakdowns of the data.
@@ -753,7 +719,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ---
 
-## 28. Real-Time & Streaming
+## 27. Real-Time & Streaming
 
 ### line-realtime ✅
 **Description:** A real-time line chart that updates dynamically with new data points, commonly used for monitoring dashboards and live metrics.
@@ -772,7 +738,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ---
 
-## 29. Machine Learning & Data Science
+## 28. Machine Learning & Data Science
 
 ### confusion-matrix ✅
 **Description:** Confusion matrix heatmap for classification model evaluation, showing true vs predicted labels with color-coded counts.
@@ -833,7 +799,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ---
 
-## 30. Scientific & Domain-Specific
+## 29. Scientific & Domain-Specific
 
 ### spectrum-plot ✅
 **Description:** Frequency spectrum visualization.
@@ -903,7 +869,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ---
 
-## 31. Printable & Fun
+## 30. Printable & Fun
 
 Druckbare Vorlagen und spielerische Visualisierungen.
 
@@ -945,10 +911,10 @@ Druckbare Vorlagen und spielerische Visualisierungen.
 
 ## Statistics
 
-- **Total Plot Types:** 255+
+- **Total Plot Types:** 245+
 - **Implemented:** 191 ✅
-- **Planned:** 64+ 📋
-- **Categories:** 31
+- **Planned:** 54+ 📋
+- **Categories:** 30
 
 ---
 

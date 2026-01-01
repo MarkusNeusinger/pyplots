@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 slider-control-basic: Interactive Plot with Slider Control
-Library: matplotlib | Python 3.13
-Quality: pending | Created: 2026-01-01
+Library: matplotlib 3.10.8 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-01
 """
 
 import matplotlib.pyplot as plt

@@ -23,3 +23,183 @@ review:
   weaknesses:
   - No axis labels (though Sources and Sectors annotations partially compensate)
   - Some flow value labels could be positioned more consistently
+  image_description: 'The plot displays a Sankey diagram showing energy flow from
+    sources to sectors. On the left side are four source nodes: Coal (dark blue),
+    Gas (yellow), Nuclear (teal), and Renewables (green). On the right side are three
+    target/sector nodes: Industrial (red), Commercial (purple), and Residential (orange).
+    Curved flow bands connect sources to targets, with widths proportional to flow
+    values. Flow values (35, 25, 20, 18, 15, 15, 12, 12) are displayed on the larger
+    flows. The title "Energy Flow · sankey-basic · plotnine · pyplots.ai" is prominently
+    displayed at the top. "Sources" and "Sectors" labels appear at the bottom. The
+    color scheme uses distinct colors for each source and target, with flows colored
+    by their source. The layout is well-balanced with good use of the 16:9 canvas.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is large and bold, node labels are clearly readable with good
+          font size (16pt), flow values are visible
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; labels are well-positioned outside nodes; flow
+          values are staggered to avoid overlap
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Flow bands are well-sized with appropriate alpha (0.5) for overlapping
+          areas; nodes have white borders for clarity
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Good color variety; sources and targets have distinct colors; however
+          some flows crossing may be hard to distinguish for colorblind users
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent canvas utilization; plot fills appropriate portion of space
+          with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: true
+        comment: No axis labels present (appropriate for Sankey diagrams which don't
+          use traditional axes, but "Sources" and "Sectors" annotations help)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: No grid (appropriate for Sankey); legend hidden as colors are self-explanatory
+          with labels
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct Sankey diagram with nodes and flows
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Source/target/value correctly mapped; flow widths proportional to
+          values
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: flows from sources to targets, width
+          proportional to value, distinct colors, node labels'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All flows and nodes visible; appropriate scaling
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed; inline labels are accurate
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "Energy Flow · sankey-basic · plotnine · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows varied flow magnitudes (8-35), multiple sources connecting
+          to multiple targets, demonstrates both major and minor flows
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Energy flow from sources (Coal, Gas, Nuclear, Renewables) to sectors
+          (Industrial, Commercial, Residential) is a classic, real-world Sankey application
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are reasonable energy flow units; total of 160 distributed
+          across 9 flows is appropriate
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 2
+        max: 3
+        passed: true
+        comment: Code follows imports → data → plot → save pattern, but has some complexity
+          due to manual polygon construction (acceptable for Sankey)
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Data is deterministic (no random generation needed)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png' correctly
+    library_features:
+      score: 4
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 4
+        max: 5
+        passed: true
+        comment: Creative use of plotnine's grammar of graphics (geom_polygon for
+          flows, geom_rect for nodes, geom_text for labels, scale_fill_manual, theme
+          customization); impressive implementation of Sankey in a library without
+          native support
+  verdict: APPROVED

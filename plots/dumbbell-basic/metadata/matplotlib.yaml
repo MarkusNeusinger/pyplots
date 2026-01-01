@@ -15,3 +15,15 @@ review:
   strengths: []
   weaknesses: []
   improvements: []
+  image_description: 'The plot shows a horizontal dumbbell chart displaying employee
+    satisfaction scores before and after workplace policy changes across 8 departments.
+    Each row represents a department (Sales, Finance, Product, Marketing, Operations,
+    Engineering, Customer Support, HR) with the y-axis showing "Department" and x-axis
+    showing "Satisfaction Score" ranging from 30 to 100. Two colored dots are connected
+    by a thin gray line for each department: blue dots (labeled "Before") on the left
+    and yellow dots (labeled "After") on the right. The data is sorted by the magnitude
+    of change, with HR showing the largest improvement at the bottom. The title follows
+    the correct format "dumbbell-basic · matplotlib · pyplots.ai". The legend is positioned
+    in the lower right corner. All dots are clearly visible with white edge colors,
+    and the grid lines are subtle vertical dashed lines.'
+  verdict: APPROVED

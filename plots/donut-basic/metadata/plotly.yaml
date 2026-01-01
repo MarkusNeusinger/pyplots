@@ -22,3 +22,166 @@ review:
   weaknesses:
   - Legend positioning creates slight layout imbalance
   - Could leverage more Plotly interactivity features like custom hover templates
+  image_description: The plot displays a donut chart with 6 budget allocation categories
+    rendered as colored ring segments. The largest segment is Engineering (35%) in
+    Python blue (#306998), followed by Marketing (20%) in yellow, Operations (15%)
+    in teal, Sales (15%) in coral/salmon, R&D (10%) in green, and HR (5%) in orange.
+    Each segment has a slight pull/explosion effect and white borders between segments.
+    Labels with category names and percentages are positioned outside the ring. The
+    center contains "Total $100M" in blue text. A vertical legend on the right lists
+    all categories. The title "donut-basic · plotly · pyplots.ai" appears at the top
+    center.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 32pt, labels at 20pt, center annotation at 36pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: All labels positioned outside the ring with no overlapping text
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Ring segments are well-sized with good thickness (hole=0.5), slight
+          pull effect adds visual separation
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses colorblind-safe palette with distinct hues (blue, yellow, teal,
+          coral, green, orange)
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good overall but the legend positioned far right creates some asymmetry
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend well-placed, no grid needed for donut charts
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct donut chart with hollow center
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories and values correctly mapped to segments
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has percentage labels, center metric ($100M total), consistent ordering
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All segments visible, no data cut off
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels match segment categories
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "donut-basic · plotly · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows 6 categories with varying sizes, demonstrates donut chart well
+          but could show more extreme size contrasts
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Budget allocation scenario is highly realistic and relatable
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values sum to 100 (representing $100M), percentages are plausible
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean flat structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses deterministic hardcoded data
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only plotly.graph_objects imported
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses go.Pie with hole parameter, add_annotation for center text,
+          and HTML export for interactivity. Could have used more Plotly-specific
+          features like hovertemplate customization.
+  verdict: APPROVED

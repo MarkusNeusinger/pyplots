@@ -27,3 +27,179 @@ review:
     operations
   - Missing some edge cases in data patterns (e.g., extended no-activity periods,
     project deadline spikes)
+  image_description: The plot displays a GitHub-style calendar heatmap showing daily
+    activity (commits) for the year 2024. The layout consists of a grid with 7 rows
+    (Mon-Sun weekdays labeled on the y-axis) and 53 columns (weeks of the year). Month
+    labels (Jan-Dec) appear at the top. Each cell represents a day, colored using
+    a green sequential colormap from light gray (#ebedf0) for zero activity to dark
+    green (#196127) for high activity. The cells are separated by white borders. A
+    horizontal colorbar at the bottom shows the scale from 0.0 to ~18+ commits, labeled
+    "Daily Activity (commits)". The title "heatmap-calendar · matplotlib · pyplots.ai"
+    appears at the top in a large, readable font. The visualization clearly shows
+    weekday vs weekend patterns, with weekdays generally showing more activity (more
+    green) than weekends.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, tick labels at 16pt, colorbar label at 16pt - all
+          clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, month labels well spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Calendar cells well-sized with clear white borders for separation
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: GitHub-style green colormap is colorblind-safe (single hue sequential)
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of canvas space, but colorbar is somewhat distant from the
+          plot
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Weekday labels are descriptive but no units applicable; colorbar
+          has units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: No explicit grid (not needed for heatmap), colorbar is well placed
+          but shrink=0.4 makes it relatively small
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct calendar heatmap type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Days correctly mapped to rows (Mon-Sun), weeks to columns
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: weekday labels on y-axis, month labels
+          at top, sequential colormap, handles missing dates with neutral color, color
+          scale legend included'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full year 2024 displayed correctly
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar accurately shows value range
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "heatmap-calendar · matplotlib · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows weekday/weekend patterns, variation in activity, some high-activity
+          days, but could have more varied patterns (e.g., vacation gaps, project
+          sprints)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: GitHub-style daily commit counts is a real, comprehensible scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values 0-18 commits per day is realistic for developer activity
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: No functions or classes, follows imports → data → plot → save pattern
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports (matplotlib, numpy, pandas, LinearSegmentedColormap)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib APIs
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: 'Saves as "plot.png" but the header says "Quality: pending" instead
+          of actual quality score'
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses pcolormesh effectively, LinearSegmentedColormap for custom colors,
+          proper axes manipulation. Could have used imshow with extent or other matplotlib-specific
+          features for cleaner code
+  verdict: APPROVED

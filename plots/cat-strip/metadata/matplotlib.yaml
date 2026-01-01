@@ -24,3 +24,179 @@ review:
     (labels in scatter calls)
   - No distinctive matplotlib features used beyond basic scatter - could leverage
     ax.errorbar() for confidence intervals or custom marker styles
+  image_description: The plot displays a categorical strip plot showing quality scores
+    (y-axis, 0-100 scale) for five manufacturing plants (Plant A through Plant E on
+    x-axis). Each plant's data points are displayed as colored circles with horizontal
+    jitter to prevent overlap. Plant A (blue, ~80-93 range), Plant B (yellow/gold,
+    wide spread ~55-95 with visible outliers), Plant C (teal/cyan, tight cluster ~82-95),
+    Plant D (orange, widest spread ~40-88 with low outliers), and Plant E (olive green,
+    moderate spread ~68-95). The title reads "cat-strip · matplotlib · pyplots.ai".
+    A subtle gray dashed grid is visible on the y-axis. Points have white edge outlines
+    and good transparency (alpha ~0.7).
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No text overlap, jitter effectively separates data points
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers sized at s=150 with alpha=0.7, appropriate for ~27 points
+          per category. Minor deduction as slightly smaller markers might reduce minimal
+          point overlap in dense areas
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Five distinct colors (blue, yellow, teal, orange, olive) are distinguishable
+          and reasonably colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins, tight_layout applied
+          correctly
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with context: "Manufacturing Plant" and "Quality
+          Score (0-100)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Y-axis grid is subtle (alpha=0.3), but legend is present in code
+          but not visible in plot (label parameter used but ax.legend() not called)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct categorical strip plot with individual points per category
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X-axis, numeric values on Y-axis as specified
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Jitter applied, individual observations visible, multiple categories
+          shown
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis limits (30-105) properly show all data including outliers
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Categories are labeled via x-tick labels (legend not strictly needed
+          as colors match tick positions)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "cat-strip · matplotlib · pyplots.ai"'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Shows varied distributions (tight vs wide spread), outliers (Plant
+          B: 55, 95; Plant D: 40, 45), different central tendencies'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Manufacturing quality control scenario is neutral, professional,
+          and relatable
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Quality scores 0-100 make sense, distributions centered around 70-90
+          are realistic
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set at the beginning
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib API with ax methods
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Uses basic ax.scatter() which is standard; could have used ax.violinplot()
+          overlay, custom markers, or matplotlib-specific styling like zorder manipulation
+  verdict: APPROVED

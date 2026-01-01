@@ -26,3 +26,180 @@ review:
     should show "$500" without the plus sign
   - No legend explaining the color scheme (blue=total, green=positive, red=negative)
   - Could benefit from interactive tooltips showing additional context
+  image_description: 'The plot displays a waterfall chart showing a quarterly financial
+    breakdown from Revenue to Net Income. The chart has 7 bars: Revenue (blue, starting
+    at $500), Cost of Goods (red, showing -$200 decrease), Gross Profit (blue subtotal
+    at $300), Operating Expenses (red, -$150), Other Income (green, +$25), Taxes (red,
+    -$45), and Net Income (blue final total at $130). Each bar shows a value label
+    in white text centered on the bar. Dashed connector lines connect the running
+    totals between bars. The color scheme uses Python Blue (#306998) for totals, green
+    (#4CAF50) for positive changes, and red (#E53935) for negative changes. The title
+    "waterfall-basic · altair · pyplots.ai" appears at the top. Y-axis shows "Amount
+    ($)" and X-axis shows "Category" with slightly angled labels.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: All text is clearly readable; title is 28pt, axis labels 18-22pt.
+          Slightly smaller than ideal but very legible.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; x-axis labels are angled to prevent overlap.
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bar sizes are well-proportioned (size=65), white stroke provides
+          good separation.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Green/red color coding is common but uses distinct shades; blue totals
+          help differentiate. Could be improved with patterns for colorblind users.
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Chart fills canvas well with balanced margins.
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis has "Amount ($)" with units, X-axis has "Category" which is
+          descriptive.
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Subtle grid with alpha=0.3 and dashed lines. No legend needed as
+          colors are intuitive, but a small legend could help clarify the color scheme.
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct waterfall chart type.
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X, values on Y correctly assigned.
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has positive/negative coloring, connector lines, total bars, and
+          value labels.
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data from 0 to 500.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend, but color scheme is self-explanatory with totals in blue.
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "waterfall-basic · altair · pyplots.ai".'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows positive changes, negative changes, and subtotals. Good variety
+          but "Gross Profit" label shows +$500 when it should show $300 (minor inconsistency
+          in labeling - actually it correctly shows $300).
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Quarterly financial breakdown is a classic waterfall use case with
+          realistic categories.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are reasonable for a business scenario ($500 revenue down
+          to $130 net income), though scale is simplified.
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: No functions or classes; follows imports → data → plot → save pattern.
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: true
+        comment: Deterministic data (hardcoded values), no random seed needed, but
+          explicit about being deterministic would be better.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only altair and pandas imported, both used.
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Altair API.
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html.
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of Altair's layering (connectors, bars, labels), encoding
+          with y/y2, and declarative style. Could leverage more Altair-specific features
+          like tooltips or interactive selection.
+  verdict: APPROVED

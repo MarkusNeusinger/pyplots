@@ -22,3 +22,175 @@ review:
   weaknesses:
   - Missing visible legend in the plot (trace has name but legend not shown)
   - Pandas import is unnecessary - could use numpy for date generation
+  image_description: 'The plot displays a line chart showing "Server Metrics · line-interactive
+    · plotly · pyplots.ai" as the title. The chart uses a blue line (#306998) to show
+    CPU Usage (%) over 7 days (Jan 1-7, 2024). The Y-axis ranges from 0 to 100% with
+    clear "CPU Usage (%)" label. The X-axis shows "Date & Time" with daily tick marks.
+    The data exhibits daily cyclical patterns with peaks reaching ~65-75% and troughs
+    around 10-30%. Notable interactive features visible: range selector buttons (1d,
+    3d, All) in top-left with "All" highlighted in yellow, and a range slider at the
+    bottom showing a miniature version of the full dataset. The layout is clean with
+    a white background, subtle grid lines, and well-proportioned margins.'
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis labels at 22pt, tick fonts at 16pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line width of 2.5 perfectly suited for 168 data points, shows patterns
+          clearly
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue line, no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, plot fills ~60% of canvas with range slider below
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"CPU Usage (%)" with units, "Date & Time" descriptive'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle (alpha 0.1), but no legend shown for the "CPU Usage"
+          trace
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct interactive line chart
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=datetime, Y=numeric correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Hover tooltips, zoom, pan, range selector, range slider all implemented
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis 0-105 shows all data including spikes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 0
+        max: 2
+        passed: false
+        comment: No visible legend in the chart (trace has name="CPU Usage" but legend
+          not displayed)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format with spec-id · library · pyplots.ai (includes
+          contextual "Server Metrics")
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows daily cycles, upward trend, noise, AND anomaly spikes - excellent
+          coverage of time series patterns
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Server CPU monitoring is a real, neutral, commonly understood scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: CPU usage 5-100% with realistic base ~35%, daily variations of ±20%,
+          perfect
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Imports → Data → Plot → Save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) used
+      - id: CQ-03
+        name: Clean Imports
+        score: 0
+        max: 2
+        passed: false
+        comment: pandas imported but only used for date_range; numpy could do this
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Modern Plotly API used
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves plot.png and plot.html correctly
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Excellent use of Plotly''s interactive features: rangeslider, rangeselector
+          buttons, hovertemplate with custom formatting, modebar customization, drag
+          modes'
+  verdict: APPROVED

@@ -26,3 +26,177 @@ review:
   - The $5k outlier in Sales is unrealistically low for annual salary data
   - Does not leverage Plotly-specific features like custom hover templates or quartile
     annotations
+  image_description: 'The plot displays 5 box plots showing salary distributions across
+    departments (Engineering, Marketing, Sales, HR, Finance). Each box uses a different
+    color: Engineering (muted blue), Marketing (yellow), Sales (blue), HR (light yellow),
+    Finance (gray). The title "box-basic · plotly · pyplots.ai" is centered at the
+    top. The Y-axis shows "Annual Salary ($)" with values ranging from $0 to $140,000,
+    formatted with dollar signs and commas. The X-axis shows "Department" with 5 category
+    labels. Each box shows the median line, quartile box, and whiskers. Outliers are
+    visible as individual points - notably two outliers in Sales (one very high ~$147k,
+    one very low ~$5k) and one in Engineering (~$57k). The background is clean white
+    with subtle horizontal gridlines.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 32pt, axis labels at 24pt, tick fonts at 20pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, category labels well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Box plots well-sized with clear median lines, whiskers, and visible
+          outlier points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Colors are distinguishable, though yellow boxes (Marketing, HR) are
+          somewhat similar
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, adequate margins, no cut-off content
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis has "Annual Salary ($)" with unit, X-axis has "Department"
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle (good), but no legend present (acceptable since showlegend=False
+          and colors are decorative)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct box plot type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X-axis, values on Y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Median line shown, outliers displayed as points, whiskers present,
+          different colors per category
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full data range shown including outliers
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend disabled appropriately (categories labeled on x-axis)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correct format "box-basic · plotly · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows outliers (especially in Sales), different distributions (Engineering
+          highest, HR lowest), varying spreads (Sales widest, HR narrowest)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Salary by department is a real, comprehensible scenario with plausible
+          relationships
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Mostly realistic salaries, though the $5k outlier in Sales is unrealistically
+          low for annual salary
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) is set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current API usage
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Basic go.Box usage without leveraging Plotly-specific features like
+          hover templates, annotations, or interactive elements that would be visible
+          in the HTML output
+  verdict: APPROVED

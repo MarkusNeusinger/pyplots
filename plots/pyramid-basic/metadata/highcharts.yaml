@@ -26,3 +26,173 @@ review:
     push it off-screen)'
   - The mirrored Y-axis on the right side is redundant and adds visual clutter
   - Could use Highcharts-specific annotations or interactive features more extensively
+  image_description: The plot displays a horizontal bar chart (population pyramid)
+    showing population distribution by age group. Blue bars (#306998, Python Blue)
+    represent Male population extending leftward from the central axis, while yellow
+    bars (#FFD43B, Python Yellow) represent Female population extending rightward.
+    Age groups range from "0-9" at the bottom to "80+" at the top, with labels on
+    both left and right Y-axes. Each bar displays its absolute value as a data label.
+    The title "Population by Age Group · pyramid-basic · highcharts · pyplots.ai"
+    is prominently displayed at the top, with a subtitle explaining "Male (left) vs
+    Female (right) - Population in Millions". The chart has a clean white background
+    with subtle grid lines and a dark vertical line at the center (value 0).
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: All text is readable; title at 48px, axis labels at 28-36px. Slightly
+          large title could be more balanced.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are well-sized and clearly visible with appropriate padding
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow palette is colorblind-safe (no red-green)
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good margins and spacing; minor issue with legend not visible in
+          the main view area
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Age Group" and "Population (Millions)" with units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Legend appears to be cut off or positioned below the visible area
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct pyramid/butterfly chart using opposing horizontal bars
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on Y-axis, values on X-axis with symmetric scaling
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Left/right bars, central axis, distinct colors, category labels,
+          subtitle identifying sides
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Symmetric axis with 10% padding shows all data
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Male/Female labels are correct
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "pyramid-basic · highcharts · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows typical population pyramid pattern with bulge in working-age
+          groups and tapering at extremes. Could show more dramatic asymmetry.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Population demographics is the canonical use case for pyramid charts
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values in millions are appropriate; the range (12-75) is realistic
+          for a medium-sized country
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → chart config → render'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: false
+        comment: Data is deterministic (no random), but no explicit seed comment
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Highcharts patterns
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Highcharts bar chart with dual xAxis, plotLines, custom formatters.
+          Could leverage more interactive features or annotations.
+  verdict: APPROVED

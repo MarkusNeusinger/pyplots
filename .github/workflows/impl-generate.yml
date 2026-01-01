@@ -271,6 +271,13 @@ jobs:
             1. Read `plots/${{ steps.inputs.outputs.specification_id }}/metadata/${{ steps.inputs.outputs.library }}.yaml`
                - Look at `review.strengths` (keep these aspects!)
                - Look at `review.weaknesses` (fix these problems - decide HOW yourself)
+               - Look at `review.image_description` (understand what was generated visually)
+               - Look at `review.criteria_checklist` (see exactly which criteria failed)
+                 - Focus on categories with low scores (e.g., visual_quality.score < visual_quality.max)
+                 - Check items with `passed: false` - these need fixing
+                 - VQ-XX items for visual issues
+                 - SC-XX items for spec compliance
+                 - CQ-XX items for code quality
             2. Read `plots/${{ steps.inputs.outputs.specification_id }}/implementations/${{ steps.inputs.outputs.library }}.py`
                - Understand what was done before
                - Keep what worked, fix what didn't
@@ -346,6 +353,13 @@ jobs:
             1. Read `plots/${{ steps.inputs.outputs.specification_id }}/metadata/${{ steps.inputs.outputs.library }}.yaml`
                - Look at `review.strengths` (keep these aspects!)
                - Look at `review.weaknesses` (fix these problems - decide HOW yourself)
+               - Look at `review.image_description` (understand what was generated visually)
+               - Look at `review.criteria_checklist` (see exactly which criteria failed)
+                 - Focus on categories with low scores (e.g., visual_quality.score < visual_quality.max)
+                 - Check items with `passed: false` - these need fixing
+                 - VQ-XX items for visual issues
+                 - SC-XX items for spec compliance
+                 - CQ-XX items for code quality
             2. Read `plots/${{ steps.inputs.outputs.specification_id }}/implementations/${{ steps.inputs.outputs.library }}.py`
                - Understand what was done before
                - Keep what worked, fix what didn't

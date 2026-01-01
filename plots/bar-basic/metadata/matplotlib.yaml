@@ -23,3 +23,171 @@ review:
     arrangement showing natural category variation
   - Could use matplotlib FuncFormatter for y-axis tick labels to show dollar signs
     consistently
+  image_description: 'The plot displays a vertical bar chart showing product sales
+    by category. Six steel-blue bars (#306998) represent different product categories:
+    Electronics ($45,200), Clothing ($32,800), Home & Garden ($28,500), Sports ($21,300),
+    Books ($18,900), and Toys ($15,600). Each bar has a dollar-formatted value label
+    positioned above it. The y-axis shows "Sales ($)" ranging from 0 to ~45,000, and
+    the x-axis shows "Product Category". The title follows the correct format: "bar-basic
+    · matplotlib · pyplots.ai". The plot has a clean design with subtle horizontal
+    grid lines, no top/right spines, and consistent bar widths with adequate spacing.'
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt, value annotations
+          at 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, all category labels clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars well-sized with good width (0.6), appropriate spacing
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme, no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Well-proportioned, good use of space with tight_layout
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Sales ($)" and "Product Category"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle (alpha=0.3) but no legend needed; however y-axis grid
+          only is appropriate
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct vertical bar chart
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on x-axis, values as bar heights
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Value labels on bars, consistent bar widths, single color, adequate
+          spacing
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis starts at 0, shows all data properly
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single-series bar chart
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "bar-basic · matplotlib · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows 6 categories with clear value differences, though data is monotonically
+          decreasing which is less interesting than mixed ordering
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Product sales by category is a plausible, real-world scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Sales values in thousands are realistic for category comparisons
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: false
+        comment: Data is deterministic (hardcoded), but no random seed comment to
+          indicate intentional reproducibility
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot imported
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: false
+        comment: Good use of Axes methods, spines control, and annotation, but could
+          leverage more matplotlib-specific features like custom formatters
+  verdict: APPROVED

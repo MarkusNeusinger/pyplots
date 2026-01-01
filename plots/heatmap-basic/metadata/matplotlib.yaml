@@ -26,3 +26,166 @@ review:
     for more idiomatic matrix display
   - Department axis labels could include additional context (e.g., "Department" →
     "Department Correlation")
+  image_description: The plot displays an 8×8 correlation matrix heatmap showing relationships
+    between 8 company departments (Sales, Marketing, Support, Dev, HR, Finance, Ops,
+    Legal). The heatmap uses the RdBu_r diverging colormap with dark red representing
+    strong positive correlations (+1.0), dark blue representing strong negative correlations
+    (-1.0), and white/light colors representing near-zero correlations. The diagonal
+    shows perfect self-correlation (1.00) in dark red. Each cell contains its correlation
+    coefficient value (e.g., -0.30, 0.49, -1.00) with white text on dark backgrounds
+    and black text on light backgrounds for optimal readability. A vertical colorbar
+    on the right shows the scale from -1.0 to +1.0 labeled "Correlation Coefficient".
+    The title "heatmap-basic · matplotlib · pyplots.ai" appears at the top. X-axis
+    labels are rotated 45° for readability.
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt, labels 20pt, tick labels 16pt, annotations 14pt - all
+          perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, rotated x-labels prevent collision
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Cell annotations clear with adaptive text color (white/black)
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: RdBu_r is a well-established colorblind-safe diverging colormap
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Square aspect ratio perfect for matrix, good proportions
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Labels "Department" are descriptive but no units (appropriate for
+          categorical)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Colorbar well placed with label, no grid needed for heatmap
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct heatmap visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Matrix values correctly mapped to colors
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Diverging colormap ✓, value annotations ✓, colorbar legend
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full correlation range -1 to +1 displayed
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar accurately labeled "Correlation Coefficient"
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "heatmap-basic · matplotlib · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows positive, negative, and zero correlations, symmetric matrix
+          with diagonal=1, but all correlations are equally distributed rather than
+          showing typical correlation patterns
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Department correlation matrix is a plausible business analytics scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values correctly bounded to [-1, 1] correlation range
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: All APIs current
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items: []
+  verdict: APPROVED

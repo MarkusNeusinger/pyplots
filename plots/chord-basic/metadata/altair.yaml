@@ -27,3 +27,171 @@ review:
     geometry calculations which reduces the declarative advantage of Altair
   - Labels could benefit from slight rotation for better alignment with arc positions
   - Flow values lack units in the data context
+  image_description: 'The plot displays a chord diagram showing migration flows between
+    6 continents. The outer ring consists of colored arc segments: Europe (dark blue
+    #306998), North America (golden yellow #FFD43B), Asia (teal #4ECDC4), Africa (coral
+    red #FF6B6B), South America (light green/mint #95E1D3), and Oceania (purple #A86EDB).
+    Each continent''s arc size is proportional to its total flow volume. Semi-transparent
+    chords connect the continents with widths corresponding to flow magnitudes. Labels
+    are positioned outside each arc segment with matching colors. The title "chord-basic
+    · altair · pyplots.ai" is displayed at the top center. A legend is present on
+    the right side showing the Region color mapping.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title and labels are clear and readable, font sizes are appropriate
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels well-positioned
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Chords are visible with good opacity (0.6), arc segments clearly
+          defined
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Distinct color palette, colorblind-friendly with good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Well-centered diagram, good use of canvas space
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: true
+        comment: N/A for chord diagram (no traditional axes)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend well-placed on right, clean styling
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct chord diagram implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Source/target/value correctly mapped to arcs and chords
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All features present: bidirectional flows, proportional chord widths,
+          distinct colors'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All entities and connections visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies all regions
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: chord-basic · altair · pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows bidirectional flows, varying magnitudes, 6 entities with 15
+          connections
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Migration flows between continents is a perfect real-world use case
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Flow values (12-55) are plausible but abstract (no units specified)
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear structure: imports → data → calculations → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (no random, uses fixed dataset)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports (altair, numpy, pandas)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Altair API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Missing explicit png check
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Altair's declarative grammar with layering, tooltips enabled
+          for interactivity, HTML export. However, chord diagrams are not a native
+          Altair chart type, requiring manual construction.
+  verdict: APPROVED

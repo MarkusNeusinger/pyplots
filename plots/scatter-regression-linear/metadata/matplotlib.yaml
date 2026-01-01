@@ -26,3 +26,175 @@ review:
   - Axis labels lack units (could be "Study Hours (hrs)" and "Exam Score (points)")
   - Manual regression calculation rather than using scipy or numpy polyfit - works
     correctly but not leveraging library ecosystem
+  image_description: 'The plot shows a scatter plot with linear regression on a white
+    background. Blue circular markers (with white edge) represent 80 data points showing
+    the relationship between Study Hours (x-axis, range 1-10) and Exam Score (y-axis,
+    range ~30-100). A prominent red regression line runs diagonally from bottom-left
+    to top-right with a semi-transparent yellow/gold 95% confidence interval band
+    surrounding it. The title reads "scatter-regression-linear · matplotlib · pyplots.ai"
+    at the top. An annotation box in the upper-left corner displays the regression
+    equation "y = 6.32x + 33.12" and "R² = 0.848". A legend in the lower-right shows
+    "95% CI" and "Regression Line". Axis labels are clear: "Study Hours" (x) and "Exam
+    Score" (y). The grid is subtle with dashed lines.'
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: 'Markers sized at s=150 with alpha=0.7, appropriate for 80 points
+          (guideline: 100-200 for 30-100 pts)'
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue (#306998) and red (#E74C3C) with yellow CI band - good contrast,
+          colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins, tight_layout applied
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels "Study Hours" and "Exam Score" but no units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Grid subtle (alpha=0.3, dashed), legend well-placed in lower-right
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct scatter plot with linear regression
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X (study hours) and Y (exam scores) correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: R² displayed, regression line distinct, 95% CI band with transparency,
+          points have alpha
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data points appropriately
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly labels CI and regression line
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "{spec-id} · {library} · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows linear correlation with noise, demonstrates regression fit
+          and confidence intervals
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Study hours vs exam scores is a classic, comprehensible educational
+          research scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Study hours 1-10, exam scores 20-100 with base 35 + 6pts/hour is
+          realistic
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → regression → plot → save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Manual regression calculation instead of using scipy.stats.linregress
+          or numpy.polyfit; could use matplotlib's built-in annotation features more
+  verdict: APPROVED

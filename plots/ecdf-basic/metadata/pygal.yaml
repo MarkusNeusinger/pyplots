@@ -15,3 +15,171 @@ review:
   strengths: []
   weaknesses: []
   improvements: []
+  image_description: 'The plot displays an ECDF (Empirical Cumulative Distribution
+    Function) as a step function on a white background. The line is rendered in a
+    light blue/steel blue color (#306998). The x-axis is labeled "Value" and ranges
+    from approximately -2.4 to 2.0, showing the sorted data values from a normal distribution.
+    The y-axis is labeled "Cumulative Proportion" and correctly ranges from 0 to 1.
+    The title follows the correct format: "ecdf-basic · pygal · pyplots.ai". Horizontal
+    and vertical grid lines are present and subtle. The step function clearly shows
+    the characteristic S-curve shape of a normal distribution''s CDF, starting near
+    0 at the left, passing through 0.5 around x=0, and approaching 1 on the right.'
+  criteria_checklist:
+    visual_quality:
+      score: 32
+      max: 35
+      items:
+      - id: VQ-01
+        name: Meaningful axis labels
+        score: 7
+        max: 7
+        passed: true
+        comment: '"Value" and "Cumulative Proportion" are clear and descriptive'
+      - id: VQ-02
+        name: No overlapping text
+        score: 6
+        max: 6
+        passed: true
+        comment: All text is readable, no overlaps
+      - id: VQ-03
+        name: Color choice
+        score: 5
+        max: 5
+        passed: true
+        comment: Python blue (#306998) used appropriately
+      - id: VQ-04
+        name: Clear data elements
+        score: 4
+        max: 5
+        passed: true
+        comment: Line is visible but could be slightly thicker for 4800px canvas
+      - id: VQ-05
+        name: Layout balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, no cut-off content
+      - id: VQ-06
+        name: Grid subtlety
+        score: 3
+        max: 3
+        passed: true
+        comment: Grid lines are subtle and help read percentile values
+      - id: VQ-08
+        name: Image size
+        score: 2
+        max: 2
+        passed: true
+        comment: 4800x2700 px correct
+    spec_compliance:
+      score: 33
+      max: 35
+      items:
+      - id: SC-01
+        name: Correct plot type
+        score: 10
+        max: 10
+        passed: true
+        comment: ECDF step function correctly implemented
+      - id: SC-02
+        name: Data mapped correctly
+        score: 7
+        max: 7
+        passed: true
+        comment: Sorted values on X, cumulative proportion on Y
+      - id: SC-03
+        name: Required features present
+        score: 7
+        max: 7
+        passed: true
+        comment: Step function increments by 1/n, shows full distribution
+      - id: SC-04
+        name: Data range appropriate
+        score: 4
+        max: 4
+        passed: true
+        comment: Y-axis 0-1, X-axis shows all data points
+      - id: SC-05
+        name: Legend accuracy
+        score: 2
+        max: 4
+        passed: true
+        comment: Legend hidden (appropriate for single series, but spec doesn't require
+          hiding)
+      - id: SC-06
+        name: Title format correct
+        score: 3
+        max: 3
+        passed: true
+        comment: '"ecdf-basic · pygal · pyplots.ai"'
+    data_quality:
+      score: 14
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature coverage
+        score: 5
+        max: 6
+        passed: true
+        comment: Shows ECDF well, demonstrates normal distribution shape. Could show
+          more variation in step sizes to highlight the 1/n increment concept.
+      - id: DQ-02
+        name: Realistic context
+        score: 5
+        max: 5
+        passed: true
+        comment: Random samples from normal distribution is a standard, realistic
+          example
+      - id: DQ-03
+        name: Appropriate scale
+        score: 4
+        max: 4
+        passed: true
+        comment: 100 observations is ideal for visualization, values are sensible
+    code_quality:
+      score: 14
+      max: 15
+      items:
+      - id: CQ-01
+        name: KISS structure
+        score: 4
+        max: 4
+        passed: true
+        comment: 'Clean sequential structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducible
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Library idioms
+        score: 3
+        max: 3
+        passed: true
+        comment: Proper pygal XY chart usage with custom Style
+      - id: CQ-04
+        name: Clean imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports (numpy, pygal, Style)
+      - id: CQ-05
+        name: Helpful comments
+        score: 1
+        max: 1
+        passed: true
+        comment: Comments explain step function construction
+      - id: CQ-06
+        name: No deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current pygal API used
+      - id: CQ-07
+        name: Output correct
+        score: 0
+        max: 1
+        passed: true
+        comment: Saves both plot.png and plot.html (correct)
+  verdict: APPROVED

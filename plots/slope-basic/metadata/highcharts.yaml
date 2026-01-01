@@ -26,3 +26,175 @@ review:
     better show the slope differences
   - Grid lines could be more subtle (lower opacity) to avoid competing with data
   - No explicit comment about deterministic data (minor)
+  image_description: 'The plot displays a slope chart (slopegraph) comparing product
+    sales between Q1 and Q4. Eight products (A through H) are shown with lines connecting
+    their Q1 values (left) to Q4 values (right). Blue lines (#306998) indicate products
+    that increased in sales (A, C, D, F, G), while yellow/gold lines (#FFD43B) indicate
+    products that decreased (B, E, H). Each endpoint has a circular marker with labels
+    showing the product name and value (e.g., "Product A: 85" on the left, "Product
+    A: 110" on the right). The title "slope-basic · highcharts · pyplots.ai" appears
+    at the top in bold, with subtitle "Product Sales: Q1 vs Q4 (thousands)" below.
+    The Y-axis is labeled "Sales (thousands)" ranging from 0 to 160 with dashed grid
+    lines. The X-axis shows "Q1" and "Q4" labels at the bottom.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title and labels are clearly readable, good font sizes for 4800x2700
+          resolution
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, labels are well-positioned at endpoints
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Lines are thick (lineWidth: 6), markers large (radius: 16), excellent
+          visibility'
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow palette is colorblind-safe (not red-green)
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good layout with appropriate margins, though Y-axis starts at 0 when
+          data starts around 45
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Y-axis has descriptive label with units: "Sales (thousands)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is dashed which is good, but legend is disabled; for slope charts
+          without legend this is acceptable but loses 1pt; grid could be more subtle
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct slope chart implementation connecting two time points
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Q1 and Q4 values correctly mapped to X positions
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Has all spec features: endpoint labels, color-coded by direction,
+          vertical axes labeled'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within chart range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for slope chart (legend disabled, entity names in labels)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "slope-basic · highcharts · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows both increases and decreases, variety of magnitudes, but could
+          show rank crossings more clearly
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Product sales Q1 vs Q4 is a plausible business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values in thousands (45-150) are realistic, though starting Y at
+          0 wastes some space
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear structure: imports → data → chart config → series → export'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: false
+        comment: Data is deterministic (hardcoded), but no explicit seed comment
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current highcharts-core API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Highcharts line series with data labels, but could leverage
+          more advanced features like animation or tooltips for static image
+  verdict: APPROVED

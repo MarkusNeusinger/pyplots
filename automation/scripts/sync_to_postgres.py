@@ -284,6 +284,10 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
                     # Review feedback
                     "review_strengths": review.get("strengths") or [],
                     "review_weaknesses": review.get("weaknesses") or [],
+                    # Extended review data (issue #2845)
+                    "review_image_description": review.get("image_description"),
+                    "review_criteria_checklist": review.get("criteria_checklist"),
+                    "review_verdict": review.get("verdict"),
                 }
             )
 

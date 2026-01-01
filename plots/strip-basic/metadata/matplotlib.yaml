@@ -25,3 +25,179 @@ review:
     single color or legend
   - Mean lines lack annotation or legend entry explaining what they represent
   - Y-axis label could include scale range (1-10)
+  image_description: 'The plot displays a strip plot showing "Survey Response Score"
+    (y-axis, scale 0-10) across four departments (x-axis): Engineering, Marketing,
+    Sales, and HR. Each department''s data points are scattered with horizontal jitter
+    to avoid overplotting. Engineering and Sales use a blue color (#306998), while
+    Marketing and HR use a yellow/gold color (#FFD43B). Black horizontal lines indicate
+    the mean score for each group (Engineering ~6.9, Marketing ~6.6, Sales ~7.7, HR
+    ~6.2). Points have white edge borders and moderate transparency (alpha 0.6). The
+    y-axis grid lines are subtle with dashed styling. The title follows the correct
+    format: "strip-basic · matplotlib · pyplots.ai". The layout is clean with good
+    use of the 16:9 canvas.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No text overlap, categories well-spaced, points jittered appropriately
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Marker size (s=200) is good for the data density (35-52 points per
+          group), alpha 0.6 works well
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Blue and yellow are distinguishable but alternating colors within
+          adjacent categories could be confusing (no legend explains the color meaning)
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent canvas utilization, balanced margins, plot fills appropriate
+          space
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels ("Department", "Survey Response Score") but no
+          units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha 0.3, dashed), y-axis only - good. No legend
+          present but mean lines lack explanation
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct strip plot with jitter
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X, continuous values on Y - correct
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Jitter (0.2 spread), transparency (0.6), horizontal mean lines as
+          reference
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis 0-11 shows all data points (scores range ~2-10)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for this simple plot
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "strip-basic · matplotlib · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows different distributions per group (varying means, spreads),
+          good variety. HR shows widest spread, Sales shows tightest - demonstrates
+          spec's point about seeing individual values
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Survey response scores by department is a realistic, comprehensible
+          scenario mentioned in spec applications
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: 1-10 survey scale is appropriate, sample sizes (35-52) are within
+          spec recommendation (10-200)
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Imports → Data → Plot → Save, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Modern matplotlib API used
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: true
+        comment: Uses ax.scatter() with jitter and ax.hlines() for means. Basic matplotlib
+          usage, no advanced features like zorder customization or custom markers
+  verdict: APPROVED

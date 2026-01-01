@@ -100,6 +100,11 @@ class Impl(Base):
     review_strengths: Mapped[list[str]] = mapped_column(StringArray, default=list)  # What's good
     review_weaknesses: Mapped[list[str]] = mapped_column(StringArray, default=list)  # What needs work
 
+    # Extended review data (from issue #2845)
+    review_image_description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # AI's visual description
+    review_criteria_checklist: Mapped[Optional[dict]] = mapped_column(UniversalJSON, nullable=True)  # Detailed scoring
+    review_verdict: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # "APPROVED" or "REJECTED"
+
     # System
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 

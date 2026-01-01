@@ -23,3 +23,155 @@ review:
   weaknesses:
   - Wicks could be slightly thicker for better visibility at smaller display sizes
   - Bottom legend creates extra whitespace below the chart
+  image_description: The plot displays a candlestick chart showing 30 trading days
+    of stock price data. Green candlesticks indicate bullish (up) days where close
+    > open, while red/coral candlesticks indicate bearish (down) days. Each candlestick
+    has a body showing the open-close range and wicks (thin lines) extending to show
+    the high-low range. The price axis ranges from approximately 128 to 172 dollars,
+    showing a general downward trend over the period. The title "candlestick-basic
+    · pygal · pyplots.ai" appears at the top, with "Trading Day" on the x-axis and
+    "Price ($)" on the y-axis. A legend at the bottom identifies "Bullish (Up)" in
+    green and "Bearish (Down)" in red.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick marks are all clearly readable at the
+          large canvas size
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; all labels are well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Candlesticks are well-sized with clearly visible bodies and wicks;
+          wicks could be slightly more prominent
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Green (#22A06B) and red (#EF4444) have good contrast and are distinguishable
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions with appropriate margins and spacing
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Price ($)" includes units; "Trading Day" is descriptive'
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct candlestick chart implementation using XY lines for bodies
+          and wicks
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: OHLC data correctly mapped to candlestick elements
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: OHLC display, color coding for up/down,
+          visible wicks'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full price range with appropriate padding
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly labels "Bullish (Up)" and "Bearish (Down)"
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "candlestick-basic · pygal · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows both bullish and bearish candles with varying sizes; good mix
+          of trend patterns
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Realistic stock price scenario with plausible volatility and price
+          movements
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Price range ~$130-170 is realistic; could have a cleaner starting
+          price
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → chart config → render'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy, pygal, and Style are imported and used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current pygal API
+    library_features:
+      score: 3
+      max: 5
+      items: []
+  verdict: APPROVED

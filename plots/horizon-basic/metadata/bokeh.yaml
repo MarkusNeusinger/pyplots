@@ -27,3 +27,182 @@ review:
   - The color legend at the very top, while present, could be more visually prominent
     and integrated
   - The axis label Hour of Day could include units (e.g., Hour of Day 0-24h)
+  image_description: 'The plot displays 6 stacked horizon charts representing server
+    CPU metrics over a 24-hour period. Each horizontal band represents a different
+    server (Web Server 1, Web Server 2, Database, Cache Server, API Gateway, Load
+    Balancer). The visualization uses blue color gradients (light to dark: #a6cee3,
+    #306998, #08306b) for positive values and orange/red gradients (light to dark:
+    #fdd0a2, #f16913, #8c2d04) for negative values. The band-folding technique is
+    correctly implemented, with color intensity increasing as magnitude increases
+    within each band. A color legend appears at the top explaining the band meanings.
+    The title "horizon-basic · bokeh · pyplots.ai" is displayed at the top center.
+    The x-axis shows "Hour of Day" from 0 to 24, and each series has its name labeled
+    on the left side. The data shows realistic server load patterns with periodic
+    oscillations, noise, and occasional spikes.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title at 32pt and axis labels at 24pt/20pt are readable; series labels
+          at 26pt are good but could be slightly larger for optimal viewing
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; series are well separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Horizon bands are clearly visible with good alpha (0.9); color differentiation
+          is effective but some subtle bands could be more distinct
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/orange palette is colorblind-friendly (deuteranopia/protanopia
+          safe)
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of canvas space; 6 series stacked vertically with legend
+          on top fills the 4800×2700 canvas well
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Hour of Day" is descriptive but lacks units; y-axis deliberately
+          hidden for horizon charts'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid appropriately disabled for horizon charts; legend is present
+          but could be more prominent
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct horizon chart implementation with band folding
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Time (hours) on x-axis, values folded into bands correctly
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 3 bands with mirrored positive/negative coloring, baseline at zero,
+          multiple series comparison
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full 24-hour range visible, all data within view
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Color legend accurately explains band meanings (Low/Medium/High for
+          both positive and negative)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "horizon-basic · bokeh · pyplots.ai" format
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows positive AND negative values, multiple intensity bands, 6 different
+          series with varying patterns; could show more extreme variation
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Server metrics over 24 hours is a perfect real-world use case matching
+          the spec's "Dashboard monitoring" application
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are plausible for server metrics; the scale normalization
+          per series is appropriate
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → plots → save; uses a loop but no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh 3.x API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as both plot.html and plot.png (correct)
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ColumnDataSource, HoverTool with custom tooltips, varea for
+          filled regions, column layout for stacking; could leverage more Bokeh-specific
+          interactivity features like linked panning
+  verdict: APPROVED

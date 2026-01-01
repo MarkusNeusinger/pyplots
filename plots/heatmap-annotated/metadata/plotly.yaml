@@ -23,3 +23,173 @@ review:
   weaknesses:
   - Axis labels are generic Sector - could be Stock Market Sector for more context
   - Colorbar thickness could be slightly larger for the canvas size
+  image_description: The plot displays an 8x8 sector correlation matrix heatmap showing
+    correlations between stock market sectors (Technology, Healthcare, Finance, Energy,
+    Consumer, Industrial, Materials, Utilities). The matrix uses a diverging RdBu
+    (Red-Blue) colorscale ranging from -1 (blue) to +1 (red), centered at 0 (white/cream).
+    Each cell contains its correlation value formatted to 2 decimal places. The diagonal
+    shows perfect correlation (1.00) in dark red. Text annotations use white font
+    on dark-colored cells (high absolute correlation) and black font on light-colored
+    cells for contrast. The title reads "Sector Correlation Matrix · heatmap-annotated
+    · plotly · pyplots.ai" at the top. Both axes are labeled "Sector" with rotated
+    x-axis labels at 45 degrees. A colorbar on the right shows the correlation scale.
+    The plot has square cells and uses the plotly_white template for a clean background.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: all text clearly readable, good font sizes (32pt title, 24pt axis
+          labels, 18pt annotations and ticks)
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: no overlapping text, rotated x-labels prevent collision
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: cells are perfectly sized, annotations clearly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: RdBu diverging colormap is colorblind-friendly
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: good layout but cells could use slightly more canvas area
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: descriptive labels "Sector" but no units (N/A for this context)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: colorbar well-placed, no grid needed for heatmap
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: correct annotated heatmap type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly assigned as sector labels
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'all spec features present: annotations, colorbar, contrast text,
+          diverging colormap'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: colorscale shows full -1 to 1 range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: colorbar correctly labeled "Correlation"
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: uses correct format "{description} · {spec-id} · {library} · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: shows positive correlations, negative correlations, perfect diagonal,
+          and varying magnitudes
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: stock sector correlation matrix is a real financial analysis scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: correlation values range from -0.23 to 1.00, realistic for market
+          sectors
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'simple script structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set correctly
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: only numpy and plotly.figure_factory used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: uses current plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: 'saves as plot.png and plot.html (minor: both outputs correct)'
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: uses plotly's `ff.create_annotated_heatmap` and custom hover template,
+          but could leverage more interactive features like click callbacks
+  verdict: APPROVED

@@ -24,3 +24,175 @@ review:
   weaknesses:
   - Y-axis label Streaming Hours (Millions) is slightly confusing when the centered
     baseline creates negative values
+  image_description: 'The plot displays a streamgraph showing monthly streaming hours
+    by music genre (Pop, Rock, Hip-Hop, Electronic, Jazz, Classical) over a 2-year
+    period from early 2022 to late 2023. The streamgraph uses a centered baseline
+    creating a symmetric, river-like appearance around the x-axis. Colors used are:
+    Python Blue (#306998) for Pop at the bottom, Yellow (#FFD43B) for Rock, Red/Orange
+    (#E24A33) for Hip-Hop, Green (#8EBA42) for Electronic, Purple (#988ED5) for Jazz,
+    and Light Blue (#348ABD) for Classical at the top. The title "streamgraph-basic
+    · plotly · pyplots.ai" is centered at the top. The x-axis shows "Month" with quarterly
+    date labels, and the y-axis shows "Streaming Hours (Millions)" ranging from -100
+    to 100. A horizontal legend is positioned above the plot area. The curves are
+    smooth and flowing, with subtle grid lines in the background.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 36pt, axis labels at 28pt, ticks at 22pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, legend is well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Stream layers are clearly visible with good distinction
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses Python Blue/Yellow with colorblind-safe palette, good contrast
+          between adjacent areas
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well, balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Y-axis has units "(Millions)" but could be clearer (streaming hours
+          is somewhat abstract for negative values)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha 0.2), legend well positioned above plot
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct streamgraph with centered baseline
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Time on X, categories stacked, values determine area height
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Smooth curves (spline), centered baseline, distinct colors, legend
+          present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axis range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: All 6 genres correctly labeled
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses exact format: "streamgraph-basic · plotly · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: 'Shows variation over time, different category sizes, seasonal patterns
+          - minor: all categories follow similar trends'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Music streaming by genre is a plausible, comprehensible scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: false
+        comment: Values are reasonable but "millions" unit on y-axis is somewhat arbitrary
+          for example data
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy, pandas, plotly.graph_objects used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: All APIs are current
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses plotly's spline smoothing, interactive hover, HTML export, go.Scatter
+          with fill="toself"
+  verdict: APPROVED

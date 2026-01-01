@@ -26,3 +26,175 @@ review:
     not implemented (optional but would enhance diagnostic capability)
   - Feature coverage could show more pronounced heteroscedasticity pattern for better
     demonstration of this diagnostic feature
+  image_description: 'The plot displays a residual scatter plot with 150 blue circular
+    markers (color #306998) against a white background. The title "residual-basic
+    · bokeh · pyplots.ai" appears at the top in black text. The x-axis is labeled
+    "Fitted Values ($K)" ranging from approximately 150 to 500, and the y-axis is
+    labeled "Residuals ($K)" ranging symmetrically from approximately -100 to +100.
+    A horizontal dashed reference line at y=0 helps assess systematic bias. The markers
+    have moderate transparency (alpha=0.6) revealing overlapping points. The plot
+    shows random scatter around zero with visible outliers at approximately (+95,
+    -80, +85) and a subtle heteroscedasticity pattern. Subtle gray grid lines are
+    present. The Bokeh toolbar icons are visible in the top-right corner.'
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 72pt, axis labels at 48pt, tick labels at 36pt - all perfectly
+          readable at 4800x2700
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Markers sized at 40 with alpha 0.6 appropriate for 150 points, revealing
+          density and outliers
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color (#306998), good contrast against white background
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins, symmetric y-axis range
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Fitted Values ($K)" and "Residuals
+          ($K)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle (alpha 0.3), but no legend needed for single-series
+          plot - deducting 0 pts since no legend is required
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct residual plot showing residuals vs fitted values
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Fitted values on x-axis, residuals on y-axis as specified
+      - id: SC-03
+        name: Required Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Has reference line at y=0, alpha transparency, symmetric y-axis,
+          but missing LOWESS/LOESS trend line mentioned as "consider" in spec
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Symmetric y-axis range around zero, all data visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single-series plot
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "residual-basic · bokeh · pyplots.ai"'
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows random scatter, outliers, slight heteroscedasticity pattern
+          - good variety but could show more extreme heteroscedasticity
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: House price regression model is a realistic scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values in $K for housing prices (150-500K fitted, ±100K residuals)
+          are realistic
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) used
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Using current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: ColumnDataSource, HoverTool with formatted tooltips, Span for reference
+          line, HTML export for interactivity
+  verdict: APPROVED

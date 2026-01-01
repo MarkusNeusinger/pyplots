@@ -23,3 +23,174 @@ review:
   - Missing Altair distinctive interactive features (tooltips, .interactive() for
     zoom/pan) that showcase the library strengths
   - Grid lines are too subtle (gridOpacity=0.3) making them barely visible
+  image_description: 'The plot displays a basic line chart showing monthly temperature
+    data over a full year (January to December 2024). The line is blue (#306998) connecting
+    12 data points, with filled circular markers at each point. The chart has a white
+    background with subtle gray grid lines. The title "line-basic · altair · pyplots.ai"
+    appears at the top center in black text. The Y-axis shows "Temperature (°C)" ranging
+    from 0 to 34, and the X-axis shows "Month" with date labels (Jan 07, Feb 04, etc.).
+    The trend shows a clear seasonal pattern: cold temperatures (~4°C) in winter months,
+    rising through spring, peaking around 30°C in late June, then declining through
+    autumn back to cold winter temperatures (~3.5°C in December).'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line strokeWidth=4 and point size=200 are well-suited for 12 data
+          points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color (#306998) with good contrast against white background
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, slight excess whitespace at top of Y-axis (max
+          ~34 when peak is ~30)
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis has "Temperature (°C)" with units, X-axis has "Month"
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is very subtle (barely visible), could be slightly more prominent
+          for improved readability
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct line plot connecting data points with straight lines
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X is temporal (months), Y is numeric (temperature)
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has line, optional markers, clear axis labels, grid lines as spec
+          requires
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data with appropriate range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single line (N/A - appropriate)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "line-basic · altair · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows clear trend pattern (seasonal temperature), but only 12 points
+          (spec suggests up to 200)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly temperature readings is a plausible, comprehensible real-world
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Temperature values 3-30°C are realistic for a temperate climate
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple script: imports → data → plot → save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only used imports (altair, numpy, pandas)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Altair API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Basic usage of Altair without leveraging its distinctive features
+          like interactivity (.interactive()), tooltips, or declarative selection
+  verdict: APPROVED

@@ -23,3 +23,172 @@ review:
   weaknesses:
   - Grid styling could be slightly more subtle (alpha 0.3 is at the upper end of recommended
     0.2-0.4 range)
+  image_description: 'The plot displays a vertical bar chart showing customer satisfaction
+    survey responses. Five blue bars (#306998) are arranged in descending order by
+    count: Satisfied (66), Very Satisfied (56), Neutral (36), Dissatisfied (27), and
+    Very Dissatisfied (15). Each bar has a count label positioned above it in matching
+    blue text. The title "count-basic · bokeh · pyplots.ai" is centered at the top.
+    The x-axis is labeled "Response Category" with slightly rotated category names,
+    and the y-axis is labeled "Number of Responses" with values from 0 to ~70. The
+    background is light gray (#fafafa) with subtle dashed horizontal grid lines. The
+    bars have a darker blue border and slight transparency (alpha=0.85).'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 32pt, axis labels at 24pt, tick labels at 20pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, category labels are rotated to prevent collision
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bar widths and heights are well-proportioned for the data
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme, colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Good canvas utilization, minor: slightly more whitespace on right
+          side'
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels: "Response Category" and "Number of Responses"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: No legend needed, but y-grid could be slightly more subtle (currently
+          adequate)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct count plot with vertical bars
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X, counts on Y correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Automatic counting from raw data, sorted by frequency, count labels
+          present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows 0 to max+15% for label space
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single-series count plot
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "count-basic · bokeh · pyplots.ai"'
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows varied distribution across 5 categories with different frequencies;
+          could show more extreme variation
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Customer satisfaction survey is a perfect, realistic use case
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 200 total responses with realistic probability distribution
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → counting → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) is set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current Bokeh API used
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: ColumnDataSource, LabelSet for annotations, proper categorical axis
+          handling, both PNG and HTML export
+  verdict: APPROVED

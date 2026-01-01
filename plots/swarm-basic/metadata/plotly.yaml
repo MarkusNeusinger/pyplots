@@ -27,3 +27,177 @@ review:
     or advanced interactivity beyond basic hover
   - Axis labels lack units (could be "Test Score (points)" or similar)
   - Legend placement has slight isolation from the main plot area
+  image_description: 'The plot displays a swarm plot showing student test scores across
+    4 classrooms (Room A through Room D). Each classroom has its own color: Room A
+    in dark blue (#306998), Room B in yellow (#FFD43B), Room C in light blue (#5A9BD4),
+    and Room D in orange (#E07B39). Individual data points are displayed as circular
+    markers with dark outlines, spread horizontally to avoid overlap. Each classroom
+    includes a white diamond marker indicating the mean score. The title "swarm-basic
+    · plotly · pyplots.ai" is centered at the top. The x-axis shows "Classroom" with
+    category labels, and the y-axis shows "Test Score" ranging from approximately
+    40-100. A legend on the right identifies each classroom color. The plot uses a
+    clean white template with subtle gridlines.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 32pt, axis titles at 24pt, tick labels at 20pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, categories well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers well-sized at 14px with good opacity (0.8) and visible outlines.
+          Slight overlap in dense areas but acceptable for swarm plot
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses blue, yellow, light blue, orange palette - distinguishable for
+          most colorblind users
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Good use of canvas space, plot fills majority of area. Minor issue:
+          legend slightly isolated on right'
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels ("Test Score", "Classroom") but no units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Subtle gridlines (alpha 0.05-0.1), legend well placed and clear
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct swarm/beeswarm plot with horizontal point spreading
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X-axis, continuous values on Y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Shows individual points, horizontal spreading to avoid overlap, mean
+          markers as suggested in spec
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis range [35, 105] shows all data points appropriately
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies all four classrooms
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "swarm-basic · plotly · pyplots.ai"'
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Excellent variety: Room A shows bimodal (main cluster + high performers),
+          Room B has wide spread with outliers, Room C is bimodal (two clusters),
+          Room D has tight clustering - demonstrates various distribution shapes'
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Student test scores by classroom is plausible and relatable, though
+          somewhat generic
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Test scores 40-95 are realistic for classroom assessments
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear script: imports → data → plot → save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Implements beeswarm algorithm manually instead of using plotly's
+          built-in jitter or a violin plot overlay. Does not leverage plotly's distinctive
+          interactive features in an interesting way
+  verdict: APPROVED

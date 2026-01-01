@@ -26,3 +26,163 @@ review:
     small relative to available space)
   - Could add hover interactivity to show category details when hovering over squares
     (Plotly strength not utilized)
+  image_description: 'The plot displays a 10x10 waffle chart (100 squares) representing
+    budget allocation across 5 categories. From bottom to top: dark blue squares for
+    Operations (35%), golden yellow squares for Marketing (25%), teal/cyan squares
+    for R&D (22%), coral/orange squares for HR (12%), and purple squares for Other
+    (6%). The title "Budget Allocation · waffle-basic · plotly · pyplots.ai" is centered
+    at the top in black text. A horizontal legend below the grid shows all categories
+    with their percentages. The squares have white borders separating them, and the
+    overall background is white.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title and legend text are large and clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Squares are well-sized with clear white borders
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Colors are distinct and colorblind-friendly (blue, yellow, teal,
+          orange, purple)
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Grid is centered but could use more canvas space; some empty areas
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend well-placed horizontally below chart with clear labels
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct waffle chart with 10x10 grid
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Values correctly mapped to square counts
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: 10x10 grid, distinct colors, legend with
+          percentages'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 100 squares filled, values sum to 100%
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows all categories with percentages
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Follows "{topic} · {spec-id} · {library} · pyplots.ai" format
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows 5 categories with varying proportions; could benefit from more
+          contrast in sizes
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Budget allocation is a perfect real-world use case for waffle charts
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Percentages are realistic for budget categories
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → grid creation → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: false
+        comment: No random seed needed (deterministic data), but numpy imported unnecessarily
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects imported
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses go.Scatter with square markers and proper layout; could leverage
+          more Plotly-specific features like hover info
+  verdict: APPROVED

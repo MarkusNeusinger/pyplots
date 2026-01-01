@@ -25,3 +25,178 @@ review:
   weaknesses:
   - No legend explaining the color scale (cold→warm color mapping)
   - HTML output is generated but not strictly required for review
+  image_description: 'The plot displays a ridgeline visualization of monthly temperature
+    distributions. There are 12 vertically stacked density curves, one for each month
+    from January (bottom) to December (top). The color scheme transitions from deep
+    blue (Python Blue #306998) for winter months (January, February, December) through
+    lighter blues for transitional months, to warm yellow (#FFD43B) for June and orange/coral
+    tones for May, July, and August. The x-axis shows "Temperature (°C)" ranging from
+    -10 to 40, with clear tick marks. Month names are displayed on the y-axis as labels.
+    The title "ridgeline-basic · plotly · pyplots.ai" is centered at the top. Each
+    density curve shows smooth Gaussian-like distributions with appropriate overlap
+    (~50%), creating the characteristic ridge mountain appearance.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 48pt, axis labels at 36pt, tick labels at 28pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No text overlaps; month labels well-spaced; density curves overlap
+          intentionally as per spec
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Density curves are well-sized and visible; slight deduction as some
+          curves could have slightly more distinct edges
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue-to-yellow gradient is colorblind-friendly; no red-green reliance
+          for differentiation
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins; left margin accommodates
+          month labels
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: X-axis shows "Temperature (°C)" with proper units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle, but no legend present (not strictly needed for labeled
+          ridgelines, but could help with color interpretation)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct ridgeline/joy plot type with stacked density curves
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Temperature values mapped to X, months create vertical stacking
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: partial overlap (~50%), vertical stacking,
+          color differentiation, meaningful order (chronological)'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: X-axis range (-15 to 40) covers all temperature data appropriately
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Month labels serve as legend; accurate
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "ridgeline-basic · plotly · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows seasonal pattern with cold winters, warm summers, and transitional
+          months with more variation
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Northern hemisphere temperature pattern is realistic; slight deduction
+          as specific city context could be clearer
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Temperature values are realistic (-2°C to 26°C base temps with appropriate
+          standard deviations)
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current API usage
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: true
+        comment: Saves as plot.png but also saves plot.html (not wrong, just extra)
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses Plotly graph_objects
+        score: 3
+        max: 5
+        passed: true
+        comment: Correctly uses go.Scatter with fill and custom hover templates; could
+          leverage more Plotly-specific features like animation or rangeslider
+  verdict: APPROVED

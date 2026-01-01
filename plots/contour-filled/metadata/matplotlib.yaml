@@ -26,3 +26,178 @@ review:
   - Mathematical demonstration is generic rather than a compelling real-world scenario
     (e.g., topographic elevation, temperature field)
   - Could add contour labels (clabel) to show numerical values on contour lines
+  image_description: 'The plot displays a filled contour visualization of a 2D mathematical
+    surface. The plot uses the viridis colormap, ranging from dark purple (approximately
+    -0.6) through teal/blue, green, to bright yellow (approximately 1.5). The surface
+    shows multiple features: two prominent yellow peaks (one around coordinates (1,
+    1) and another around (-1.5, -1)), a dark purple valley/depression around (-0.5,
+    1.5), and a smaller peak around (1.5, -1.5). White contour lines are overlaid
+    on the filled regions for level identification. The X and Y axes range from -3
+    to 3, labeled as "X Position" and "Y Position" respectively. A colorbar on the
+    right shows "Surface Height (z)" values. The title correctly displays "contour-filled
+    · matplotlib · pyplots.ai". The plot uses equal aspect ratio, making the overall
+    shape square within a 16:9 canvas.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt, colorbar
+          labels at appropriate sizes - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, clean layout
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Contour levels clearly visible, 80x80 grid provides smooth color
+          transitions
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Viridis is a perceptually uniform, colorblind-safe colormap
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas, equal aspect ratio makes plot square leaving
+          some empty space on sides but overall balanced
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels ("X Position", "Y Position") but without units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: No explicit grid (appropriate for contour), colorbar well-placed;
+          contour lines act as implicit grid
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct filled contour plot using contourf
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X, Y, Z correctly assigned to meshgrid
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: filled contours, colorbar, overlaid contour
+          lines, appropriate level count (15)'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full data range visible, colorbar shows complete value range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar label correctly describes the z-values as "Surface Height
+          (z)"
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "contour-filled · matplotlib · pyplots.ai"'
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Excellent feature coverage: multiple peaks, a valley, and smooth
+          gradients demonstrating all aspects of filled contours'
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 7
+        passed: true
+        comment: Mathematical surface (Gaussian peaks/valleys) is plausible for demonstrating
+          contours but generic
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values in reasonable range (-0.8 to 1.5), coordinate range (-3 to
+          3) appropriate
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set (though not strictly needed as data is deterministic)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png'
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses contourf and contour appropriately, but could leverage additional
+          matplotlib features like clabel for contour labels
+  verdict: APPROVED

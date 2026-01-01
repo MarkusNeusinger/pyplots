@@ -24,3 +24,162 @@ review:
   - Could demonstrate exploding multiple slices (e.g., 2 slices) to better showcase
     the feature flexibility
   - Minor layout imbalance with legend placement causing slight asymmetry
+  image_description: 'The plot displays an exploded pie chart titled "pie-exploded
+    · matplotlib · pyplots.ai". The chart shows market share distribution across 5
+    companies: TechCorp (35%, dark blue, exploded/separated from center), DataSoft
+    (25%, yellow), CloudNet (18%, green), AIVentures (12%, purple), and Others (10%,
+    orange). The TechCorp slice is visually separated from the pie to emphasize the
+    market leader. All slices have white edge separators and percentage labels in
+    white bold text positioned inside each slice. Category labels are displayed outside
+    each slice in black text. A legend box titled "Companies" is positioned to the
+    right of the pie chart listing all five categories with their corresponding colors.
+    The pie chart uses a square aspect ratio and fills the canvas well.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, labels at 20pt, percentages at 18pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, labels and percentages are well-positioned
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Pie slices are well-sized, explosion effect is clearly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses colorblind-safe palette (blue, yellow, green, purple, orange)
+          with good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of canvas but legend creates some imbalance to the right;
+          slight excess whitespace at bottom
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend is well-positioned and properly formatted with title
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct exploded pie chart
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories and values correctly mapped to slices
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Explosion effect, percentage labels, distinct colors, and legend
+          all present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, percentages sum to 100%
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels match slice labels exactly
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "pie-exploded · matplotlib · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows explosion feature well, but only one slice is exploded (spec
+          suggests 1-3 slices could be exploded to show more variation)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Tech market share is a plausible, realistic business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Market share percentages are realistic (35%, 25%, 18%, 12%, 10% =
+          100%)
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 0
+        max: 3
+        passed: false
+        comment: No random seed, but data is deterministic so this is acceptable (partial
+          deduction)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot imported and used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with correct dpi and bbox_inches
+    library_features:
+      score: 5
+      max: 5
+      items: []
+  verdict: APPROVED

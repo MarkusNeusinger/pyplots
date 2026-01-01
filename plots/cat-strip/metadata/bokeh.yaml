@@ -20,3 +20,174 @@ review:
   - Proper use of ColumnDataSource for data management
   weaknesses:
   - Could add HoverTool to show exact values on hover leveraging Bokeh interactivity
+  image_description: 'The plot displays a categorical strip plot with 5 manufacturing
+    batches (A through E) on the x-axis and Quality Score (ranging from approximately
+    45-97) on the y-axis. Points are rendered in a muted blue color (#306998) with
+    darker blue outlines. Each batch shows individual data points with horizontal
+    jitter applied to reduce overlap. The distributions vary: Batch C shows the highest
+    and tightest clustering (~90-97), Batch D shows the widest spread with some low
+    outliers (~47-87), Batch A and E show medium-high scores, and Batch B shows medium
+    scores with moderate spread. The title "cat-strip · bokeh · pyplots.ai" appears
+    at the top left. The background is light gray (#fafafa) with subtle dashed horizontal
+    grid lines. The Bokeh toolbar is visible in the top right corner.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 48pt, axis labels at 36pt, tick labels at 28pt - all clearly
+          readable at full resolution
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, category labels well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers at size=25 with alpha=0.7 work well for 125 points, though
+          slightly on the larger side
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color scheme is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas, plot fills appropriate area, minor issue with
+          toolbar placement
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Manufacturing Batch" and "Quality Score" are descriptive'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Subtle dashed y-grid at 0.3 alpha is good, but no legend present
+          (though not strictly needed for single-color plot)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct categorical strip plot with jitter
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on x-axis, numeric values on y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Jitter applied, individual points visible, categories clearly separated
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full range of data (~45-97)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single-color categorical strip
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "cat-strip · bokeh · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows varied distributions (tight vs spread, high vs low means),
+          includes outliers in Batch D
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Manufacturing quality scores is a plausible, neutral business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Quality scores 45-97 are reasonable, though some values slightly
+          below typical QC thresholds
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses jitter transform and ColumnDataSource which are Bokeh-specific,
+          but could leverage more Bokeh features like HoverTool for interactivity
+  verdict: APPROVED

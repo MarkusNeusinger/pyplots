@@ -27,3 +27,177 @@ review:
     capabilities
   - Grid lines at 0.1 alpha are barely visible - could be slightly more prominent
     (0.2-0.3)
+  image_description: The plot displays a bubble chart with 40 data points representing
+    company performance metrics. The bubbles are rendered in a muted blue color (#306998)
+    with darker blue outlines and 60% opacity. The x-axis shows "Revenue ($ millions)"
+    ranging from approximately 20 to 80, and the y-axis shows "Growth Rate (%)" ranging
+    from 0 to about 42. Bubble sizes vary significantly, representing market share
+    values. A size legend in the upper right shows three reference bubbles for 5%,
+    15%, and 30% market share with a white background and subtle border. The title
+    "bubble-basic · plotly · pyplots.ai" is centered at the top. The background uses
+    a clean white template with subtle gray gridlines.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 32pt, axis labels at 24pt, tick labels at 18pt - all excellently
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, bubbles have good transparency for
+          overlapping areas
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Bubble sizes well-adapted for 40 data points, good alpha of 0.6,
+          though a few central bubbles cluster
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color scheme is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Perfect layout with appropriate margins, legend well-positioned outside
+          plot area
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Revenue ($ millions)" and "Growth
+          Rate (%)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is very subtle (good), but legend could use better visual differentiation
+          between size levels
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bubble chart with three dimensions mapped
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=Revenue, Y=Growth Rate, Size=Market Share correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: transparency for overlaps, size legend,
+          area-based scaling'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axis ranges
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Size legend with "Market Share" title and representative values
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "{spec-id} · {library} · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows variety of bubble sizes and positions, though size distribution
+          could show more extreme variation
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: 'Excellent business scenario: companies by revenue vs growth with
+          market share - directly from spec applications'
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Revenue 20-80M, Growth 0-42%, Market Share 2-35% - all realistic
+          business values
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean flow: imports → data → plot → save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects imported and used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses graph_objects correctly with hover templates, but could leverage
+          more Plotly-specific features like color gradients or annotations
+  verdict: APPROVED

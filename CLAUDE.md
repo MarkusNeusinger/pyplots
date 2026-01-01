@@ -308,6 +308,34 @@ quality_score: 92
 
 # Review feedback (used for regeneration)
 review:
+  # AI's visual description of the generated plot
+  image_description: |
+    The plot shows a scatter plot with 100 data points displaying
+    a positive correlation. Points are rendered in blue with 70%
+    opacity. Axes are clearly labeled and a subtle grid is visible.
+
+  # Detailed scoring breakdown by category
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+        - id: VQ-01
+          name: Text Legibility
+          score: 10
+          max: 10
+          passed: true
+          comment: "All text readable at full size"
+    spec_compliance:
+      score: 23
+      max: 25
+      items: [...]
+    # ... data_quality, code_quality, library_features
+
+  # Final verdict
+  verdict: APPROVED
+
+  # Summary feedback
   strengths:
     - "Clean code structure"
     - "Good use of alpha for overlapping points"
@@ -329,6 +357,7 @@ Quality: 92/100 | Created: 2025-01-10
 - Spec-level tracking in `specification.yaml`: `created`, `updated`, `issue`, `suggested`, `tags`
 - Per-library metadata in separate files (no merge conflicts!)
 - **Review feedback** stored in metadata for regeneration (AI reads previous feedback to improve)
+- **Extended review data**: `image_description`, `criteria_checklist`, and `verdict` for targeted fixes
 - Contributors credited via `suggested` field
 - Tags are at spec level (same for all libraries)
 - Per-library metadata updated automatically by `impl-review.yml` (quality score, review feedback)

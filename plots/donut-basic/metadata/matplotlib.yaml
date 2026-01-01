@@ -26,3 +26,169 @@ review:
     ability to compare proportions
   - Could benefit from slightly more contrast between adjacent segments (Operations
     light blue and Marketing blue are somewhat similar)
+  image_description: 'The plot displays a donut chart with 5 segments representing
+    budget allocation categories. The colors used are: blue (#306998) for Marketing
+    (25.0%), yellow (#FFD43B) for Development (35.0%), light blue (#5BA0D0) for Operations
+    (15.0%), sage green (#8FBC8F) for Sales (18.0%), and light pink (#DDA0DD) for
+    Support (7.0%). Each segment displays its percentage in white bold text positioned
+    within the ring. Category labels are placed outside the ring in black text. The
+    center of the donut contains "Total $100K" in blue text. The title "donut-basic
+    · matplotlib · pyplots.ai" appears at the top in dark text. The chart uses white
+    edge lines between segments for separation. Overall layout is balanced with good
+    use of the square canvas.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, category labels at 20pt, percentage labels at 16pt
+          - all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, all labels well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Ring width of 0.5 provides excellent visibility, white edges separate
+          segments clearly
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Colors are distinguishable and colorblind-safe (no red-green only
+          distinctions)
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, square format appropriate for circular chart
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: No grid needed, labels serve as legend effectively
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct donut/ring chart with hollow center
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories and values correctly mapped to segments
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Center text with total, percentage labels on segments, 5 categories
+          (within 3-8 range)
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All segments visible and properly sized
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Category labels correctly positioned and accurate
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "donut-basic · matplotlib · pyplots.ai"
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows 5 categories with varying sizes, but could have more dramatic
+          size differences to better demonstrate comparison
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Budget allocation is a perfect real-world use case for donut charts
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values sum to 100% which is correct; "$100K" total is plausible but
+          the "K" suffix with percentages that happen to sum to 100 is slightly confusing
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (no random generation)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot imported and used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png'
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of wedgeprops for ring width and styling, pctdistance/labeldistance
+          for positioning. Could have used matplotlib's more advanced features like
+          shadow or explode.
+  verdict: APPROVED

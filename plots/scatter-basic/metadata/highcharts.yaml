@@ -28,3 +28,171 @@ review:
     points
   - Does not leverage Highcharts tooltip/hover interactivity features visible in the
     static image
+  image_description: The plot displays a scatter plot on a white background with approximately
+    100 data points. The points are rendered as filled circles in a muted blue color
+    (Python Blue) with transparency (alpha ~0.7). The title "scatter-basic · highcharts
+    · pyplots.ai" appears at the top in bold black text. The X-axis is labeled "X
+    Value" (ranging from ~4.8 to ~13.6) and the Y-axis is labeled "Y Value" (ranging
+    from ~2 to ~15). Both axes have subtle gray dashed grid lines. The data shows
+    a clear positive correlation pattern with some scatter/noise. The overall layout
+    is clean and professional with good proportions.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick marks are all clearly readable at the
+          high resolution
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers are appropriately sized for 100 data points with good transparency
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color (Python Blue) is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, though slight extra whitespace at top
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Labels are descriptive ("X Value", "Y Value") but lack units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle with dashed style and appropriate alpha; legend disabled
+          (appropriate for single series)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct scatter plot type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly mapped to axes
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: transparency, axis labels, title, grid
+          lines'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data points with appropriate padding
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend appropriately disabled for single-series scatter
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "scatter-basic · highcharts · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows correlation pattern with noise, demonstrates typical scatter
+          behavior
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Plausible data range, shows meaningful positive correlation
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Sensible numeric values
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear script: imports → data → chart config → export'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current highcharts-core API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses highcharts-core properly with ScatterSeries, but doesn't leverage
+          advanced Highcharts features like tooltips or interactive hover states in
+          the static output
+  verdict: APPROVED

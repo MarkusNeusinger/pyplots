@@ -24,3 +24,181 @@ review:
     for time series
   - Legend marker at bottom is quite small
   - Uses raw dict configuration instead of highcharts-core Python wrapper classes
+  image_description: The plot displays an interactive line chart showing server CPU
+    usage over 7 days of hourly data. The title "line-interactive · highcharts · pyplots.ai"
+    is prominently displayed at the top in bold black text, with a subtitle explaining
+    the zoom functionality. The main chart area shows a blue (#306998) line tracing
+    CPU usage percentage (Y-axis, 0-106%) against date/time (X-axis, Jan 01-08). The
+    line exhibits clear daily cyclical patterns with peaks around 55-65% and troughs
+    around 10-30%, along with visible spikes (anomalies) reaching up to ~73%. The
+    Y-axis has percentage labels, and the X-axis shows daily date labels. A legend
+    "CPU Usage" appears at the bottom center. The overall layout has a clean white
+    background with subtle gray grid lines.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: All text is readable; title, axis labels, and tick marks are clearly
+          visible. Font sizes are appropriate for the 4800x2700 canvas.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements. Date labels are spaced well.
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line width is appropriate (5px), markers appear on hover. The data
+          pattern is clearly visible.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses colorblind-safe blue (#306998) on white background with good
+          contrast.
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Chart fills the canvas well with balanced margins. Spacing is properly
+          configured.
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"CPU Usage (%)" with units on Y-axis, "Date and Time" on X-axis.'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha 0.1), but legend is placed at bottom which
+          is acceptable. However, the legend marker is very small and could be more
+          visible.
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct interactive line chart type.
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Datetime on X-axis, numeric CPU % on Y-axis correctly mapped.
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Hover tooltips (crosshair + tooltip configured), zoom (zoomType:
+          "x"), and the subtitle instructs on zoom usage.'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows 0-105%, X-axis shows full 7-day range.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: '"CPU Usage" legend label is accurate.'
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "line-interactive · highcharts · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows daily cycles, upward trend, noise, and spike anomalies. Could
+          show more dramatic variation or multiple series.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Server CPU usage is a realistic, neutral IT monitoring scenario.
+          Values are plausible.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: CPU usage 5-100% is realistic; 168 hourly points for 7 days is sensible.
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data generation → config → HTML → screenshot.
+          No functions/classes.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42).
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (json, tempfile, time, urllib, Path, numpy,
+          pandas, selenium).
+      - id: CQ-04
+        name: No Deprecated API
+        score: 0
+        max: 1
+        passed: false
+        comment: Uses manual dict config instead of highcharts-core Python library.
+          While functional, the library docs recommend the Python wrapper.
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html.
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Highcharts's native zoom, crosshair, datetime formatting, and
+          interactive HTML export. However, does not use range selector or navigator
+          which are Highcharts's premium interactive features for time series.
+  verdict: APPROVED

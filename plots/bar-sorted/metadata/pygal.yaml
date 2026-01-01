@@ -23,3 +23,181 @@ review:
   weaknesses:
   - Missing y-axis title to label the categories dimension
   - Data values could show more variation to better demonstrate sorting benefit
+  image_description: 'The plot displays a horizontal bar chart showing monthly sales
+    by product category, sorted in descending order from top to bottom. The title
+    "bar-sorted · pygal · pyplots.ai" appears at the top. Eight categories are shown:
+    Electronics ($4,850) at the top, followed by Clothing ($3,720), Home & Garden
+    ($2,980), Sports ($2,450), Books ($1,890), Toys ($1,560), Beauty ($1,240), and
+    Food ($980) at the bottom. All bars are rendered in Python Blue (#306998). The
+    x-axis is labeled "Sales (USD)" with tick marks at $0, $1,000, $2,000, $3,000,
+    and $4,000. Value labels are displayed centered within each bar with dollar formatting.
+    Subtle vertical grid lines help with value reading. The layout is clean with good
+    use of whitespace.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, category labels, and value labels are all clearly readable.
+          Font sizes are well-scaled for the 4800x2700 canvas.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text anywhere. Category labels on left, values centered
+          in bars, all cleanly separated.
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are well-sized with good spacing between them. The visual hierarchy
+          is clear.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme (Python Blue) is colorblind-safe. Good contrast
+          against white background.
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good layout overall, but slight margin asymmetry with more empty
+          space on the right.
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: X-axis labeled "Sales (USD)" with units clearly indicated.
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid lines are visible and subtle, but no y-axis title labeling the
+          categories dimension.
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct horizontal bar chart type, appropriate for sorted data with
+          category labels.
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories correctly on Y-axis, values on X-axis.
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Sorted descending (largest first), horizontal orientation for readability,
+          value labels on bars.
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data appropriately, from $0 to beyond $4,850.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend disabled appropriately since categories are labeled on Y-axis.
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "bar-sorted · pygal · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows clear ranking with varied values demonstrating the sorting
+          concept well. Could show more extreme value differences.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly sales by product category is a plausible, neutral business
+          scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are realistic for monthly sales, though all values being in
+          similar thousands range is slightly uniform.
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple script: imports → data → style → chart → save. No functions
+          or classes.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (hardcoded values), no random generation needed.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only pygal and Style imported, both used.
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current pygal API.
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves to both plot.png and plot.html correctly.
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses HorizontalBar, custom Style, print_values with value_formatter,
+          truncate_label. Good use of pygal-specific features but could leverage more
+          interactive SVG capabilities.
+  verdict: APPROVED

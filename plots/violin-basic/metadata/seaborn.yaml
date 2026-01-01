@@ -25,3 +25,174 @@ review:
   - Could use inner="quartile" to show individual quartile lines more distinctly,
     or add miniature box plots with inner="box"
   - Missing y-axis grid extension through violins (grid only on axis area)
+  image_description: The plot displays four violin plots comparing salary distributions
+    across four departments (Engineering, Marketing, Sales, Support). The violins
+    alternate in color between a muted blue (#306998) and golden yellow (#FFD43B).
+    Each violin shows the kernel density estimation with mirrored sides, clearly revealing
+    distribution shapes. Inside each violin, dotted lines indicate quartiles (Q1,
+    Q3) and a dashed line shows the median. The y-axis displays "Salary ($)" with
+    currency formatting ranging from $20k to $120k. The x-axis shows "Department"
+    with category labels. The title correctly follows the format "violin-basic · seaborn
+    · pyplots.ai". The Sales department violin clearly shows a bimodal distribution
+    (two peaks around $55k and $90k), demonstrating the ability to reveal complex
+    distribution shapes. A subtle horizontal grid with alpha=0.3 aids readability.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, labels at 20pt, ticks at 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, all elements clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Violins well-sized, quartile lines clearly visible inside
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Blue/gold palette is colorblind-safe (not red-green), good contrast,
+          though alternating could be clearer
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Well-proportioned layout with good use of space
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Salary ($)" and "Department"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: false
+        comment: Grid is subtle (alpha=0.3), but y-axis only; no legend needed
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct violin plot type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X, values on Y correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Shows quartiles (inner="quart"), median line, mirrored density on
+          both sides
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full data range from ~$20k to ~$130k
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed/shown (categories on x-axis), legend=False is appropriate
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses exact format: "violin-basic · seaborn · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Shows different distribution shapes: normal (Engineering, Marketing,
+          Support), bimodal (Sales) - demonstrates the key violin feature'
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 7
+        passed: true
+        comment: Salary by department is plausible; specific values are reasonable
+          though somewhat generic
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Salary ranges ($30k-$130k) are realistic for the context
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Flat structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports (matplotlib, numpy, pandas, seaborn)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn API with hue parameter
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses seaborn's violinplot with inner="quart", correct hue/palette
+          usage, but doesn't showcase more advanced features like split violins or
+          cut parameter
+  verdict: APPROVED

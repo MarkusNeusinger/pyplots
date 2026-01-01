@@ -26,3 +26,181 @@ review:
     into specific regions or spike lines for precise value reading
   - Marker size (14) slightly large for 150 points - could be reduced to 10-12 for
     cleaner appearance
+  image_description: 'The plot displays a residual analysis visualization with the
+    title "residual-basic · plotly · pyplots.ai" centered at the top. The X-axis shows
+    "Fitted Values" ranging from approximately 10 to 100, and the Y-axis shows "Residuals"
+    ranging from approximately -12 to +12. Blue circular markers (#306998) with moderate
+    transparency (alpha ~0.6) represent 150 individual residual points. A yellow dashed
+    horizontal line at y=0 serves as the zero reference line. A red solid trend line
+    (smoothed moving average) oscillates near zero, revealing subtle patterns in the
+    residuals. The plot demonstrates heteroscedasticity - variance clearly increases
+    as fitted values increase (tighter spread on the left, wider spread on the right).
+    A well-formatted legend in the top-right corner identifies all three elements:
+    Residuals, Zero Reference, and Trend (Smoothed). The background is white with
+    subtle gray gridlines.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 32pt, axis labels at 24pt, tick labels at 18pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, all elements clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers at size 14 with 0.6 opacity work well for 150 points, though
+          slightly on the larger side
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue, yellow, and red are distinguishable; no red-green confusion
+          issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good margins, plot fills canvas appropriately, legend positioned
+          well
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels "Fitted Values" and "Residuals" but no units specified
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid at alpha 0.3 is appropriate; legend is well-placed but slightly
+          overlaps data region
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct residual plot showing residuals vs fitted values
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=Fitted values, Y=Residuals correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has horizontal reference line at y=0, smoothed trend line (LOWESS
+          approximation via moving average), moderate transparency
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, y-axis symmetric around zero
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies all three elements
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses exact format: "residual-basic · plotly · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows heteroscedasticity pattern, random scatter around zero, subtle
+          non-linear pattern via trend line. Missing explicit outliers that stand
+          out dramatically
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Data simulates realistic regression diagnostics with heteroscedasticity,
+          a common real-world pattern
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are reasonable for generic regression residuals; could be
+          more contextual (e.g., specific units for a real scenario)
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses go.Scatter and custom hover templates which are Plotly features,
+          but doesn't leverage more advanced interactive features like range sliders,
+          buttons, or annotations that would enhance diagnostic exploration
+  verdict: APPROVED

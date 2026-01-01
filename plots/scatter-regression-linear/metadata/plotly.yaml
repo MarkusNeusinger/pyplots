@@ -24,3 +24,182 @@ review:
   - Does not use plotly express trendline features (px.scatter with trendline="ols")
     which would be more idiomatic
   - Legend positioned in lower-right could overlap with data in some scenarios
+  image_description: 'The plot displays a scatter chart showing the relationship between
+    Advertising Spend (x-axis, in thousands $, ranging from ~5 to 105) and Sales Revenue
+    (y-axis, in thousands $, ranging from ~50 to 300). Blue circular markers with
+    a dark blue outline represent 80 data points with moderate transparency (~0.65
+    alpha). A prominent yellow/gold regression line runs through the data showing
+    a strong positive linear relationship. A light blue semi-transparent confidence
+    interval band surrounds the regression line. The title "scatter-regression-linear
+    · plotly · pyplots.ai" is centered at the top. An annotation box in the upper-left
+    corner displays the regression equation (y = 2.56x + 26.77), R² = 0.974, and r
+    = 0.987. A legend in the lower-right corner shows three items: 95% CI, Data points,
+    and Regression (R² = 0.974). The plot uses a clean white template with subtle
+    gray gridlines.'
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt, annotation
+          at 20pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, annotation and legend positioned clearly
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Markers size 14 with 0.65 alpha is well-suited for 80 data points,
+          regression line clearly visible at width 4
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue (#306998) and yellow (#FFD43B) provide excellent contrast, colorblind-safe
+          combination
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins (l=80, r=60, t=100,
+          b=80)
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Advertising Spend (thousands $)"
+          and "Sales Revenue (thousands $)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle (alpha 0.1), but legend placement in lower-right creates
+          slight visual imbalance; could be better positioned
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct scatter plot with linear regression line
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X (advertising spend) and Y (sales revenue) correctly assigned as
+          independent/dependent variables
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: R² displayed, regression line distinct,
+          95% CI band with transparency, point transparency, regression equation annotation'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data with appropriate padding
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels correctly identify 95% CI, Data points, and Regression
+          with R² value
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "scatter-regression-linear · plotly · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows linear relationship with noise, demonstrates regression fit,
+          confidence interval widens appropriately at edges
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Advertising spend vs sales revenue is a classic, realistic business
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 3
+        max: 5
+        passed: false
+        comment: Values are reasonable but the very high R² (0.974) represents an
+          unusually clean relationship; real-world data typically has more scatter
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear script: imports → data → calculations → figure → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png (and plot.html for interactivity)
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses plotly's graph_objects and annotations well, but doesn't leverage
+          plotly's trendline capabilities via px.scatter(trendline) or hover customization
+  verdict: APPROVED

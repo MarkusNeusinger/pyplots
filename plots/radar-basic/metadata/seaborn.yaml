@@ -25,3 +25,183 @@ review:
   - Radar charts lack units notation - could add "(Score 0-100)" in subtitle or annotation
   - The two employee profiles could show more contrasting values to better demonstrate
     radar chart comparison capability
+  image_description: 'The plot displays a radar/spider chart comparing two employees
+    (Senior Developer in blue, Team Lead in yellow/gold) across 6 competency dimensions:
+    Technical Skills, Communication, Creativity, Problem Solving, Leadership, and
+    Teamwork. The chart uses a polar coordinate system with concentric gridlines at
+    20, 40, 60, 80, and 100. Both series are shown as filled polygons with transparency
+    (~0.25 alpha), allowing overlap visibility. Data points are marked with circular
+    markers at each vertex. The title "radar-basic · seaborn · pyplots.ai" appears
+    at the top in bold black text. A legend in the upper right corner identifies the
+    two series. The chart uses a square 1:1 aspect ratio with good canvas utilization.
+    Category labels are positioned at the outer edge of each axis and are clearly
+    readable.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, category labels at 22pt, tick labels at 18pt - all
+          clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Markers sized at s=400 with linewidth=4, perfect for 6 data points
+          per series
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses seaborn's colorblind palette, blue and gold/yellow are easily
+          distinguishable
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Square format appropriate for radar, plot fills canvas well, balanced
+          margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: false
+        comment: No axis labels with units (radar charts typically don't have traditional
+          axis labels, but score units could be noted)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Grid at alpha=0.3, legend well-placed in upper right with good styling
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct radar/spider chart
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on angular axis, values on radial axis correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Filled polygons with alpha 0.25, gridlines at 20/40/60/80/100, axis
+          labels at outer edge, distinct colors with legend, closed polygons
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: 0-100 scale as recommended, all data visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies Senior Developer and Team Lead
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "radar-basic · seaborn · pyplots.ai"'
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows comparison between two profiles with contrasting strengths,
+          but profiles could show more dramatic differences to better demonstrate
+          radar chart utility
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Employee performance review is a perfect, relatable use case from
+          spec applications
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are realistic (65-92 range), though slightly compressed -
+          could use fuller range
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → setup → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: false
+        comment: No random seed, but data is deterministic (hardcoded values), minor
+          deduction for not including np.random.seed(42) even though not strictly
+          needed
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: 'All imports used: matplotlib, numpy, pandas, seaborn'
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn 0.13+ API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses sns.set_theme() and sns.scatterplot() for data points, plus
+          colorblind palette. However, radar charts are not a seaborn specialty -
+          the implementation correctly falls back to matplotlib polar projection for
+          the core chart while leveraging seaborn for styling and the data point markers
+  verdict: APPROVED

@@ -21,3 +21,174 @@ review:
   weaknesses:
   - Legend color swatches all show the same blue color instead of the actual bar colors
   - No np.random.seed(42) even though data is deterministic
+  image_description: 'The plot displays a grouped bar chart showing quarterly revenue
+    (Q1-Q4) for three product lines: Electronics (blue), Clothing (yellow), and Home
+    & Garden (green). Each quarter has three side-by-side bars representing the different
+    product categories. Value labels appear above each bar (e.g., "$245K", "$180K").
+    The title reads "Quarterly Revenue by Product · bar-grouped · bokeh · pyplots.ai"
+    at the top. The y-axis is labeled "Revenue ($ Thousands)" with tick marks at 0,
+    100, 200, 300, 400. The x-axis shows "Quarter" with Q1, Q2, Q3, Q4 labels. A legend
+    in the top-right corner identifies the three product categories. The background
+    is light gray (#fafafa) with subtle dashed horizontal grid lines.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, axis labels, and value labels are clearly readable; tick labels
+          could be slightly larger
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are well-sized and clearly visible with good spacing
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Blue, yellow, green palette is distinguishable but yellow-green may
+          be challenging for some colorblind users
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good canvas utilization, balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Descriptive labels with units ("Revenue ($ Thousands)")
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Legend shows all items with same blue color instead of their actual
+          colors
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct grouped bar chart
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on x-axis, values on y-axis, groups side-by-side
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: distinct colors, legend, consistent spacing,
+          value labels'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows all data (0-430 accommodates max value of 385)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels match the data groups
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Follows "{description} · {spec-id} · {library} · pyplots.ai" format
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows variation across quarters and products; different trends for
+          each product line
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Quarterly revenue by product line is a common real-world business
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values in $125K-$385K range are realistic for product revenue
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Linear script structure without functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 0
+        max: 3
+        passed: false
+        comment: No random seed used (though data is deterministic, best practice
+          is to include seed)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses FactorRange for grouped categorical axis and factor_cmap for
+          coloring, but could leverage more Bokeh-specific features like HoverTool
+  verdict: APPROVED

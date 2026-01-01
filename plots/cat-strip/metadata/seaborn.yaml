@@ -24,3 +24,171 @@ review:
     or violin for statistical summary)
   - Color palette includes two blue shades (Plant A and Plant C) that may be confused
     at a glance
+  image_description: 'The plot displays a categorical strip plot with 5 manufacturing
+    plants (Plant A-E) on the x-axis and Quality Score (%) on the y-axis (range ~35-100).
+    Each plant has ~25 data points shown as colored circles with horizontal jitter.
+    Colors used: Plant A (blue), Plant B (yellow), Plant C (light blue), Plant D (gray),
+    Plant E (brown/orange). Different distributions are visible - Plant C shows tight
+    clustering around 90, Plant D shows high variability with outliers down to ~40,
+    and other plants show intermediate patterns. Title format is correct: "cat-strip
+    · seaborn · pyplots.ai". Subtle horizontal grid lines are present. All text is
+    clearly legible.'
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, labels at 20pt, ticks at 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No text overlap, jitter prevents point overlap effectively
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Markers sized appropriately (size=12) with alpha=0.7 for 125 points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Distinct colors but includes both blue shades that could be confused
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well, balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive with units: "Quality Score (%)" and "Manufacturing Plant"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha=0.3), no legend needed since colors match x-axis
+          labels
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct categorical strip plot using sns.stripplot
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on x-axis, numeric values on y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Jitter applied, individual points visible, categorical comparison
+          shown
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full data range with appropriate limits (35-105)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed, colors match x-axis categories
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "cat-strip · seaborn · pyplots.ai"'
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Shows varied distributions: tight (Plant C), variable (Plant D),
+          outliers visible'
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Manufacturing quality control is plausible, though somewhat generic
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Quality scores 40-100% are realistic for manufacturing
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib, numpy, seaborn used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn API with hue parameter
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Uses basic stripplot without additional seaborn features like combining
+          with boxplot/violin, using statistical estimation, or dodge for grouped
+          data
+  verdict: APPROVED

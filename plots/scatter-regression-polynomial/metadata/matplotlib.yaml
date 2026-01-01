@@ -25,3 +25,174 @@ review:
   - Uses only basic matplotlib/numpy; scipy.stats or sklearn could provide more sophisticated
     polynomial fitting
   - Generic axis units (units) rather than more specific economic terms
+  image_description: 'The plot displays a scatter plot with polynomial regression
+    on a 16:9 canvas. The scatter points are blue (#306998) with white edges and moderate
+    transparency (alpha ~0.6), showing 80 data points. A prominent yellow/gold (#FFD43B)
+    quadratic curve fits through the data, surrounded by a light yellow semi-transparent
+    95% confidence band. The title reads "scatter-regression-polynomial · matplotlib
+    · pyplots.ai" at the top. The x-axis is labeled "Investment (units)" and y-axis
+    "Return (units)". A white annotation box in the upper left shows the polynomial
+    equation (y = -0.47x² + 5.69x + 5.20) and R² = 0.859. A legend in the lower right
+    shows three items: Data points, 95% confidence band, and Polynomial fit (degree
+    2). Grid lines are subtle with dashed style. The parabolic curve peaks around
+    x=6, demonstrating diminishing returns.'
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt, axis labels 20pt, ticks 16pt, all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers s=150 appropriate for 80 points, alpha=0.6 good; slightly
+          large but acceptable
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow contrast is colorblind-safe, no red-green issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well, balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive with units: "Investment (units)", "Return (units)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: false
+        comment: Grid subtle (alpha=0.3), legend placed well but could be positioned
+          away from data area
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct scatter plot with polynomial regression
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly assigned (Investment vs Return)
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All features present: R² displayed, polynomial curve distinct, confidence
+          band, equation annotated'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data properly
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels accurate for all three elements
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "scatter-regression-polynomial · matplotlib · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows parabolic curve clearly with peak demonstrating diminishing
+          returns; could show more variation at extremes
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Economics diminishing returns example is real and comprehensible
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values reasonable (0-10 investment, 5-25 return); units generic but
+          acceptable
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Imports → Data → Plot → Save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy imported
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses standard matplotlib; could leverage annotate better or use scipy
+          for more sophisticated fitting
+  verdict: APPROVED

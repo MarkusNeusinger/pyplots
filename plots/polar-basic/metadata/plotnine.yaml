@@ -26,3 +26,178 @@ review:
     Level)
   - The implementation relies heavily on manual Cartesian conversion rather than leveraging
     plotnine distinctive features
+  image_description: The plot displays a polar/radar chart showing hourly activity
+    levels throughout a 24-hour day. The chart uses a circular coordinate system with
+    time labels at 8 positions (00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00)
+    around the perimeter. Four concentric dashed circular gridlines mark radius values
+    of 25, 50, 75, and 100. Eight radial spokes extend from the center. Data points
+    (24 total, one per hour) are shown as yellow-filled circles with blue outlines,
+    connected by a blue line forming a closed loop. The pattern shows lower activity
+    at night (around midnight, closer to center) and higher activity during morning/afternoon
+    hours (extended toward outer rings). The title "Hourly Activity Levels · polar-basic
+    · plotnine · pyplots.ai" appears at the top. The background is white/clean with
+    no axis labels visible.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: title is clear at 24pt, hour labels readable at size 14, radius labels
+          slightly small but acceptable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: no overlapping text anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: points are well-sized (size=4 with stroke), line visible (size=1.5),
+          appropriate for 24 data points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: blue (#306998) and yellow (#FFD43B) provide excellent contrast, colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: good use of canvas space, plot centered, margins balanced, slight
+          excess whitespace at bottom
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: true
+        comment: polar chart has no traditional axis labels (this is acceptable for
+          polar plots, but no units shown for radius)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: gridlines are subtle (alpha=0.6, dashed), no legend needed
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: correct polar chart with circular coordinates
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: theta (angle) and radius correctly mapped to hour and activity level
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: radial gridlines visible, angular labels at standard intervals, starts
+          at top (90°) for time-based data per spec
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: all data visible within range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 1
+        max: 2
+        passed: true
+        comment: no legend present (acceptable for single series, but could label
+          what "activity" means)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: correctly uses "polar-basic · plotnine · pyplots.ai" format
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: shows cyclical pattern well with variation, demonstrates both high
+          and low activity periods
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: hourly activity levels is a very realistic and relatable scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: activity values 5-100 are sensible, though units unclear
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: follows imports → data → plot → save pattern without functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: all imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: uses current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: uses plotnine's grammar of graphics (ggplot, aes, geom_*) but since
+          plotnine lacks native polar coordinates, the implementation manually converts
+          to Cartesian - this is a creative workaround but not a distinctive plotnine
+          feature
+  verdict: APPROVED

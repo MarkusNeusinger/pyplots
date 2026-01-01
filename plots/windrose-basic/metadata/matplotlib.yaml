@@ -27,3 +27,183 @@ review:
     corner rather than being positioned closer to the plot area
   - The 15+ m/s (red) speed category is present in legend but barely visible in data,
     making the legend somewhat misleading about what speeds are actually represented
+  image_description: The wind rose plot displays a polar histogram showing wind direction
+    and speed distribution. North is positioned at the top with 16 compass direction
+    labels (N, NNE, NE, ENE, E, ESE, SE, SSE, S, SSW, SW, WSW, W, WNW, NW, NNW) arranged
+    around the perimeter in bold black text. The radial axis shows frequency percentages
+    from 0% to 18% with concentric dashed circles. Each spoke represents a direction
+    sector with stacked colored bars indicating wind speed ranges. The color scheme
+    progresses from dark blue (0-3 m/s) through lighter blues (3-6, 6-9 m/s) to yellow
+    (9-12 m/s) and orange (12-15 m/s), with red (15+ m/s) shown in the legend but
+    barely visible in the data. The dominant winds are from the SW-W-WNW-NW sectors,
+    showing a clear prevailing westerly pattern. A legend box in the lower-left corner
+    shows "Wind Speed" with all six speed ranges. The title "windrose-basic · matplotlib
+    · pyplots.ai" appears at the top in bold black text.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, direction labels at 16pt bold, percentage labels at
+          14pt, all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, direction labels well-spaced around perimeter
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bar segments clearly visible, white edge separation between stacked
+          segments, appropriate bar width
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Cool-to-warm progression is colorblind-friendly, good contrast between
+          speed categories
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Square format appropriate for polar plot, but legend positioned outside
+          plot area creates some imbalance; plot utilizes canvas well
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Radial axis shows frequency in percentage format, direction labels
+          are standard compass notation
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle (alpha=0.3) which is good, but legend placement at
+          bbox_to_anchor=(-0.15, -0.15) causes it to float isolated in corner rather
+          than being positioned closer to the plot area
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct polar stacked histogram (wind rose)
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Direction mapped to angular position, speed to color, frequency to
+          radial extent
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 16 direction sectors, 6 speed bins with stacked segments, North at
+          top, clockwise direction
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, axes show full range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows all 6 speed ranges with units (m/s)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "windrose-basic · matplotlib · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows prevailing winds (SW), secondary pattern (NW), variable directions,
+          multiple speed categories with realistic distribution
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Simulates 8760 hourly readings (one year), uses Weibull distribution
+          for wind speeds which is meteorologically appropriate
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Wind speeds 0-25 m/s are reasonable; however, the 15+ m/s category
+          is barely represented in the visualization despite being in the legend
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data generation → binning → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set at the beginning
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib APIs
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png'
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: true
+        comment: Uses matplotlib's polar projection correctly with set_theta_zero_location
+          and set_theta_direction, but this is basic polar chart functionality rather
+          than advanced matplotlib features
+  verdict: APPROVED

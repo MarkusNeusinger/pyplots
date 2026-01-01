@@ -24,3 +24,175 @@ review:
   - Axis labels lack units (though for generic residuals, units may not be applicable)
   - Grid styling could use slightly higher alpha for better visibility (currently
     0.3)
+  image_description: The plot displays a residual plot with approximately 150 blue
+    scatter points (#306998) plotted against fitted values. A solid black horizontal
+    reference line at y=0 helps assess systematic bias. A yellow/gold LOWESS smoothed
+    trend line traverses the plot, showing the residuals are mostly centered around
+    zero with slight variation. The x-axis is labeled "Fitted Values" (ranging from
+    ~10 to 90), and the y-axis is labeled "Residuals" (symmetric range from -30 to
+    +30). The title "residual-basic · plotnine · pyplots.ai" appears in bold at the
+    top. The plot uses a minimal theme with subtle dashed gray grid lines. Points
+    have moderate transparency (alpha=0.6) allowing density visualization. Several
+    outliers are visible (around +25 at x≈85, -22 at x≈55), demonstrating heteroscedasticity
+    pattern where variance increases with fitted values.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt bold, axis titles 20pt, tick labels 16pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Points sized well (size=4) with good alpha (0.6) for 150 points,
+          slightly on the smaller side but clearly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue points with yellow trend line, good contrast, colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels "Fitted Values" and "Residuals" but no units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid alpha set to 0.3 with dashed style (good), but no legend needed/present
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct residual plot type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Fitted values on X, residuals on Y correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: horizontal reference line at y=0, transparency,
+          LOWESS trend line, proper axis labels'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Symmetric y-axis around zero as spec recommends
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for this plot type
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "residual-basic · plotnine · pyplots.ai" format
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows heteroscedasticity pattern, outliers, and mostly random scatter
+          - demonstrates key diagnostic aspects well
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Plausible regression residuals scenario with realistic patterns,
+          though generic
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Sensible fitted values (10-90) and residual range
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of plotnine's grammar of graphics with geom_hline, geom_smooth
+          (LOWESS), theme_minimal, and proper theming. Could have used more advanced
+          features like faceting or custom scales.
+  verdict: APPROVED

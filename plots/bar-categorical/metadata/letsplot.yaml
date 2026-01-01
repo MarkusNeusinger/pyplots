@@ -23,3 +23,171 @@ review:
   - Does not leverage lets-plot interactive features (tooltips, hover effects) that
     distinguish it from plotnine
   - Data context is generic; could use a more specific real-world scenario
+  image_description: 'The plot displays a categorical bar chart showing fruit type
+    frequency counts. Five vertical bars represent different fruits: Bananas (~40),
+    Mangoes (~31), Grapes (~33), Oranges (~40), and Apples (~56). The bars are rendered
+    in a muted blue color (#306998) with darker borders. The title "bar-categorical
+    · letsplot · pyplots.ai" appears at the top left in bold. The x-axis is labeled
+    "Fruit Type" with category names below each bar, and the y-axis is labeled "Count"
+    with tick marks from 0 to 55. The plot uses a minimal theme with horizontal grid
+    lines only, and the overall layout is clean with good proportions.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is bold and large, axis labels and tick text are clearly readable
+          at full resolution
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, category labels are well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are appropriately sized with good width and clear visibility
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme with good contrast, no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas appropriately with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Labels are descriptive ("Fruit Type", "Count") but lack units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: false
+        comment: Horizontal grid only is appropriate for bar chart, but no legend
+          needed; minor grid could be more subtle
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct categorical count bar chart using geom_bar()
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on x-axis, counts on y-axis (computed automatically)
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Automatic count computation from raw categorical data
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full range of counts (0-55)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single-series bar chart
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly formatted as "bar-categorical · letsplot · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows variation in counts across categories, demonstrates the counting
+          functionality well
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 7
+        passed: false
+        comment: Fruit popularity is plausible but generic; could be more specific
+          (e.g., store inventory, survey results)
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 200 samples with realistic probability weights producing sensible
+          counts
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Modern lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves both plot.png and plot.html which is correct for letsplot
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses ggplot grammar correctly with geom_bar() and theme customization,
+          but does not leverage lets-plot specific features like tooltips or interactivity
+  verdict: APPROVED

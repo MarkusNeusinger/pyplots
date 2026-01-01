@@ -25,3 +25,172 @@ review:
     cleaner
   - Markers could be slightly larger (size=6-7) for better visibility at the data
     points
+  image_description: The plot displays a step chart showing cumulative monthly sales
+    data over 12 months. A dark blue (#306998) step line creates a clear stair-step
+    pattern ascending from approximately $45K in month 1 to $822K in month 12. Bright
+    yellow (#FFD43B) circular markers highlight each data point where changes occur.
+    The title "step-basic · letsplot · pyplots.ai" appears at the top left. The x-axis
+    is labeled "Month" with ticks from 1-12, and the y-axis is labeled "Cumulative
+    Sales ($K)" ranging from 50 to 850. A subtle gray dashed grid aids value reading.
+    The plot fills the canvas well with balanced proportions.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick marks are all clearly readable at appropriate
+          sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Step line is well-sized; markers are visible but could be slightly
+          larger for optimal visibility
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow contrast is colorblind-safe and high contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Cumulative Sales ($K)", "Month"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is appropriate but no legend present (though not strictly needed
+          for single series)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct step/stair plot type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=Month (sequential), Y=Cumulative Sales correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Step pattern with markers at data points as suggested in spec
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data points visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for single series, no legend needed
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "step-basic · letsplot · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows cumulative/monotonic increasing pattern well; could show more
+          variation in step sizes
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly cumulative sales is a perfect real-world scenario matching
+          spec examples
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are realistic for sales data; units in thousands are appropriate
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (numpy, pandas, lets_plot)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as plot.png but export path uses "." which works
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ggplot grammar, geom_step with direction parameter, theme_minimal,
+          but no advanced lets-plot specific features like tooltips or interactivity
+          in the static output
+  verdict: APPROVED

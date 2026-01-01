@@ -23,3 +23,180 @@ review:
   weaknesses:
   - Missing axis titles (e.g., Asset Class for both axes) would add context
   - Colorbar could have more intermediate tick values for precision reading
+  image_description: 'The plot displays a 7x7 correlation matrix heatmap showing relationships
+    between financial asset classes: Stocks, Bonds, Gold, Real Estate, Crypto, Commodities,
+    and Cash. The heatmap uses a diverging RdBu_r colormap with dark red indicating
+    strong positive correlations (+1.0), white/light for near-zero correlations, and
+    dark blue for strong negative correlations (-1.0). Each cell contains bold white
+    or dark text annotations showing the correlation coefficient to 2 decimal places.
+    The text color automatically contrasts with the background - white text on dark
+    cells, dark text on light cells. The diagonal shows perfect 1.00 correlations
+    (dark red). A vertical colorbar on the right shows the correlation scale from
+    -1.0 to 1.0. The title "heatmap-annotated · seaborn · pyplots.ai" appears in bold
+    at the top. X-axis labels are rotated 45 degrees for readability. Cell gridlines
+    are thin white separators.'
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is bold 24pt, annotations are 16pt bold, axis labels are 16pt,
+          colorbar has clear labels - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, x-axis labels rotated 45° to prevent overlap
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Square cells with optimal size, clear visual distinction between
+          correlation strengths
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: RdBu_r diverging colormap is colorblind-friendly, blue-white-red
+          spectrum works well
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Square 12x12 figure perfectly fills canvas, colorbar positioned well
+          with good margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Variable names are descriptive but no axis titles like "Asset Classes"
+          present
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: White gridlines at 0.5 width are good, colorbar present but ticks
+          could include more intermediate values
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct annotated heatmap type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Rows and columns correctly mapped to variables, values to colors
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has annotations, colorbar, contrasting text colors, diverging colormap
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full -1 to +1 correlation range shown
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar labeled "Correlation" with appropriate ticks
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correct format "heatmap-annotated · seaborn · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Shows full range: strong positive (0.65 Stocks-Crypto), moderate
+          (0.40, 0.35), weak (0.10, 0.05), negative (-0.25, -0.20), and perfect correlations
+          (1.00 diagonal)'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Financial asset correlation matrix is an excellent real-world use
+          case with plausible relationships
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: All correlation values are in valid -1 to +1 range with realistic
+          financial relationships
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → plot → save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set (though data is deterministic anyway)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: 'All imports used: matplotlib.pyplot, numpy, pandas, seaborn'
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: Leverages seaborn's sns.heatmap with annot=True, fmt=".2f", automatic
+          text contrast, cmap centering, square cells, and cbar_kws
+  verdict: APPROVED

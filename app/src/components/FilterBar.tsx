@@ -139,8 +139,7 @@ export function FilterBar({
   const handleValueSelect = useCallback(
     (category: FilterCategory, value: string) => {
       onAddFilter(category, value);
-      onTrackEvent('filter_add', { category, value });
-      // Track search if query was used
+      // Track search if query was used (filter changes tracked via pageview)
       if (searchQuery.trim()) {
         onTrackEvent('search', { query: searchQuery.trim(), category });
       }
@@ -169,39 +168,33 @@ export function FilterBar({
   const handleRemoveValue = useCallback(
     (value: string) => {
       if (activeGroupIndex !== null) {
-        const group = activeFilters[activeGroupIndex];
         onRemoveFilter(activeGroupIndex, value);
-        onTrackEvent('filter_remove', { category: group?.category || '', value });
       }
       setChipMenuAnchor(null);
       setActiveGroupIndex(null);
     },
-    [activeGroupIndex, activeFilters, onRemoveFilter, onTrackEvent]
+    [activeGroupIndex, onRemoveFilter]
   );
 
   // Remove entire group
   const handleRemoveGroup = useCallback(() => {
     if (activeGroupIndex !== null) {
-      const group = activeFilters[activeGroupIndex];
       onRemoveGroup(activeGroupIndex);
-      onTrackEvent('filter_remove_group', { category: group?.category || '' });
     }
     setChipMenuAnchor(null);
     setActiveGroupIndex(null);
-  }, [activeGroupIndex, activeFilters, onRemoveGroup, onTrackEvent]);
+  }, [activeGroupIndex, onRemoveGroup]);
 
   // Add value to existing group (OR)
   const handleAddValueToExistingGroup = useCallback(
     (value: string) => {
       if (activeGroupIndex !== null) {
-        const group = activeFilters[activeGroupIndex];
         onAddValueToGroup(activeGroupIndex, value);
-        onTrackEvent('filter_add_or', { category: group?.category || '', value });
       }
       setChipMenuAnchor(null);
       setActiveGroupIndex(null);
     },
-    [activeGroupIndex, activeFilters, onAddValueToGroup, onTrackEvent]
+    [activeGroupIndex, onAddValueToGroup]
   );
 
   // Memoize search results to avoid recalculating on every render
@@ -209,6 +202,28 @@ export function FilterBar({
     () => getSearchResults(filterCounts, activeFilters, searchQuery, selectedCategory),
     [filterCounts, activeFilters, searchQuery, selectedCategory]
   );
+
+  // Track searches with no results (debounced, to discover missing specs)
+  const lastTrackedQueryRef = useRef<string>('');
+  useEffect(() => {
+    const query = searchQuery.trim();
+    // Only track if: query >= 2 chars, no results, not already tracked this query
+    if (query.length >= 2 && searchResults.length === 0 && query !== lastTrackedQueryRef.current) {
+      const timer = setTimeout(() => {
+        onTrackEvent('search_no_results', { query });
+        lastTrackedQueryRef.current = query;
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [searchQuery, searchResults.length, onTrackEvent]);
+
+  // Reset tracked query when dropdown closes
+  useEffect(() => {
+    if (!dropdownAnchor) {
+      lastTrackedQueryRef.current = '';
+    }
+  }, [dropdownAnchor]);
+
   // Only open if anchor is valid and in document
   const isDropdownOpen = Boolean(dropdownAnchor) && document.body.contains(dropdownAnchor);
   const hasQuery = searchQuery.trim().length > 0;
@@ -349,10 +364,7 @@ export function FilterBar({
             key={`${group.category}-${index}`}
             label={displayLabel}
             onClick={(e) => handleChipClick(e, index)}
-            onDelete={() => {
-              onRemoveGroup(index);
-              onTrackEvent('filter_remove_group', { category: group.category });
-            }}
+            onDelete={() => onRemoveGroup(index)}
             deleteIcon={<CloseIcon sx={{ fontSize: '1rem !important' }} />}
             sx={{
               fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',

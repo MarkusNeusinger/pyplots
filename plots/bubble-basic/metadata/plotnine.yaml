@@ -25,3 +25,176 @@ review:
     a more realistic scenario
   - Could showcase more plotnine features like adding a color aesthetic for a fourth
     dimension as suggested in spec notes
+  image_description: The plot displays a bubble chart with approximately 50 data points
+    on a clean minimal theme background. The x-axis ranges from 6 to 14 (labeled "X
+    Value") and the y-axis from approximately 7 to 14 (labeled "Y Value"). All bubbles
+    are rendered in a consistent blue color (#306998) with transparency (alpha ~0.6).
+    Bubble sizes vary noticeably, representing the third dimension. A size legend
+    on the right side shows three reference bubbles for sizes 25, 50, and 75. The
+    title "bubble-basic · plotnine · pyplots.ai" is displayed at the top. The overall
+    layout is well-proportioned with a 16:9 aspect ratio. The data shows a positive
+    correlation between X and Y values with good variation in bubble sizes.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis titles at 20pt, axis text at 16pt, legend text
+          at 14-18pt - all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, bubbles have good alpha transparency
+          to handle visual overlap
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: 'Bubbles are well-sized with scale_size_area(max_size=20), good visibility.
+          Minor deduction: some small bubbles could be slightly more prominent'
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme (#306998 blue) is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Good proportions, minimal background with theme_minimal(). Small
+          deduction: legend could be positioned slightly better'
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels "X Value" and "Y Value" but no units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle from theme_minimal(), legend is present and clear
+          but positioned on plot area
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bubble chart using geom_point with size aesthetic
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X, Y, and size correctly mapped to aesthetics
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: size legend, transparency (alpha=0.6),
+          scale_size_area for area-based scaling'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Size legend correctly shows scale with values 25, 50, 75
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "bubble-basic · plotnine · pyplots.ai"'
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: 'Shows good variation in all three dimensions (x, y, size). Minor
+          deduction: could show more extreme size variation'
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Plausible synthetic data with correlation between x and y, generic
+          but acceptable
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values are reasonable and sensible
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) ensures reproducibility
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as "plot.png"
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: true
+        comment: Uses ggplot grammar with geom_point and scale_size_area, theme_minimal,
+          element_text customization. This is standard plotnine usage but doesn't
+          showcase advanced features like faceting or additional aesthetics
+  verdict: APPROVED

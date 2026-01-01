@@ -25,3 +25,175 @@ review:
     should start at 0 or slightly below label positions
   - X-axis label Sample is generic; could be more descriptive like Iris Samples or
     simply removed since individual labels are shown
+  image_description: 'The plot displays a hierarchical dendrogram showing clustering
+    of 15 iris flower samples across three species (Setosa, Versicolor, Virginica).
+    The tree structure uses two colors: blue (#306998) for the top-level merge connecting
+    the Setosa cluster to the Versicolor/Virginica cluster at distance ~10, and yellow/gold
+    (#FFD43B) for all lower-level merges. The Y-axis shows "Distance (Ward)" ranging
+    from -2 to 12, and the X-axis shows "Sample" with individual sample labels (e.g.,
+    Setosa-1, Versicolor-3, Virginica-5) displayed at a 35-degree angle. The title
+    "dendrogram-basic · letsplot · pyplots.ai" appears at the top. The hierarchical
+    structure clearly shows Setosa samples clustering together on the left, while
+    Versicolor and Virginica samples form a separate major branch on the right, which
+    is scientifically accurate for iris data.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels are all clearly readable at appropriate
+          sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: Sample labels are angled to avoid overlap, all text is readable
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line segments are appropriately sized (1.5 width), colors are distinct
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue and yellow are colorblind-safe, high contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good overall, but Y-axis extends into negative values unnecessarily
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Distance (Ward)" is descriptive, but "Sample" is generic'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid on Y-axis only is appropriate, but X-axis grid lines removed
+          while labels remain could be cleaner
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct dendrogram/hierarchical clustering visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Samples on X-axis, distance on Y-axis, correctly implemented
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Tree structure, branch heights proportional to merge distances, labels
+          present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, complete tree structure shown
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed, colors are self-explanatory (threshold-based)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "dendrogram-basic · letsplot · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows hierarchical structure, different merge distances, cluster
+          separation; could show more varied within-cluster distances
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Iris flower species clustering is a classic, well-known example
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Ward distances are reasonable, though the spread is quite compressed
+          at lower levels
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → linkage → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) is set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves to 'plot.png' but with path='.' parameter which is redundant
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of geom_segment, geom_text, scale_color_manual, and theme
+          customization. However, doesn't leverage lets-plot's interactive features
+          in the HTML export or more advanced theming capabilities.
+  verdict: APPROVED

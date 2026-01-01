@@ -21,3 +21,173 @@ review:
   weaknesses:
   - Consider using slightly larger marker size (s=10-12) for better visibility of
     individual points
+  image_description: 'The plot displays a SHAP summary visualization with 12 breast
+    cancer features sorted vertically by importance (most important at top). Each
+    row represents a feature with dots representing individual samples. The horizontal
+    axis shows SHAP values ranging from approximately -0.75 to 1.0, with a clear blue
+    vertical reference line at x=0. Points are colored using a coolwarm diverging
+    colormap: blue indicates low feature values (0.0) and red indicates high feature
+    values (1.0). The colorbar on the right clearly labels "Feature Value (Low to
+    High)". Features like "mean area" and "mean concave points" show wide SHAP value
+    distributions, while "mean compactness" shows a narrow distribution. The title
+    reads "shap-summary · seaborn · pyplots.ai" at the top. The layout is clean with
+    subtle gridlines on the x-axis.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt, axis labels 20pt, tick labels 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, feature names clearly separated, jitter prevents
+          point overlap
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 8
+        passed: true
+        comment: Points visible with good alpha, but marker size=8 could be slightly
+          larger for optimal viewing
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Coolwarm colormap is colorblind-safe diverging palette
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of canvas, colorbar properly integrated
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"SHAP Value (Impact on Model Output)" and "Feature" are descriptive'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid subtle at alpha=0.3, but legend=False means no legend (colorbar
+          serves this purpose adequately)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct SHAP summary plot with stripplot approach
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: SHAP values on X, features on Y, correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has diverging colormap, vertical zero line, jitter, sorted by importance,
+          top 10 features
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full range of SHAP values displayed
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar accurately represents feature value scale
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "shap-summary · seaborn · pyplots.ai"
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows varied SHAP distributions but some features show limited spread
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Breast cancer dataset is a real, neutral scientific domain
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: SHAP values are realistic for probability outputs (-0.75 to 1.0)
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42) and random_state=42
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used (matplotlib, numpy, pandas, seaborn, sklearn)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Modern seaborn API used correctly
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves to plot.png correctly
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of sns.stripplot with hue mapping and palette, sns.despine
+          for styling, but could leverage more seaborn features
+  verdict: APPROVED

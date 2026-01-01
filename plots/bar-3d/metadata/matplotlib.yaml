@@ -24,3 +24,173 @@ review:
   - Grid styling could use alpha parameter for subtler appearance
   - Could benefit from slightly more contrast in bar heights (all values in 65-225
     range, some near-zero values would show more variation)
+  image_description: The plot shows a 3D bar chart with 5 products (Product A through
+    E) on the x-axis, 4 quarters (Q1-Q4) on the y-axis, and sales values (ranging
+    from ~65 to ~225) on the z-axis. The bars use a viridis colormap where purple/dark
+    blue represents lower values (~65-100), teal/green for mid-range values (~120-160),
+    and yellow for higher values (~200-225). The viewing angle is set at elevation
+    25° and azimuth 45°, providing good visibility of most bars. A colorbar on the
+    right reinforces the sales values. The bars have semi-transparent faces (alpha=0.85)
+    with dark gray edges. All axis labels are clear and readable, with "Product" and
+    "Quarter" labels and "Sales (thousands $)" on the z-axis.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt, labels 20pt, ticks 14-16pt, all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, all labels clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Bars well-sized and visible, slight occlusion of some back bars but
+          transparency helps
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Viridis colormap is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, plot fills canvas well, colorbar slightly increases
+          right margin
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive with units: "Sales (thousands $)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: No grid alpha setting (default grid), colorbar serves as legend substitute
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct 3D bar chart
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Products on x, quarters on y, sales as height correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 3D bars, color gradient for depth perception, semi-transparency as
+          spec suggests
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, z-axis range appropriate
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar correctly labeled with units
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "bar-3d · matplotlib · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variation across products and quarters, different growth patterns,
+          but all values are positive (no contrasting negative/near-zero)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Sales by product and quarter is a classic, neutral business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values in thousands of dollars (65-225) are realistic for quarterly
+          product sales
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set, though data is actually hardcoded
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy used, both required
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: All APIs current
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses bar3d which is matplotlib's standard 3D plotting, but doesn't
+          use advanced features like annotations, custom lighting, or multiple subplots
+          for rotation views
+  verdict: APPROVED

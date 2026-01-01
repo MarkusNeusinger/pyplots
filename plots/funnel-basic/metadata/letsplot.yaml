@@ -23,3 +23,180 @@ review:
   - Could add np.random.seed(42) comment for reproducibility documentation even though
     data is deterministic
   - HTML output generated but not required by spec (minor)
+  image_description: 'The plot displays a well-designed funnel chart with 5 trapezoidal
+    segments representing sales pipeline stages: Awareness (1,000 - 100%), Interest
+    (600 - 60%), Consideration (400 - 40%), Intent (200 - 20%), and Purchase (100
+    - 10%). The segments narrow progressively from top to bottom. Colors used are:
+    dark blue (#306998) for Awareness, light blue (#4A90D9) for Interest, yellow (#FFD43B)
+    for Consideration, orange (#F5A623) for Intent, and dark orange/brown (#D45D00)
+    for Purchase. Each segment contains bold white text showing the stage name, value
+    with comma formatting, and percentage. White borders (2px) separate the segments
+    cleanly. The title "funnel-basic · letsplot · pyplots.ai" appears centered at
+    the top in bold. The chart uses theme_void() for a clean background with no axes
+    or grid.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: All text is bold, white, and perfectly readable against the colored
+          backgrounds. Title is appropriately sized.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; each label is well-centered within its trapezoid
+          segment.
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Trapezoid segments are well-sized and clearly visible with good proportions.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Good color progression from blue to orange; distinct enough for colorblind
+          users, though blue/yellow adjacent could be slightly better differentiated.
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Funnel is well-centered and fills the canvas appropriately with balanced
+          margins.
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: true
+        comment: N/A for funnel charts (theme_void removes axes intentionally).
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: No grid (appropriate for funnel), legend correctly hidden since labels
+          are on segments.
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct funnel chart with trapezoidal segments narrowing top to bottom.
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Stage names and values correctly mapped to segments.
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: distinct colors per stage, value/percentage
+          labels, proportional widths.'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 5 stages visible and properly ordered.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Labels on segments serve as legend; correctly formatted.
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "funnel-basic · letsplot · pyplots.ai"'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows progressive decrease across stages, demonstrating funnel conversion
+          concept perfectly.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Sales funnel is a classic, realistic use case with sensible stage
+          names.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values (1000→600→400→200→100) are realistic for a sales funnel scenario.
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports → data → polygon building → plot → save.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 1
+        max: 3
+        passed: false
+        comment: Deterministic data (no random), but no explicit seed statement. Data
+          is hardcoded so reproducible, partial credit.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (pandas, lets_plot, export).
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API.
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves to 'plot.png' but uses export_ggsave with path='.' which is
+          correct, however also saves plot.html which wasn't strictly required.
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses geom_polygon for custom shapes, scale_y_reverse, theme_void,
+          ggsize - good lets-plot usage but could use more advanced features like
+          tooltips or annotations.
+  verdict: APPROVED

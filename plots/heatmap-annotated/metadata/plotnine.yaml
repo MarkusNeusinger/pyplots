@@ -27,3 +27,177 @@ review:
     default
   - Library features score is modest - implementation works but does not showcase
     unique plotnine capabilities
+  image_description: The plot displays an 8×8 correlation matrix heatmap of economic
+    indicators (GDP Growth, Inflation, Unemployment, Interest Rate, Consumer Conf,
+    Mfg Index, Export Vol, Housing). The heatmap uses a diverging RdBu (red-blue)
+    colormap with red indicating negative correlations and blue indicating positive
+    correlations. Each cell contains the correlation coefficient formatted to 2 decimal
+    places. The diagonal shows 1.00 values (self-correlation) in deep blue. Text colors
+    automatically switch between white (for dark backgrounds with |correlation| >
+    0.5) and black (for light backgrounds) for readability. The colorbar on the right
+    shows the correlation scale from -1.0 to 1.0. X-axis labels are rotated 45 degrees.
+    The title follows the required format. The plot uses a square aspect ratio with
+    white borders between cells.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is large and clear (24pt), axis labels are readable (14pt with
+          rotation), annotations inside cells are visible
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; x-axis labels rotated 45° prevents collision
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Tiles are well-sized, annotations clearly visible with proper contrast
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: RdBu diverging palette is colorblind-safe for correlation data
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of square canvas (12×12), though could use slightly more
+          of the canvas area
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Labels say "Variable" which is descriptive but generic; no units
+          (though N/A for correlation)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: White cell borders work well; legend well-placed but title could
+          be more prominent
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Correct: annotated heatmap'
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly show variables, fill mapped to correlation values
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has annotations, colorbar, contrasting text colors, proper number
+          formatting
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Correlation values range -1 to 1 as expected
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Correlation" label is accurate'
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses `heatmap-annotated · plotnine · pyplots.ai` format correctly
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows both positive and negative correlations, diagonal 1.0 values,
+          range of strengths; could show more extreme correlations
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Economic indicators correlation is a perfect real-world application
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are plausible for economic correlations, though some relationships
+          could be more economically intuitive
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses `np.random.seed(42)`
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as `plot.png`
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses ggplot grammar well with geom_tile + geom_text, scale_fill_distiller,
+          and scale_color_identity, but doesn't leverage any unique plotnine features
+          beyond standard ggplot2 patterns
+  verdict: APPROVED

@@ -24,3 +24,176 @@ review:
   weaknesses:
   - Y-axis uses scientific notation (2.000e+4) instead of human-readable currency
     format
+  image_description: The plot displays four violin plots showing salary distributions
+    across four departments (Engineering, Marketing, Sales, Support). Each violin
+    uses alternating Python blue (#306998) and yellow (#FFD43B) colors. The violins
+    are mirrored/symmetrical showing kernel density estimation on both sides. Inside
+    each violin is a white box showing quartiles (Q1-Q3), a horizontal black median
+    line, and whiskers extending to 1.5×IQR. The title "violin-basic · bokeh · pyplots.ai"
+    appears at the top left. X-axis shows "Department" with category labels, Y-axis
+    shows "Annual Salary (USD)" in scientific notation (2.000e+4 to 1.400e+5). Grid
+    lines are subtle and dashed on the y-axis only. Each department shows distinct
+    distribution shapes - Engineering has tight distribution around 85k, Marketing
+    around 65k, Sales shows wider spread around 70k, and Support is narrower around
+    50k.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels are readable, though scientific
+          notation on y-axis is slightly harder to interpret than formatted currency
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, all elements clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Violins are well-sized, box plots visible inside, whiskers clear
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue and yellow are colorblind-safe, good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, slight extra whitespace on right side
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive with units: "Annual Salary (USD)", "Department"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: No legend needed, but y-grid uses scientific notation which reduces
+          readability
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct violin plot with KDE
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X, values on Y correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has quartile markers, mirrored density, median line as per spec
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A (no legend needed, categories clear on x-axis)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "violin-basic · bokeh · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows different distribution shapes (Engineering tight, Sales wide,
+          Support narrow), different means, demonstrates violin plot strengths
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Salary by department is a real, comprehensible scenario mentioned
+          in spec applications
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Salary values are realistic (50k-85k means with appropriate standard
+          deviations)
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Modern Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Implements violin from scratch using patches rather than using Bokeh's
+          built-in capabilities; while technically correct, doesn't showcase Bokeh-specific
+          features
+  verdict: APPROVED

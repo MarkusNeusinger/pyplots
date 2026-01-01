@@ -25,3 +25,178 @@ review:
     whitespace; could be positioned closer or inside the plot
   - Could use matplotlib distinctive features more (e.g., colorbar for continuous
     third variable, custom tick formatters, or annotation capabilities)
+  image_description: 'The plot displays a polar scatter plot for wind measurement
+    data with a compass-style orientation (North at top, clockwise direction). Data
+    points are positioned by wind direction (angle) and wind speed (radius, 0-20 m/s).
+    Three categories are shown: Morning (blue circles) clustered around SW direction,
+    Afternoon (yellow circles) clustered around NW direction, and Evening (brown circles)
+    distributed across all directions. The title "polar-scatter · matplotlib · pyplots.ai"
+    appears at top center. A "Time of Day" legend is positioned in the upper right.
+    Radial gridlines appear at 10 and 20 m/s intervals. The axis label "Wind Speed
+    (m/s)" appears on the left side.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, direction labels at 18pt, tick labels at 14pt, legend
+          at 16pt - all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; legend positioned outside plot area
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Marker size (s=150) and alpha (0.7) appropriate for 120 points; slight
+          deduction as some brown/blue overlap makes individual points harder to distinguish
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Blue (#306998), Yellow (#FFD43B), and Brown (#8B4513) are distinguishable;
+          minor concern that blue and brown could be confused in some colorblind conditions
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Square 12x12 figure appropriate for polar plot; good canvas utilization
+          with legend outside
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Wind Speed (m/s)" includes units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid has alpha=0.3 which is good, but legend is positioned quite
+          far from the plot (bbox_to_anchor=(1.05, 1.0))
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct polar scatter plot
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Angle = wind direction, Radius = wind speed correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec requirements met: 120 points, angle/radius encoding, color
+          for third variable (time of day), compass-style labels, radial gridlines'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Radial axis starts at 0 and extends to 20 (max data ~22)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies Morning, Afternoon, Evening
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "polar-scatter · matplotlib · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows prevailing wind directions (SW morning, NW afternoon) and variable
+          evening winds; good clustering patterns; minor deduction as data is perhaps
+          too clustered, limiting spread demonstration
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Wind measurement scenario with time-of-day variation is realistic
+          and comprehensible
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Wind speeds 0-22 m/s are realistic; minor point that most speeds
+          cluster 0-10 m/s with only a few outliers reaching 20+
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set at start
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used (matplotlib.pyplot, numpy, Line2D)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: No deprecated functions
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png'
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses matplotlib's polar projection and compass configuration (set_theta_zero_location,
+          set_theta_direction, set_thetagrids), but these are standard polar features
+          rather than distinctive matplotlib strengths
+  verdict: APPROVED

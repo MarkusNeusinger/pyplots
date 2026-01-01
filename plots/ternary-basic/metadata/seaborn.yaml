@@ -29,3 +29,178 @@ review:
   - Grid legend not present (minor issue for single-series data)
   - Square figure (12x12) instead of recommended 16:9 landscape, though appropriate
     for ternary plots
+  image_description: 'The plot displays a ternary diagram showing soil composition
+    data. The equilateral triangle has three vertices labeled in bold: "Sand (100%)"
+    at bottom-left, "Silt (100%)" at bottom-right, and "Clay (100%)" at the top. The
+    triangle is outlined in black with gray grid lines at 10% intervals creating a
+    mesh pattern inside. Tick marks with percentage labels (20%, 40%, 60%, 80%) appear
+    along all three edges. Approximately 50 blue circular data points (with white
+    edge and alpha transparency) are scattered across the triangle, representing different
+    soil compositions. The title "Soil Composition · ternary-basic · seaborn · pyplots.ai"
+    appears at the top. The background is white with a clean, professional appearance.
+    The plot uses a square aspect ratio with good utilization of the canvas space.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, vertex labels at 20pt bold, tick labels at 14pt -
+          all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers sized appropriately (s=200) with alpha=0.7 for 50 points,
+          white edges help distinguish overlapping points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color (#306998) with good contrast, no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of square canvas, triangle well-centered with balanced margins,
+          slight extra whitespace at bottom
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for ternary plot, but vertex labels with "(100%)" effectively
+          communicate the scale
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha=0.3), but no legend present (not strictly needed
+          for single-series data)
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct ternary plot with equilateral triangle
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Three components correctly mapped to triangle coordinates
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Grid lines at 10% intervals, labeled vertices, tick marks at 20%
+          intervals, visually distinct points
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data points visible within triangle
+      - id: SC-05
+        name: Legend Accuracy
+        score: 1
+        max: 2
+        passed: true
+        comment: No legend, but data context clear from title and labels
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "Soil Composition · ternary-basic · seaborn ·
+          pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: 50 points spread across the triangle showing good compositional variety,
+          covers most regions
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Soil composition (Sand, Silt, Clay) is a classic and realistic ternary
+          plot application
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Percentages sum to 100, values generated via Dirichlet distribution
+          are realistic
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear script: imports → data → plot → save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used (plt, np, pd, sns)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current seaborn API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses sns.scatterplot and sns.set_style/set_context, but ternary plotting
+          is primarily matplotlib-based custom work
+  verdict: APPROVED

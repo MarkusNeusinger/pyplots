@@ -23,3 +23,172 @@ review:
   - Code specifies colorblind-safe blue/orange colors but plot renders green/red (color
     variable assignment mismatch)
   - Structure uses for loops and functions rather than pure KISS linear style
+  image_description: The plot displays a candlestick chart showing 30 trading days
+    of stock price data from January 2 to approximately February 10, 2024. The chart
+    uses **green** for bullish (up) candles and **red** for bearish (down) candles
+    - this is the traditional green/red color scheme, NOT the colorblind-safe blue/orange
+    mentioned in the code. The y-axis shows "Price ($)" ranging from approximately
+    133 to 160. The x-axis shows "Date" with tick labels at 5-day intervals (Jan 02,
+    Jan 09, Jan 16, Jan 23, Jan 30, Feb 06). The title correctly displays "candlestick-basic
+    · seaborn · pyplots.ai". A legend in the upper left shows "Bullish (Up)" in green
+    and "Bearish (Down)" in red. The data shows a general downward trend from ~$150
+    to ~$135 with both bullish and bearish periods clearly visible. Wicks (shadows)
+    are clearly visible and thinner than the candle bodies. A subtle horizontal grid
+    helps read price levels.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt, labels 20pt, ticks 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Candlesticks well-sized, wicks visible, bodies clear
+      - id: VQ-04
+        name: Color Accessibility
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses green/red (not colorblind-safe despite code comment) - deducted
+          2 points
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, appropriate padding
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Price ($)" with units, "Date" descriptive'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Legend uses green/red inconsistent with code's blue/orange intent
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct candlestick chart
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: OHLC data correctly mapped to candle elements
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Body shows open-close, wicks show high-low, color distinguishes direction
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows all price data with padding
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies bullish/bearish
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "candlestick-basic · seaborn · pyplots.ai"'
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows both bullish and bearish candles, varying body sizes, visible
+          wicks, doji-like small bodies
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Stock price simulation is plausible, shows realistic downward trend
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Price range $133-160 is realistic for stock data
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 0
+        max: 3
+        passed: true
+        comment: Uses for loop with functions, not pure KISS style
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: No deprecated functions
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses sns.set_theme, sns.set_context, sns.lineplot for wicks, but
+          candlestick is not a native seaborn chart type so relies on matplotlib primitives
+  verdict: APPROVED

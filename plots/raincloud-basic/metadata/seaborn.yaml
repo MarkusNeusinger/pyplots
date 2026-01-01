@@ -24,3 +24,168 @@ review:
   - Violin clipping approach uses direct vertex manipulation rather than seaborn-native
     methods
   - Legend overlaps slightly with data points in the upper left corner
+  image_description: 'The plot displays a raincloud visualization comparing reaction
+    times across three experimental conditions (Control, Treatment A, Treatment B).
+    Each condition is represented with a colorblind-accessible color scheme: blue
+    (#306998) for Control, yellow/gold (#E6A800) for Treatment A, and green (#4DAF4A)
+    for Treatment B. The raincloud structure is correctly implemented with half-violins
+    (clouds) on the right side of each category, white boxplots with black borders
+    in the middle showing median and quartiles, and jittered strip points (rain) on
+    the left side. The title "raincloud-basic · seaborn · pyplots.ai" is displayed
+    at the top. The Y-axis shows "Reaction Time (ms)" ranging from about 300-575ms,
+    and the X-axis shows "Condition". The Treatment B distribution clearly shows bimodality
+    in its half-violin, demonstrating the advantage of rainclouds over traditional
+    boxplots. A legend is positioned in the upper left corner. Grid lines are subtle
+    and dashed on the y-axis only.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt, axis labels 20pt, tick labels 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Points visible with appropriate size and alpha, slight overlap in
+          dense areas
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow/green palette is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, slight extra whitespace on right
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Reaction Time (ms)" includes units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha 0.3), but legend placement in upper left overlaps
+          with the data area slightly
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct raincloud plot with all three elements
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X, continuous values on Y
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Half-violin, boxplot, jittered points all present; layout follows
+          cloud-right, rain-left convention
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axis limits
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels match conditions
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: Format is correct but uses middot (·) character consistently
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows normal distribution (Control), tighter distribution (Treatment
+          A), and bimodal distribution (Treatment B)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Reaction time experiment is a plausible psychology research scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values 280-575ms are realistic for human reaction times
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Linear script structure without functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used (matplotlib, numpy, pandas, seaborn)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 0
+        max: 1
+        passed: true
+        comment: Uses legacy approach for violin manipulation
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items: []
+  verdict: APPROVED

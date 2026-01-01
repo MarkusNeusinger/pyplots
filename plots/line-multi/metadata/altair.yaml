@@ -25,3 +25,177 @@ review:
   - Could add tooltips for better interactivity in the HTML version
   - Y-axis starting at 0 creates unnecessary whitespace when minimum data is around
     40
+  image_description: The plot displays a multi-line comparison chart tracking 4 product
+    lines (Electronics, Clothing, Furniture, Books) over 24 months from February 2023
+    to December 2024. The title "line-multi · altair · pyplots.ai" is centered at
+    the top. Electronics (coral/red) shows the highest values (~150-195k), followed
+    by Clothing (yellow, dotted line pattern, ~110-170k with seasonal variation),
+    Furniture (green, steady ~80-95k), and Books (blue, lowest, ~40-65k with gradual
+    upward trend). Each line has circular markers at data points. The legend "Product
+    Line" is positioned in the top-right. Y-axis shows "Sales (thousands USD)" from
+    0-200, X-axis shows "Month" with date labels. Subtle dashed grid lines appear
+    in the background.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, x-axis date labels well spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Lines are thick (strokeWidth=4), markers visible (size=80) - slightly
+          large markers for 24 points but appropriate
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Uses colorblind-safe palette (#306998 blue, #FFD43B yellow, #E15759
+          red, #59A14F green) with distinct stroke patterns'
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas, but legend positioned at right edge creates slight
+          imbalance
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Both axes have descriptive labels with units: "Sales (thousands
+          USD)", "Month"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle (0.3 opacity, dashed) but legend symbol colors don't
+          match line colors well (symbol shows fill, not stroke)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct multi-line chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=time (months), Y=numeric (sales), color=categorical (product)
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Multiple lines with distinct colors, legend, varied line styles (strokeDash),
+          markers
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, Y-axis starts at 0 showing full range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies all 4 product lines
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "line-multi · altair · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows 4 series with different trends (upward, seasonal, steady, gradual
+          increase), but all trends are generally upward
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly sales for product lines is a perfect real-world scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values in thousands USD are plausible but starting Y at 0 when min
+          data is ~40 creates some whitespace
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Imports → Data → Plot → Save, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only altair, numpy, pandas - all used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Altair API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses declarative encoding, mark_line with point overlay, strokeDash
+          encoding, interactive() for HTML, but could use tooltips for richer interactivity
+  verdict: APPROVED

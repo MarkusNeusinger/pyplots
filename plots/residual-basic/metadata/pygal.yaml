@@ -25,3 +25,177 @@ review:
     placement would be cleaner
   - Axis labels lack units (e.g., could use more descriptive context)
   - Realistic context could be stronger with more specific scenario labeling
+  image_description: 'The plot displays a residual scatter plot on a white background
+    with blue circular markers (Python Blue #306998) representing residuals plotted
+    against fitted values. The fitted values range from approximately 10 to 50 on
+    the x-axis, while the residuals span from -8 to +8 on the y-axis with symmetric
+    scaling. A dashed red/salmon horizontal reference line at y=0 helps assess systematic
+    bias. The title "residual-basic · pygal · pyplots.ai" appears at the top center
+    in gray text. Axis labels clearly show "Fitted Values" and "Residuals". The legend
+    is positioned in the top-left corner showing "Residuals" (blue square) and "Zero
+    Reference" (red square). Several outliers are visible at approximately (+15, +8.5),
+    (+30, -9.2), and (+42, +7.8). The majority of points cluster randomly around the
+    zero line, demonstrating good model behavior. Subtle horizontal dotted grid lines
+    aid readability.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title and axis labels are clearly readable; font sizes are appropriate
+          for the 4800x2700 canvas
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; legend is well-separated from data
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers are visible with good size (dots_size=14); transparency at
+          0.6 reveals density well
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue for data points and red for reference line provide good contrast;
+          colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good canvas utilization; plot area is well-proportioned though legend
+          could be at bottom
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels "Fitted Values" and "Residuals" but no units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Subtle horizontal grid lines (y_guides only); legend is readable
+          and well-placed
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct XY scatter plot for residual visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Fitted values on X-axis, residuals on Y-axis as specified
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Includes horizontal reference line at y=0, transparency, symmetric
+          y-axis
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data points visible within axis range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies "Residuals" and "Zero Reference"
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "residual-basic · pygal · pyplots.ai"'
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows random scatter around zero, outliers, and slight heteroscedasticity;
+          demonstrates residual patterns well
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 7
+        passed: true
+        comment: Plausible regression diagnostics scenario; generic but appropriate
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Sensible fitted values (10-50) and residual magnitudes
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear script: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and pygal imports used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current pygal API usage
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: true
+        comment: Saves both plot.png and plot.html correctly
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses XY chart, custom Style, stroke_style for dashed line; good but
+          not exceptional pygal usage
+  verdict: APPROVED

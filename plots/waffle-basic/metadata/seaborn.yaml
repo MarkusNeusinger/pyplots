@@ -23,3 +23,170 @@ review:
   - Legend could be positioned closer to the grid (large gap between chart and legend)
   - Grid fills top-to-bottom which is less intuitive than bottom-to-top (like filling
     a glass)
+  image_description: 'The plot displays a 10x10 waffle chart (100 squares) representing
+    budget allocation across 5 categories. The grid fills from the top-left corner,
+    moving left-to-right and top-to-bottom. Colors used: Blue (#306998) for Housing
+    (35 squares), Yellow (#FFD43B) for Food (25 squares), Green (#4CAF50) for Transportation
+    (20 squares), Orange (#FF7043) for Utilities (12 squares), and Purple (#9C27B0)
+    for Entertainment (8 squares). The title "waffle-basic · seaborn · pyplots.ai"
+    appears at the top in bold. A legend below the chart shows all categories with
+    their percentages. White grid lines separate each square. The plot uses a square
+    aspect ratio (12x12 inches) which is appropriate for waffle charts.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt is clearly readable, legend at 18pt is well-sized
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Squares are well-sized with clear white borders
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Good distinct colors, though blue and purple could be slightly closer
+          for some colorblind types
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Square format is perfect for waffle chart, good use of canvas
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: true
+        comment: N/A for waffle charts (no axes needed, correctly hidden)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Legend well placed below chart, but could be closer to the grid
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct waffle chart implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories correctly mapped to colored squares
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 10x10 grid, distinct colors, legend with percentages
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 100 squares filled, values sum to 100%
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows all categories with percentages
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format `waffle-basic · seaborn · pyplots.ai`
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows 5 categories with varying proportions, good range from 8% to
+          35%
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Budget allocation is a perfect real-world use case for waffle charts
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are realistic for household budget, though Housing at 35%
+          could be higher for realism
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → grid creation → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (no random generation needed)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn/matplotlib APIs
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 0
+        passed: true
+        comment: Saves as plot.png correctly
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses sns.heatmap creatively for waffle visualization, though heatmap
+          is a workaround since seaborn lacks native waffle support
+  verdict: APPROVED

@@ -25,3 +25,176 @@ review:
   - Could leverage more seaborn-specific features like sns.set_theme() or custom context
     settings
   - The color palette is custom but not from seaborn recommended colorblind-safe palettes
+  image_description: The plot displays a multi-line chart with 4 product lines (Electronics,
+    Apparel, Home & Garden, Sports) tracked over 12 months (Jan-Dec). Electronics
+    (blue line with circle markers) shows strong upward growth culminating in a holiday
+    spike in Nov-Dec, reaching ~133K. Apparel (yellow/gold line with X markers) shows
+    a seasonal wave pattern peaking around April-June. Home & Garden (green line with
+    square markers) peaks in summer (Aug) then declines. Sports (pink/magenta line
+    with + markers) remains relatively stable with slight downward trend. The title
+    "line-multi · seaborn · pyplots.ai" is prominently displayed at the top. A well-positioned
+    legend in the upper left identifies each series. The y-axis shows "Sales (thousands
+    USD)" ranging 0-140, x-axis shows month names. All lines have markers at data
+    points and use distinct colors.
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt bold, axis labels 20pt, ticks 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line width 3, marker size 12 - perfectly adapted for 4 series with
+          12 points each
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Good distinct colors (blue, yellow, green, pink), though green/yellow
+          could be closer in some colorblind modes
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well, balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Sales (thousands USD)" with units, "Month" is descriptive'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid alpha 0.3 is subtle, legend well placed but could be slightly
+          more refined
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct multi-line plot
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=months, Y=sales values, correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Multiple series, distinct colors, legend, markers present as specified
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, y-axis appropriately scaled
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies all 4 product lines
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "line-multi · seaborn · pyplots.ai"'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows trends (Electronics growth), seasonal patterns (Apparel, Home
+          & Garden), stability (Sports), and divergence between series
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly sales for product lines is a real, comprehensible business
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Sales values in 10-140K range are realistic for product categories
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used (matplotlib, numpy, pandas, seaborn)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 0
+        max: 1
+        passed: true
+        comment: Uses `dashes=False` which works but the modern seaborn approach is
+          cleaner
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png' but should use the full path convention
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses sns.lineplot with hue/style for grouping which is seaborn's
+          strength, but could leverage more advanced features like confidence intervals
+          or seaborn's built-in themes
+  verdict: APPROVED

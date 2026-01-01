@@ -23,3 +23,173 @@ review:
   - Grid lines could be more subtle (lower alpha/opacity)
   - Axis labels could include units for clarity (e.g., Number of Responses instead
     of Count)
+  image_description: The plot displays a vertical bar chart showing customer satisfaction
+    survey responses across 5 categories ordered logically from "Very Dissatisfied"
+    to "Very Satisfied". The bars are rendered in a consistent muted blue color (#306998)
+    with count values (1, 5, 8, 21, 15) displayed on top of each bar. The title "count-basic
+    · pygal · pyplots.ai" appears at the top center. The x-axis is labeled "Satisfaction
+    Level" and y-axis is labeled "Count". Horizontal dotted grid lines aid readability.
+    The chart uses a white background with good spacing between bars and balanced
+    margins.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, tick labels, and value labels are all clearly
+          readable at the large canvas size
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; all category labels and values are
+          well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are appropriately sized with good width and spacing
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme with good contrast against white background
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Labels are descriptive but lack units (Count could be "Number of
+          Responses")
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: false
+        comment: Grid is subtle (dotted lines), legend correctly hidden for single-series
+          count plot; minor deduction for grid being slightly prominent
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bar chart type for count plot
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on x-axis, counts on y-axis correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Automatic counting from raw data, count labels on bars, logical category
+          ordering
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, y-axis starts at 0
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend appropriately hidden for single-series count plot
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "count-basic · pygal · pyplots.ai" format
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variation across all 5 satisfaction levels with different frequencies;
+          could show more extreme variation
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Customer satisfaction survey is a perfect real-world scenario for
+          count plots
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: 50 responses is realistic; counts are plausible for a survey
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Data is deterministic (hardcoded list), no random seed needed
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only Counter, pygal, and Style are imported and used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current pygal API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses pygal's Style customization, print_values, and value_formatter;
+          could leverage more pygal-specific features like tooltips or custom rendering
+  verdict: APPROVED

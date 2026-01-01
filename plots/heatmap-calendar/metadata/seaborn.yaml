@@ -21,3 +21,177 @@ review:
   weaknesses:
   - Could use seaborn figure-level functions or additional styling features to better
     showcase the library
+  image_description: The plot displays a calendar heatmap showing daily contributions
+    over the year 2024. The visualization uses a green sequential colormap ("Greens")
+    with white cell borders. Weekdays (Mon-Sun) are labeled on the y-axis, and months
+    (Jan-Dec) are labeled on the x-axis. Each cell represents a day, with color intensity
+    indicating the contribution count (0-15). The colorbar on the right shows "Daily
+    Contributions" ranging from 0 to approximately 15. The title "heatmap-calendar
+    · seaborn · pyplots.ai" is displayed at the top. The plot shows a clear pattern
+    with higher activity (darker green) on weekdays and lower activity (lighter green)
+    on weekends (Sat/Sun rows are noticeably lighter). The layout fills the canvas
+    well with good proportions.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, weekday/month labels at 16pt, colorbar labels at 14-16pt
+          - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, all labels clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Cells are well-sized with good visibility, white borders clearly
+          delineate each day
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Green sequential colormap is colorblind-safe (single hue variation)
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well, balanced margins, colorbar properly positioned
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: false
+        comment: No axis labels (x/y labels are intentionally empty, but spec doesn't
+          require units)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Colorbar is well-placed and labeled; white cell borders serve as
+          grid
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct calendar heatmap structure with days as cells, weeks as columns
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Weekdays on y-axis, weeks/months on x-axis, values as color intensity
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has weekday labels (Mon-Sun), month labels, sequential colormap,
+          color scale legend
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full year 2024 displayed (365 days), all data visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar correctly labeled "Daily Contributions" with accurate scale
+          0-15
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "heatmap-calendar · seaborn · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows variation in activity, weekend vs weekday patterns, zero-activity
+          days, high-activity days
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: GitHub-style contribution graph scenario, realistic daily coding
+          activity pattern
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values 0-15 are realistic for daily contributions, exponential distribution
+          with weekday boost is plausible
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib, numpy, pandas, seaborn - all used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Uses sns.heatmap which is correct but basic; could leverage seaborn's
+          statistical capabilities or additional features
+  verdict: APPROVED

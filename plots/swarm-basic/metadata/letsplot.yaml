@@ -23,3 +23,176 @@ review:
   weaknesses:
   - Axis label Performance Score could include units or scale indication like Performance
     Score (0-100)
+  image_description: 'The plot displays a swarm (sina) plot showing Performance Scores
+    across four departments: Engineering (blue), Marketing (yellow), Sales (green),
+    and Support (red/crimson). Individual data points are spread horizontally to avoid
+    overlap, creating the characteristic beeswarm pattern. Each department shows a
+    different distribution shape - Engineering has a tight cluster around 80, Marketing
+    shows wider spread with some low outliers, Sales displays a bimodal pattern with
+    clusters around 65 and 90, and Support has a moderate spread with visible outliers
+    at the low end (around 45-48). Black horizontal crossbars indicate the mean score
+    for each department. The title correctly reads "swarm-basic · letsplot · pyplots.ai".
+    The plot uses a clean minimal theme with subtle gray horizontal grid lines.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels are all clearly readable at appropriate
+          sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No text overlap; data points spread nicely using sina algorithm
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Points are well-sized (size=4) with good alpha (0.7); density is
+          appropriate for ~175 points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Four distinct colors (blue, yellow, green, red) provide good contrast
+          and differentiation
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Performance Score" and "Department" are descriptive but lack units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle and appropriate; legend hidden (not needed as x-axis
+          labels identify categories)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct swarm/beeswarm plot using geom_sina
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Category on X, continuous value on Y
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Individual points shown, horizontal spreading to avoid overlap, mean
+          markers present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within 0-100 range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed; categories clearly labeled on x-axis
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "swarm-basic · letsplot · pyplots.ai"'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Excellent variety: Engineering (tight normal), Marketing (wide spread
+          with outliers), Sales (bimodal distribution), Support (outliers visible)'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Employee performance scores by department is a perfect real-world
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Performance scores 0-100 are realistic; group sizes (38-52) appropriate
+          for swarm plots
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) and geom_sina seed=42
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: geom_sina is the lets-plot equivalent of swarm/beeswarm, uses scale_color_manual/scale_fill_manual,
+          theme customization, crossbar for means
+  verdict: APPROVED

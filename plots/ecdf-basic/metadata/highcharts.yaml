@@ -26,3 +26,177 @@ review:
   - Axis labels lack units (e.g., Value (units) would be more descriptive)
   - Data uses a simple normal distribution; a slightly more interesting distribution
     would better demonstrate ECDF capabilities
+  image_description: The plot displays an ECDF (Empirical Cumulative Distribution
+    Function) step chart on a white background. The title "ecdf-basic · highcharts
+    · pyplots.ai" is prominently displayed at the top in bold black text. The X-axis
+    is labeled "Value" and ranges from approximately 10 to 86, representing the sample
+    values from a normal distribution. The Y-axis is labeled "Cumulative Proportion"
+    and correctly ranges from 0 to 1. The ECDF is rendered as a blue (#306998 Python
+    Blue) step function line that rises from left to right in a characteristic S-curve
+    shape typical of normally distributed data. Dashed gray grid lines are present
+    on both axes to aid in reading values. A legend showing "ECDF" appears at the
+    bottom center. The chart uses the step="left" configuration, creating proper vertical
+    jumps at each data point.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 72px, axis labels at 48px, tick labels at 36px - all perfectly
+          readable at 4800x2700
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Line width of 6px is good for the step function, markers disabled
+          as appropriate for ECDF
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color (#306998) with good contrast against white background
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, adequate margins; plot fills canvas well but legend
+          position at bottom center is slightly awkward
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Value" and "Cumulative Proportion" are descriptive but lack units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle with dashed style and 0.15 alpha, but legend placement
+          at bottom overlaps slightly with x-axis label area
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct ECDF step chart
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Values on X-axis, cumulative proportion on Y-axis correctly
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Step function increases by 1/n at each point, y-axis 0-1, grid lines
+          present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis correctly fixed at 0-1, X-axis shows full data range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend label "ECDF" is accurate
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses exact format: ecdf-basic · highcharts · pyplots.ai'
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows the characteristic S-curve shape of normal distribution; 150
+          points is appropriate; could show more interesting distribution features
+          like asymmetry
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Normal distribution with mean 50, std 15 is a reasonable example
+          but quite generic
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values between ~10-86 are sensible for the chosen parameters
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no unnecessary functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) ensures reproducibility
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current highcharts-core API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Highcharts step line chart with proper configuration; could
+          leverage more interactive features like tooltips or zoom for HTML version
+  verdict: APPROVED

@@ -25,3 +25,177 @@ review:
     color palettes
   - X-axis label could be more descriptive (e.g., Employee Satisfaction Score instead
     of just Satisfaction Score)
+  image_description: The plot displays a horizontal dumbbell chart comparing employee
+    satisfaction scores before and after policy changes across 10 departments. Blue
+    dots (#306998) represent "Before Policy" values and yellow dots (#FFD43B) with
+    gray edge outlines represent "After Policy" values. Gray connecting lines (#888888)
+    link each pair of dots. Departments are listed on the y-axis (HR, Customer Support,
+    Marketing, IT, Research, Legal, Finance, Operations, Sales, Engineering), sorted
+    by the magnitude of improvement (ascending). The x-axis shows "Satisfaction Score
+    (%)" ranging from approximately 50 to 90. The title "dumbbell-basic · seaborn
+    · pyplots.ai" appears at the top. A legend in the lower right identifies the two
+    data series. A subtle dashed vertical grid with alpha transparency aids readability.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt, axis labels 20pt, tick labels 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels clearly visible
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Marker size (s=400) appropriate for 10 data points, connecting lines
+          visible but subtle
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue (#306998) and yellow (#FFD43B) are colorblind-safe and highly
+          distinguishable
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well, balanced margins, legend placed appropriately
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: X-axis has units "(%)" but could be more descriptive (e.g., "Employee
+          Satisfaction Score (%)")
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: false
+        comment: Grid is subtle (alpha=0.3, dashed), legend well placed but could
+          be positioned in upper left to avoid being near data
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct dumbbell/connected dot plot implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on y-axis, values on x-axis as per spec recommendation
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Horizontal orientation, distinct colors, sorted by difference, thin
+          connecting lines
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: X-axis range (45-95) shows all data with appropriate padding
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly labels "Before Policy" and "After Policy"
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "dumbbell-basic · seaborn · pyplots.ai"'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows variation in both start/end values and differences; all departments
+          show improvement but with varying magnitudes
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Employee satisfaction before/after policy changes is a realistic,
+          comprehensible scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Satisfaction scores 52-88% are realistic; improvements of 13-19 points
+          are plausible
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Imports → Data → Plot → Save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 0
+        max: 3
+        passed: false
+        comment: No random seed needed (deterministic data), but data is hardcoded
+          which is fine
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only used imports (matplotlib.pyplot, pandas, seaborn)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as "plot.png"
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses sns.scatterplot which is basic seaborn usage; could have used
+          seaborn's built-in styling or color palettes more distinctively
+  verdict: APPROVED

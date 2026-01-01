@@ -21,3 +21,166 @@ review:
   weaknesses:
   - Legend could be positioned closer to the chart for better visual cohesion
   - No explicit random seed (though data is deterministic, best practice to include)
+  image_description: 'The plot displays a donut chart showing budget allocation by
+    department. The chart has a hollow center containing "Total $100M" text. Five
+    colored segments represent different departments: Marketing (28.0%, Python blue
+    #306998), Operations (22.0%, yellow), R&D (25.0%, green), Sales (18.0%, orange),
+    and HR (7.0%, purple). Each segment has a percentage label positioned on the segment.
+    A legend titled "Department" appears on the right side listing all five categories
+    with corresponding color markers. The title "donut-basic · letsplot · pyplots.ai"
+    is centered at the top. The overall layout is clean with good whitespace balance.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, center label, and percentage labels are clearly readable.
+          Legend text is slightly small but acceptable.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; all percentage labels are well-positioned on
+          segments
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Donut segments are appropriately sized with good ring width (hole=0.5)
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses colorblind-safe palette with Python blue, yellow, green, orange,
+          purple - all distinguishable
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions; slight imbalance with legend positioned far right
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend well-placed, no grid needed for donut chart
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct donut chart with hollow center
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories and values correctly mapped to segments
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has percentage labels, center metric ($100M), 5 categories (within
+          3-8 range)
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All segments visible, percentages sum to 100%
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly maps colors to department names
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "donut-basic · letsplot · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variety in segment sizes (7% to 28%), demonstrates donut features
+          well
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Budget allocation by department is a realistic, relatable business
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are plausible; $100M total is realistic for a company budget
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: true
+        comment: Deterministic data (no random), but no explicit seed statement
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 4
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 4
+        max: 5
+        passed: true
+        comment: Uses geom_pie with hole parameter, layer_labels for percentage formatting,
+          geom_label for center annotation, theme_void - good use of lets-plot features
+  verdict: APPROVED

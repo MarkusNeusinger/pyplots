@@ -29,3 +29,180 @@ review:
     3D feature mentioned in the spec
   - Uses raw JavaScript config rather than highcharts-core Python library, making
     it less maintainable
+  image_description: 'The plot displays a 3D scatter visualization with three distinct
+    clusters rendered in Highcharts. The title "scatter-3d · highcharts · pyplots.ai"
+    appears at the top in bold with a subtitle "Three-dimensional clustered data visualization".
+    Three clusters are shown: Cluster A (dark blue/Python Blue, #306998) positioned
+    in the upper-right area, Cluster B (yellow/Python Yellow, #FFD43B) in the middle-left
+    area, and Cluster C (teal, #17BECF) scattered in the lower portion. Each axis
+    is labeled with units: "X Position (units)", "Y Position (units)", and "Z Position
+    (units)". The 3D perspective includes subtle blue-tinted frame planes at the bottom,
+    back, and side. A vertical legend on the right identifies the three clusters.
+    The overall layout is clean with good use of the canvas space.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, subtitle, axis labels, tick marks, and legend are all clearly
+          readable at full resolution
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; all labels are well-positioned and fully readable
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers are well-sized (radius 14) with good opacity (0.8); clusters
+          are clearly distinguishable, though some markers in Cluster C slightly overlap
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses colorblind-safe palette (blue, yellow, teal) with no red-green
+          conflicts
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good canvas utilization; plot fills ~60% of canvas; slight imbalance
+          with more whitespace on left
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'All axes have descriptive labels with units: "X Position (units)",
+          etc.'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle and appropriate; however legend is positioned far
+          to the right with significant empty space between the chart and legend
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct 3D scatter plot implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X, Y, Z correctly mapped to three spatial dimensions
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 3D visualization, clustering, transparency, color encoding all present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show full data range with appropriate tick intervals
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies all three clusters
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Follows exact format: "scatter-3d · highcharts · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows three distinct clusters with different spatial distributions;
+          demonstrates 3D spatial relationships well, but all clusters have similar
+          spread
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Generic "Position" labels work for demonstrating 3D scatter but lack
+          a specific real-world scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values are sensible for demonstrating 3D relationships; -5 to 6 range
+          appropriate
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Follows imports → data → plot → save structure without functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 0
+        max: 1
+        passed: true
+        comment: Uses direct JavaScript chart config instead of highcharts-core Python
+          library, which is unconventional but functional
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Highcharts 3D module with scatter3d type, 3D frame planes, interactive
+          tooltips, and hover states; however, interactive rotation (drag-to-rotate)
+          which is Highcharts' signature 3D feature is not explicitly enabled
+  verdict: APPROVED

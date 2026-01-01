@@ -23,3 +23,181 @@ review:
   weaknesses:
   - Axis labels lack units (e.g., "Amplitude (a.u.)" or "Sample Index (n)")
   - Image height is 2661px instead of exactly 2700px (minor dimension discrepancy)
+  image_description: The plot displays a stem plot showing a damped oscillation signal
+    with 30 data points. Each data point is represented by a blue (#306998) circular
+    marker connected to the y=0 baseline by a thin vertical stem line. The title "stem-basic
+    · highcharts · pyplots.ai" appears at the top. The x-axis is labeled "Sample Index"
+    (0-29) and the y-axis is labeled "Amplitude" (ranging from approximately -0.8
+    to 1.15). The plot shows a classic damped oscillation pattern starting with high
+    amplitude (~1.0) and decaying over time with alternating positive and negative
+    values. A subtle grid is visible with light gray lines. The baseline at y=0 is
+    clearly marked with a darker horizontal line.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick marks are all clearly readable. Font
+          sizes are appropriate for the 4800x2700 canvas.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere in the plot.
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Markers are appropriately sized (radius 10) with good visibility.
+          Stems are thin but clearly visible. 30 data points with this marker size
+          is optimal.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme (#306998 blue) with white marker borders. No
+          colorblind issues.
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Good use of canvas space. Minor deduction: slightly more whitespace
+          at the bottom than necessary.'
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels ("Sample Index", "Amplitude") but no units provided.
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Subtle grid (alpha 0.1), legend disabled which is appropriate for
+          single series.
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct stem plot with vertical lines from baseline to markers.
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X is sample index, Y is amplitude value. Correctly assigned.
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: thin vertical stems, circular markers
+          at top, baseline at y=0.'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 30 data points visible within axis range.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend appropriately disabled for single-series plot.
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "stem-basic · highcharts · pyplots.ai"'
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: 'Shows damped oscillation with both positive and negative values.
+          Good demonstration of stem plot capabilities. Minor: could show more variety
+          in the oscillation pattern.'
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Damped oscillation is a realistic signal processing scenario. Context
+          is appropriate.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Amplitude values between -0.8 and 1.15 are realistic for normalized
+          signal data.
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → chart config → series → export. No
+          functions/classes.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42) for reproducible results.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used.
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current highcharts-core API.
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as plot.png but aspect ratio is 4800x2700 not exact (actual
+          appears 4800x2661 based on image metadata).
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Highcharts plotLines for baseline, scatter series for markers,
+          line series for stems. Good use of Highcharts options system but no advanced
+          interactive features enabled.
+  verdict: APPROVED

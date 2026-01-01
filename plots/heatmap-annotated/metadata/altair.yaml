@@ -24,3 +24,178 @@ review:
     context
   - Does not utilize Altair interactive features (tooltips) in the HTML output
   - Canvas utilization could be improved with slightly larger margins
+  image_description: 'The plot displays a 7×7 annotated correlation heatmap showing
+    relationships between business metrics: Sales, Marketing, R&D, Support, Revenue,
+    Growth, and Profit. The visualization uses a blue-orange diverging colormap (blueorange
+    scheme) with the scale ranging from -1 to 1. Each cell contains its correlation
+    coefficient formatted to 2 decimal places. The diagonal shows perfect correlations
+    (1.00) in dark orange. Strong positive correlations appear in orange/brown (e.g.,
+    Sales-Revenue: 0.86, R&D-Growth: 0.87, Revenue-Profit: 0.87), while the only negative
+    correlation visible is Support-Profit at -0.24 in light blue. Text annotations
+    use white color on dark backgrounds (|correlation| > 0.5) and black on light backgrounds
+    for optimal contrast. The title "heatmap-annotated · altair · pyplots.ai" appears
+    at the top. A vertical colorbar legend on the right shows the correlation scale.
+    The chart is square with equal-sized cells separated by white borders.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis labels at 18pt, annotations at 20pt bold - all
+          clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text anywhere, x-axis labels angled at -45° to prevent
+          collision
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Cell sizes well-proportioned, annotations clearly visible within
+          cells
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Diverging blue-orange colormap is colorblind-friendly
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of canvas but slightly compact; could use more padding
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Labels show "Variable" which is descriptive but generic without units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: White cell borders provide clean separation, legend well-positioned
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct annotated heatmap implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly mapped to variable names, values to color intensity
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: color intensity, text annotations, contrast
+          text, colorbar'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full correlation range -1 to 1 displayed
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar correctly labeled "Correlation" with accurate scale
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "heatmap-annotated · altair · pyplots.ai"'
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows strong positive correlations and negative correlations, but
+          negative values are limited (only -0.24 visible)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Business metrics correlation matrix is a highly realistic and common
+          use case
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Correlation values are realistic; deliberately engineered correlations
+          (Revenue from Sales/Marketing) work well
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) ensures reproducibility
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports (altair, numpy, pandas)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Altair API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves both plot.png and plot.html (minor deviation but acceptable
+          for interactive library)
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of layered marks (rect + text), conditional color encoding,
+          but could leverage more Altair-specific features like tooltips for interactivity
+  verdict: APPROVED

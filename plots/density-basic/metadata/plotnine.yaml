@@ -25,3 +25,177 @@ review:
   weaknesses:
   - Rug plot color (yellow) could have better contrast against the white background
     for accessibility
+  image_description: 'The plot displays a smooth density curve representing the distribution
+    of test scores. The main density area is filled with a semi-transparent blue color
+    (#306998) with a matching blue outline. The distribution shows clear bimodality:
+    a primary peak around 72 points and a secondary bump around 88 points, representing
+    the "high achievers" group. A yellow/gold rug plot along the x-axis shows individual
+    observations as small vertical lines. The x-axis is labeled "Test Score (points)"
+    ranging from 30 to 100, and the y-axis shows "Probability Density" ranging from
+    0.00 to 0.03. The title "density-basic · plotnine · pyplots.ai" is prominently
+    displayed at the top. The plot uses a clean minimal theme with subtle gray grid
+    lines.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels are all clearly readable with
+          appropriate font sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Density curve well-sized with appropriate fill alpha (0.6), rug marks
+          visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Blue density is colorblind-safe; yellow rug could have slightly better
+          contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, no cut-off content, appropriate whitespace
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Test Score (points)" and "Probability
+          Density"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Subtle grid with alpha 0.3, no legend needed for single distribution
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct density/KDE plot type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Continuous variable correctly mapped to x-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Smooth curve ✓, fill with transparency ✓, rug plot ✓, appropriate
+          bandwidth
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show full data range appropriately
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A (single distribution, no legend needed)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "density-basic · plotnine · pyplots.ai"'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Bimodal distribution showcases distribution characteristics (skewness,
+          modality) as mentioned in spec
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Test scores is a compelling real-world scenario mentioned in spec
+          examples
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Scores between 0-100 are sensible; 200 observations is within recommended
+          range
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) is set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Using current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of plotnine's grammar of graphics with geom_density + geom_rug
+          layering, theme_minimal, and element_text sizing. Could leverage additional
+          plotnine features like annotate or faceting for bonus.
+  verdict: APPROVED

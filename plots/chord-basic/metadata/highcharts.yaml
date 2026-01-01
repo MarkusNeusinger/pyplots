@@ -21,3 +21,179 @@ review:
   weaknesses:
   - Europe label is missing from the visible portion of the diagram - label may be
     positioned outside visible area or obscured
+  image_description: 'The plot displays a chord/dependency wheel diagram showing migration
+    flows between 6 continents. The diagram is circular with entities arranged around
+    the perimeter: Oceania (orange) at the top, Europe (blue, arc visible but label
+    missing), South America (green) on the left, Africa (purple) on the lower-left,
+    Asia (yellow) at the bottom, and North America (cyan) on the right. Colored ribbons/chords
+    connect the continents, with ribbon width proportional to migration flow magnitude.
+    The title "chord-basic · highcharts · pyplots.ai" appears at the top with a subtitle
+    "Migration Flows Between Continents (Millions)". The background is white and all
+    visible labels are clearly readable.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, subtitle, and continent labels are all clearly readable at
+          full resolution
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text or visual elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Chords are well-sized with appropriate opacity (0.6), clearly showing
+          flow magnitudes
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses colorblind-safe palette (blue, yellow, purple, cyan, green,
+          orange) - no red-green conflicts
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, diagram well-centered, minor issue with Europe
+          label not visible
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for chord diagrams, continent names serve as labels - all appropriately
+          descriptive
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Legend disabled appropriately as nodes are labeled, but Europe label
+          missing reduces clarity
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct chord/dependency wheel diagram
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Source/target/value correctly mapped to chord connections
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Bidirectional flows visible, chord width proportional to flow, distinct
+          colors per entity
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 6 continents and 30 connections displayed
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Node labels correctly identify each continent
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Follows exact format: "chord-basic · highcharts · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Shows all aspects: bidirectional flows, varying magnitudes, all
+          6 continents connected'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Migration flows between continents is a perfect real-world scenario
+          for chord diagrams
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 3
+        max: 5
+        passed: true
+        comment: Values in millions are plausible, though some flows seem high (e.g.,
+          55M Asia→North America)
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: true
+        comment: Deterministic data (no random seed needed), but depends on external
+          JS downloads
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Highcharts API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Highcharts dependency wheel which is native chord diagram support,
+          includes tooltips configuration, but could leverage more interactive features
+          in HTML output
+  verdict: APPROVED

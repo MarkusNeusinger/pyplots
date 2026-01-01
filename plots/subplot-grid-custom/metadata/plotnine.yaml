@@ -27,3 +27,186 @@ review:
   - The grid layout uses | and / operators which create a 2-column layout, but does
     not demonstrate explicit colspan/rowspan parameters mentioned in spec notes
   - Library features score could be higher with additional ggplot2 grammar features
+  image_description: 'The plot displays a custom subplot grid layout forming an investment
+    portfolio dashboard. The main title "subplot-grid-custom · plotnine · pyplots.ai"
+    appears at the top in bold black text. The layout consists of a large main plot
+    on the left side spanning the full height, showing "Portfolio Value Trend" with
+    a blue line chart displaying portfolio values from ~96,000 to ~103,000 over 60
+    trading days, with data points marked and a yellow linear regression trend line
+    with confidence band. On the right side are three stacked smaller panels: (1)
+    "Asset Allocation" - a vertical bar chart showing Stocks (~55%), Bonds (~25%),
+    Real Estate (~12%), and Cash (~8%) in blue, yellow, light blue, and coral colors;
+    (2) "Daily Trading Volume" - a bar chart showing volume fluctuations over 60 trading
+    days in blue; (3) "Returns Distribution" - a yellow histogram showing daily returns
+    centered around 0% with a roughly normal distribution. All subplots have white
+    backgrounds with subtle gray grid lines.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: 'All text readable, main title is excellent, subplot titles and axis
+          labels are clear. Minor: some axis tick labels are slightly small but still
+          readable.'
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text or elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Line, bars, and histogram bins are clearly visible. Points on main
+          plot could be slightly larger.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow/coral color scheme is colorblind-safe, good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Excellent dashboard layout with main plot given prominence. Right
+          column panels are well-proportioned. Minor: slight vertical compression
+          on right panels.'
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'All axes have descriptive labels with units: "Portfolio Value ($)",
+          "Allocation (%)", "Volume (Units)", "Daily Return (%)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle and appropriate. No legend needed for most plots,
+          but asset allocation chart hides legend (acceptable choice).
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct custom grid layout with multiple different plot types (line,
+          bar, histogram)
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: All data correctly mapped to appropriate axes
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Implements custom grid with non-uniform sizing (main plot spans
+          full height, 3 smaller panels stacked). Uses plotnine composition operators
+          (| and /). Minor: could demonstrate rowspan more explicitly.'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axis ranges
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No misleading legends
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "subplot-grid-custom · plotnine · pyplots.ai"'
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows multiple plot types (line with trend, bar charts, histogram)
+          demonstrating dashboard capability. The portfolio data shows both upward
+          and downward movements.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Investment portfolio dashboard is an excellent real-world scenario
+          for dashboard-style layouts
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Realistic portfolio values (~$100k), reasonable allocation percentages,
+          plausible trading volumes and returns
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plots → composition → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves to "plot.png" correctly
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of plotnine composition operators (| for horizontal, / for
+          vertical stacking), ggplot grammar, stat_smooth for trend line. Could leverage
+          more ggplot2-specific features like faceting alternatives.
+  verdict: APPROVED

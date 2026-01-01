@@ -26,3 +26,176 @@ review:
   - Could use Plotly native go.Indicator with bullet mode for more idiomatic implementation
   - Profit chart shows 140 tick label extending into right margin area
   - Missing explicit x-axis title though subplot titles provide context
+  image_description: 'The plot displays four horizontal bullet charts arranged vertically,
+    each representing a different KPI metric. From top to bottom: Revenue ($K) showing
+    actual value of 275 exceeding target of 250, Profit ($K) at 85 below target of
+    100, Customers at 320 below target of 400, and Satisfaction at 4.2 below target
+    of 4.5. Each bullet chart features three grayscale background bands representing
+    qualitative ranges (poor/satisfactory/good), a blue (#306998) horizontal bar showing
+    the actual value, a thin black vertical line marking the target, and the actual
+    value displayed in blue text on the right side. The title "bullet-basic · plotly
+    · pyplots.ai" is centered at the top. The overall design is clean with a white
+    background and subtle gridlines.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title at 32pt, subplot titles at 22pt, tick labels at 16pt, value
+          annotations at 20pt - all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars, range bands, and target markers all clearly visible with good
+          sizing
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses grayscale for ranges and single blue for actual values - colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, though right margin annotation "140" visible on
+          Profit chart extends slightly beyond intended area
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Subplot titles serve as labels but lack explicit axis titles with
+          units on x-axis
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha 0.1), no legend needed for this chart type
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bullet chart implementation with all components
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Actual values as bars, targets as markers, ranges as background bands
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: actual bar, target marker, qualitative
+          range bands, labels, value annotations'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within appropriate ranges
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed, metric labels are clear
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly formatted as "bullet-basic · plotly · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Shows multiple scenarios: exceeding target (Revenue), below target
+          (others), different scales and units'
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: KPI dashboard scenario is realistic; metrics are plausible business
+          KPIs
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values are realistic for business metrics (Revenue in $K, customer
+          counts, satisfaction scores 1-5)
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple script structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: true
+        comment: Deterministic data (no random), but no explicit seed statement
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports (plotly.graph_objects, plotly.subplots)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses subplots, shapes for target markers, annotations, hover templates;
+          could leverage Plotly's native Indicator trace with bullet mode
+  verdict: APPROVED

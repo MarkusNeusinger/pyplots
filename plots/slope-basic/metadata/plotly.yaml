@@ -26,3 +26,180 @@ review:
     decrease)
   - Some endpoint labels are positioned close together and could benefit from slight
     vertical adjustment to prevent near-overlap
+  image_description: 'The plot displays a slope chart (slopegraph) comparing product
+    sales between Q1 2024 and Q4 2024 for 10 tech products. Blue lines (#306998 -
+    Python Blue) represent products with sales increases (8 products: Laptop Pro,
+    Wireless Earbuds, Smart Watch, Gaming Mouse, Mechanical Keyboard, Webcam HD, USB
+    Hub). Yellow/gold lines (#FFD43B - Python Yellow) represent products with sales
+    decreases (3 products: Tablet Ultra, Portable SSD, Monitor Stand). Each product
+    has labels at both endpoints showing the product name and sales value in $K. The
+    chart uses a clean white template with subtle horizontal grid lines. The title
+    "Product Sales Q1 vs Q4 · slope-basic · plotly · pyplots.ai" is centered at the
+    top. The Y-axis displays "Sales ($K)" ranging from approximately 30 to 310. The
+    X-axis shows the two time points "Q1 2024" and "Q4 2024".'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt, annotations
+          at 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 7
+        max: 8
+        passed: true
+        comment: Most labels are readable, but some endpoint labels are slightly close
+          together (e.g., Smart Watch/Tablet Ultra on left, Gaming Mouse/Mechanical
+          Keyboard on right)
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Lines have good width (3), markers are sized appropriately (14),
+          clear visual hierarchy
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow color scheme is colorblind-safe, good contrast against
+          white background
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of margins (200px on sides), plot fills canvas well, but
+          could use slightly more vertical space
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis has "Sales ($K)" with units, X-axis shows time period names
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha 0.1), but no legend explaining blue=increase,
+          yellow=decrease
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct slope chart (slopegraph) implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Entity names as labels, values at start/end correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Labels at both endpoints, color coding by direction (increase vs
+          decrease), vertical axes labeled with time points
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data points visible within range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No traditional legend but color coding is consistent and understandable
+          from context
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "Product Sales Q1 vs Q4 · slope-basic · plotly
+          · pyplots.ai"'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows both increases (majority) and decreases (3 products), varied
+          magnitudes of change, demonstrates rank changes
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Tech product sales Q1 vs Q4 is a realistic business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Sales values in $30K-$310K range are realistic for product lines
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear script: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 0
+        max: 3
+        passed: false
+        comment: No random data used, but data is hardcoded (acceptable, but deterministic)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only plotly.graph_objects imported
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Plotly's annotation system, hover templates for interactivity,
+          but could leverage more Plotly-specific features
+  verdict: APPROVED

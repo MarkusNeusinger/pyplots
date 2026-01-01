@@ -24,3 +24,173 @@ review:
   - Axis labels are generic (X Axis, Y Axis) rather than contextual
   - Layout has more whitespace than optimal; surface could fill more of the canvas
   - np.random.seed(42) is included but unnecessary since the data generation is deterministic
+  image_description: The plot displays a 3D surface visualization with the title "surface-basic
+    · plotly · pyplots.ai" centered at the top. The surface shows a smooth mathematical
+    function with peaks (yellow, ~1.3) and valleys (purple, ~-0.8) created from combining
+    sinusoidal patterns. The Viridis colormap transitions from dark purple/blue at
+    low Z values to bright yellow/green at high values. The X and Y axes range from
+    -4 to 4, with "X Axis" and "Y Axis" labels. The Z axis shows "Z Value" ranging
+    from approximately -1 to 1.5. A vertical colorbar on the right displays the Z
+    Value scale. The surface is viewed from a 3D perspective with subtle gray grid
+    lines, and the overall layout uses a clean white background.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis labels at 20pt, tick fonts at 14-16pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Surface is well-rendered with 40x40 grid providing smooth detail
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Viridis colormap is colorblind-safe and provides excellent contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Plot centered but has significant whitespace around it; surface could
+          be larger
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Labels are descriptive ("X Axis", "Y Axis", "Z Value") but lack units
+          or more meaningful context
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid at alpha 0.1 is appropriately subtle; colorbar well-placed
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct 3D surface plot type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X, Y grid correctly mapped to Z height values
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: smooth surface, colormap, colorbar, axis
+          labels'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data with appropriate range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar accurately represents Z values
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Title follows exact format `{spec-id} · {library} · pyplots.ai`
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows peaks and valleys but mathematical function is abstract rather
+          than showcasing full range of surface features
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Mathematical function demonstration is plausible but generic rather
+          than a real-world scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values range appropriately for mathematical function visualization
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses `np.random.seed(42)` (though seed not used since data is deterministic)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as `plot.png` and `plot.html`
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses go.Surface and colorbar, but does not leverage Plotly's interactive
+          features in the static output; HTML export included which is good
+  verdict: APPROVED

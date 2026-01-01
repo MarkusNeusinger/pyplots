@@ -24,3 +24,177 @@ review:
     blue/orange alternative
   - HTML output does not include hover tooltips to show OHLC values - missed opportunity
     for Bokeh interactivity
+  image_description: The plot displays a candlestick chart showing 30 trading days
+    of stock price data from January 2024 to February 2024. Green candles indicate
+    bullish days (close >= open) and red candles indicate bearish days (close < open).
+    The chart shows a clear downward trend from approximately $165 to $135 over the
+    period. Each candlestick has visible wicks (shadows) extending above and below
+    the body, representing the high-low range. The title "candlestick-basic · bokeh
+    · pyplots.ai" appears in the top-left corner. The X-axis displays dates with labels
+    like "Jan 01 2024", "Jan 08", "Jan 15", etc. The Y-axis shows "Price ($)" ranging
+    from about 130 to 170. A subtle dashed grid helps read price levels. The candles
+    are well-proportioned with appropriate spacing.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 36pt, axis labels at 24pt, tick labels at 18pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, dates are well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Candle bodies and wicks are perfectly sized for 30 data points, clear
+          distinction between elements
+      - id: VQ-04
+        name: Color Accessibility
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses green (#22c55e) and red (#ef4444) which is the most common convention
+          but not ideal for colorblind users
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, no cut-off content, appropriate margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Date" and "Price ($)" are descriptive with units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha 0.3) with dashed lines; no legend needed for
+          this plot type
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct candlestick chart with bodies and wicks
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Date on X-axis, OHLC correctly mapped to candle components
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: OHLC representation, color-coded bullish/bearish,
+          visible wicks thinner than bodies'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full price range from ~130 to 170
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed; color coding is self-explanatory for candlesticks
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Exactly matches "{spec-id} · {library} · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows both bullish AND bearish candles with good variety; demonstrates
+          trend (downward), volatility, and different candle sizes
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Stock price scenario with realistic 2% daily volatility, plausible
+          price range ($130-$170)
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Good price values, though the consistent downtrend might be slightly
+          exaggerated for a typical 30-day period
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean flow: imports → data generation → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses `np.random.seed(42)`
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (numpy, pandas, bokeh components)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as `plot.png` and `plot.html`
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses ColumnDataSource and segment/vbar glyphs appropriately, but
+          doesn't leverage Bokeh's interactive features (hover tooltips showing OHLC
+          values would be a great addition for the HTML version)
+  verdict: APPROVED

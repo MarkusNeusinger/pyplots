@@ -22,3 +22,170 @@ review:
   - Grid lines could be more subtle (currently at default opacity)
   - Font sizes in the style are larger than library defaults but tick labels could
     be slightly larger for optimal legibility
+  image_description: 'The plot displays a vertical bar chart showing "Quarterly sales
+    by product category" with 6 categories: Electronics ($45,200), Clothing ($32,800),
+    Home & Garden ($28,500), Sports ($19,700), Books ($15,300), and Toys ($12,400).
+    All bars use a consistent Python Blue color (#306998). Value labels are positioned
+    on top of each bar with dollar formatting. The title "bar-basic · pygal · pyplots.ai"
+    appears at the top. The x-axis is labeled "Category" and y-axis "Sales ($)" with
+    horizontal grid lines. The layout is clean with good proportions and adequate
+    spacing between bars.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, axis labels, and value labels are all clearly readable; tick
+          labels slightly small but acceptable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are well-sized with good spacing
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme, colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, slight extra whitespace on right
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive with units: "Sales ($)", "Category"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: No legend shown (appropriate since single series), but grid could
+          be more subtle
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct vertical bar chart
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on x-axis, values as bar heights
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Value labels present, consistent bar widths, adequate spacing
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, y-axis starts at $0
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly hidden for single series
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "bar-basic · pygal · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variation in values, clear ranking; could benefit from more
+          contrast between adjacent values
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Quarterly sales by product category is a plausible retail scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are realistic for quarterly sales; range could be slightly
+          wider for more visual impact
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → chart → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (hardcoded values)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only pygal and Style imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current pygal API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as plot.png but also creates plot.html (minor)
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses custom Style, value_formatter, print_values; could leverage
+          more pygal-specific interactivity features
+  verdict: APPROVED

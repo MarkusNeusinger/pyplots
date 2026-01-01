@@ -25,3 +25,180 @@ review:
   - Missing explanatory context - no subtitle or annotation explaining this is simulated
     daily temperature data
   - Could leverage more matplotlib polar features like fill_between for area emphasis
+  image_description: The plot displays a polar chart showing hourly temperature patterns
+    over a 24-hour cycle. The chart uses a circular coordinate system with time labels
+    around the perimeter (12 AM at top, proceeding clockwise through 3 AM, 6 AM, 9
+    AM, 12 PM, 3 PM, 6 PM, 9 PM). Temperature is represented radially with concentric
+    circles marked at 5°C, 10°C, 15°C, 20°C, and 25°C. Data points are shown as blue
+    (#306998) scatter points with white edges, connected by a yellow/gold (#FFD43B)
+    line forming a closed loop. The pattern shows cooler temperatures (around 7-15°C)
+    near midnight/early morning and warmer temperatures (around 18-23°C) in the afternoon,
+    clearly demonstrating the expected diurnal temperature cycle. The title "Hourly
+    Temperature Pattern · polar-basic · matplotlib · pyplots.ai" is displayed at the
+    top.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at fontsize 26, angular labels at 18, radial labels at 16 -
+          all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, well-spaced labels
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers at s=300 with white edges are clearly visible, line connects
+          well; slight deduction as 24 points could use slightly smaller markers
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue markers and yellow line provide excellent contrast; no colorblind
+          issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Square format (12x12) is perfect for polar chart, plot fills canvas
+          well
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Radial labels include units (°C), angular labels are time-based
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle with alpha=0.3, but no legend explaining what the
+          data represents (no legend needed for single series, but context could be
+          improved)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct polar chart implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Theta=hours (angular), radius=temperature correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: scatter points, line connection, proper
+          angular labels, radial gridlines'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows 0-30°C which contains all data points
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A single series, no legend needed
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "Hourly Temperature Pattern · polar-basic ·
+          matplotlib · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows cyclical pattern clearly with variation; could show more dramatic
+          temperature swings
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Hourly temperature is an excellent real-world application for polar
+          charts
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Temperatures 7-23°C are realistic; slight deduction as the sinusoidal
+          base + noise is somewhat idealized
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy imported
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses polar projection correctly, but doesn't leverage advanced matplotlib
+          polar features like fill_between or custom theta formatting
+  verdict: APPROVED

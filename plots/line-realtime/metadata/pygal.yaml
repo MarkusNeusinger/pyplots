@@ -23,3 +23,172 @@ review:
     - the trailing edge visual indication could be more prominent
   - X-axis time labels could be slightly larger for better legibility at this canvas
     size
+  image_description: 'The plot displays a CPU Usage Monitor with a filled blue area
+    chart showing CPU usage percentage (0-100%) over time from 14:29:01 to 14:30:00.
+    The chart has a light gray plot background with horizontal gridlines. A dashed
+    yellow/gold horizontal line at 80% indicates the warning threshold. The main CPU
+    usage data shows realistic fluctuations between roughly 20-77%, with several spikes.
+    The rightmost portion (last 5 points) is highlighted in red/coral with larger
+    dots, representing the "LIVE" current data. The legend in the top-left shows three
+    series: "CPU Usage" (blue), "Warning Thresh..." (truncated yellow), and "Current:
+    52.8%" (red). The title "CPU Usage Monitor (Live) · line-realtime · pygal · pyplots.ai"
+    appears at the top. X-axis labels are rotated 45° showing timestamps.'
+  criteria_checklist:
+    visual_quality:
+      score: 35
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 8
+        max: 10
+        passed: true
+        comment: Title and axis labels are readable; x-axis time labels could be slightly
+          larger
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Line and dots are visible; fill area works well for data visualization
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue, yellow, and red are distinguishable; colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas; legend slightly truncated
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "CPU Usage (%)" and "Time (HH:MM:SS)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle; legend text truncation ("Warning Thresh...") is not
+          ideal
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct line chart for real-time visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Time on X-axis, CPU usage on Y-axis correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has sliding window concept, live indicator, warning threshold; fade
+          effect for older data is implemented but subtle
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows 0-100% correctly
+      - id: SC-05
+        name: Legend Accuracy
+        score: 1
+        max: 2
+        passed: true
+        comment: Legend labels mostly correct but "Warning Thresh..." is truncated
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "CPU Usage Monitor (Live) · line-realtime ·
+          pygal · pyplots.ai"'
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows spikes, fluctuations, trend; one spike crosses warning threshold
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: CPU monitoring is a real, practical use case from spec applications
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: CPU values between 5-98% are realistic
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current pygal API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses pygal Style customization, fill area, stroke styles, cubic interpolation;
+          good but not exceptional use of pygal features
+  verdict: APPROVED

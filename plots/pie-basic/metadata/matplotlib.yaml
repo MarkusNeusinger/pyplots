@@ -25,3 +25,168 @@ review:
   - Generic product names instead of more realistic category names
   - Could use shadow or additional visual enhancements
   - Legend title is generic - could match data context
+  image_description: 'The plot displays a pie chart with 5 slices representing market
+    share distribution for Products A through E. The largest slice (Product A at 35%)
+    is slightly exploded/offset from the center for emphasis. Colors used are: deep
+    blue (#306998) for Product A, golden yellow (#FFD43B) for Product B, teal (#4ECDC4)
+    for Product C, coral red (#FF6B6B) for Product D, and gray (#95A5A6) for Product
+    E. Each slice has a bold white percentage label centered within it. Category labels
+    (Product A-E) appear around the perimeter of the pie. A legend is positioned on
+    the right side with "Categories" as its title. The title "pie-basic · matplotlib
+    · pyplots.ai" appears at the top. White edge lines separate each slice for visual
+    clarity. The chart uses a square format appropriate for pie charts.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, labels at 20pt, percentages at 18pt bold - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, all labels and percentages clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Slices well-sized, white edges provide clear separation
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Colors are distinct and colorblind-safe (blue, yellow, teal, red,
+          gray)
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, though legend slightly extends canvas
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: false
+        comment: Legend well-placed, no grid needed for pie charts
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct pie chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories and values correctly mapped to slices
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has percentage labels, distinct colors, legend, and slight explosion
+          for emphasis
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, percentages sum to 100%
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies all categories
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "pie-basic · matplotlib · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows varying slice sizes (35%, 25%, 20%, 12%, 8%), good range of
+          proportions
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Market share distribution is a real, common scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are reasonable; could benefit from more realistic product
+          names
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: true
+        comment: Data is deterministic but no random seed comment (data doesn't use
+          random)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot imported, nothing unused
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png'
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses wedgeprops for edge styling, explode parameter, autopct formatting,
+          but could use shadow or more advanced features
+  verdict: APPROVED

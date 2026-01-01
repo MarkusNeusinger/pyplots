@@ -27,3 +27,175 @@ review:
     change
   - Yellow color (#FFD43B) may be slightly difficult to distinguish from white background
     in some viewing conditions
+  image_description: The plot displays a multi-line comparison chart showing monthly
+    sales data (in thousands of dollars) for three product lines across 12 months
+    (January to December). **Product A (Electronics)** is shown as a blue solid line
+    with circle markers, demonstrating steady growth with a seasonal Q4 bump, ranging
+    from ~52K to ~107K. **Product B (Appliances)** appears as a yellow/gold dashed
+    line with square markers, starting high (~81K), dipping mid-year (~55K), then
+    recovering (~79K). **Product C (Software)** is rendered as a red dash-dot line
+    with triangle markers, showing exponential growth from ~29K to ~70K. The title
+    correctly reads "line-multi · matplotlib · pyplots.ai". Legend is positioned in
+    the upper left with clear series identification. Grid is subtle with dashed lines.
+    All text is clearly readable with proper sizing.
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt, labels 20pt, ticks 16pt - all perfectly readable at full
+          resolution
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text or elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Lines are 3pt width with 10pt markers, perfectly visible for 12 data
+          points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Blue/Yellow/Red provides good distinction, though blue-yellow could
+          be improved for some colorblind types
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Month" and "Sales ($ thousands)" - descriptive with units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha 0.3), legend well-placed but could use slightly
+          better visual separation
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct multi-line plot for comparison
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=months, Y=sales values correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Distinct colors, legend, varied line styles, markers - all present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, axes show complete range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels match data series correctly
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses exact format: `line-multi · matplotlib · pyplots.ai`'
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows growth, decline, recovery, and exponential patterns - excellent
+          variety
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Monthly sales for product lines is plausible; minor deduction as
+          exact business context is generic
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Sales in $50K-$110K range is realistic for product lines
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: No functions/classes, clean linear flow
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib and numpy imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png'
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses ax.plot correctly with line styles and markers, but no advanced
+          matplotlib features like annotations, secondary axes, or fill_between
+  verdict: APPROVED

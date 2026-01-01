@@ -24,3 +24,187 @@ review:
   - The baseline reference circle at r=0 adds unnecessary visual noise and code complexity
   - Grid opacity (0.35) is slightly high; could be more subtle at 0.25-0.3
   - Could leverage more Plotly-specific interactive features like custom hover templates
+  image_description: The plot displays a polar chart showing 24-hour temperature data.
+    The chart has a circular layout with hour labels (0h through 22h) positioned around
+    the perimeter at 2-hour intervals, starting from the top (0h/midnight). The radial
+    axis shows temperature values from 0 to 25°C with the label "Temperature (°C)"
+    in the center. Data points are shown as medium-sized blue markers (#306998) connected
+    by lines, with a light blue semi-transparent fill (toself). The pattern shows
+    warmer temperatures during midday hours (10h-14h reaching ~20-25°C) and cooler
+    temperatures at night (~5-10°C around 22h-4h). The title "polar-basic · plotly
+    · pyplots.ai" appears at the top. The background is white with subtle gray grid
+    lines.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: 'Title, axis labels, and tick labels are all readable. Font sizes
+          are appropriate for the canvas. Minor: tick font could be slightly larger.'
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements. Hour labels are well-spaced around
+          the perimeter.
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers are visible and appropriately sized (16px). Lines connect
+          clearly. Fill provides good area visualization. Slightly larger markers
+          would improve visibility.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color (#306998) with good contrast against white background.
+          No colorblind issues.
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Polar chart fills the canvas well. Balanced margins. Good use of
+          space.
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Radial axis labeled "Temperature (°C)" with proper units.
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is visible but slightly too prominent (alpha 0.35 is higher
+          than recommended 0.2-0.4 range ceiling). Legend is hidden which is appropriate
+          for single series, but the baseline trace at r=0 is unnecessary and adds
+          visual noise.
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct polar chart type using Scatterpolar.
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Theta (angular position) correctly mapped to hours, radius mapped
+          to temperature.
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: radial gridlines visible, angular labels
+          at standard intervals, starting angle at top (90°) for time-based data,
+          appropriate radial scale.'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data. Range set to 0 to max(radius)*1.1.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend appropriately hidden for single series; trace name is descriptive.
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "polar-basic · plotly · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows cyclical temperature pattern well with day/night variation.
+          Could benefit from showing both the cyclical nature AND some anomalies or
+          multiple data series to better demonstrate polar chart capabilities.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Hourly temperature readings is an excellent, realistic application.
+          The sinusoidal pattern with noise mimics real daily temperature cycles.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Temperature values (5-25°C) are realistic for a typical day's temperature
+          range.
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear structure: imports → data → plot → save. No functions
+          or classes.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42) for reproducible noise.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects imported, both used.
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API.
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as plot.png AND plot.html (both correct), but the baseline
+          trace at r=0 is unnecessary code.
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Scatterpolar correctly with fill="toself" for area visualization.
+          Saves both PNG and HTML for interactivity. However, could leverage more
+          Plotly-specific features like hover customization or animation.
+  verdict: APPROVED

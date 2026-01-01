@@ -24,3 +24,179 @@ review:
     audiences)
   - Wick linewidth (2) could be thinner (1-1.5) relative to body for better visual
     distinction per spec note
+  image_description: The plot displays a candlestick chart showing 30 trading days
+    of stock price data from January 2 to mid-February 2024. Green/teal candlesticks
+    indicate bullish (price increase) days while red candlesticks indicate bearish
+    (price decrease) days. Each candlestick clearly shows the body (open-close range)
+    and wicks/shadows (high-low range). The price ranges from approximately $130 to
+    $165, showing an initial uptrend peaking around Jan 10-15 followed by a downtrend.
+    The title correctly displays "candlestick-basic · matplotlib · pyplots.ai". The
+    x-axis shows dates formatted as "Jan 01", "Jan 08", etc. with weekly major ticks,
+    and the y-axis shows "Price ($)". A subtle dashed grid helps read price levels.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, x-axis labels rotated 45° to avoid
+          collision
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Candlesticks are clearly visible with good width and distinct wicks,
+          though wick linewidth could be slightly thinner relative to body for more
+          contrast
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Green (#26a69a) and red (#ef5350) have good contrast and are distinguishable
+          for most colorblind types
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions with appropriate padding on all sides
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Date" and "Price ($)" - descriptive with units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha 0.3 for y, 0.15 for x), but no legend explaining
+          green=bullish, red=bearish
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct candlestick chart implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: OHLC data correctly mapped to candlestick elements
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: OHLC display, color coding for up/down,
+          visible wicks thinner than body, date formatting, subtle grid'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full price range with 10% padding
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for this basic implementation (colors are self-explanatory
+          in financial context)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "candlestick-basic · matplotlib · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows both bullish and bearish candles, various body sizes, visible
+          wicks; good mix but data happens to show more of a downtrend pattern
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Stock price starting at $150 with ~2% daily volatility is realistic;
+          business days correctly used
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Price values realistic, though 30 days is on the shorter end of the
+          20-100 range specified
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used (matplotlib.dates, matplotlib.pyplot, numpy, pandas)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current API usage
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses matplotlib primitives (Rectangle, plot) to build candlesticks
+          manually; functional but doesn't leverage mplfinance or other specialized
+          tools; appropriate for "basic" spec though
+  verdict: APPROVED

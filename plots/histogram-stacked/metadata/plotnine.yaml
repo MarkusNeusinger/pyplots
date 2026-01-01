@@ -22,3 +22,161 @@ review:
   weaknesses:
   - Could use scale_fill_brewer for more colorblind-safe colors instead of manual
     hex values
+  image_description: 'The plot displays a stacked histogram showing plant height distributions
+    across three soil types. The x-axis shows "Plant Height (cm)" ranging from 10
+    to 50, and the y-axis shows "Frequency" from 0 to about 68. Three distinct colors
+    represent the soil types: dark blue (#306998) for Clay Soil, yellow (#FFD43B)
+    for Loamy Soil, and teal (#4ECDC4) for Sandy Soil. The bars are stacked on top
+    of each other, with white borders separating segments (alpha=0.85). The distributions
+    show different peaks: Sandy Soil peaks around 25cm, Loamy Soil around 30cm, and
+    Clay Soil around 22cm. The legend is positioned on the right side. The title "histogram-stacked
+    · plotnine · pyplots.ai" is prominently displayed at the top. The plot uses a
+    minimal theme with subtle gray gridlines on a white background.'
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: All text perfectly readable at full size
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars well-sized with good alpha and white borders
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Colors distinguishable but could be more colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent proportions, plot fills canvas well
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive with units: "Plant Height (cm)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid subtle, legend placement acceptable
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct stacked histogram
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y and fill correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: All spec features present (stacking, colors, legend)
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels correct and descriptive
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses exact format: histogram-stacked · plotnine · pyplots.ai'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows three distinct distributions with different means and spreads
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Excellent plant growth scenario (science/agriculture)
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Realistic plant heights (10-50 cm)
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Fixed seed (42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current APIs
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 4
+      max: 5
+      items: []
+  verdict: APPROVED

@@ -15,3 +15,14 @@ review:
   strengths: []
   weaknesses: []
   improvements: []
+  image_description: 'The plot shows a slope chart (slopegraph) comparing product
+    sales between Q1 and Q4. Ten products are displayed with lines connecting their
+    Q1 values (left) to Q4 values (right). Lines are color-coded: **blue (#306998)**
+    for products that increased (Laptop, Tablet, Monitor, Mouse, Headphones, Webcam)
+    and **yellow (#FFD43B)** for products that decreased (Phone, Keyboard, Charger,
+    Speaker). Each endpoint has a circular marker and labels on both sides identifying
+    the product. The Y-axis shows "Sales (units)" ranging from ~100 to 1200. The X-axis
+    displays "Q1 Sales" and "Q4 Sales" as period labels. A legend in the top-right
+    shows "Direction" with Increase/Decrease categories. The title reads "slope-basic
+    · altair · pyplots.ai". A subtle dashed grid helps with reading values.'
+  verdict: APPROVED

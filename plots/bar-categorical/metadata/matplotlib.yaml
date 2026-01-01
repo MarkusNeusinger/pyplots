@@ -23,3 +23,172 @@ review:
   - Could use more distinctive matplotlib features (e.g., custom hatching, gradient
     fills, or annotation arrows)
   - Y-axis label "Count (Frequency)" is slightly redundant - could be simplified
+  image_description: 'The plot displays a vertical bar chart with 5 bars representing
+    product categories (Product A through E) on the x-axis. The bars are colored in
+    Python Blue (#306998) with a darker edge color. Each bar has a bold count label
+    above it showing the frequency values: Product A (154), Product B (118), Product
+    C (97), Product D (76), and Product E (55). The bars are sorted in descending
+    order by count. The y-axis shows "Count (Frequency)" ranging from 0 to 160, and
+    the x-axis is labeled "Product Category". The title follows the correct format:
+    "bar-categorical · matplotlib · pyplots.ai". A subtle horizontal dashed grid is
+    visible on the y-axis. The top and right spines are removed for a cleaner appearance.'
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt, value labels
+          at 18pt bold - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, bars well-spaced, labels clear
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are appropriately sized, good width relative to spacing
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme (Python Blue), no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well, balanced margins, good proportions
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels but y-axis could have units (e.g., "Count (n)"
+          or just "Count")
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha=0.3), but no legend needed for this single-series
+          chart
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bar chart for categorical count data
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on x-axis, counts on y-axis as specified
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Auto-counts raw categorical data, sorted descending as noted in spec
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full range from 0 to above max value
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed, N/A
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "bar-categorical · matplotlib · pyplots.ai"'
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows varying frequencies across 5 categories, good distribution
+          variety
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Product preference survey is a realistic, neutral business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 500 survey responses with sensible probability distribution
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) ensures reproducibility
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports (matplotlib, numpy, pandas) are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with correct dpi and bbox_inches
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: true
+        comment: Uses standard matplotlib bar chart with Axes methods. Added value
+          labels and spine removal are nice touches, but could leverage more matplotlib-specific
+          features like custom tick formatting or annotations.
+  verdict: APPROVED

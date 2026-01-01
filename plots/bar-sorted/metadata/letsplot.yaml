@@ -30,3 +30,177 @@ review:
     HTML export
   - 'Grid styling: minor grid is blanked but could keep subtle major grid for value
     reference'
+  image_description: The plot displays a horizontal sorted bar chart showing monthly
+    revenue by product category. The bars are arranged in descending order from top
+    (Electronics at ~$425K) to bottom (Health at ~$62K). All bars use a consistent
+    blue color (#306998). The title "bar-sorted · lets-plot · pyplots.ai" appears
+    at the top in bold. The y-axis is labeled "Product Category" with 10 categories
+    listed, and the x-axis shows "Monthly Revenue" with currency formatting ($0.0K
+    to $400.0K+). The chart uses a minimal theme with subtle dashed horizontal grid
+    lines and clean white background. The layout is well-balanced with the plot utilizing
+    most of the canvas area.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is large and bold (~26pt), axis titles at ~22pt, tick labels
+          at ~18pt - all perfectly readable at full resolution
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: Horizontal orientation prevents any label overlap, all category names
+          clearly visible
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bar widths (0.7) are well-proportioned for 10 categories, good spacing
+          between bars
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color scheme, no color differentiation needed, high contrast
+          against white
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well, balanced margins, good use of horizontal
+          space
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Y-axis label "Product Category" and X-axis "Monthly Revenue" are
+          descriptive but X-axis lacks explicit unit in label (though shown in tick
+          format)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle with dashed lines and appropriate alpha, no legend
+          needed (single series)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct sorted bar chart implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on Y-axis, values on X-axis (correct for horizontal bars)
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Sorted descending (largest at top), horizontal orientation for readability
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, axis range appropriate ($0K-$425K+)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single-series chart
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly formatted as "bar-sorted · lets-plot · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows clear descending sort with good value variation, but could
+          include more dramatic range differences
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly revenue by product category is a realistic business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Revenue values in $62K-$425K range are plausible for monthly category
+          revenue
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports → data → sort → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (no random values)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used appropriately
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 0
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ggplot2 grammar (ggplot, geom_bar, coord_flip), theme_minimal,
+          scale_y_continuous with currency formatting, proper categorical ordering
+  verdict: APPROVED

@@ -26,3 +26,177 @@ review:
     marks), making the grid overly dense
   - All three product lines show uniform upward trends - data could demonstrate more
     varied patterns (e.g., one declining, seasonal variations)
+  image_description: 'The plot displays a grouped bar chart with 4 quarters (Q1, Q2,
+    Q3, Q4) on the x-axis and revenue values on the y-axis. Three product lines are
+    shown as grouped vertical bars: Electronics (blue #306998), Clothing (yellow #FFD43B),
+    and Home & Garden (purple #9467BD). The title "bar-grouped · highcharts · pyplots.ai"
+    appears prominently at the top with a subtitle "Quarterly Revenue by Product Line
+    (in thousands USD)". Each bar has data labels showing values (e.g., $245K, $312K,
+    $287K, $398K for Electronics). The y-axis displays "Revenue (thousands USD)" with
+    formatted tick labels ($0K to $420K in $10K increments), and the x-axis shows
+    "Quarter". A boxed legend with the three product lines is positioned in the top-right
+    corner with a subtle border and shadow.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is large and bold (72px), axis labels at 48px, tick labels
+          at 36px - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, bars well-spaced, data labels clear
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are appropriately sized with good groupPadding and pointPadding
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/Yellow/Purple palette is colorblind-safe, avoids red-green
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of canvas but y-axis has excessive tick marks (every $10K
+          creates visual clutter)
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Both axes have descriptive labels with units: "Quarter" and "Revenue
+          (thousands USD)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid lines are dashed but overly dense due to $10K intervals; legend
+          is well-placed but grid dominates
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct grouped bar (column) chart
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories (quarters) on X, values on Y, groups (products) as series
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Distinct colors, clear legend, consistent bar widths, adequate spacing,
+          value labels present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full range from 0 to above max value
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels match series names correctly
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "bar-grouped · highcharts · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows quarterly comparison with 3 groups, demonstrates growth trends,
+          but could show more variation (all products trend upward)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Quarterly revenue by product line is a real, comprehensible business
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values in $156K-$398K range are realistic for quarterly revenue
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → chart config → export'
+      - id: CQ-02
+        name: Reproducibility
+        score: 0
+        max: 3
+        passed: false
+        comment: 'No random seed, but data is deterministic (hardcoded arrays) - PARTIAL:
+          data is fixed but no explicit seed documentation'
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current highcharts-core API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Uses Highcharts-specific features: column chart type, dataLabels
+          with formatting, gridLineDashStyle, floating legend with shadow, subtitle,
+          formatted y-axis labels with ${value}K'
+  verdict: APPROVED

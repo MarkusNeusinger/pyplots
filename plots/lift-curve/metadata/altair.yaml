@@ -25,3 +25,176 @@ review:
   - Could add a small legend to label the lift curve line
   - Annotation text placement could be slightly adjusted to avoid visual proximity
     to the reference line
+  image_description: The plot displays a lift curve showing cumulative lift on the
+    Y-axis (ranging from 0 to 5.0) against population targeted percentage on the X-axis
+    (0-100%). The main lift curve is a solid blue line (#306998) that starts high
+    at approximately 5.0 (capped by the Y-axis scale) at the far left, then gradually
+    decreases in a smooth curve as the population percentage increases, eventually
+    approaching 1.0 at 100%. Blue filled circular markers are placed at decile points
+    (10%, 20%, 30%, etc.) along the curve. A gray dashed horizontal reference line
+    at y=1 represents random selection, with the annotation "Random Selection (Lift
+    = 1)" placed near it. The title "lift-curve · altair · pyplots.ai" is displayed
+    at the top center. Axis labels are clearly readable with "Population Targeted
+    (%)" on the X-axis and "Cumulative Lift" on the Y-axis. The background has subtle
+    grid lines.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick marks are all clearly readable at appropriate
+          font sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere in the plot
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line width is appropriate (strokeWidth=4), decile markers are clearly
+          visible (size=200)
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses blue (#306998) and gray, colorblind-safe combination
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, plot fills canvas well with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Descriptive labels but no units (percentage sign is part of label
+          text, not a unit)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: false
+        comment: Grid is subtle and good (alpha=0.3), but annotation text slightly
+          overlaps the reference line area
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct lift curve visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=population percentage, Y=cumulative lift, correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Reference line at y=1, decile markers, smooth curve, all present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: X-axis 0-100%, Y-axis shows full lift range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 0
+        max: 2
+        passed: false
+        comment: No legend present (not strictly needed but could label the lift curve)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "lift-curve · altair · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows high lift at low percentages, gradual decline, approaches 1
+          at 100% - demonstrates all key aspects
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Customer churn prediction scenario with 20% churn rate is realistic
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Lift values range from ~5x at top to 1x at bottom, realistic for
+          a good model
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear script: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports (altair, numpy, pandas)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Altair API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses layered chart composition and tooltips, but could leverage more
+          Altair features like selections or interactive highlighting
+  verdict: APPROVED

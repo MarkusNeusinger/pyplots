@@ -28,3 +28,189 @@ review:
   - Legend text could be larger relative to the plot scale for better visibility
   - Could leverage more Highcharts-specific features like tooltips configuration or
     animation settings in the HTML output
+  image_description: 'The plot displays a multi-line chart with 4 distinct product
+    category series tracked over 12 months (Jan-Dec). The title "line-multi · highcharts
+    · pyplots.ai" appears at the top in bold black text, with a subtitle "Monthly
+    Sales by Product Category (thousands USD)" below it. The Y-axis is labeled "Sales
+    (thousands USD)" and ranges from 0 to 300. The X-axis shows month abbreviations.
+    Four lines are plotted: Electronics (blue with circle markers, showing strong
+    growth to 280), Clothing (yellow with square markers, showing seasonal pattern),
+    Home & Garden (purple with triangle markers, peaking mid-year), and Sports Equipment
+    (cyan/teal with diamond markers, showing a summer peak). A legend in the upper
+    right identifies each series with matching colors and marker shapes. The lines
+    are thick (6px) with visible markers at data points. The background is white with
+    subtle gray gridlines.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is large and bold, axis labels and tick marks are clearly readable
+          at 72px, 48px, and 36px respectively
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all month labels are well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Lines are thick (6px) with large markers (radius 12), easily distinguishable.
+          Slight deduction as lines cross and overlap in middle months but markers
+          help distinguish
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue, yellow, purple, cyan palette is colorblind-safe, avoids red-green
+          conflict
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Good use of canvas space, legend positioned well. Minor: legend
+          could be slightly closer to the plot area'
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis has "Sales (thousands USD)" with units, X-axis has descriptive
+          "Month" label
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: 'Grid is subtle (gray), legend is clear with border. Minor: legend
+          has small text relative to overall scale'
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct multi-line chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X is months (categorical/time), Y is sales values, multiple series
+          correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Multiple lines (4 series), distinct colors, legend, markers at data
+          points as specified
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis starts at 0, shows all data points with appropriate headroom
+          to 300
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels match series names correctly
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "line-multi · highcharts · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: 'Shows 4 series with different patterns: growth trend (Electronics),
+          seasonal bi-modal (Clothing), single peak (Home & Garden), mild peak (Sports).
+          Could show more dramatic crossing/divergence'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly sales for product categories is a realistic business scenario
+          with plausible seasonal patterns
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Values in thousands USD (45-280) are realistic for product category
+          sales. Minor: could use more dramatic scale differences between categories'
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports → data → chart config → series → HTML
+          → PNG export'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42), though data is actually hardcoded which
+          is fine
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (numpy, highcharts_core, selenium, pathlib,
+          etc.)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current highcharts-core API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Outputs plot.png correctly, but imports LineSeries from wrong module
+          (highcharts_core.options.series.area instead of highcharts_core.options.series.line)
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Highcharts-specific features like marker symbols, styled legend
+          with border/padding, plot_options for line styling. Could leverage more
+          interactive features or advanced Highcharts options
+  verdict: APPROVED

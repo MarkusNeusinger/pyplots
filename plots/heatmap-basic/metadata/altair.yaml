@@ -26,3 +26,172 @@ review:
   - Generic row/column labels (Row A, Col 1) could be more realistic (e.g., correlation
     matrix with variable names)
   - X-axis labels appear slightly rotated which is unnecessary for short labels
+  image_description: The plot displays an 8x8 heatmap with rows labeled "Row A" through
+    "Row H" and columns labeled "Col 1" through "Col 8". The colormap uses a blue-orange
+    diverging scheme (blueorange) with blue representing low values (~8-25) and orange/brown
+    representing high values (~100-110). Each cell displays its numeric value as text
+    annotation - white text on dark cells and black text on light cells. A clear diagonal
+    pattern is visible with higher values along the main diagonal descending from
+    top-left to bottom-right. The title "heatmap-basic · altair · pyplots.ai" appears
+    at the top. A vertical colorbar legend labeled "Value" shows the scale from approximately
+    20 to 100.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis labels at 16-20pt, annotations at 18pt - all
+          perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Cells well-sized, clear color differentiation
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Blue-orange diverging scheme is colorblind-safe, good choice
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, slight whitespace around edges
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Column" and "Row" are descriptive but generic (no units expected
+          for this type)'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Colorbar present and well-placed, no grid needed for heatmap (cells
+          serve as grid)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct heatmap using mark_rect()
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly assigned to columns/rows, value to color
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Matrix format, color intensity, diverging colormap with domainMid,
+          value annotations, colorbar legend all present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All values visible within scale
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend title "Value" is accurate
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "heatmap-basic · altair · pyplots.ai"
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows diagonal pattern and value variation well, but lacks negative
+          values to fully demonstrate diverging colormap
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Generic row/column labels, plausible but not real-world scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values 8-110 are sensible for demonstration
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current Altair API used
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses alt.condition for text color, tooltip encoding, scale with domainMid,
+          but could use more interactive features
+  verdict: APPROVED

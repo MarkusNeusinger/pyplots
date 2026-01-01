@@ -25,3 +25,180 @@ review:
   - X-axis shows decimal tick values (2.5, 5.0, 7.5, 10.0, 12.5) instead of integer
     months (1-12); should use scale_x_continuous with breaks=range(1,13) for cleaner
     month representation
+  image_description: The plot displays a basic line chart showing monthly temperature
+    data over a 12-month period. The line is rendered in a blue color (#306998) connecting
+    12 data points, each marked with circular markers of the same blue color. The
+    X-axis shows "Month" with decimal tick labels (2.5, 5.0, 7.5, 10.0, 12.5), and
+    the Y-axis shows "Temperature (°C)" ranging from approximately 5 to 27 degrees.
+    The title "line-basic · plotnine · pyplots.ai" is displayed at the top. The plot
+    uses a minimal theme with subtle gray grid lines and a clean white background.
+    The data follows a realistic seasonal temperature pattern - low in winter months
+    (1-2, 11-12), rising through spring, peaking in summer (month 7), and declining
+    through autumn.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels are all clearly readable with
+          appropriate font sizes (24pt title, 20pt axis labels, 16pt tick labels)
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere in the plot
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line width (2.5) and point size (6) are well-suited for 12 data points,
+          providing excellent visibility
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color (#306998) has good contrast against white background,
+          no colorblind issues with single-series data
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins, good use of 16:9 aspect
+          ratio
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Y-axis has units "Temperature (°C)" but X-axis "Month" could benefit
+          from showing month names or clearer integer ticks instead of decimals (2.5,
+          5.0, etc.)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: false
+        comment: Grid is subtle (alpha 0.3), but the X-axis decimal ticks (2.5, 5.0,
+          7.5) are awkward for monthly data - should show integers 1-12
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct basic line plot
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X (month) and Y (temperature) correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has line connecting points, markers on data points, grid lines, clear
+          axis labels
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 12 data points visible within axis range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single series
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "line-basic · plotnine · pyplots.ai" format
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows complete seasonal cycle with rising trend, peak, and decline
+          - demonstrates line plot's ability to show trends over time
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly temperature data is a classic, relatable use case for line
+          plots
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Temperature values (5-27°C) are realistic for a temperate climate
+          annual cycle
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions or classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Good use of plotnine''s grammar of graphics: ggplot + aes + geom_line
+          + geom_point + labs + theme_minimal + theme customization with element_text
+          and element_line'
+  verdict: APPROVED

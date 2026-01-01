@@ -23,3 +23,174 @@ review:
   - Uses seaborn only for styling (sns.set_context) rather than seaborn plotting functions
     - this is essentially a matplotlib plot with seaborn theming
   - Legend label defined but not displayed (acceptable for single series)
+  image_description: The plot displays a step chart showing cumulative sales data
+    over 12 months (January through December). The chart uses a deep blue (#306998)
+    stepped line with horizontal segments connected by vertical risers, creating a
+    stair-step pattern. Yellow/gold circular markers (#FFD43B) with blue outlines
+    are placed at each data point where values change. The x-axis shows month abbreviations
+    (Jan-Dec), and the y-axis shows "Cumulative Sales ($K)" ranging from 0 to approximately
+    1200. The title "step-basic · seaborn · pyplots.ai" appears at the top. A subtle
+    dashed grid is visible in the background. The cumulative sales start at ~45 in
+    January and increase progressively to ~1100 in December.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; month labels are well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Markers (s=150) are appropriately sized for 12 data points; line
+          width (3) is clearly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue and yellow combination is colorblind-safe with good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins, tight_layout applied
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: false
+        comment: Y-axis has units "($K)", X-axis is descriptive "Month"
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha=0.3, dashed) but there is no legend despite
+          having a label in the code
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct step/stair plot with 'post' style
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=months (sequential), Y=cumulative sales (values)
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Step lines with markers at data points, grid lines for tracing values
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis starts at 0, all data visible with 5% headroom
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single series (label in code but not shown,
+          which is fine)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly formatted as "step-basic · seaborn · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows clear stair-step pattern with varying step heights (seasonal
+          growth pattern)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Cumulative monthly sales is a real-world application mentioned in
+          spec
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Sales values are realistic ($45K-$155K monthly, ~$1.1M cumulative
+          annually)
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Flat script structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports (matplotlib, numpy, pandas, seaborn) are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png'
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Uses matplotlib's ax.step() and ax.scatter() with seaborn only for
+          styling (sns.set_context). Does not use seaborn's actual plotting functions.
+  verdict: APPROVED

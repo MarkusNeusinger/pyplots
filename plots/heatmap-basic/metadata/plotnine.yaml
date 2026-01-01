@@ -27,3 +27,178 @@ review:
     Index or similar)
   - Cell annotation text color is always black, which reduces contrast on darker blue
     cells (e.g., Region G, Q1 2023 at -45.4)
+  image_description: The heatmap displays an 8x8 matrix showing performance metrics
+    across 8 regions (A-H on the y-axis) and 8 time periods (Q1 2023 through Q4 2024
+    on the x-axis). The color scheme uses a diverging palette with Python Blue (#306998)
+    for negative values and Python Yellow (#FFD43B) for positive values, with white
+    at the midpoint (0). Each cell contains its numerical value as a text annotation.
+    The colorbar legend on the right shows the "Value" scale ranging from approximately
+    -25 to +25. The title "heatmap-basic · plotnine · pyplots.ai" appears at the top.
+    The plot clearly shows a trend pattern where earlier quarters have predominantly
+    negative values (blue) and later quarters show positive values (yellow), demonstrating
+    regional performance improvement over time.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 14-16pt, cell
+          annotations at size 12 - all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, x-axis labels rotated 45° to avoid
+          collision
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Tiles are well-sized with clear white borders, annotations visible
+          on all backgrounds
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue-white-yellow diverging palette is colorblind-safe (avoids red-green)
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, slight white space on right side near colorbar
+          but acceptable
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Time Period" and "Region" are descriptive but lack units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: 'Grid removed for clean heatmap look, legend well placed; minor:
+          panel_grid_major=element_blank removes subtle structure'
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct heatmap using geom_tile
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=time periods, Y=regions, fill=value correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Diverging colormap for +/- values ✓, value annotations ✓, colorbar
+          legend
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, axes show complete range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Value" legend label correct with proper scale'
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "heatmap-basic · plotnine · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows both positive and negative values, trend patterns, regional
+          variation; could show more extreme outliers
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Performance metrics by region and quarter is a real, comprehensible
+          business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values range from ~-45 to ~+47, plausible for performance metrics
+          but units undefined
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no unnecessary functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Good use of ggplot grammar with geom_tile + geom_text layering, but
+          scale_fill_gradient2 is basic; could leverage faceting or more advanced
+          theming
+  verdict: APPROVED

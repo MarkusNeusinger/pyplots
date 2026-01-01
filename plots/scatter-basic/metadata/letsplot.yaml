@@ -23,3 +23,166 @@ review:
   - Data labels use generic X Value/Y Value instead of a realistic scenario (e.g.,
     Study Hours vs Exam Score)
   - Title text could be slightly larger for better visibility at full resolution
+  image_description: The plot displays a 2D scatter chart with approximately 150 data
+    points in a muted blue color (#306998) with transparency (alpha 0.7). The title
+    "scatter-basic · lets-plot · pyplots.ai" appears at the top-left in gray text.
+    The X-axis is labeled "X Value" ranging from approximately 4.5 to 15, and the
+    Y-axis is labeled "Y Value" ranging from approximately 1 to 18. The points show
+    a clear positive linear correlation with moderate scatter/noise around the trend.
+    A subtle dashed gray grid provides reference lines. The plot uses a 16:9 aspect
+    ratio with a clean minimal theme and white background.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 8
+        max: 10
+        passed: true
+        comment: all text readable, font sizes appropriate but could be slightly larger
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: no overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: markers well-sized for 150 points with good alpha
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: single blue color, colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: good 16:9 proportions, data fills space well
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: descriptive labels but missing units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: subtle dashed grid, no legend needed
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: correct 2D scatter plot
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: transparency, axis labels, title, grid all present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: all data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for single-series scatter
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: uses "scatter-basic · lets-plot · pyplots.ai" format
+    data_quality:
+      score: 15
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: shows positive correlation with scatter noise
+      - id: DQ-02
+        name: Realistic Context
+        score: 3
+        max: 7
+        passed: false
+        comment: generic "X Value"/"Y Value" lacks real-world context
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: sensible numeric ranges
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: clean imports → data → plot → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: all imports used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: current API usage
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: saves as plot.png
+    library_features:
+      score: 4
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 4
+        max: 5
+        passed: true
+        comment: ggplot grammar, theme_minimal(), element_text customization, ggsize(),
+          exports PNG with scale and interactive HTML
+  verdict: APPROVED

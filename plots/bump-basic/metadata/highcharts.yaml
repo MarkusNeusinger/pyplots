@@ -22,3 +22,172 @@ review:
   weaknesses:
   - X-axis title Match Week not visible in the rendered image despite being configured
   - LineSeries imported from highcharts_core.options.series.area instead of highcharts_core.options.series.line
+  image_description: 'The plot displays a bump chart showing league standings for
+    6 sports teams (Eagles, Wolves, Tigers, Bears, Sharks, Lions) over 6 match weeks.
+    The Y-axis is correctly inverted with Rank 1 at the top and Rank 6 at the bottom.
+    Each team is represented by a colored line with circular markers at each week:
+    Eagles (blue), Wolves (yellow), Tigers (purple), Bears (cyan), Sharks (pink),
+    Lions (brown). The title "bump-basic · highcharts · pyplots.ai" is displayed prominently
+    at the top with a subtitle "League Standings Over Season". The legend is positioned
+    vertically on the right side. Lines show various patterns - Eagles rise to 1st,
+    Wolves start strong then fade, Tigers peak mid-season, Bears drop early and stabilize,
+    while Sharks and Lions remain consistently at 5th and 6th place respectively.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title (72px), axis labels (48px), tick labels (36px) all clearly
+          readable at full size
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Lines (6px width) and markers (14px radius) perfectly sized for 6
+          teams
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Colorblind-safe palette with good contrast between all colors
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good proportions, but x-axis label "Match Week" is missing from the
+          visible plot
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Rank Position" is descriptive but no units needed; x-axis title
+          not visible'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Subtle dashed grid lines, legend well-placed on right
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bump chart showing rankings over time
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Weeks on X-axis, ranks on Y-axis, correctly inverted
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Inverted Y-axis, distinct colors, dot markers, connected lines
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows 1-6, X-axis shows all 6 weeks
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: All 6 team names correctly labeled
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "bump-basic · highcharts · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows overtakes, stability, rise, fall patterns as spec requires
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Sports league standings is a natural bump chart application
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 6 teams, 6 weeks, ranks 1-6 are sensible values
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 1
+        max: 3
+        passed: false
+        comment: Has functions via series loop, but follows simple sequential structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: false
+        comment: Deterministic data (no random), fully reproducible
+      - id: CQ-03
+        name: Clean Imports
+        score: 1
+        max: 2
+        passed: true
+        comment: LineSeries imported from area module (unusual but works)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current highcharts-core API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Highcharts options, reversed axis, line series, but no advanced
+          features like data labels or tooltips in static output
+  verdict: APPROVED

@@ -23,3 +23,187 @@ review:
   - Could include flow value labels on hover or annotations to show exact TWh values
   - Transportation sector only receives flows from Gas and Renewables, missing Coal
     and Nuclear contributions
+  image_description: "The plot displays a Sankey diagram showing energy distribution\
+    \ from four source nodes (Natural Gas, Nuclear, Renewables, Coal) on the left\
+    \ to four target nodes (Residential, Commercial, Transportation, Industrial) on\
+    \ the right. \n\n**Colors**: Source nodes use distinct colors - dark blue for\
+    \ Coal, light blue for Natural Gas, yellow for Nuclear, and green for Renewables.\
+    \ Target nodes use muted grayish-blue tones. Flow links are semi-transparent (alpha\
+    \ ~0.5) and colored to match their source.\n\n**Title**: \"Energy Distribution\
+    \ · sankey-basic · plotly · pyplots.ai\" centered at top in appropriate font size.\n\
+    \n**Layout**: The diagram fills the canvas well with adequate margins. Node labels\
+    \ are positioned clearly next to their respective nodes. Flow widths are proportional\
+    \ to values, making it easy to identify major pathways (Natural Gas → Residential\
+    \ being the largest flow)."
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: 'All text clearly readable: title at appropriate size (~36pt), node
+          labels at ~22pt, all crisp and legible'
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; node labels are well-positioned and do not interfere
+          with flows
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Flow links appropriately sized with 0.5 opacity allowing visibility
+          where flows cross
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Color scheme uses blue, yellow, green which are colorblind-friendly;
+          distinct hues for different sources
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent canvas utilization; diagram fills ~70% of space with balanced
+          margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: true
+        comment: N/A for Sankey diagrams (no axes) - applying 2 points for node labels
+          which are descriptive
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Clean white template, no distracting elements; node colors serve
+          as implicit legend
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct Sankey diagram showing flows between nodes
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Source-target-value correctly mapped; link widths proportional to
+          flow values
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: distinct colors for sources, link opacity
+          for crossing flows, clear node labels'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All flows visible and readable
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Node labels accurately describe each category
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Follows exact format: "Energy Distribution · sankey-basic · plotly
+          · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: 'Shows flows from 4 sources to 4 targets with varying magnitudes;
+          demonstrates multiple flow paths and crossings; minor: could show more dramatic
+          variation in flow sizes'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Energy distribution from sources (Coal, Gas, Nuclear, Renewables)
+          to sectors (Residential, Commercial, Industrial, Transportation) is a classic,
+          comprehensible real-world scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Values in TWh are sensible for energy; Natural Gas having highest
+          residential flow is realistic; minor: Transportation sector could have more
+          diverse energy sources'
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear structure: imports → data → colors → figure creation
+          → layout → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (no random values used)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only `plotly.graph_objects` imported and used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API (go.Sankey)
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as `plot.png` and `plot.html`
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses Plotly's interactive Sankey with go.Sankey, custom node padding/thickness,
+          link transparency, HTML output for interactivity
+  verdict: APPROVED

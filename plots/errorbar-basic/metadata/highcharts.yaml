@@ -25,3 +25,173 @@ review:
     or not rendering properly
   - Axis labels lack units (e.g. Measured Value units would be more informative)
   - Only demonstrates symmetric error bars; spec mentions asymmetric errors as a feature
+  image_description: The plot shows a bar chart with error bars displaying experimental
+    measurements for 6 samples (Sample A through Sample F). Blue column bars (#306998)
+    represent the mean values ranging from approximately 35 to 52 on the y-axis. Black
+    error bars with visible caps (whiskers) extend above and below each bar, showing
+    the error ranges. The title "errorbar-basic · highcharts · pyplots.ai" is prominently
+    displayed at the top in bold. A subtitle reads "Experimental measurements with
+    error ranges". The x-axis is labeled "Experimental Samples" and the y-axis is
+    labeled "Measured Value". A legend in the top-right shows "Mean Value" with a
+    blue circle indicator. The grid uses dashed gray lines. The layout is clean with
+    good use of canvas space.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 64px, axis titles at 42px, labels at 32px - all highly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars and error bars are well-sized and clearly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue (#306998) with black error bars - colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good canvas utilization, balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Descriptive labels but no units specified
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: false
+        comment: Dashed grid is subtle, legend well positioned but only shows "Mean
+          Value" (Error Range not visible in legend)
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct error bar plot with column bars
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X, values on Y with error bars
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Error bars have visible caps, consistent widths
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis starts at 25, shows all data clearly
+      - id: SC-05
+        name: Legend Accuracy
+        score: 1
+        max: 2
+        passed: false
+        comment: Legend shows "Mean Value" but Error Range legend entry not visible
+          in final image
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "errorbar-basic · highcharts · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows symmetric error bars with varying magnitudes; could show asymmetric
+          errors too per spec
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Experimental samples with measurements is a realistic scientific
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values 35-52 with errors 2.8-5.8 are plausible but generic
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple linear script with no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: false
+        comment: Data is deterministic (hardcoded), but no random seed needed since
+          no random data
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Highcharts API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses Highcharts' native errorbar series type with proper whisker/stem
+          styling, column series, and interactive HTML output
+  verdict: APPROVED

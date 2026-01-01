@@ -23,3 +23,175 @@ review:
   weaknesses:
   - Grid lines could be more subtle (lower alpha value)
   - Data context is generic rather than demonstrating a specific domain application
+  image_description: The plot displays a residual plot with fitted values (15-100)
+    on the x-axis and residuals (approximately -14 to 12) on the y-axis. Blue scatter
+    points (with ~0.6 alpha transparency) show the distribution of residuals around
+    zero. A red dashed horizontal reference line at y=0 provides a baseline for assessing
+    bias. A yellow/gold LOESS smoothed trend line shows the local pattern in residuals,
+    staying close to zero across the fitted value range. The plot has a clean minimal
+    theme with subtle gray gridlines, clear axis labels ("Fitted Values" and "Residuals
+    (Observed − Predicted)"), and the title "residual-basic · letsplot · pyplots.ai"
+    at the top. Several outliers are visible (around -13 and +11), demonstrating realistic
+    regression diagnostics.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick marks are all clearly readable with
+          appropriate sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels fully visible
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Points are well-sized for the 100-point dataset with good alpha,
+          though slightly small
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue points, red reference line, yellow trend line - all distinguishable
+          and colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas appropriately with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels: "Fitted Values" and "Residuals (Observed − Predicted)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: No legend needed (single series), but grid could be more subtle (alpha
+          higher than ideal)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct residual plot type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Fitted values on X, residuals on Y as specified
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Includes reference line at y=0, LOESS trend line, alpha transparency
+          on points
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis approximately symmetric around zero (-14 to +12)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed; single data series
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "residual-basic · letsplot · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows heteroscedasticity pattern and outliers as specified, good
+          diagnostic interest
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Plausible regression residuals, though context is generic rather
+          than domain-specific
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values are realistic for regression diagnostics
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 1
+        max: 2
+        passed: true
+        comment: Uses wildcard import with noqa comments (acceptable for lets-plot)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ggplot grammar, geom_smooth with LOESS, theme customization;
+          could leverage more lets-plot specific features
+  verdict: APPROVED

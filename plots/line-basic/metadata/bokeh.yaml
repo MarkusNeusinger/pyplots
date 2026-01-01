@@ -25,3 +25,176 @@ review:
   - No legend present (minor issue for single series)
   - Data pattern (warmest mid-month) is slightly artificial for typical monthly weather
     data
+  image_description: The plot displays a basic line chart showing daily temperature
+    readings over 31 days of a month. A blue line (#306998) connects all data points,
+    with small circular markers at each point featuring white borders. The title "line-basic
+    · bokeh · pyplots.ai" appears in the top-left corner. The X-axis is labeled "Day
+    of Month" ranging from 0 to ~31, and the Y-axis is labeled "Temperature (°C)"
+    ranging from approximately 19°C to 30°C. The background is a subtle light gray
+    (#fafafa) with dashed grid lines. The data shows a sinusoidal pattern with temperatures
+    warmer mid-month (peaking around day 20-21 at ~30°C) and cooler at the start and
+    end of the month (~19-21°C), with realistic daily variation/noise overlaid.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 42pt, axis labels at 32pt, tick labels at 24pt - all clearly
+          readable at full resolution
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere in the plot
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Line width of 5 and marker size of 16 are appropriate for 31 data
+          points; markers slightly small but visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color (#306998) is colorblind-safe with good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, proper margins, no content cut off
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Both axes have descriptive labels with units: "Day of Month" and
+          "Temperature (°C)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle (alpha 0.3, dashed) which is good, but no legend present
+          (single series, so acceptable but not perfect)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct line plot connecting data points
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X correctly shows sequential days, Y shows temperature values
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Clean single line, clear axis labels, grid lines, markers on data
+          points (all spec requirements met)
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 31 days visible, temperature range appropriate
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Single series, no legend needed
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "line-basic · bokeh · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows trend (sinusoidal seasonal pattern), variation (noise), but
+          could show more dramatic features
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Daily temperature readings for a month is a perfect realistic scenario
+          mentioned in the spec
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Temperature range 19-30°C is realistic; however the sinusoidal pattern
+          peaks mid-month which is slightly unusual for typical monthly weather
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses ColumnDataSource which is good Bokeh practice, but doesn't leverage
+          Bokeh's distinctive interactive features like hover tooltips or other interactive
+          elements. For a static export, this is acceptable but not exceptional.
+  verdict: APPROVED

@@ -27,3 +27,174 @@ review:
   - Could benefit from a simple legend explaining the color-branch relationship
   - Some segments (like SMB, Retail) appear relatively small; could show more variation
     in data
+  image_description: 'The plot displays a sunburst chart with three concentric rings
+    representing an organizational budget hierarchy. The innermost ring shows three
+    main departments: **Eng** (dark blue), **Sales** (yellow/gold), and **Mktg** (green)
+    - each with white bold text labels. The second ring shows subdivisions: Backend
+    and Frontend for Eng (lighter blues), North and South for Sales (lighter yellows),
+    and Digital and Brand for Mktg (lighter greens). The outermost ring displays projects/categories:
+    API, Database, Web App, Mobile (blues), Enterprise, SMB, Retail (yellows), and
+    SEO, Ads, Events (greens). White borders separate all segments clearly. The chart
+    is centered on a clean white background with the title "sunburst-basic · letsplot
+    · pyplots.ai" at the top.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: All text is clearly readable; title is prominent, inner labels are
+          bold white, outer labels have good contrast
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; labels are well-positioned within segments
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Segments are well-sized with clear proportions and white separators
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Good color scheme using blue/yellow/green branches with consistent
+          shading (-1: yellow text on light yellow segments could be improved)'
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Chart is well-centered but could use more canvas space (-1: some
+          empty space around chart)'
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for sunburst; title present and properly formatted
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: No legend present (not strictly needed but could help clarify hierarchy)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct sunburst chart with concentric rings
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Three hierarchy levels properly mapped to rings
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Shows hierarchical data, proportional segments, consistent branch
+          colors, clear level separation
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All segments visible and properly proportioned
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Labels directly on segments (appropriate for sunburst)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "sunburst-basic · letsplot · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: 'Shows 3 levels, varying segment sizes, multiple branches (-1: could
+          show more variation in leaf sizes)'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Organizational budget breakdown is realistic and comprehensible
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Budget values (6-18) are plausible for relative comparison
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 1
+        max: 3
+        passed: false
+        comment: 'Uses helper function `create_wedge` (-2: violates KISS principle
+          of no functions)'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Data is deterministic (no random generation)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses geom_polygon and manual polygon construction; while creative,
+          doesn't leverage lets-plot's native pie/sector capabilities if available
+  verdict: APPROVED

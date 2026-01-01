@@ -23,3 +23,174 @@ review:
   - Green/red color scheme is standard for finance but not colorblind-accessible;
     consider using blue/orange or shapes
   - X-axis shows numeric Trading Day instead of actual dates which would be more informative
+  image_description: 'The plot displays a candlestick chart with 30 trading days of
+    simulated stock data. Green (teal, #22ab94) candles represent bullish days (close
+    >= open) and red (#f23645) candles represent bearish days (close < open). Each
+    candlestick has a rectangular body showing the open-close range and thin black
+    wicks showing the high-low range. The x-axis shows "Trading Day" (0-30), the y-axis
+    shows "Price ($)" ranging approximately from 132 to 155. The title "candlestick-basic
+    · plotnine · pyplots.ai" is displayed at the top. The background is minimal with
+    subtle gray gridlines. The overall trend shows a price decline from ~150 to ~135
+    over the 30-day period.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick marks are all clearly readable at appropriate
+          sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Candlesticks are well-sized and clearly visible; some very small
+          body candles (doji-like) are a bit hard to see but this is realistic
+      - id: VQ-04
+        name: Color Accessibility
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses green/red which is common for finance but not ideal for colorblind
+          users
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, no cut-off content
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Price ($)" includes units, "Trading Day" is descriptive'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle and helpful; no legend shown but guide=None is intentional
+          since colors are self-explanatory for candlesticks
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct candlestick chart with OHLC data
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Date on X, price on Y, OHLC correctly mapped to candle components
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Shows body (open-close), wicks (high-low), color coding for direction
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend hidden as colors are standard financial convention
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "candlestick-basic · plotnine · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows both bullish and bearish candles, varying body sizes, clear
+          wicks; good mix but could have more dramatic movements
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Stock price simulation is a realistic, comprehensible scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Price around $135-155 is realistic for stocks; the downward trend
+          is perhaps slightly monotonic
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses plotnine's grammar of graphics (ggplot + geom_segment + geom_rect)
+          but this is a workaround approach rather than leveraging plotnine's statistical
+          transformations or faceting capabilities
+  verdict: APPROVED

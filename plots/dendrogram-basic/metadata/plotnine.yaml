@@ -26,3 +26,175 @@ review:
   - The color threshold logic (0.7 * max) is somewhat arbitrary and unexplained visually
   - Bottom margin has extra whitespace due to rotated labels extending into the plot
     area
+  image_description: 'The plot displays a hierarchical dendrogram visualizing clustering
+    of 15 iris flower samples (5 each of Setosa, Versicolor, and Virginica). The tree
+    structure uses a two-color scheme: Python Blue (#306998) for high-level merges
+    at the top and Python Yellow (#FFD43B) for lower-level merges. The Y-axis shows
+    "Distance (Ward)" ranging from 0 to 12, and the X-axis is labeled "Sample". Sample
+    labels are displayed at 45-degree angles at the bottom (e.g., Setosa-4, Setosa-3,
+    Versicolor-1, Virginica-1, etc.). The title reads "dendrogram-basic · plotnine
+    · pyplots.ai". The layout is clean with subtle dashed grid lines on the Y-axis.
+    The dendrogram correctly shows Setosa samples clustering together on the left,
+    while Versicolor and Virginica samples cluster on the right side, reflecting their
+    biological similarity.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt, all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, labels are well-spaced with 45-degree rotation
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Dendrogram branches clearly visible with size=1.8
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow color scheme is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good proportions but slight extra whitespace at bottom due to label
+          rotation
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Y-axis has descriptive label with method "Distance (Ward)" but no
+          units; X-axis just "Sample"
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle with alpha=0.3 and dashed style; no legend needed
+          but color meaning unexplained
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct dendrogram/hierarchical clustering visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Branch heights correctly represent merge distances
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Shows hierarchical structure, merge distances, labeled leaves
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full range of distances
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed; color distinction is decorative
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "dendrogram-basic · plotnine · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows species clustering well; could show more variation in merge
+          heights within species
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Iris flower classification is a classic, realistic ML scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Ward distances are reasonable; values make sense for normalized data
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → linkage → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Missing bbox_inches equivalent for tight layout
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of geom_segment, geom_text, theme customization, and scale_color_manual.
+          However, relies heavily on scipy for dendrogram coordinates rather than
+          showcasing more plotnine-specific grammar of graphics features.
+  verdict: APPROVED

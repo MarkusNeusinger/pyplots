@@ -28,3 +28,175 @@ review:
   - Could use sns.clustermap or add dendrograms to showcase seaborn clustering capabilities
     as mentioned in spec notes
   - Colorbar label is set twice (in cbar_kws and manually), which is redundant code
+  image_description: 'The heatmap displays a 7×12 matrix showing monthly performance
+    scores (0-100) across 7 departments (Sales, Marketing, Engineering, Support, Finance,
+    HR, Operations) over 12 months (Jan-Dec). The plot uses a diverging RdBu (Red-Blue)
+    colormap centered at 50, where blue indicates high performance (approaching 100)
+    and red indicates low performance (approaching 0). Each cell contains a white
+    numeric annotation showing the exact score. White grid lines separate the cells.
+    The colorbar on the right is labeled "Performance Score" with a 0-100 scale. The
+    title "heatmap-basic · seaborn · pyplots.ai" appears at the top. Axis labels "Month"
+    (x-axis) and "Department" (y-axis) are clearly visible. Notable patterns include:
+    Finance row is consistently blue (high scores 74-91), Sales shows strong first
+    half (80-95) then drops, Engineering has strong second half performance (75-95
+    in Aug-Nov), and HR has a mid-year dip (11 in April).'
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt, labels 20pt, ticks 16pt, annotations 16pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Cell colors and annotations are perfectly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: RdBu diverging colormap is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Square format appropriate for heatmap, good proportions
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels "Month" and "Department" but no units (appropriate
+          for categorical data)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Colorbar well placed; white gridlines are effective but slightly
+          thick
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct heatmap visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Rows=departments, Columns=months, color=values correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Diverging colormap ✓, value annotations ✓, colorbar
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full 0-100 range shown with vmin/vmax
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar correctly labeled "Performance Score"
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Exact format "heatmap-basic · seaborn · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows high/low values, consistent patterns (Finance), seasonal trends
+          (Sales, Engineering), mid-period dips (HR)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly department performance metrics is a real, comprehensible
+          business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Performance scores 0-100 with realistic distribution and patterns
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot, numpy, seaborn - all used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Modern seaborn API usage
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Uses sns.heatmap which is core seaborn, but doesn't leverage seaborn-specific
+          features like clustermap for hierarchical clustering
+  verdict: APPROVED

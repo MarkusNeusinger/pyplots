@@ -25,3 +25,169 @@ review:
     be more distinct
   - Percentage labels on very small segments may be harder to read at smaller display
     sizes
+  image_description: 'The plot displays a donut chart with 5 colored segments representing
+    budget allocation by department. The segments are: Marketing (28%, dark blue),
+    Development (35%, yellow), Operations (18%, light blue), Sales (12%, gray), and
+    Support (7%, sage green). White percentage labels appear on each segment. The
+    hollow center contains "Total: $100M" in blue text. The title "donut-basic · altair
+    · pyplots.ai" is positioned at the top center. A legend with category names and
+    colored circles is placed on the right side. White stroke separates segments for
+    clarity.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, legend, and center text are clearly readable. Percentage labels
+          on segments are legible but slightly small on smaller segments.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; all labels are well-positioned.
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: All segments are clearly visible with good proportions. White stroke
+          separation enhances clarity.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Good color differentiation; blue/yellow/gray/green palette is mostly
+          colorblind-safe, though the two blues (Marketing and Operations) could be
+          more distinct.
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Well-centered donut with appropriate proportions, good use of whitespace.
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend is well-placed on the right, clear and appropriately sized.
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct donut/ring chart with hollow center.
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories correctly mapped to segments by value.
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has percentage labels on segments, center text with key metric, consistent
+          segment ordering.
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, percentages sum to 100%.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly matches segment colors and labels.
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "donut-basic · altair · pyplots.ai".'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows varying segment sizes well (7% to 35%), demonstrates donut
+          chart effectively. Could show more extreme size variations.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Budget allocation by department is a realistic, relatable business
+          scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are plausible for budget allocation. 5 categories is appropriate
+          (spec says 3-8).
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear structure: imports → data → chart → layers → save.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (no random values).
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only altair and pandas imported, both used.
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Altair API.
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html.
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Excellent use of Altair''s declarative grammar: mark_arc for donut,
+          layering for text overlays, tooltips for interactivity, proper encoding
+          with theta channel.'
+  verdict: APPROVED

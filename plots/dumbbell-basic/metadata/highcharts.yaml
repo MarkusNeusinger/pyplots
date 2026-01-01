@@ -27,3 +27,178 @@ review:
   - Legend text could be more descriptive with colors mentioned
   - Y-axis title present but x-axis title is null - could benefit from clearer axis
     labeling
+  image_description: 'The plot displays a horizontal dumbbell chart showing employee
+    satisfaction scores before and after policy changes across 8 departments. Each
+    department has two dots connected by a thin gray line: a blue dot (#306998) representing
+    the "before" score and a yellow dot (#FFD43B) representing the "after" score.
+    Data labels display the numeric values on each dot. Departments are listed on
+    the y-axis (Customer Support, Operations, Research & Development, Engineering,
+    Sales, Marketing, Human Resources, Finance) and sorted by the magnitude of change
+    in descending order. The title reads "Employee Satisfaction Before/After · dumbbell-basic
+    · highcharts · pyplots.ai" with a subtitle "Satisfaction scores before and after
+    policy changes by department". A legend in the top-right shows "Before → After".
+    The x-axis ranges from approximately 40 to 95 representing satisfaction scores.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 52px, labels at 32px, axis labels at 28px, all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, good spacing between categories
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Markers radius 18 is appropriate, connector width 5 is visible but
+          not overpowering
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow colorblind-safe palette, good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good proportions but large left margin for category labels could
+          be reduced slightly
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Y-axis has "Satisfaction Score" but no units, categories are self-explanatory
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: 'Grid subtle with dashed style and #e0e0e0 color, legend well positioned
+          but text slightly small relative to other elements'
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct dumbbell chart type using Highcharts dumbbell module
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on y-axis, values on x-axis (horizontal orientation as
+          spec recommends)
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Distinct colors for start/end, sorting by difference, thin connecting
+          line, all present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axis range 40-95 shows all data points with appropriate padding
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Before → After" accurately describes the data'
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: 'Uses format but slightly different: "Employee Satisfaction Before/After
+          · dumbbell-basic · highcharts · pyplots.ai" (should be simpler spec-id format
+          but includes context)'
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows before/after comparison with varying gaps, all positive changes
+          (no negative changes shown which would add variety)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Employee satisfaction scores is a real, comprehensible scenario matching
+          spec example
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Scores 45-88 are realistic satisfaction percentages
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → config → render → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Data is deterministic (hardcoded values)
+      - id: CQ-03
+        name: Clean Imports
+        score: 1
+        max: 2
+        passed: false
+        comment: All imports used, but json import could be from standard position
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Highcharts API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses Highcharts dumbbell module with inverted chart for horizontal layout,
+          data labels, custom marker styling
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use but could leverage more interactive features in HTML output
+  verdict: APPROVED

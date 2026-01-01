@@ -22,3 +22,175 @@ review:
   - Manual ECDF computation instead of using plotnine native stat_ecdf() which would
     be more idiomatic
   - Axis label Values is generic and lacks units or more descriptive context
+  image_description: The plot displays an ECDF (Empirical Cumulative Distribution
+    Function) as a blue step function on a clean minimal background. The title "ecdf-basic
+    · plotnine · pyplots.ai" is positioned at the top center. The x-axis is labeled
+    "Values" and shows data ranging from approximately 0 to 90, with tick marks at
+    25, 50, and 75. The y-axis is labeled "Cumulative Proportion" with values from
+    0.0 to 1.0 in 0.1 increments. The step function shows a classic S-shaped cumulative
+    distribution, starting near 0 on the left and rising to 1.0 on the right, with
+    the steepest increase around the median value of 50. Light gray grid lines aid
+    in reading values. The blue color (#306998) provides good contrast against the
+    white background.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels are all clearly readable with
+          appropriate font sizes (24pt title, 20pt axis labels, 16pt tick labels)
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Step line is clearly visible with appropriate width (size=1.5)
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color with good contrast, colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas appropriately with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Labels are descriptive but lack units ("Values" could specify the
+          measurement unit)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: false
+        comment: Grid is subtle (alpha=0.3), but no legend needed for single series
+          - minor deduction for grid being slightly less visible than optimal
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct ECDF step plot
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Values on x-axis, cumulative proportion on y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Step function increases by 1/n, y-axis 0-1, grid lines present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis correctly shows 0-1 range, x-axis shows full data range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single series
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "ecdf-basic · plotnine · pyplots.ai"
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows normal distribution ECDF well, demonstrates S-curve shape;
+          could show more interesting features like different distribution shapes
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Normal distribution centered at 50 with spread of 15 is plausible
+          generic data
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: 200 observations is good for ECDF visualization; values in reasonable
+          range
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses plotnine's ggplot grammar correctly with geom_step, theme_minimal,
+          and proper element_text styling; however, could leverage stat_ecdf() for
+          native ECDF computation instead of manual calculation
+  verdict: APPROVED

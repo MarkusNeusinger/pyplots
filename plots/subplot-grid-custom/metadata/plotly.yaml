@@ -23,3 +23,178 @@ review:
   - No rowspan demonstration (spec mentions both colspan AND rowspan)
   - Grid lines not visible (could add subtle grid for better readability)
   - Scatter plot markers could be slightly larger for the data density (50 points)
+  image_description: 'The plot displays a custom subplot grid with 5 panels arranged
+    in a 2×3 grid. The main title "subplot-grid-custom · plotly · pyplots.ai" is centered
+    at the top in large font. The top-left panel ("Stock Price (2 Columns)") spans
+    2 columns and shows a blue line chart of stock price over time from January to
+    April 2024, with price declining from ~108 to ~78. The top-right panel ("Category
+    Performance") shows a yellow bar chart with 4 categories (Product A-D) with scores
+    ranging from ~68 to ~91. The bottom row has three equal-width panels: "Trading
+    Volume" (blue bar chart showing volume over time), "Revenue vs Expenses" (blue
+    scatter plot showing positive correlation), and "Daily Returns Distribution" (yellow
+    histogram of returns centered around 0%). All panels use the Python blue (#306998)
+    and yellow (#FFD43B) color scheme. Axis labels include units where appropriate.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: all text readable, title size 32pt, subplot titles 20pt, tick labels
+          14pt - good but tick labels could be slightly larger
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: no overlapping text anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: line width 3 for main plot, markers size 12 for scatter, bars clearly
+          visible - slightly small markers for scatter
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: blue and yellow are colorblind-safe, good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: excellent use of canvas, subplot grid well proportioned, main plot
+          appropriately larger
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: all axes have descriptive labels with units (Price ($), Volume (K),
+          Revenue ($K), etc.)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: no grid lines visible (plotly_white template), no legend needed
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: correct custom subplot grid with non-uniform cell sizes (colspan=2
+          for main plot)
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly assigned in all subplots
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: has colspan spanning, multiple plot types (line, bar, scatter, histogram),
+          dashboard-style layout
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: all data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: no legend needed, subplot titles serve as identifiers
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'correct format: "subplot-grid-custom · plotly · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: shows multiple plot types and span configurations, but no rowspan
+          demonstrated (only colspan)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: financial dashboard scenario with stock price, volume, revenue/expenses,
+          returns - very realistic
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: realistic values overall, though stock dropping from 108 to 78 in
+          4 months is steep
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: all imports used (numpy, pandas, plotly.graph_objects, plotly.subplots)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: using current plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: uses make_subplots with specs for custom grid, graph_objects for
+          fine control, but doesn't leverage interactivity features like hover customization
+  verdict: APPROVED

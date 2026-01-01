@@ -25,3 +25,173 @@ review:
     points)
   - Y-axis shows frequencies up to ~469 Hz but the chirp only goes to 200 Hz (wasted
     vertical space showing noise)
+  image_description: The spectrogram displays a heatmap of a linear chirp signal.
+    The plot shows time (0.06 to 1.91 seconds) on the x-axis and frequency (0 to ~469
+    Hz) on the y-axis. A clear diagonal yellow band sweeps from low frequencies at
+    early times to high frequencies at later times, representing the increasing frequency
+    of the chirp signal. The background is predominantly teal/green (mid-power levels)
+    with scattered darker blue/purple spots (low power). A vertical colorbar on the
+    right shows "Power (dB)" ranging from approximately -100 dB (purple) to -10 dB
+    (yellow), using a viridis colormap. The title reads "spectrogram-basic · highcharts
+    · pyplots.ai" with a subtitle "Linear chirp signal (10-200 Hz) with linear frequency
+    axis".
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title and axis labels are clearly readable; tick labels slightly
+          small but legible
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Heatmap cells are appropriately sized for the data density
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Viridis colormap is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good canvas utilization; slight imbalance with right margin for legend
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Time (seconds)" and "Frequency (Hz)" with proper units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: No visible grid lines; legend/colorbar is present but lacks subtle
+          gridlines on plot
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct heatmap spectrogram visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Time on x-axis, frequency on y-axis, power as color intensity
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Colorbar with dB units, proper axis labels, perceptually uniform
+          colormap
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full time and frequency range displayed
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar correctly labeled "Power (dB)"
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "{spec-id} · {library} · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Chirp signal clearly shows frequency increasing over time; could
+          show additional signal features
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Signal processing context is realistic and neutral
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Frequencies 10-200 Hz appropriate; y-axis extends to ~500 Hz which
+          is fine but shows noise above signal range
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current APIs
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as plot.png (correct)
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Highcharts heatmap with proper color axis and tooltip; could
+          leverage more interactive features
+  verdict: APPROVED

@@ -21,3 +21,173 @@ review:
   weaknesses:
   - Missing grid lines would improve readability (add panel_grid with subtle alpha)
   - Axis labels lack units (e.g., Measurement Value (units) would be more informative)
+  image_description: The plot displays a basic error bar chart with 6 experimental
+    samples (Sample A through F) on the x-axis and Measurement Value on the y-axis
+    (ranging from ~30 to ~58). Each sample is represented by a blue point (#306998
+    color) with vertical error bars extending above and below. The error bars have
+    visible horizontal caps at both ends. The title "errorbar-basic · plotnine · pyplots.ai"
+    is displayed at the top. The plot uses a clean minimal theme with a light gray
+    background and subtle grid lines. All text is clearly legible with good font sizes.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels are all clearly readable with
+          appropriate font sizes (24pt title, 20pt axis labels, 16pt tick labels)
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; x-axis labels are well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Points (size=6) and error bars (size=1.5) are clearly visible and
+          well-proportioned for 6 data points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color (#306998) with good contrast, no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good canvas utilization with balanced margins, plot fills appropriate
+          space
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Labels are descriptive ("Experiment", "Measurement Value") but lack
+          units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: No grid visible (theme_minimal removes it), which reduces readability
+          slightly
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct error bar plot with points and error bars
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X (categorical samples) and Y (measurement values) correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Error bars with caps, consistent widths, symmetric errors - all present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single series (appropriate)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "errorbar-basic · plotnine · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows variation in measurements and error sizes, but all errors are
+          symmetric (spec mentions asymmetric as a possibility)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Lab measurements with uncertainty is a realistic scientific scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values in 30-55 range with errors of 2.8-5.5 are plausible for lab
+          measurements
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (no random generation)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as "plot.png" but missing bbox_inches equivalent
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ggplot grammar correctly with geom_errorbar and geom_point,
+          theme_minimal, but doesn't leverage advanced plotnine features like faceting
+          or scale customization
+  verdict: APPROVED

@@ -24,3 +24,177 @@ review:
   - Layout could be tighter - generous margins mean the actual chart area is slightly
     smaller than optimal
   - X-axis lacks a descriptive label (though Month context is clear from labels)
+  image_description: |-
+    The plot displays a streamgraph (stacked area chart with centered baseline) showing music streaming trends over 24 months (Jan '23 to Dec '24). Five music genres are visualized as flowing, stacked layers:
+    - **Pop** (blue, #306998) - top layer, largest area, relatively stable with slight seasonal variation
+    - **Rock** (yellow, #FFD43B) - second layer, showing gradual decline over time
+    - **Hip-Hop** (purple, #9467BD) - middle layer, showing growth trend over the period
+    - **Electronic** (cyan, #17BECF) - fourth layer, with subtle seasonal oscillation
+    - **Jazz** (pink, #E377C2) - bottom layer, smallest and most stable
+
+    The chart has a white background with a clear title "Music Streaming Trends · streamgraph-basic · highcharts · pyplots.ai" and subtitle "Monthly streaming hours by genre (2023-2024)". X-axis shows month labels, y-axis is hidden (as typical for streamgraphs). A horizontal legend at the bottom identifies each genre.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is large (64px), subtitle (36px), and axis labels (28px) are
+          all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; month labels are well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Stream layers are well-sized with good fill opacity (0.85), smooth
+          curves visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses colorblind-safe palette avoiding red-green conflicts
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good layout but could use slightly more vertical space for the chart
+          area; margins are generous
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: false
+        comment: Y-axis is intentionally hidden for streamgraphs, but x-axis lacks
+          descriptive title (acceptable for this plot type, but no units shown)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend is well-positioned at bottom, no distracting grid
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct streamgraph with centered baseline and flowing curves
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Time on x-axis, categories stacked vertically, values represented
+          by area height
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Smooth interpolation, centered baseline, distinct colors, legend
+          present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, appropriate time range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies all 5 genres
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "{spec-id} · {library} · pyplots.ai" format
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Shows multiple trends: growing (Hip-Hop), declining (Rock), seasonal
+          (Pop, Electronic), stable (Jazz)'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Music streaming by genre is a perfect real-world application matching
+          spec examples
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values in 1000-4000 streaming hours range are plausible, though the
+          absolute scale isn't shown
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'No functions/classes, linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42) for deterministic data
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Highcharts-core API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: 'Missing: uses container.screenshot() but plot.html is also created
+          (minor)'
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Highcharts StreamGraphSeries, proper chart type, but doesn't
+          leverage advanced interactivity in the static output
+  verdict: APPROVED

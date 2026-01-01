@@ -22,3 +22,180 @@ review:
   weaknesses:
   - Grid lines could be slightly more visible (alpha 0.2-0.3 instead of 0.1)
   - Could add hover tooltips to leverage Highcharts interactivity strengths
+  image_description: The plot displays a histogram with KDE overlay showing simulated
+    daily stock returns. The histogram bars are semi-transparent blue (#306998 with
+    0.6 alpha) with darker blue borders. The KDE curve is rendered as a smooth yellow/golden
+    area spline (#FFD43B) with light yellow fill underneath. The title "histogram-kde
+    · highcharts · pyplots.ai" is prominently displayed at the top with a subtitle
+    "Simulated Daily Stock Returns (%)". The x-axis shows "Return (%)" ranging from
+    approximately -9 to 10.5, and the y-axis shows "Density" from 0 to 0.17. The legend
+    in the upper right identifies "Histogram" and "KDE" series. The distribution shows
+    a slight left skew with the main peak around -1.5 to 0, and a secondary concentration
+    around -3 reflecting the bimodal data generation.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, subtitle, axis labels, and tick marks are all clearly readable.
+          Slightly smaller than optimal for the canvas size.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; all labels are well-spaced and clear.
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: 'Histogram bars and KDE curve are well-sized. The semi-transparent
+          bars allow the KDE to show through nicely. Minor: some bars appear slightly
+          thin relative to bin width.'
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue and yellow are colorblind-safe, providing excellent contrast.
+          No red-green conflicts.
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good use of canvas space with appropriate margins. Plot area is well-proportioned.
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: X-axis has "Return (%)" with units, Y-axis has "Density" without
+          units (density is unitless, so acceptable).
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha 0.1), legend is well-placed. Grid could be
+          slightly more visible.
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correctly implements histogram with KDE overlay.
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Values correctly mapped to x-axis, density on y-axis.
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All required features present: histogram bars, KDE curve, density
+          scaling.'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes range.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies "Histogram" and "KDE".
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "histogram-kde · highcharts · pyplots.ai".'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows bimodal distribution demonstrating KDEs ability to capture
+          underlying shape. Could show more extreme tails or outliers.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Stock returns is an excellent realistic context for histogram-KDE
+          visualization.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Return values are realistic (-9% to +10% range). 500 data points
+          is appropriate.
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → plot → save. No functions or classes.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42) for reproducibility.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used.
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current API patterns.
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as plot.png but also creates plot.html (minor - both files
+          are acceptable for highcharts).
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses AreaSplineSeries for smooth KDE curve and ColumnSeries for histogram.
+          Could leverage more Highcharts-specific features like tooltips or hover
+          effects.
+  verdict: APPROVED

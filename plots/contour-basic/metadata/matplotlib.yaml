@@ -28,3 +28,182 @@ review:
     adjusting the color scale or level range
   - Some contour labels appear in multiple locations which could be reduced for cleaner
     presentation
+  image_description: 'The plot displays a contour visualization of a simulated mountain
+    terrain. It shows a 10km x 10km area with two distinct peaks: a main peak in the
+    northeast (around coordinates 7,7) reaching approximately 1000m elevation (shown
+    in bright yellow-green), and a secondary peak in the southwest (around coordinates
+    2,3) reaching about 600m (shown in cyan-green). A valley depression runs through
+    the center of the map (shown in white/light colors at around 200-300m elevation).
+    The viridis colormap transitions from dark purple (low elevations ~200m) through
+    blue, green, to yellow (high elevations ~1000m). White contour lines are overlaid
+    at 50m intervals, with thicker major contour lines every 200m labeled with elevation
+    values (400m, 600m, 800m). A colorbar on the right shows the elevation scale.
+    Axis labels indicate "Distance East (km)" and "Distance North (km)" with clear
+    tick marks. The title reads "Mountain Terrain · contour-basic · matplotlib · pyplots.ai".'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; contour labels are well-placed and
+          readable
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Filled contours with appropriate alpha (0.9), contour lines visible
+          but not overwhelming
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Viridis colormap is colorblind-safe and provides excellent contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good layout with square aspect ratio; slight asymmetry with colorbar
+          but acceptable
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Distance East (km)", "Distance North
+          (km)", "Elevation (m)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: No grid present (acceptable for contour plot), but no legend either.
+          Colorbar serves as legend but the plot could benefit from annotations for
+          peaks.
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct contour plot implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y grid correctly mapped, Z values properly displayed as contours
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: filled regions (contourf), contour lines,
+          labeled levels, colorbar'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full range displayed (0-10 km on both axes, 200-1000m elevation)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar accurately shows elevation scale
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "Mountain Terrain · contour-basic · matplotlib ·
+          pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows peaks, valley, gradients, and multiple terrain features; could
+          show more extreme variations
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Mountain terrain with realistic topographic features (peaks, ridges,
+          valleys)
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Elevation range 200-1000m is realistic; 10km area is sensible scale
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports → data → plot → save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses `np.random.seed(42)` (though not strictly needed since data
+          is deterministic)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy imported
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png' with dpi=300
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses contourf, contour, clabel effectively; could leverage more advanced
+          features like custom contour levels styling or hatching
+  verdict: APPROVED

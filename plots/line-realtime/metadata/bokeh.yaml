@@ -25,3 +25,177 @@ review:
   - Data stays mostly in the 25-60% range; showing occasional values near 0% or 90%+
     would demonstrate the full scale
   - Could utilize Bokeh HoverTool for interactive HTML output to show values on hover
+  image_description: 'The plot displays a real-time CPU usage monitor as a line chart.
+    The X-axis shows time (from 14:09:32 to 14:09:37 on Dec 31, 2025) with "Time"
+    label. The Y-axis shows "CPU Usage (%)" ranging from 0-100. The line is rendered
+    in Python blue (#306998) with a gradient fade effect - older data on the left
+    appears more transparent with smaller markers, while recent data on the right
+    is fully opaque with larger markers. Two CPU usage spikes are visible (~55% and
+    ~58%). The latest data point is highlighted with a yellow marker and labeled "Current:
+    34.2%". An arrow pointing left with "Older data scrolls off" text indicates the
+    scrolling direction. The title "CPU Usage Monitor · line-realtime · bokeh · pyplots.ai"
+    appears in blue at the top. Background is light gray with subtle dashed grid lines.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 40pt, axis labels at 28pt, tick labels at 22pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Line and markers well-sized, gradient effect works well, slight deduction
+          as some middle markers could be slightly larger
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color scheme, yellow highlight for current value provides
+          good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas, slight top-heavy whitespace above the 60-100%
+          range that is unused
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "CPU Usage (%)" and "Time"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: No legend present (though not strictly needed for single-series),
+          grid is appropriately subtle
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct line chart for real-time data
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Timestamps on X, CPU usage values on Y
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Sliding window effect, visual indication of scrolling direction,
+          current value label
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows 0-100%, X-axis shows full time window
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Current value label is accurate
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "CPU Usage Monitor · line-realtime · bokeh · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows spikes, baseline variation, trending; could show more dramatic
+          variation
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: CPU usage monitoring is a perfect real-world scenario for real-time
+          charts
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values between 25-58% are realistic; could benefit from showing values
+          closer to limits
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Using current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 0
+        passed: false
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ColumnDataSource, Arrow, Label, VeeHead annotations; could leverage
+          more Bokeh-specific features like HoverTool or streaming capabilities
+  verdict: APPROVED

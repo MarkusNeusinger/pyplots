@@ -21,3 +21,178 @@ review:
   weaknesses:
   - Legend placement in top-left could be moved to a less intrusive position
   - Font sizes deviate from library style guide recommendations
+  image_description: 'The plot displays a grouped bar chart showing quarterly revenue
+    data for three product lines. Four quarters (Q1-Q4) are shown on the x-axis with
+    three bars per quarter representing Software (blue #306998), Hardware (yellow
+    #FFD43B), and Services (coral/pink #FF6B6B). The y-axis shows Revenue in millions
+    of dollars ranging from $0.0M to $6.0M. Each bar has a value label on top (e.g.,
+    $4.2M, $5.1M, $6.3M). The legend is positioned in the top-left corner. The title
+    "bar-grouped · pygal · pyplots.ai" appears at the top. The background is white
+    with subtle horizontal grid lines, and the overall layout is clean and well-proportioned.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, axis labels, and value labels are all clearly readable. Font
+          sizes are well-scaled for the 4800x2700 canvas.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; all labels are cleanly separated.
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are well-sized with good spacing between groups and within groups.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue, yellow, and coral provide excellent contrast and are colorblind-friendly
+          (no red-green only distinction).
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good canvas utilization; plot fills majority of space. Legend placement
+          in top-left is functional but slightly crowds the first data point area.
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Both axes have descriptive labels with units: "Revenue ($M)" and
+          "Quarter".'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle and appropriate. However, legend position overlaps
+          with the plot area margin and could be better placed.
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct grouped bar chart implementation.
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on x-axis, groups as separate series, values as bar heights.
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: distinct colors, clear legend, consistent
+          bar widths, value labels on bars.'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full range from 0 to above maximum value.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies all three product lines.
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "{spec-id} · {library} · pyplots.ai" format.
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variation across quarters and between product lines. Software
+          shows growth trend, all series show different patterns.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Quarterly revenue by product line is a real, comprehensible business
+          scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Revenue values in $2.5M-$6.3M range are realistic for product line
+          quarterly revenue.
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → style → chart → save.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: true
+        comment: Data is deterministic (hardcoded values), but no random seed needed
+          since no random data is used. Minor deduction for not using numpy/random
+          at all.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only pygal and Style are imported, both are used.
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current pygal API.
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html.
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses pygal's Style customization, print_values with custom formatter,
+          SVG/PNG dual output. Could leverage more advanced features like tooltips
+          configuration or animation settings.
+  verdict: APPROVED

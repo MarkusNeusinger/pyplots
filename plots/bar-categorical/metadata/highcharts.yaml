@@ -23,3 +23,172 @@ review:
   - X-axis title is partially cut off at the bottom of the image despite marginBottom/spacingBottom
     settings
   - Image height is 2561px instead of the specified 2700px (browser viewport issue)
+  image_description: 'The plot displays a vertical column/bar chart with a white background.
+    The title "bar-categorical · highcharts · pyplots.ai" appears at the top in bold
+    black text, with a subtitle "Product Category Purchase Frequency" below it. Six
+    blue (#306998) bars represent different product categories: Electronics (130),
+    Clothing (93), Books (86), Home & Garden (78), Sports (58), and Toys (55). Each
+    bar has a data label showing its count value. The x-axis is labeled "Product Category"
+    and shows all category names clearly. The y-axis is labeled "Count" and ranges
+    from 0 to 140 with gridlines. The bars are sorted in descending order by count.
+    The bars have slightly rounded corners (borderRadius: 4).'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title at 48px, axis titles at 36px, labels at 32px - all highly readable.
+          Slight deduction as tick labels could be slightly larger.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text anywhere; categories well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are appropriately sized and clearly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color (#306998 blue) is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good overall but x-axis title "Product Category" is cut off at the
+          bottom of the image
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Product Category" and "Count" are descriptive'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle, legend correctly disabled for single series
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct column/bar chart for categorical counts
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on x-axis, counts on y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Auto-counts raw categorical data, sorts by descending count
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full range (0-140) covering all data
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend appropriately disabled for single series
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "bar-categorical · highcharts · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows varying frequencies across 6 categories demonstrating the counting
+          functionality well. Could have more categories for richer demonstration.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Product category purchases is a realistic e-commerce scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: 500 samples with counts ranging 55-130 is reasonable, though probabilities
+          could create more dramatic variation
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → chart config → export'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current highcharts-core API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Outputs plot.png correctly, but image dimensions are 4800x2561 instead
+          of specified 4800x2700
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ColumnSeries, dataLabels, borderRadius styling. Could leverage
+          more Highcharts features like animations or tooltips in HTML output.
+  verdict: APPROVED

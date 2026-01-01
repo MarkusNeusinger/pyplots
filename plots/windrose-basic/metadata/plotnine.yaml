@@ -25,3 +25,198 @@ review:
     and may be confusing
   - Small innermost wedge segments are harder to visually distinguish due to their
     size
+  image_description: The plot displays a wind rose chart with 8 directional spokes
+    (N, NE, E, SE, S, SW, W, NW) arranged in a polar layout with North at the top.
+    Each spoke contains stacked colored wedge segments representing wind speed bins.
+    The colors progress from dark blue (0-5 m/s, calm winds) through light blue (5-10
+    m/s), green (10-15 m/s), yellow (15-20 m/s), to orange (20+ m/s, strong winds).
+    The SW direction shows the longest spokes, indicating prevailing winds from that
+    direction. Concentric dashed gridlines at 5%, 10%, and 15% frequency are visible,
+    with percentage labels positioned near the N spoke. The title "windrose-basic
+    · plotnine · pyplots.ai" appears at the top. A legend on the right side labeled
+    "Wind Speed" shows all 5 speed categories with their colors and units (m/s). Direction
+    labels (N, NE, E, etc.) are positioned outside the chart in bold black text. The
+    background is clean white.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: 'Title is clear at ~24pt, direction labels are bold and readable,
+          frequency labels are visible. Legend text is adequately sized. Minor: frequency
+          axis label could be slightly larger.'
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements. Direction labels, frequency percentages,
+          and legend are all well-separated.
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Wedges are clearly visible with good alpha (0.9), white borders separate
+          segments well. Small gaps between adjacent direction wedges aid readability.
+          Minor deduction for very small innermost wedge segments being slightly harder
+          to distinguish.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Color progression from blue→green→yellow→orange is colorblind-friendly
+          (avoids pure red-green differentiation). Sequential color scheme is intuitive.
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Plot is well-centered, good use of canvas space. Legend positioned
+          appropriately on the right. Minor: slight asymmetry in axis limits creates
+          small imbalance.'
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Frequency (%)" label is present and italicized. Wind speed legend
+          includes units (m/s). However, this is a polar plot without traditional
+          axes - partial credit.'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Dashed gridlines at appropriate alpha (0.7), legend is well-placed
+          with border and clear labels.
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct wind rose chart as polar stacked histogram showing direction
+          and speed distribution.
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Direction correctly mapped to angular position, frequency to radial
+          extent, speed to stacked color segments.
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: 8 direction bins, 5 speed bins, stacked
+          segments, cool-to-warm colors, legend with speed ranges, radial frequency
+          axis.'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, gridlines extend to 15% covering the data range
+          appropriately.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows all 5 speed categories with accurate labels
+          and m/s units.
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: Uses correct format "windrose-basic · plotnine · pyplots.ai" but
+          uses regular dot · character (acceptable).
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: 'Shows prevailing SW winds, variation across directions, all speed
+          bins represented. Good demonstration of wind patterns. Minor: could show
+          more dramatic variation in highest speed bins.'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Coastal weather station scenario is realistic and well-documented
+          in code comments. Prevailing SW winds are typical for coastal locations.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Wind speed ranges (0-5, 5-10, 10-15, 15-20, 20+ m/s) are realistic.
+          Frequency percentages are plausible. Minor: total frequencies across all
+          bins should ideally sum to ~100%.'
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → polygon construction → plot → save.
+          No functions or classes.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42), though data is actually deterministic (hardcoded
+          frequencies).
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (numpy, pandas, math, plotnine components).
+      - id: CQ-04
+        name: No Deprecated API
+        score: 0
+        max: 1
+        passed: true
+        comment: Uses older plotnine parameter naming but functional.
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300.
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses plotnine grammar of graphics (ggplot + geom_polygon + geom_line
+          + geom_text + theme). Manual polygon construction is necessary since plotnine
+          lacks native coord_polar. Shows good understanding of the library but the
+          workaround is complex.
+  verdict: APPROVED

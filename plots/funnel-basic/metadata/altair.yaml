@@ -22,3 +22,176 @@ review:
   - Could benefit from tooltips for enhanced interactivity in the HTML version
   - Middle blue stages (Interest, Consideration, Intent) have subtle color differences
     that could be more distinct
+  image_description: 'The plot displays a basic funnel chart with 5 stages arranged
+    vertically from top to bottom: Awareness (dark blue, 1000), Interest (medium blue,
+    600), Consideration (lighter blue, 400), Intent (light blue, 200), and Purchase
+    (yellow, 100). Each stage is represented as a horizontally centered bar with rounded
+    corners. The bars progressively narrow from top to bottom, creating the classic
+    funnel shape. Stage labels appear on the left y-axis in bold text, while value
+    labels with percentages (e.g., "1000 (100.0%)", "600 (60.0%)") are positioned
+    to the right of each bar. The title "funnel-basic · altair · pyplots.ai" is centered
+    at the top. The color scheme transitions from Python blue (#306998) to yellow
+    (#FFD43B), providing good visual differentiation between stages.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, stage labels at 20pt bold, value labels at 18pt bold
+          - all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bar heights of 70px are well-sized, good spacing between stages
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Blue-to-yellow gradient is colorblind-friendly, but subtle blue variations
+          between middle stages may be hard to distinguish
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas space, bars well-centered, though some empty space
+          on the right side
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: true
+        comment: No x-axis (hidden intentionally, appropriate), but y-axis has no
+          title (appropriate for this chart type) - N/A for funnel charts
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Grid disabled (appropriate), no legend needed as stages are labeled
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct funnel chart type using centered horizontal bars
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Stages correctly mapped to y-axis, values to bar width
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: distinct colors, value/percentage labels,
+          proportional widths'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, no clipping
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed, stages clearly labeled
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "funnel-basic · altair · pyplots.ai"'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows clear progressive decrease (1000→600→400→200→100), demonstrates
+          drop-offs between stages
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Sales funnel scenario with realistic stage names matching spec example
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values are sensible for a sales funnel (1000 leads → 100 purchases
+          = 10% conversion)
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 0
+        max: 3
+        passed: false
+        comment: No random seed needed (deterministic data), but technically no seed
+          set - data is hardcoded so this is fine (3/3)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only altair and pandas imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: All Altair APIs are current
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Altair's declarative grammar well with mark_bar, encode, x/x2
+          for bar range. Could have used tooltips or interactivity for bonus points.
+  verdict: APPROVED

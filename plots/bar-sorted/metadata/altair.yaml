@@ -22,3 +22,171 @@ review:
   weaknesses:
   - Grid styling (dashed lines) is slightly more prominent than ideal; solid lines
     with lower opacity might be cleaner
+  image_description: The plot shows a horizontal bar chart with 10 product categories
+    sorted by sales in descending order. The bars are colored in Python Blue (#306998).
+    The y-axis displays product names (Laptop, Smartphone, Tablet, Headphones, Smartwatch,
+    Camera, Keyboard, Monitor, Speaker, Mouse from top to bottom). The x-axis shows
+    "Sales (Units)" ranging from 0 to about 4,800. The title "bar-sorted · altair
+    · pyplots.ai" appears at the top center. A subtle dashed grid (light blue/gray)
+    is visible behind the bars. The bars have rounded right edges. The layout is clean
+    with good use of space.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is large and clear (~28pt), axis labels are well-sized (~22pt),
+          tick labels readable (~18pt)
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: Horizontal orientation prevents label overlap, all text fully readable
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are appropriately sized, good spacing between categories
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme (Python Blue), no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Good proportions, plot fills canvas well, minor: slight asymmetry
+          in margins'
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Sales (Units)" includes units, "Product" is descriptive'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle with good opacity (0.3), but no legend needed for
+          single-series; however grid dashes could be less prominent
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct sorted bar chart
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on Y, values on X correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Sorted descending, horizontal orientation for readability (as spec
+          recommends)
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, axis starts at 0
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single series
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses exact format: "bar-sorted · altair · pyplots.ai"'
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: 'Shows clear ranking with good value distribution, minor: could show
+          more variation in middle values'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Product sales is a realistic business scenario, neutral topic
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Sales values (720-4850 units) are plausible for product sales
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (hardcoded values), no random elements
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only altair and pandas imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Altair API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: Declarative encoding with sort="-x", tooltip encoding, cornerRadiusEnd
+          styling, configure_axis/configure_view, HTML export for interactivity
+  verdict: APPROVED

@@ -15,3 +15,179 @@ review:
   strengths: []
   weaknesses: []
   improvements: []
+  image_description: 'The plot displays a dendrogram (hierarchical clustering tree)
+    with a white background. The title "dendrogram-basic · highcharts · pyplots.ai"
+    appears at the top center. The Y-axis is labeled "Distance (Ward)" ranging from
+    0 to approximately 10.75, and the X-axis is labeled "Sample". The dendrogram shows
+    15 leaf nodes at the bottom representing iris flower samples: Setosa-4, Setosa-3,
+    Setosa-5, Setosa-1, Setosa-2, Versicolor-1, Versicolor-4, Versicolor-5, Versicolor-2,
+    Versicolor-3, Virginica-1, Virginica-3, Virginica-2, Virginica-4, and Virginica-5.
+    The tree structure is drawn in Python Blue (#306998) with clear U-shaped connections
+    showing the hierarchical merging pattern. The Setosa samples cluster together
+    on the left, while Versicolor and Virginica samples form a separate major cluster
+    on the right, with the two main clusters merging at the highest distance (~10).
+    The branch heights correctly represent the Ward linkage distances. Labels are
+    rotated at 45 degrees for readability.'
+  criteria_checklist:
+    visual_quality:
+      score: 32
+      max: 35
+      items:
+      - id: VQ-01
+        name: Meaningful axis labels
+        score: 7
+        max: 7
+        passed: true
+        comment: '"Distance (Ward)" and "Sample" are descriptive'
+      - id: VQ-02
+        name: No overlapping text
+        score: 5
+        max: 6
+        passed: true
+        comment: Labels readable but slightly crowded at bottom
+      - id: VQ-03
+        name: Color choice
+        score: 5
+        max: 5
+        passed: true
+        comment: Python Blue (#306998) is colorblind-safe
+      - id: VQ-04
+        name: Clear data elements
+        score: 5
+        max: 5
+        passed: true
+        comment: Lines are thick (4px) and clearly visible
+      - id: VQ-05
+        name: Layout balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good overall but large bottom margin
+      - id: VQ-06
+        name: Grid subtlety
+        score: 3
+        max: 3
+        passed: true
+        comment: Subtle grid lines with low alpha
+      - id: VQ-07
+        name: Legend placement
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly disabled
+      - id: VQ-08
+        name: Image size
+        score: 1
+        max: 2
+        passed: true
+        comment: 4785x2646, close to but not exactly 4800x2700
+    spec_compliance:
+      score: 33
+      max: 35
+      items:
+      - id: SC-01
+        name: Correct plot type
+        score: 10
+        max: 10
+        passed: true
+        comment: Dendrogram correctly rendered with tree structure
+      - id: SC-02
+        name: Data mapped correctly
+        score: 7
+        max: 7
+        passed: true
+        comment: Linkage matrix properly converted to visual coordinates
+      - id: SC-03
+        name: Required features present
+        score: 7
+        max: 7
+        passed: true
+        comment: Shows hierarchical clustering, merge distances, labels
+      - id: SC-04
+        name: Data range appropriate
+        score: 4
+        max: 4
+        passed: true
+        comment: Y-axis shows full distance range with padding
+      - id: SC-05
+        name: Legend accuracy
+        score: 2
+        max: 4
+        passed: true
+        comment: No legend needed for this plot type, but N/A
+      - id: SC-06
+        name: Title format correct
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses correct format
+    data_quality:
+      score: 15
+      max: 15
+      items:
+      - id: DQ-01
+        name: Feature coverage
+        score: 6
+        max: 6
+        passed: true
+        comment: Shows multiple cluster levels, varying merge distances
+      - id: DQ-02
+        name: Realistic context
+        score: 5
+        max: 5
+        passed: true
+        comment: Iris flower species is a classic clustering example
+      - id: DQ-03
+        name: Appropriate scale
+        score: 4
+        max: 4
+        passed: true
+        comment: 15 samples, 3 species groups, sensible measurements
+    code_quality:
+      score: 13
+      max: 15
+      items:
+      - id: CQ-01
+        name: KISS structure
+        score: 4
+        max: 4
+        passed: true
+        comment: 'Linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducible
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Library idioms
+        score: 3
+        max: 3
+        passed: true
+        comment: Proper use of highcharts-core API
+      - id: CQ-04
+        name: Clean imports
+        score: 1
+        max: 2
+        passed: true
+        comment: LineSeries imported from area module (unusual but works)
+      - id: CQ-05
+        name: Helpful comments
+        score: 1
+        max: 1
+        passed: true
+        comment: Data generation sections documented
+      - id: CQ-06
+        name: No deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current API usage
+      - id: CQ-07
+        name: Output correct
+        score: 0
+        max: 1
+        passed: true
+        comment: Saves plot.png AND plot.html (html is fine, but screenshot method
+          differs from standard)
+  verdict: APPROVED

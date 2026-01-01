@@ -26,3 +26,177 @@ review:
   - All distributions are normal - adding one skewed or bimodal distribution would
     better demonstrate violin plot capabilities
   - Axis labels lack context or units (e.g., Test Score instead of Value)
+  image_description: 'The plot displays four violin plots arranged horizontally, each
+    representing a different category (Group A, Group B, Group C, Group D). The violins
+    show kernel density estimations with mirrored sides, and each contains three horizontal
+    lines indicating the 25th, 50th (median), and 75th percentiles. The color scheme
+    alternates between blue (#306998, #4B8BBE) for Groups A and C, and yellow (#FFD43B,
+    #FFE873) for Groups B and D. The title "violin-basic · plotnine · pyplots.ai"
+    appears at the top in a large font. The x-axis is labeled "Category" and the y-axis
+    "Value". The distributions vary visibly: Group A is centered around 50, Group
+    B around 65 with wider spread, Group C is narrower around 45, and Group D around
+    70 with moderate spread. The minimal theme provides a clean white background.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is large and clear, axis labels and tick labels are all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all category labels are well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Violins are well-sized and clearly visible, quantile lines are visible
+          but could be slightly more prominent
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Blue/yellow palette has good contrast and is distinguishable, though
+          could use a more standard colorblind-safe palette
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions with appropriate whitespace, 16:9 aspect ratio used
+          effectively
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Labels are descriptive ("Category", "Value") but lack units or context
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: No visible grid (minimal theme), legend hidden which is fine since
+          colors don't add information
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct violin plot with kernel density estimation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X-axis, values on Y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Shows quartile markers (25%, 50%, 75%), mirrored density, median
+          line present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend appropriately hidden since fill colors match x-axis categories
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "violin-basic · plotnine · pyplots.ai"'
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows different distributions (different means, spreads), but all
+          are normal distributions - could show some skewed or bimodal data
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Generic groups are plausible but not tied to a real scenario like
+          the spec suggests (salary, test scores, etc.)
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values in reasonable range (25-125), 200 points per category is appropriate
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions or classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) is set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ggplot2 grammar with geom_violin and draw_quantiles parameter,
+          theme_minimal, proper plotnine idioms. Could leverage more advanced features
+          like faceting or custom stats.
+  verdict: APPROVED

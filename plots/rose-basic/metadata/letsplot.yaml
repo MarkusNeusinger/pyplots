@@ -26,3 +26,176 @@ review:
     cleaner appearance
   - The y-axis title appears on the left side which is slightly awkward for polar
     coordinates
+  image_description: The plot displays a rose chart (polar bar chart) showing monthly
+    rainfall distribution. The chart is centered on the canvas with months arranged
+    clockwise starting from January at the top (12 o'clock position). Each wedge represents
+    a month with the radius proportional to rainfall amount. Colors transition smoothly
+    from Python Blue (#306998) for winter months through greens and yellows to Python
+    Yellow (#FFD43B) for December. July has the longest bar (168mm), while February
+    has the shortest (65mm). The title reads "Monthly Rainfall Distribution · rose-basic
+    · letsplot · pyplots.ai" in bold at the top. Radial gridlines are visible at 20mm
+    intervals (0, 20, 40, 60, 80, 100, 120, 140, 160). The y-axis label "Rainfall
+    (mm)" appears on the left side. Month labels are positioned around the outer edge
+    of the chart.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis text at 16pt, all clearly readable. Slightly
+          crowded month labels but acceptable.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Bars are well-sized with 0.85 alpha, good visibility. Slightly tight
+          spacing between adjacent bars.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Gradient from blue to yellow is colorblind-safe, no red-green dependency
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Rose chart is well-centered, fills ~60% of canvas, balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis labeled "Rainfall (mm)" with units, x-axis appropriately blank
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Legend disabled (appropriate), but radial gridlines could be more
+          subtle
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct rose/coxcomb chart using polar coordinates
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Months on angular axis, rainfall on radial axis correctly
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: equal-angle wedges, radius proportional
+          to value, radial gridlines'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within the chart bounds
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly disabled (colors are per-month gradient, self-explanatory)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Follows "{description} · {spec-id} · {library} · pyplots.ai" format
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows seasonal rainfall pattern with summer peak (Jul=168mm) and
+          winter trough (Feb=65mm). Good variation across months.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly rainfall is a realistic application mentioned in spec
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Rainfall values 65-168mm are plausible for temperate climate, though
+          slightly high for some months
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: true
+        comment: 'Data is deterministic (hardcoded), but np.random.seed not needed.
+          Minor: no explicit seed statement.'
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses lets-plot's ggplot grammar with coord_polar, scale_fill_manual,
+          and theme customization. Could leverage more interactive features.
+  verdict: APPROVED

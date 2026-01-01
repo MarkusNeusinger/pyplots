@@ -22,3 +22,166 @@ review:
   - White text on yellow circles has lower contrast than on blue circles
   - Color palette repeats without logical grouping meaning
   - No legend or color key explaining what colors represent
+  image_description: 'The plot displays a packed bubble chart with 15 circles representing
+    department budgets. Circle sizes scale by budget amount (from $6M Security to
+    $45M Engineering). Colors alternate between Python blue tones (#306998, #4B8BBE,
+    #3776AB) and yellow tones (#FFD43B, #FFE873). Larger circles display labels with
+    department names and budget values in white text (e.g., ''Engineering $45M'',
+    ''R&D $42M''). The title ''Department Budgets · bubble-packed · bokeh · pyplots.ai''
+    appears at the top. Circles are tightly packed without overlap on a light gray
+    background (#f8f9fa), with white outlines separating them. Axes are hidden as
+    appropriate for this chart type.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title at 36pt is excellent, labels at 24pt/20pt are readable on larger
+          circles, but some yellow circles have low contrast with white text
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: All circles properly separated with 10px padding, no text overlap
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Circle sizes well-adapted, smallest (Security $6M) still clearly
+          visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Blue/yellow palette is colorblind-safe, but could benefit from more
+          distinct hues for easier differentiation
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent packing, circles centered in frame with good proportions
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: No grid needed, tooltips provide legend functionality
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct packed bubble chart implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Size correctly represents value (area-scaled)
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Circle packing simulation, labels, tooltips all present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 15 departments visible and readable
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Labels and tooltips correctly show department and budget
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format 'Department Budgets · bubble-packed · bokeh ·
+          pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variation in bubble sizes well, but no grouping demonstrated
+          (optional per spec)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Department budgets is a realistic, comprehensible scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Budget values ($6M-$45M) are plausible, though spread could be wider
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear script: imports → data → simulation → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current Bokeh API used
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves both plot.png and plot.html (extra file, but not wrong)
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of ColumnDataSource, LabelSet, hover tooltips; could leverage
+          more Bokeh features like CustomJS callbacks
+  verdict: APPROVED

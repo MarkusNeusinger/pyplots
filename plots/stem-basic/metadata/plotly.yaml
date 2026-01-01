@@ -26,3 +26,166 @@ review:
     quantities)
   - Grid alpha (0.1) is very subtle, could be slightly more visible (0.2-0.3) for
     better readability
+  image_description: The plot displays a basic stem plot showing a damped oscillation
+    signal with 30 data points. Blue stems (#306998) extend vertically from a dark
+    horizontal baseline at y=0 to circular markers at each data value. The markers
+    are well-sized with white borders for visibility. Title "stem-basic · plotly ·
+    pyplots.ai" is centered at the top. X-axis is labeled "Sample Index" (ranging
+    0-30), Y-axis is labeled "Amplitude" (ranging approximately -0.8 to 1.0). The
+    plot uses a clean white background (plotly_white template) with subtle gray gridlines.
+    The data shows the characteristic decay pattern of a damped cosine wave with small
+    random noise, demonstrating both positive and negative amplitude values.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: all text clearly readable at full size, appropriate font scaling
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: no overlapping text or elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: markers well-sized (16px), stems visible (width 2)
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: single blue color scheme, colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: good canvas utilization, minor extra whitespace
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: descriptive labels but missing units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: grid subtle, no legend needed
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: correct stem plot with vertical lines and markers
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: all spec features present (stems, markers, baseline at y=0)
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: axes show all data
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: no legend needed for single series
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: uses correct {spec-id} · {library} · pyplots.ai format
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: shows positive/negative values, decay pattern
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: damped oscillation is plausible signal processing scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: sensible normalized amplitude values
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: clean imports → data → plot → save
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) used
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: only used imports
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: saves as plot.png and plot.html
+    library_features:
+      score: 4
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 4
+        max: 5
+        passed: true
+        comment: interactive hover templates with amplitude formatting, HTML export
+  verdict: APPROVED

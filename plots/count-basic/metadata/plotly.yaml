@@ -22,3 +22,171 @@ review:
   - Could enhance Plotly interactivity with custom hover templates showing percentages
   - Y-axis label could include units (e.g., Count (n) or Frequency)
   - Bar colors could use a gradient or vary by value to better showcase Plotly capabilities
+  image_description: 'The plot displays a vertical bar chart showing survey response
+    counts. Five blue bars (#306998 with darker outlines) are arranged from highest
+    to lowest frequency: Agree (66), Strongly Agree (56), Neutral (36), Disagree (27),
+    and Strongly Disagree (15). Each bar has its count value displayed above it in
+    large text. The title "count-basic · plotly · pyplots.ai" is centered at the top.
+    The x-axis is labeled "Survey Response" and y-axis is labeled "Count". The background
+    uses the plotly_white template with subtle horizontal gridlines. The layout is
+    clean and well-proportioned.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, tick labels, and count annotations are all clearly
+          readable at appropriate sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; category labels are well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are appropriately sized with good spacing (bargap=0.3)
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme with good contrast; no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good use of canvas space, balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Labels are descriptive but lack units (e.g., "Count (n)" would be
+          better)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Subtle grid (alpha=0.1), no legend needed for single series
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct count plot using vertical bars
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X-axis, counts on Y-axis correctly
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Sorted by frequency descending, count labels on bars as spec suggests
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full range from 0 to above max count
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for single series, appropriately omitted
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "count-basic · plotly · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows varying frequencies across 5 categories; could show more extreme
+          variation
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Survey responses (Likert scale) is a realistic, commonly understood
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: 200 total responses is reasonable; distribution probabilities are
+          realistic
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) ensures reproducibility
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses go.Bar correctly but doesn't leverage Plotly's interactive features
+          like hover templates or animations
+  verdict: APPROVED

@@ -25,3 +25,179 @@ review:
   weaknesses:
   - Legend positioned in top-right corner with some wasted space; could be integrated
     more tightly with the plot area
+  image_description: 'The plot displays a scatter plot with linear regression showing
+    the relationship between Advertising Spend ($K) on the x-axis (ranging from 10-98)
+    and Sales Revenue ($K) on the y-axis (ranging from 10-280). Blue circular data
+    points (80 points with ~0.7 alpha) are scattered around a bright yellow regression
+    line. A light gray/blue semi-transparent 95% confidence interval band surrounds
+    the regression line. The title "scatter-regression-linear · highcharts · pyplots.ai"
+    is prominently displayed at the top in bold. Below it, a subtitle shows the regression
+    equation "y = 2.54x + 12.85 | R² = 0.988". A legend in the top-right corner identifies
+    the three series: 95% Confidence Interval, Regression Line, and Data Points. The
+    grid lines are subtle (light gray), and the overall layout is clean with good
+    use of the canvas space.'
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: 'All text is clearly readable: title at 56px, subtitle at 40px, axis
+          labels at 36px, tick labels at 28px, legend at 28px'
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, everything is well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Markers at radius 12 are well-sized for 80 data points, alpha at
+          0.7 is appropriate
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue (#306998) and yellow (#FFD43B) are colorblind-safe, good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills majority of canvas, balanced margins, legend well-positioned
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Advertising Spend ($K)" and "Sales
+          Revenue ($K)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle at alpha 0.1, but legend could be positioned better
+          (floating in top-right with some empty space)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct scatter plot with linear regression
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X (advertising spend) and Y (sales revenue) correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All required features present: scatter points, regression line,
+          confidence interval, R², regression equation'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data appropriately
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels correctly describe all three series
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "scatter-regression-linear · highcharts · pyplots.ai"'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows clear linear relationship with appropriate scatter/noise demonstrating
+          regression fit
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Advertising spend vs sales revenue is a real, comprehensible business
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Values are realistic: $10-100K ad spend generating $30-270K revenue'
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 1
+        max: 3
+        passed: false
+        comment: While there are no functions/classes, the code structure is more
+          complex due to Highcharts requirements (downloading JS, HTML generation,
+          Selenium)
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current API usage
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves both plot.png and plot.html (extra file is acceptable but noted)
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: 'Uses Highcharts-specific features: AreaRangeSeries for CI band,
+          proper series layering, subtitle for equation. Could have used more interactive
+          features like tooltips with data values.'
+  verdict: APPROVED

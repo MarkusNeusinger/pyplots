@@ -22,3 +22,171 @@ review:
   - Clean visual design with removed top/right spines
   weaknesses:
   - No legend to explicitly identify the histogram bars vs KDE curve
+  image_description: 'The plot displays a histogram with KDE overlay showing daily
+    stock returns (%). The histogram uses blue semi-transparent bars (#306998) with
+    white edges, showing the frequency distribution of returns centered around 0%.
+    A smooth yellow/gold KDE curve (#FFD43B) overlays the histogram, highlighting
+    the underlying probability density. The x-axis shows "Daily Return (%)" ranging
+    from approximately -8 to +8, and the y-axis shows "Density" ranging from 0.00
+    to 0.35. The title follows the correct format: "histogram-kde · seaborn · pyplots.ai".
+    The distribution is roughly bell-shaped with slight left skewness, visible tail
+    behavior on both ends, and the KDE smoothly traces the shape of the histogram
+    bars. Top and right spines are removed for a cleaner look, and a subtle dashed
+    grid is present.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt, axis labels 20pt, tick labels 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Histogram bars and KDE line clearly visible, appropriate alpha (0.5)
+          for bars
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue histogram and yellow KDE line provide excellent contrast, colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well, balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Daily Return (%)" includes units, "Density" is descriptive'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: false
+        comment: Grid is subtle (alpha=0.3), but no legend present (though not strictly
+          required here as colors are self-evident)
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct histogram with KDE overlay
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Continuous values correctly mapped to x-axis, density on y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Semi-transparent bars, density scaling, KDE overlay - all present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full range of data visible including tails
+      - id: SC-05
+        name: Legend Accuracy
+        score: 0
+        max: 2
+        passed: false
+        comment: No legend present to distinguish histogram vs KDE
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: histogram-kde · seaborn · pyplots.ai'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows distribution shape, skewness, tail behavior, and central tendency
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Stock returns is a perfect real-world scenario for this plot type
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Daily returns of -8% to +8% with most values in ±2% is realistic
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot, numpy, seaborn used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Modern seaborn API used
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses sns.histplot with stat="density" and sns.kdeplot for separate
+          control of histogram and KDE styling
+  verdict: APPROVED

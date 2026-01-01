@@ -26,3 +26,176 @@ review:
   - Legend font sizes could be slightly larger for better readability at full resolution
   - No visual indication of hierarchy depth through color shading/intensity as mentioned
     in spec notes
+  image_description: 'The treemap displays market capitalization data by sector and
+    company using a strip-based layout. Technology sector (Python blue #306998) dominates
+    the left side with Apple ($2800B), Microsoft ($2400B), Google ($1800B), and NVIDIA
+    ($1200B) stacked vertically. Consumer (sage green), Healthcare (teal), Finance
+    (yellow), and Energy (coral) sectors follow to the right with decreasing widths
+    proportional to their total values. Each rectangle shows the company name in bold
+    white text with the market cap value below. White borders (3px) separate rectangles
+    clearly. A "Sector" legend appears on the right with proper color coding. The
+    title "treemap-basic · altair · pyplots.ai" is centered at the top.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Text is clearly readable; title 28pt, labels 20pt bold, values 16pt.
+          Slightly below optimal for largest canvas.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; labels only shown on rectangles with sufficient
+          area.
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Rectangle sizes perfectly proportional to values; smart filtering
+          of labels for small areas.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Five distinct colors with good contrast; colorblind-safe palette
+          (no red-green confusion).
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent canvas utilization; treemap fills nearly the entire plot
+          area with balanced margins.
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Legend well-placed on right; no grid needed for treemaps. Legend
+          could be slightly larger.
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct treemap visualization with nested rectangles proportional
+          to values.
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Category → color/strip, subcategory → nested rectangles, value →
+          area.
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Has distinct colors per category, labels on larger rectangles, white
+          borders. Missing: color shading intensity for hierarchy depth.'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 15 data points visible; values correctly proportioned.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows all 5 sectors with matching colors.
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly formatted as "treemap-basic · altair · pyplots.ai".
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows hierarchical structure with 5 categories and 15 companies;
+          demonstrates size variation well. Could show more extreme size differences.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Market capitalization by sector/company is a perfect real-world treemap
+          use case; company values are realistic.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Market cap values in billions USD are accurate for major companies
+          (Apple ~$2.8T, etc.).
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean sequential flow: imports → data → layout calculation → chart
+          creation → save.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (no random values needed for this dataset).
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only altair and pandas imported, both used.
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Altair API.
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html.
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of mark_rect, layered charts, tooltips. However, Altair
+          doesn't have native treemap support, so manual layout calculation was required.
+          The implementation is creative but doesn't leverage Altair's declarative
+          strengths as much as possible.
+  verdict: APPROVED

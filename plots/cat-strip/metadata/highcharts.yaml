@@ -23,3 +23,179 @@ review:
   - Legend position in top-right corner encroaches on the data visualization area
   - Points lack alpha/transparency which would help visualize density in overlapping
     areas
+  image_description: 'The plot displays a categorical strip plot showing plant height
+    measurements (cm) across four treatment groups: Control, Fertilizer A, Fertilizer
+    B, and Fertilizer C. The title "cat-strip · highcharts · pyplots.ai" appears at
+    the top center. The x-axis shows "Treatment Group" with four category labels,
+    and the y-axis shows "Plant Height (cm)" ranging from approximately 7-42 cm. Each
+    category has its own color: Control (blue #306998), Fertilizer A (yellow #FFD43B),
+    Fertilizer B (purple #9467BD), and Fertilizer C (cyan #17BECF). Points are jittered
+    horizontally within each category to prevent overlap. A legend appears in the
+    top-right corner with a white background and border. The plot has subtle gray
+    gridlines and a clean white background.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title and axis labels are clearly readable; font sizes are appropriate
+          for the 4800x2700 canvas
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; jitter prevents point overlap effectively
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers are well-sized (radius 14) with good visibility; slight deduction
+          as some points in dense areas could benefit from transparency
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Colorblind-safe palette used (blue, yellow, purple, cyan - no red-green
+          conflicts)
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good use of canvas space; plot area is well-proportioned with balanced
+          margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Plant Height (cm)" and "Treatment
+          Group"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha 0.1), but legend placement in top-right overlaps
+          the data area for Fertilizer B/C categories
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct categorical strip/scatter plot with jitter
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X-axis, numeric values on Y-axis as specified
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Jitter applied, individual points visible, categories clearly separated
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data points visible within axis range (7-42 cm)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels match category names correctly
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "cat-strip · highcharts · pyplots.ai"'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Excellent variety: Control (low, moderate spread), Fertilizer A
+          (moderate, tight), Fertilizer B (high with outliers at 38, 40, and low at
+          12), Fertilizer C (bimodal distribution ~20 and ~30)'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Plant growth experiment with fertilizer treatments is a classic,
+          neutral scientific scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Plant heights 10-40 cm are realistic for seedling/small plant measurements
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 1
+        max: 3
+        passed: false
+        comment: Code has functions/loops but is relatively simple; however uses a
+          loop for series creation which is acceptable
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: '`np.random.seed(42)` is set'
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Highcharts API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: true
+        comment: Saves as plot.png but also saves plot.html (correct for interactive
+          library)
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Highcharts built-in jitter feature which is good; could leverage
+          more interactive features like tooltips with custom formatting
+  verdict: APPROVED

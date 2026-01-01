@@ -24,3 +24,177 @@ review:
   - Seaborn lineplot used in a loop rather than leveraging native grouping capabilities
   - Could benefit from more dramatic rank changes in the data to better showcase slope
     chart strength
+  image_description: The plot displays a slope chart comparing Q1 vs Q4 revenue for
+    8 tech companies. Lines connect data points between two vertical axes labeled
+    "Q1 Revenue ($M)" and "Q4 Revenue ($M)". Blue (#306998) lines indicate revenue
+    increases (TechCorp, DataFlow, NetWorks, CodeBase, LogicPro - 5 companies), while
+    yellow (#FFD43B) lines show decreases (CloudNine, ByteSize, SoftEdge - 3 companies).
+    Each endpoint is labeled with the company name and value in parentheses. The title
+    "slope-basic · seaborn · pyplots.ai" appears at the top. A legend in the lower
+    right distinguishes "Increase" and "Decrease" categories. The layout has appropriate
+    margins with labels positioned clearly outside the plot area.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is 24pt bold, axis labels 20pt, tick labels 16pt, entity labels
+          15pt bold - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 8
+        passed: true
+        comment: Minor overlap between "LogicPro (125)" and "125" y-axis tick label
+          on the left side; slight crowding around 160-178 range
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line width 3.5 and marker size 14 are well-suited for 8 entities,
+          alpha 0.85 provides good visibility
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow combination is colorblind-safe with excellent contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good use of canvas with adjusted margins (left=0.22, right=0.78)
+          accommodating labels
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Y-axis has "Revenue ($M)" with units, but x-axis labels are tick
+          labels showing period names rather than axis label
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid alpha 0.3 with dashed lines is subtle; legend placed well but
+          could be more integrated
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct slope chart/slopegraph connecting two time points
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Entities correctly shown on both axes, values mapped to y-position
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Labels at both endpoints ✓, color coding by direction ✓, vertical
+          axes labeled with time points
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows all data with appropriate padding (8%)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly indicates Increase/Decrease
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "slope-basic · seaborn · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows both increases (5) and decreases (3), good variation in magnitude;
+          could show more dramatic rank changes
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Tech company quarterly revenue is a plausible real-world scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Revenue values ($52M-$225M) are realistic for tech companies, though
+          range is somewhat narrow
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear structure: imports → data → plot → save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: false
+        comment: 'Data is deterministic but no random seed needed anyway; minor: sorting
+          changes display order'
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (matplotlib.pyplot, pandas, seaborn, Line2D)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png' with dpi=300
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses sns.lineplot and sns.set_style but slope charts aren't a seaborn
+          specialty; matplotlib does heavy lifting for annotations
+  verdict: APPROVED

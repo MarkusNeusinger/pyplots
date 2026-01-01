@@ -23,3 +23,176 @@ review:
   - Axis labels lack units (e.g., Measured Value (units) would be better)
   - Could demonstrate asymmetric error bars to show full feature coverage as mentioned
     in spec
+  image_description: The plot displays a basic error bar chart with 5 experimental
+    groups (Control, Treatment A, Treatment B, Treatment C, Treatment D) on the x-axis
+    and "Measured Value" on the y-axis (range ~40-68). Each group shows a central
+    blue point marker with vertical error bars extending above and below, featuring
+    horizontal caps at both ends. The colors are a consistent blue (#306998) for both
+    points and error bars. The title correctly displays "errorbar-basic · letsplot
+    · pyplots.ai" at the top. The background is clean white with subtle gray grid
+    lines, using a minimal theme. The data shows variation across groups with Treatment
+    B having the highest mean (~61) and largest error range, while Control has the
+    lowest mean (~45).
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick marks are all clearly readable at appropriate
+          sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; all labels well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Error bars and points are appropriately sized for the 5 data points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good use of canvas space, balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Labels are descriptive ("Experimental Group", "Measured Value") but
+          lack units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: false
+        comment: Grid is subtle and appropriate; no legend needed for single series,
+          but grid lines are visible (acceptable)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct error bar plot type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X (categories) and Y (values) correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Error bars with caps present, symmetric errors shown
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis range (40-68) shows all data with appropriate padding
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single series (appropriate)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "errorbar-basic · letsplot · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows varying error magnitudes and mean values, but all errors are
+          symmetric (spec mentions asymmetric as an option)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Experimental treatment data is a perfect real-world scenario for
+          error bars
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values in 40-68 range with errors of 4-7 are realistic for experimental
+          measurements
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: false
+        comment: Data is deterministic (hardcoded), but no random seed comment for
+          clarity
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses ggplot2-style grammar correctly with geom_errorbar and geom_point,
+          but doesn't leverage advanced lets-plot features like tooltips or interactive
+          elements
+  verdict: APPROVED

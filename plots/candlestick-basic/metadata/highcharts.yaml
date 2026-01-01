@@ -25,3 +25,14 @@ review:
   weaknesses:
   - Grid line alpha (0.15) could be slightly higher for better price level readability
     at this resolution
+  image_description: The plot displays a candlestick chart titled "Stock Price Movement
+    · candlestick-basic · highcharts · pyplots.ai". The chart shows 30 trading days
+    of OHLC data from October 1 to November 9, 2024. Bullish candles (close > open)
+    are rendered in Python Blue (#306998), while bearish candles (close < open) are
+    rendered in warm amber/orange (#E67E22). The Y-axis shows "Price (USD)" ranging
+    from $140 to $151 with $1 intervals. The X-axis displays dates in "Mon DD" format.
+    Wicks are clearly visible with darker tones (dark blue for bullish, reddish-brown
+    for bearish). The chart shows an initial decline from ~$150 to ~$142-143, followed
+    by choppy trading and a slight recovery at the end. Grid lines are dashed and
+    subtle. The layout is clean with good proportions.
+  verdict: APPROVED

@@ -25,3 +25,176 @@ review:
     use more distinct colors for better differentiation
   - Performance scores exceed 100 for some outliers which is slightly inconsistent
     if interpreting as percentage scores
+  image_description: 'The plot displays a box-and-whisker chart with 4 departments
+    (Engineering, Marketing, Sales, Support) on the x-axis and Performance Score on
+    the y-axis (ranging from ~20 to ~130). Each department has a distinct colored
+    box: Engineering in steel blue (#306998), Marketing in yellow (#FFD43B), Sales
+    in lighter blue (#4B8BBE), and Support in orange (#E8A838). The boxes show median
+    lines, quartile boxes, and whiskers extending to 1.5*IQR. Outliers are visible
+    as gray circular points - Engineering has one low outlier (~43), Marketing has
+    one high outlier (~104), and Sales has three outliers (one very high at ~127,
+    one at ~104, and one very low at ~21). The title "box-basic · matplotlib · pyplots.ai"
+    appears at the top. A subtle horizontal grid with dashed lines aids readability.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Boxes well-sized, outliers clearly visible with appropriate marker
+          size
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Colors are distinguishable but blue shades (Engineering/Sales) are
+          somewhat similar
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, proper use of tight_layout
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels but no units (Performance Score could have units)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid subtle at alpha=0.3, y-axis only which is appropriate; no legend
+          needed for this plot type
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct box-and-whisker plot
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X, values on Y correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Median line, quartile boxes, whiskers at 1.5*IQR, outliers shown,
+          different colors per category
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible including outliers
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed; category labels serve this purpose
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "box-basic · matplotlib · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows outliers, different distributions (narrow for Marketing, wide
+          for Sales), varying medians; could show more extreme differences
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Department performance scores is a realistic, comprehensible scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Scores in 20-130 range; some outliers above 100 are slightly unrealistic
+          for a 0-100 score context
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib and numpy imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses tick_labels instead of deprecated labels parameter
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses patch_artist for filled boxes and customizes flierprops/medianprops/whiskerprops,
+          but does not use more advanced matplotlib features like violin overlays
+          or swarm points
+  verdict: APPROVED

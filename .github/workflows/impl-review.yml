@@ -206,12 +206,39 @@ jobs:
                # Save structured feedback as JSON (one array per file)
                echo '["Strength 1", "Strength 2"]' > review_strengths.json
                echo '["Weakness 1"]' > review_weaknesses.json
+
+               # Save verdict
+               echo "APPROVED" > review_verdict.txt  # or "REJECTED"
+
+               # Save image description (multi-line text)
+               cat > review_image_description.txt << 'EOF'
+               The plot shows a scatter plot with blue markers...
+               [Your full image description here]
+               EOF
+
+               # Save criteria checklist as structured JSON
+               cat > review_checklist.json << 'EOF'
+               {
+                 "visual_quality": {
+                   "score": 36,
+                   "max": 40,
+                   "items": [
+                     {"id": "VQ-01", "name": "Text Legibility", "score": 10, "max": 10, "passed": true, "comment": "All text readable"},
+                     {"id": "VQ-02", "name": "No Overlap", "score": 8, "max": 8, "passed": true, "comment": "No overlapping elements"}
+                   ]
+                 },
+                 "spec_compliance": {"score": 23, "max": 25, "items": [...]},
+                 "data_quality": {"score": 18, "max": 20, "items": [...]},
+                 "code_quality": {"score": 10, "max": 10, "items": [...]},
+                 "library_features": {"score": 5, "max": 5, "items": [...]}
+               }
+               EOF
                ```
 
             8. **DO NOT add ai-approved or ai-rejected labels** - the workflow will add them after updating metadata.
 
             **IMPORTANT**: Your review MUST include the "Image Description" section. A review without an image description will be considered invalid.
-            **IMPORTANT**: The Strengths/Weaknesses sections are saved to the metadata for future regeneration. Be specific!
+            **IMPORTANT**: All review data (strengths, weaknesses, image_description, criteria_checklist) is saved to metadata for future regeneration. Be specific!
 
       - name: Extract quality score
         id: score
@@ -266,21 +293,8 @@ jobs:
           git fetch origin "$BRANCH"
           git checkout -B "$BRANCH" "origin/$BRANCH"
 
-          # Read review feedback from JSON files (created by Claude)
-          STRENGTHS="[]"
-          WEAKNESSES="[]"
-
-          if [ -f "review_strengths.json" ]; then
-            STRENGTHS=$(cat review_strengths.json)
-          fi
-          if [ -f "review_weaknesses.json" ]; then
-            WEAKNESSES=$(cat review_weaknesses.json)
-          fi
-
           # Update metadata file with quality score, timestamp, and review feedback
           if [ -f "$METADATA_FILE" ]; then
-            # Update all metadata using Python for proper YAML handling
-            # Pass JSON via files to avoid shell escaping issues with quotes
             TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
             # Write Python script to temp file to avoid YAML/shell escaping issues
@@ -294,8 +308,12 @@ jobs:
           score = int(sys.argv[2])
           timestamp = sys.argv[3]
 
+          # Read existing review data files
           strengths = []
           weaknesses = []
+          image_description = None
+          criteria_checklist = None
+          verdict = None
 
           if Path('review_strengths.json').exists():
               try:
@@ -311,6 +329,28 @@ jobs:
               except:
                   pass
 
+          if Path('review_image_description.txt').exists():
+              try:
+                  with open('review_image_description.txt') as f:
+                      image_description = f.read().strip()
+              except:
+                  pass
+
+          if Path('review_checklist.json').exists():
+              try:
+                  with open('review_checklist.json') as f:
+                      criteria_checklist = json.load(f)
+              except:
+                  pass
+
+          if Path('review_verdict.txt').exists():
+              try:
+                  with open('review_verdict.txt') as f:
+                      verdict = f.read().strip()
+              except:
+                  pass
+
+          # Load existing metadata
           with open(metadata_file, 'r') as f:
               data = yaml.safe_load(f)
 
@@ -320,12 +360,24 @@ jobs:
           if 'review' not in data:
               data['review'] = {}
 
+          # Update review section with all fields
           data['review']['strengths'] = strengths
           data['review']['weaknesses'] = weaknesses
+
+          # Add extended review data (issue #2845)
+          if image_description:
+              data['review']['image_description'] = image_description
+          if criteria_checklist:
+              data['review']['criteria_checklist'] = criteria_checklist
+          if verdict:
+              data['review']['verdict'] = verdict
 
           def str_representer(dumper, data):
               if isinstance(data, str) and data.endswith('Z') and 'T' in data:
                   return dumper.represent_scalar('tag:yaml.org,2002:str', data, style="'")
+              # Use literal block style for multi-line strings (image_description)
+              if isinstance(data, str) and '\n' in data:
+                  return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
               return dumper.represent_scalar('tag:yaml.org,2002:str', data)
 
           yaml.add_representer(str, str_representer)
@@ -335,7 +387,7 @@ jobs:
           EOF
 
             python3 /tmp/update_metadata.py "$METADATA_FILE" "$SCORE" "$TIMESTAMP"
-            echo "::notice::Updated metadata with quality score ${SCORE} and review feedback"
+            echo "::notice::Updated metadata with quality score ${SCORE} and extended review data"
           fi
 
           # Update implementation header with quality score

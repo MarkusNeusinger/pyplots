@@ -258,8 +258,7 @@ gs://pyplots-images/
 ├── plots/{spec-id}/{library}/           # Production (after merge)
 │   ├── plot.png                         # Full-size optimized image
 │   ├── plot_thumb.png                   # Thumbnail (600px width)
-│   ├── plot.html                        # Optional (interactive libraries)
-│   └── history/                         # Version history
+│   └── plot.html                        # Optional (interactive libraries)
 │
 └── staging/{spec-id}/{library}/         # Temp (during review)
     └── plot.png, plot.html

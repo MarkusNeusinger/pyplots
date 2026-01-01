@@ -410,9 +410,7 @@ GROUP BY s.id;
 ```
 1. New version of implementation
    → UPDATE impls SET preview_url=..., quality_score=..., updated_at=NOW()
-
-2. Old GCS images moved to history/
-   → Database references latest URLs
+   → GCS images overwritten with latest version
 ```
 
 ### Deletion Flow

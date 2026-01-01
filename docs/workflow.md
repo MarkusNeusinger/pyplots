@@ -14,7 +14,7 @@ pyplots is a **community-driven, AI-powered platform** that automatically discov
 
 ### Key Principles
 
-1. **Images in GCS, Code in GitHub**: Plot PNGs stored in Google Cloud Storage with version history, source code version-controlled
+1. **Images in GCS, Code in GitHub**: Plot PNGs stored in Google Cloud Storage, source code version-controlled
 2. **Multi-Version Support**: All plots tested across Python 3.11+ (3.11, 3.12, 3.13, 3.13 primary)
 3. **Hybrid Automation**: AI handles routine tasks, humans approve critical decisions
 4. **Standard Datasets**: Use well-known datasets (pandas iris, seaborn tips, kaggle) for realistic previews
@@ -369,11 +369,10 @@ Via **GitHub Issue Labels**:
    - Avoid redundant evaluations
 
 2. **Efficient Storage**:
-   - GCS versioning: all versions kept permanently for history tracking
-   - Path structure: `plots/{spec-id}/{library}/{variant}/v{ISO-timestamp}.png`
-   - Thumbnails: `v{timestamp}_thumb.png` (400px width) for gallery views
+   - Path structure: `plots/{spec-id}/{library}/plot.png`
+   - Thumbnails: `plot_thumb.png` (600px width) for gallery views
    - Images never in git repository
-   - Before/after comparison in Issues for updates
+   - Only latest version stored (no version history)
 
 3. **Smart Scheduling**:
    - Event-based maintenance (not daily scheduled)

@@ -661,15 +661,14 @@ jobs:
           ISSUE: ${{ steps.issue.outputs.number }}
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
         run: |
-          # Use versioned production URLs (permanent, in history/ folder)
-          # These will be available after impl-merge promotes from staging
-          PNG_URL="https://storage.googleapis.com/pyplots-images/plots/${SPEC_ID}/${LIBRARY}/history/v0.png"
+          # Use staging URLs (available immediately after upload)
+          PNG_URL="https://storage.googleapis.com/pyplots-images/staging/${SPEC_ID}/${LIBRARY}/plot.png"
           HTML_URL=""
 
           # Set HTML_URL for interactive libraries
           case "$LIBRARY" in
             plotly|bokeh|altair|highcharts|pygal|letsplot)
-              HTML_URL="https://storage.googleapis.com/pyplots-images/plots/${SPEC_ID}/${LIBRARY}/history/v0.html"
+              HTML_URL="https://storage.googleapis.com/pyplots-images/staging/${SPEC_ID}/${LIBRARY}/plot.html"
               ;;
           esac
 

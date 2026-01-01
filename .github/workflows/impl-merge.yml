@@ -165,18 +165,9 @@ jobs:
 
           STAGING="gs://pyplots-images/staging/${SPEC_ID}/${LIBRARY}"
           PRODUCTION="gs://pyplots-images/plots/${SPEC_ID}/${LIBRARY}"
-          HISTORY="${PRODUCTION}/history"
 
-          # Get created date from metadata for version naming (YYYY-MM-DD)
-          CREATED_DATE=$(yq '.created' "plots/${SPEC_ID}/metadata/${LIBRARY}.yaml" 2>/dev/null | cut -d'T' -f1 || echo "$(date +%Y-%m-%d)")
-          echo "Created date: ${CREATED_DATE}"
-
-          # 1. Copy from staging to production (current)
+          # Copy from staging to production
           gsutil -m cp -r "${STAGING}/*" "${PRODUCTION}/" 2>/dev/null || echo "No staging files to promote"
-
-          # 2. Copy versioned to history/ folder (using date instead of version number)
-          gsutil cp "${STAGING}/plot.png" "${HISTORY}/${CREATED_DATE}.png" 2>/dev/null || true
-          gsutil cp "${STAGING}/plot.html" "${HISTORY}/${CREATED_DATE}.html" 2>/dev/null || true
 
           # Make production files public
           gsutil -m acl ch -r -u AllUsers:R "${PRODUCTION}/" 2>/dev/null || true
@@ -185,7 +176,7 @@ jobs:
           gsutil -m rm -r "${STAGING}/" 2>/dev/null || true
 
           rm -f /tmp/gcs-key.json
-          echo "::notice::Promoted images to production + history/${CREATED_DATE}"
+          echo "::notice::Promoted images to production"
 
       - name: Update issue labels
         if: steps.check.outputs.should_run == 'true' && steps.issue.outputs.number != ''

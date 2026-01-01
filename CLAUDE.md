@@ -241,7 +241,7 @@ Example: `plots/scatter-basic/` contains everything for the basic scatter plot.
 - **`plots/{specification-id}/`**: Plot-centric directories (spec, metadata, implementations together)
   - `specification.md`: Library-agnostic specification (Description, Applications, Data, Notes)
   - `specification.yaml`: Spec-level metadata (tags, created, issue, suggested, updates)
-  - `metadata/{library}.yaml`: Per-library metadata (preview_url, quality_score, history)
+  - `metadata/{library}.yaml`: Per-library metadata (preview_url, quality_score, review feedback)
   - `implementations/{library}.py`: Library-specific implementations
 - **`prompts/`**: AI agent prompts for code generation, quality evaluation, and tagging
   - `templates/`: Spec and metadata templates
@@ -447,7 +447,7 @@ uv run python -c "from core.database import is_db_configured; print(is_db_config
 - Everything in `plots/{specification-id}/`:
   - `specification.md` - specification description
   - `specification.yaml` - spec-level metadata (tags, created, issue, etc.)
-  - `metadata/{library}.yaml` - per-library metadata (quality score, generation history)
+  - `metadata/{library}.yaml` - per-library metadata (quality score, review feedback)
   - `implementations/*.py` - library implementations
 
 **What's NOT Stored in DB**:

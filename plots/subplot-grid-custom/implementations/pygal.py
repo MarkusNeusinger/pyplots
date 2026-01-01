@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 subplot-grid-custom: Custom Subplot Grid Layout
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-01
@@ -69,7 +69,22 @@ detail_style = Style(
     stroke_width=3,
 )
 
-# Main chart - Line chart for price trend (spans 2 columns)
+sidebar_style = Style(
+    background="white",
+    plot_background="white",
+    foreground="#333333",
+    foreground_strong="#333333",
+    foreground_subtle="#666666",
+    colors=("#306998", "#FFD43B", "#9467BD", "#17BECF"),
+    title_font_size=40,
+    label_font_size=24,
+    major_label_font_size=20,
+    legend_font_size=20,
+    value_font_size=16,
+    stroke_width=3,
+)
+
+# Main chart - Line chart for price trend (spans 2 columns, row 1 only now)
 main_chart = pygal.Line(
     width=2300,
     height=1100,
@@ -82,50 +97,137 @@ main_chart = pygal.Line(
     show_x_guides=False,
     show_y_guides=True,
     x_label_rotation=0,
-    show_legend=True,
-    legend_at_bottom=False,
+    show_legend=False,
+    truncate_label=-1,
 )
-main_chart.x_labels = [str(i) if i % 15 == 0 else "" for i in range(days)]
+# Use clear numeric labels every 15 days
+main_chart.x_labels = [
+    "Day 0",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Day 15",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Day 30",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Day 45",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Day 60",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Day 75",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Day 90",
+]
 main_chart.add("Price", list(prices))
 
-# Volume chart - Bar chart
+# Sidebar chart - Pie chart for sector allocation (spans 2 rows, demonstrating rowspan)
+pie_chart = pygal.Pie(
+    width=1150,
+    height=1100,
+    style=sidebar_style,
+    title="Portfolio Allocation",
+    show_legend=True,
+    legend_at_bottom=True,
+    inner_radius=0.4,
+)
+allocations = [("Tech", 35), ("Health", 25), ("Finance", 28), ("Energy", 12)]
+for sector, pct in allocations:
+    pie_chart.add(sector, pct)
+
+# Volume chart - Bar chart (no redundant legend)
 volume_chart = pygal.Bar(
     width=1150,
     height=530,
     style=detail_style,
-    title="Daily Volume",
+    title="Daily Volume (M)",
     x_title="Day",
-    y_title="Volume (M)",
+    y_title="Volume",
     show_x_guides=False,
     show_y_guides=True,
-    show_legend=True,
-    legend_at_bottom=True,
+    show_legend=False,
     x_label_rotation=0,
+    truncate_label=-1,
 )
 volume_sampled = volume[::5] / 1e6  # Sample every 5th day for readability
-volume_chart.x_labels = [str(i * 5) if i % 4 == 0 else "" for i in range(len(volume_sampled))]
+volume_chart.x_labels = [f"{i * 5}" if i % 4 == 0 else "" for i in range(len(volume_sampled))]
 volume_chart.add("Volume", list(volume_sampled))
 
-# Returns histogram
-hist_counts, hist_edges = np.histogram(daily_returns, bins=12)
-hist_chart = pygal.Bar(
-    width=1150,
-    height=530,
-    style=detail_style,
-    title="Returns Distribution",
-    x_title="Daily Return (%)",
-    y_title="Frequency",
-    show_x_guides=False,
-    show_y_guides=True,
-    show_legend=True,
-    legend_at_bottom=True,
-    x_label_rotation=30,
-)
-hist_labels = [f"{hist_edges[i]:.1f}" for i in range(len(hist_counts))]
-hist_chart.x_labels = hist_labels
-hist_chart.add("Returns", list(hist_counts))
-
-# Scatter plot for sector performance
+# Scatter plot for risk vs return (no redundant legend)
 scatter_chart = pygal.XY(
     width=1150,
     height=530,
@@ -135,20 +237,19 @@ scatter_chart = pygal.XY(
     y_title="Return (%)",
     show_x_guides=True,
     show_y_guides=True,
-    show_legend=True,
-    legend_at_bottom=True,
+    show_legend=False,
     stroke=False,
     dots_size=16,
 )
 scatter_data = [(float(x_corr[i]), float(y_corr[i])) for i in range(len(x_corr))]
 scatter_chart.add("Sectors", scatter_data)
 
-# Category bar chart for performance
+# Category bar chart for performance (no redundant legend)
 perf_chart = pygal.Bar(
     width=1150,
     height=530,
     style=detail_style,
-    title="Sector Performance",
+    title="Sector Score",
     x_title="Sector",
     y_title="Score",
     show_x_guides=False,
@@ -163,15 +264,21 @@ for i, (cat, val) in enumerate(zip(categories, performance, strict=True)):
 
 # Render charts to SVG strings
 main_svg = main_chart.render().decode("utf-8")
+pie_svg = pie_chart.render().decode("utf-8")
 volume_svg = volume_chart.render().decode("utf-8")
-hist_svg = hist_chart.render().decode("utf-8")
 scatter_svg = scatter_chart.render().decode("utf-8")
 perf_svg = perf_chart.render().decode("utf-8")
 
 # Dashboard title
 main_title = "subplot-grid-custom · pygal · pyplots.ai"
 
-# Create HTML with CSS Grid layout
+# Create HTML with CSS Grid layout demonstrating both colspan and rowspan
+# Layout: 4 columns x 2 rows
+# - Main chart: colspan 2, row 1 only
+# - Pie chart: column 4, rowspan 2 (spans both rows - demonstrates rowspan!)
+# - Volume chart: column 3, row 1
+# - Scatter chart: column 1, row 2
+# - Sector Score: column 2-3, row 2 (colspan 2)
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -212,24 +319,29 @@ html_content = f"""<!DOCTYPE html>
             width: 100%;
             height: 100%;
         }}
+        /* Main chart spans 2 columns in row 1 */
         .main-chart {{
             grid-column: 1 / 3;
+            grid-row: 1;
+        }}
+        /* Volume chart in column 3, row 1 */
+        .volume-chart {{
+            grid-column: 3;
+            grid-row: 1;
+        }}
+        /* Pie chart spans 2 rows (rowspan demonstration) */
+        .pie-chart {{
+            grid-column: 4;
             grid-row: 1 / 3;
         }}
-        .cell-1 {{
-            grid-column: 3;
-            grid-row: 1;
-        }}
-        .cell-2 {{
-            grid-column: 4;
-            grid-row: 1;
-        }}
-        .cell-3 {{
-            grid-column: 3;
+        /* Scatter chart in column 1, row 2 */
+        .scatter-chart {{
+            grid-column: 1;
             grid-row: 2;
         }}
-        .cell-4 {{
-            grid-column: 4;
+        /* Sector score spans 2 columns in row 2 */
+        .perf-chart {{
+            grid-column: 2 / 4;
             grid-row: 2;
         }}
     </style>
@@ -238,10 +350,10 @@ html_content = f"""<!DOCTYPE html>
     <div class="dashboard-title">{main_title}</div>
     <div class="grid-container">
         <div class="chart-cell main-chart">{main_svg}</div>
-        <div class="chart-cell cell-1">{volume_svg}</div>
-        <div class="chart-cell cell-2">{scatter_svg}</div>
-        <div class="chart-cell cell-3">{hist_svg}</div>
-        <div class="chart-cell cell-4">{perf_svg}</div>
+        <div class="chart-cell volume-chart">{volume_svg}</div>
+        <div class="chart-cell pie-chart">{pie_svg}</div>
+        <div class="chart-cell scatter-chart">{scatter_svg}</div>
+        <div class="chart-cell perf-chart">{perf_svg}</div>
     </div>
 </body>
 </html>"""

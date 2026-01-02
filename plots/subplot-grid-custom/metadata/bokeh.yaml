@@ -28,3 +28,180 @@ review:
     notes
   - Could leverage more Bokeh-specific interactive features like linked brushing or
     hover tooltips
+  image_description: 'The plot displays a dashboard-style custom subplot grid with
+    5 panels. The main title "subplot-grid-custom · bokeh · pyplots.ai" is centered
+    at the top. The top row contains two panels: (1) "Price Trend Over Time" - a large
+    blue line chart with scatter points showing stock price declining from ~108 to
+    ~80 over 100 days, and (2) "Daily Trading Volume" - yellow vertical bars showing
+    volume fluctuating between 1-5 million. The bottom row has three smaller panels:
+    (1) "Returns Distribution" - a green histogram showing approximately normal distribution
+    of daily returns from -6% to +4%, (2) "Sales by Product Category" - blue vertical
+    bars for Products A-D with varying heights (45, 72, 38, 65 units), and (3) "Variable
+    Correlation Analysis" - coral/red scatter points showing positive correlation.
+    All panels have readable axis labels with units, subtle gray grid lines, and gray
+    outlines.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: all text readable, font sizes appropriate for large canvas, slight
+          reduction as some labels could be slightly larger
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: no overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: 'markers and bars well-sized, scatter points visible with good alpha;
+          minor: histogram bins could have slightly more contrast'
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: uses blue, yellow, green, coral - distinct and colorblind-safe palette
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: dashboard fills canvas well with varied panel sizes demonstrating
+          custom grid; minor asymmetry in bottom row widths
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: descriptive labels with units (Price ($), Volume (millions), Daily
+          Return (%), Units Sold)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: grids subtle at alpha 0.3; no legends needed for these single-series
+          plots but could benefit from subplot outlines being more subtle
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: correctly implements custom subplot grid with non-uniform cell sizes
+          (larger main chart, smaller supporting views)
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly assigned for all five subplot types
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: demonstrates colspan concept (main time series wider), multiple plot
+          types (line, bar, histogram, scatter), dashboard-style layout
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: all axes show complete data ranges
+      - id: SC-05
+        name: Legend Accuracy
+        score: 1
+        max: 2
+        passed: true
+        comment: no legends shown (not strictly needed but could add series labels)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: uses correct "subplot-grid-custom · bokeh · pyplots.ai" format
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: shows 5 different plot types demonstrating grid flexibility; could
+          add a plot spanning multiple rows for full rowspan demonstration
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: excellent financial dashboard scenario with price, volume, returns,
+          sales - cohesive and realistic
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: values realistic (prices ~80-110, volume 1-5M, returns ±6%), product
+          sales could have more realistic scale
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: clean imports → data → plots → layout → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: all imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: uses current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: uses Bokeh's row/column layouts and ColumnDataSource; could leverage
+          more Bokeh-specific features like hover tools or linked axes for a dashboard
+  verdict: APPROVED

@@ -20,3 +20,175 @@ review:
   - Proper use of seaborn lineplot with hue for categorical grouping
   weaknesses:
   - Axis labels could be more descriptive (e.g., "Competition Week" and "League Position")
+  image_description: 'The bump chart displays 5 sports teams (Lions, Tigers, Bears,
+    Eagles, Wolves) with their ranking positions tracked over 6 weeks (Week 1-6).
+    The Y-axis shows ranks 1-5 with rank 1 at the top (inverted axis as required).
+    Each team is represented by a distinct colored line with circular markers: Lions
+    (blue #306998), Tigers (yellow), Bears (red), Eagles (green), and Wolves (purple).
+    Lines connect the rankings across weeks showing position changes. The title follows
+    the correct format "bump-basic · seaborn · pyplots.ai". A legend on the right
+    side clearly identifies each team. The grid is subtle with dashed lines at alpha
+    0.3.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, labels at 20pt, ticks at 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text or elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Markers size 18 and linewidth 4 are excellent for 5 entities over
+          6 periods
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Five distinct colors that are colorblind-safe (blue, yellow, red,
+          green, purple)
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, legend placed outside plot area using bbox_to_anchor
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: false
+        comment: Labels are "Week" and "Rank" without units or context; could be more
+          descriptive
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle at alpha=0.3 with dashed lines; legend is well-placed
+          outside
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bump chart with lines connecting rankings over time
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Period (Week) on X-axis, Rank on Y-axis, correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Y-axis inverted, distinct colors, dot markers present, lines connect
+          entities
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 5 ranks and 6 weeks visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies all 5 teams
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "bump-basic · seaborn · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows rank changes, overtakes (Tigers→Lions at Week 3), stability,
+          rises and falls
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Sports league standings over a season is a realistic and comprehensible
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 5 teams over 6 weeks with ranks 1-5 is perfect for bump chart demonstration
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 0
+        max: 3
+        passed: false
+        comment: No random seed set (though data is deterministic, best practice is
+          to include seed when using any randomness)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only used imports (matplotlib.pyplot, pandas, seaborn)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png'
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses seaborn's lineplot with hue grouping and palette, which is good
+          but relatively basic seaborn usage
+  verdict: APPROVED

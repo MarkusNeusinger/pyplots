@@ -29,3 +29,14 @@ review:
     support
   - The colormap only shows positive correlations (0.28 to 1.00); for a fully diverging
     colormap demo, negative correlations would better showcase the blue end
+  image_description: 'The plot displays a 6x6 correlation matrix heatmap showing relationships
+    between business metrics: Revenue, Marketing, R&D Spend, Customers, Satisfaction,
+    and Retention. The cells are colored using a diverging blue-white-red colormap
+    where blue indicates lower correlations (~0.28), white/light colors represent
+    mid-range values (~0.64), and red indicates strong positive correlations (1.00).
+    Each cell displays its correlation value with 2 decimal places. The diagonal shows
+    perfect correlations (1.00) in dark red. Row labels appear on the left, column
+    labels are rotated 45° at the bottom. A vertical colorbar on the right shows the
+    value scale from 0.28 to 1.00 labeled "Correlation". The title follows the required
+    format at the top.'
+  verdict: APPROVED

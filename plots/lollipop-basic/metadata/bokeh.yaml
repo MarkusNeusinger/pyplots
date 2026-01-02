@@ -23,3 +23,174 @@ review:
   - Redundant sorting code (data is already defined in sorted order)
   - Bokeh toolbar icons visible in top-right corner could be hidden for cleaner static
     output
+  image_description: The plot displays a lollipop chart showing product sales by category.
+    Ten categories are shown on the x-axis (Electronics, Clothing, Home & Garden,
+    Sports, Books, Toys, Food, Beauty, Automotive, Office) with sales values in dollars
+    on the y-axis ranging from $0 to ~$85,000. Each data point consists of a blue
+    vertical stem (#306998) extending from the baseline to a yellow circular marker
+    (#FFD43B) with a blue outline. The data is sorted in descending order from left
+    to right. Category labels are rotated at approximately 40 degrees for readability.
+    The background is light gray (#fafafa) with subtle dashed horizontal grid lines.
+    The title "lollipop-basic · bokeh · pyplots.ai" appears at the top left. Y-axis
+    values are formatted as currency with thousands separators.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title at 32pt, axis labels at 24pt, tick labels at 18pt - all clearly
+          readable, slightly smaller title would be ideal
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, rotated x-axis labels prevent collision
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Stems (line_width=4) and markers (size=25) are well-sized for the
+          data density
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow combination is colorblind-safe with good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas space, minor excess whitespace on right side
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Sales ($)" and "Product Category"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: No legend needed, grid is subtle (alpha=0.3, dashed), but Bokeh toolbar
+          icons visible in corner
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct lollipop chart with stems and circular markers
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on x-axis, values on y-axis as specified
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Thin stems, circular markers, vertical orientation, sorted data
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full range from 0 to max value
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single series
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "lollipop-basic · bokeh · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows good range of values with clear descending pattern, could show
+          more variation in middle values
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Product sales by category is a realistic business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values ($15K-$85K) are plausible retail sales figures, though slightly
+          generic
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: true
+        comment: Deterministic data (hardcoded values), but sorting after definition
+          is redundant since data is already sorted
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ColumnDataSource, segment + scatter glyphs, NumeralTickFormatter
+          - good Bokeh patterns but no interactive features beyond defaults
+  verdict: APPROVED

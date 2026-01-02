@@ -27,3 +27,175 @@ review:
   - Axis label Performance Score lacks units (e.g., Performance Score (%) or similar)
   - Some performance scores exceed 100 which may seem unrealistic for a typical percentage-based
     score
+  image_description: The plot displays a categorical strip plot with four product
+    categories (Product A, B, C, D) on the x-axis and Performance Score (ranging from
+    ~45 to ~115) on the y-axis. Points are jittered horizontally to reduce overlap.
+    Colors alternate between blue (#306998) for Products A and C, and yellow (#FFD43B)
+    for Products B and D. The title "cat-strip · plotnine · pyplots.ai" is at the
+    top. The plot uses a minimal theme with subtle gray grid lines. Each category
+    shows approximately 30 data points with different distributions - Product A has
+    a tight cluster around 70-80, Product B shows more spread with higher values,
+    Product C has a tight cluster around 65-75, and Product D shows the widest spread
+    from ~45 to ~115.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is large and clear, axis labels are well-sized, tick labels
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Points are well-sized with good alpha, though could be slightly larger
+          for this point count
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Blue and yellow are distinguishable, but the alternating pattern
+          doesn't serve a clear purpose
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good use of canvas space, well-proportioned margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels but no units (Performance Score could have units)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle and appropriate, legend correctly hidden since colors
+          don't add information
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct categorical strip plot with jitter
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on x-axis, numeric values on y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Jitter applied, individual points visible, multiple categories shown
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data points visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend appropriately hidden (colors are redundant with x-axis)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "cat-strip · plotnine · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows different distributions (tight vs spread), different means,
+          but could show more obvious outliers
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Product performance scores is a plausible business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Performance scores in 50-115 range are reasonable, though some values
+          slightly exceed 100
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) is set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current plotnine API used
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses geom_jitter which is standard ggplot grammar, but doesn't leverage
+          plotnine-specific features like faceting, statistical transformations, or
+          more sophisticated scales
+  verdict: APPROVED

@@ -26,3 +26,164 @@ review:
     variation
   - Chart could be slightly larger to better utilize canvas space for maximum visual
     impact
+  image_description: 'The sunburst chart displays a company budget breakdown with
+    three hierarchical levels rendered as concentric rings. The innermost circle shows
+    "Company Budget" in dark Python Blue (#306998). The second ring displays four
+    departments: Engineering (Python Blue), Sales (Python Yellow #FFD43B), Marketing
+    (Light Blue), and Operations (Light Yellow). The outermost ring shows teams within
+    each department: Backend, Frontend, DevOps under Engineering; Enterprise, SMB
+    under Sales; Digital, Brand under Marketing; and HR, Finance under Operations.
+    Labels are displayed radially within each segment. The chart uses white line separators
+    between segments, with the title "sunburst-basic · plotly · pyplots.ai" centered
+    at the top. The overall layout is well-balanced with the chart centered on a white
+    background.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: all text is readable; font size is adequate, though some smaller
+          segments have slightly compressed text
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: no overlapping text, all labels fit within their segments
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: all segments are clearly visible with appropriate proportional sizing
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: uses Python Blue/Yellow palette with variations, colorblind-friendly
+          blue-yellow scheme
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: chart is well-centered but could utilize slightly more canvas area
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: correct sunburst chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: hierarchical levels correctly mapped (root → departments → teams)
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'all spec features present: 3 hierarchy levels, proportional segment
+          angles, consistent colors within branches'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: all data segments visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: labels accurately represent data categories
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: correctly uses "sunburst-basic · plotly · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: shows multi-level hierarchy with varying segment sizes; could benefit
+          from more variation in proportions
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: company budget breakdown is an excellent real-world scenario matching
+          spec's application examples
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: budget values in millions are reasonable; some teams have similar
+          values reducing visual contrast
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: clean imports → data → plot → save structure, no unnecessary functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: deterministic data (no random values)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: only plotly.graph_objects is imported and used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: uses go.Sunburst with branchvalues="total", custom hover template,
+          radial text orientation; could leverage more Plotly interactivity features
+          in HTML output
+  verdict: APPROVED

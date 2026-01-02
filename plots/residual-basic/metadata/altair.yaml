@@ -25,3 +25,175 @@ review:
   - Axis labels lack units (though for residuals this is often acceptable)
   - Data scenario is generic rather than tied to a specific real-world regression
     context
+  image_description: The plot displays a residual plot with blue circular markers
+    (#306998) showing residuals against fitted values. The x-axis is labeled "Fitted
+    Values" ranging from 5 to 55, and the y-axis is labeled "Residuals" with a symmetric
+    range from -6.0 to 6.0. A dashed black horizontal reference line at y=0 clearly
+    indicates the zero-residual baseline. A yellow/gold LOESS smoothed trend line
+    (bandwidth 0.4) weaves through the data showing the local trend of residuals.
+    The title "residual-basic · altair · pyplots.ai" is displayed at the top center.
+    The data shows 100 points with visible outliers around (16, 4.5), (30, 3.8), and
+    (41, -4.2), demonstrating heteroscedasticity with slightly increasing variance
+    as fitted values increase. The grid is subtle with low opacity, and the overall
+    layout is clean with good proportions.
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text or elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Points are well-sized (150) with good opacity (0.6), appropriate
+          for 100 data points; minor deduction as slightly larger would be ideal
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue (#306998) and yellow (#FFD43B) provide excellent contrast and
+          colorblind-safe palette
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of canvas, plot well-centered with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Labels are descriptive ("Fitted Values", "Residuals") but lack units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Grid is subtle (0.3 opacity), no legend needed for this plot type
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct residual plot (scatter with reference line)
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Fitted values on X, residuals on Y - correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: horizontal reference line at y=0, transparency
+          (0.6), LOESS trend line, proper axis labels, symmetric y-axis'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Symmetric y-axis (-6 to 6), appropriate x-axis (5-55)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed, N/A
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Exactly matches `{spec-id} · {library} · pyplots.ai` format
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows outliers, heteroscedasticity pattern, random scatter; could
+          show more pronounced funnel shape
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 7
+        passed: true
+        comment: Plausible regression residuals but generic (not tied to real-world
+          scenario)
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Residual values realistic for standardized regression context
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Follows imports → data → plot → save pattern, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses `np.random.seed(42)`
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only altair, numpy, pandas - all used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Altair API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of Altair's declarative layering (alt.layer), transform_loess
+          for LOESS smoothing, tooltips, and proper encoding with scale configurations
+  verdict: APPROVED

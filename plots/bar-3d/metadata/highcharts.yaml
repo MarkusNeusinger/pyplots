@@ -25,3 +25,183 @@ review:
     could help
   - The interactive HTML version could include drag-to-rotate functionality for better
     exploration
+  image_description: 'The plot displays a 3D bar chart with 5 product categories (Laptop,
+    Tablet, Phone, Monitor, Keyboard) on the x-axis extending into depth, with quarterly
+    data (Q1-Q4) represented as separate colored bars along the z-axis. The y-axis
+    shows Revenue ($K) from 0 to 260. The bars use a colorblind-safe palette: blue
+    (#306998) for Q1, yellow (#FFD43B) for Q2, purple (#9467BD) for Q3, and cyan (#17BECF)
+    for Q4. The title "bar-3d · highcharts · pyplots.ai" appears at the top in bold,
+    with a subtitle showing the data context. The 3D perspective is applied with a
+    moderate viewing angle (alpha=15, beta=20), creating depth perception. A vertical
+    legend in the upper-right corner identifies each quarter. The Phone category shows
+    the tallest bars (especially Q2 at ~235), while Keyboard shows the shortest values
+    (~30-50). The 3D effect shows bars arranged in depth with proper occlusion.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title and subtitle readable, axis labels clear, but y-axis title
+          "Revenue ($K)" is slightly rotated and could be clearer
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, all labels clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Bars are well-sized for the 3D view; some bars in the back are partially
+          occluded by taller front bars (expected in 3D but reduces visibility slightly)
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent colorblind-safe palette with blue, yellow, purple, and
+          cyan
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good canvas utilization with plot filling ~60% of area; slight imbalance
+          with legend far right
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Descriptive axis labels with units ("Revenue ($K)", "Product Category",
+          "Quarter")
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Legend well-placed and readable; however, the z-axis "Quarter" label
+          appears at bottom right and is somewhat isolated
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct 3D bar chart with proper depth rendering
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=products, Y=revenue, Z=quarters correctly mapped as per spec
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: 3D depth, categorical x/y dimensions,
+          numeric height values'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full data range visible (0-260 covers all values)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies Q1-Q4
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "bar-3d · highcharts · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variation across products and quarters with realistic seasonal
+          patterns; could show more extreme variation between products
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Sales revenue by product category is a realistic and neutral business
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Revenue values in $K are sensible (30-235K); some products have similar
+          heights making comparison harder
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → chart config → series →
+          export'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42) for deterministic output
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (numpy, highcharts_core, selenium, urllib, tempfile,
+          time, Path)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Highcharts API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Outputs plot.png correctly, but uses underscore in loop variable
+          "_product" and "_quarter" which is unnecessary
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of Highcharts 3D module (options3d, alpha, beta, depth,
+          viewDistance), but could leverage more interactivity features in the HTML
+          version like drag rotation
+  verdict: APPROVED

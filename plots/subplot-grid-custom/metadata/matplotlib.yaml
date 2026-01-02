@@ -26,3 +26,173 @@ review:
   - Bottom row subplots appear slightly cramped compared to the main panel proportions
   - Library features score could be improved by using shared axes between related
     plots (e.g., dates) or constrained_layout
+  image_description: The plot displays a 6-panel financial dashboard layout using
+    matplotlib's GridSpec. The main plot (spanning 2 columns and 2 rows in top-left)
+    shows a blue price trend line with light blue fill below, featuring dates (Jan-May)
+    on x-axis and price ($70-$110) on y-axis. Top-right shows a correlation scatter
+    plot with yellow markers (blue edges) plotting Variable X vs Variable Y. Middle-right
+    displays a "Performance" bar chart with alternating blue/yellow bars for products
+    A-D with value annotations (85, 72, 93, 67). Bottom-left shows a "Daily Volume"
+    bar chart in blue. Bottom-center shows a "Return Distribution" histogram in yellow
+    with blue edges and a dashed vertical line at 0. Bottom-right contains a "Summary
+    Stats" text box with monospace statistics on a light blue background. The overall
+    title "subplot-grid-custom · matplotlib · pyplots.ai" appears at the top. Color
+    scheme uses Python blue (#306998) and yellow (#FFD43B).
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt, subplot titles 18pt+, axis labels 16pt+, all readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, date labels properly formatted by month
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Scatter markers s=150 good for 50 points, line width adequate, bars
+          visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow palette is colorblind-safe, good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of GridSpec with 2x2 main panel, bottom row slightly cramped
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Labels include units: "Price ($)", "Volume (M)", "Daily Return (%)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid has good alpha=0.3, but legend only on main plot; other subplots
+          lack legends where needed
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct GridSpec-based multi-panel dashboard layout
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: All data correctly mapped to appropriate subplot types
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: colspan/rowspan used (2x2 main), varied cell sizes, dashboard-style
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All axes show complete data ranges
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend on main plot is accurate
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "subplot-grid-custom · matplotlib · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows time series, scatter, bar charts, histogram, text stats - diverse
+          coverage
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Financial/stock dashboard is a realistic, neutral business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Price range ($70-$110), volume (1-5M), returns (±5%) are realistic
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Flat script: imports → data → plot → save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set at start
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used (matplotlib, numpy, pandas)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: No deprecated functions
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300, bbox_inches='tight'
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: true
+        comment: Uses GridSpec, fill_between, DateFormatter - good matplotlib features
+          but could leverage more advanced features like shared axes
+  verdict: APPROVED

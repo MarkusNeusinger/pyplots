@@ -26,3 +26,177 @@ review:
     rule; should inline the transformation logic
   - Yellow color for Versicolor may be less distinguishable for colorblind users;
     consider using a more accessible palette
+  image_description: 'The plot displays Andrews curves for the Iris dataset with 150
+    samples transformed into Fourier series curves. Three species are shown: Setosa
+    (blue), Versicolor (yellow/gold), and Virginica (red/coral). The x-axis shows
+    parameter t in radians from -π to π with proper π notation tick labels. The y-axis
+    shows f(t) in normalized units ranging from approximately -4 to 4. The title correctly
+    reads "Iris Dataset · andrews-curves · plotly · pyplots.ai". The legend is well-positioned
+    in the upper right corner with a subtle border. Curves show clear visual separation
+    between species - Setosa curves (blue) cluster distinctly from Versicolor and
+    Virginica, which show some natural overlap. Transparency (alpha=0.4) effectively
+    reveals density patterns where curves converge and diverge.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 32pt, axis labels at 24pt, tick labels at 18pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, legend positioned away from data
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line width=2 with 0.4 opacity perfectly suited for 150 overlapping
+          curves
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Blue/yellow/red distinguishable, though yellow could be harder for
+          some colorblind users
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good canvas utilization, minor extra whitespace on right side
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive with units: "Parameter t (radians)", "f(t) (normalized
+          units)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid alpha 0.3 is appropriate, but the legend shows "Setosa", "Versicolor",
+          "Virginica" labels which appear small relative to the overall plot
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct Andrews curves visualization with Fourier transformation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Variables correctly mapped as Fourier coefficients, t parameter correctly
+          on x-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Normalization applied, transparency used, color by category implemented
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full t range [-π, π] shown, y-axis auto-scaled to data
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Species names correctly labeled
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "Iris Dataset · andrews-curves · plotly · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows all 150 samples, demonstrates cluster separation and overlap
+          patterns
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Classic Iris dataset, perfect for demonstrating multivariate visualization
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 3
+        max: 5
+        passed: true
+        comment: Normalized values are correct but deterministic data from sklearn
+          has no seed needed
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 0
+        max: 3
+        passed: false
+        comment: Contains a helper function `andrews_curve()` which violates the no-functions
+          rule
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses deterministic Iris dataset from sklearn
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used (numpy, plotly, sklearn)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with correct dimensions
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses Plotly features
+        score: 5
+        max: 5
+        passed: true
+        comment: Custom hover templates, interactive HTML export, proper legend grouping,
+          go.Scatter with graph_objects
+  verdict: APPROVED

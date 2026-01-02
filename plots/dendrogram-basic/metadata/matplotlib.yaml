@@ -25,3 +25,174 @@ review:
     figure/axes setup
   - Y-axis label could be more descriptive (e.g., Ward Linkage Distance or include
     clustering interpretation hints)
+  image_description: 'The plot displays a dendrogram (hierarchical clustering tree)
+    with 15 iris flower samples on the x-axis and Ward distance on the y-axis (ranging
+    0-10). The tree structure shows three distinct color-coded clusters: orange branches
+    for Setosa samples (left side), green branches for Versicolor and Virginica samples
+    (center and right). The blue horizontal line at the top connects the Setosa cluster
+    to the Versicolor/Virginica cluster at distance ~10. Sample labels are rotated
+    45 degrees and clearly readable. The title "dendrogram-basic · matplotlib · pyplots.ai"
+    appears at the top. The plot has a clean white background with subtle dashed horizontal
+    grid lines on the y-axis. Top and right spines are removed for a cleaner appearance.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 14-16pt, all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: Sample labels are rotated 45° preventing any overlap, all text fully
+          readable
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Dendrogram branches are clearly visible with good line weights
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Orange, green, and blue are colorblind-safe and distinguishable
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good use of 16:9 aspect ratio, well-proportioned margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: '"Sample" and "Distance (Ward)" are descriptive but y-axis could
+          include units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Subtle dashed grid on y-axis only (alpha=0.3), no legend needed for
+          this plot type
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct dendrogram/hierarchical clustering visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Samples on x-axis, merge distances on y-axis as expected
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses scipy.cluster.hierarchy, shows branch heights proportional to
+          distances, vertical orientation
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 15 samples visible, full distance range shown
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed; cluster colors are self-explanatory
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly formatted as "dendrogram-basic · matplotlib · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows hierarchical structure with clear cluster separations at different
+          distance levels
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Iris flower species is a classic, well-known clustering example
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 15 samples (within recommended 10-50), realistic iris measurements
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → linkage → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib, numpy, and scipy.cluster.hierarchy used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: All APIs are current
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Uses scipy's dendrogram function directly; matplotlib is used only
+          for figure setup and styling, not for any distinctive matplotlib-specific
+          visualization features
+  verdict: APPROVED

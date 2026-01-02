@@ -25,3 +25,170 @@ review:
     of duplicating percentages visible on segments
   - 'Two similar teal colors (#4ECDC4 and #95E1D3) could be harder to distinguish
     for some users'
+  image_description: 'The plot displays a donut chart (ring chart) showing portfolio
+    allocation across 5 asset classes. The chart uses a square 3600x3600 format with
+    the donut centered slightly left. Colors used are: Python Blue (#306998) for Technology
+    (35%), Yellow (#FFD43B) for Healthcare (25%), Teal (#4ECDC4) for Finance (20%),
+    Coral/Red (#FF6B6B) for Energy (12%), and Light Teal (#95E1D3) for Retail (8%).
+    Percentage labels are positioned within each segment. The center displays "Total"
+    with "100" below it in Python Blue. A legend on the right side shows each category
+    with its percentage. The title "donut-basic · bokeh · pyplots.ai" appears at the
+    top left.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: All text readable; title 36pt, segment labels 26pt, center text 32-48pt,
+          legend 22pt - all appropriately sized
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Donut segments well-sized with thick ring width (0.45-0.95 radius),
+          good visual weight
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Good contrast and mostly colorblind-safe palette, though some similar
+          teal shades could be improved
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions with chart centered and legend positioned to the
+          right
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend well-placed on right side with clear color boxes
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct donut/ring chart using annular_wedge
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories correctly mapped to segments, values to angles
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Center space used for key metric (Total: 100), percentage labels
+          on segments, 5 categories (within 3-8 range)'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All segments visible and properly proportioned
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels match categories and show percentages
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "donut-basic · bokeh · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows varied segment sizes (35% down to 8%), demonstrates donut chart
+          well, though could show more extreme size differences
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Portfolio allocation by asset class is a real, comprehensible scenario
+          perfectly suited for donut charts
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values sum to 100% appropriately; percentages are realistic for portfolio
+          allocation
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple script structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (no random values used)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (math.pi, numpy, bokeh components)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as plot.png correctly, but legend labels show "(35%)" which
+          duplicates the value display
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ColumnDataSource, cumsum transform, annular_wedge which are
+          Bokeh-specific; exports both PNG and HTML
+  verdict: APPROVED

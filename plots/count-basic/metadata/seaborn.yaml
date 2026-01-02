@@ -21,3 +21,172 @@ review:
   weaknesses:
   - Does not leverage seaborn distinctive features like hue parameter or palette customization
   - Y-axis label could be more specific (e.g., Response Count or Frequency)
+  image_description: 'The plot displays a count plot (bar chart) showing survey responses
+    for preferred programming languages. Eight vertical bars are displayed in descending
+    order by frequency: Python (140), JavaScript (101), Java (86), Go (43), C++ (42),
+    Rust (33), TypeScript (31), and Ruby (24). The bars are a consistent blue color
+    (#306998). Each bar has a count label positioned above it. The x-axis is labeled
+    "Programming Language" and the y-axis is labeled "Number of Responses". The title
+    follows the required format "count-basic · seaborn · pyplots.ai". A subtle horizontal
+    dashed grid is visible behind the bars, and the top and right spines have been
+    removed for a cleaner appearance. The layout is well-balanced with good use of
+    canvas space.'
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, labels at 20pt, ticks at 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, all category labels clearly visible
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are well-sized, count labels clearly visible above each bar
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color, no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, plot fills canvas appropriately
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels but no units (counts don't need units, but could
+          specify "count" or "frequency")
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Subtle grid with alpha 0.3, dashed style; no legend needed for single-color
+          plot
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct count plot using sns.countplot
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories correctly mapped to x-axis, counts to y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Sorted by frequency (descending), count labels on bars as spec suggests
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, y-axis starts at 0
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed, N/A
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "count-basic · seaborn · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows varying frequencies across 8 categories with good distribution
+          from high to low
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Programming language survey is a relatable, real-world scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 500 responses distributed across 8 languages with realistic weights
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (matplotlib, numpy, pandas, seaborn)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn API correctly
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Uses sns.countplot which is the appropriate seaborn function, but
+          this is basic usage without leveraging seaborn's distinctive features like
+          hue for grouping, statistical estimation, or palette customization
+  verdict: APPROVED

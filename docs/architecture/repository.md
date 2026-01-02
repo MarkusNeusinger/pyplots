@@ -240,14 +240,63 @@ quality_score: 92
 
 # Review feedback (used by AI for regeneration)
 review:
-  strengths: ["Clean code structure"]
-  weaknesses: ["Grid could be more subtle"]
+  # AI's visual description of the generated plot
+  image_description: |
+    The plot shows a scatter plot with 100 data points displaying
+    a positive correlation. Points are rendered in blue with 70%
+    opacity. Axes are clearly labeled and a subtle grid is visible.
+
+  # Detailed scoring breakdown by category
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+        - id: VQ-01
+          name: Text Legibility
+          score: 10
+          max: 10
+          passed: true
+          comment: "All text readable at full size"
+        - id: VQ-02
+          name: No Overlap
+          score: 8
+          max: 8
+          passed: true
+          comment: "No element overlap detected"
+    spec_compliance:
+      score: 23
+      max: 25
+      items: [...]
+    data_quality:
+      score: 18
+      max: 20
+      items: [...]
+    code_quality:
+      score: 10
+      max: 10
+      items: [...]
+    library_features:
+      score: 5
+      max: 5
+      items: [...]
+
+  # Final verdict
+  verdict: APPROVED
+
+  # Summary feedback
+  strengths:
+    - "Clean code structure"
+    - "Good use of alpha for overlapping points"
+  weaknesses:
+    - "Grid could be more subtle"
 ```
 
 **Key Points**:
 - Each library has its own file (no merge conflicts!)
 - Created by `impl-generate.yml`, updated by `impl-review.yml`
 - Review feedback persisted for AI to improve on regeneration
+- Extended review data includes `image_description`, `criteria_checklist`, and `verdict` for targeted fixes
 
 ### GCS Storage
 

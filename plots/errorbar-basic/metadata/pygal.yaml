@@ -25,3 +25,185 @@ review:
   - Error bar caps could be slightly more prominent for better visibility
   - Does not leverage pygal interactive features (tooltips showing exact values would
     enhance the visualization)
+  image_description: The plot displays a basic error bar chart with 6 experimental
+    groups (Control, Treatment A through E) on the x-axis and Response Value (units)
+    on the y-axis ranging from 0 to ~55. Each data point is represented by a blue
+    (#306998) filled circle with vertical error bars extending above and below, terminated
+    by horizontal caps. The title "errorbar-basic · pygal · pyplots.ai" appears at
+    the top. The background is white with subtle horizontal grid lines. Treatment
+    C and D show notably asymmetric error bars as intended by the data. The layout
+    is clean with good use of the canvas space.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels are all readable. Font sizes
+          are appropriately scaled for the 4800x2700 canvas. Slight deduction as tick
+          labels could be slightly larger.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; all labels are clearly separated and
+          readable.
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Data points (dots_size=22) and error bars (stroke_width=5) are well-sized
+          and clearly visible. Error bar caps are appropriately proportioned.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color (#306998) with good contrast against white background.
+          No colorblind concerns.
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good canvas utilization with data occupying the upper portion. Slight
+          imbalance as y-axis starts at 0 but data ranges from ~23-55, leaving lower
+          portion empty.
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis has "Response Value (units)" with units; X-axis has "Experimental
+          Group" which is descriptive.
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Horizontal grid lines are subtle and helpful. No legend shown (appropriate
+          since single series), but the legend is disabled rather than elegantly handled.
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct error bar plot implementation using XY chart with manual
+          error bar construction.
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories correctly mapped to x-axis, means to y-axis positions.
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Error bars with caps present, asymmetric errors supported. Spec mentions
+          "visible caps" which are implemented, though caps could be slightly more
+          prominent.
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data points and error bars fully visible within the chart area.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend appropriately hidden for single series display.
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "errorbar-basic · pygal · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows both symmetric (Control, Treatment E) and asymmetric error
+          bars (Treatment C, D). Good variety in mean values. Could show more dramatic
+          asymmetry to better demonstrate the feature.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Experimental treatment data with control group is a classic, realistic
+          scientific context.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values in 25-50 range are plausible for generic "response values."
+          Errors of 2-6 units are reasonable. The context is somewhat generic.
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports → data → style → chart → save. No functions
+          or classes.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (hardcoded values), no random seed needed.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only pygal and Style imported, both used.
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current pygal API.
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html (appropriate for pygal).
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses pygal's XY chart and custom Style effectively. Creative manual
+          construction of error bars using multiple series. However, pygal doesn't
+          have native error bar support, so this is a workaround rather than leveraging
+          distinctive pygal features like interactivity or tooltips.
+  verdict: APPROVED

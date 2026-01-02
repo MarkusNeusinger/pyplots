@@ -23,3 +23,174 @@ review:
   - Axis labels are generic ("Variables" instead of "Financial Metrics")
   - Grid linewidth=2 is slightly heavy; alpha or linewidth=1 would be more subtle
   - Does not leverage advanced matplotlib features like matshow() or custom Normalize
+  image_description: 'The plot displays an 8×8 annotated correlation heatmap showing
+    relationships between financial metrics: Revenue, Profit, Expenses, Growth, Risk,
+    ROI, Debt, and Assets. The heatmap uses a diverging RdBu_r colormap (red for positive,
+    blue for negative correlations) with values ranging from -1.0 to 1.0. Each cell
+    contains a bold numerical annotation with 2 decimal places. Text color automatically
+    contrasts with the background—white text on dark cells (high |correlation|), black
+    text on light cells (low |correlation|). The diagonal shows 1.00 values (self-correlation)
+    in dark red. A vertical colorbar on the right labeled "Correlation Coefficient"
+    shows the value scale. X-axis labels are rotated 45° for readability. White grid
+    lines separate cells cleanly.'
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt, axis labels 20pt, tick labels 16pt, annotations 14pt
+          bold - all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; rotated x-labels prevent collision
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Cell annotations perfectly sized relative to cells; clear visual
+          distinction
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: RdBu_r diverging colormap is colorblind-safe; red-blue distinction
+          works for most color vision deficiencies
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Square format appropriate for correlation matrix; good use of canvas
+          space
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Labels say "Variables" without units; could be more descriptive (e.g.,
+          "Financial Metrics")
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: White grid is clean but linewidth=2 is slightly heavy; colorbar well-positioned
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct annotated heatmap
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y are variable labels, values are correlations
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has annotations, colorbar, automatic text contrast
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full -1 to 1 correlation range shown
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar correctly labeled
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses "heatmap-annotated · matplotlib · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows positive correlations (0.85 Revenue-Profit), negative correlations
+          (-0.52 Profit-Debt), near-zero values, and diagonal=1
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Financial metrics correlation matrix is a real-world use case
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Correlation values are realistic and within valid -1 to 1 range
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib and numpy imported
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Uses basic imshow() rather than matplotlib's newer matshow() or pcolormesh();
+          no use of Normalize or custom formatters
+  verdict: APPROVED

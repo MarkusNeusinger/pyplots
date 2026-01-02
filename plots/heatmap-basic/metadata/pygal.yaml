@@ -26,3 +26,173 @@ review:
     lacks native heatmap support)
   - Colorbar title Score could be more descriptive (e.g., Performance Score (%))
   - No explicit axis titles (could add Department and Quarter labels)
+  image_description: The plot displays an 8×8 matrix heatmap showing department performance
+    scores across quarters. Row labels on the left show departments (Sales, Marketing,
+    Engineering, Support, Finance, HR, Operations, R&D). Column labels at the bottom
+    show quarters (Q1 2023 through Q4 2024). Each cell contains a numeric score (58-97
+    range) with color intensity representing magnitude - lighter blues for lower scores,
+    darker blues for higher scores. A vertical colorbar on the right shows the "Score"
+    scale from 58 to 97 with a mid-value of 78. The title "heatmap-basic · pygal ·
+    pyplots.ai" appears at the top center. All text is clearly legible with good contrast,
+    and the layout uses a square 1:1 aspect ratio.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, row/column labels, and cell values all clearly readable at
+          large font sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text anywhere, all elements well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Cells are well-sized for the 8×8 grid, clear visual distinction between
+          values
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Sequential blue colormap is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, slight asymmetry with colorbar placement but acceptable
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Row/column labels are descriptive but no explicit axis title labels
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Colorbar present and functional, white cell borders serve as grid
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct heatmap visualization with matrix format
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Rows=departments, columns=quarters, color=score value
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has value annotations, colorbar legend, but no diverging colormap
+          (spec suggests for +/- data, not required here)
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, no clipping
+      - id: SC-05
+        name: Legend Accuracy
+        score: 1
+        max: 2
+        passed: true
+        comment: Colorbar labeled "Score" but could be more descriptive
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "heatmap-basic · pygal · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variation across departments and time, patterns visible (R&D
+          improving, Engineering consistently high)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Performance metrics across departments and quarters is a realistic
+          business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Scores in 58-97 range are plausible performance metrics
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 0
+        max: 3
+        passed: false
+        comment: Uses custom class (MatrixHeatmap) which violates KISS principle,
+          though necessary for pygal
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: No deprecated functions
+      - id: CQ-05
+        name: Output Correct
+        score: 2
+        max: 1
+        passed: true
+        comment: 'Saves as plot.png (bonus: also saves plot.svg and plot.html)'
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: Creative extension of pygal Graph class to create custom heatmap,
+          leverages pygal SVG rendering, style system, and HTML embedding
+  verdict: APPROVED

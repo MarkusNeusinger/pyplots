@@ -25,3 +25,183 @@ review:
     represent
   - Color palette progression from dark blue to light blue could have slightly more
     contrast for the lowest speed bins
+  image_description: The plot displays a wind rose chart on a polar coordinate system
+    with 8 compass directions (N, NE, E, SE, S, SW, W, NW) arranged clockwise with
+    North at the top. Each direction shows stacked bars representing wind speed frequency
+    distributions. The color scheme progresses from dark navy blue (0-3 m/s) through
+    light blue (3-6 m/s), yellow (6-9 m/s), orange (9-12 m/s) to coral red (>12 m/s).
+    The dominant wind directions are SW and W, showing the highest frequencies (~22-25%).
+    The radial axis displays percentage values (5%, 10%, 15%, 20%) at 45-degree angle.
+    A legend titled "Wind Speed" on the right side clearly identifies the 5 speed
+    categories. The title "windrose-basic · plotly · pyplots.ai" is centered at the
+    top.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 32pt, direction labels at 22pt, radial ticks at 18pt, legend
+          at 18-20pt - all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bar segments are well-sized and clearly visible, stacking is clear
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Good progression from cool to warm colors; blue-yellow-orange-red
+          is generally colorblind-friendly, though blue/navy distinction could be
+          slightly clearer
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas, polar plot is well-centered, legend placement
+          is appropriate; slight gap between plot and legend
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: true
+        comment: Polar chart - no traditional axis labels, but radial axis has % suffix
+          which is informative. Direction labels serve as angular axis. No explicit
+          units label for "Frequency"
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Subtle circular grid lines, legend is well-placed with border and
+          appropriate sizing
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct wind rose / polar stacked bar chart
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Direction mapped to angular axis, frequency to radial, speed to color/stacking
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 8 direction sectors, 5 speed bins, stacked representation, legend
+          with speed ranges
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, radial axis extends appropriately to ~22%
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows all 5 speed categories with accurate labels
+          and colors
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "windrose-basic · plotly · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variation in direction frequency (SW/W dominant), different
+          speed distributions per direction, realistic Weibull speed distribution;
+          could show slightly more variation in speed composition across directions
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: 'Excellent: simulated hourly data for one year (8760 obs), prevailing
+          westerly winds typical of mid-latitude locations, Weibull distribution for
+          wind speeds is meteorologically accurate'
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Wind speeds 0-12+ m/s are realistic, percentages are reasonable;
+          very small frequencies for N/NE directions could have slightly more representation
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → binning → figure → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set at beginning
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects used, both necessary
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API (go.Barpolar, write_image, write_html)
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses go.Barpolar which is appropriate for wind rose, polar layout
+          configuration, and generates both PNG and HTML for interactivity. Could
+          further leverage Plotly's hover customization for speed/direction details.
+  verdict: APPROVED

@@ -23,3 +23,177 @@ review:
   - Y-axis label could include units (e.g., Daily Visitors (count))
   - Could add tooltip showing exact values for interactive version carried to static
     aesthetics
+  image_description: The plot displays a basic area chart showing daily website visitors
+    over January 2024 (30 days). The area is filled with a semi-transparent blue color
+    (#306998) with a darker blue line along the top edge. The title "area-basic ·
+    altair · pyplots.ai" is centered at the top in black text. The X-axis shows "Date"
+    with date labels (2024, Wed 03, Fri 05, etc.), and the Y-axis shows "Daily Visitors"
+    ranging from 0 to approximately 8,500. Dashed gridlines are visible throughout.
+    The data shows a clear weekly pattern with dips on weekends (Saturday/Sunday)
+    and higher values on weekdays, plus an overall upward trend from ~6,000 to ~7,500
+    visitors.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: All text is readable; title at 28pt, axis labels at 22pt, tick labels
+          at 18pt. Slightly conservative sizing but fully legible.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Area fill with 0.4 opacity and 3px line width is well-suited for
+          this data density (30 points)
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color (#306998), no color comparison needed, good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, slight excess whitespace in lower portion due to
+          Y-axis starting at 0
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels ("Date", "Daily Visitors") but no units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle with dashed lines and 0.3 opacity; no legend needed
+          for single series
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct area chart with filled area below the line
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=datetime (date), Y=numeric (visitors) correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Semi-transparent fill (0.4), gridlines, clear axis labels, line visible
+          on top
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows all data with 10% headroom, X-axis shows full date range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single series plot
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "area-basic · altair · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows trend AND cyclical pattern (weekday/weekend); missing extreme
+          peaks/valleys that would show full dynamic range
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Website traffic is a perfect real-world scenario for area charts;
+          weekday/weekend pattern is authentic
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values 3,500-8,200 visitors/day are realistic; could show more variation
+          in scale
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses `np.random.seed(42)`
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports (altair, numpy, pandas) are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Modern Altair API throughout
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves correctly but comment mentions wrong resolution math (1600×900×3
+          ≠ 4800×2700 correctly explained)
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Altair's declarative grammar with `.encode()`, `.properties()`,
+          `.configure_axis()`, and `.interactive()` for HTML output. Could leverage
+          more Altair-specific features like tooltips in the static version.
+  verdict: APPROVED

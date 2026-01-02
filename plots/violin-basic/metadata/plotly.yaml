@@ -26,3 +26,162 @@ review:
   - Could leverage more Plotly-specific features like custom hover templates
   - Data could include one bimodal distribution to better showcase violin plot capabilities
     over box plots
+  image_description: 'The plot displays four violin plots representing salary distributions
+    across four departments: Engineering, Marketing, Sales, and Support. Each violin
+    shows a mirrored kernel density estimation with an embedded white box plot showing
+    quartiles and a dashed median line. The color scheme alternates between blue (#306998,
+    #4B8BBE) for Engineering and Sales, and yellow (#FFD43B, #FFE873) for Marketing
+    and Support. The title "violin-basic · plotly · pyplots.ai" is centered at the
+    top. The y-axis shows "Annual Salary ($)" ranging from ~20,000 to ~140,000 with
+    comma-formatted tick labels. The x-axis shows "Department" with the four category
+    labels. The layout uses a clean white template with subtle gridlines. Sales shows
+    the widest distribution (highest variance), while Support shows the narrowest
+    and lowest salary range.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis labels at 22pt, ticks at 18pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Violin shapes clearly visible with appropriate opacity (0.7), box
+          plots well-sized
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Blue/yellow palette is colorblind-safe, though two similar blues
+          and two similar yellows reduce distinction slightly
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, proper margins, well-centered
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis has units "Annual Salary ($)", X-axis is descriptive "Department"
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct violin plot type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X, values on Y correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has quartile markers (box), mirrored density, median line (meanline)
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, axes show full range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for this plot type (categories labeled on axis)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correct format "violin-basic · plotly · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows different distribution shapes and spreads well; Sales has high
+          variance, Support has low variance and lower mean - demonstrates violin
+          advantages. Could show more multimodality.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Salary by department is a perfect realistic scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Salary values are realistic for US departments; Support slightly
+          low but plausible
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items: []
+  verdict: APPROVED

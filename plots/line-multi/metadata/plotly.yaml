@@ -28,3 +28,148 @@ review:
     range sliders that would enhance the multi-line comparison experience
   - 'Minor inconsistency: y-axis label says Thousands of Units but actual values are
     in the 50-230 range'
+  image_description: |-
+    The plot displays a multi-line comparison chart showing monthly product sales for 4 product categories over 12 months (January to December). The lines are:
+    - **Electronics** (blue solid line, circle markers): Shows a strong upward trend from ~155 to ~230 units
+    - **Clothing** (yellow solid line, square markers): Shows seasonal variation, starting at ~200, with fluctuations
+    - **Home & Garden** (green dashed line, diamond markers): Relatively stable around 100-120 units with slight increase
+    - **Sports** (purple dotted line, triangle markers): Declining trend from ~125 to ~70 units
+
+    The title reads "Monthly Product Sales · line-multi · plotly · pyplots.ai" centered at the top. The y-axis is labeled "Sales (Thousands of Units)" and x-axis "Month". The legend is positioned in the upper left corner with a semi-transparent white background. Grid lines are subtle gray. All text is clearly readable.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: 'All text clearly readable: title 32pt, axis titles 24pt, tick labels
+          20pt'
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, legend well-placed
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Lines are thick (width=4), markers size 12 with distinct symbols,
+          all clearly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue, yellow, green, purple palette is colorblind-safe with good
+          contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good use of canvas space, balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis has units "Sales (Thousands of Units)", X-axis "Month"
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct multi-line comparison plot
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X is time (months), Y is numeric sales values
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: distinct colors, legend, varied line
+          styles, markers'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, axes properly scaled
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels match series names correctly
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly formatted as "Monthly Product Sales · line-multi · plotly
+          · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Shows diverse trends: upward (Electronics), seasonal (Clothing),
+          stable (Home & Garden), declining (Sports)'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly product sales is a realistic business scenario with plausible
+          seasonal patterns
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+    library_features:
+      score: 3
+      max: 5
+      items: []
+  verdict: APPROVED

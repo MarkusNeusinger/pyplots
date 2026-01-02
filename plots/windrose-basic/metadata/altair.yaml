@@ -24,3 +24,178 @@ review:
   weaknesses:
   - Percentage labels (5%, 10%, etc.) could be slightly larger for better visibility
   - The Frequency (%) axis title text overlaps slightly with the 15%/20% labels area
+  image_description: The plot displays a wind rose chart with 8 directional sectors
+    (N, NE, E, SE, S, SW, W, NW) arranged in polar coordinates with North at the top.
+    Each sector contains stacked wedge segments representing wind speed ranges, colored
+    in a progression from Python blue (0-3 m/s) through yellow (3-6 m/s), gold (6-9
+    m/s), orange (9-12 m/s), to red-orange (>12 m/s). The chart shows a clear prevailing
+    westerly/southwesterly wind pattern, with the W, SW, and NW sectors having the
+    longest extensions (~25% frequency). The title "windrose-basic · altair · pyplots.ai"
+    appears at the top in large font. A legend labeled "Wind Speed" is positioned
+    on the right showing all 5 speed categories. Concentric circles mark frequency
+    percentages (5%, 10%, 15%, 20%, 25%) with a "Frequency (%)" label. Light gray
+    radial lines extend from the center to each direction label.
+  criteria_checklist:
+    visual_quality:
+      score: 35
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, direction labels, and legend are clearly readable; percentage
+          labels slightly small but acceptable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; percentage labels positioned well between
+          N and NW
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Wedges are clearly visible and well-sized; stacked segments distinguishable
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue-yellow-orange-red palette is colorblind-friendly; good contrast
+          between segments
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Square layout appropriate for polar chart; good canvas utilization;
+          legend positioned well
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Frequency (%)" label present but no units on direction (N/S/E/W
+          are standard, so acceptable)'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid circles are subtle; legend well-placed; radial lines perhaps
+          slightly dense
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct wind rose polar histogram
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Direction mapped to angle, speed to color, frequency to radius
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has 8 sectors, speed bins, stacking, legend; cool-to-warm colors
+          present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All directions visible, frequency axis shows full range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend shows all 5 speed ranges correctly
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: Correct format used (spec-id · library · pyplots.ai)
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows prevailing wind pattern, multiple speed ranges, varied frequencies
+          across directions
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Simulated year of hourly wind data with Weibull distribution; westerly
+          prevailing pattern realistic
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Wind speeds 0-12+ m/s realistic; frequencies as percentages sensible
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear script: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only altair, numpy, pandas used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: false
+        comment: Current API usage
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as plot.png and plot.html (correct)
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: Creative use of mark_line with filled=True for polygon wedges, layered
+          composition, tooltips, declarative encoding
+  verdict: APPROVED

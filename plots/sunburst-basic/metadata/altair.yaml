@@ -24,3 +24,172 @@ review:
     labels (rely on hover tooltips)
   - Legend positioned far from chart, creating visual imbalance
   - Could benefit from more interactive features like click-to-zoom that Altair supports
+  image_description: 'The plot displays a sunburst chart with three concentric rings
+    representing a hierarchical company budget breakdown. The innermost ring shows
+    4 departments (Engineering, Operations, Marketing, Sales) with white bold text
+    labels positioned at the center of each arc. The middle ring displays teams within
+    each department using lighter shades of the parent department color. The outermost
+    ring shows projects with the lightest color shades. Engineering (Python Blue #306998)
+    occupies the largest segment, followed by Sales (Coral), Marketing (Yellow), and
+    Operations (Teal). White stroke lines clearly separate all segments. A legend
+    is positioned on the right side listing the four departments. The title "sunburst-basic
+    · altair · pyplots.ai" appears at the top center.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Department labels readable but slightly small for outer rings; inner
+          labels excellent
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, clean separation
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: All segments clearly visible with good sizing and white strokes
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Colorblind-safe palette with distinct hues (blue, yellow, teal, coral)
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good chart centering but legend slightly isolated on right
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: false
+        comment: N/A for sunburst charts (no axes)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend well-organized, no grid needed
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct sunburst chart with concentric rings
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Hierarchy properly mapped: Department > Team > Project'
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: 3 levels, segment angles proportional
+          to values'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, no clipping
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows departments with matching colors
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: sunburst-basic · altair · pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows 4 departments, multiple teams and projects; demonstrates hierarchy
+          well but all leaf nodes similar size
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Company budget breakdown is plausible real-world scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Budget values ($K) are sensible, though range could be wider
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 2
+        max: 3
+        passed: true
+        comment: Mostly linear but has some complex angle calculations (acceptable
+          for sunburst)
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (no random seed needed)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports (altair, numpy, pandas)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Modern Altair API used
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses mark_arc, layering, and tooltips; could use more interactive
+          features
+  verdict: APPROVED

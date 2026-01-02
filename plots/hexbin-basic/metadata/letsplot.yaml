@@ -26,3 +26,180 @@ review:
     (tooltips, hover info)
   - Some sparse hexagons at the edges are very small, making density harder to read
     in low-count areas
+  image_description: 'The plot displays a hexagonal binning visualization showing
+    density of 2D point data. Three distinct density clusters are visible: one in
+    the upper-right quadrant (around x=3, y=3) with moderate density (cyan/teal colors),
+    one in the lower-left area (around x=-2, y=1) with moderate density, and one highly
+    concentrated cluster in the lower-center (around x=0, y=-3) showing the highest
+    density with yellow/bright green colors (count ~120). The background uses a light
+    gray color (#FAFAFA), with subtle dashed gray grid lines. The viridis colormap
+    ranges from dark purple (low count ~20) through cyan/teal to bright yellow (highest
+    count ~120). The color bar on the right shows the "Count" legend. Title is correctly
+    formatted as "hexbin-basic · letsplot · pyplots.ai" at the top. Axis labels are
+    "X Coordinate" and "Y Coordinate". The 16:9 aspect ratio is properly implemented.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, tick marks, and legend text are all clearly readable
+          at appropriate sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; all labels are well-positioned
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Hexagons are well-sized and clearly visible; density patterns are
+          easy to discern; minor deduction as some sparse edge hexagons are quite
+          small
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Viridis colormap is perceptually uniform and colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions overall; slight excess whitespace on right edge
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels "X Coordinate" and "Y Coordinate" but no units
+          (acceptable for generic coordinate data)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Grid is subtle with dashed lines and appropriate alpha; legend is
+          well-placed on the right
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct hexagonal binning plot type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X and Y coordinates correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: color bar for density scale, viridis
+          colormap, hexagonal bins with visible density patterns'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly labeled as "Count" representing bin density
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "hexbin-basic · letsplot · pyplots.ai"'
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows multiple density clusters with varying intensities; demonstrates
+          the key hexbin feature of revealing density patterns; could show more extreme
+          density variation
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Clustered bivariate data is plausible for density visualization;
+          scenario is generic but appropriate for demonstrating hexbin capabilities
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Coordinate values and point counts are sensible
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 1
+        max: 2
+        passed: true
+        comment: 'Minor issue: imports element_line, element_rect which could be consolidated,
+          but all imports are used'
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses lets-plot's ggplot2-style grammar with geom_hex, scale_fill_viridis,
+          and theme customization; could leverage more lets-plot specific features
+          like tooltips or interactivity in the HTML output
+  verdict: APPROVED

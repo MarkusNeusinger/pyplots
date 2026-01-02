@@ -26,3 +26,172 @@ review:
     example
   - Could add hover tooltips to show exact percentile values, which is a key Bokeh
     strength
+  image_description: The plot displays a classic ECDF (Empirical Cumulative Distribution
+    Function) step function rendered in blue (#306998). The x-axis is labeled "Value"
+    ranging from approximately 10 to 90, and the y-axis is labeled "Cumulative Proportion"
+    ranging from 0 to 1. The title "ecdf-basic · bokeh · pyplots.ai" appears in the
+    top-left corner. The step function shows the characteristic S-curve shape of a
+    normal distribution, starting near 0 at low values and approaching 1 at high values.
+    The grid lines are subtle and dashed. The plot uses proper step-wise increments,
+    clearly showing each data point as a horizontal step followed by a vertical rise.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title and axis labels are readable at full size, though tick labels
+          could be slightly larger
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line width of 4 is well-suited for the data density, step function
+          clearly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color (#306998) with good contrast, no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas space, minor excess whitespace on right edge
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels ("Value", "Cumulative Proportion") but no units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle with alpha=0.3 and dashed style, no legend needed
+          for single series
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct ECDF step function implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Values correctly sorted on X, cumulative proportion on Y
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Step function increases by 1/n at each point, Y ranges 0-1, grid
+          lines present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis set to (0, 1.05) showing all data with appropriate padding
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for single series (full points)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correct format "ecdf-basic · bokeh · pyplots.ai"
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows normal distribution ECDF well, but single distribution only
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Generic normal distribution (mean=50, std=15), plausible but not
+          a specific real-world scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 200 observations is ideal for ECDF, values in reasonable range
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ColumnDataSource and proper Bokeh figure setup, also generates
+          HTML for interactivity, but could leverage more Bokeh-specific features
+          like hover tools
+  verdict: APPROVED

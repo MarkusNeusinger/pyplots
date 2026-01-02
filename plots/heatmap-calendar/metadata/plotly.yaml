@@ -27,3 +27,15 @@ review:
   - Could leverage more Plotly-specific features like custom hover data showing actual
     dates
   - Colorbar title could include more context
+  image_description: 'The plot displays a GitHub-style calendar heatmap for 2024 showing
+    contribution activity over the full year. The layout uses a grid with 7 rows (Mon-Sun)
+    and approximately 53 columns (weeks). Days are represented as cells with gaps
+    between them. A sequential green colorscale (from light gray #ebedf0 for zero/empty
+    to dark green #216e39 for high values) encodes contribution counts. Month labels
+    (Jan-Dec) appear along the top axis. Weekday labels (Mon-Sun) are on the left
+    y-axis. A vertical colorbar on the right shows the "Contributions" scale from
+    0-18. The title "GitHub Activity 2024 · heatmap-calendar · plotly · pyplots.ai"
+    is centered at the top in large font. The data shows realistic patterns: weekends
+    (Sat/Sun) have generally lighter activity, with occasional burst days showing
+    dark green.'
+  verdict: APPROVED

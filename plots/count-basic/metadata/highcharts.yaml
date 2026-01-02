@@ -25,3 +25,174 @@ review:
     of Responses" instead of just "Count")
   - Could leverage more Highcharts-specific features in the HTML output (tooltips
     are standard but animations could be showcased)
+  image_description: 'The plot displays a count/column chart showing survey response
+    frequencies with 5 categories sorted in descending order by count. The bars are
+    rendered in Python Blue (#306998) color. From left to right: "Satisfied" (24 responses,
+    tallest bar), "Very Satisfied" (12), "Neutral" (8), "Dissatisfied" (5), and "Very
+    Dissatisfied" (1, shortest bar). Each bar has a white data label showing the count
+    value positioned at the top. The title "count-basic · highcharts · pyplots.ai"
+    appears at the top in bold. The Y-axis is labeled "Count" ranging from 0-26, and
+    the X-axis is labeled "Response Category". The background is white with subtle
+    gray horizontal grid lines. The chart has good proportions with balanced margins
+    and fills the canvas well.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, tick labels, and data labels all clearly readable
+          at the large resolution
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; category labels have adequate spacing
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are well-sized with good width and spacing for 5 categories
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme (Python Blue) is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good layout overall, though slightly more bottom margin than needed
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels ("Count", "Response Category") but no units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle and appropriate; legend correctly disabled for single
+          series
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct column/count chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X-axis, counts on Y-axis correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has sorted bars (descending), count labels on bars as spec suggests
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full range from 0 to above max count (26)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend appropriately disabled for single series
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "count-basic · highcharts · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variation in counts across categories (1-24 range), though
+          all categories have different counts which is good
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Survey satisfaction responses is a perfect real-world scenario for
+          count plots
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: 50 total responses is reasonable; values are plausible for a small
+          survey
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear structure: imports → data → count → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: false
+        comment: Data is deterministic (hardcoded list), but no explicit seed comment
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current highcharts-core API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Highcharts column series with data labels, proper chart configuration,
+          and correct PNG export via Selenium. Could leverage more Highcharts-specific
+          features like tooltips or animations in HTML output.
+  verdict: APPROVED

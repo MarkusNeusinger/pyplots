@@ -27,3 +27,171 @@ review:
     on right side'
   - Data variation could be more dramatic to better showcase the explosion feature
     contrast
+  image_description: 'The plot shows an exploded pie chart titled "pie-exploded ·
+    highcharts · pyplots.ai" with a subtitle "Market Share by Company". The chart
+    displays 6 segments representing different tech companies: TechCorp (35.0%, blue,
+    exploded), DataSoft (25.0%, yellow, exploded), CloudNet (18.0%, purple), InnoSys
+    (12.0%, cyan), WebScale (7.0%, brown), and CoreLogic (3.0%, pink). The two largest
+    segments (TechCorp and DataSoft) are visually separated/exploded from the main
+    pie to emphasize the market leaders. Data labels show company names with percentage
+    values. A legend is positioned on the right side with all category names and colored
+    indicators. The chart uses a white background with clean, professional styling.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is large and bold (72px), data labels are clearly readable
+          (36px), legend text is appropriately sized
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, all labels are well-positioned around the pie
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Pie slices are well-sized (65% of chart area), explosion offset is
+          clearly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses colorblind-safe palette with distinct blue, yellow, purple,
+          cyan, brown, pink colors
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good overall layout but pie is slightly off-center due to legend
+          placement on right; minor imbalance
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend well-placed on right side, no grid needed for pie chart
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct exploded pie chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories and values correctly mapped to pie slices
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has explosion effect, percentage labels, distinct colors, legend
+          for category identification
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, percentages sum to 100%
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend accurately shows all 6 categories with correct colors
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "pie-exploded · highcharts · pyplots.ai" format
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows explosion on 2 slices (leader and runner-up), varied slice
+          sizes; could show more dramatic size variation
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Market share by company is a perfect real-world scenario for exploded
+          pie charts
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are plausible (35%, 25%, 18%, 12%, 7%, 3% = 100%); could have
+          more dramatic variation
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear structure: imports → data → plot → save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: false
+        comment: No random seed needed (deterministic data), but data is hardcoded
+          which is fine
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Highcharts API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses Highcharts-specific sliced property for explosion, slicedOffset
+          for explosion distance, allowPointSelect for interactivity, proper series
+          configuration
+  verdict: APPROVED

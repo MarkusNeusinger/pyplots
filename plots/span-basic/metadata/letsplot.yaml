@@ -23,3 +23,175 @@ review:
   - Axis label for y-axis lacks units (could be "Economic Index (points)" or similar)
   - Legend title "Highlighted Region" is redundant since it only shows one category
   - Does not demonstrate horizontal span variant mentioned in spec (vertical only)
+  image_description: The plot displays a line chart showing an "Economic Index" over
+    time from 2006 to 2011. A semi-transparent yellow/gold vertical span highlights
+    the "Recession 2008-2009" period, clearly labeled at the top of the highlighted
+    region. The line is rendered in Python blue (#306998) with both line segments
+    and circular markers at each data point. The data shows a decline from ~105 in
+    2006, bottoming out around 74 during the recession, then recovering to ~119 by
+    late 2011. The title "span-basic · letsplot · pyplots.ai" appears at the top.
+    Axis labels show "Year" on x-axis and "Economic Index" on y-axis. A legend on
+    the right identifies the yellow region as "Highlighted Region - Recession Period".
+    The overall layout is clean with a light gray background and subtle grid lines.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, tick marks, and legend are all clearly readable
+          with appropriate font sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Line and markers are appropriately sized for the data density (72
+          points); markers could be slightly smaller to reduce visual clutter
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue line on yellow span provides excellent contrast; colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas appropriately with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Labels are descriptive ("Year", "Economic Index") but lack units
+          for the index
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle, but legend title "Highlighted Region" is somewhat
+          redundant with the legend content
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correctly implements vertical span plot with highlighted region
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Time on x-axis, values on y-axis, span correctly positioned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Semi-transparent fill (alpha 0.25), underlying data visible, text
+          label within span region
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data with appropriate padding
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies the recession period
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses exact format: "span-basic · letsplot · pyplots.ai"'
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows vertical span effectively; could demonstrate horizontal span
+          as well for complete coverage
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Economic recession scenario is realistic and widely understood
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Economic index values (65-125) are plausible for such an indicator
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure without functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 0
+        max: 1
+        passed: true
+        comment: pd.date_range with freq="ME" is the newer syntax but may have compatibility
+          considerations
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses geom_rect for span which is standard ggplot grammar; could leverage
+          more lets-plot specific features like tooltips for interactivity
+  verdict: APPROVED

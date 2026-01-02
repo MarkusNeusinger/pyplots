@@ -23,3 +23,177 @@ review:
   - Only demonstrates post step style; could showcase more step variations mentioned
     in spec
   - Could use fill_between to add visual distinction to the stepped area
+  image_description: The plot displays a step (stair-step) chart showing cumulative
+    monthly sales data over 12 months (January through December). The step line is
+    rendered in a blue color (#306998) with horizontal lines connected by vertical
+    segments creating the characteristic stair-step pattern. Yellow circular markers
+    (#FFD43B) with blue borders are placed at each data point to highlight where value
+    changes occur. The chart shows cumulative sales increasing from approximately
+    45 thousand dollars in January to about 849 thousand dollars by December. The
+    x-axis shows month abbreviations (Jan-Dec), and the y-axis displays "Cumulative
+    Sales (thousands $)" ranging from 0 to approximately 850. The title "step-basic
+    · matplotlib · pyplots.ai" appears at the top. A legend in the upper left identifies
+    "Cumulative Sales" (the step line) and "Monthly Totals" (the markers). A subtle
+    dashed grid aids in reading values.
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, labels at 20pt, ticks at 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, month labels well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Step line at linewidth=3 is clearly visible, markers at s=200 are
+          appropriately sized for 12 data points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow color scheme is colorblind-safe with good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins, tight_layout applied
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Month" and "Cumulative Sales (thousands
+          $)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid at alpha=0.3 is subtle, but legend placement in upper-left partially
+          overlaps with the data area
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct step plot using ax.step() with stair-step pattern
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=months (sequential), Y=cumulative sales (values) correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: ''post'' step style, markers at data
+          points, grid lines'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full range from near 0 to ~850, all data visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels correctly identify step line and markers
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "step-basic · matplotlib · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows cumulative increasing pattern well, but only demonstrates 'post'
+          style (spec mentions pre/mid/post options)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly cumulative sales is a realistic, comprehensible scenario
+          matching spec applications
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Sales values in realistic range (45-105k monthly, 849k cumulative)
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple script: imports → data → plot → save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set for reproducibility
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png' with dpi=300
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses ax.step() correctly with where='post', but doesn't leverage
+          advanced matplotlib features like fill_between for step areas or custom
+          step formatting
+  verdict: APPROVED

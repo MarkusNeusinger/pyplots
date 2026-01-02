@@ -25,3 +25,184 @@ review:
   - Title format includes extra descriptive text before the required format
   - Edge curves could be slightly less transparent in the center region where they
     overlap
+  image_description: 'The plot displays a hive plot visualization for software module
+    dependencies. Three radial axes extend from near the center: **Core** (pointing
+    right/east), **Utility** (pointing upper-left), and **Interface** (pointing lower-left).
+    Each axis has nodes (circles) positioned along it with sizes representing degree
+    (number of connections). Core modules are shown in blue (#306998), Utility modules
+    in yellow (#FFD43B), and Interface modules in green (#34A853). Curved Bezier edges
+    connect the nodes, colored by type: blue for within-Core, yellow for within-Utility,
+    green for within-Interface, and gray for between-axes connections. The title at
+    the top reads "Software Module Dependencies · hive-basic · letsplot · pyplots.ai".
+    A comprehensive legend on the right shows Edge Type, Connections (size scale 2-8),
+    and Module Type. The background is white with axis labels in bold black text near
+    each axis terminus.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: 'Title is large and readable (24pt), axis labels are bold and clear.
+          Legend text is appropriately sized. Minor: tick marks not present but appropriate
+          for this plot type.'
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, axis labels well separated from nodes
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Nodes are clearly visible with good sizing scaled by degree. Edges
+          have appropriate alpha (0.6) for visibility without overwhelming. Slightly
+          dense in the center.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue, yellow, and green provide good contrast and are colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot is well-centered, uses canvas effectively, legend positioned
+          appropriately on the right
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: true
+        comment: No numeric axis labels or units (N/A for hive plots - radial position
+          represents degree ordering)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend is comprehensive with three sections (Edge Type, Connections,
+          Module Type), axis lines are subtle gray
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct hive plot with radial axes, nodes positioned by attribute,
+          curved edges
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Nodes correctly assigned to axes by module type, positioned by degree
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: 3 axes, nodes with degree, edges with
+          bundling-like curves, realistic software dependency scenario'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All nodes visible, radial range from 0.3 to 0.95 works well
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend accurately describes edge types, node sizes, and module types
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: Title includes spec-id, library, pyplots.ai but adds descriptive
+          prefix "Software Module Dependencies" which is acceptable but not the exact
+          format
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows within-axis and between-axis connections, varying node degrees,
+          but no especially complex patterns
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Software module dependencies is an excellent real-world scenario
+          matching spec's application examples
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 15 nodes across 3 axes is appropriate, degree values (2-8) are realistic
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → calculations → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) is set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy, pandas, lets_plot used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves to 'plot.png' but ggsave path parameter may cause issues
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ggplot grammar, geom_path for curves, geom_point with size mapping,
+          theme_void for clean look. Could leverage more lets-plot specific features
+          like tooltips.
+  verdict: APPROVED

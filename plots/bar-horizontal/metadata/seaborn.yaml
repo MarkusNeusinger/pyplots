@@ -23,3 +23,175 @@ review:
     suggestion for drawing attention to specific categories
   - Uses seaborn primarily as a styling layer over matplotlib rather than leveraging
     seaborn statistical features
+  image_description: The plot displays a horizontal bar chart showing programming
+    language popularity survey results. There are 10 horizontal bars in a consistent
+    steel blue color (#306998), sorted from lowest (Kotlin at 12%) at the top to highest
+    (Python at 68%) at the bottom. Each bar has a percentage label at its end. The
+    y-axis shows "Programming Language" with language names (Kotlin, Swift, Rust,
+    Go, TypeScript, C#, C++, Java, JavaScript, Python), and the x-axis shows "Percentage
+    of Respondents (%)" with values from 0 to 70. The title reads "bar-horizontal
+    · seaborn · pyplots.ai". A subtle dashed grid is visible on the x-axis. Top and
+    right spines are removed for a cleaner look.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: 'All text is perfectly readable: title at 24pt, axis labels at 20pt,
+          tick labels at 16pt'
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are well-sized with consistent height, good spacing between
+          categories
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme avoids colorblind issues entirely
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well, balanced margins, good use of space
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: X-axis has units "(%)", Y-axis label "Programming Language" is descriptive
+          but no unit needed for categorical
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Subtle dashed grid at alpha 0.3, no legend needed (single color)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct horizontal bar chart
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on Y-axis, values on X-axis as specified
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: sorted bars, value labels, consistent
+          bar heights, adequate spacing'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: X-axis extended to 78 to accommodate labels, all data visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single-color chart
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "bar-horizontal · seaborn · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows ranking/comparison well, sorted from low to high; could have
+          highlighted a specific bar to show that feature
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Programming language popularity survey is a real, relatable scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are percentages 12-68%, realistic but total exceeds 100% (multi-select
+          survey implied)
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: false
+        comment: Data is deterministic but no random seed comment since data is hardcoded
+          (acceptable, but could document)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Only used imports: matplotlib.pyplot, pandas, seaborn'
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses modern seaborn API with hue parameter correctly
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses seaborn's barplot correctly with hue for palette, but doesn't
+          leverage seaborn-specific statistical features like confidence intervals
+          or other advanced capabilities
+  verdict: APPROVED

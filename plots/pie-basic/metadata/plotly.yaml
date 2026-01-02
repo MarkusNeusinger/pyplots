@@ -28,3 +28,168 @@ review:
   - Could use plotly hovertemplate for richer interactivity in the HTML version
   - Slice size distribution is fairly uniform (35/25/20/12/8) - more extreme variation
     would better demonstrate the plot type ability to show disparate proportions
+  image_description: The plot displays a pie chart showing "Budget allocation by department"
+    with 5 distinct slices. The Engineering slice (35%) is in Python Blue (#306998)
+    and is slightly exploded/pulled out for emphasis. Marketing (25%) is bright yellow,
+    Sales (20%) is teal, Operations (12%) is coral/salmon, and HR (8%) is light green.
+    Each slice displays both the category name and percentage directly on it. The
+    title "pie-basic · plotly · pyplots.ai" is centered at the top in a clean font.
+    A vertical legend on the right side lists all five departments with their corresponding
+    color squares. White borders cleanly separate each slice. The overall layout is
+    clean with a white background.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, slice labels at 20pt, legend at 18pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, all labels fit within slices or are clearly
+          positioned
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Pie slices are well-sized and clearly visible with good proportions
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Colorblind-safe palette with distinct hues (blue, yellow, teal, coral,
+          green)
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good overall, but slight imbalance with empty space on left vs legend
+          on right
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend well-placed on right, clean styling
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct pie chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories and values correctly mapped to slices
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has percentage labels, distinct colors, legend, and slight explosion
+          for emphasis
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, percentages sum to 100%
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows all 5 categories
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "pie-basic · plotly · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows 5 categories with varying sizes, but could show more variation
+          in slice sizes
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Budget allocation by department is a classic, realistic use case
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values (35%, 25%, 20%, 12%, 8%) are realistic department budget proportions
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (no random values)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only plotly.graph_objects imported
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Using current plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses go.Pie with pull parameter for explosion, textinfo for labels,
+          and generates interactive HTML. Could leverage more plotly-specific features
+          like hover templates.
+  verdict: APPROVED

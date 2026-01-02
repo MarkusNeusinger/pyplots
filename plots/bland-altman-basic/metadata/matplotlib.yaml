@@ -24,3 +24,178 @@ review:
   - Legend and right-side annotations show redundant information; consider removing
     one or making them complementary
   - Marker size (s=150) slightly below the recommended 100-200 range for 80 data points
+  image_description: 'The plot displays a Bland-Altman agreement plot comparing two
+    blood pressure measurement methods. Blue circular markers (80 data points) are
+    scattered showing the difference between methods plotted against the mean of both
+    methods. A solid dark blue horizontal line indicates the mean bias at -2.44 mmHg.
+    Two dashed golden/yellow horizontal lines mark the limits of agreement at +1.96
+    SD (6.55 mmHg) and -1.96 SD (-11.44 mmHg). A subtle dotted gray reference line
+    is at y=0. The right side of the plot has text annotations showing the bias and
+    limits of agreement values. The x-axis is labeled "Mean of Two Methods (mmHg)"
+    ranging from 80-150, and the y-axis is labeled "Difference (Method 1 - Method
+    2) (mmHg)" ranging from -15 to about 7. The title follows the required format:
+    "bland-altman-basic · matplotlib · pyplots.ai". A legend in the upper left explains
+    the three horizontal lines.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt, annotations
+          at 14pt - all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all annotations positioned cleanly
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers at s=150 with alpha=0.6 appropriate for 80 points, though
+          could be slightly larger per guidelines (100-200 recommended for 30-100
+          points)
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow color scheme is colorblind-safe with good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good overall layout, though right margin annotations extend beyond
+          typical plot area
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Both axes have descriptive labels with units (mmHg)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Legend is well-placed but provides redundant information (same values
+          shown in annotations); grid is subtle at alpha=0.3
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct Bland-Altman plot type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X-axis shows mean of pairs, Y-axis shows difference
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Mean line, ±1.96 SD lines, annotations all present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly describes line meanings
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "bland-altman-basic · matplotlib · pyplots.ai"'
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows good spread of differences with points both within and outside
+          limits of agreement; demonstrates realistic bias
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Blood pressure sphygmomanometer comparison is a classic real-world
+          application
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Blood pressure values around 80-150 mmHg are realistic
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy imported
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: No deprecated functions used
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png'
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: true
+        comment: Uses basic matplotlib features (axhline, scatter, text annotations)
+          correctly but doesn't leverage advanced features like fill_between for confidence
+          regions
+  verdict: APPROVED

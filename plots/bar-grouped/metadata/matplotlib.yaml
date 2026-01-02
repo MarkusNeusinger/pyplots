@@ -21,3 +21,172 @@ review:
   weaknesses:
   - Legend position in upper left may conflict with data if values were higher in
     Q1 (upper right or outside plot would be safer)
+  image_description: The plot displays a grouped bar chart with quarterly sales data
+    (Q1-Q4) for three product categories. Electronics is shown in Python Blue (#306998),
+    Clothing in Python Yellow (#FFD43B), and Home & Garden in green (#4CAF50). Each
+    category group contains three side-by-side bars with value labels displayed above
+    each bar (e.g., 245, 178, 125 for Q1). The title "bar-grouped · matplotlib · pyplots.ai"
+    is centered at the top. The y-axis label reads "Sales (Thousands USD)" with values
+    from 0 to ~450, and the x-axis shows "Quarter" with Q1-Q4 labels. A legend in
+    the upper left corner identifies each product line. Subtle dashed grid lines appear
+    on the y-axis with good transparency.
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt, all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, bars well-spaced, value labels clear
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars sized appropriately with good spacing between groups
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/Yellow/Green palette is colorblind-safe, high contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well, balanced margins, legend well-positioned
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis includes units "(Thousands USD)", X-axis descriptive "Quarter"
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid at alpha=0.3 is good, but legend could be positioned in less
+          data-relevant area (upper right would be better as it doesn't interfere
+          with potential higher values)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct grouped bar chart
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X, groups as side-by-side bars, values as heights
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Distinct colors, legend, consistent spacing, value labels
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis starts at 0, includes headroom for labels
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels match data series exactly
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correct format "bar-grouped · matplotlib · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Shows varied patterns: Electronics peaks in Q4, Clothing grows steadily,
+          Home & Garden peaks mid-year'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Quarterly sales by product line is a common business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values in hundreds of thousands USD are realistic for retail sales
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses deterministic hardcoded data, no randomness
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 0
+        max: 1
+        passed: true
+        comment: Uses `strict=True` in zip which is Python 3.10+ only (minor compatibility
+          concern)
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png' correctly
+    library_features:
+      score: 4
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of bar positioning with np.arange offsets, ax.annotate for
+          value labels, edge styling with white borders
+  verdict: APPROVED

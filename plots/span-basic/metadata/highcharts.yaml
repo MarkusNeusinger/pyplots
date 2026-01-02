@@ -25,3 +25,175 @@ review:
     with categories)
   - Stock price values are somewhat generic; could reference a specific index for
     more realism
+  image_description: |-
+    The plot displays a line chart showing stock price data over time from January 2007 to October 2010. The title "span-basic · highcharts · pyplots.ai" appears at the top in bold black text, with a subtitle "Stock Price with Recession Period Highlighted" below it. The y-axis is labeled "Stock Price ($)" ranging from 50 to 180. The x-axis shows quarterly dates from Jan 2007 to Oct 2010. A blue line with circular markers traces the stock price movement.
+
+    Two span regions are clearly visible:
+    1. A **vertical span** (light blue, ~25% opacity) highlighting the "Recession Period" from Jan 2008 to Jan 2009, with a label at the top
+    2. A **horizontal span** (light yellow, ~25% opacity) highlighting the "Below Target Price" zone from $50 to $100, with a label on the left side
+
+    The data shows the stock price declining from ~$155 peak in mid-2007 down to ~$78 during the recession (Apr 2009), then recovering to ~$135 by Oct 2010. The overlapping spans create a visual intersection where both highlighted regions meet.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 72px, labels at 48px, tick labels at 36px - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, x-axis labels spaced well
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line width 6, markers radius 12 - excellent visibility for 16 data
+          points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue line (#306998), blue span, yellow span - colorblind-safe, no
+          red-green conflicts
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good use of canvas space, plot fills majority of area, balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Y-axis has unit "($)", but X-axis label is just "Date" (configured
+          in code but not visible in output - appears Highcharts auto-hides it when
+          categories are used)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Subtle grid lines, legend positioned appropriately
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct span/plot band implementation using Highcharts plotBands
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X-axis shows dates (categories), Y-axis shows stock prices
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Both vertical AND horizontal spans demonstrated with labels
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis 50-180 shows all data points appropriately
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Stock Price" legend label is accurate'
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "span-basic · highcharts · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Excellent! Shows BOTH vertical span (time period) AND horizontal
+          span (threshold zone), matching all spec applications
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: 2008-2009 recession is a real historical event, stock price behavior
+          is realistic
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 3
+        max: 5
+        passed: false
+        comment: Values are reasonable but somewhat generic ($78-$158 range); could
+          be more specific to a real index
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Imports → Data → Chart config → Save - clean linear structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 1
+        max: 3
+        passed: false
+        comment: Data is hardcoded (deterministic) but no explicit seed comment; acceptable
+          but could be clearer
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (Path, tempfile, time, urllib, selenium, highcharts)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current highcharts-core API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as "plot.png" and "plot.html"
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of Highcharts-specific plotBands feature for both x_axis
+          and y_axis, with styled labels and positioning
+  verdict: APPROVED

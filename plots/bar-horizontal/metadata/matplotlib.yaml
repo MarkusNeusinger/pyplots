@@ -22,3 +22,174 @@ review:
   - Could highlight the top 1-3 languages with a different color to draw attention
     as suggested in spec
   - Bar edge color adds visual complexity without clear benefit
+  image_description: The plot displays a horizontal bar chart showing "Top 10 programming
+    languages by popularity". The chart uses a blue color (#306998) for all bars with
+    a darker edge. Python is at the top with 68.2%, followed by JavaScript at 62.5%,
+    then Java, C++, TypeScript, C#, Go, Rust, PHP, and Swift at the bottom with 18.3%.
+    Bars are sorted from largest (top) to smallest (bottom). Each bar has a percentage
+    label at its end. The x-axis shows "Popularity (%)" ranging from 0 to 80, and
+    the y-axis shows "Programming Language". The title correctly uses the format "bar-horizontal
+    · matplotlib · pyplots.ai". A subtle dashed grid appears on the x-axis. Top and
+    right spines are removed for a cleaner look.
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, all category labels and value labels are clearly
+          separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bar heights appropriate (0.65), good spacing between bars, value
+          labels clearly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color scheme, no colorblind issues, good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well, balanced margins, good proportions
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: X-axis has "Popularity (%)" with units, Y-axis has descriptive "Programming
+          Language"
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle (alpha=0.3), but no legend needed/present (acceptable)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct horizontal bar chart using ax.barh()
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on Y-axis, values on X-axis as specified
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: sorted bars, consistent bar heights,
+          value labels at bar ends, adequate spacing'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: X-axis extends to 80% (1.2x max value) showing all data clearly
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single-series chart
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "bar-horizontal · matplotlib · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows ranking effectively with 10 categories, good variety in values,
+          but all bars same color (spec mentions "highlight specific bars" as option)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Programming language popularity is a realistic, relatable scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Percentages are realistic and within plausible range for survey data
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set (though not strictly needed for hardcoded
+          data)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: No deprecated functions used
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png' with dpi=300
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ax.barh(), text annotations, spine removal, but no advanced
+          matplotlib features like custom patches or color gradients
+  verdict: APPROVED

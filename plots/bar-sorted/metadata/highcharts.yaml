@@ -25,3 +25,175 @@ review:
     making it harder to estimate intermediate values
   - Data labels show K suffix but the axis title says thousands USD - minor redundancy
     in unit notation
+  image_description: The plot shows a horizontal bar chart with 10 product categories
+    sorted by sales values in ascending order (smallest at top, largest at bottom).
+    The bars are displayed in a consistent blue color (#306998). At the top is the
+    title "bar-sorted · highcharts · pyplots.ai" in bold black text, with the subtitle
+    "Monthly Sales by Product Category" in gray below it. Category labels appear on
+    the left y-axis (Pet Supplies at top with 25K, down to Electronics at bottom with
+    145K). Each bar has a data label showing the value with "K" suffix positioned
+    just to the right of the bar. The layout uses clean white background with no visible
+    gridlines on the x-axis (though the y-axis has dashed grid lines). The chart fills
+    the canvas well with good margins.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 48px, labels at 28px, axis text at 24-32px - all highly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, clean spacing
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars well-sized with appropriate spacing
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color (#306998), colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of canvas, but y-axis (value axis) lacks visible tick labels/gridlines
+          at bottom
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Y-axis has "Sales (thousands USD)" with units, but not visible in
+          rendered output (no x-axis gridlines/ticks shown)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle dashed style, legend correctly disabled for single
+          series
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct sorted bar chart (horizontal)
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on y-axis, values on x-axis correctly
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Sorted order, value labels on bars, horizontal orientation for readability
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible (25K to 145K)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend appropriately disabled for single series
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "bar-sorted · highcharts · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows clear sorting and value variation, but all positive values
+          without dramatic differences
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly sales by product category is a real, neutral business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values from 25K to 145K are realistic sales figures
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → chart setup → export'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: false
+        comment: Data is deterministic (hardcoded), but no random seed comment needed
+          since no randomness
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current highcharts-core API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Highcharts bar chart with dataLabels, borderRadius, subtitle,
+          proper options structure, but could leverage more interactive features like
+          tooltip customization
+  verdict: APPROVED

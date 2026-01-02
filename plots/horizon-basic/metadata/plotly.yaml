@@ -25,3 +25,168 @@ review:
   - Series labels (Server A-F) could be larger for better readability at full resolution
   - X-axis tick font size (16) is slightly below optimal for 4800x2700 output
   - Color legend annotation text is small and could be more prominent
+  image_description: 'The plot displays a horizon chart with 6 server CPU load time
+    series (Server A through Server F) arranged vertically as subplots over a 24-hour
+    period. Each series uses the horizon chart folding technique: positive deviations
+    from baseline are shown in blue (light to dark shades indicating increasing magnitude
+    across 3 bands), while negative deviations are shown in red (light to dark). The
+    title reads "Server CPU Load (24h) · horizon-basic · plotly · pyplots.ai" centered
+    at the top. The x-axis shows "Hour of Day" from 0 to ~24, with tick marks at 0,
+    5, 10, 15, 20. Series labels appear on the left side of each subplot. A color
+    interpretation legend is positioned in the top-right corner. The layout uses a
+    clean white background with no gridlines, and each series row has consistent height.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 8
+        max: 10
+        passed: true
+        comment: Title and axis labels readable, series labels slightly small
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Fill areas clearly visible with good color intensity bands
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/red diverging palette is colorblind-accessible
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, plot fills canvas appropriately
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Hour of Day" descriptive but no units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid hidden (appropriate), color legend present but small
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct horizon chart with band folding
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Time on x-axis, values folded into bands
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Multi-series, color-coded bands, positive/negative mirroring
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full 24-hour range visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Color interpretation annotation accurate
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Follows "{spec-id} · {library} · pyplots.ai" format
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows both positive and negative values, multiple bands, spikes
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Server CPU monitoring is a classic horizon chart use case
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values represent deviation from baseline, scale is reasonable
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: No functions/classes, linear flow
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with correct dimensions
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses subplots with shared_xaxes, annotations; could leverage more
+          interactive features
+  verdict: APPROVED

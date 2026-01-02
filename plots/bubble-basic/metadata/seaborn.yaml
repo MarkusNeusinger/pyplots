@@ -25,3 +25,173 @@ review:
   - Could leverage seaborn hue parameter to add color as optional fourth dimension
     per spec suggestion
   - Data context is synthetic without a compelling real-world scenario
+  image_description: 'The plot displays a bubble chart with 50 semi-transparent blue
+    bubbles (#306998) on a white background with subtle dashed grid lines. The bubbles
+    vary in size from small (Size: 20) to large (Size: 80), representing a third variable.
+    The X-axis is labeled "X Value" and ranges from approximately 20 to 80, while
+    the Y-axis is labeled "Y Value" and ranges from approximately 15 to 70. The data
+    shows a clear positive correlation between X and Y values. A size legend titled
+    "Bubble Size" appears in the upper-left corner with three reference bubbles (20,
+    50, 80). The title "bubble-basic · seaborn · pyplots.ai" is displayed at the top
+    in the correct format.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, labels at 20pt, ticks at 16pt - all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, legend well-placed
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Bubbles are well-sized with good alpha (0.6) for 50 points; minor
+          deduction for some dense overlap areas
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme, good contrast against white background
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, 16:9 aspect ratio, no cut-off content
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Labels are "X Value" and "Y Value" - descriptive but without units
+          or real-world context
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Grid subtle with alpha=0.3 and dashed style, legend well-positioned
+          with framealpha
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bubble chart showing three variables (x, y, size)
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly assigned with size as third dimension
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: size legend, transparency, proper scaling'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 50 data points visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Size legend correctly shows scaling from 20 to 80
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "bubble-basic · seaborn · pyplots.ai"
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows varied bubble sizes, positive correlation, overlapping bubbles;
+          minor deduction as data could show more diverse size distribution patterns
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 7
+        passed: true
+        comment: Synthetic data with plausible correlation, but generic "X Value/Y
+          Value" rather than real-world scenario like market analysis
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Values are sensible (X: 20-80, Y: 15-70, Size: 20-100)'
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean Imports → Data → Plot → Save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (matplotlib, numpy, pandas, seaborn)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png'
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses seaborn's scatterplot with DataFrame integration and size parameter,
+          but doesn't leverage seaborn's advanced features like hue/style or statistical
+          annotations
+  verdict: APPROVED

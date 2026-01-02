@@ -26,3 +26,190 @@ review:
   - Contour labels cluster in the lower-left peak area, minor readability concern
   - Code uses helper functions which deviates from KISS structure (though justified
     for algorithm complexity)
+  image_description: 'The plot displays a contour visualization using a heatmap background
+    with overlaid white contour lines and black shadow outlines for visibility. The
+    colormap is viridis (purple to yellow gradient), showing three distinct regions:
+    a bright yellow high-value peak in the upper-right (~90%), a yellow-green peak
+    in the lower-left (~80%), and a dark purple low-value region in the upper-center
+    (~10%). White contour lines clearly delineate iso-levels from 10% to 90% in 10%
+    increments. Each contour level is labeled with a white rectangular annotation
+    showing the percentage value. The title reads "contour-basic · highcharts · pyplots.ai"
+    at the top. X-axis is labeled "X Position (units)" and Y-axis is labeled "Y Position
+    (units)", both ranging from approximately -3.0 to 3.0. A vertical colorbar on
+    the right shows "Intensity (%)" from 0% to 100%.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, axis labels, and contour labels are all clearly readable.
+          Font sizes are appropriate for the 4800x2700 resolution.
+      - id: VQ-02
+        name: No Overlap
+        score: 7
+        max: 8
+        passed: true
+        comment: Contour labels are well-placed along the lines. Minor clustering
+          of labels in the lower-left peak (30%-80% labels stack vertically), but
+          still readable.
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Heatmap cells are properly sized for the 100x100 grid. Contour lines
+          with shadow effect provide excellent visibility against the varying background
+          colors.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Viridis colormap is colorblind-safe. White contour lines with black
+          shadow ensure visibility across all color values.
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good margins, no clipping. Colorbar is well-positioned on the right.
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "X Position (units)", "Y Position
+          (units)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid lines are barely visible/not shown on the heatmap. The dotted
+          grid configured in code is not apparent in the final image.
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct contour plot type with both filled regions (heatmap) and
+          contour lines as specified.
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X, Y, Z correctly mapped. Grid coordinates properly assigned.
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has colorbar, contour lines, filled regions, and labeled levels.
+          The specification suggests "Consider using both contour lines and filled
+          regions for clarity" - this is done well. However, no diverging colormap
+          option shown (only viridis which is sequential).
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, axes span the full -3 to 3 range.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar legend correctly shows "Intensity (%)" with proper scale.
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "contour-basic · highcharts · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows multiple peaks (high values), a valley (low value region),
+          and gradients between them. Demonstrates the key features of contour plots
+          well. Could show a saddle point for completeness.
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Uses a mathematical Gaussian combination that simulates "temperature
+          distribution" as mentioned in comments. Plausible scientific scenario but
+          generic.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Grid of 100x100 points provides smooth contours. Value range 0-100%
+          is sensible for normalized intensity.
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 1
+        max: 3
+        passed: false
+        comment: Code uses functions (marching_squares_contour, connect_segments)
+          rather than flat script structure. While these are necessary for the contour
+          extraction algorithm, it deviates from the KISS principle.
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) is set, ensuring reproducibility.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used.
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current API.
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html.
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of Highcharts heatmap module with annotations API for
+          contour labels. Custom marching squares algorithm to generate contour lines
+          as overlay series. Shadow effect on contour lines for visibility. Interactive
+          HTML output alongside PNG.
+  verdict: APPROVED

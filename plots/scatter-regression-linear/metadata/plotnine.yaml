@@ -23,3 +23,174 @@ review:
   - Well-configured theme with proper font sizes for 4800×2700 output
   weaknesses:
   - Grid lines appear slightly more visible than ideal despite alpha settings
+  image_description: The plot displays a scatter plot with linear regression showing
+    the relationship between Study Hours (x-axis) and Exam Score in percentage (y-axis).
+    Blue scatter points (~80 data points) are distributed across the plot showing
+    a clear positive linear correlation. A golden/yellow regression line runs diagonally
+    from bottom-left to top-right, with a semi-transparent yellow confidence band
+    around it. The title "scatter-regression-linear · plotnine · pyplots.ai" appears
+    at the top. The regression equation (y = 5.26x + 43.53) and R² = 0.871 are annotated
+    in the upper-left area. The background uses a minimal theme with subtle gray grid
+    lines. The layout is clean with good 16:9 proportions.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels all clearly readable at appropriate
+          sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Points well-sized with good alpha (0.65), though could be slightly
+          larger for 80 points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue (#306998) and yellow (#FFD43B) provide excellent contrast, colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Perfect 16:9 layout with balanced margins and good canvas utilization
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Study Hours" and "Exam Score (%)" are descriptive with units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: No legend needed, but grid could be more subtle (alpha values set
+          but appear slightly visible)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct scatter plot with linear regression
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly assigned (study hours → exam score)
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: R² displayed, regression line distinct,
+          confidence band with transparency, points with alpha, equation annotation'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data appropriately
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A (no legend needed for single series)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: `scatter-regression-linear · plotnine · pyplots.ai`'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows clear linear relationship with scatter around the line, demonstrates
+          regression fit well
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Study hours vs exam score is a classic educational research scenario
+          from the spec
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Study hours 1-10, exam scores 40-100% are realistic values
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses `np.random.seed(42)`
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as `plot.png`
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Excellent use of plotnine''s ggplot2 grammar: `geom_smooth(method="lm",
+          se=True)` for regression, `theme_minimal()`, proper `element_text()` sizing,
+          `annotate()` for statistical text'
+  verdict: APPROVED

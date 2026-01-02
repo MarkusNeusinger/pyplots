@@ -23,3 +23,177 @@ review:
   weaknesses:
   - 'Minor: Grid lines could be slightly more subtle (current alpha 0.1 is good but
     gridwidth=1 makes them slightly prominent)'
+  image_description: The plot displays a horizontal sorted bar chart showing "Monthly
+    sales by product category" with 10 product categories arranged in descending order
+    from top to bottom. Electronics leads with 450 (thousands USD), followed by Clothing
+    (380), Home & Garden (320), Sports (280), Books (250), Toys (220), Beauty (195),
+    Food & Grocery (170), Automotive (140), and Office Supplies (95) at the bottom.
+    All bars are rendered in a consistent Python Blue (#306998) color with darker
+    border lines. Value labels appear outside each bar to the right. The title "bar-sorted
+    · plotly · pyplots.ai" is centered at the top. The x-axis shows "Sales (thousands
+    USD)" ranging from 0 to ~500, and the y-axis shows "Product Category". The background
+    uses Plotly's white template with subtle gridlines.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 32pt, axis labels at 24pt, tick labels at 18pt - all perfectly
+          readable at full resolution
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; horizontal orientation prevents label collision
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are well-sized with good spacing (bargap=0.25), value labels
+          clearly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme with good contrast, no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas with adequate margins; slight excess whitespace
+          on right side
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Sales (thousands USD)" and "Product Category" are descriptive with
+          units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle and appropriate, but no legend needed for single-series
+          data (deducting 0 points - N/A for single series)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct sorted bar chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on Y-axis, values on X-axis, correctly sorted descending
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Sorted descending, horizontal orientation (spec recommended for long
+          labels), value labels on bars
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: X-axis range [0, max*1.15] shows all data with room for labels
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for single series, no legend needed
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "bar-sorted · plotly · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows clear ranking with varied values spanning wide range (95-450),
+          demonstrating the sorting concept well
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly sales by product category is a plausible, neutral business
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values in thousands USD are realistic for retail sales data
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42) for reproducibility
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses go.Bar with proper configuration, plotly_white template, text
+          positioning, interactive HTML export, proper scaling (width=1600, height=900,
+          scale=3)
+  verdict: APPROVED

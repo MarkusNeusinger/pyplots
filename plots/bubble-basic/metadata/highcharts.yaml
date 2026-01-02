@@ -25,3 +25,15 @@ review:
     intervals
   - Bubble size legend appears to be cut off or not fully visible at the bottom
   - No categorical color dimension shown (optional per spec but would enhance demonstration)
+  image_description: The plot displays a bubble chart with 30 data points representing
+    tech company comparisons. The bubbles are rendered in a muted blue color (#306998)
+    with semi-transparent fill. The title "bubble-basic · highcharts · pyplots.ai"
+    appears at the top in bold, followed by a subtitle "Bubble size represents Market
+    Capitalization". The x-axis shows "Revenue (Billion USD)" ranging from 0 to 660,
+    and the y-axis shows "Growth Rate (%)" ranging from 0 to 54. Bubbles vary in size
+    from small (representing lower market cap) to large (representing higher market
+    cap). The data shows a general negative correlation between revenue and growth
+    rate - smaller companies have higher growth rates while larger companies have
+    lower growth rates. A subtle grid is visible, and there appears to be a legend
+    entry at the bottom (partially visible).
+  verdict: APPROVED

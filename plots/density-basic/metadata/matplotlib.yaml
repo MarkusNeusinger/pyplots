@@ -26,3 +26,176 @@ review:
   - X-axis label could include units for full marks (e.g., Test Score (points))
   - Relies on scipy.stats.gaussian_kde rather than exploring matplotlib-native density
     plotting options
+  image_description: The plot displays a kernel density estimation (KDE) curve for
+    test scores. The main distribution is shown as a smooth blue curve (#306998) with
+    semi-transparent blue fill. The density peaks around 72-75 representing the main
+    student group, with a visible shoulder/secondary mode around 45 from the lower-performing
+    group, demonstrating the slight bimodality. A rug plot at the bottom shows individual
+    observations as vertical tick marks in matching blue. The title "density-basic
+    · matplotlib · pyplots.ai" is centered at the top. X-axis labeled "Test Score"
+    ranges from ~20 to ~100+, Y-axis labeled "Density" ranges from 0 to ~0.026. The
+    plot has clean styling with removed top/right spines and subtle dashed gridlines.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping elements, clean layout
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Density curve and rug plot clearly visible with appropriate linewidth
+          (3) and alpha (0.4)
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme (#306998 blue), excellent contrast, colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Well-proportioned with tight_layout, good use of space
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Descriptive labels ("Test Score", "Density") but no units on x-axis
+          (could be "Test Score (points)")
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: false
+        comment: Grid is subtle (alpha=0.3) which is good, but no legend present (though
+          not strictly needed for single series)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct density/KDE plot implementation using scipy.stats.gaussian_kde
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Values correctly mapped to x-axis, density to y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has smooth density curve, fill under curve with transparency, rug
+          plot as spec suggests
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, appropriate x-range extension
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for single series (no legend needed)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "density-basic · matplotlib · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows bimodality (main peak + lower group), left-skewed distribution,
+          outliers visible in rug
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Test scores is a real, comprehensible scenario; bimodal distribution
+          is realistic for student performance
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 3
+        max: 5
+        passed: false
+        comment: Values are realistic (0-100 test scores), but clipping to 0-100 after
+          normal generation creates slight artifacts at boundaries
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set correctly
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports (matplotlib, numpy, scipy.stats)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses scipy for KDE rather than matplotlib-native features. Good use
+          of fill_between, spines removal, but could leverage more matplotlib-specific
+          styling
+  verdict: APPROVED

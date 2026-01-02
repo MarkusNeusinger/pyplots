@@ -24,3 +24,169 @@ review:
   - Uses monochromatic palette instead of seaborn built-in color palettes like colorblind
     or Blues which could add visual interest
   - Grid uses dashed linestyle which is slightly more prominent than recommended
+  image_description: The plot shows a horizontal bar chart displaying 10 product categories
+    sorted by sales in descending order. Electronics leads at $450k, followed by Clothing
+    ($380k), Home & Garden ($320k), Sports ($275k), Books ($240k), Toys ($210k), Beauty
+    ($185k), Automotive ($150k), Food & Grocery ($120k), and Pet Supplies ($95k).
+    All bars are a consistent steel blue color (#306998). The title "bar-sorted ·
+    seaborn · pyplots.ai" appears at the top. The y-axis shows "Product Category"
+    and x-axis shows "Sales (thousands $)". Value labels are positioned at the end
+    of each bar. A subtle dashed grid appears on the x-axis with alpha=0.3. The layout
+    is clean with good proportions - the plot fills the canvas well.
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, labels at 20pt, ticks at 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; horizontal orientation prevents label collision
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are well-sized, clear visual hierarchy
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme, no color distinction issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas appropriately, balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Sales (thousands $)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid alpha 0.3 is good, but no legend needed; however, grid lines
+          could be slightly more subtle
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct sorted bar chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on Y-axis, values on X-axis correctly
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Sorted descending, horizontal orientation, value labels present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: X-axis extended to 115% to fit value labels
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single-series data
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "bar-sorted · seaborn · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows sorted bars with clear ranking; could demonstrate more variation
+          in values to highlight the sorting benefit
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Realistic product sales scenario, neutral business context
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values from $95k to $450k are realistic for business sales
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses modern seaborn API with hue parameter
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses sns.barplot correctly with hue parameter for API compatibility,
+          but doesn't leverage seaborn's statistical features or built-in palettes
+  verdict: APPROVED

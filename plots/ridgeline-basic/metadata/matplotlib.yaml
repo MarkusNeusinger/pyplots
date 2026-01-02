@@ -25,3 +25,162 @@ review:
   - Manual KDE implementation using list comprehension is less efficient than using
     scipy.stats.gaussian_kde
   - Grid could be slightly more subtle (alpha=0.2 instead of 0.3)
+  image_description: 'The plot displays a beautiful ridgeline visualization with 12
+    overlapping density curves representing monthly temperature distributions. The
+    months are arranged vertically from January at the top to December at the bottom.
+    A viridis color gradient is used: purple/dark blue for cold winter months (January,
+    February) transitioning through blue and teal to bright yellow-green for warmer
+    months (July, August). Each ridge shows a smooth bell-shaped density distribution.
+    Winter months peak around 0-5°C while summer months peak around 25°C, showing
+    a realistic Northern Hemisphere seasonal pattern. The x-axis shows ''Temperature
+    (°C)'' ranging from -10 to 40. Month names are clearly displayed as y-axis labels.
+    The title ''ridgeline-basic · matplotlib · pyplots.ai'' is prominently displayed.
+    The ridges have ~60% overlap creating the characteristic Joy Plot appearance.
+    A subtle dashed grid appears on the x-axis only.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at fontsize=24, xlabel at fontsize=20, y-tick labels at fontsize=14,
+          x-ticks at fontsize=16 - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; month labels are well-spaced and density curves
+          overlap intentionally as per ridgeline design
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Density curves are well-sized with scale=2.5, alpha=0.8 provides
+          excellent visibility while maintaining overlap aesthetics
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses viridis colormap which is colorblind-safe and has excellent
+          perceptual uniformity
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins, tight_layout applied
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'X-axis has descriptive label with units: ''Temperature (°C)'''
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct ridgeline/Joy Plot type with vertically stacked density curves
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Values correctly mapped to x-axis density, groups (months) to y-axis
+          positions
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: partial overlap (~60%), vertical stacking,
+          group labels on y-axis, color differentiation'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: X-axis range (-10 to 40°C) shows all data properly
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed; month labels serve as group identifiers
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: ''ridgeline-basic · matplotlib · pyplots.ai'''
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows seasonal variation with clear difference between winter/summer,
+          spring/fall transition months have realistic intermediate values and higher
+          variation
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly temperature distributions for Northern Hemisphere is an excellent,
+          comprehensible real-world scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Temperature values are realistic: ~2-4°C in winter, ~22-25°C in
+          summer, with appropriate standard deviations'
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → plot → save, no functions or
+          classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42) for reproducibility
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy imported, both used
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png'
+    library_features:
+      score: 3
+      max: 5
+      items: []
+  verdict: APPROVED

@@ -27,3 +27,186 @@ review:
     items show condition-specific names like Control (Cloud) which is confusing
   - Could leverage more Plotly-specific interactive features
   - Implementation header has pre-filled quality score before actual review
+  image_description: 'The plot displays a raincloud visualization for four experimental
+    conditions (Control, Treatment A, Treatment B, Treatment C) showing reaction time
+    data in milliseconds. Each condition has three components: (1) a half-violin "cloud"
+    shown on the right side in distinct colors (blue for Control, light blue for Treatment
+    A, yellow for Treatment B, gray for Treatment C), (2) a white box plot with black
+    outlines in the center showing median, quartiles, and whiskers, and (3) jittered
+    data points ("rain") on the left side of each condition. The title "raincloud-basic
+    · plotly · pyplots.ai" is centered at the top. Y-axis shows "Reaction Time (ms)"
+    ranging from 200-700ms, X-axis shows "Experimental Condition". A legend labeled
+    "Raincloud Components" in the upper right explains Cloud (Distribution), Stats
+    (Box Plot), and Rain (Data Points). Treatment B clearly shows a bimodal distribution
+    in its violin shape. The plot has a clean white background with subtle horizontal
+    gridlines.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 32pt, axis labels at 24pt, tick labels at 20pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text or elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: 'Markers well-sized with proper opacity, violin density clearly visible.
+          Minor: some rain points at edges slightly overlap'
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue, light blue, yellow, gray palette is colorblind-safe with good
+          differentiation
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins, legend positioned neatly
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Reaction Time (ms)" and "Experimental Condition" are descriptive
+          with units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: 'Legend labels are incorrect: shows "Cloud (Distribution)" but actual
+          legend items show condition names like "Control (Cloud)", creating inconsistency'
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct raincloud plot with half-violin, box plot, and jittered points
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X-axis, values on Y-axis correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Has all three components (cloud, box, rain). However, spec notes
+          "cloud on top, rain below" but here cloud is on right, rain on left. For
+          vertical orientation spec says "cloud on right side, boxplot centered, rain
+          points on left/below" - implementation follows this, but rain is beside
+          rather than "below" the boxplot
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis range 200-700ms shows all data including outliers
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies the three components
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "raincloud-basic · plotly · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Excellent: Control (normal distribution), Treatment A (narrower,
+          shifted), Treatment B (bimodal clearly visible in violin!), Treatment C
+          (wider distribution with outliers)'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Reaction times in psychology experiments is a perfect real-world
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values 250-700ms are realistic for human reaction times
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → plot → save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: 'Header says "Quality: 91/100" which was pre-set, should not have
+          quality in implementation header until review is done'
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses go.Violin and go.Box with good hover templates and custom styling.
+          However, doesn't leverage Plotly's interactivity features like buttons,
+          sliders, or annotations. HTML output is generated but could showcase more
+          interactive capabilities
+  verdict: APPROVED

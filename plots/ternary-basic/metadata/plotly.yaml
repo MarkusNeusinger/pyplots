@@ -26,3 +26,176 @@ review:
   - Library features underutilized - could add color encoding by a fourth variable
     or use marker size variation
   - Slight marker overlap in dense central regions of the triangle
+  image_description: 'The plot displays a ternary diagram showing soil composition
+    data with three components: Sand (%), Silt (%), and Clay (%). The equilateral
+    triangle has the title "ternary-basic · plotly · pyplots.ai" centered at the top
+    in large, readable font. Blue markers (#306998) with white outlines and 0.7 opacity
+    are distributed across the triangle, representing 50 soil samples. Each vertex
+    is labeled with its component name and percentage units. Grid lines appear at
+    20% intervals with subtle gray color (0.2 opacity). The tick labels show values
+    from 0-100 at 20% increments. The white background provides clean contrast, and
+    markers are well-sized for the data density.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 48pt, axis labels at 32pt, tick labels at 22pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers well-sized at 18 with appropriate opacity for 50 points (-1
+          for slightly large markers causing minor overlaps in dense areas)
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme, colorblind-safe blue
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good margins, triangle well-centered, slight excess whitespace on
+          sides (-1)
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'All axes labeled with component names and units: "Sand (%)", "Silt
+          (%)", "Clay (%)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid subtle at 0.2 opacity, but no legend shown (-1, though single-category
+          scatter doesn't strictly need legend)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct ternary plot type using Scatterternary
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Three components correctly mapped to a, b, c axes
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Grid lines at 20% intervals, clear vertex labels, distinct markers
+          with appropriate size
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within triangle, components sum to 100%
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for single-category scatter
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correct format "ternary-basic · plotly · pyplots.ai"
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows distribution across triangle, but data is randomly distributed
+          without showing meaningful clusters or patterns (-2)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Soil composition (sand, silt, clay) is a classic, real-world ternary
+          application
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values sum to 100%, appropriate for compositional data (-1 for purely
+          random distribution)
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with correct dimensions (4800x2700 via scale=3)
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses Scatterternary and hovertemplate for interactivity, but could
+          leverage more Plotly features like colorscale or animation
+  verdict: APPROVED

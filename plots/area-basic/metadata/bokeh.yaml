@@ -23,3 +23,176 @@ review:
   - Missing HoverTool for interactivity - Bokeh key strength is interactive exploration
   - Axis labels lack units (could be Daily Visitors count or similar)
   - Large empty space below data since values range 4000-7000 but y starts at 0
+  image_description: The plot displays a basic area chart showing daily website visitors
+    over January 2024. The filled area uses a steel blue color (#306998) with 40%
+    transparency, creating visual weight that emphasizes the magnitude of visitor
+    counts. A solid line traces the top edge of the area for clear definition. The
+    x-axis shows dates from Jan 01, 2024 to Feb 01, with clear date labels. The y-axis
+    displays "Daily Visitors" ranging from 0 to approximately 7000. The title "area-basic
+    · bokeh · pyplots.ai" appears in the top left. The data exhibits a realistic weekly
+    cyclical pattern (weekend dips) with an overall upward trend across the month.
+    Subtle dashed grid lines aid value estimation. The y-axis correctly starts at
+    0, which is essential for area charts to avoid misleading representations.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 48pt, axis labels at 36pt, tick labels at 28pt - all perfectly
+          readable at 4800x2700
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; date labels are well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Area fill and line are perfectly visible; line width of 5 appropriate
+          for canvas size
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme, good contrast against white background
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, slight excess whitespace at bottom due to y starting
+          at 0 but data ranging 4000-7000
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Daily Visitors" and "Date" are descriptive but lack units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha 0.3) with nice dashed styling; no legend needed
+          for single series
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct area chart with filled region below line
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Datetime on x-axis, numeric values on y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Semi-transparent fill (0.4), gridlines present, clear axis labels,
+          line on top
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, y-axis starts at 0
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for single series, no misleading elements
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly formatted as "area-basic · bokeh · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows trend, cyclical pattern, and magnitude well; could show more
+          dramatic variations
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Website traffic with weekly patterns and growth trend is a real,
+          comprehensible scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values 4000-7000 visitors/day plausible; base of 5000 perhaps high
+          for "basic" example
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses varea() and ColumnDataSource correctly, but doesn't leverage
+          Bokeh's interactive features like HoverTool which would enhance the visualization
+  verdict: APPROVED

@@ -25,3 +25,179 @@ review:
     Response" or add domain context)
   - Data is somewhat generic - could use a more realistic scenario with meaningful
     variable names instead of abstract X/y_true
+  image_description: 'The plot displays a residual plot with fitted values (ranging
+    from ~3 to ~23) on the x-axis and residuals (ranging from ~-7 to ~8) on the y-axis.
+    The title "residual-plot · plotnine · pyplots.ai" is clearly visible at the top.
+    Points are colored by type: blue (#306998) for "Normal" points and red/coral (#E74C3C)
+    for "Outlier" points. A dark blue horizontal reference line at y=0 represents
+    perfect predictions. Two gray dashed horizontal lines mark the ±2 standard deviation
+    boundaries for outlier detection. A yellow LOWESS smoothing line runs through
+    the data near zero, showing no strong systematic pattern. The legend labeled "Point
+    Type" appears on the right side. The background uses theme_minimal with subtle
+    gray gridlines.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis titles at 20pt, tick labels at 16pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Points are well-sized (size=4) with good alpha (0.7) for 150 points;
+          slight deduction as some points at the boundaries are very close
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue and red distinction is colorblind-safe; outliers clearly stand
+          out
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of 16:9 canvas, plot fills appropriate space with balanced
+          margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Fitted Values" and "Residuals" are descriptive but lack units (1
+          point)'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle but legend title says "Point Type" (should match data
+          semantics better); also the grid is slightly prominent
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct residual plot with scatter points
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Fitted values on x-axis, residuals on y-axis as per spec
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has horizontal reference line at y=0, LOWESS smoothing line, ±2σ
+          bands, outlier coloring - all spec features present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly distinguishes Normal vs Outlier
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "residual-plot · plotnine · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows outliers (4 points beyond ±2σ), random scatter around zero
+          indicating good fit, slight pattern from LOWESS; could show more heteroscedasticity
+          to demonstrate that use case
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Linear regression with synthetic data is plausible; slightly generic
+          (no real-world variable names)
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Residuals ranging ±7 with std ~1.5 is realistic for regression diagnostics
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports → data → plot → save (no functions/classes)'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Using current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png'
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of ggplot grammar with geom_point, geom_hline, geom_smooth,
+          scale_color_manual, and theme customization; could leverage more plotnine-specific
+          features like faceting or stat_smooth variants
+  verdict: APPROVED

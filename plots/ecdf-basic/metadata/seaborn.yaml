@@ -28,3 +28,170 @@ review:
     to showcase library capabilities
   - Data context is generic (random normal samples) rather than a compelling real-world
     scenario
+  image_description: The plot displays a clear ECDF (Empirical Cumulative Distribution
+    Function) step function with a steel blue line (#306998) against a white background.
+    The x-axis is labeled "Value" and ranges from approximately 10 to 90, while the
+    y-axis is labeled "Cumulative Proportion" and correctly spans from 0 to 1.0. The
+    title "ecdf-basic · seaborn · pyplots.ai" is prominently displayed at the top.
+    The step function exhibits the characteristic S-curve shape expected from normally
+    distributed data (mean=50, std=15), with the steepest increase around the center
+    (values 40-60) and flattening tails at both ends. Subtle dashed grid lines (alpha=0.3)
+    aid in reading percentile values. The line width is appropriately thick (linewidth=3)
+    for visibility at high resolution.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt, labels 20pt, ticks 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line width of 3 is perfect for this data density
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color, no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: '"Value" and "Cumulative Proportion" are descriptive but lack units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha=0.3, dashed), no legend needed
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct ECDF step function
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Values on X, cumulative proportion on Y
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Step function, 0-1 y-axis range, grid for percentile reading
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, y-axis correctly set to 0-1
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single series
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: ecdf-basic · seaborn · pyplots.ai'
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows normal distribution ECDF well, but could benefit from showing
+          specific percentile markers
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Random samples from normal distribution is a classic statistical
+          example
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values centered at 50 with std=15 are sensible, though generic
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) is set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib, numpy, seaborn - all used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: sns.ecdfplot is current API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses sns.ecdfplot which is seaborn-specific, but no additional seaborn
+          features like stat parameter variations or complementary=True option
+  verdict: APPROVED

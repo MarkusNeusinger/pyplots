@@ -24,3 +24,175 @@ review:
   - Crosshair cursor mentioned in comments but only available in HTML output, not
     PNG
   - Minor visual gap between the two panes could be tighter
+  image_description: The plot displays a professional dual-pane candlestick chart
+    with synchronized volume bars. The upper pane (~70% height) shows OHLC candlesticks
+    with blue color for "Up Day" and orange for "Down Day", depicting a stock declining
+    from ~$165 to ~$127 over 60 trading days (Jan-Mar 2024). Wicks are visible extending
+    from candlestick bodies. The lower pane (~30% height) shows corresponding volume
+    bars using the same color scheme, with human-readable y-axis labels (3.9M, 6.1M,
+    8.3M). The title "candlestick-volume · letsplot · pyplots.ai" appears at top,
+    with a horizontal legend showing "Direction" with Up Day/Down Day entries. Both
+    panes share a common x-axis showing dates. Grid lines are subtle gray. The layout
+    is well-balanced with good canvas utilization.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title ~24pt, axis labels ~20pt, tick marks ~16pt, all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, date labels well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Candlesticks are visible with appropriate sizing; wicks could be
+          slightly thicker for better visibility
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue (#0077BB) and orange (#EE7733) are colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good 70/30 split as specified; slight gap between panes but acceptable
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Price ($)" and "Volume (shares)" with units, "Date (2024)" is descriptive'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle, but legend positioning at top overlaps with data
+          area conceptually; minor grid alignment issue between panes
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct candlestick chart with volume bars in dual-pane layout
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Date on X, OHLC prices correctly mapped, volume on lower pane
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has shared x-axis, color-coded volume, proper pane ratio; no crosshair
+          cursor in PNG (only available in HTML)
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, axes show complete range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Direction" legend with "Up Day"/"Down Day" is accurate'
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: '"candlestick-volume · letsplot · pyplots.ai" is correct'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows both bullish (blue) and bearish (orange) candles, varying volume,
+          overall downtrend with some recovery; good mix but could show more dramatic
+          reversals
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Stock price data with realistic volatility and volume correlation
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Prices ($127-$165) and volumes (4M-8M) are realistic; volume format
+          is human-readable
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 1
+        max: 3
+        passed: true
+        comment: Has helper function `format_volume()` which breaks KISS principle
+          (no functions/classes rule)
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses `np.random.seed(42)`
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy, pandas, lets_plot used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses modern gggrid instead of deprecated GGBunch
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses gggrid for multi-panel layout, ggplot2 grammar, scale_color_manual,
+          theme customization, ggsave with scale parameter
+  verdict: APPROVED

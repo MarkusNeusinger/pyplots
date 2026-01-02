@@ -34,7 +34,7 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
   const { copied, copyToClipboard, reset: resetCopied } = useCopyCode({
     onCopy: () => {
       const specId = selectedSpec || image?.spec_id;
-      onTrackEvent?.('copy_code', { spec: specId, library: image?.library, method: 'modal' });
+      onTrackEvent?.('copy_code', { spec: specId, library: image?.library, method: 'button' });
     },
   });
 
@@ -92,13 +92,13 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
   // Track native copy events (Ctrl+C, Cmd+C)
   const handleNativeCopy = useCallback(() => {
     const specId = selectedSpec || image?.spec_id;
-    onTrackEvent?.('copy_code', { spec: specId, library: image?.library, method: 'native' });
+    onTrackEvent?.('copy_code', { spec: specId, library: image?.library, method: 'keyboard' });
   }, [onTrackEvent, selectedSpec, image?.library, image?.spec_id]);
 
   // Track contextmenu (right-click) - user may copy from context menu
   const handleContextMenu = useCallback(() => {
     const specId = selectedSpec || image?.spec_id;
-    onTrackEvent?.('copy_code', { spec: specId, library: image?.library, method: 'contextmenu' });
+    onTrackEvent?.('copy_code', { spec: specId, library: image?.library, method: 'keyboard' });
   }, [onTrackEvent, selectedSpec, image?.library, image?.spec_id]);
 
   // Download image via backend proxy
@@ -119,10 +119,8 @@ export function FullscreenModal({ image, selectedSpec, onClose, onTrackEvent }: 
 
   const handleClose = useCallback(() => {
     setShowCode(false);
-    const specId = selectedSpec || image?.spec_id;
-    onTrackEvent?.('modal_close', { spec: specId, library: image?.library });
     onClose();
-  }, [onClose, onTrackEvent, selectedSpec, image?.library, image?.spec_id]);
+  }, [onClose]);
 
   return (
     <Modal

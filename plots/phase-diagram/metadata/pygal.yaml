@@ -24,3 +24,15 @@ review:
   - The equilibrium point marker at origin is quite small and could be more prominent
   - The undamped oscillator trajectory shows some numerical drift (not a perfect ellipse
     due to Euler method)
+  image_description: 'The plot displays a phase diagram showing two oscillator trajectories
+    on a white background. The title "phase-diagram · pygal · pyplots.ai" appears
+    at the top in dark gray text. The X-axis is labeled "Position x" (range -1.2 to
+    2) and the Y-axis is labeled "Velocity dx/dt" (range -3 to 3). There are two main
+    trajectories: (1) A blue spiral trajectory ("Damped Oscillator γ=0.3") that starts
+    from the outer region and spirals inward toward the origin, demonstrating damped
+    oscillation converging to equilibrium; (2) A yellow elliptical trajectory ("Undamped
+    Oscillator (Limit Cycle)") that forms a closed loop, representing periodic motion
+    without energy loss. A small red dot at the origin marks the "Equilibrium (Fixed
+    Point)". The legend is displayed at the bottom with colored squares indicating
+    each series. Grid lines are shown in light gray.'
+  verdict: APPROVED

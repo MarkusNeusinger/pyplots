@@ -25,3 +25,160 @@ review:
     chart)
   - Could benefit from more extreme variation in segment sizes to better demonstrate
     donut chart capabilities
+  image_description: 'The plot displays a donut chart showing budget allocation across
+    6 departments. The ring uses seaborn''s Set2 color palette with distinct pastel
+    colors: orange for Engineering (28.1%), teal-green for Marketing (15.6%), yellow
+    for R&D (17.5%), light green for HR (7.5%), pink for Sales (20.0%), and blue for
+    Operations (11.2%). The center displays "Total $160,000" in bold dark text. Percentage
+    labels appear in white bold text inside each segment. Category labels are positioned
+    outside the ring. The title "donut-basic · seaborn · pyplots.ai" appears at the
+    top. White edge separators divide the segments. The chart uses a square aspect
+    ratio appropriate for circular visualizations.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, labels, and percentages are clearly readable; center text
+          is prominent
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: All labels and percentages are well-positioned without overlap
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Donut ring has appropriate width (0.5), segments clearly distinguished
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Set2 palette is generally colorblind-friendly, though some similar
+          tones
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of square canvas, donut well-centered
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct donut chart with hollow center
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories and values correctly mapped to segments
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Center text with total, percentage labels, consistent ordering
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All segments visible and proportional
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Category labels accurate and positioned correctly
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "donut-basic · seaborn · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows 6 categories with varying proportions; could show more extreme
+          variation
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Budget allocation by department is a real, comprehensible scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are realistic for departmental budgets, though could include
+          smaller departments
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: true
+        comment: Deterministic data (hardcoded values), no random seed needed but
+          also no random data
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (matplotlib, pandas, seaborn)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib/seaborn APIs
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses seaborn's color_palette and set_theme, but donut chart is matplotlib-native;
+          seaborn doesn't have a dedicated donut/pie function
+  verdict: APPROVED

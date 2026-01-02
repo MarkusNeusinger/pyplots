@@ -26,3 +26,178 @@ review:
     for colorblind users; consider using more distinct hues'
   - Does not leverage plotnine-specific features like scale_fill_brewer for built-in
     colorblind-safe palettes
+  image_description: 'The plot displays a grouped bar chart showing quarterly revenue
+    by product line. There are 4 quarters (Q1-Q4) on the x-axis, with 3 bars per quarter
+    representing Hardware (dark blue #306998), Services (yellow #FFD43B), and Software
+    (light blue #4B8BBE). The y-axis shows "Revenue ($ millions)" ranging from 0 to
+    ~165. The title "bar-grouped · plotnine · pyplots.ai" is displayed at the top.
+    A legend labeled "Product Line" appears on the right side. The plot uses a minimal
+    theme with subtle gray gridlines. Software consistently shows the highest revenue,
+    growing from ~120 in Q1 to ~165 in Q4, while Hardware remains relatively stable
+    (78-92) and Services grows modestly (45-70).'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels are all clearly readable with
+          appropriate font sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, clean spacing throughout
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are well-sized and clearly visible with good spacing between
+          groups
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Blue/yellow/light blue palette is distinguishable but the two blues
+          could be better differentiated for colorblind users
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins, legend positioned appropriately
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis includes units "Revenue ($ millions)", X-axis "Quarter" is
+          descriptive
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle and appropriate, but legend shows categories in alphabetical
+          order (Hardware, Services, Software) rather than the order they appear in
+          the bars (Software, Hardware, Services), which creates confusion when reading
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct grouped bar chart implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories (Quarter) on x-axis, values (Revenue) on y-axis, groups
+          (Product) differentiated by color
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Side-by-side bars, distinct colors, clear legend present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, y-axis starts at 0
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels match data
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correct format "bar-grouped · plotnine · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variation across quarters and between product lines, demonstrates
+          clear patterns (Software growth, Hardware stability), but all products show
+          similar upward trend
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Quarterly revenue by product line is a real, comprehensible business
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Revenue values in tens of millions are realistic for a business context
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure, no functions or classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (no random elements)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as "plot.png"
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Basic ggplot usage with geom_bar and position_dodge; could leverage
+          plotnine's grammar more (e.g., faceting, stat transformations, or scale_fill_brewer
+          for color palettes)
+  verdict: APPROVED

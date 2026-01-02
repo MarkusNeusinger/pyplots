@@ -25,3 +25,182 @@ review:
     documented in prompts/library/highcharts.md
   - Annotation font size could be slightly larger for better readability at a distance
   - Colorbar legend labels are small relative to the chart size
+  image_description: The plot shows a 7×7 correlation matrix heatmap for financial
+    indicators (Revenue, Profit, Growth, ROI, Debt, Assets, Employees). The heatmap
+    uses a diverging colormap with blue for negative correlations (-1), white for
+    zero, and golden-yellow for positive correlations (+1). Each cell displays its
+    correlation value with 2 decimal places (e.g., 1.00 on the diagonal, -0.84 for
+    Growth-Assets). The title reads "heatmap-annotated · highcharts · pyplots.ai"
+    at the top. Both axes are labeled "Variables" with category labels on x-axis (bottom)
+    and y-axis (left). A vertical colorbar legend on the right shows the scale from
+    -1 to 1. Cell borders are white, creating clear separation between cells.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: 'Title, labels, and annotations are clearly readable. Font sizes
+          are appropriate for the 3600×3600 canvas. Minor: annotation text could be
+          slightly larger for perfect visibility.'
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; all labels and annotations are clearly separated.
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Cells are appropriately sized with good visibility of all data elements.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses blue-white-yellow diverging colormap which is colorblind-safe
+          (avoids red-green).
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Square aspect ratio is perfect for a correlation matrix. Good margins
+          and balanced whitespace.
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Variables" labels are descriptive but lack context units (acceptable
+          for correlation which is unitless).'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Colorbar legend is well-positioned. White cell borders serve as grid.
+          Legend labels could be slightly larger.
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct heatmap type with annotations.
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly show categories, color correctly shows correlation
+          values.
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All required features present: annotations, colorbar, diverging
+          colormap, contrast text.'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, colorbar shows full -1 to 1 range.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar accurately reflects the correlation scale.
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "{spec-id} · {library} · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows positive and negative correlations, diagonal ones, varying
+          magnitudes. Could show a few more extreme correlations (only -0.84 and -0.62
+          approach the extremes).
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Financial indicators correlation matrix is a realistic and comprehensible
+          scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Correlation values are in valid range [-1, 1]. Matrix is symmetric
+          as expected. Some values seem slightly random for financial data but acceptable.
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean script structure: imports → data → chart options → rendering.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42) for deterministic data generation.
+      - id: CQ-03
+        name: Clean Imports
+        score: 0
+        max: 2
+        passed: true
+        comment: Imports json and urllib.request but these are necessary. However,
+          the code doesn't use highcharts-core library as recommended in library rules
+          - it uses raw JavaScript/JSON approach instead.
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: No deprecated functions used.
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html.
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Highcharts heatmap module with dataLabels, colorAxis with stops.
+          However, doesn't use highcharts-core Python library as documented in library
+          rules, instead uses raw JSON/JavaScript approach.
+  verdict: APPROVED

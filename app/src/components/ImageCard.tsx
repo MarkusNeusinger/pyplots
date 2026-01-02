@@ -89,7 +89,7 @@ export const ImageCard = memo(function ImageCard({
       if (code) {
         await navigator.clipboard.writeText(code);
         setCopyState('copied');
-        onTrackEvent?.('copy_code', { spec: image.spec_id, library: image.library });
+        onTrackEvent?.('copy_code', { spec: image.spec_id, library: image.library, method: 'card' });
         setTimeout(() => setCopyState('idle'), 2000);
       } else {
         setCopyState('idle');
@@ -214,9 +214,6 @@ export const ImageCard = memo(function ImageCard({
             onClick={(e) => {
               e.stopPropagation();
               onTooltipToggle(isSpecTooltipOpen ? null : specTooltipId);
-              if (!isSpecTooltipOpen) {
-                onTrackEvent?.('description_spec', { spec: image.spec_id });
-              }
             }}
             sx={{
               fontSize: labelFontSize,
@@ -287,9 +284,6 @@ export const ImageCard = memo(function ImageCard({
                 onClick={(e) => {
                   e.stopPropagation();
                   onTooltipToggle(isLibTooltipOpen ? null : libTooltipId);
-                  if (!isLibTooltipOpen) {
-                    onTrackEvent?.('description_lib', { library: image.library });
-                  }
                 }}
                 sx={{
                   fontSize: labelFontSize,

@@ -23,3 +23,163 @@ review:
   weaknesses:
   - Legend background could be slightly more transparent (0.7 vs 0.8 opacity)
   - Grid alpha very subtle at 0.1 - could be 0.2-0.3 for better visual guidance
+  image_description: The plot displays a histogram with KDE overlay visualizing daily
+    stock returns. The histogram uses semi-transparent blue bars (#306998 with 50%
+    opacity) showing return distribution from approximately -3% to +3%. A bright yellow/gold
+    KDE curve (#FFD43B) smoothly overlays the histogram, revealing the underlying
+    probability density. The title "histogram-kde · plotly · pyplots.ai" is centered
+    at the top. X-axis labeled "Daily Return (%)", y-axis labeled "Density". Legend
+    in upper right corner shows "Histogram" and "KDE" entries with a semi-transparent
+    white background. Clean white template with subtle gridlines and a zero-line on
+    the x-axis.
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title ~32pt, labels ~24pt, ticks ~18pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Histogram bars and KDE curve well-sized for data density
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Blue and yellow have good contrast; minor deduction as yellow could
+          be slightly more saturated
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent layout with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Descriptive labels with units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid subtle at alpha 0.1, legend well-placed but background slightly
+          large
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct histogram with KDE overlay
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Returns on x-axis, density on y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Semi-transparent bars (~0.5 alpha), density-scaled y-axis, smooth
+          KDE, contrasting colors
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full range shown with appropriate padding
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Labels accurate
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Exact format: "histogram-kde · plotly · pyplots.ai"'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows negative skew, heavier left tail, asymmetric distribution
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Stock returns scenario realistic with 550 observations
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Daily returns (-3% to +3%) realistic for stocks
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save flow
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current APIs
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items: []
+  verdict: APPROVED

@@ -26,3 +26,170 @@ review:
     the right
   - Only one slice is exploded; spec mentions 1-3 slices could be exploded for demonstration
   - Missing HoverTool which would enhance the interactive HTML output with tooltips
+  image_description: 'The plot displays an exploded pie chart with the title "pie-exploded
+    · bokeh · pyplots.ai" at the top. The chart shows 5 market share segments: "Tech
+    Giant" (42.0%) in Python blue (#306998) which is visually exploded/separated from
+    the center, "Startup A" (18.0%) in yellow, "Startup B" (15.0%) in green, "Others"
+    (14.0%) in purple, and "Legacy Corp" (11.0%) in orange. Each slice has a white
+    percentage label positioned inside. The legend is placed on the right side showing
+    category names with their percentages. The pie chart uses a 1:1 square format
+    (3600x3600) with clean white background and no axes/grid (appropriate for pie
+    charts). The explosion effect is clearly visible on the largest "Tech Giant" slice
+    which is offset from the center.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title at 36pt, labels at 24pt, legend at 28pt - all clearly readable,
+          though legend text could be slightly larger
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels well positioned inside slices
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Pie slices are well-sized, filling good portion of canvas, explosion
+          effect clearly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses colorblind-safe palette with distinct hues (blue, yellow, green,
+          purple, orange)
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of square canvas, pie is well-centered, legend placement
+          is reasonable but slightly far from chart
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: No grid (appropriate), legend well formatted with transparent background
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct exploded pie chart
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories and values correctly mapped to slices
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has explosion effect, percentage labels, distinct colors, legend
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, percentages sum to 100%
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels match categories with accurate percentages
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly formatted as "pie-exploded · bokeh · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows explosion effect well on largest slice; could demonstrate multiple
+          exploded slices per spec note
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Market share scenario is realistic and comprehensible
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are reasonable (42%, 18%, 15%, 14%, 11%), though slightly
+          generic distribution
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: false
+        comment: Uses deterministic data (good), but no np.random.seed even though
+          numpy is imported
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Bokeh's wedge glyph, ColumnDataSource for labels, LabelSet;
+          generates HTML for interactivity. Could leverage more advanced Bokeh features
+          like HoverTool for tooltips.
+  verdict: APPROVED

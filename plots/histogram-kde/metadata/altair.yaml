@@ -24,3 +24,175 @@ review:
     on the left
   - No subtle background grid to help read density values
   - Missing axis units (could be Test Score points and Density probability)
+  image_description: The plot displays a histogram with KDE overlay showing a bimodal
+    distribution of test scores. The histogram bars are rendered in semi-transparent
+    blue (#306998 with opacity 0.5), ranging from approximately 20 to 100 on the x-axis
+    labeled "Test Score". The y-axis shows "Density" values from 0.000 to 0.034. A
+    smooth yellow/gold KDE curve (#FFD43B) overlays the histogram, clearly showing
+    two peaks - a larger peak around 45 and a smaller peak around 72, demonstrating
+    the bimodal nature of the data. The title "histogram-kde · altair · pyplots.ai"
+    is displayed at the top center. The plot has good proportions with clean axis
+    labels and tick marks that are clearly readable.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Histogram bars and KDE line clearly visible; KDE strokeWidth=4 stands
+          out well against the bars
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow combination is colorblind-safe and has excellent contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good canvas utilization; minor issue with excessive x-axis range
+          showing 0-12 where no data exists
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Test Score" and "Density" are descriptive but lack units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: No visible grid or legend (no legend needed for this plot type, but
+          subtle grid would improve readability)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct histogram with KDE overlay
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Values correctly mapped to x-axis, density on y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Semi-transparent bars (0.5 alpha), density-scaled y-axis, KDE curve
+          overlay - all present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single-series plot
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly formatted as "histogram-kde · altair · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Bimodal distribution excellently demonstrates KDE smoothing vs histogram
+          binning
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 7
+        passed: true
+        comment: Test scores are plausible scenario; bimodal could represent two class
+          sections
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Test scores 20-100 with 500 observations is realistic
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) ensures reproducibility
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (altair, numpy, pandas, scipy.stats)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: All APIs current
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: true
+        comment: Saves both plot.png and plot.html correctly, but minor redundancy
+          in code structure
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Altair's layered chart composition and encoding system well,
+          but could leverage tooltips or interactive features
+  verdict: APPROVED

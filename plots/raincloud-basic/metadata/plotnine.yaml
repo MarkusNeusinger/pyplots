@@ -24,3 +24,177 @@ review:
   - No legend showing color-to-condition mapping (relies solely on y-axis labels)
   - Uses scipy for KDE instead of native plotnine density geoms (geom_violin with
     half-violin trimming would be more idiomatic)
+  image_description: |-
+    The plot shows a horizontal raincloud visualization with three experimental conditions (Control, Treatment A, Treatment B) displayed vertically. Each condition has three components arranged from top to bottom:
+    - **Cloud (half-violin/KDE)**: Blue for Control, Yellow for Treatment A, Green for Treatment B - positioned above the boxplot showing distribution density
+    - **Boxplot**: White-filled narrow boxplots centered on each row showing median, quartiles, and whiskers
+    - **Rain (jittered points)**: Scattered points below the boxplot in matching colors with moderate transparency
+
+    The title "raincloud-basic · plotnine · pyplots.ai" appears at the top. X-axis shows "Reaction Time (ms)" ranging from ~300-600, Y-axis shows "Experimental Condition" with the three group labels. Treatment B clearly shows a bimodal distribution in both the cloud and rain points. The visual metaphor of "rain falling from clouds" is achieved correctly.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels are all clearly readable with
+          appropriate sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Rain points are visible with good alpha; could be slightly larger
+          for optimal visibility
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue, yellow, green palette is colorblind-safe with excellent contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas space; minor extra whitespace on left side
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Reaction Time (ms)" and "Experimental
+          Condition"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: No legend present (colors are not labeled in a legend, though category
+          labels on y-axis help)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct raincloud plot with all three components (half-violin, boxplot,
+          jittered points)
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on Y-axis, values on X-axis correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All required features present: cloud on top, boxplot centered, rain
+          below'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show full data range appropriately
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Category labels on Y-axis serve as legend; colors consistently matched
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly formatted as "raincloud-basic · plotnine · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Excellent: shows unimodal (Control, Treatment A) AND bimodal (Treatment
+          B) distributions'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Reaction time experiment is a real, comprehensible psychological
+          research scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Reaction times in 300-600ms range are realistic for cognitive tasks
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear script: imports → data → plot → save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42) and np.random.seed(123) for deterministic
+          output
+      - id: CQ-03
+        name: Clean Imports
+        score: 1
+        max: 2
+        passed: false
+        comment: All imports used, but scipy is an additional dependency beyond core
+          plotnine
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: 'Minor: header shows Quality: 86/100 which is outdated'
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of plotnine grammar (ggplot, geom_ribbon, geom_boxplot,
+          geom_point, coord_flip, theme system). Creative use of geom_ribbon for half-violin.
+          However, relies on scipy for KDE calculation rather than native plotnine
+          density estimation.
+  verdict: APPROVED

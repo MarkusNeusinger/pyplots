@@ -24,3 +24,13 @@ review:
     canvas)
   - Title format uses middle dot separators correctly but position could be higher
     for better spacing
+  image_description: 'The plot displays a semi-circular gauge chart with a dark blue
+    needle pointing to the value 72. The gauge spans from 0 to 100 with tick marks
+    and numeric labels at every 2 units. The title "gauge-basic · highcharts · pyplots.ai"
+    appears at the top in bold black text. Three color zones are visible: purple (0-30)
+    on the left for the low zone, golden/yellow (30-70) in the middle zone, and dark
+    blue (70-100) on the right for the high zone. The value "72" is prominently displayed
+    as a large bold number below the gauge center. The axis label "Performance (%)"
+    appears in the center of the gauge. The background is white with subtle gradient
+    effects on the gauge dial frame.'
+  verdict: APPROVED

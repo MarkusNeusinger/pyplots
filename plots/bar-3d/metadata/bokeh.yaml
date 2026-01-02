@@ -23,3 +23,184 @@ review:
   - Realistic business scenario with meaningful variation in data
   weaknesses:
   - Title format uses hyphens/dashes instead of middle dots as required by SC-06
+  image_description: 'The plot displays a 3D bar chart showing quarterly sales data
+    across 5 products (A through E) over 4 quarters (Q1-Q4). The visualization uses
+    an isometric projection with bars rendered as 3D rectangular prisms. Colors are
+    mapped using the Viridis palette, ranging from dark blue (low values ~45) through
+    green to bright yellow (high values ~130). Product C has the tallest bars (yellow/green,
+    ~120-130 range), Product D has the shortest (dark blue, ~45-60 range). The chart
+    includes: three axes (Products, Quarters, and implied Z for height), clear product
+    labels along one axis, quarter labels along another, a color bar on the right
+    showing "Sales (thousands)" with scale from 0-130, and a title "Quarterly Sales
+    by Product - bar-3d - bokeh - pyplots.ai". The bars have semi-transparency (alpha=0.75)
+    with subtle edge lines, and face shading to give 3D depth perception. Background
+    is light gray with subtle dotted grid lines.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: 'Title 44pt, axis titles 32pt, labels 26pt - all clearly readable.
+          Minor: title uses hyphen not middle dot'
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; labels well-spaced along projected axes
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars clearly visible with good 3D shading; semi-transparency reveals
+          occluded bars
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Viridis palette is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins; color bar positioned
+          appropriately
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: '"Products" and "Quarters" labels present; color bar has "Sales (thousands)"
+          with units. Deducting 1 pt for no explicit Z-axis label showing units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha 0.2, dashed), but colorbar title font could
+          be more readable
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct 3D bar chart with bars on 2D grid rising into third dimension
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=Products, Y=Quarters, Z=Sales height correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Color gradient reinforces z-values, semi-transparency reveals hidden
+          bars, proper category counts (5x4)
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, scale 0-130 appropriate
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Color bar correctly shows sales scale
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: false
+        comment: Uses "Quarterly Sales by Product - bar-3d - bokeh - pyplots.ai" instead
+          of required "bar-3d \u00b7 bokeh \u00b7 pyplots.ai" format (uses hyphen-dash,
+          not middle dot)
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Shows variation: high performer (Product C ~120-130), low performer
+          (Product D ~45-60), mixed performers, quarterly trends'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Business sales scenario with products and quarters is neutral and
+          plausible
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Sales values 45-130 (thousands) are realistic for quarterly product
+          sales
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear script: imports \u2192 data \u2192 projection logic \u2192
+          plot \u2192 save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 1
+        max: 2
+        passed: false
+        comment: 'Most imports used, but ColorBar and LinearColorMapper are created
+          but ColorBar mapper uses the mapper. Range1d, CDN all used. Minor: could
+          simplify'
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current Bokeh 3.8 API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html (both correct for Bokeh)
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses Bokeh's patch(), ColorBar, LinearColorMapper, custom Label annotations,
+          export_png for static output plus save() for interactive HTML
+  verdict: APPROVED

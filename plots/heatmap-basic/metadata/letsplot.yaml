@@ -25,3 +25,171 @@ review:
   - White text on yellow cells (mid-range values) has slightly reduced contrast
   - The data does not show any clear patterns or clustering as mentioned in the spec
     notes
+  image_description: The heatmap displays a 6×8 matrix showing department performance
+    scores by quarter. The x-axis shows 6 departments (Sales, Marketing, R&D, Operations,
+    Finance, HR) with labels rotated at 45 degrees. The y-axis shows 8 quarters (Q1-Q8)
+    from top to bottom. Each cell contains a numerical score value displayed in bold
+    white text. The color scale uses a diverging gradient from blue (low ~20-30) through
+    yellow (mid ~50-60) to red (high ~80-90), with a color bar legend on the right
+    labeled "Performance Score". The title "heatmap-basic · letsplot · pyplots.ai"
+    appears at the top. Cell values range from approximately 23.4 to 89.6.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title and axis labels are readable, cell annotations are clear white
+          bold text
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Tiles are well-sized with clear color differentiation
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Diverging color scale is good but uses red which may be problematic
+          for some colorblind users
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, well-balanced layout
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Labels are descriptive but lack units (Score is unitless so acceptable)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Legend is clear but positioned a bit far from the plot
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct heatmap using geom_tile
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=Department, Y=Quarter, Fill=Score correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has value annotations, colorbar legend, diverging colormap
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within the plot area
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows "Performance Score" with accurate scale
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "heatmap-basic · letsplot · pyplots.ai"
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows variation across departments and quarters, but no clear clustering
+          or extreme outliers
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Department performance scores by quarter is a real, comprehensible
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Scores 15-95 are realistic for performance metrics, though some values
+          seem arbitrary
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ggplot grammar with geom_tile and geom_text, scale_fill_gradient2
+          for diverging colors, but nothing particularly unique to lets-plot
+  verdict: APPROVED

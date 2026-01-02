@@ -26,3 +26,188 @@ review:
     to colspan
   - Tick labels on x-axis of main chart are dense and could benefit from rotation
     or fewer ticks
+  image_description: 'The plot displays a custom subplot grid layout with 5 different
+    visualizations arranged in 3 rows. The top row shows a large "Daily Price Trend
+    (Main View)" line chart spanning the full width with a blue (#306998) line showing
+    price movements from January to late April 2024. The middle row contains two charts
+    side by side: a yellow bar chart showing "Trading Volume" and a blue histogram
+    showing "Return Distribution" with daily return percentages. The bottom row has
+    a scatter plot titled "Feature Correlation" showing blue points demonstrating
+    positive correlation between Feature A and Feature B, and a donut chart "Category
+    Breakdown" with four colored segments (blue, yellow, light blue, golden). A legend
+    for the category breakdown appears at the top right. The main title "subplot-grid-custom
+    · altair · pyplots.ai" is displayed at the top center. All text is readable, axes
+    are properly labeled with units where appropriate (Price $, Volume, Daily Return
+    %, Feature A/B).'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: All text is clearly readable; title is appropriately sized at 30pt,
+          subplot titles at 18-22pt, axis labels at 14-18pt. Slightly smaller than
+          ideal for some tick labels but still legible.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; all labels and titles are well-positioned
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Line chart is well-sized (strokeWidth=4), scatter points are appropriately
+          sized (size=120), histogram and bar charts are clear. Donut chart could
+          be slightly larger.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses blue (#306998), yellow (#FFD43B), light blue (#4B8BBE) - colorblind-safe
+          palette with good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good overall layout with clear visual hierarchy. Main chart appropriately
+          larger. Slight imbalance with legend placement far right.
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Price ($)", "Volume", "Daily Return
+          (%)", "Feature A", "Feature B"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: No grid lines (clean look), but legend for category breakdown is
+          placed far from the donut chart
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correctly implements custom subplot grid with non-uniform cell sizes
+          (main chart wider)
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly assigned for all subplots (time series, histogram,
+          scatter, categorical)
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Implements colspan-style layout with main chart spanning full width,
+          multiple plot types, dashboard-style layout. Minor: could show rowspan as
+          well.'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All axes show complete data ranges
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels correctly match category names
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "subplot-grid-custom · altair · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows diverse plot types (line, bar, histogram, scatter, donut) demonstrating
+          grid flexibility. Could include more variation in grid patterns.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Financial dashboard scenario with price, volume, returns, correlations,
+          and product breakdown - highly plausible real-world use case
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Price around $75-110 (realistic stock), volume 500-2000 (reasonable),
+          returns -6% to +6% (realistic daily). Correlation features slightly generic.
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → charts → layout → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Only necessary imports: altair, numpy, pandas'
+      - id: CQ-04
+        name: No Deprecated API
+        score: 0
+        max: 1
+        passed: false
+        comment: Uses .properties(title=...) which works but could use more modern
+          patterns
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html correctly
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Excellent use of Altair''s declarative syntax: vconcat/hconcat for
+          layout composition, resolve_scale for independent axes, mark_arc for donut,
+          comprehensive encoding with explicit type annotations (:Q, :T, :N)'
+  verdict: APPROVED

@@ -24,3 +24,176 @@ review:
   - Legend positioned in top-left could be closer to the data area or at bottom
   - Data is deterministic but CQ-02 scoring convention expects explicit seed comment
     for clarity
+  image_description: 'The plot displays a multi-line chart showing monthly sales data
+    for 4 product lines over 12 months. Four distinct colored lines are visible: a
+    blue line (Electronics) showing strong growth from ~45 to 110, a yellow line (Clothing)
+    with gradual growth from ~38 to 88, an orange line (Home Goods) with steady growth
+    from ~28 to 72, and a teal line (Sports) showing a seasonal pattern that rises
+    from ~22 to peak around 72 in July-August then declines to ~28 in December. The
+    title "line-multi · pygal · pyplots.ai" is displayed at the top center. A legend
+    in the top-left identifies all four series. The Y-axis shows "Sales (thousands
+    USD)" and the X-axis shows "Month" with labels from Jan to Dec. Circular markers
+    appear at each data point. Horizontal dotted grid lines help with value reading.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: All text is readable, title and axis labels are clear, legend is
+          legible. Slightly smaller than optimal for the canvas size.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, all labels are clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Lines and dots are visible, stroke width of 8 and dot size of 12
+          work well. Lines could be slightly thicker for the large canvas.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue, yellow, orange, and teal are colorblind-safe and easily distinguishable
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas, plot fills most of the space. Legend placement
+          in top-left is functional but slightly distant from the plot area.
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis includes units "Sales (thousands USD)", X-axis labeled "Month"
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid lines are subtle and helpful. Legend is well-identified but
+          positioned slightly far from the data area.
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct multi-line chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X-axis shows months (categorical/time), Y-axis shows numeric values
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Multiple series with distinct colors, legend present, markers at
+          data points
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data points visible, axes accommodate full range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies all four series
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly formatted as "line-multi · pygal · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Shows diverse trends: steady growth (Electronics), gradual growth
+          (Clothing, Home Goods), and seasonal variation (Sports with summer peak)'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly product sales is a plausible, real-world business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Sales values in tens of thousands USD are realistic for product lines
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear structure: imports → data → style → chart → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 0
+        max: 3
+        passed: false
+        comment: No random seed needed (deterministic data), but data is hardcoded
+          which is good
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only pygal and Style are imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current pygal API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses pygal.Line with custom Style, show_dots, dots_size, and legend
+          configuration. Could leverage more pygal-specific features like tooltips
+          or fill options.
+  verdict: APPROVED

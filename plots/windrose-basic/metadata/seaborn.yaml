@@ -24,3 +24,185 @@ review:
   - Missing explicit radial axis label (should indicate Frequency or similar)
   - Seaborn is used primarily for styling rather than seaborn plotting functions -
     actual bars drawn with matplotlib polar bar plot
+  image_description: The plot displays a polar wind rose chart with 16 directional
+    sectors. The title "windrose-basic · seaborn · pyplots.ai" is prominently displayed
+    at the top in bold black text. North (N) is correctly positioned at the top, with
+    compass directions (NE, E, SE, S, SW, W, NW) labeled around the perimeter in bold
+    black text. The chart shows stacked colored bars representing wind speed categories,
+    progressing from pale yellow (0-3 m/s) through orange shades (3-6, 6-10 m/s) to
+    red/crimson (10-15, 15+ m/s). The dominant wind direction is clearly from the
+    SW, with a prominent ~30% frequency spike showing strong winds (many red/orange
+    segments). A secondary NE pattern (~10% frequency) is visible with moderate speeds.
+    The radial axis shows percentage labels (0%, 5%, 10%, 15%, 20%, 25%, 30%) with
+    subtle gray grid lines. A legend titled "Wind Speed" is positioned in the lower
+    right corner with a white background and gray border, showing all five speed categories
+    with their colors.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt bold, direction labels at 18pt bold, radial labels
+          at 14pt, all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, clean separation between all labels
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Stacked bars are clearly visible with good alpha (0.9), white edges
+          provide separation; minor deduction for some thin segments in less frequent
+          directions
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: YlOrRd palette progresses from yellow to red, colorblind-friendly
+          sequential palette
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Square 12x12 figure works well for polar plot, but some empty space
+          in corners; legend well-positioned
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: true
+        comment: No explicit axis labels (radial axis shows only percentages without
+          "Frequency" label)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Grid subtle at alpha 0.3, legend well-placed with good styling
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct wind rose chart as polar stacked histogram
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Direction mapped to theta, speed to stacked segments, frequency to
+          radial extent
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 16 direction bins, 5 speed ranges, stacked colored segments, legend
+          present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full 360° coverage, radial axis properly scaled to max ~30%
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend accurately shows speed ranges with matching colors
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Exact format "windrose-basic · seaborn · pyplots.ai" with middle
+          dots
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows prevailing SW winds, secondary NE pattern, varying speeds by
+          direction; good distribution but could show more calm conditions
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: 8760 observations (one year hourly) with realistic Weibull-distributed
+          speeds and dominant SW/NE patterns typical of many locations
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Wind speeds 0-25 m/s realistic, though max 25 m/s is on the high
+          end for typical hourly data
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear script: imports → data → bins → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set at start
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib, numpy, seaborn used (all necessary)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 0
+        max: 1
+        passed: false
+        comment: Uses `strict=True` in zip which is fine, but line 65 has overly complex
+          logic
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png'
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses sns.set_style("whitegrid"), sns.set_context("talk"), sns.color_palette("YlOrRd");
+          however, the actual plotting is done with matplotlib's ax.bar on polar projection,
+          not seaborn plotting functions
+  verdict: APPROVED

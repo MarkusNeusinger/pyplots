@@ -26,3 +26,176 @@ review:
     it is a code standard)
   - Horizontal grid lines removed but vertical grid lines kept - for a horizontal
     dumbbell chart, horizontal grid lines would help read values more easily
+  image_description: The plot displays a horizontal dumbbell chart comparing employee
+    satisfaction scores before and after workplace policy changes across 8 departments.
+    Blue dots (#306998) represent "Before" scores and yellow dots (#FFD43B) represent
+    "After" scores, connected by subtle gray lines. Departments are listed on the
+    y-axis (HR, Customer Support, Engineering, Operations, Marketing, Product, Finance,
+    Sales) and satisfaction scores (30-100) on the x-axis. The data is sorted by improvement
+    magnitude with HR and Customer Support showing the largest gains at the bottom.
+    The title correctly displays "dumbbell-basic · plotnine · pyplots.ai". A legend
+    on the right distinguishes "After" and "Before" periods. Text is well-sized and
+    readable, with a clean minimal theme and subtle vertical grid lines.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis titles at 20pt, axis text at 16pt, all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, all labels clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Dots sized appropriately (size=6) for 8 categories, connecting lines
+          subtle
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow combination is colorblind-safe, high contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good use of 16:9 canvas, balanced margins, plot fills space well
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels ("Satisfaction Score", "Department") but no units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Legend well placed, but horizontal grid lines removed leaving only
+          vertical lines which is unusual for horizontal chart
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct dumbbell/connected dot plot chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on y-axis, values on x-axis (horizontal orientation as
+          specified)
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Two dots with distinct colors, connecting lines, sorted by difference
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: X-axis limits (30-100) show all data appropriately
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows "Before" and "After" with matching colors
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "dumbbell-basic · plotnine · pyplots.ai"'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Shows varying magnitudes of change (small: Sales 6 pts, large: HR
+          28 pts), all positive improvements, good spread'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Employee satisfaction scores before/after policy changes - real,
+          comprehensible scenario matching spec example
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Satisfaction scores 40-88 are realistic percentages
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports → data → plot → save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 0
+        max: 3
+        passed: false
+        comment: No random seed set (data is deterministic, but best practice to include
+          seed for consistency)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png'
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses plotnine's grammar of graphics (ggplot, aes, geom_segment, geom_point,
+          scale_color_manual, theme_minimal), but no advanced features like faceting
+          or statistical transformations
+  verdict: APPROVED

@@ -24,3 +24,175 @@ review:
     seaborn native capabilities (though seaborn lacks a dedicated area chart function)
   - 'Grid legend scoring: single series plots could benefit from a subtle annotation
     or data source note'
+  image_description: The plot displays a basic area chart showing website visitors
+    over time (January 2024). The chart uses a semi-transparent blue fill (#306998
+    Python Blue at alpha 0.4) with a darker blue line (linewidth 3) on top. The x-axis
+    shows dates from 2024-01-01 to 2024-01-29 with rotated labels at 45 degrees. The
+    y-axis shows visitor counts from 0 to approximately 7500. The title "area-basic
+    · seaborn · pyplots.ai" appears at the top. A clear weekly pattern is visible
+    with dips on weekends (lower traffic) and peaks mid-week. There's also an overall
+    upward trend. The gridlines are subtle with alpha 0.3 and dashed style.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at fontsize 24, axis labels at 20, tick labels at 16, all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, date labels are rotated to avoid collision
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line width of 3 is optimal, area fill at alpha 0.4 shows magnitude
+          clearly
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme (Python Blue), colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, slight excess whitespace at top
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Date" and "Visitors (count)" - descriptive with units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is good (alpha 0.3), but no legend present (single series, acceptable
+          but not ideal)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct area chart with filled region below line
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=datetime (dates), Y=numeric (visitors) correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Semi-transparent fill (alpha 0.4), gridlines, clear axis labels all
+          present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis starts at 0 (emphasizes area magnitude), all data visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Single series, no legend needed
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "area-basic · seaborn · pyplots.ai"
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows weekly pattern and upward trend, demonstrates magnitude emphasis
+          well, but could show more variety (e.g., occasional anomalies)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Daily website visitors over a month is a perfect real-world scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values 3000-7500 are realistic for website traffic, though starting
+          y at 0 adds some empty space
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (matplotlib, numpy, pandas, seaborn)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 0
+        max: 1
+        passed: true
+        comment: 'Minor: Uses ax.fill_between from matplotlib instead of seaborn-native
+          approach'
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses sns.lineplot which is seaborn-native, but the area fill uses
+          matplotlib's ax.fill_between. Seaborn doesn't have a native area chart function,
+          so this hybrid approach is acceptable but doesn't showcase seaborn's distinctive
+          features like regplot, kdeplot, or statistical aggregation.
+  verdict: APPROVED

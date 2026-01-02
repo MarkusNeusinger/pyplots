@@ -25,3 +25,172 @@ review:
     rather than two distinct peaks
   - Grid could use slightly lower alpha (0.2 instead of 0.3) for even more subtle
     appearance
+  image_description: The plot displays a kernel density estimation (KDE) curve showing
+    the distribution of test scores. The curve is filled with a semi-transparent blue
+    color (#306998) and has a thicker outline. The plot shows a bimodal distribution
+    with a main peak around 72-75 points and a secondary shoulder/peak around 88-90
+    points. A rug plot is visible along the x-axis showing individual data points
+    as small vertical lines. The title "density-basic · seaborn · pyplots.ai" is displayed
+    at the top. The x-axis is labeled "Test Score (points)" and the y-axis is labeled
+    "Density". A subtle dashed grid is present in the background. The layout is clean
+    with good proportions in 16:9 aspect ratio.
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, labels at 20pt, ticks at 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Density curve clearly visible with appropriate fill alpha and line
+          width
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color, no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, no cut-off content, balanced whitespace
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Descriptive labels with units ("Test Score (points)", "Density")
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle at alpha=0.3 with dashed style (good), but no legend
+          present (not strictly needed for single-series density)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct KDE/density plot
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Continuous variable correctly visualized
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Includes filled curve with transparency, rug plot showing individual
+          observations
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full distribution visible from ~30 to ~120
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for single series (no legend needed)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "density-basic · seaborn · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows bimodal distribution demonstrating skewness/multimodality as
+          mentioned in spec, but the bimodality is somewhat subtle (appears more as
+          a shoulder)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Test scores is a perfect realistic context for density plots
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Test scores ranging ~40-110 are realistic
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports (matplotlib.pyplot, numpy, seaborn)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses seaborn's `kdeplot` with fill parameter and `rugplot` - both
+          are seaborn-specific statistical visualization functions
+  verdict: APPROVED

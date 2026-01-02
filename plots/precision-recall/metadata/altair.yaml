@@ -23,3 +23,173 @@ review:
   weaknesses:
   - Axis labels could be more descriptive (e.g., "Recall (Sensitivity)" and "Precision
     (PPV)") to aid interpretation
+  image_description: The plot displays a precision-recall curve comparing two classifiers
+    on a 16:9 canvas. A blue stepped line represents "Logistic Regression (AP = 0.634)"
+    and a yellow/gold stepped line represents "Random Forest (AP = 0.752)". A gray
+    dashed horizontal baseline at precision = 0.30 indicates the random classifier
+    performance. The X-axis is labeled "Recall" (0.00 to 1.00) and the Y-axis is labeled
+    "Precision" (0.00 to 1.00). The title "precision-recall · altair · pyplots.ai"
+    appears at the top center. The legend is well-positioned in the bottom-right corner,
+    showing all three line types with their respective colors and AP scores.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Stepped lines are clearly visible with appropriate stroke width (4px
+          for curves, 3px for baseline)
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue (#306998) and yellow (#FFD43B) are colorblind-safe and distinguishable
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well, legend positioned appropriately in bottom-right
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: false
+        comment: '"Recall" and "Precision" lack units or context (could be "Recall
+          (True Positive Rate)" etc.)'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Subtle grid with 0.3 opacity, legend well-placed with clear entries
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct precision-recall curve
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Recall on X-axis, Precision on Y-axis as expected
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: AP scores displayed, baseline reference line present, stepped line
+          style used
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Both axes show 0-1 range appropriately
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels correctly identify models and their AP scores
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "precision-recall · altair · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows two classifiers with different performance levels, baseline,
+          AP scores
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 7
+        passed: true
+        comment: Binary classification scenario is plausible, simulates 30% positive
+          class ratio
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Precision/recall values in valid 0-1 range with realistic AP scores
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Linear imports → data → plot → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only uses altair, numpy, pandas - all necessary
+      - id: CQ-04
+        name: No Deprecated API
+        score: 0
+        max: 1
+        passed: true
+        comment: Uses np.trapezoid which is the newer name (was np.trapz), but this
+          is correct for Python 3.13
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png (and plot.html)
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Uses Altair declarative grammar well: layered charts, step-after
+          interpolation, custom color/stroke-dash scales, proper legend configuration'
+  verdict: APPROVED

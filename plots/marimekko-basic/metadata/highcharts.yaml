@@ -22,3 +22,170 @@ review:
   weaknesses:
   - Grid lines not visible on the plot area (gridLineWidth set but not appearing prominently)
   - Y-axis tick labels could be slightly larger for optimal readability at 4800x2700
+  image_description: 'The plot displays a Marimekko chart showing market share distribution
+    across 5 regions (North America, Europe, Asia Pacific, Latin America, Middle East).
+    Each region has a variable-width bar proportional to its market size in millions
+    USD. The bars are stacked with 4 product categories: Enterprise (dark blue #306998),
+    SMB (yellow #FFD43B), Consumer (purple #9467BD), and Government (cyan #17BECF).
+    Percentage labels appear on each segment (e.g., 42%, 28%, 22%, 8% for North America).
+    The title "marimekko-basic · highcharts · pyplots.ai" appears at top with a subtitle.
+    The legend is positioned on the right side. Region names appear below each bar,
+    and the x-axis shows cumulative market size values.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, labels, and data labels are readable; y-axis tick labels are
+          slightly small
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: All segments clearly visible with good sizing
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Colorblind-safe palette (blue, yellow, purple, cyan)
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas; slight extra whitespace at bottom
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis has "Market Share (%)", X-axis has "Market Size (Millions
+          USD)"
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: No visible grid lines on plot area; legend well placed
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct Marimekko chart using variwide with stacking
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Bar widths = market size, heights = market share percentage
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Variable widths, stacked segments, color coding, value labels
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, y-axis 0-100%
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies all 4 product lines
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "marimekko-basic · highcharts · pyplots.ai"'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows varying bar widths, different distributions per region
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Market share by region and product line is a perfect real-world scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Market sizes (120-520M USD) and percentages (8-45%) are realistic
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Linear structure with no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 0
+        max: 3
+        passed: false
+        comment: No random seed needed (deterministic data), but hardcoded data is
+          fine
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Highcharts API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses variwide chart type with stacking, custom renderer for region
+          labels, but could leverage more interactive features
+  verdict: APPROVED

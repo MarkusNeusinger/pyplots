@@ -22,3 +22,173 @@ review:
   - Y-axis starts at 0 creating large empty space below the data (could use min property)
   - Axis labels lack units (could be "Daily Visitors (count)" or "Day of Month (date)")
   - Could leverage more Highcharts-specific features like hover tooltips or animation
+  image_description: The plot displays a basic area chart showing website traffic
+    over 30 days. The chart has a blue color scheme (#306998) with a gradient fill
+    that transitions from semi-opaque at the top (~0.5 alpha) to nearly transparent
+    at the bottom (~0.1 alpha). The title "area-basic · highcharts · pyplots.ai" is
+    prominently displayed at the top in bold. The X-axis is labeled "Day of Month"
+    with values from 1-30, and the Y-axis shows "Daily Visitors" ranging from 0 to
+    4000. Small blue circular markers are placed at each data point along the line.
+    The data shows a clear upward trend with weekly cyclical patterns (peaks roughly
+    every 7 days). Grid lines are subtle and visible on both axes. The overall layout
+    is clean with white background.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is large and bold (72px), axis labels are clear (48px), tick
+          labels readable (36px)
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers visible, line width good, could use slightly larger markers
+          for 30 data points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color palette, no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, though Y-axis starts at 0 creating empty space
+          below data
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels but no units (visitors per day could be clearer)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid subtle and appropriate, legend disabled but not needed for single
+          series
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct area chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=days, Y=visitors correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Filled area, gridlines, axis labels all present per spec
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data points visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend disabled appropriately for single series
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses exact format: "{spec-id} · {library} · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows trend and periodicity well, could show more variation in magnitude
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Website visitors scenario is realistic and relatable
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values (2000-3700 visitors/day) are reasonable, though range could
+          be tighter
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear script: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current highcharts-core API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Uses container.screenshot() instead of driver.save_screenshot()
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses gradient fill color, proper Highcharts options structure, but
+          doesn't leverage more advanced features like tooltips or hover effects
+  verdict: APPROVED

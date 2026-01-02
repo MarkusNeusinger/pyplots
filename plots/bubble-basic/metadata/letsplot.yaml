@@ -23,3 +23,177 @@ review:
   - Grid styling could have lower alpha for even more subtle appearance
   - Could leverage more letsplot-specific interactive features given the library strengths
     in this area
+  image_description: The plot displays a bubble chart with a light blue/steel blue
+    color scheme on a white background with subtle dotted grid lines. The x-axis shows
+    "Revenue (Million USD)" ranging from 10 to 200, and the y-axis shows "Growth Rate
+    (%)" ranging from 0 to 30. There are approximately 40 bubbles of varying sizes
+    scattered across the plot, with bubble sizes representing "Market Share (%)" as
+    shown in the legend on the right side. The legend shows five reference bubble
+    sizes for 5, 10, 15, 20, and 25% market share. The title "bubble-basic · letsplot
+    · pyplots.ai" appears at the top left. The bubbles have a transparency (alpha)
+    applied, allowing overlapping bubbles to remain visible. The data shows a general
+    negative correlation between revenue and growth rate, with higher-revenue companies
+    tending to have lower growth rates.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick marks at 16pt, all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 8
+        passed: true
+        comment: Bubbles are visible with good alpha (0.6), though some smaller bubbles
+          could be slightly larger for 40 data points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color (#306998) with varying sizes, no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, data well-distributed, legend well-placed
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive with units: "Revenue (Million USD)" and "Growth Rate
+          (%)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: 'Grid is subtle but legend title size (18) is good; minor: grid could
+          use lower alpha'
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bubble chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=revenue, Y=growth rate, size=market share correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: size legend, transparency, three variables
+          visualized'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows "Market Share (%)" with appropriate size references
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "bubble-basic · letsplot · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows range of bubble sizes and data distribution, good variation
+          in all three dimensions
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Market analysis scenario is real and comprehensible (revenue vs growth
+          vs market share)
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Revenue 10-200M USD and growth 0-30% are realistic; market share
+          values are reasonable
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current lets-plot API used
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: true
+        comment: Uses ggplot grammar correctly with theme_minimal, but could leverage
+          more letsplot-specific features like tooltips or interactive elements
+  verdict: APPROVED

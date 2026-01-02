@@ -23,3 +23,176 @@ review:
   - Does not leverage Bokeh's interactive features (hover tooltips showing statistics
     would be valuable)
   - Axis labels lack units (could be "Test Score (points)" for clarity)
+  image_description: The plot displays a box-and-whisker plot comparing test score
+    distributions across four classes (Class A, B, C, D). Each box shows the interquartile
+    range (IQR) with a black median line. Class A has a blue box (~70-78 range), Class
+    B has a yellow/gold box (~82-88 range) with a tight distribution, Class C has
+    a light blue box (~57-80 range) showing the widest spread, and Class D has a gray
+    box (~72-83 range). Whiskers extend appropriately and outliers are displayed as
+    hollow circles - Class A has one low outlier (~49), Class B has outliers both
+    above (~99) and below (~45-52), Class C has outliers above (~135) and below (~8),
+    and Class D has outliers above (~103-108) and below (~40-42). The title reads
+    "box-basic · bokeh · pyplots.ai" and axes are labeled "Class" (x-axis) and "Test
+    Score" (y-axis). The layout is clean with a dashed horizontal grid.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels are all clearly readable. Font
+          sizes are appropriate for 4800x2700 canvas.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Boxes, whiskers, and outliers are well-sized and clearly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Good color choices (blue, yellow, light blue, gray) that are distinguishable;
+          yellow may have slight contrast issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, no cut-off content, well-centered
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels ("Test Score", "Class") but no units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle with dashed lines and appropriate alpha; no legend
+          needed for this plot type
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct box-and-whisker plot
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on x-axis, numerical values on y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Median lines, boxes (Q1-Q3), whiskers at 1.5*IQR, outliers as points,
+          different colors per category
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data including outliers visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for this plot type (categories labeled on x-axis)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "box-basic · bokeh · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Excellent variety: shows different spreads (tight Class B vs wide
+          Class C), outliers on both high and low ends, varying medians'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Test scores across classes is a realistic, comprehensible scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Test scores 0-140 range is realistic for educational data
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports → data → calculations → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Implementation manually calculates box plot statistics instead of
+          using Bokeh's built-in capabilities. While functionally correct, it doesn't
+          showcase Bokeh-specific features like hover tools or interactive elements
+          that would distinguish it from other libraries.
+  verdict: APPROVED

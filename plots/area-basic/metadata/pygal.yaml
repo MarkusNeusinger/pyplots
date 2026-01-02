@@ -25,3 +25,177 @@ review:
   - Y-axis label Visitors could include units (e.g., Visitors count)
   - Data dots could be slightly larger for better visibility at the target resolution
   - Could leverage more pygal-specific features like custom tooltips or value formatting
+  image_description: The plot displays a basic area chart with a light blue/steel
+    blue filled area beneath the line. The title "area-basic · pygal · pyplots.ai"
+    is clearly visible at the top. The X-axis is labeled "Day of Month" with values
+    1, 5, 10, 15, 20, 25, 30 shown. The Y-axis is labeled "Visitors" with values ranging
+    from approximately 900 to 2100. Data points are marked with small dots along the
+    line. The area fill has semi-transparency (approximately 40% opacity). A legend
+    "Daily Visitors" appears at the bottom left. The background is white with subtle
+    horizontal gridlines. The chart shows website traffic patterns with weekend dips
+    and weekday peaks.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick marks are all readable. Font sizes are
+          well-scaled for the 4800x2700 canvas.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements. X-axis labels are spaced well by showing
+          every 5th day.
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Line and fill are clearly visible. Dots are appropriately sized at
+          6px. Could be slightly larger for better visibility.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme (#306998 blue) is colorblind-safe.
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions with legend at bottom, proper margins.
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Labels are descriptive ("Day of Month", "Visitors") but "Visitors"
+          lacks units (e.g., "count" or "per day").
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Y-axis gridlines are subtle and helpful. Legend placement is good
+          but could be more prominent.
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct area chart type using pygal.Line with fill=True.
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X (days) and Y (visitors) correctly assigned.
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Semi-transparent fill (0.4), gridlines, clear axis labels all present.
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 30 days visible, Y-axis shows full range from ~890 to ~2150.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows "Daily Visitors".
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "area-basic · pygal · pyplots.ai".'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows trends, peaks, valleys, and weekly patterns. Could show more
+          dramatic variation.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Website visitor data over a month is a perfect real-world scenario
+          matching the spec example.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values (890-2150 visitors) are realistic for a small-medium website.
+          Range is reasonable.
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean script: imports → data → plot → save. No functions or classes.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: true
+        comment: Data is deterministic (hardcoded list), but no random seed comment
+          explaining this.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only pygal and Style imported, both used.
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Using current pygal API.
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html.
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses pygal's Style class for customization, fill=True for area, show_dots,
+          stroke_style. Could leverage more pygal-specific features like tooltips
+          or value formatters.
+  verdict: APPROVED

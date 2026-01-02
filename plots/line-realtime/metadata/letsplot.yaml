@@ -28,3 +28,181 @@ review:
   - The point alpha gradient (fade effect) is implemented but barely visible in the
     output; the text annotation helps but actual visual fade would be stronger
   - Grid alpha at 0.5 could be more subtle (0.2-0.3 recommended)
+  image_description: 'The plot displays a real-time CPU usage monitoring chart with
+    a blue line (#306998) showing oscillating CPU usage between approximately 10%
+    and 70% over 100 time samples. The chart features a light blue area fill beneath
+    the line for visual depth. A prominent yellow circular marker highlights the latest
+    data point on the right edge showing "Current: 33.8%". A red dashed horizontal
+    line at 80% indicates a "Warning threshold" with red text label. A gray dotted
+    line at 50% serves as a reference. The left side includes a gray annotation "←
+    older data fades" indicating the streaming direction. The title "line-realtime
+    · letsplot · pyplots.ai" appears at the top. The x-axis shows "Time (samples at
+    100ms interval)" from 0-100, and the y-axis shows "CPU Usage (%)" from 0-100.
+    The chart uses a minimal theme with a clean white background and subtle gray grid
+    lines.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is bold and large (28pt), axis titles clearly readable (22pt),
+          tick labels appropriately sized (16pt)
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: All text elements are well-positioned with no overlap
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Line and points are visible; alpha gradient on points is subtle but
+          present; -1 for points being somewhat small relative to line width
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow/red color scheme is colorblind-safe with good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good canvas utilization; slight empty space at top of chart area
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Both axes have descriptive labels with units ("CPU Usage (%)", "Time
+          (samples at 100ms interval)")
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: No legend present (not needed for single series); grid is subtle
+          at alpha 0.5 but could be slightly more subtle
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct line chart for time series data
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Time index on X, CPU usage on Y correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has sliding window visualization, fade effect indication, current
+          value annotation, threshold lines; -1 for fade effect being annotation text
+          rather than actual visual gradient on older points
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis 0-100% appropriate for CPU usage
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Current value label accurate
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: Uses "letsplot" instead of "lets-plot" in title; should match library
+          name exactly
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows oscillating pattern, noise, spikes at indices 25/48/72/88,
+          low points; -1 for spikes not being dramatically visible in the final output
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: CPU monitoring is a perfect real-world scenario for real-time charts
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: CPU values 0-100% appropriate; oscillation and noise realistic for
+          system monitoring
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 4
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of ggplot2 grammar with geom_line, geom_area, geom_point,
+          geom_text, geom_hline; uses scale_alpha_identity for alpha mapping; HTML
+          export for interactivity; -1 for not using more advanced lets-plot specific
+          features like tooltips
+  verdict: APPROVED

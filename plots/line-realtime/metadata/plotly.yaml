@@ -24,3 +24,179 @@ review:
   - Title format includes extra descriptor before spec-id instead of exact format
   - Fade effect using vrect covers some data points reducing left portion readability
   - Grid alpha at 0.1 is too subtle, could be 0.2-0.3 for better visibility
+  image_description: 'The plot displays a real-time CPU usage monitor with a continuous
+    blue line (#306998) tracing CPU percentage over 120 seconds. A light blue gradient
+    fill extends from the line to the x-axis. The x-axis shows "Time (seconds)" ranging
+    from 0-120, while the y-axis displays "CPU Usage (%)" from 0-100. The title reads
+    "CPU Usage Monitor · line-realtime · plotly · pyplots.ai" at the top center. A
+    prominent yellow circular marker with blue border highlights the latest data point
+    (32.6%) with a text label above it. The left side features a white gradient fade
+    effect indicating the scrolling direction, accompanied by a blue arrow and "←
+    Data scrolls" annotation. A red "● LIVE" indicator appears in the lower right
+    corner. The legend in the upper right shows "CPU Usage" and "Current: 32.6%".
+    The data exhibits realistic CPU patterns with baseline oscillation around 35-40%
+    and several spikes reaching up to ~75%.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 32pt, axis labels at 24pt, ticks at 18pt, all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Line width 3 is appropriate, latest marker clearly visible at size
+          18
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue color scheme is colorblind-safe, good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good layout but slight imbalance with fade effect covering data on
+          left
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Time (seconds)", "CPU Usage (%)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is very subtle at alpha 0.1, legend well-placed; however the
+          "← Data scrolls" arrow text appears slightly redundant with the fade effect
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct line chart type for real-time visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Time on X-axis, CPU usage on Y-axis correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Sliding window effect (fade), latest value indicator, live indicator,
+          scrolling direction arrow all present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis 0-105% shows all data, X-axis shows full 120 points
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies "CPU Usage" and current value
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: Uses descriptive title with spec-id and library, but format is "CPU
+          Usage Monitor · line-realtime · plotly · pyplots.ai" instead of "{spec-id}
+          · {library} · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows baseline oscillation, noise, and CPU spikes; demonstrates real-time
+          monitoring scenario well
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: CPU usage monitoring is a real, neutral, comprehensible scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: CPU values 0-100% with realistic patterns (base ~35%, spikes to ~75%)
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses go.Scatter with fill, add_annotation, add_vrect for fade effect,
+          interactive HTML output; however could have leveraged more Plotly-specific
+          features like animation frames
+  verdict: APPROVED

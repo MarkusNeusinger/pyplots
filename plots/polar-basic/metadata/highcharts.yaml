@@ -25,3 +25,174 @@ review:
   - Y-axis (radial) title is rotated vertically making it harder to read
   - Grid alpha could be slightly more visible (0.2-0.3 rather than 0.15)
   - Could use hour labels (0h, 6h, 12h, 18h) instead of degrees for better context
+  image_description: The plot displays a polar chart with a white background. The
+    title "polar-basic · highcharts · pyplots.ai" is shown in bold black text at the
+    top, with the subtitle "24-Hour Temperature Pattern" below it in gray. The circular
+    chart has angular axis labels at 30° intervals (0°, 30°, 60°, ..., 330°) around
+    the perimeter. The radial axis shows temperature in Celsius from 0°C to 30°C with
+    gridlines every 5°C, and a rotated "Temperature (°C)" label. Data points are connected
+    by blue lines forming an irregular polygon shape, showing temperature variation
+    throughout a 24-hour cycle. The temperatures are lower around 0° (near the center)
+    and higher around 90-180° (extending outward). A legend at the bottom shows "Temperature"
+    with a blue marker. The chart uses a blue color (#306998) which is colorblind-safe.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title and labels are clearly readable at full size, though some radial
+          labels could be slightly larger
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels are clearly separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Data points and connecting lines are visible, markers are appropriately
+          sized
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses colorblind-safe blue (#306998) with good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good layout with 70% pane size, though some whitespace at edges
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis has "Temperature (°C)" with units, X-axis shows degrees
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle at 0.15 alpha, legend well-placed but could be larger
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct polar chart type with angular and radial axes
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Theta (hours as degrees) and radius (temperature) correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has radial gridlines, angular labels at standard intervals; missing
+          compass-style labels option
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data points visible within 0-35°C range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows "Temperature"
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact required format "polar-basic · highcharts · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows cyclical temperature pattern with variation, demonstrates polar
+          nature well
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: 24-hour temperature pattern is a real-world scenario mentioned in
+          spec
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Temperature range 5-25°C is realistic, though some noise points seem
+          low for daytime
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Highcharts API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Highcharts polar mode with scatter series, but could leverage
+          more interactive features
+  verdict: APPROVED

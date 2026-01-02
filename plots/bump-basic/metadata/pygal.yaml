@@ -25,3 +25,175 @@ review:
     using legend_at_bottom=True or adjusting legend_box_size
   - Does not utilize pygal-specific interactive features (tooltips, value formatters,
     hover effects) that would enhance the visualization
+  image_description: 'The plot displays a bump chart showing sports league standings
+    over 6 weeks. The title "bump-basic · pygal · pyplots.ai" is centered at the top.
+    The Y-axis labeled "Rank" shows positions 1-5 from top to bottom (correctly inverted).
+    The X-axis labeled "Period" shows Week 1 through Week 6. Five teams are represented
+    with distinct colored lines: Team Alpha (blue), Team Beta (yellow/gold), Team
+    Gamma (green), Team Delta (red), and Team Epsilon (purple). Each team''s position
+    is marked with dot markers connected by lines. The chart shows clear ranking changes
+    over time - Team Beta starts at rank 1 but drops, Team Alpha rises to first place
+    by Week 6, and Team Gamma has significant volatility. The legend is positioned
+    in the upper left. Grid lines are visible but subtle.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: All text is readable; title and labels are clear, though font sizes
+          could be slightly larger for optimal viewing
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; legend, axis labels, and data points are all
+          distinct
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Dot markers and lines are well-sized and clearly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Five distinct colors (blue, yellow, green, red, purple) with good
+          contrast; distinguishable for most color vision types
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good use of space, proportions are well-balanced
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels "Rank" and "Period" but no units (though units
+          not applicable here)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle and appropriate; legend placement in upper-left is
+          acceptable but overlays plot area slightly
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bump chart showing rankings over time
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Entities mapped correctly, periods on X-axis, ranks on Y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Y-axis inverted (rank 1 at top), distinct colors, dot markers, lines
+          connecting entities
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All ranks 1-5 shown, all periods displayed
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies all five teams
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Title follows correct format: "bump-basic · pygal · pyplots.ai"'
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows rank changes, overtakes, and stability well; could include
+          more dramatic position swaps
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Sports league standings is a perfect real-world bump chart use case
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 5 teams, 6 weeks, ranks 1-5 - all sensible values
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple flat structure: imports → data → config → chart → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses deterministic hardcoded data (no random generation needed)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only pygal and Style are imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current pygal API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Uses basic pygal.Line() without leveraging pygal-specific features
+          like tooltips, value_formatter, or custom interpolation styles
+  verdict: APPROVED

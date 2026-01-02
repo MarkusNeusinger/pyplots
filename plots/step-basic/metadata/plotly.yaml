@@ -15,3 +15,13 @@ review:
   strengths: []
   weaknesses: []
   improvements: []
+  image_description: 'The plot displays a step chart showing "Monthly Cumulative Sales"
+    over 12 months (Jan-Dec). The chart uses a dark blue line (Python Blue #306998)
+    with a stair-step pattern created using ''hv'' (horizontal-then-vertical) style.
+    Each data point is marked with a yellow circle (Python Yellow #FFD43B) with a
+    blue border. The y-axis shows "Cumulative Sales ($)" ranging from ~50k to ~375k,
+    and the x-axis shows months. The title follows the correct format: "Monthly Cumulative
+    Sales · step-basic · plotly · pyplots.ai". The legend is positioned in the upper
+    left corner with a semi-transparent background. Grid lines are subtle (light gray),
+    and the overall layout is clean with a white background (plotly_white template).'
+  verdict: APPROVED

@@ -26,3 +26,174 @@ review:
     value annotations
   - Does not use plotly.express px.strip() which would provide native strip plot functionality
     with automatic jitter
+  image_description: The plot displays a strip plot with four categories (Group A,
+    Group B, Group C, Group D) on the x-axis and "Response Score" on the y-axis ranging
+    from approximately 30 to 110. Each group shows individual data points with horizontal
+    jitter applied. Groups A and C use blue color (#306998), while Groups B and D
+    use yellow (#FFD43B). Black horizontal lines indicate the mean for each group.
+    The title "strip-basic · plotly · pyplots.ai" is centered at the top. A legend
+    on the right side identifies each group. The background uses the plotly_white
+    template with subtle horizontal grid lines.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title (size 32), axis labels (size 24), and tick labels (size 20/18)
+          are all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; jitter prevents most point overlap
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers (size 14) with opacity 0.6 are well-sized for ~50-60 points
+          per group; slight reduction for minor overlap in dense areas
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Blue (#306998) and yellow (#FFD43B) have good contrast, but using
+          only 2 colors for 4 groups reduces distinction between alternating groups
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, plot fills canvas well with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Labels are descriptive ("Category", "Response Score") but lack units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha 0.1), legend is well-placed; however, legend
+          duplicates x-axis labels which is redundant
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct strip plot with individual points and jitter
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on x-axis, continuous values on y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Jitter (0.2 width), transparency (0.6), mean reference lines as suggested
+          in spec
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, y-axis range appropriate
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels match data groups
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "strip-basic · plotly · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows different distributions (varying means, spreads), demonstrates
+          density through jitter
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Survey response scores grouped by demographic category - realistic
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Response scores in 30-110 range are realistic for surveys
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: '`np.random.seed(42)` used'
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports (numpy, plotly.graph_objects)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Implementation uses go.Scatter with manual jitter instead of leveraging
+          plotly.express's built-in strip plot (px.strip) which handles jitter automatically
+          and provides better hover interactions
+  verdict: APPROVED

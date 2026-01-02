@@ -24,3 +24,162 @@ review:
   - The fill_between function is from matplotlib rather than a seaborn-specific function;
     while seaborn does not have a native band/fill_between equivalent, the implementation
     correctly uses sns.lineplot for the central line
+  image_description: The plot displays a band chart showing a 95% confidence interval
+    around a mean trend line. The band is rendered in a semi-transparent light blue
+    (#306998 with alpha 0.3), representing the confidence interval that expands over
+    time (heteroscedastic behavior). The central trend line is rendered in bright
+    yellow/gold (#FFD43B) with a linewidth of 3. The data shows a sinusoidal pattern
+    with an upward linear trend, ranging from approximately -1 to 8 on the amplitude
+    axis and 0 to 10 on the time axis. The title "band-basic · seaborn · pyplots.ai"
+    is clearly visible at the top. Axis labels "Time (s)" and "Amplitude" are well-sized.
+    A legend in the upper left corner identifies both elements. The grid uses subtle
+    dashed lines. Overall, the layout is clean and professional with excellent readability.
+  criteria_checklist:
+    visual_quality:
+      score: 40
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: 'All text perfectly readable: title 24pt, labels 20pt, ticks 16pt'
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Band with alpha=0.3 and line with linewidth=3 are perfectly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow color scheme is colorblind-safe with excellent contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent proportions and whitespace distribution
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive with units: "Time (s)", "Amplitude"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Subtle grid (alpha=0.3, dashed), well-placed legend
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct band plot using fill_between
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: x, y_lower, y_upper, y_center all correctly implemented
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Band with transparency, central line in contrasting color
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, axes appropriately scaled
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend accurately describes "95% Confidence Interval" and "Mean Trend"
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: band-basic · seaborn · pyplots.ai'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows expanding uncertainty over time (heteroscedasticity), demonstrates
+          band behavior excellently
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Time series with 95% CI bounds is a realistic scientific application
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Sensible amplitude and time values
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (matplotlib.pyplot, numpy, seaborn)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items: []
+  verdict: APPROVED

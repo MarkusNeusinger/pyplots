@@ -23,3 +23,168 @@ review:
   - Data scenario is generic normal distribution - could represent a real-world context
   - Could leverage Plotly interactivity features more (hover tooltips showing exact
     percentiles)
+  image_description: 'The plot displays a basic ECDF (Empirical Cumulative Distribution
+    Function) with a clean, professional appearance. The title "ecdf-basic · plotly
+    · pyplots.ai" appears at the top in dark blue text. The x-axis is labeled "Value"
+    and ranges from approximately 10 to 90, while the y-axis is labeled "Cumulative
+    Proportion" and correctly ranges from 0 to 1. The ECDF is rendered as a blue step
+    function line (color #306998) with appropriate thickness, showing the characteristic
+    S-shaped curve of a normal distribution. The plot uses a white background with
+    subtle gray grid lines. The layout is well-balanced with appropriate margins.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 48pt, axis labels at 36pt, tick labels at 28pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line width of 4 is excellent for the step function, clearly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color (#306998) with good contrast on white
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good margins, plot fills canvas appropriately
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Labels are descriptive but lack units ("Value" could specify context)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Subtle grid with alpha 0.1, legend appropriately hidden for single
+          series
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct ECDF step function using shape="hv"
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Sorted values on X, cumulative proportion on Y
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Step function increases by 1/n, y-axis 0-1, grid lines present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis explicitly set to [0, 1], X shows full data range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend hidden (appropriate for single series)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Exact format: "ecdf-basic · plotly · pyplots.ai"'
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows full distribution shape from 0 to 1, demonstrates S-curve
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 7
+        passed: false
+        comment: Normal distribution with mean=50, sd=15 is plausible but generic
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 200 observations is ideal, values in sensible range (10-90)
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: false
+        comment: Good use of go.Scatter with shape="hv" for steps, but could leverage
+          Plotly Express ecdf or add hover interactivity
+  verdict: APPROVED

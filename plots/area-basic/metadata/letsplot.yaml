@@ -24,3 +24,177 @@ review:
   - Uses numeric day_num instead of actual dates; could use scale_x_datetime for proper
     date axis formatting
   - Grid styling could be more subtle (add alpha to panel_grid)
+  image_description: The plot shows a basic area chart displaying daily website visitors
+    over 30 days. The filled area uses a semi-transparent blue color (#306998 with
+    alpha 0.4), with a darker blue line (same color, size=2) tracing the top boundary
+    of the area. The chart has a light gray dashed grid in the background. The title
+    "area-basic · letsplot · pyplots.ai" appears at the top. The x-axis is labeled
+    "Day of Month" (ranging from 0 to 30), and the y-axis is labeled "Daily Visitors"
+    (ranging from 0 to 8,000). The data shows a realistic pattern with an upward trend
+    over the month, weekly cyclical variations (approximately 7-day periods visible
+    as peaks and valleys), and some random noise. Values start around 5,000 visitors
+    and end near 7,500.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick marks are all clearly readable with
+          appropriate font sizes (title=24, axis_title=20, axis_text=16)
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere in the plot
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Area fill and line are well-sized and clearly visible; alpha=0.4
+          is appropriate
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color scheme is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions overall, though the y-axis starts at 0 which creates
+          a large empty area below the data (values range ~4,300-7,600)
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Labels are descriptive ("Day of Month", "Daily Visitors") but lack
+          units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is visible with dashed style but could be more subtle (alpha
+          not apparent in grid styling)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct area chart type with filled area below the line
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X (day number) and Y (visitors) correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has semi-transparent fill (alpha 0.4), gridlines, clear axis labels
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single-series area chart
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correct format "area-basic · letsplot · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows trend, cyclical pattern, and variation well; could show more
+          dramatic peaks/valleys
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Website visitors is the exact example from spec; daily pattern with
+          weekly cycles is realistic
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Visitor counts (2,000-8,000 range) are realistic for a medium-sized
+          website
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (numpy, pandas, lets_plot)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Implementation uses basic ggplot grammar but doesn't leverage lets-plot
+          specific features like interactive tooltips, scale_x_datetime for proper
+          date handling, or other distinctive capabilities
+  verdict: APPROVED

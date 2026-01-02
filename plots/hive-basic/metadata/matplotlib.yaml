@@ -28,3 +28,182 @@ review:
   - Figure size is 12x12 instead of recommended 16x9 default from library rules
   - Node labels could benefit from slightly larger font size (18pt instead of 16pt)
     for better readability
+  image_description: 'The plot shows a hive plot with three radial axes arranged 120
+    degrees apart in a triangular configuration. The axes are labeled "Core" (top,
+    in Python blue #306998), "Utility" (bottom-left, in Python yellow #FFD43B), and
+    "Interface" (bottom-right, in teal #4ECDC4). Each axis contains nodes represented
+    as colored circles with white edge borders. Node labels are positioned adjacent
+    to their respective markers (Engine, Config, Logger, Cache on Core axis; Parser,
+    Validator, Formatter, Converter, Helper on Utility axis; API, Web, CLI, SDK on
+    Interface axis). Curved edges connect nodes through the center point, with edge
+    colors matching their source axis color at reduced opacity (alpha ~0.4). A small
+    white center point marks the origin. The title "Software Module Dependencies"
+    appears at the top with subtitle "hive-basic · matplotlib · pyplots.ai". A legend
+    at the bottom shows the three module categories with their corresponding colors.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: all text is readable; title 26pt, axis labels 22pt, node labels 16pt
+          - slightly below optimal but still clear
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: no overlapping text elements; node labels well positioned
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: nodes s=400 with white edge, axes linewidth=6, edges alpha=0.4 -
+          all perfectly visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: blue/yellow/teal palette is colorblind-safe with good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: good use of 12x12 square canvas; slight bottom whitespace due to
+          legend placement
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: true
+        comment: hive plots don't use traditional X/Y axes (N/A for this plot type,
+          no deduction should apply but keeping 0 for strict compliance)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: no grid needed for hive plot; legend well placed at bottom with 3
+          columns
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: correct hive plot with radial axes and curved edges through center
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: nodes correctly positioned on axes by category, position encodes
+          order/importance
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'all spec features present: 3 axes, node labels, edge connections
+          with transparency'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: all nodes visible with proper radii (0.15-0.85)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: legend correctly shows all three module categories
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: correctly uses "hive-basic · matplotlib · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: shows cross-axis connections, within-axis connections, and varying
+          node counts per axis; could show more edge weight variation
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: software module dependency network is realistic and matches spec
+          example exactly
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: 13 nodes and 17 edges is appropriate; slight imbalance (4 Core, 5
+          Utility, 4 Interface)
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 2
+        max: 3
+        passed: true
+        comment: has one helper function `node_to_cartesian()` which is reasonable
+          for this complex plot but not strictly KISS
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: '`np.random.seed(42)` set'
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: only necessary imports used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: uses current matplotlib API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: saves as 'plot.png'
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: uses LineCollection for efficient edge rendering and bezier curves,
+          but doesn't leverage more advanced matplotlib features like FancyBboxPatch
+          or custom transforms
+  verdict: APPROVED

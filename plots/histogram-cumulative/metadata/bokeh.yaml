@@ -24,3 +24,176 @@ review:
   - Could leverage HoverTool to show percentile information on hover
   - No reference lines showing common percentiles (p50, p90, p99) which would enhance
     the cumulative histogram utility
+  image_description: The plot displays a cumulative histogram showing web service
+    response times. The visualization features a blue step function line (#306998)
+    with a light blue filled area underneath. Yellow circular markers (#FFD43B) with
+    blue borders are placed at each bin edge to mark cumulative count values. The
+    x-axis shows "Response Time (ms)" ranging from 0 to approximately 700ms, and the
+    y-axis shows "Cumulative Count" ranging from 0 to 500. The title correctly follows
+    the format "histogram-cumulative · bokeh · pyplots.ai". The background is a light
+    gray (#fafafa) with dashed grid lines at 0.3 alpha. The curve is monotonically
+    increasing as expected for a cumulative histogram, starting at 0 and reaching
+    500 (total sample size). There's a Bokeh logo/toolbar visible in the top-right
+    corner.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 36pt, axis labels at 28pt, tick labels at 22pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Step line and markers are visible; markers could be slightly larger
+          for this canvas size
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow color scheme is colorblind-safe with good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas space, slight empty area on right where data tapers
+          off
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Response Time (ms)" and "Cumulative
+          Count"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Dashed grid at alpha 0.3 is good, but Bokeh toolbar/logo visible
+          in corner detracts
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct cumulative histogram with step function visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X-axis shows response time bins, Y-axis shows cumulative count
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Shows cumulative count, monotonically increasing, step function display
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full data range visible (0-700ms, 0-500 count)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single-series plot
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "histogram-cumulative · bokeh · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows cumulative nature well; could better demonstrate percentile
+          lookups with reference lines
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Web service response times is a real, neutral, comprehensible scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Response times 10-700ms are realistic; mixing exponential and normal
+          distributions creates interesting shape
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → plot → save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses ColumnDataSource and basic plotting, but doesn't leverage Bokeh's
+          interactive features (HoverTool for showing percentiles, annotations, etc.)
+  verdict: APPROVED

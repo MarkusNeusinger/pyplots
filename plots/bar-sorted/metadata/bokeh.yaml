@@ -22,3 +22,175 @@ review:
   - No value labels on bars (spec mentions value labels can improve readability)
   - Does not leverage Bokeh interactive capabilities (hover tooltips would enhance
     the plot)
+  image_description: The plot displays a sorted bar chart with 10 vertical bars arranged
+    in descending order from left to right. The bars are colored in a muted blue (#306998
+    - Python blue) with darker blue outlines. The title "bar-sorted · bokeh · pyplots.ai"
+    appears in the top-left corner. The x-axis is labeled "Product" with category
+    labels (Product A through Product J) rotated at a slight angle. The y-axis is
+    labeled "Sales (Units)" with values ranging from 0 to approximately 450. The bars
+    show a clear descending pattern from Product A (highest ~450) to Product J (lowest
+    ~85). The background is clean white with subtle dashed horizontal grid lines.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels are readable. Font sizes are
+          appropriate for the 4800x2700 canvas, though title could be slightly larger.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text. X-axis labels are rotated to prevent overlap.
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are well-sized with good width (0.7), appropriate spacing, and
+          clear visibility.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme with good contrast. No colorblind issues with
+          monochromatic design.
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas space. Plot fills adequate area, though there's
+          slightly more whitespace on the right.
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Both axes have descriptive labels with units: "Product" and "Sales
+          (Units)".'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Subtle dashed grid lines with alpha 0.3, but no legend present (though
+          not strictly needed for single-color bars).
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct sorted bar chart implementation.
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X-axis, values on Y-axis, correctly mapped.
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Descending sort order, clear visual hierarchy, ranking visualization.
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis starts at 0, all data visible.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single-series bar chart.
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "bar-sorted · bokeh · pyplots.ai".'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows descending sort clearly with good value spread. Could benefit
+          from more varied gaps between values.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Sales performance by product is a realistic, neutral business scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values (85-450 units) are plausible for sales data, though specific
+          product context is generic.
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes.
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42), though data is actually hardcoded.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (numpy, bokeh.io, bokeh.models, bokeh.plotting).
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh API.
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as "plot.png".
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ColumnDataSource properly, figure with categorical x_range,
+          vbar method, and Bokeh-specific styling. Could leverage more interactive
+          features or hover tools.
+  verdict: APPROVED

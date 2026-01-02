@@ -25,3 +25,175 @@ review:
   - Image dimensions (4500x2400) slightly below target specification (4800x2700);
     should use width=1600 for exact match
   - No value labels on or above bars as suggested in the specification Notes section
+  image_description: 'The plot displays a vertical bar chart showing product sales
+    by category. Seven blue bars (#306998) with subtle rounded top corners are arranged
+    in descending order from left to right. Categories shown are: Electronics (~$45,200),
+    Clothing (~$32,100), Home & Garden (~$28,400), Sports (~$21,800), Books (~$18,500),
+    Toys (~$15,200), and Food (~$12,300). The Y-axis displays "Sales ($)" with currency
+    formatting from $0 to $50,000. X-axis labels are rotated -45 degrees and show
+    "Product Category". The title reads "bar-basic · altair · pyplots.ai". A subtle
+    dashed grid is visible in the background. All text is clearly readable.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick marks are all clearly readable with
+          appropriate font sizes (title 28pt, labels 22pt, ticks 18pt)
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; the -45 degree angle on x-axis labels prevents
+          overlap effectively
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are well-sized with good spacing, easily distinguishable
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color (#306998) is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions with appropriate whitespace
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Y-axis has "Sales ($)" which is descriptive but unit is in the label
+          not separate; X-axis has "Product Category"
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid has appropriate opacity (0.3) with dashed styling, but no legend
+          present (not strictly required for single-series bar chart, but could add
+          context)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct vertical bar chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X-axis, values on Y-axis correctly
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Consistent bar widths, single color, adequate spacing present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for single-series (no legend needed)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly uses "bar-basic · altair · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows good variation in values; bars sorted by height shows ranking
+          well; could benefit from value labels as suggested in spec
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Product sales by retail category is a real, comprehensible scenario
+          matching spec examples
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Sales values ($12K-$45K) are realistic for retail category data
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (no random generation)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only altair and pandas imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Altair API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as plot.png and plot.html correctly, but dimensions (1500×800
+          × 3 = 4500×2400) slightly below target (4800×2700)
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Altair's declarative encoding, tooltips, sort parameter, and
+          cornerRadius styling; could leverage more interactive features like selection
+          or conditional encoding
+  verdict: APPROVED

@@ -24,3 +24,180 @@ review:
   - Could leverage Bokeh interactive features (hover tooltips) in the HTML output
   - All improvements are positive; including one negative change would demonstrate
     the plot type full capability
+  image_description: The plot displays a horizontal dumbbell chart comparing employee
+    satisfaction scores before and after policy changes across 8 departments. Blue
+    dots (#306998) represent "Before Policy Changes" and yellow dots (#FFD43B) represent
+    "After Policy Changes", connected by subtle gray lines. Departments are listed
+    on the y-axis (Finance, Sales, Operations, Customer Support, Engineering, Marketing,
+    Human Resources, Research & Development - sorted by improvement magnitude). The
+    x-axis shows "Satisfaction Score" ranging from approximately 50 to 90. The title
+    "dumbbell-basic · bokeh · pyplots.ai" is at the top. A legend in the bottom right
+    identifies the two dot colors.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels are readable. Font sizes are
+          appropriate for the 4800x2700 canvas though could be slightly larger for
+          tick labels.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text or elements. Department names are fully visible.
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Dots are appropriately sized (size=25) and clearly visible. Connecting
+          lines are subtle but visible.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue (#306998) and yellow (#FFD43B) provide excellent contrast and
+          are colorblind-safe (not red-green).
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas space, though the plot could be slightly more
+          centered. Minor whitespace imbalance on the right.
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels: "Satisfaction Score" and "Department".'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle with dashed lines and alpha=0.3. However, the legend
+          appears cut off/partially visible at the bottom right corner.
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct dumbbell chart with two dots connected by lines.
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on y-axis, values on x-axis (horizontal orientation as
+          specified).
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Distinct colors for start/end dots, thin connecting lines, sorted
+          by difference.
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: X-axis range (45-95) shows all data points with appropriate padding.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies "Before Policy Changes" and "After Policy
+          Changes".
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "dumbbell-basic · bokeh · pyplots.ai".'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variation in both starting points and improvement magnitudes.
+          All positive changes shown; could include one negative change for full coverage.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Employee satisfaction scores before/after policy changes is a realistic,
+          comprehensible scenario.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Satisfaction scores (55-88) are realistic. Could show slightly more
+          variation in starting points.
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear structure: imports → data → plot → save.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: true
+        comment: 'Data is deterministic (hardcoded values), but no random seed since
+          none needed. Minor: sorting makes data deterministic.'
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used.
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh API.
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html.
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ColumnDataSource and Bokeh's scatter/line methods. Could leverage
+          hover tools or other Bokeh interactivity features in the HTML output.
+  verdict: APPROVED

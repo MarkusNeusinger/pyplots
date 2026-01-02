@@ -29,3 +29,172 @@ review:
     are adjacent
   - Level 1 labels use 3-character abbreviations that may not be immediately clear
     (Eng, Mar, Sal, Ope)
+  image_description: 'The plot displays a sunburst chart showing a company budget
+    hierarchy across three concentric rings. The innermost ring shows four departments:
+    Engineering (Eng, blue), Marketing (Mar, yellow), Sales (Sal, red), and Operations
+    (Ope, green). The middle ring shows teams within each department (Backend, Frontend,
+    DevOps, Digital, Content, Enterprise, SMB, Support, HR) in lighter shades of the
+    parent colors. The outermost ring shows projects (API, Database, Web App, Mobile,
+    Infrastructure, Social Media, SEO, Blog, Video, EMEA, APAC, Direct, Tier 1, Tier
+    2, Recruiting) in the lightest shades. A legend on the right shows the department
+    color gradients with budget totals. Ring level labels (Dept, Team, Project) appear
+    below the chart. The title "sunburst-basic · bokeh · pyplots.ai" is centered at
+    the top.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title is 32pt, labels are 14-22pt, all readable but some outer labels
+          are slightly small
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, labels are well-positioned
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Wedges are clearly visible with good separation via white borders
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Colors are distinguishable but red/green combination could be problematic
+          for some colorblind users
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent layout, chart fills canvas well, legend is properly positioned
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: true
+        comment: N/A for sunburst (no axes), but ring level labels are present
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend is informative with gradient swatches and budget values
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct sunburst chart with concentric rings
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Hierarchical data correctly mapped to rings (level_1→level_2→level_3)
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: 3 hierarchy levels, proportional segments,
+          clear separation'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, segments span correctly
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend shows all departments with budget totals
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "sunburst-basic · bokeh · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows hierarchy well but some smaller segments lack labels
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Company budget breakdown is a realistic, relatable scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Budget values are plausible but units (K) only shown in legend
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 2
+        max: 3
+        passed: true
+        comment: Structure is logical but uses nested loops which adds complexity
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (no random seed needed)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Modern Bokeh API used
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses annular_wedge effectively but does not leverage Bokeh's interactive
+          features (hover tooltips would enhance this visualization)
+  verdict: APPROVED

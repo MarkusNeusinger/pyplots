@@ -25,3 +25,165 @@ review:
   - X-axis label Date could be more descriptive (e.g., Trading Date or include year)
   - Grid only shows horizontal lines; subtle vertical gridlines at date markers could
     help readability
+  image_description: The plot displays a candlestick chart showing 30 trading days
+    of stock price data from January 2 to February 6. Green candlesticks represent
+    bullish days (close > open) and red candlesticks represent bearish days (close
+    < open). Each candlestick has a rectangular body showing the open-close range
+    and thin gray wicks extending to show the high-low range. The y-axis shows "Price
+    ($)" ranging from approximately 93 to 112, and the x-axis shows "Date" with labels
+    at Jan 02, Jan 09, Jan 16, Jan 23, Jan 30, and Feb 06. The title reads "candlestick-basic
+    · letsplot · pyplots.ai". The chart uses a minimal theme with subtle horizontal
+    grid lines and no vertical grid lines. The overall trend shows an initial rise
+    followed by a decline.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick marks are all clearly readable at full
+          size
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, x-axis date labels are well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Candlestick bodies are appropriately sized with clear wicks
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Green (#22C55E) and red (#EF4444) are distinguishable but red-green
+          is not ideal for colorblind users
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, no cut-off content, appropriate whitespace
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Y-axis has units "Price ($)" but x-axis is generic "Date"
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle but only horizontal lines; no legend needed for this
+          plot type
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct candlestick chart implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: OHLC data correctly mapped to candlestick elements
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Shows open, high, low, close; green/red color coding; visible wicks
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed; colors are self-explanatory for candlestick charts
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly formatted as "candlestick-basic · letsplot · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows both bullish and bearish candles, varying body sizes, and different
+          wick lengths; good mix of patterns
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Simulated stock OHLC data with realistic random walk behavior
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Price around $100 is realistic; 30 business days is appropriate
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png (via SVG conversion)
+    library_features:
+      score: 3
+      max: 5
+      items: []
+  verdict: APPROVED

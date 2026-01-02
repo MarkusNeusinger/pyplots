@@ -23,3 +23,171 @@ review:
   - Y-axis label could include units/scale indicator (e.g., Accuracy Score 0-1)
   - Could demonstrate more lets-plot specific features like tooltips or interactive
     elements
+  image_description: |-
+    The plot shows a learning curve with two distinct lines on a light gray background. The title "learning-curve-basic · letsplot · pyplots.ai" appears at the top. The x-axis displays "Training Set Size (samples)" ranging from 0 to 1,600, and the y-axis shows "Accuracy Score" ranging from 0.55 to 1.0. Two curves are visible:
+    - A **blue line** (Training Score) starting around 0.88 and quickly rising to plateau near 0.99
+    - A **yellow/gold line** (Validation Score) starting around 0.67 and gradually rising to about 0.84
+    Both curves have shaded confidence bands showing standard deviation. The legend is positioned at the bottom center, clearly labeling "Training Score" and "Validation Score". The plot demonstrates a classic overfitting pattern with a gap between training and validation scores.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick marks are all clearly readable with
+          appropriate font sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Lines and points are clearly visible; markers slightly small but
+          acceptable
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue and yellow/gold are colorblind-safe and high contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good use of canvas space, balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Y-axis says "Accuracy Score" but lacks units (could be "Accuracy
+          Score (0-1)")
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Subtle gray grid, legend well positioned at bottom
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct learning curve with two lines and confidence bands
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Training sizes on X, scores on Y correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has both training/validation curves, shaded confidence bands, proper
+          legend
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axis limits
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly labels Training Score and Validation Score
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "{spec-id} · {library} · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows overfitting pattern with gap between training and validation;
+          demonstrates improvement with more data
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: ML model evaluation is a perfect realistic scenario for learning
+          curves
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Score values 0.65-0.99 are realistic; training sizes 50-1600 are
+          reasonable
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Using current lets_plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ggplot2 grammar correctly with geom_ribbon for confidence bands,
+          manual color scales, and theme customization; could leverage more interactive
+          features
+  verdict: APPROVED

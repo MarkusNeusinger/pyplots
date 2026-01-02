@@ -24,3 +24,173 @@ review:
     variations
   - Data distribution is purely normal; could show slight asymmetry or a few outliers
     for richer feature demonstration
+  image_description: The plot displays a histogram of exam scores using 20 bins. Bars
+    are rendered in a muted blue color (#306998) with white edge lines (1.5px) separating
+    each bin clearly. The distribution is approximately normal, centered around 72-75
+    points, with frequencies ranging from 0 to ~60 students per bin. The x-axis ranges
+    from ~30 to 100 (exam scores in points), and the y-axis shows frequency counts
+    starting at 0. The title "histogram-basic · matplotlib · pyplots.ai" appears at
+    the top. Axis labels are descriptive with units ("Exam Score (points)" and "Frequency
+    (count)"). A subtle dashed y-axis grid (alpha 0.3) aids readability. The layout
+    is clean with good proportions and no clutter.
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt, labels 20pt, ticks 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars well-sized, white edges clearly separate bins, alpha 0.85 provides
+          good visibility
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color, no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, tight_layout applied, no cut-off content
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Both axes have descriptive labels with units in parentheses
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid only on y-axis is fine for histograms, but no legend needed
+          here (N/A - deducting 0)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct histogram chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Single continuous variable correctly binned on x-axis, frequency
+          on y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Clear bin edges with no gaps (edgecolor="white"), readable labels,
+          appropriate bin count (20), y-axis starts at zero
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, x-axis spans full score range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single-series histogram (N/A - full points)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "histogram-basic · matplotlib · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows normal distribution shape clearly, but could demonstrate more
+          features like outliers or slight skewness for richer visualization
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Exam scores with mean=72, std=12 is a very realistic educational
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Scores clipped to 0-100 range, realistic exam score distribution
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current ax.hist() API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png'
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses standard hist() with basic parameters; could showcase matplotlib-specific
+          features like histtype, density normalization, or statistical annotations
+  verdict: APPROVED

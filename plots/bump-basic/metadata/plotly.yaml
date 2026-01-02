@@ -24,3 +24,178 @@ review:
   - Data is deterministic so seed is not technically needed, but consider adding np.random.seed
     for consistency if random data is ever used
   - Layout balance could be improved with legend placement closer to plot
+  image_description: 'The plot displays a bump chart showing sports league standings
+    over 6 weeks. The Y-axis shows ranks from 1 (top) to 5 (bottom) with rank 1 correctly
+    positioned at the top (inverted axis). The X-axis shows "Period" with Week 1 through
+    Week 6. Five teams are tracked with distinct colored lines and circular markers:
+    Team Alpha (blue #306998), Team Beta (yellow #FFD43B), Team Gamma (green #2ecc71),
+    Team Delta (red #e74c3c), and Team Epsilon (purple #9b59b6). The lines effectively
+    show ranking changes - Team Alpha rises from 3rd to 1st, Team Beta falls from
+    1st to 2nd, Team Gamma has dynamic movement including briefly taking 1st in Week
+    5. The title reads "bump-basic · plotly · pyplots.ai" at top left. The legend
+    is positioned to the right of the plot area. The background uses plotly_white
+    template with subtle grid lines.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, tick labels all clearly readable with appropriate
+          font sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels clear
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Lines (width=4) and markers (size=16) are well-sized for the data
+          density
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Five distinct colors that are colorblind-friendly (blue, yellow,
+          green, red, purple)
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good overall balance, though right margin for legend takes notable
+          space
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Period" and "Rank" are descriptive but lack units (though units
+          aren''t really applicable here)'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle, legend is well-placed but slightly distant from plot
+          area
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bump chart showing rank changes over time
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=periods, Y=ranks correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Inverted Y-axis (rank 1 at top), distinct colors, dot markers, lines
+          connecting entities
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All ranks (1-5) and periods (Week 1-6) visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies all five teams
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "bump-basic · plotly · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows rank changes, overtakes, stability (Team Delta stays 4th mostly);
+          could show more dramatic swaps
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Sports league standings is a perfect, real-world bump chart use case
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: 5 teams over 6 weeks is appropriate; values are sensible
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 0
+        max: 3
+        passed: false
+        comment: No random seed set (though data is deterministic, np.random is imported
+          but not used)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only plotly.graph_objects imported, which is used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 2
+        max: 2
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses go.Scatter with mode="lines+markers", proper plotly_white template,
+          interactive HTML export, and autorange="reversed" for Y-axis inversion
+  verdict: APPROVED

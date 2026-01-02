@@ -26,3 +26,174 @@ review:
     - consider removing legend or using it for a different variable
   - Grid alpha at 0.1 is perhaps too subtle - 0.2-0.3 would be more visible while
     still unobtrusive
+  image_description: 'The plot displays a categorical strip plot showing plant height
+    measurements (in cm) across five soil types: Clay, Sandy, Loam, Peat, and Chalk.
+    Each category has its own distinct color: Clay in Python Blue (#306998), Sandy
+    in Python Yellow (#FFD43B), Loam in coral red (#E15759), Peat in teal (#76B7B2),
+    and Chalk in green (#59A14F). Individual data points are scattered vertically
+    within each category with horizontal jitter applied to prevent overlap. The title
+    "cat-strip · plotly · pyplots.ai" is centered at the top. The y-axis shows "Plant
+    Height (cm)" ranging from ~10 to ~80, and the x-axis shows "Soil Type" with the
+    five category labels. A legend in the upper right identifies each soil type by
+    color. The background is clean white with subtle horizontal gridlines.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, jitter effectively separates data points
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers at size 14 with 0.7 opacity work well for ~25-28 points per
+          category; slightly large but visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses colorblind-safe palette with good contrast; no red-green confusion
+          issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, plot fills canvas well, minor extra margin space
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive with units: "Plant Height (cm)" and "Soil Type"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle (rgba 0.1 alpha), but legend duplicates x-axis labels
+          which is redundant
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct categorical strip plot with jitter
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on x-axis, numeric values on y-axis as specified
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Jitter applied, individual points visible, distributions shown
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data points visible within axes range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels match category names correctly
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "cat-strip · plotly · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows different distributions (means, spreads), includes outliers
+          for Sandy and Loam; excellent variety
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Plant growth by soil type is a real, neutral scientific scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Plant heights 10-80cm are realistic for many plant species
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses go.Scatter with custom hover templates which is good, but could
+          leverage px.strip() for more idiomatic plotly usage; interactivity via HTML
+          is included
+  verdict: APPROVED

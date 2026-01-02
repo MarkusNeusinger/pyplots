@@ -28,3 +28,184 @@ review:
   - The -0.15 value in correlation heatmap appears slightly clipped/cramped
   - Library features score limited - did not leverage lets-plot interactive tooltip
     capabilities in HTML output
+  image_description: 'The plot displays a financial dashboard with 5 subplots arranged
+    in a custom grid layout. The main plot (top-left, larger) shows a "Stock Price"
+    line chart with blue line and light blue fill area, price ranging from ~0 to ~100+
+    over 100 trading days. Below it is a "Trading Volume" bar chart with yellow/gold
+    bars showing volume in millions. On the right side, there are three smaller panels:
+    a "Returns" histogram (blue bars showing daily return distribution), a "Sectors"
+    bar chart (with diverging colors - green for positive returns in Tech/Health/Finance
+    and red for negative in Energy), and a "Correlations" heatmap (4x4 matrix with
+    correlation values displayed as text on colored tiles using a diverging blue-red-white
+    scale). The overall title "subplot-grid-custom · lets-plot · pyplots.ai" appears
+    at the top. The layout effectively demonstrates non-uniform cell sizes with the
+    main chart spanning more area than supporting panels.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: All text is readable; titles are bold and clear, axis labels appropriately
+          sized, though some could be slightly larger
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; all labels and tick marks clearly visible
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Line, bars, histogram bins, and heatmap tiles all clearly visible;
+          bar widths well-suited to density
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses blue/gold/green/red scheme with good contrast; diverging scales
+          for sectors and correlations are colorblind-distinguishable
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas with clear hierarchy; main plot appropriately
+          larger, minor gaps between right panels
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'All axes have descriptive labels with units: "Price ($)", "Volume
+          (M)", "Daily Return (%)", "Return (%)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Subtle grids (alpha 0.3), legends appropriately hidden where color
+          scale is self-explanatory
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correctly implements custom subplot grid with multiple plot types
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All data correctly mapped: time series, volume, returns histogram,
+          sector performance, correlations'
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Demonstrates row/column spanning via ggbunch; shows dashboard-style
+          layout with varied cell sizes. Minor: could have shown a cell spanning multiple
+          rows'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All axes show complete data ranges
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Color scales accurate where used
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correct format "subplot-grid-custom · lets-plot · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows 5 different plot types (line with area, bar, histogram, categorical
+          bar with gradient, heatmap with text); demonstrates diverse subplot capabilities
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Financial dashboard is a realistic, neutral use case exactly matching
+          the spec's described application
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Stock prices, volumes, returns, correlations all have realistic values;
+          seed ensures reproducibility
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → individual plots → ggbunch assembly
+          → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set early
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy, pandas, lets_plot used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 0
+        max: 1
+        passed: false
+        comment: Uses noqa comments for wildcard import; minor issue
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ggbunch for custom grid positioning which is lets-plot specific;
+          uses scale_fill_gradient2, geom_area, geom_tile with text; could have showcased
+          more unique lets-plot features like tooltips or interactivity
+  verdict: APPROVED

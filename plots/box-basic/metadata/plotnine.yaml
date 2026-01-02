@@ -24,3 +24,171 @@ review:
   - No subtle grid lines to aid value reading (theme_minimal removes them by default)
   - Y-axis starting at 0 creates unnecessary whitespace since no salaries are near
     zero
+  image_description: 'The plot displays a box-and-whisker chart showing salary distributions
+    across four departments (Engineering, Marketing, Sales, Support). Each department
+    has a distinctly colored box: Engineering (coral/salmon), Marketing (olive green),
+    Sales (cyan/turquoise), and Support (purple/violet). The boxes show median lines,
+    quartiles, and whiskers extending to 1.5×IQR. Outliers are visible as individual
+    gray points above several boxes (Engineering, Marketing, Sales, Support). The
+    title "box-basic · plotnine · pyplots.ai" appears at the top. X-axis labeled "Department"
+    and Y-axis labeled "Salary ($)" with values ranging from 0 to 150000.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels are all clearly readable at appropriate
+          sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Box plots are well-sized, outliers visible with appropriate alpha
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Colors are distinguishable but not from a standard colorblind-safe
+          palette
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, minor whitespace at bottom left
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Descriptive labels with units ("Salary ($)", "Department")
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: No visible grid, legend hidden (acceptable since categories on x-axis)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct box-and-whisker plot
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X, values on Y correctly
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Median lines, quartiles, whiskers at 1.5×IQR, outliers as points,
+          different colors per category
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend appropriately hidden (categories shown on x-axis)
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correct format "box-basic · plotnine · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows different distributions, outliers present, varying spreads;
+          could show more outlier variety
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Salary by department is a real, comprehensible business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Salary values are realistic; y-axis starting at 0 creates some empty
+          space
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Modern plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: verbose=False is non-standard parameter
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ggplot grammar correctly with geom_boxplot, theme_minimal, element_text
+          customization; could leverage scale_fill_brewer for better palettes
+  verdict: APPROVED

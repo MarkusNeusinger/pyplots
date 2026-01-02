@@ -26,3 +26,174 @@ review:
     top-right or outside placement
   - Jittered rain points are uniformly dark gray instead of matching condition colors,
     which reduces visual cohesion
+  image_description: |-
+    The plot displays a raincloud visualization for three experimental conditions (Control, Treatment A, Treatment B) comparing reaction times in milliseconds. Each condition shows:
+    - **Half-violin (cloud)**: Positioned on the right side of each category in distinct colors - blue for Control, yellow for Treatment A, and green for Treatment B
+    - **Box plot**: White/gray boxplots centered-left showing median, quartiles, and whiskers
+    - **Jittered points (rain)**: Dark gray scatter points positioned to the left of the boxplots
+    - **Colors**: Blue (#306998), Yellow (#FFD43B), Green (#5BA85B) - colorblind-friendly palette
+    - **Title**: "raincloud-basic · letsplot · pyplots.ai" at top
+    - **Axes**: Y-axis "Reaction Time (ms)" ranging 200-700, X-axis "Experimental Condition"
+    - **Legend**: Positioned in bottom-right showing condition colors
+    - **Layout**: Clean minimal theme with subtle horizontal grid lines
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt bold, axis labels 20pt, tick labels 16pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text or elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Violin, boxplot, and jittered points all visible; rain points could
+          be slightly larger
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow/green palette is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas, though Treatment B violin extends close to edge
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis has units "(ms)", X-axis descriptive "Experimental Condition"
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Legend placement at bottom-right is reasonable but slightly overlaps
+          with data region
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct raincloud plot with all three components
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X, continuous values on Y correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has half-violin, boxplot, jittered points; layout follows spec (cloud
+          right, rain left); bimodal distribution shown in Treatment B
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies conditions
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "raincloud-basic · letsplot · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows normal, shifted, and bimodal distributions; Treatment B clearly
+          shows bimodality
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Reaction time experiment is a real psychology research scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Reaction times 250-700ms are realistic for cognitive tasks
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses show_half parameter for half-violin, position_nudge, layer_tooltips
+          for interactivity, flavor_high_contrast_light(); could use more advanced
+          lets-plot features
+  verdict: APPROVED

@@ -27,3 +27,164 @@ review:
     could improve canvas utilization
   - The seaborn library is primarily used for styling rather than core plotting (acceptable
     since seaborn has no native pie chart)
+  image_description: 'The plot shows an exploded pie chart visualizing market share
+    analysis. The chart displays 5 company segments: TechCorp (35.2%, dark blue, exploded
+    outward from the center), DataSoft (22.8%, yellow), CloudNet (18.5%, teal), AIVentures
+    (14.3%, coral/salmon), and CyberSys (9.2%, light mint green). All slices have
+    white percentage labels with bold text inside them. The TechCorp slice is visibly
+    separated from the center, emphasizing it as the market leader. A legend on the
+    right side shows company names with their percentages. The title reads ''Market
+    Share Analysis · pie-exploded · seaborn · pyplots.ai'' in bold at the top. The
+    chart uses white edge lines between slices and has a clean white background.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, legend, and percentage labels are all clearly readable with
+          appropriate font sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels are clearly positioned within
+          their slices
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Pie slices are well-sized and proportioned, wedges clearly visible
+          with white edges
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Good distinct colors, though some shades could be improved for full
+          colorblind safety
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good canvas utilization, pie chart is well-sized, minor imbalance
+          with legend positioning creating some empty space at bottom
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend is well-styled with shadow and positioned appropriately
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct chart type (exploded pie chart)
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories and values correctly mapped to slices
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: exploded slice, percentage labels, distinct
+          colors, legend'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, percentages sum to 100%
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows all categories with percentages
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: ''Market Share Analysis · pie-exploded · seaborn
+          · pyplots.ai'''
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows exploded slice for leader, but could demonstrate multiple exploded
+          slices as spec allows 1-3
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Market share analysis is a perfect real-world use case
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are realistic percentages that sum to 100%; 5 categories is
+          within optimal range
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure, no classes/functions
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: true
+        comment: Data is deterministic but no random seed (though not strictly needed
+          here since no random data)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and seaborn imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as 'plot.png'
+    library_features:
+      score: 3
+      max: 5
+      items: []
+  verdict: APPROVED

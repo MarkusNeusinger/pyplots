@@ -27,3 +27,174 @@ review:
     in requirements
   - Marker size could be reduced to 6-8 with alpha 0.6 for 365 data points to reduce
     visual clutter
+  image_description: The plot displays an interactive line chart showing daily temperature
+    readings over a full year (January 2024 to January 2025). The line is rendered
+    in Python Blue (#306998) with small circular markers at each data point that have
+    a yellow border. The chart shows a clear seasonal sinusoidal pattern with temperatures
+    ranging from approximately -5°C in winter to ~35°C in summer. The title "line-interactive
+    · bokeh · pyplots.ai" appears in blue at the top left. The y-axis is labeled "Temperature
+    (°C)" and the x-axis is labeled "Date". A legend box labeled "Daily Temperature"
+    is positioned in the upper left. The background is light gray (#FAFAFA) with subtle
+    dashed grid lines. The bokeh toolbar with zoom/pan controls is visible on the
+    right edge.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 36pt, axis labels at 28pt, tick labels at 22pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, date labels well spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 8
+        passed: true
+        comment: Line width of 4 and marker size of 10 are appropriate for 365 points,
+          though markers could be slightly smaller with lower alpha for this density
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme (Python Blue) with good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Temperature (°C)" includes units, "Date" is descriptive'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle with alpha 0.2, but legend position overlaps the highest
+          data points in January 2024
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct interactive line chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Date on X, Temperature on Y correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Has hover tooltips, zoom (wheel + box), pan, reset. Missing: range
+          selector/slider for quick navigation mentioned in spec'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 365 days visible, full temperature range shown
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Daily Temperature" accurately describes the data'
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "line-interactive · bokeh · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows full seasonal variation, noise, both extremes
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Daily temperature is a plausible scenario, though base temp of 12°C
+          suggests a specific climate zone
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Temperature range -5°C to 35°C is realistic for temperate climates
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves both plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of ColumnDataSource, HoverTool with custom tooltips, interactive
+          tools (WheelZoom, BoxZoom, Pan, Reset). Could leverage RangeSlider widget
+          for enhanced navigation per spec.
+  verdict: APPROVED

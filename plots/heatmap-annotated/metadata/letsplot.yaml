@@ -24,3 +24,178 @@ review:
     be more descriptive)
   - Random correlation data could have more realistic sector relationships (e.g.,
     Tech-Finance correlation patterns)
+  image_description: The plot displays an 8×8 correlation matrix heatmap for stock
+    sectors (Tech, Finance, Healthcare, Energy, Consumer, Industrial, Materials, Utilities).
+    It uses a diverging colormap with blue (#2166AC) for negative correlations, white
+    (#F7F7F7) for near-zero values, and red (#B2182B) for positive correlations. Each
+    cell contains bold numeric annotations showing correlation coefficients to 2 decimal
+    places. The diagonal shows perfect correlation (1.00) as expected. Text color
+    dynamically contrasts with background - white text on dark cells (|value| > 0.5)
+    and black text on lighter cells. X-axis labels are rotated 45 degrees. A colorbar
+    legend labeled "Correlation" shows the scale from -1 to 1. The title correctly
+    follows the format "heatmap-annotated · lets-plot · pyplots.ai".
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is bold 24pt, axis labels 20pt, tick labels 16pt, annotations
+          visible and readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, 45-degree rotation prevents x-axis
+          label overlap
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Tiles well-sized, annotations clearly visible with appropriate contrast
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Diverging blue-white-red colormap is colorblind-friendly (RdBu variant)
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good proportions but some extra whitespace on right side due to colorbar
+          placement
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels ("Sector") but no units (appropriate for correlation
+          matrix)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Legend well-placed, white cell borders provide good separation, but
+          no grid (appropriate for heatmap)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct heatmap with annotations
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly assigned to sectors, value mapped to color and annotation
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Annotations present, auto-contrasting text color, colorbar included,
+          diverging colormap used
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all 8 sectors, colorbar shows full -1 to 1 range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar labeled "Correlation" with correct scale
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Exact format "heatmap-annotated · lets-plot · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows positive correlations, negative correlations, perfect diagonal,
+          values near zero
+      - id: DQ-02
+        name: Realistic Context
+        score: 5
+        max: 7
+        passed: true
+        comment: Stock sector correlations are plausible but generated randomly rather
+          than based on real market data patterns
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: All values properly bounded [-1, 1], symmetric matrix as expected
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy, pandas, lets_plot imported, all used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: 'Saves as plot.png but also generates plot.html (minor: both outputs
+          are fine)'
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ggplot2-style grammar with geom_tile, geom_text, scale_color_identity,
+          scale_fill_gradient2, theme_minimal. Good use of lets-plot features but
+          doesn't leverage advanced interactive features that lets-plot offers.
+  verdict: APPROVED

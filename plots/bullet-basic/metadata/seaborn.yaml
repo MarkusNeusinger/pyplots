@@ -24,3 +24,177 @@ review:
   - Seaborn is minimally utilized - only sns.barplot for the actual value bars, while
     most visualization work is done with matplotlib. Could better leverage seaborn
     DataFrame-centric approach or styling capabilities.
+  image_description: |-
+    The plot displays a horizontal bullet chart with four KPI metrics (Revenue, Customer Satisfaction, Efficiency, Quality Score) stacked vertically. Each metric shows:
+    - **Grayscale background bands** in three shades (light gray for Poor, medium gray for Satisfactory, dark gray for Good)
+    - **Blue horizontal bars** (#306998 Python Blue) representing actual values
+    - **Black vertical marker lines** indicating targets
+    - **Blue percentage labels** (78%, 85%, 62%, 91%) positioned to the right of each bar
+
+    The title "bullet-basic · seaborn · pyplots.ai" is displayed at the top in bold. X-axis shows "Performance (%)" from 0-100. A well-positioned legend in the upper right explains all elements. The layout is clean with subtle vertical grid lines and no overlapping elements.
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt bold, axis labels 20pt, tick labels 16pt, all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, metric labels clear, value labels positioned
+          well
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars, target markers, and background bands all clearly visible and
+          well-sized
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Grayscale bands with blue bars, colorblind-safe design
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent proportions, good use of space
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Performance (%)" is descriptive with units, but Y-axis has no label
+          (set to empty string intentionally)'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid subtle (alpha 0.3), legend well-placed but could use slightly
+          smaller font for balance
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bullet chart implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Actual values as bars, targets as markers, ranges as background bands
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: actual bar, target marker, qualitative
+          ranges, labels'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: X-axis 0-115 shows all data clearly
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies Poor/Satisfactory/Good/Actual/Target
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "bullet-basic · seaborn · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows metrics above target (Quality Score 91% vs 85%), below target
+          (Revenue 78% vs 90%, Efficiency 62% vs 75%), and at target (Customer Satisfaction
+          85% vs 80% exceeds). Good variety but could show one metric in "poor" range
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Business KPIs (Revenue, Customer Satisfaction, Efficiency, Quality
+          Score) are realistic metrics
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Percentage values 0-100 with realistic performance numbers
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set (even though data is hardcoded)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used (matplotlib.patches, pyplot, numpy, pandas, seaborn)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Modern seaborn API usage
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: sns.barplot is used but the implementation is primarily matplotlib-based.
+          The grayscale bands, target markers, and styling all use matplotlib directly.
+          Seaborn's distinctive features (statistical aggregation, automatic styling,
+          hue-based coloring) are not leveraged.
+  verdict: APPROVED

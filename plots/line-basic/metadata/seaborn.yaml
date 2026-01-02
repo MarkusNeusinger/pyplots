@@ -25,3 +25,174 @@ review:
     variation to show real-world noise
   - Does not leverage seaborn distinctive statistical features (confidence intervals,
     error bands)
+  image_description: The plot displays a line chart showing monthly temperature data
+    over 12 months. A single blue line (#306998) connects 12 data points with circular
+    markers. The line shows a clear sinusoidal pattern typical of seasonal temperature
+    variation - starting low around 4°C in January/February, peaking at approximately
+    30°C in July, then declining back to about 4°C in December. The x-axis is labeled
+    "Month" with integer values 1-12, and the y-axis is labeled "Temperature (°C)"
+    ranging from approximately 5 to 30. The title correctly displays "line-basic ·
+    seaborn · pyplots.ai". A subtle dashed grid is visible in the background. The
+    overall layout is clean with good proportions.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, labels at 20pt, ticks at 16pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line width of 3 and marker size of 12 perfectly adapted for 12 data
+          points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color with good contrast, no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, 16:9 aspect ratio well utilized
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Month" and "Temperature (°C)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: false
+        comment: → 0/2 - Grid at alpha=0.3 is good, but no legend present (though
+          not strictly required for single line)
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct line chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=Month (sequential), Y=Temperature (continuous) correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Single line, clear axis labels, grid lines, markers on data points
+          - all present
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all 12 data points without clipping
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Single line, legend not required
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: "line-basic · seaborn · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows trend clearly, but could demonstrate more variation patterns
+          (e.g., some noise or anomalies)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly temperature readings is a perfect real-world scenario mentioned
+          in spec
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Temperature range ~4-30°C is realistic for temperate climate annual
+          variation
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports (matplotlib, numpy, pandas, seaborn) are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses sns.lineplot which is seaborn's main line plotting function,
+          but doesn't leverage more distinctive features like confidence intervals
+          or hue grouping
+  verdict: APPROVED

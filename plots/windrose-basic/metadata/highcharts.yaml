@@ -24,3 +24,169 @@ review:
     removing or repositioning
   - Uses manual JSON config instead of highcharts-core Python library (acceptable
     but less idiomatic)
+  image_description: 'The plot displays a polar wind rose chart with 8 compass direction
+    sectors (N, NE, E, SE, S, SW, W, NW). The chart uses stacked bars radiating from
+    the center, with 5 color-coded speed ranges: dark blue (0-3 m/s), teal (3-6 m/s),
+    yellow (6-9 m/s), orange (9-12 m/s), and red (>12 m/s). The dominant wind directions
+    are clearly W, SW, and S, showing a prevailing westerly pattern. The title "windrose-basic
+    · highcharts · pyplots.ai" is at the top with subtitle "Annual Wind Pattern Distribution".
+    A legend on the right shows "Wind Speed" categories. Radial axis shows frequency
+    percentages from 0% to 24%. Grid lines are subtle gray circles.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, direction labels, and axis percentages are all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Stacked bars are well-sized and distinguishable
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Colorblind-safe progression from cool blue to warm red/orange
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good but plot is slightly offset left with large right margin for
+          legend
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Frequency (%) label present with units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: The "Frequency (%)" y-axis title overlaps with the percentage labels
+          on the radial axis
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct polar stacked histogram (wind rose)
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Direction on angular axis, frequency on radial axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 8 direction sectors, 5 speed bins, stacked colors
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axis shows all data up to ~24%
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows speed ranges with colors
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format "{spec-id} · {library} · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Shows varied wind patterns: dominant W/SW, secondary directions,
+          all speed ranges'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Annual hourly wind data (8760 obs) with realistic Weibull speed distribution
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Frequencies 0-24% are realistic for meteorological data
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear structure: imports → data → config → render'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 0
+        max: 2
+        passed: false
+        comment: json import is used but numpy and other imports are all needed
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Highcharts API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: true
+        comment: Creates plot.png correctly
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Highcharts polar chart with stacking, but manually constructs
+          config instead of using highcharts-core Python library
+  verdict: APPROVED

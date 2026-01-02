@@ -23,3 +23,175 @@ review:
   - Legend shows only color swatches, not the actual line styles (Altair limitation
     - strokeDash legend combined with color shows color only)
   - No interactive features (tooltips, hover) which are Altair distinctive strength
+  image_description: 'The plot displays a styled line chart showing monthly temperature
+    readings from four weather stations (Coastal, Mountain, Valley, Highland) over
+    12 months (Jan-Dec). The chart uses distinct line styles: solid blue for Coastal,
+    dashed yellow/gold for Mountain, dotted teal/green for Valley, and dash-dot coral/red
+    for Highland. The X-axis shows months from January to December, and the Y-axis
+    shows Temperature (°C) ranging from -4 to 40. All four lines follow a seasonal
+    pattern peaking in summer months (July-August). The title "line-styled · altair
+    · pyplots.ai" is displayed at the top. A legend in the upper-right corner identifies
+    each station with its corresponding color and line style. A subtle grid with dashed
+    lines aids readability.'
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, month labels well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Lines are thick (strokeWidth=4), all styles clearly distinguishable
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses Python Blue, Yellow, Teal, Coral - colorblind-friendly palette
+          with distinct hues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well, balanced margins, legend positioned appropriately
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: '"Month" and "Temperature (°C)" - descriptive with units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle (alpha 0.3), but legend symbols don't show line styles,
+          only colors
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct line plot with multiple series
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=months, Y=temperature values, correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: All 4 line styles present (solid, dashed, dotted, dash-dot), legend
+          included
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full range (-5 to 40), all data visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels match data series correctly
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "line-styled · altair · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows all 4 standard line styles (solid, dashed, dotted, dash-dot),
+          seasonal patterns with variation
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Weather station temperature data is a real, neutral, comprehensible
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Temperature values are realistic (-2°C to 35°C seasonal range)
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple script: imports → data → plot → save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Only used imports: altair, numpy, pandas'
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Altair API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 0
+        max: 5
+        passed: false
+        comment: Uses basic Altair mark_line and encode. Could leverage Altair's interactive
+          features, tooltips, or selection mechanisms, but keeps it simple for styled
+          line display
+  verdict: APPROVED

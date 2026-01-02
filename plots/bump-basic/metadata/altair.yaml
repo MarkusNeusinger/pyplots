@@ -23,3 +23,177 @@ review:
   - Brown and light gray colors for Man United and Tottenham could be more distinguishable
     for accessibility
   - Missing explicit reproducibility comment (data is deterministic but not annotated)
+  image_description: 'The plot displays a bump chart showing Premier League team standings
+    over 6 match weeks. The title "bump-basic · altair · pyplots.ai" appears at the
+    top in large black text. The Y-axis shows "League Position" from 1 (top) to 6
+    (bottom), correctly inverted. The X-axis shows "Match Week" with Week 1-6 labels
+    rotated at approximately 45 degrees. Six teams are represented with distinct colors:
+    Arsenal (blue), Chelsea (yellow), Liverpool (red/coral), Man City (green), Man
+    United (brown), and Tottenham (light gray). Each team''s trajectory is shown with
+    connected lines (stroke width ~4) and filled circular markers at each week. The
+    legend is positioned on the right side. A subtle dashed grid helps track positions.
+    The layout is clean with good proportions.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, all labels are distinct and readable
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line strokeWidth=4 and point size=250 are well-suited for 6 entities
+          over 6 periods
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Good distinct colors, though brown/gray could be more distinguishable
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, legend well-positioned on right
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels ("Match Week", "League Position") but no units
+          (N/A for rankings)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha=0.3, dashed), legend is well-placed but could
+          have larger spacing
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bump chart showing rankings over time
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Entity→color, Period→X-axis, Rank→Y-axis correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Inverted Y-axis, distinct colors, dot markers at each period, lines
+          connecting entities
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All ranks 1-6 visible, all weeks shown
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies all 6 teams
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "bump-basic · altair · pyplots.ai"
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows rank changes, overtakes, stability (Tottenham), volatility
+          (Man United), rises (Arsenal), falls (Man United)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Premier League standings is a perfect real-world application for
+          bump charts
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 6 teams over 6 weeks with ranks 1-6 is realistic and appropriate
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 1
+        max: 3
+        passed: false
+        comment: Deterministic data (hardcoded), but no random seed comment to clarify
+          intent
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only altair and pandas imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Modern Altair API used
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with correct scale_factor
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: true
+        comment: Uses declarative encoding, layered charts (lines + points), interactive
+          HTML export, tooltips - good usage but could leverage more Altair-specific
+          features like selections
+  verdict: APPROVED

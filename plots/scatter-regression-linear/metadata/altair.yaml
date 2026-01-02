@@ -24,3 +24,183 @@ review:
   weaknesses:
   - Could use Altair built-in transform_regression() for the regression line and band,
     though this would lose the ability to display R² and equation
+  image_description: The plot displays a scatter plot with linear regression showing
+    the relationship between Advertising Spend ($K) on the x-axis (ranging from 10
+    to 98) and Sales Revenue ($K) on the y-axis (ranging from approximately 10 to
+    110). Blue filled circular points (with moderate transparency ~0.65) show 80 data
+    points with clear positive correlation. A yellow/gold solid regression line runs
+    through the data from lower-left to upper-right. A semi-transparent yellow confidence
+    band surrounds the regression line, showing the 95% CI that widens slightly at
+    the extremes. The title "scatter-regression-linear · altair · pyplots.ai" appears
+    at the top-left. The regression equation "y = 0.84x + 12.85 | R² = 0.902" is displayed
+    prominently in the upper portion of the plot. Grid lines are subtle with low opacity.
+    The layout is well-balanced with good canvas utilization.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is large (~28pt), axis labels are clear (~22pt), tick labels
+          readable (~18pt)
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Points are well-sized (size=150) with good alpha (0.65), appropriate
+          for 80 data points. Could be slightly larger but still good.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue points (#306998) and yellow line (#FFD43B) provide excellent
+          contrast, colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent canvas utilization, plot fills appropriate space with balanced
+          margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: "Advertising Spend ($K)", "Sales
+          Revenue ($K)"'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle (alpha 0.3) which is good. No legend needed for this
+          plot type. However, regression annotation is positioned well.
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct scatter plot with linear regression
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X (advertising spend) and Y (sales revenue) correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: R² displayed, regression line distinct,
+          95% CI band with transparency, points have alpha ~0.65, axis labels descriptive,
+          regression equation shown'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data with appropriate scaling (zero=False)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed; annotation serves this purpose well
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses exact format: "scatter-regression-linear · altair · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows strong linear relationship (R²=0.902) with realistic noise/scatter.
+          Good range of values. Could show slightly more variation in correlation
+          strength but still demonstrates concept well.
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Advertising spend vs sales revenue is a classic, comprehensible business
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Values are realistic: $10K-$100K advertising spend yielding $15K-$100K+
+          sales revenue'
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → statistics → chart → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only altair, numpy, pandas imported - all used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Altair API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as plot.png AND plot.html which is correct for Altair
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses Altair's declarative layering (alt.layer) and encoding system
+          well. Could leverage transform_regression() for cleaner implementation,
+          but manual calculation allows displaying R² which Altair doesn't provide
+          natively. Good tooltip support.
+  verdict: APPROVED

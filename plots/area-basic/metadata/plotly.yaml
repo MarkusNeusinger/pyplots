@@ -26,3 +26,176 @@ review:
     just "Date")
   - Missing hover template customization which is a key Plotly strength
   - Could benefit from range slider or zoom capabilities to showcase Plotly interactivity
+  image_description: The plot displays a basic area chart showing daily website visitors
+    over January 2024 (30 days). The x-axis shows dates from Jan 2, 2024 to Jan 29,
+    2024, and the y-axis shows "Visitors (daily count)" ranging from 0 to approximately
+    7000. The area below the line is filled with a semi-transparent blue color (rgba
+    blue, ~0.4 alpha), while the line itself is a darker blue (#306998). The data
+    exhibits a clear weekly cyclical pattern (peaks and troughs repeating roughly
+    every 7 days) along with an overall upward trend from ~5000 to ~7000 visitors.
+    The title "Daily Website Visitors · area-basic · plotly · pyplots.ai" is centered
+    at the top. The background uses the plotly_white template with subtle light gray
+    gridlines. The layout is clean with good margins and no overlapping elements.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis titles at 22pt, tick labels at 18pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text anywhere, dates are well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line width of 3 is appropriate, area fill clearly visible with good
+          alpha
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color scheme, no colorblind concerns
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good margins, well-proportioned plot area
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Y-axis has units "(daily count)" but X-axis just says "Date" without
+          format specification
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Grid is subtle at alpha 0.1, but no legend shown (showlegend=False)
+          - for a single series this is acceptable but loses points
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct area chart using fill="tozeroy"
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Datetime on x-axis, numeric visitors on y-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Semi-transparent fill (0.4), gridlines present, clear axis labels
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis starts at 0, all data visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for single series, name is descriptive
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Correctly formatted as "Daily Website Visitors · area-basic · plotly
+          · pyplots.ai"
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows trend, weekly pattern, and variance - good demonstration of
+          area chart strengths. Could show more dramatic volume changes.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Website traffic is a perfect real-world scenario for area charts
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values 4000-7000 are plausible for a mid-size website, though somewhat
+          high minimum
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) is set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy, pandas, plotly.graph_objects used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 2
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses basic go.Scatter with fill, but doesn't leverage Plotly's interactive
+          features like hover templates, range sliders, or annotations that would
+          enhance the visualization
+  verdict: APPROVED

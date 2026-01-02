@@ -22,3 +22,175 @@ review:
   weaknesses:
   - Grid lines could be more subtle (lower alpha) for a cleaner look
   - Axis labels are functional but could be more descriptive
+  image_description: 'The plot displays a bump chart showing tech company rankings
+    over 6 quarters (Q1-Q6). Five companies are tracked: Alpha Corp (teal), Gamma
+    Tech (green), Beta Inc (coral/salmon), Delta Systems (blue/periwinkle), and Epsilon
+    Labs (pink). The Y-axis shows ranks 1-5 with rank 1 at the top (inverted). Lines
+    connect each company''s rank across quarters with dot markers at each data point.
+    Company names appear as labels on the right side at their final Q6 positions.
+    The title "bump-basic · plotnine · pyplots.ai" is displayed at the top. The background
+    is minimal with a subtle grid.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; end labels well-spaced at different
+          ranks
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Lines (size=2.5) and points (size=6) are well-sized; slight deduction
+          as some line crossings are dense
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Set2 palette is colorblind-safe with good distinction between categories
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions; right side has adequate space for labels but could
+          be slightly tighter
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Quarter" and "Rank" are descriptive but lack context (e.g., could
+          be "Quarterly Period")'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid subtle, legend disabled in favor of direct labels (good choice),
+          but grid could be even more subtle
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bump chart showing ranking changes over time
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=period, Y=rank, color=entity - correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Y-axis inverted, distinct colors, dot markers, lines connecting entities
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, axis limits appropriate (0.5-7.5 allows space for
+          labels)
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Direct labels accurate and match entities
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "bump-basic · plotnine · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows rank changes, overtakes, stability (Epsilon Labs), volatility
+          (Gamma Tech); good variety but all 5 ranks used every period (no ties shown)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Tech company market rankings is a plausible real-world scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: 5 entities, 6 periods is appropriate; ranks 1-5 sensible
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Simple imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Data is deterministic (hardcoded values)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotnine API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as "plot.png"
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses ggplot grammar properly with geom_line, geom_point, geom_text,
+          scale_y_reverse, theme customization; solid plotnine usage but no advanced
+          features like faceting
+  verdict: APPROVED

@@ -25,3 +25,172 @@ review:
   - Grid lines could be slightly more subtle (currently alpha 0.15, could use 0.1)
   - Axis labels could include units or more context (e.g., Theoretical Quantiles (Standard
     Deviations))
+  image_description: 'The plot displays a Q-Q (Quantile-Quantile) plot with a white
+    background. Blue circular markers (Python blue color #306998 with 0.7 alpha) represent
+    sample quantiles plotted against theoretical quantiles. A dashed yellow reference
+    line (y=x) runs diagonally across the plot. The title "qq-basic · highcharts ·
+    pyplots.ai" appears at the top in bold. The x-axis is labeled "Theoretical Quantiles"
+    and the y-axis "Sample Quantiles". Both axes range approximately from 6 to 102.
+    A legend in the top-right corner identifies the reference line and sample quantiles
+    (N=100). The data points follow the reference line closely in the middle range
+    but show slight deviation at the upper end, indicating the intended right skew
+    in the data.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 72px, axis titles at 48px, tick labels at 36px - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Marker radius 18 with alpha 0.7 is optimal for 100 data points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Colorblind-safe Python blue (#306998) and yellow (#FFD43B)
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Descriptive labels but missing units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: false
+        comment: Grid is subtle with dashed style, but alpha 0.15 could be slightly
+          lower; legend well placed
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct Q-Q scatter plot with reference line
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Theoretical quantiles on X, sample quantiles on Y
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Reference line (y=x), scatter points, proper axis labels
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data points with appropriate padding
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies reference line and sample quantiles with
+          N=100
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses exact format "qq-basic · highcharts · pyplots.ai"
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows slight right skew demonstrating Q-Q interpretation, but could
+          show more extreme deviations
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Statistical data comparison is a real use case
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values centered around 50 with reasonable spread
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current highcharts_core API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 5
+        max: 5
+        passed: true
+        comment: Uses Highcharts series configuration, legend options, interactive
+          HTML export
+  verdict: APPROVED

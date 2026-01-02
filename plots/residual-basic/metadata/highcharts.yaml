@@ -25,3 +25,179 @@ review:
   - Margins are generous but slightly excessive, reducing the effective plot area
   - Trend line label says Trend (Smoothed) but spec suggests LOWESS/LOESS terminology
     would be more precise
+  image_description: The plot displays a residual scatter plot with a blue color scheme
+    (#306998) for data points. The title "residual-basic · highcharts · pyplots.ai"
+    appears at the top with a subtitle "Residuals from Linear Regression Model." The
+    X-axis is labeled "Fitted Values" ranging from ~10 to ~98, and the Y-axis is labeled
+    "Residuals" with a symmetric range from -40 to +40. A horizontal blue reference
+    line at y=0 is present with a "Zero Reference" label on the right. The scatter
+    points show moderate transparency with blue outlines. A yellow/gold smoothed trend
+    line (labeled "Trend (Smoothed)" in the legend) runs through the data showing
+    slight variation. The legend is positioned in the top-right corner. Several outliers
+    are visible (around +28, +33, and -25). The layout uses the full canvas well with
+    appropriate margins.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels are all clearly readable at full
+          size with appropriate font sizes
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text or elements, everything is well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers are appropriately sized (radius 14) with good alpha (0.6)
+          for 120 points. Slightly larger than optimal but still effective
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue (#306998) and yellow (#FFD43B) palette is colorblind-safe, no
+          red-green conflict
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas with appropriate margins, though margins are quite
+          large leaving some unused space
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: '"Fitted Values" and "Residuals" are descriptive but lack units'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha via color), legend is well-placed but could
+          be more compact
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct scatter plot for residual visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Fitted values on X, residuals on Y as specified
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Has horizontal reference line at y=0, moderate transparency (~0.6),
+          smoothed trend line (moving average), proper axis labels
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Symmetric y-axis range around zero as recommended in spec
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly labels "Residuals" and "Trend (Smoothed)"
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "residual-basic · highcharts · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows random scatter around zero, clear outliers at +28/+33/-25,
+          and mild heteroscedasticity. Could show slightly more pronounced patterns
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Plausible regression residuals scenario, but context is generic (not
+          tied to specific domain)
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values are sensible for regression residuals with fitted values 10-90
+          and residuals ±40
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple sequential structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (numpy, highcharts components, selenium, etc.)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current highcharts-core API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as both plot.png and plot.html (correct for interactive library)
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses Highcharts features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses plotLines for zero reference, spline series for trend, proper
+          chart configuration. Could leverage more interactive tooltips or data labels
+          for outlier highlighting
+  verdict: APPROVED

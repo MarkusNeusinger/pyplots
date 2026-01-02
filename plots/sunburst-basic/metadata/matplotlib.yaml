@@ -26,3 +26,174 @@ review:
   - Could use more extreme value variation between segments to better demonstrate
     proportional sizing
   - White label color on inner ring may reduce contrast on lighter portions
+  image_description: 'The plot displays a sunburst chart with three concentric rings
+    showing a company budget breakdown. The innermost ring shows three departments:
+    Engineering (blue, #306998), Sales (yellow, #FFD43B), and Marketing (olive/gold).
+    The middle ring displays teams: Frontend, Backend, DevOps under Engineering; North,
+    South under Sales; Digital, Brand under Marketing. The outer ring shows individual
+    projects like Web App, Mobile, API, Database, Cloud, CI/CD, Enterprise, SMB, SEO,
+    Ads, Events, and Content. The chart uses Python branding colors as the base palette
+    with lighter variations for child levels. The title "Company Budget · sunburst-basic
+    · matplotlib · pyplots.ai" appears at the top. The chart fills the square canvas
+    well with proper spacing and white edge separators between segments.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is 24pt bold, department labels are 18pt white bold, team labels
+          14pt, project labels 12pt - all clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text; smaller segments appropriately skip labels
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Ring widths and segment sizes are well adapted; white edges provide
+          clear separation
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Uses blue/yellow/olive palette that is largely colorblind-friendly,
+          but some lighter variations may be difficult to distinguish
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Square figure (12x12) fills canvas excellently; chart is centered
+          with balanced margins
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: No legend needed for labeled segments, but could benefit from a legend
+          or annotation showing the value hierarchy
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct sunburst chart with concentric rings
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Hierarchy levels correctly mapped: Level 1 (departments) → Level
+          2 (teams) → Level 3 (projects)'
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: 3 hierarchy levels, proportional angles,
+          consistent branch colors'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 12 projects, 6 teams, and 3 departments visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Labels directly on segments are accurate
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "Company Budget · sunburst-basic · matplotlib
+          · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows varied hierarchy with different segment sizes, but all level-1
+          categories are roughly similar in size
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Company budget breakdown is a real, comprehensible scenario with
+          appropriate categories
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Budget values in $thousands are reasonable (60-200k per project),
+          though some variation could be more extreme
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → processing → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: false
+        comment: Deterministic data used (no random), but no explicit seed comment
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy used, both necessary
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib pie() API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses pie() with wedgeprops for ring widths which is matplotlib's
+          approach to sunburst, but this is not a specialized sunburst function; it's
+          a manual construction using nested pie charts
+  verdict: APPROVED

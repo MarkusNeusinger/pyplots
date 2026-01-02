@@ -25,3 +25,178 @@ review:
   - Legend appears relatively small compared to the large canvas size; legend text
     could be scaled up for better readability at full resolution
   - Code uses manual loops instead of ColumnDataSource which is more idiomatic Bokeh
+  image_description: The plot shows a pie chart with 5 slices representing budget
+    allocation by department. The largest slice (Engineering, 35%) is in Python blue
+    (#306998) and is slightly exploded/separated from the center. The second largest
+    is Marketing (25%) in bright yellow (#FFD43B), followed by Sales (20%) in red,
+    Operations (12%) in purple, and HR (8%) in green. Each slice has a percentage
+    label displayed on it - white text for darker slices and dark text for the yellow
+    slice. The title "pie-basic · bokeh · pyplots.ai" appears at the top. A legend
+    on the right side lists all categories with their percentages. The pie chart is
+    centered in a square 3600x3600 canvas with clean white background and no axes/grid
+    (appropriate for pie charts).
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title at 40pt, percentage labels at 32pt, legend at 28pt - all clearly
+          readable, though legend text could be slightly larger
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, all labels well-positioned within slices
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Wedges are clearly visible with good sizing, white borders separate
+          slices well
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Distinct colors that work for colorblind users (blue, yellow, red,
+          purple, green - no red-green only distinction)
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, pie centered well, though legend placement creates
+          some asymmetry
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for pie charts, handled correctly by hiding axes
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: true
+        comment: Legend is functional but appears small relative to the large canvas,
+          could be better integrated
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct pie chart implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories and values correctly mapped to slices
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: percentage labels, distinct colors, legend,
+          slight explosion on key slice'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, slices properly sized
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows all categories with percentages
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "pie-basic · bokeh · pyplots.ai"'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows 5 categories with varied proportions, explosion effect on largest
+          slice; could show more variation in smaller slices
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Budget allocation by department is a realistic, comprehensible scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Percentages are reasonable (35%, 25%, 20%, 12%, 8% = 100%), though
+          distribution is somewhat standard
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Follows imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses deterministic hardcoded data, no random elements
+      - id: CQ-03
+        name: Clean Imports
+        score: 1
+        max: 2
+        passed: true
+        comment: Most imports used, though `output_file` and `save` are only used
+          for HTML output
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png correctly
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses distinctive library features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Bokeh wedge glyphs and Label annotations correctly, generates
+          both PNG and interactive HTML; however, could leverage ColumnDataSource
+          for more idiomatic Bokeh code
+  verdict: APPROVED

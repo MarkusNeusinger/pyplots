@@ -23,3 +23,173 @@ review:
   - Legend could be hidden for single-series plots to reduce visual clutter
   - Data shows smooth seasonal curve but lacks irregular variations that would better
     demonstrate line plot flexibility
+  image_description: The plot displays a line chart showing monthly temperature data
+    across a full year (January to December). The line is rendered in a dark blue
+    color (#306998) with circular markers at each data point. The chart clearly shows
+    a seasonal temperature pattern - cold winter months (Jan ~5°C, Dec ~6°C), rising
+    through spring, peaking in summer (Jul ~29°C), and declining through autumn. The
+    title "line-basic · highcharts · pyplots.ai" appears at the top. The Y-axis is
+    labeled "Temperature (°C)" and the X-axis is labeled "Month". Subtle dashed horizontal
+    grid lines help with value reading. The background is white with clean, professional
+    styling.
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick marks are all clearly readable at the
+          output resolution
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; month labels are well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Line width and marker size are well-adapted for 12 data points
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color, no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions with adequate margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis has "Temperature (°C)" with units, X-axis has "Month"
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle and appropriate, but legend shows "Temperature" which
+          is somewhat redundant for a single-series plot
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct line chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=months (sequential), Y=temperature (continuous)
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Clean minimal design, clear axis labels, grid lines, markers on data
+          points
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full range from ~4 to 30
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend label correctly shows "Temperature"
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: "line-basic · highcharts · pyplots.ai"'
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows clear seasonal trend with rise and fall; could show more variability
+          or edge cases
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly temperature readings represent a realistic Northern Hemisphere
+          seasonal pattern
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are realistic (5-29°C) for temperate climate annual temperatures
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 1
+        max: 2
+        passed: true
+        comment: Imports LineSeries from area module instead of line module (minor
+          issue)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current highcharts-core API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Uses Highcharts features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of chart options, series styling, and grid customization;
+          could leverage more interactive/advanced Highcharts features
+  verdict: APPROVED

@@ -69,11 +69,7 @@ async def pg_engine():
     if not database_url:
         pytest.skip("DATABASE_URL not set - skipping PostgreSQL E2E tests")
 
-    engine = create_async_engine(
-        database_url,
-        echo=False,
-        connect_args={"timeout": CONNECTION_TIMEOUT},
-    )
+    engine = create_async_engine(database_url, echo=False, connect_args={"timeout": CONNECTION_TIMEOUT})
 
     try:
         async with asyncio.timeout(CONNECTION_TIMEOUT + 2):

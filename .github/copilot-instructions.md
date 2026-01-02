@@ -169,7 +169,7 @@ Examples: `scatter-basic`, `scatter-color-mapped`, `bar-grouped-horizontal`, `he
 - **Test Types**:
   - **Unit tests** (`tests/unit/`): Fast, isolated, mocked dependencies
   - **Integration tests** (`tests/integration/`): SQLite in-memory for API tests
-  - **E2E tests** (`tests/e2e/`): Real PostgreSQL with isolated `test_e2e` schema (skipped if DATABASE_URL not set)
+  - **E2E tests** (`tests/e2e/`): Real PostgreSQL with separate `test` database (skipped if DATABASE_URL not set)
 - **Markers**: Use `@pytest.mark.unit`, `@pytest.mark.integration`, `@pytest.mark.e2e`
 
 ### Plot Implementation Style (KISS)

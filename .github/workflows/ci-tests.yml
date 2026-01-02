@@ -102,7 +102,7 @@ jobs:
       # Tests include:
       # - Unit tests: Fast, mocked dependencies
       # - Integration tests: SQLite in-memory for repository layer
-      # - E2E tests: Real PostgreSQL with isolated test_e2e schema
+      # - E2E tests: Real PostgreSQL with separate 'test' database
 
     - name: Upload coverage to GitHub Artifacts
       if: steps.check.outputs.should_test == 'true' && always()

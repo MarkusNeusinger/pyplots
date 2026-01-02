@@ -3,7 +3,7 @@ E2E tests with real PostgreSQL database.
 
 Tests full API stack against a real PostgreSQL database.
 No mocking - uses actual database connection via DATABASE_URL.
-Tests run in isolated 'test_e2e' schema to protect production data.
+Tests run in separate 'test' database to protect production data.
 
 These tests are skipped if DATABASE_URL is not set, allowing
 local development without PostgreSQL.

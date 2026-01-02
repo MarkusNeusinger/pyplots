@@ -1,15 +1,16 @@
 """
 E2E test fixtures with real PostgreSQL database.
 
-Uses a separate 'test_e2e' schema to isolate test data from production.
+Uses a separate 'test' database to isolate test data from production.
 Tests are skipped if DATABASE_URL is not set or database is unreachable.
 
 Connection modes:
-- Local: Direct DATABASE_URL from .env
+- Local: Direct DATABASE_URL from .env (auto-derives test database)
 - CI: DATABASE_URL via Cloud SQL Proxy (localhost:5432 -> Cloud SQL)
+- Explicit: TEST_DATABASE_URL for custom test database
 
 Note: These tests must NOT be run with pytest-xdist parallelization
-as multiple workers would conflict on the shared test_e2e schema.
+as multiple workers would conflict on the shared test database.
 """
 
 import asyncio
@@ -17,13 +18,11 @@ import os
 
 import pytest
 import pytest_asyncio
-from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from core.database.models import Base
 
 
-TEST_SCHEMA = "test_e2e"
 CONNECTION_TIMEOUT = 10  # seconds - skip tests if DB unreachable
 
 # Test data constants
@@ -32,14 +31,21 @@ TEST_THUMB_URL = "https://storage.googleapis.com/pyplots-images/test/thumb.png"
 
 
 def _get_database_url():
-    """Get DATABASE_URL from environment, loading .env if needed."""
+    """Get test database URL, defaulting to 'test' database on same instance."""
     from dotenv import load_dotenv
 
     load_dotenv()
 
-    database_url = os.environ.get("DATABASE_URL")
+    # Prefer explicit TEST_DATABASE_URL
+    database_url = os.environ.get("TEST_DATABASE_URL")
+
     if not database_url:
-        return None
+        # Derive from DATABASE_URL by replacing database name with 'test'
+        prod_url = os.environ.get("DATABASE_URL")
+        if not prod_url:
+            return None
+        # Replace database name at end of URL (e.g., /pyplots -> /test)
+        database_url = prod_url.rsplit("/", 1)[0] + "/test"
 
     # Ensure async driver
     if database_url.startswith("postgresql://"):
@@ -53,53 +59,47 @@ def _get_database_url():
 @pytest_asyncio.fixture(scope="function")
 async def pg_engine():
     """
-    Create PostgreSQL engine and setup test schema.
+    Create PostgreSQL engine for test database.
 
-    Creates a separate 'test_e2e' schema to isolate tests from production data.
-    The schema is dropped and recreated for each test.
+    Uses a separate 'test' database to isolate tests from production.
+    Tables are dropped and recreated for each test.
     Skips tests if database is unreachable.
     """
     database_url = _get_database_url()
     if not database_url:
         pytest.skip("DATABASE_URL not set - skipping PostgreSQL E2E tests")
 
-    # Create temporary engine for schema setup
-    temp_engine = create_async_engine(database_url, echo=False, connect_args={"timeout": CONNECTION_TIMEOUT})
-    try:
-        async with asyncio.timeout(CONNECTION_TIMEOUT + 2):
-            async with temp_engine.begin() as conn:
-                await conn.execute(text(f"DROP SCHEMA IF EXISTS {TEST_SCHEMA} CASCADE"))
-                await conn.execute(text(f"CREATE SCHEMA {TEST_SCHEMA}"))
-        await temp_engine.dispose()
-    except (TimeoutError, asyncio.TimeoutError, OSError) as e:
-        await temp_engine.dispose()
-        pytest.skip(f"Database unreachable (timeout) - skipping E2E tests: {e}")
-    except Exception as e:
-        await temp_engine.dispose()
-        pytest.skip(f"Database connection failed - skipping E2E tests: {e}")
-
-    # Create main engine with search_path set at connection level
     engine = create_async_engine(
         database_url,
         echo=False,
-        connect_args={"server_settings": {"search_path": TEST_SCHEMA}, "timeout": CONNECTION_TIMEOUT},
+        connect_args={"timeout": CONNECTION_TIMEOUT},
     )
 
-    # Create tables in test schema
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    try:
+        async with asyncio.timeout(CONNECTION_TIMEOUT + 2):
+            async with engine.begin() as conn:
+                # Drop all tables for clean state
+                await conn.run_sync(Base.metadata.drop_all)
+                # Create fresh tables
+                await conn.run_sync(Base.metadata.create_all)
+    except (TimeoutError, asyncio.TimeoutError, OSError) as e:
+        await engine.dispose()
+        pytest.skip(f"Database unreachable (timeout) - skipping E2E tests: {e}")
+    except Exception as e:
+        await engine.dispose()
+        pytest.skip(f"Database connection failed - skipping E2E tests: {e}")
 
     yield engine
 
-    # Cleanup: Drop entire test schema
+    # Cleanup: Drop all tables
     async with engine.begin() as conn:
-        await conn.execute(text(f"DROP SCHEMA IF EXISTS {TEST_SCHEMA} CASCADE"))
+        await conn.run_sync(Base.metadata.drop_all)
     await engine.dispose()
 
 
 @pytest_asyncio.fixture
 async def pg_session(pg_engine):
-    """Create session with test schema (search_path set at engine level)."""
+    """Create session for test database."""
     async_session = async_sessionmaker(pg_engine, class_=AsyncSession, expire_on_commit=False)
     async with async_session() as session:
         yield session
@@ -109,10 +109,10 @@ async def pg_session(pg_engine):
 @pytest_asyncio.fixture
 async def pg_db_with_data(pg_session):
     """
-    Seed test schema with sample data.
+    Seed test database with sample data.
 
     Creates the same test data as tests/conftest.py:test_db_with_data
-    but in the PostgreSQL test schema.
+    but in the PostgreSQL test database.
     """
     from core.database.models import Impl, Library, Spec
 

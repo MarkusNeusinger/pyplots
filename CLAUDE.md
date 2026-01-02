@@ -154,11 +154,11 @@ uv run pytest tests/unit/api/test_routers.py::test_get_specs
 **Test Infrastructure**:
 - **Unit tests** (`tests/unit/`): Fast, mocked dependencies
 - **Integration tests** (`tests/integration/`): SQLite in-memory for API tests
-- **E2E tests** (`tests/e2e/`): Real PostgreSQL with isolated `test_e2e` schema
+- **E2E tests** (`tests/e2e/`): Real PostgreSQL with separate `test` database
 
 **Database for Tests**:
 - **Unit/Integration**: SQLite in-memory (via custom types in `core/database/types.py`)
-- **E2E**: PostgreSQL with `test_e2e` schema (auto-created, auto-dropped)
+- **E2E**: PostgreSQL with separate `test` database (tables auto-created, auto-dropped)
 - E2E tests are skipped if `DATABASE_URL` is not set
 
 ### Code Quality

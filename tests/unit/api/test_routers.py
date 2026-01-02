@@ -201,6 +201,49 @@ class TestLibrariesRouter:
             assert len(data["libraries"]) == 1
             assert data["libraries"][0]["id"] == "matplotlib"
 
+    def test_libraries_cache_hit(self, db_client) -> None:
+        """Libraries should return cached data when available."""
+        client, _ = db_client
+
+        cached_data = {"libraries": [{"id": "cached_lib", "name": "Cached"}]}
+
+        with patch("api.routers.libraries.get_cache", return_value=cached_data):
+            response = client.get("/libraries")
+            assert response.status_code == 200
+            data = response.json()
+            assert data["libraries"][0]["id"] == "cached_lib"
+
+    def test_library_images_with_db(self, db_client, mock_spec) -> None:
+        """Library images should return images from DB."""
+        client, _ = db_client
+
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_all = AsyncMock(return_value=[mock_spec])
+
+        with (
+            patch("api.routers.libraries.get_cache", return_value=None),
+            patch("api.routers.libraries.set_cache"),
+            patch("api.routers.libraries.SpecRepository", return_value=mock_spec_repo),
+        ):
+            response = client.get("/libraries/matplotlib/images")
+            assert response.status_code == 200
+            data = response.json()
+            assert data["library"] == "matplotlib"
+            assert len(data["images"]) == 1
+            assert data["images"][0]["spec_id"] == "scatter-basic"
+
+    def test_library_images_cache_hit(self, db_client) -> None:
+        """Library images should return cached data when available."""
+        client, _ = db_client
+
+        cached_data = {"library": "matplotlib", "images": [{"spec_id": "cached"}]}
+
+        with patch("api.routers.libraries.get_cache", return_value=cached_data):
+            response = client.get("/libraries/matplotlib/images")
+            assert response.status_code == 200
+            data = response.json()
+            assert data["images"][0]["spec_id"] == "cached"
+
 
 class TestSpecsRouter:
     """Tests for specs router."""
@@ -304,6 +347,53 @@ class TestDownloadRouter:
         ):
             response = client.get("/download/scatter-basic/seaborn")
             assert response.status_code == 404
+
+    def test_download_success(self, client: TestClient, mock_spec) -> None:
+        """Download should return image when spec and impl found."""
+
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
+
+        # Mock httpx response
+        mock_response = MagicMock()
+        mock_response.content = b"fake image content"
+        mock_response.raise_for_status = MagicMock()
+
+        mock_httpx_client = AsyncMock()
+        mock_httpx_client.get = AsyncMock(return_value=mock_response)
+        mock_httpx_client.__aenter__ = AsyncMock(return_value=mock_httpx_client)
+        mock_httpx_client.__aexit__ = AsyncMock(return_value=None)
+
+        with (
+            patch(DB_CONFIG_PATCH, return_value=True),
+            patch("api.routers.download.SpecRepository", return_value=mock_spec_repo),
+            patch("api.routers.download.httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
+            response = client.get("/download/scatter-basic/matplotlib")
+            assert response.status_code == 200
+            assert response.headers["content-type"] == "image/png"
+            assert "attachment" in response.headers["content-disposition"]
+            assert response.content == b"fake image content"
+
+    def test_download_gcs_error(self, client: TestClient, mock_spec) -> None:
+        """Download should return 502 when GCS fetch fails."""
+        import httpx
+
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
+
+        mock_httpx_client = AsyncMock()
+        mock_httpx_client.get = AsyncMock(side_effect=httpx.HTTPError("GCS error"))
+        mock_httpx_client.__aenter__ = AsyncMock(return_value=mock_httpx_client)
+        mock_httpx_client.__aexit__ = AsyncMock(return_value=None)
+
+        with (
+            patch(DB_CONFIG_PATCH, return_value=True),
+            patch("api.routers.download.SpecRepository", return_value=mock_spec_repo),
+            patch("api.routers.download.httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
+            response = client.get("/download/scatter-basic/matplotlib")
+            assert response.status_code == 502
 
 
 class TestSeoRouter:

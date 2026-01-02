@@ -373,6 +373,14 @@ def sync_to_database(session: Session, plots: list[dict]) -> dict:
             update_set["review_strengths"] = impl.get("review_strengths") or []
             update_set["review_weaknesses"] = impl.get("review_weaknesses") or []
 
+            # Extended review data (issue #2845)
+            if impl.get("review_image_description") is not None:
+                update_set["review_image_description"] = impl["review_image_description"]
+            if impl.get("review_criteria_checklist") is not None:
+                update_set["review_criteria_checklist"] = impl["review_criteria_checklist"]
+            if impl.get("review_verdict") is not None:
+                update_set["review_verdict"] = impl["review_verdict"]
+
             stmt = insert(Impl).values(**impl).on_conflict_do_update(constraint="uq_impl", set_=update_set)
             session.execute(stmt)
             stats["impls_synced"] += 1

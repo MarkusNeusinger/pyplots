@@ -9,30 +9,17 @@ import type { PlotImage } from '../types';
 import type { ImageSize } from '../constants';
 import { useInfiniteScroll, useAnalytics, useFilterState, isFiltersEmpty } from '../hooks';
 import { Header, Footer, FilterBar, ImagesGrid, FullscreenModal } from '../components';
-import { useAppData } from '../components/Layout';
+import { useAppData, useHomeState } from '../components/Layout';
 
 export function HomePage() {
   const navigate = useNavigate();
   const { specsData, librariesData, stats } = useAppData();
+  const { homeStateRef, saveScrollPosition } = useHomeState();
 
-  // Handle scroll restoration on back navigation
+  // Disable browser's automatic scroll restoration
   useEffect(() => {
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
-    }
-
-    // Check for saved scroll position from back navigation
-    const savedScrollY = sessionStorage.getItem('homeScrollY');
-    if (savedScrollY) {
-      // Delay scroll restoration to allow images to load
-      const timer = setTimeout(() => {
-        window.scrollTo(0, parseInt(savedScrollY, 10));
-        // Clear the saved position
-        sessionStorage.removeItem('homeScrollY');
-      }, 150);
-      return () => clearTimeout(timer);
-    } else {
-      window.scrollTo(0, 0);
     }
   }, []);
 
@@ -69,6 +56,21 @@ export function HomePage() {
     setHasMore,
   });
 
+  // Restore scroll position from persistent state (ref for sync access)
+  const scrollRestoredRef = useRef(false);
+  useEffect(() => {
+    if (scrollRestoredRef.current) return;
+    const savedScrollY = homeStateRef.current.scrollY;
+    if (savedScrollY > 0 && displayedImages.length > 0) {
+      requestAnimationFrame(() => {
+        window.scrollTo(0, savedScrollY);
+        scrollRestoredRef.current = true;
+      });
+    } else if (displayedImages.length > 0) {
+      scrollRestoredRef.current = true;
+    }
+  }, [homeStateRef, displayedImages.length]);
+
   // UI state
   const [modalImage, setModalImage] = useState<PlotImage | null>(null);
   const [openImageTooltip, setOpenImageTooltip] = useState<string | null>(null);
@@ -102,16 +104,16 @@ export function HomePage() {
         document.activeElement.blur();
       }
 
-      // Save scroll position for back navigation
-      sessionStorage.setItem('homeScrollY', String(window.scrollY));
+      // Save scroll position synchronously to ref before navigation
+      saveScrollPosition();
 
-      // Navigate to spec page
+      // Navigate to spec page immediately
       const specId = img.spec_id || '';
       const library = img.library;
       navigate(`/${specId}/${library}`);
       trackEvent('navigate_to_spec', { spec: specId, library });
     },
-    [navigate, trackEvent]
+    [navigate, trackEvent, saveScrollPosition]
   );
 
   // Close tooltip when clicking anywhere

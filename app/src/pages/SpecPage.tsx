@@ -247,7 +247,7 @@ export function SpecPage() {
         <Box
           sx={{
             position: 'relative',
-            maxWidth: 1100,
+            maxWidth: { xs: '100%', md: 1200, lg: 1400, xl: 1600 },
             mx: 'auto',
             borderRadius: 2,
             overflow: 'hidden',

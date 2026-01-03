@@ -1,0 +1,296 @@
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Skeleton from '@mui/material/Skeleton';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
+import { API_URL } from '../constants';
+import { useAnalytics } from '../hooks';
+import { useAppData } from '../components/Layout';
+import type { PlotImage } from '../types';
+
+interface CatalogSpec {
+  id: string;
+  title: string;
+  description?: string;
+  images: PlotImage[];
+}
+
+export function CatalogPage() {
+  const { specsData } = useAppData();
+  const { trackEvent } = useAnalytics();
+
+  const [allImages, setAllImages] = useState<PlotImage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [rotationIndex, setRotationIndex] = useState<Record<string, number>>({});
+
+  // Fetch all images
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const res = await fetch(`${API_URL}/plots/filter`);
+        if (res.ok) {
+          const data = await res.json();
+          setAllImages(data.images || []);
+        }
+      } catch (err) {
+        console.error('Error fetching images:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchImages();
+  }, []);
+
+  // Group images by spec_id and merge with spec metadata
+  const catalogSpecs = useMemo(() => {
+    // Group images by spec_id
+    const imagesBySpec: Record<string, PlotImage[]> = {};
+    for (const img of allImages) {
+      const specId = img.spec_id || '';
+      if (!imagesBySpec[specId]) {
+        imagesBySpec[specId] = [];
+      }
+      imagesBySpec[specId].push(img);
+    }
+
+    // Merge with spec metadata
+    const specs: CatalogSpec[] = specsData
+      .filter((spec) => imagesBySpec[spec.id])
+      .map((spec) => ({
+        id: spec.id,
+        title: spec.title,
+        description: spec.description,
+        images: imagesBySpec[spec.id],
+      }));
+
+    // Sort alphabetically by title
+    specs.sort((a, b) => a.title.localeCompare(b.title));
+
+    return specs;
+  }, [allImages, specsData]);
+
+  // Handle image click - rotate to next implementation
+  const handleImageClick = useCallback(
+    (specId: string, totalImages: number) => {
+      setRotationIndex((prev) => ({
+        ...prev,
+        [specId]: ((prev[specId] || 0) + 1) % totalImages,
+      }));
+      trackEvent('catalog_rotate', { spec: specId });
+    },
+    [trackEvent]
+  );
+
+  if (loading) {
+    return (
+      <Box sx={{ py: 4 }}>
+        <Skeleton variant="text" width={200} height={40} sx={{ mb: 4 }} />
+        {[1, 2, 3, 4, 5].map((i) => (
+          <Box key={i} sx={{ display: 'flex', gap: 3, mb: 3 }}>
+            <Skeleton variant="rectangular" width={280} height={158} sx={{ borderRadius: 1, flexShrink: 0 }} />
+            <Box sx={{ flex: 1 }}>
+              <Skeleton variant="text" width="60%" height={28} />
+              <Skeleton variant="text" width="100%" height={20} />
+              <Skeleton variant="text" width="80%" height={20} />
+            </Box>
+          </Box>
+        ))}
+      </Box>
+    );
+  }
+
+  return (
+    <>
+      <Helmet>
+        <title>Catalog | pyplots.ai</title>
+        <meta name="description" content="Browse all Python plotting examples alphabetically" />
+        <meta property="og:title" content="Catalog | pyplots.ai" />
+        <meta property="og:description" content="Browse all Python plotting examples alphabetically" />
+      </Helmet>
+
+      <Box sx={{ pb: 4 }}>
+        {/* Back Button */}
+        <Button
+          component={Link}
+          to="/"
+          startIcon={<ArrowBackIcon />}
+          sx={{
+            color: '#6b7280',
+            mb: 3,
+            fontFamily: '"MonoLisa", monospace',
+            textTransform: 'none',
+            '&:hover': { color: '#3776AB', bgcolor: 'transparent' },
+          }}
+        >
+          Back
+        </Button>
+
+        {/* Title */}
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{
+            fontFamily: '"MonoLisa", monospace',
+            fontWeight: 600,
+            mb: 4,
+            color: '#1f2937',
+          }}
+        >
+          Catalog
+          <Typography
+            component="span"
+            sx={{
+              ml: 2,
+              fontSize: '1rem',
+              fontWeight: 400,
+              color: '#9ca3af',
+            }}
+          >
+            {catalogSpecs.length} examples
+          </Typography>
+        </Typography>
+
+        {/* Spec List */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {catalogSpecs.map((spec) => {
+            const currentIndex = rotationIndex[spec.id] || 0;
+            const currentImage = spec.images[currentIndex];
+
+            return (
+              <Box
+                key={spec.id}
+                sx={{
+                  display: 'flex',
+                  gap: 3,
+                  p: 2,
+                  bgcolor: '#fff',
+                  borderRadius: 2,
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                  transition: 'box-shadow 0.2s',
+                  '&:hover': {
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                  },
+                }}
+              >
+                {/* Image - Click to rotate */}
+                <Box
+                  onClick={() => handleImageClick(spec.id, spec.images.length)}
+                  sx={{
+                    position: 'relative',
+                    width: 280,
+                    height: 158,
+                    flexShrink: 0,
+                    borderRadius: 1,
+                    overflow: 'hidden',
+                    bgcolor: '#f3f4f6',
+                    cursor: spec.images.length > 1 ? 'pointer' : 'default',
+                    '&:hover .rotate-hint': {
+                      opacity: spec.images.length > 1 ? 1 : 0,
+                    },
+                  }}
+                >
+                  {currentImage && (
+                    <Box
+                      component="img"
+                      src={currentImage.thumb || currentImage.url}
+                      alt={spec.title}
+                      sx={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  )}
+
+                  {/* Rotation hint badge */}
+                  {spec.images.length > 1 && (
+                    <Box
+                      className="rotate-hint"
+                      sx={{
+                        position: 'absolute',
+                        bottom: 4,
+                        right: 4,
+                        px: 1,
+                        py: 0.25,
+                        bgcolor: 'rgba(0,0,0,0.6)',
+                        borderRadius: 1,
+                        fontSize: '0.7rem',
+                        fontFamily: '"MonoLisa", monospace',
+                        color: '#fff',
+                        opacity: 0,
+                        transition: 'opacity 0.2s',
+                      }}
+                    >
+                      {currentIndex + 1}/{spec.images.length}
+                    </Box>
+                  )}
+
+                  {/* Current library badge */}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 4,
+                      left: 4,
+                      px: 0.75,
+                      py: 0.25,
+                      bgcolor: 'rgba(55, 118, 171, 0.9)',
+                      borderRadius: 0.5,
+                      fontSize: '0.65rem',
+                      fontFamily: '"MonoLisa", monospace',
+                      color: '#fff',
+                    }}
+                  >
+                    {currentImage?.library}
+                  </Box>
+                </Box>
+
+                {/* Text - Click to navigate */}
+                <Box
+                  component={Link}
+                  to={`/${spec.id}/${currentImage?.library || ''}`}
+                  sx={{
+                    flex: 1,
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: '"MonoLisa", monospace',
+                      fontWeight: 600,
+                      fontSize: '1rem',
+                      color: '#1f2937',
+                      mb: 0.5,
+                      '&:hover': { color: '#3776AB' },
+                    }}
+                  >
+                    {spec.title}
+                  </Typography>
+                  {spec.description && (
+                    <Typography
+                      sx={{
+                        fontFamily: '"MonoLisa", monospace',
+                        fontSize: '0.85rem',
+                        color: '#6b7280',
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      {spec.description}
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+            );
+          })}
+        </Box>
+      </Box>
+    </>
+  );
+}

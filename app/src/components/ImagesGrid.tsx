@@ -115,14 +115,14 @@ export function ImagesGrid({
             No images found for this spec.
           </Alert>
         ) : (
-          <Grid
-            container
-            spacing={3}
-            sx={{
-              opacity: isTransitioning ? 0 : 1,
-              transition: 'opacity 0.15s ease-in-out',
-            }}
-          >
+            <Grid
+              container
+              spacing={3}
+              sx={{
+                opacity: isTransitioning ? 0 : 1,
+                transition: 'opacity 0.15s ease-in-out',
+              }}
+            >
             {images.map((image, index) => {
               const lib = libraryMap.get(image.library);
               const spec = specMap.get(image.spec_id || '');
@@ -148,7 +148,7 @@ export function ImagesGrid({
                 </Grid>
               );
             })}
-          </Grid>
+            </Grid>
         )}
         {/* Load more trigger (invisible) */}
         {hasMore && (

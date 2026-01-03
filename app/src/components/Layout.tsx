@@ -61,7 +61,7 @@ export function Layout() {
   return (
     <AppDataContext.Provider value={{ specsData, librariesData, stats }}>
       <Box sx={{ minHeight: '100vh', bgcolor: '#fafafa', py: 5, position: 'relative' }}>
-        <Container maxWidth={false} sx={{ px: { xs: 4, sm: 8, lg: 12 } }}>
+        <Container maxWidth={false} sx={{ px: { xs: 2, sm: 4, md: 8, lg: 12 } }}>
           <Outlet />
         </Container>
       </Box>

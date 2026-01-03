@@ -24,9 +24,15 @@ export const LibraryPills = memo(function LibraryPills({
       sx={{
         display: 'flex',
         gap: 1,
-        flexWrap: 'wrap',
         justifyContent: 'center',
         py: 2,
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        mx: -2,
+        px: 2,
+        // Hide scrollbar but keep functionality
+        scrollbarWidth: 'none',
+        '&::-webkit-scrollbar': { display: 'none' },
       }}
     >
       {implementations.map((impl) => {
@@ -40,6 +46,7 @@ export const LibraryPills = memo(function LibraryPills({
             onClick={() => onSelect(impl.library_id)}
             variant={isSelected ? 'filled' : 'outlined'}
             sx={{
+              flexShrink: 0,
               fontFamily: '"MonoLisa", monospace',
               fontSize: '0.875rem',
               fontWeight: isSelected ? 600 : 400,

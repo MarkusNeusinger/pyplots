@@ -57,14 +57,14 @@ export function CatalogPage() {
       imagesBySpec[specId].push(img);
     }
 
-    // Merge with spec metadata
+    // Merge with spec metadata and sort images by library name
     const specs: CatalogSpec[] = specsData
       .filter((spec) => imagesBySpec[spec.id])
       .map((spec) => ({
         id: spec.id,
         title: spec.title,
         description: spec.description,
-        images: imagesBySpec[spec.id],
+        images: imagesBySpec[spec.id].sort((a, b) => a.library.localeCompare(b.library)),
       }));
 
     // Sort alphabetically by title
@@ -72,6 +72,17 @@ export function CatalogPage() {
 
     return specs;
   }, [allImages, specsData]);
+
+  // Initialize random rotation indices once specs are loaded
+  useEffect(() => {
+    if (catalogSpecs.length > 0 && Object.keys(rotationIndex).length === 0) {
+      const initialIndices: Record<string, number> = {};
+      catalogSpecs.forEach((spec) => {
+        initialIndices[spec.id] = Math.floor(Math.random() * spec.images.length);
+      });
+      setRotationIndex(initialIndices);
+    }
+  }, [catalogSpecs, rotationIndex]);
 
   // Handle image click - rotate to next implementation
   const handleImageClick = useCallback(
@@ -165,7 +176,8 @@ export function CatalogPage() {
                 key={spec.id}
                 sx={{
                   display: 'flex',
-                  gap: 3,
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  gap: { xs: 2, sm: 3 },
                   p: 2,
                   bgcolor: '#fff',
                   borderRadius: 2,
@@ -181,8 +193,8 @@ export function CatalogPage() {
                   onClick={() => handleImageClick(spec.id, spec.images.length)}
                   sx={{
                     position: 'relative',
-                    width: 280,
-                    height: 158,
+                    width: { xs: '100%', sm: 280 },
+                    height: { xs: 180, sm: 158 },
                     flexShrink: 0,
                     borderRadius: 1,
                     overflow: 'hidden',
@@ -190,6 +202,9 @@ export function CatalogPage() {
                     cursor: spec.images.length > 1 ? 'pointer' : 'default',
                     '&:hover .rotate-hint': {
                       opacity: spec.images.length > 1 ? 1 : 0,
+                    },
+                    '&:hover .library-hint': {
+                      opacity: 1,
                     },
                   }}
                 >
@@ -231,17 +246,20 @@ export function CatalogPage() {
 
                   {/* Current library badge */}
                   <Box
+                    className="library-hint"
                     sx={{
                       position: 'absolute',
                       top: 4,
                       left: 4,
                       px: 0.75,
                       py: 0.25,
-                      bgcolor: 'rgba(55, 118, 171, 0.9)',
+                      bgcolor: 'rgba(0,0,0,0.6)',
                       borderRadius: 0.5,
                       fontSize: '0.65rem',
                       fontFamily: '"MonoLisa", monospace',
                       color: '#fff',
+                      opacity: 0,
+                      transition: 'opacity 0.2s',
                     }}
                   >
                     {currentImage?.library}

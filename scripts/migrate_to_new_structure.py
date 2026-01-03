@@ -12,7 +12,7 @@ New structure:
 - metadata/{library}.yaml (per-library: preview_url, current, history)
 
 Usage:
-    python automation/scripts/migrate_to_new_structure.py [--dry-run]
+    python scripts/migrate_to_new_structure.py [--dry-run]
 """
 
 import argparse

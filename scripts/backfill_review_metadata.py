@@ -11,8 +11,8 @@ IMPORTANT: When multiple AI Review comments exist (repair attempts),
 always takes the LAST one (the one that led to merge).
 
 Usage:
-    python automation/scripts/backfill_review_metadata.py --dry-run
-    python automation/scripts/backfill_review_metadata.py --execute
+    python scripts/backfill_review_metadata.py --dry-run
+    python scripts/backfill_review_metadata.py --execute
 
 Requires:
     - gh CLI authenticated

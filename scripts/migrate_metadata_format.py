@@ -7,7 +7,7 @@ Changes:
 2. metadata/{library}.yaml: Flatten current:, remove history, add created/updated/review
 3. implementations/*.py: Update docstring header to new format
 
-Run: uv run python automation/scripts/migrate_metadata_format.py
+Run: uv run python scripts/migrate_metadata_format.py
 """
 
 import re

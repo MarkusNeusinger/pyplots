@@ -500,7 +500,7 @@ claude-skill plot-generation \
 ### Example 2: From Python
 
 ```python
-# automation/generators/claude_generator.py
+# core/generators/claude_generator.py
 from claude_skills import invoke_skill
 
 result = invoke_skill(

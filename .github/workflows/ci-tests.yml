@@ -13,6 +13,12 @@ on:
       - develop
       - 'specification/**'
       - 'implementation/**'
+  workflow_dispatch:
+    inputs:
+      force_run:
+        description: 'Force run all tests (ignore change detection)'
+        type: boolean
+        default: true
 
 jobs:
   test:
@@ -47,8 +53,18 @@ jobs:
         # Plot implementations don't have unit tests
         TESTABLE_CHANGES=$(echo "$CHANGED_FILES" | grep '\.py$' | grep -v '^plots/' || true)
 
-        if [[ -n "$TESTABLE_CHANGES" ]]; then
+        # Also run tests if test configuration files change
+        CONFIG_CHANGES=$(echo "$CHANGED_FILES" | grep -E '^(pyproject\.toml|pytest\.ini|conftest\.py)$' || true)
+
+        # Force run on workflow_dispatch with force_run=true
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.force_run }}" == "true" ]]; then
+          echo "Manual trigger with force_run=true, will run tests"
+          echo "should_test=true" >> $GITHUB_OUTPUT
+        elif [[ -n "$TESTABLE_CHANGES" ]]; then
           echo "Found testable Python changes, will run tests"
+          echo "should_test=true" >> $GITHUB_OUTPUT
+        elif [[ -n "$CONFIG_CHANGES" ]]; then
+          echo "Found test config changes ($CONFIG_CHANGES), will run tests"
           echo "should_test=true" >> $GITHUB_OUTPUT
         else
           echo "No testable changes (only plots/ or non-Python), skipping tests"

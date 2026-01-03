@@ -81,6 +81,11 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(require_db)):
             generated_by=impl.generated_by,
             python_version=impl.python_version,
             library_version=impl.library_version,
+            review_strengths=impl.review_strengths or [],
+            review_weaknesses=impl.review_weaknesses or [],
+            review_image_description=impl.review_image_description,
+            review_criteria_checklist=impl.review_criteria_checklist,
+            review_verdict=impl.review_verdict,
         )
         for impl in spec.impls
     ]
@@ -95,6 +100,8 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(require_db)):
         tags=spec.tags,
         issue=spec.issue,
         suggested=spec.suggested,
+        created=spec.created.isoformat() if spec.created else None,
+        updated=spec.updated.isoformat() if spec.updated else None,
         implementations=impls,
     )
     set_cache(key, result)

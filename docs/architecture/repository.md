@@ -76,11 +76,13 @@ pyplots/
 ├── core/                              # Shared business logic
 │   ├── __init__.py
 │   ├── config.py                      # Configuration (.env-based)
-│   └── database/                      # Database layer
-│       ├── __init__.py
-│       ├── connection.py              # Async connection management
-│       ├── models.py                  # SQLAlchemy ORM models
-│       └── repositories.py            # Repository pattern
+│   ├── database/                      # Database layer
+│   │   ├── __init__.py
+│   │   ├── connection.py              # Async connection management
+│   │   ├── models.py                  # SQLAlchemy ORM models
+│   │   └── repositories.py            # Repository pattern
+│   └── generators/                    # Reusable code generators
+│       └── plot_generator.py          # Plot code generation utilities
 │
 ├── api/                               # FastAPI backend
 │   ├── __init__.py
@@ -95,9 +97,12 @@ pyplots/
 │   ├── package.json
 │   └── Dockerfile
 │
-├── automation/                        # Automation scripts
-│   └── scripts/
-│       └── sync_to_postgres.py        # Sync plots/ to database
+├── automation/                        # Workflow automation
+│   └── scripts/                       # Workflow-specific utilities
+│       ├── sync_to_postgres.py        # Sync plots/ to database
+│       ├── workflow_utils.py          # Utilities for GitHub Actions
+│       ├── label_manager.py           # Label operations
+│       └── workflow_cli.py            # CLI for workflows
 │
 ├── tests/                             # Test suite
 │   └── unit/
@@ -120,6 +125,15 @@ pyplots/
 │
 ├── alembic/                           # Database migrations
 │   └── versions/
+│
+├── scripts/                           # One-time and manual scripts
+│   ├── evaluate-plot.py               # Manual plot evaluation
+│   ├── regenerate-thumbnails.py       # Image processing
+│   ├── backfill_review_metadata.py    # One-time migration
+│   ├── fix_library_versions.py        # One-time fix
+│   ├── migrate_metadata_format.py     # One-time migration
+│   ├── migrate_to_new_structure.py    # One-time migration
+│   └── upgrade_specs*.py              # Spec upgrade utilities
 │
 ├── docs/                              # Documentation
 │   ├── architecture/
@@ -390,12 +404,42 @@ plt.savefig('plot.png', dpi=300)
 
 ### `core/`
 
-**Purpose**: Shared business logic used by API
+**Purpose**: Shared business logic and reusable components
 
 **Key Components**:
 - `database/connection.py` - Async database connection
 - `database/models.py` - SQLAlchemy ORM models
 - `database/repositories.py` - Repository pattern for data access
+- `generators/plot_generator.py` - Reusable plot code generation utilities
+
+---
+
+### `automation/`
+
+**Purpose**: Workflow-specific automation used by GitHub Actions
+
+**Key Components**:
+- `scripts/sync_to_postgres.py` - Database sync (used by sync-postgres.yml)
+- `scripts/workflow_utils.py` - Parsing and utilities for workflows
+- `scripts/label_manager.py` - Label operations and transitions
+- `scripts/workflow_cli.py` - CLI interface for workflow steps
+
+**Principle**: Only contains components actively used by workflows. One-time or manual scripts belong in `scripts/`.
+
+---
+
+### `scripts/`
+
+**Purpose**: One-time migrations and manually-run utilities
+
+**Key Components**:
+- `evaluate-plot.py` - Manual plot quality evaluation
+- `regenerate-thumbnails.py` - Image processing utilities
+- `backfill_review_metadata.py` - One-time backfill migration
+- `migrate_*.py` - One-time structure migrations
+- `upgrade_specs*.py` - Spec upgrade utilities
+
+**Principle**: Scripts that are not part of automated workflows. Used for maintenance, migrations, and manual operations.
 
 ---
 

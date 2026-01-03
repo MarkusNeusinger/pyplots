@@ -1,10 +1,10 @@
-"""Tests for automation.generators.plot_generator module."""
+"""Tests for core.generators.plot_generator module."""
 
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from automation.generators.plot_generator import extract_and_validate_code, retry_with_backoff
+from core.generators.plot_generator import extract_and_validate_code, retry_with_backoff
 
 
 class TestExtractAndValidateCode:

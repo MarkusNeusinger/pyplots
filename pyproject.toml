@@ -151,10 +151,6 @@ asyncio_mode = "auto"
 testpaths = ["tests"]
 norecursedirs = [
     "docs",
-    "scripts",
-    ".git",
-    ".venv",
-    "__pycache__",
     "temp",
 ]
 addopts = [

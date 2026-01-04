@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Menu from '@mui/material/Menu';
@@ -7,11 +8,13 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import Divider from '@mui/material/Divider';
+import Tooltip from '@mui/material/Tooltip';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import ViewAgendaIcon from '@mui/icons-material/ViewAgenda';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import ListIcon from '@mui/icons-material/List';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 
@@ -343,28 +346,57 @@ export function FilterBar({
             {scrollPercent}% · {currentTotal}
           </Typography>
         )}
-        {/* Grid size toggle - absolute right (desktop only) */}
+        {/* Catalog icon + Grid size toggle - absolute right (desktop only) */}
         {!isMobile && (
           <Box
-            onClick={() => onImageSizeChange(imageSize === 'normal' ? 'compact' : 'normal')}
             sx={{
               position: 'absolute',
               right: 0,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              width: 32,
-              height: 32,
-              cursor: 'pointer',
-              color: '#9ca3af',
-              '&:hover': { color: '#3776AB' },
+              gap: 0.5,
             }}
           >
-            {imageSize === 'normal' ? (
-              <ViewAgendaIcon sx={{ fontSize: '1.25rem' }} />
-            ) : (
-              <ViewModuleIcon sx={{ fontSize: '1.25rem' }} />
-            )}
+            {/* Catalog icon */}
+            <Tooltip title="catalog">
+              <Box
+                component={Link}
+                to="/catalog"
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 32,
+                  height: 32,
+                  color: '#9ca3af',
+                  '&:hover': { color: '#3776AB' },
+                }}
+              >
+                <ListIcon sx={{ fontSize: '1.25rem' }} />
+              </Box>
+            </Tooltip>
+            {/* Grid size toggle */}
+            <Tooltip title={imageSize === 'normal' ? 'compact view' : 'normal view'}>
+              <Box
+                onClick={() => onImageSizeChange(imageSize === 'normal' ? 'compact' : 'normal')}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 32,
+                  height: 32,
+                  cursor: 'pointer',
+                  color: '#9ca3af',
+                  '&:hover': { color: '#3776AB' },
+                }}
+              >
+                {imageSize === 'normal' ? (
+                  <ViewAgendaIcon sx={{ fontSize: '1.25rem' }} />
+                ) : (
+                  <ViewModuleIcon sx={{ fontSize: '1.25rem' }} />
+                )}
+              </Box>
+            </Tooltip>
           </Box>
         )}
         {/* Active filter chips */}
@@ -443,15 +475,17 @@ export function FilterBar({
             },
           }}
         >
-          <SearchIcon
-            className="search-icon"
-            sx={{
-              color: '#9ca3af',
-              fontSize: isSearchExpanded ? '1rem' : '1.25rem',
-              transition: 'all 0.2s ease',
-              flexShrink: 0,
-            }}
-          />
+          <Tooltip title={isSearchExpanded ? '' : 'search'}>
+            <SearchIcon
+              className="search-icon"
+              sx={{
+                color: '#9ca3af',
+                fontSize: isSearchExpanded ? '1rem' : '1.25rem',
+                transition: 'all 0.2s ease',
+                flexShrink: 0,
+              }}
+            />
+          </Tooltip>
           <InputBase
             inputRef={inputRef}
             id="filter-search"
@@ -531,25 +565,27 @@ export function FilterBar({
           ) : (
             <Box />
           )}
-          <Box
-            onClick={() => onImageSizeChange(imageSize === 'normal' ? 'compact' : 'normal')}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 32,
-              height: 32,
-              cursor: 'pointer',
-              color: '#9ca3af',
-              '&:hover': { color: '#3776AB' },
-            }}
-          >
-            {imageSize === 'normal' ? (
-              <ViewAgendaIcon sx={{ fontSize: '1.25rem' }} />
-            ) : (
-              <ViewModuleIcon sx={{ fontSize: '1.25rem' }} />
-            )}
-          </Box>
+          <Tooltip title={imageSize === 'normal' ? 'compact view' : 'normal view'}>
+            <Box
+              onClick={() => onImageSizeChange(imageSize === 'normal' ? 'compact' : 'normal')}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 32,
+                height: 32,
+                cursor: 'pointer',
+                color: '#9ca3af',
+                '&:hover': { color: '#3776AB' },
+              }}
+            >
+              {imageSize === 'normal' ? (
+                <ViewAgendaIcon sx={{ fontSize: '1.25rem' }} />
+              ) : (
+                <ViewModuleIcon sx={{ fontSize: '1.25rem' }} />
+              )}
+            </Box>
+          </Tooltip>
         </Box>
       )}
 

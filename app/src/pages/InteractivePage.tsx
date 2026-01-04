@@ -215,6 +215,18 @@ export function InteractivePage() {
             <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
             <Box
               component={Link}
+              to="/catalog"
+              sx={{
+                color: '#3776AB',
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' },
+              }}
+            >
+              catalog
+            </Box>
+            <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
+            <Box
+              component={Link}
               to={`/${specId}`}
               sx={{
                 color: '#3776AB',

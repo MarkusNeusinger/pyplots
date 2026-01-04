@@ -1,5 +1,4 @@
 import { memo, useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
@@ -8,7 +7,6 @@ import ClickAwayListener from '@mui/material/ClickAwayListener';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
-import ListIcon from '@mui/icons-material/List';
 
 interface HeaderProps {
   stats?: { specs: number; plots: number; libraries: number } | null;
@@ -190,32 +188,6 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
         {isXs ? '. copy. create.' : '. grab the code. make it yours.'}
       </Typography>
 
-      {/* Catalog Link */}
-      <Box
-        component={RouterLink}
-        to="/catalog"
-        sx={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 0.5,
-          mt: 2,
-          px: 1.5,
-          py: 0.5,
-          borderRadius: 1,
-          fontFamily: '"MonoLisa", monospace',
-          fontSize: '0.85rem',
-          color: '#6b7280',
-          textDecoration: 'none',
-          transition: 'all 0.2s',
-          '&:hover': {
-            color: '#3776AB',
-            bgcolor: 'rgba(55, 118, 171, 0.08)',
-          },
-        }}
-      >
-        <ListIcon sx={{ fontSize: '1rem' }} />
-        catalog
-      </Box>
     </Box>
   );
 });

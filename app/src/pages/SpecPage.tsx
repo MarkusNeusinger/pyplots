@@ -227,6 +227,18 @@ export function SpecPage() {
           <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
           <Box
             component={Link}
+            to="/catalog"
+            sx={{
+              color: '#3776AB',
+              textDecoration: 'none',
+              '&:hover': { textDecoration: 'underline' },
+            }}
+          >
+            catalog
+          </Box>
+          <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
+          <Box
+            component={Link}
             to={`/${specId}`}
             sx={{
               color: '#3776AB',
@@ -266,7 +278,7 @@ export function SpecPage() {
             fontFamily: '"MonoLisa", monospace',
             fontSize: { xs: '0.8rem', sm: '0.9rem' },
             color: '#6b7280',
-            maxWidth: 700,
+            maxWidth: { xs: '100%', md: 800, lg: 950, xl: 1100 },
             mx: 'auto',
             mb: 2,
             lineHeight: 1.6,

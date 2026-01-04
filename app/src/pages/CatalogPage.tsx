@@ -3,13 +3,12 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import Skeleton from '@mui/material/Skeleton';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import { API_URL } from '../constants';
 import { useAnalytics } from '../hooks';
-import { useAppData } from '../components/Layout';
+import { useAppData, useHomeState } from '../components/Layout';
+import { Footer } from '../components';
 import type { PlotImage } from '../types';
 
 interface CatalogSpec {
@@ -21,11 +20,13 @@ interface CatalogSpec {
 
 export function CatalogPage() {
   const { specsData } = useAppData();
+  const { saveScrollPosition } = useHomeState();
   const { trackEvent } = useAnalytics();
 
   const [allImages, setAllImages] = useState<PlotImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [rotationIndex, setRotationIndex] = useState<Record<string, number>>({});
+  const [expandedDescs, setExpandedDescs] = useState<Record<string, boolean>>({});
 
   // Fetch all images
   useEffect(() => {
@@ -127,28 +128,48 @@ export function CatalogPage() {
   return (
     <>
       <Helmet>
-        <title>Catalog | pyplots.ai</title>
-        <meta name="description" content="Browse all Python plotting examples alphabetically" />
-        <meta property="og:title" content="Catalog | pyplots.ai" />
-        <meta property="og:description" content="Browse all Python plotting examples alphabetically" />
+        <title>catalog | pyplots.ai</title>
+        <meta name="description" content="Browse all Python plotting specifications alphabetically" />
+        <meta property="og:title" content="catalog | pyplots.ai" />
+        <meta property="og:description" content="Browse all Python plotting specifications alphabetically" />
       </Helmet>
 
       <Box sx={{ pb: 4 }}>
-        {/* Back Button */}
-        <Button
-          component={Link}
-          to="/"
-          startIcon={<ArrowBackIcon />}
+        {/* Breadcrumb navigation */}
+        <Box
           sx={{
-            color: '#6b7280',
+            display: 'flex',
+            alignItems: 'center',
+            mx: { xs: -2, sm: -4, md: -8, lg: -12 },
+            mt: -5,
+            px: 2,
+            py: 1,
             mb: 3,
+            bgcolor: '#f3f4f6',
+            borderBottom: '1px solid #e5e7eb',
             fontFamily: '"MonoLisa", monospace',
-            textTransform: 'none',
-            '&:hover': { color: '#3776AB', bgcolor: 'transparent' },
+            fontSize: '0.85rem',
+            position: 'sticky',
+            top: 0,
+            zIndex: 100,
           }}
         >
-          Back
-        </Button>
+          <Box
+            component={Link}
+            to="/"
+            sx={{
+              color: '#3776AB',
+              textDecoration: 'none',
+              '&:hover': { textDecoration: 'underline' },
+            }}
+          >
+            pyplots.ai
+          </Box>
+          <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
+          <Box component="span" sx={{ color: '#4b5563' }}>
+            catalog
+          </Box>
+        </Box>
 
         {/* Title */}
         <Typography
@@ -161,7 +182,7 @@ export function CatalogPage() {
             color: '#1f2937',
           }}
         >
-          Catalog
+          catalog
           <Typography
             component="span"
             sx={{
@@ -171,7 +192,7 @@ export function CatalogPage() {
               color: '#9ca3af',
             }}
           >
-            {catalogSpecs.length} examples
+            {catalogSpecs.length} specifications
           </Typography>
         </Typography>
 
@@ -281,6 +302,7 @@ export function CatalogPage() {
                 <Box
                   component={Link}
                   to={`/${spec.id}/${currentImage?.library || ''}`}
+                  onClick={saveScrollPosition}
                   sx={{
                     flex: 1,
                     textDecoration: 'none',
@@ -304,11 +326,25 @@ export function CatalogPage() {
                   </Typography>
                   {spec.description && (
                     <Typography
+                      onClick={(e) => {
+                        if (!expandedDescs[spec.id]) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setExpandedDescs((prev) => ({ ...prev, [spec.id]: true }));
+                        }
+                      }}
                       sx={{
                         fontFamily: '"MonoLisa", monospace',
                         fontSize: '0.85rem',
                         color: '#6b7280',
                         lineHeight: 1.6,
+                        cursor: expandedDescs[spec.id] ? 'default' : 'pointer',
+                        ...(!expandedDescs[spec.id] && {
+                          display: '-webkit-box',
+                          WebkitLineClamp: 5,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                        }),
                       }}
                     >
                       {spec.description}
@@ -319,6 +355,9 @@ export function CatalogPage() {
             );
           })}
         </Box>
+
+        {/* Footer */}
+        <Footer onTrackEvent={trackEvent} />
       </Box>
     </>
   );

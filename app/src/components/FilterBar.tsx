@@ -56,8 +56,10 @@ export function FilterBar({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  // Scroll percentage - estimate based on total plots, not just loaded ones
+  // Scroll percentage and sticky detection
   const [scrollPercent, setScrollPercent] = useState(0);
+  const [isSticky, setIsSticky] = useState(false);
+  const filterBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const calculatePercent = () => {
@@ -73,6 +75,10 @@ export function FilterBar({
 
       const percent = Math.round((scrollY / estimatedTotalHeight) * 100);
       setScrollPercent(Math.min(100, Math.max(0, percent || 0)));
+
+      // Detect if bar is in sticky mode (scrolled past threshold)
+      // The bar becomes sticky when scrollY > ~200px (header height)
+      setIsSticky(scrollY > 200);
     };
     calculatePercent();
     window.addEventListener('scroll', calculatePercent);
@@ -288,16 +294,27 @@ export function FilterBar({
 
   return (
     <Box
+      ref={filterBarRef}
       sx={{
         mb: 4,
-        px: 2,
-        py: 1.5,
         position: 'sticky',
         top: 0,
         zIndex: 100,
-        bgcolor: '#fafafa',
-        backdropFilter: 'blur(8px)',
-        backgroundColor: 'rgba(250, 250, 250, 0.9)',
+        py: 1,
+        transition: 'background-color 0.2s, border-color 0.2s, margin 0.2s, padding 0.2s',
+        // Only apply full-width styling when sticky
+        ...(isSticky
+          ? {
+              mx: { xs: -2, sm: -4, md: -8, lg: -12 },
+              px: { xs: 2, sm: 4, md: 8, lg: 12 },
+              bgcolor: '#f3f4f6',
+              borderBottom: '1px solid #e5e7eb',
+            }
+          : {
+              px: 2,
+              bgcolor: 'transparent',
+              borderBottom: '1px solid transparent',
+            }),
       }}
     >
       {/* Filter chips row */}

@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext, useRef, useCallback } from 'react';
+import { useState, useEffect, createContext, useContext, useRef, useCallback, type ReactNode } from 'react';
 import { Outlet } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -50,7 +50,7 @@ const HomeStateContext = createContext<HomeStateContext | null>(null);
 export function useAppData() {
   const context = useContext(AppDataContext);
   if (!context) {
-    throw new Error('useAppData must be used within Layout');
+    throw new Error('useAppData must be used within AppDataProvider');
   }
   return context;
 }
@@ -58,12 +58,13 @@ export function useAppData() {
 export function useHomeState() {
   const context = useContext(HomeStateContext);
   if (!context) {
-    throw new Error('useHomeState must be used within Layout');
+    throw new Error('useHomeState must be used within AppDataProvider');
   }
   return context;
 }
 
-export function Layout() {
+// Global provider that wraps the entire router (persists across all pages including InteractivePage)
+export function AppDataProvider({ children }: { children: ReactNode }) {
   const [specsData, setSpecsData] = useState<SpecInfo[]>([]);
   const [librariesData, setLibrariesData] = useState<LibraryInfo[]>([]);
   const [stats, setStats] = useState<{ specs: number; plots: number; libraries: number } | null>(null);
@@ -117,12 +118,19 @@ export function Layout() {
   return (
     <AppDataContext.Provider value={{ specsData, librariesData, stats }}>
       <HomeStateContext.Provider value={{ homeState, homeStateRef, setHomeState, saveScrollPosition }}>
-        <Box sx={{ minHeight: '100vh', bgcolor: '#fafafa', py: 5, position: 'relative' }}>
-          <Container maxWidth={false} sx={{ px: { xs: 2, sm: 4, md: 8, lg: 12 } }}>
-            <Outlet />
-          </Container>
-        </Box>
+        {children}
       </HomeStateContext.Provider>
     </AppDataContext.Provider>
+  );
+}
+
+// Layout component for pages with standard layout (HomePage, SpecPage, CatalogPage)
+export function Layout() {
+  return (
+    <Box sx={{ minHeight: '100vh', bgcolor: '#fafafa', py: 5, position: 'relative' }}>
+      <Container maxWidth={false} sx={{ px: { xs: 2, sm: 4, md: 8, lg: 12 } }}>
+        <Outlet />
+      </Container>
+    </Box>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -186,7 +186,7 @@ export function InteractivePage() {
           flexDirection: 'column',
         }}
       >
-        {/* Top bar with controls */}
+        {/* Breadcrumb navigation */}
         <Box
           sx={{
             display: 'flex',
@@ -196,29 +196,56 @@ export function InteractivePage() {
             py: 1,
             bgcolor: '#f3f4f6',
             borderBottom: '1px solid #e5e7eb',
+            fontFamily: '"MonoLisa", monospace',
+            fontSize: '0.85rem',
           }}
         >
-          <Box
-            sx={{
-              fontFamily: '"MonoLisa", monospace',
-              fontSize: '0.85rem',
-              color: '#4b5563',
-            }}
-          >
-            {specId} · {library}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box
+              component={Link}
+              to="/"
+              sx={{
+                color: '#3776AB',
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' },
+              }}
+            >
+              pyplots.ai
+            </Box>
+            <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
+            <Box
+              component={Link}
+              to={`/${specId}`}
+              sx={{
+                color: '#3776AB',
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' },
+              }}
+            >
+              {specId}
+            </Box>
+            <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
+            <Box
+              component={Link}
+              to={`/${specId}/${library}`}
+              sx={{
+                color: '#3776AB',
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' },
+              }}
+            >
+              {library}
+            </Box>
+            <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
+            <Box component="span" sx={{ color: '#4b5563' }}>
+              interactive
+            </Box>
           </Box>
-          <Box sx={{ display: 'flex', gap: 0.5 }}>
-            <Tooltip title="View Raw HTML">
-              <IconButton onClick={handleOpenExternal} size="small">
-                <OpenInNewIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Close">
-              <IconButton onClick={handleClose} size="small">
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </Box>
+          <Tooltip title="View Raw HTML">
+            <IconButton onClick={handleOpenExternal} size="small">
+              <OpenInNewIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Box>
 
         {/* Fullscreen iframe - scaled to fit container */}

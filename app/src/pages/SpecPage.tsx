@@ -8,6 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Skeleton from '@mui/material/Skeleton';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -196,21 +197,50 @@ export function SpecPage() {
       </Helmet>
 
       <Box sx={{ pb: 4 }}>
-        {/* Back Button */}
-        <Button
-          component={Link}
-          to="/"
-          startIcon={<ArrowBackIcon />}
+        {/* Breadcrumb navigation */}
+        <Box
           sx={{
-            color: '#6b7280',
+            display: 'flex',
+            alignItems: 'center',
+            mx: { xs: -2, sm: -4, md: -8, lg: -12 },
+            mt: -5, // Compensate for Layout padding
+            px: 2,
+            py: 1,
             mb: 2,
+            bgcolor: '#f3f4f6',
+            borderBottom: '1px solid #e5e7eb',
             fontFamily: '"MonoLisa", monospace',
-            textTransform: 'none',
-            '&:hover': { color: '#3776AB', bgcolor: 'transparent' },
+            fontSize: '0.85rem',
           }}
         >
-          Back
-        </Button>
+          <Box
+            component={Link}
+            to="/"
+            sx={{
+              color: '#3776AB',
+              textDecoration: 'none',
+              '&:hover': { textDecoration: 'underline' },
+            }}
+          >
+            pyplots.ai
+          </Box>
+          <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
+          <Box
+            component={Link}
+            to={`/${specId}`}
+            sx={{
+              color: '#3776AB',
+              textDecoration: 'none',
+              '&:hover': { textDecoration: 'underline' },
+            }}
+          >
+            {specId}
+          </Box>
+          <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
+          <Box component="span" sx={{ color: '#4b5563' }}>
+            {selectedLibrary}
+          </Box>
+        </Box>
 
         {/* Title */}
         <Typography

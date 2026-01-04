@@ -4,6 +4,8 @@ import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
+import Fab from '@mui/material/Fab';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 import { API_URL } from '../constants';
 import { useAnalytics } from '../hooks';
@@ -27,6 +29,7 @@ export function CatalogPage() {
   const [loading, setLoading] = useState(true);
   const [rotationIndex, setRotationIndex] = useState<Record<string, number>>({});
   const [expandedDescs, setExpandedDescs] = useState<Record<string, boolean>>({});
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   // Fetch all images
   useEffect(() => {
@@ -94,6 +97,15 @@ export function CatalogPage() {
       setRotationIndex(initialIndices);
     }
   }, [catalogSpecs, rotationIndex]);
+
+  // Show/hide scroll-to-top button based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Handle image click - rotate to next implementation
   const handleImageClick = useCallback(
@@ -359,6 +371,25 @@ export function CatalogPage() {
         {/* Footer */}
         <Footer onTrackEvent={trackEvent} />
       </Box>
+
+      {/* Floating scroll-to-top button */}
+      <Fab
+        size="small"
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        sx={{
+          position: 'fixed',
+          bottom: 24,
+          right: 24,
+          bgcolor: '#f3f4f6',
+          color: '#6b7280',
+          opacity: showScrollTop ? 1 : 0,
+          visibility: showScrollTop ? 'visible' : 'hidden',
+          transition: 'opacity 0.3s, visibility 0.3s',
+          '&:hover': { bgcolor: '#e5e7eb', color: '#3776AB' },
+        }}
+      >
+        <KeyboardArrowUpIcon />
+      </Fab>
     </>
   );
 }

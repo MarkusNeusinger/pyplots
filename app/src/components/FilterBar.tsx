@@ -565,27 +565,48 @@ export function FilterBar({
           ) : (
             <Box />
           )}
-          <Tooltip title={imageSize === 'normal' ? 'compact view' : 'normal view'}>
-            <Box
-              onClick={() => onImageSizeChange(imageSize === 'normal' ? 'compact' : 'normal')}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 32,
-                height: 32,
-                cursor: 'pointer',
-                color: '#9ca3af',
-                '&:hover': { color: '#3776AB' },
-              }}
-            >
-              {imageSize === 'normal' ? (
-                <ViewAgendaIcon sx={{ fontSize: '1.25rem' }} />
-              ) : (
-                <ViewModuleIcon sx={{ fontSize: '1.25rem' }} />
-              )}
-            </Box>
-          </Tooltip>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            {/* Catalog icon */}
+            <Tooltip title="catalog">
+              <Box
+                component={Link}
+                to="/catalog"
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 32,
+                  height: 32,
+                  color: '#9ca3af',
+                  '&:hover': { color: '#3776AB' },
+                }}
+              >
+                <ListIcon sx={{ fontSize: '1.25rem' }} />
+              </Box>
+            </Tooltip>
+            {/* Grid size toggle */}
+            <Tooltip title={imageSize === 'normal' ? 'compact view' : 'normal view'}>
+              <Box
+                onClick={() => onImageSizeChange(imageSize === 'normal' ? 'compact' : 'normal')}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 32,
+                  height: 32,
+                  cursor: 'pointer',
+                  color: '#9ca3af',
+                  '&:hover': { color: '#3776AB' },
+                }}
+              >
+                {imageSize === 'normal' ? (
+                  <ViewAgendaIcon sx={{ fontSize: '1.25rem' }} />
+                ) : (
+                  <ViewModuleIcon sx={{ fontSize: '1.25rem' }} />
+                )}
+              </Box>
+            </Tooltip>
+          </Box>
         </Box>
       )}
 

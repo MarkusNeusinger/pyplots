@@ -10,9 +10,9 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 import { API_URL } from '../constants';
 
-// Default dimensions matching pyplots standard (4800x2700 at 300 DPI)
-const DEFAULT_WIDTH = 4800;
-const DEFAULT_HEIGHT = 2700;
+// Initial dimensions - will be updated via postMessage from iframe
+const INITIAL_WIDTH = 1600;
+const INITIAL_HEIGHT = 900;
 
 interface Implementation {
   library_id: string;
@@ -35,19 +35,38 @@ export function InteractivePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [scale, setScale] = useState(1);
+  const [contentWidth, setContentWidth] = useState(INITIAL_WIDTH);
+  const [contentHeight, setContentHeight] = useState(INITIAL_HEIGHT);
 
-  // Calculate scale to fit container
+  // Calculate scale to fit container based on current content dimensions
   const updateScale = useCallback(() => {
     if (containerRef.current) {
       const containerWidth = containerRef.current.clientWidth;
       const containerHeight = containerRef.current.clientHeight;
-      const scaleX = containerWidth / DEFAULT_WIDTH;
-      const scaleY = containerHeight / DEFAULT_HEIGHT;
-      setScale(Math.min(scaleX, scaleY));
+      const scaleX = containerWidth / contentWidth;
+      const scaleY = containerHeight / contentHeight;
+      // Use 0.98 safety margin to prevent scrollbars from rounding errors
+      setScale(Math.min(scaleX, scaleY) * 0.98);
     }
+  }, [contentWidth, contentHeight]);
+
+  // Listen for size reports from iframe
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'pyplots-size') {
+        const { width, height } = event.data;
+        if (width > 0 && height > 0) {
+          setContentWidth(width);
+          setContentHeight(height);
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
   }, []);
 
-  // Update scale on mount, resize, and when content loads
+  // Update scale on mount, resize, and when content dimensions change
   useEffect(() => {
     const timer = setTimeout(updateScale, 100);
     window.addEventListener('resize', updateScale);
@@ -55,7 +74,7 @@ export function InteractivePage() {
       clearTimeout(timer);
       window.removeEventListener('resize', updateScale);
     };
-  }, [updateScale, loading, htmlUrl]);
+  }, [updateScale]);
 
   // Fetch spec data to get preview_html URL
   useEffect(() => {
@@ -96,10 +115,16 @@ export function InteractivePage() {
     navigate(`/${specId}/${library}`);
   };
 
+  // Open original (unmodified) HTML in new tab
   const handleOpenExternal = () => {
     if (htmlUrl) {
       window.open(htmlUrl, '_blank', 'noopener,noreferrer');
     }
+  };
+
+  // Build proxy URL for iframe (injects size reporter script)
+  const getProxyUrl = (url: string) => {
+    return `${API_URL}/proxy/html?url=${encodeURIComponent(url)}`;
   };
 
   if (loading) {
@@ -206,14 +231,14 @@ export function InteractivePage() {
           }}
         >
           <iframe
-            src={htmlUrl}
-            width={DEFAULT_WIDTH}
-            height={DEFAULT_HEIGHT}
+            src={getProxyUrl(htmlUrl)}
+            width={contentWidth}
+            height={contentHeight}
             style={{
-              width: DEFAULT_WIDTH,
-              height: DEFAULT_HEIGHT,
-              minWidth: DEFAULT_WIDTH,
-              maxWidth: DEFAULT_WIDTH,
+              width: contentWidth,
+              height: contentHeight,
+              minWidth: contentWidth,
+              maxWidth: contentWidth,
               border: 'none',
               transform: `scale(${scale})`,
               transformOrigin: 'center center',

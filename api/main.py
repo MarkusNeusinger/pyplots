@@ -27,6 +27,7 @@ from api.routers import (  # noqa: E402
     health_router,
     libraries_router,
     plots_router,
+    proxy_router,
     seo_router,
     specs_router,
     stats_router,
@@ -128,6 +129,7 @@ app.include_router(libraries_router)
 app.include_router(plots_router)
 app.include_router(download_router)
 app.include_router(seo_router)
+app.include_router(proxy_router)
 
 
 if __name__ == "__main__":

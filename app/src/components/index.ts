@@ -4,4 +4,3 @@ export { LoaderSpinner } from './LoaderSpinner';
 export { FilterBar } from './FilterBar';
 export { ImagesGrid } from './ImagesGrid';
 export { ImageCard } from './ImageCard';
-export { FullscreenModal } from './FullscreenModal';

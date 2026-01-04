@@ -9,6 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 import { API_URL } from '../constants';
+import { useAnalytics } from '../hooks';
 
 // Initial dimensions - will be updated via postMessage from iframe
 const INITIAL_WIDTH = 1600;
@@ -28,7 +29,15 @@ interface SpecDetail {
 export function InteractivePage() {
   const { specId, library } = useParams();
   const navigate = useNavigate();
+  const { trackPageview } = useAnalytics();
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Track interactive page view
+  useEffect(() => {
+    if (specId && library) {
+      trackPageview(`/interactive/${specId}/${library}`);
+    }
+  }, [specId, library, trackPageview]);
 
   const [htmlUrl, setHtmlUrl] = useState<string | null>(null);
   const [title, setTitle] = useState<string>('');

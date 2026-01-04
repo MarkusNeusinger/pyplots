@@ -130,7 +130,7 @@ export function SpecTabs({
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
     const tabNames = ['code', 'specification', 'implementation', 'quality'];
-    onTrackEvent?.(`view_${tabNames[newValue]}`, { library: libraryId });
+    onTrackEvent?.('tab_click', { tab: tabNames[newValue], library: libraryId });
   };
 
   // Memoize syntax-highlighted code
@@ -320,7 +320,7 @@ export function SpecTabs({
             <Box>
               <SectionTitle>Tags</SectionTitle>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
-                {allTags.map(({ category, value }, i) => (
+                {allTags.map(({ value }, i) => (
                   <Chip
                     key={i}
                     label={value}

@@ -23,7 +23,12 @@ interface CatalogSpec {
 export function CatalogPage() {
   const { specsData } = useAppData();
   const { saveScrollPosition } = useHomeState();
-  const { trackEvent } = useAnalytics();
+  const { trackPageview, trackEvent } = useAnalytics();
+
+  // Track catalog page view
+  useEffect(() => {
+    trackPageview('/catalog');
+  }, [trackPageview]);
 
   const [allImages, setAllImages] = useState<PlotImage[]>([]);
   const [loading, setLoading] = useState(true);

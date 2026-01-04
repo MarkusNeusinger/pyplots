@@ -4,6 +4,7 @@ import httpx
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import HTMLResponse
 
+
 router = APIRouter(tags=["proxy"])
 
 # Script injected to report content size to parent window
@@ -75,10 +76,7 @@ async def proxy_html(url: str):
     """
     # Security: Only allow URLs from our GCS bucket
     if not url.startswith(f"https://{ALLOWED_HOST}/{ALLOWED_BUCKET}/"):
-        raise HTTPException(
-            status_code=400,
-            detail=f"Only URLs from {ALLOWED_HOST}/{ALLOWED_BUCKET} are allowed",
-        )
+        raise HTTPException(status_code=400, detail=f"Only URLs from {ALLOWED_HOST}/{ALLOWED_BUCKET} are allowed")
 
     # Fetch the HTML
     async with httpx.AsyncClient(timeout=30.0) as client:
@@ -86,9 +84,9 @@ async def proxy_html(url: str):
             response = await client.get(url)
             response.raise_for_status()
         except httpx.HTTPStatusError as e:
-            raise HTTPException(status_code=e.response.status_code, detail="Failed to fetch HTML")
-        except httpx.RequestError:
-            raise HTTPException(status_code=502, detail="Failed to connect to storage")
+            raise HTTPException(status_code=e.response.status_code, detail="Failed to fetch HTML") from e
+        except httpx.RequestError as e:
+            raise HTTPException(status_code=502, detail="Failed to connect to storage") from e
 
     html_content = response.text
 

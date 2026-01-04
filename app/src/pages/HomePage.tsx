@@ -8,7 +8,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import type { PlotImage } from '../types';
 import type { ImageSize } from '../constants';
 import { useInfiniteScroll, useAnalytics, useFilterState, isFiltersEmpty } from '../hooks';
-import { Header, Footer, FilterBar, ImagesGrid, FullscreenModal } from '../components';
+import { Header, Footer, FilterBar, ImagesGrid } from '../components';
 import { useAppData, useHomeState } from '../components/Layout';
 
 export function HomePage() {
@@ -72,7 +72,6 @@ export function HomePage() {
   }, [homeStateRef, displayedImages.length]);
 
   // UI state
-  const [modalImage, setModalImage] = useState<PlotImage | null>(null);
   const [openImageTooltip, setOpenImageTooltip] = useState<string | null>(null);
   const [imageSize, setImageSize] = useState<ImageSize>(() => {
     const stored = localStorage.getItem('imageSize');
@@ -130,7 +129,7 @@ export function HomePage() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || modalImage) return;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
 
       if (e.key === ' ') {
         e.preventDefault();
@@ -146,7 +145,7 @@ export function HomePage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleRandom, handleRemoveGroup, activeFilters.length, modalImage]);
+  }, [handleRandom, handleRemoveGroup, activeFilters.length]);
 
   // Get selected spec/library for compatibility with existing components
   const specFilter = activeFilters.find((f) => f.category === 'spec');
@@ -207,13 +206,6 @@ export function HomePage() {
       )}
 
       <Footer onTrackEvent={trackEvent} selectedSpec={selectedSpec} selectedLibrary={selectedLibrary} />
-
-      <FullscreenModal
-        image={modalImage}
-        selectedSpec={modalImage?.spec_id || selectedSpec}
-        onClose={() => setModalImage(null)}
-        onTrackEvent={trackEvent}
-      />
 
       {/* Floating scroll-to-top button */}
       <Fab

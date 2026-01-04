@@ -4,12 +4,12 @@ interface EventProps {
   [key: string]: string | undefined;
 }
 
-function debounce<T extends (...args: unknown[]) => void>(fn: T, delay: number) {
+function debounce<T extends (...args: never[]) => void>(fn: T, delay: number): T {
   let timeoutId: ReturnType<typeof setTimeout>;
-  return (...args: Parameters<T>) => {
+  return ((...args: Parameters<T>) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => fn(...args), delay);
-  };
+  }) as T;
 }
 
 // Konvertiert Query-Params zu Pfad-Segmenten für Plausible
@@ -41,15 +41,18 @@ export function useAnalytics() {
   const lastPageviewRef = useRef<string>('');
   const isProduction = typeof window !== 'undefined' && window.location.hostname === 'pyplots.ai';
 
-  const sendPageview = useCallback(() => {
-    if (!isProduction) return;
+  const sendPageview = useCallback(
+    (urlOverride?: string) => {
+      if (!isProduction) return;
 
-    const url = buildPlausibleUrl();
-    if (url === lastPageviewRef.current) return;
-    lastPageviewRef.current = url;
+      const url = urlOverride ? `https://pyplots.ai${urlOverride}` : buildPlausibleUrl();
+      if (url === lastPageviewRef.current) return;
+      lastPageviewRef.current = url;
 
-    window.plausible?.('pageview', { url });
-  }, [isProduction]);
+      window.plausible?.('pageview', { url });
+    },
+    [isProduction]
+  );
 
   const trackPageview = useMemo(() => debounce(sendPageview, 300), [sendPageview]);
 

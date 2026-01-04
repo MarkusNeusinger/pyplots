@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
@@ -27,15 +27,8 @@ export function CatalogPage() {
   const [loading, setLoading] = useState(true);
   const [rotationIndex, setRotationIndex] = useState<Record<string, number>>({});
 
-  // Ref to prevent double fetching in StrictMode
-  const fetchedRef = useRef(false);
-
   // Fetch all images
   useEffect(() => {
-    // Skip if already fetched (StrictMode double-render protection)
-    if (fetchedRef.current) return;
-    fetchedRef.current = true;
-
     const abortController = new AbortController();
 
     const fetchImages = async () => {
@@ -201,7 +194,7 @@ export function CatalogPage() {
                   boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
                   transition: 'box-shadow 0.2s',
                   '&:hover': {
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                   },
                 }}
               >
@@ -212,10 +205,11 @@ export function CatalogPage() {
                     position: 'relative',
                     width: { xs: '100%', sm: 280 },
                     height: { xs: 180, sm: 158 },
-                    flexShrink: 0,
-                    borderRadius: 1,
+                    borderRadius: 1.5,
                     overflow: 'hidden',
-                    bgcolor: '#f3f4f6',
+                    bgcolor: '#fff',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                    flexShrink: 0,
                     cursor: spec.images.length > 1 ? 'pointer' : 'default',
                     '&:hover .rotate-hint': {
                       opacity: spec.images.length > 1 ? 1 : 0,

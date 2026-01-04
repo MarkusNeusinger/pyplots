@@ -37,12 +37,15 @@ export function InteractivePage() {
   const [scale, setScale] = useState(1);
   const [contentWidth, setContentWidth] = useState(INITIAL_WIDTH);
   const [contentHeight, setContentHeight] = useState(INITIAL_HEIGHT);
+  const [sizeReady, setSizeReady] = useState(false);
 
   // Calculate scale to fit container based on current content dimensions
   const updateScale = useCallback(() => {
     if (containerRef.current) {
-      const containerWidth = containerRef.current.clientWidth;
-      const containerHeight = containerRef.current.clientHeight;
+      // Account for padding (p: 3 = 24px on each side)
+      const padding = 48;
+      const containerWidth = containerRef.current.clientWidth - padding;
+      const containerHeight = containerRef.current.clientHeight - padding;
       const scaleX = containerWidth / contentWidth;
       const scaleY = containerHeight / contentHeight;
       // Use 0.98 safety margin to prevent scrollbars from rounding errors
@@ -58,6 +61,7 @@ export function InteractivePage() {
         if (width > 0 && height > 0) {
           setContentWidth(width);
           setContentHeight(height);
+          setSizeReady(true);
         }
       }
     };
@@ -224,27 +228,39 @@ export function InteractivePage() {
             flex: 1,
             position: 'relative',
             overflow: 'hidden',
-            bgcolor: '#f9fafb',
+            bgcolor: '#fafafa',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            p: 3,
           }}
         >
-          <iframe
-            src={getProxyUrl(htmlUrl)}
-            width={contentWidth}
-            height={contentHeight}
-            style={{
-              width: contentWidth,
-              height: contentHeight,
-              minWidth: contentWidth,
-              maxWidth: contentWidth,
-              border: 'none',
-              transform: `scale(${scale})`,
-              transformOrigin: 'center center',
+          <Box
+            sx={{
+              bgcolor: '#fff',
+              borderRadius: 2,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              overflow: 'hidden',
+              width: contentWidth * scale,
+              height: contentHeight * scale,
+              opacity: sizeReady ? 1 : 0,
+              transition: 'opacity 0.2s ease-in-out',
             }}
-            title={`${title} - ${library} interactive`}
-          />
+          >
+            <iframe
+              src={getProxyUrl(htmlUrl)}
+              width={contentWidth}
+              height={contentHeight}
+              style={{
+                width: contentWidth,
+                height: contentHeight,
+                border: 'none',
+                transform: `scale(${scale})`,
+                transformOrigin: 'top left',
+              }}
+              title={`${title} - ${library} interactive`}
+            />
+          </Box>
         </Box>
       </Box>
     </>

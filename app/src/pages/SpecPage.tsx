@@ -262,18 +262,23 @@ export function SpecPage() {
         {/* Main Image (full width) */}
         <Box
           sx={{
-            position: 'relative',
             maxWidth: { xs: '100%', md: 1200, lg: 1400, xl: 1600 },
             mx: 'auto',
-            borderRadius: 2,
-            overflow: 'hidden',
-            bgcolor: '#f3f4f6',
-            aspectRatio: '16/9',
-            '&:hover .impl-counter': {
-              opacity: 1,
-            },
           }}
         >
+          <Box
+            sx={{
+              position: 'relative',
+              borderRadius: 2,
+              overflow: 'hidden',
+              bgcolor: '#fff',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              aspectRatio: '16/9',
+              '&:hover .impl-counter': {
+                opacity: 1,
+              },
+            }}
+          >
           {!imageLoaded && (
             <Skeleton
               variant="rectangular"
@@ -379,6 +384,7 @@ export function SpecPage() {
               /{specData.implementations.length}
             </Box>
           )}
+          </Box>
         </Box>
 
         {/* Tabs */}

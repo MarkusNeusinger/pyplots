@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
@@ -10,6 +10,8 @@ import Skeleton from '@mui/material/Skeleton';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DownloadIcon from '@mui/icons-material/Download';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import CheckIcon from '@mui/icons-material/Check';
 
 import { API_URL } from '../constants';
 import { useAnalytics } from '../hooks';
@@ -59,6 +61,7 @@ export function SpecPage() {
   const [error, setError] = useState<string | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [descExpanded, setDescExpanded] = useState(false);
+  const [codeCopied, setCodeCopied] = useState(false);
 
   // Fetch spec data
   useEffect(() => {
@@ -133,6 +136,19 @@ export function SpecPage() {
     link.download = `${specId}-${selectedLibrary}.png`;
     link.click();
     trackEvent('download_image', { spec: specId, library: selectedLibrary || undefined });
+  }, [currentImpl, specId, selectedLibrary, trackEvent]);
+
+  // Handle copy code
+  const handleCopyCode = useCallback(async () => {
+    if (!currentImpl?.code) return;
+    try {
+      await navigator.clipboard.writeText(currentImpl.code);
+      setCodeCopied(true);
+      trackEvent('copy_code', { spec: specId, library: selectedLibrary || undefined, method: 'image' });
+      setTimeout(() => setCodeCopied(false), 2000);
+    } catch (err) {
+      console.error('Copy failed:', err);
+    }
   }, [currentImpl, specId, selectedLibrary, trackEvent]);
 
   // Track page view
@@ -294,6 +310,20 @@ export function SpecPage() {
               gap: 0.5,
             }}
           >
+            {currentImpl?.code && (
+              <Tooltip title={codeCopied ? 'Copied!' : 'Copy Code'}>
+                <IconButton
+                  onClick={handleCopyCode}
+                  sx={{
+                    bgcolor: 'rgba(255,255,255,0.9)',
+                    '&:hover': { bgcolor: '#fff' },
+                  }}
+                  size="small"
+                >
+                  {codeCopied ? <CheckIcon fontSize="small" color="success" /> : <ContentCopyIcon fontSize="small" />}
+                </IconButton>
+              </Tooltip>
+            )}
             <Tooltip title="Download PNG">
               <IconButton
                 onClick={handleDownload}

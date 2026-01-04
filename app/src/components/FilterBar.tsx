@@ -437,6 +437,8 @@ export function FilterBar({
           />
           <InputBase
             inputRef={inputRef}
+            id="filter-search"
+            name="filter-search"
             placeholder={selectedCategory ? FILTER_LABELS[selectedCategory] : ''}
             value={searchQuery}
             onChange={(e) => {

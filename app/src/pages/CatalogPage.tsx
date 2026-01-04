@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
@@ -27,22 +27,39 @@ export function CatalogPage() {
   const [loading, setLoading] = useState(true);
   const [rotationIndex, setRotationIndex] = useState<Record<string, number>>({});
 
+  // Ref to prevent double fetching in StrictMode
+  const fetchedRef = useRef(false);
+
   // Fetch all images
   useEffect(() => {
+    // Skip if already fetched (StrictMode double-render protection)
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+
+    const abortController = new AbortController();
+
     const fetchImages = async () => {
       try {
-        const res = await fetch(`${API_URL}/plots/filter`);
+        const res = await fetch(`${API_URL}/plots/filter`, {
+          signal: abortController.signal,
+        });
+        if (abortController.signal.aborted) return;
         if (res.ok) {
           const data = await res.json();
           setAllImages(data.images || []);
         }
       } catch (err) {
+        if (abortController.signal.aborted) return;
         console.error('Error fetching images:', err);
       } finally {
-        setLoading(false);
+        if (!abortController.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
     fetchImages();
+
+    return () => abortController.abort();
   }, []);
 
   // Group images by spec_id and merge with spec metadata

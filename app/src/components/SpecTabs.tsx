@@ -175,7 +175,7 @@ export function SpecTabs({
   }, [tags]);
 
   return (
-    <Box sx={{ mt: 3, maxWidth: 900, mx: 'auto' }}>
+    <Box sx={{ mt: 3, maxWidth: { xs: '100%', md: 1200, lg: 1400, xl: 1600 }, mx: 'auto' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs
           value={tabIndex}
@@ -487,7 +487,12 @@ export function SpecTabs({
                                       width: 6,
                                       height: 6,
                                       borderRadius: '50%',
-                                      bgcolor: item.passed ? '#22c55e' : '#ef4444',
+                                      bgcolor:
+                                        item.score === 0
+                                          ? '#ef4444' // red for 0
+                                          : item.score === item.max
+                                            ? '#22c55e' // green for full
+                                            : '#f59e0b', // yellow for partial
                                     }}
                                   />
                                   <Typography sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.75rem', color: '#4b5563' }}>

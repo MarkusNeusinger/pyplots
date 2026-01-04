@@ -339,10 +339,8 @@ export function SpecPage() {
             {currentImpl?.preview_html && (
               <Tooltip title="Open Interactive">
                 <IconButton
-                  component="a"
-                  href={currentImpl.preview_html}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  component={Link}
+                  to={`/interactive/${specId}/${selectedLibrary}`}
                   onClick={() => trackEvent('open_interactive', { spec: specId, library: selectedLibrary || undefined })}
                   sx={{
                     bgcolor: 'rgba(255,255,255,0.9)',

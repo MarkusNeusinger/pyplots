@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { HomePage } from './pages/HomePage';
 import { SpecPage } from './pages/SpecPage';
 import { CatalogPage } from './pages/CatalogPage';
+import { InteractivePage } from './pages/InteractivePage';
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,8 @@ const router = createBrowserRouter([
       { path: ':specId/:library', element: <SpecPage /> },
     ],
   },
+  // Fullscreen interactive view (outside Layout)
+  { path: 'interactive/:specId/:library', element: <InteractivePage /> },
 ]);
 
 export function AppRouter() {

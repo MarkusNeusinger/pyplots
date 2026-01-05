@@ -154,7 +154,7 @@ async def seo_spec_implementation(
         # Fallback when DB unavailable
         return HTMLResponse(
             BOT_HTML_TEMPLATE.format(
-                title=f"{spec_id} - {library} | pyplots.ai",
+                title=f"{html.escape(spec_id)} - {html.escape(library)} | pyplots.ai",
                 description=DEFAULT_DESCRIPTION,
                 image=DEFAULT_IMAGE,
                 url=f"https://pyplots.ai/{html.escape(spec_id)}/{html.escape(library)}",
@@ -174,7 +174,7 @@ async def seo_spec_implementation(
         BOT_HTML_TEMPLATE.format(
             title=f"{html.escape(spec.title)} - {html.escape(library)} | pyplots.ai",
             description=html.escape(spec.description or DEFAULT_DESCRIPTION),
-            image=image,
+            image=html.escape(image, quote=True),
             url=f"https://pyplots.ai/{html.escape(spec_id)}/{html.escape(library)}",
         )
     )

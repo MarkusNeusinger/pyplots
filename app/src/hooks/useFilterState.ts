@@ -210,24 +210,32 @@ export function useFilterState({
 
   // Remove a filter value from a specific group
   const handleRemoveFilter = useCallback((groupIndex: number, value: string) => {
+    const group = activeFiltersRef.current[groupIndex];
+    if (group) {
+      onTrackEvent('filter_remove', { category: group.category, value });
+    }
     setActiveFilters((prev) => {
       const newFilters = [...prev];
-      const group = newFilters[groupIndex];
-      if (!group) return prev;
+      const grp = newFilters[groupIndex];
+      if (!grp) return prev;
 
-      const updatedValues = group.values.filter((v) => v !== value);
+      const updatedValues = grp.values.filter((v) => v !== value);
       if (updatedValues.length === 0) {
         return newFilters.filter((_, i) => i !== groupIndex);
       }
-      newFilters[groupIndex] = { ...group, values: updatedValues };
+      newFilters[groupIndex] = { ...grp, values: updatedValues };
       return newFilters;
     });
-  }, []);
+  }, [onTrackEvent]);
 
   // Remove entire group by index
   const handleRemoveGroup = useCallback((groupIndex: number) => {
+    const group = activeFiltersRef.current[groupIndex];
+    if (group) {
+      onTrackEvent('filter_remove', { category: group.category, value: group.values.join(',') });
+    }
     setActiveFilters((prev) => prev.filter((_, i) => i !== groupIndex));
-  }, []);
+  }, [onTrackEvent]);
 
   // Random filter - replaces last filter slot (or adds first one)
   const handleRandom = useCallback(

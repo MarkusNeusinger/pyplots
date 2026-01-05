@@ -89,7 +89,7 @@ export const ImageCard = memo(function ImageCard({
       if (code) {
         await navigator.clipboard.writeText(code);
         setCopyState('copied');
-        onTrackEvent?.('copy_code', { spec: image.spec_id, library: image.library, method: 'card' });
+        onTrackEvent?.('copy_code', { spec: image.spec_id, library: image.library, method: 'card', page: 'home' });
         setTimeout(() => setCopyState('idle'), 2000);
       } else {
         setCopyState('idle');

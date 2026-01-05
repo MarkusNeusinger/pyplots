@@ -221,7 +221,7 @@ export function FilterBar({
       const timer = setTimeout(() => {
         onTrackEvent('search_no_results', { query });
         lastTrackedQueryRef.current = query;
-      }, 500);
+      }, 200);
       return () => clearTimeout(timer);
     }
   }, [searchQuery, searchResults.length, onTrackEvent]);
@@ -378,7 +378,11 @@ export function FilterBar({
             {/* Grid size toggle */}
             <Tooltip title={imageSize === 'normal' ? 'compact view' : 'normal view'}>
               <Box
-                onClick={() => onImageSizeChange(imageSize === 'normal' ? 'compact' : 'normal')}
+                onClick={() => {
+                  const newSize = imageSize === 'normal' ? 'compact' : 'normal';
+                  onImageSizeChange(newSize);
+                  onTrackEvent('toggle_grid_size', { size: newSize });
+                }}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
@@ -588,7 +592,11 @@ export function FilterBar({
             {/* Grid size toggle */}
             <Tooltip title={imageSize === 'normal' ? 'compact view' : 'normal view'}>
               <Box
-                onClick={() => onImageSizeChange(imageSize === 'normal' ? 'compact' : 'normal')}
+                onClick={() => {
+                  const newSize = imageSize === 'normal' ? 'compact' : 'normal';
+                  onImageSizeChange(newSize);
+                  onTrackEvent('toggle_grid_size', { size: newSize });
+                }}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',

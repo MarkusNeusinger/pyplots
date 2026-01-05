@@ -164,7 +164,7 @@ export function SpecTabs({
     try {
       await navigator.clipboard.writeText(code);
       setCopied(true);
-      onTrackEvent?.('copy_code', { library: libraryId, method: 'tab' });
+      onTrackEvent?.('copy_code', { spec: specId, library: libraryId, method: 'tab', page: 'spec_detail' });
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Copy failed:', err);

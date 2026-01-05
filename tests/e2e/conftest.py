@@ -18,6 +18,7 @@ import os
 
 import pytest
 import pytest_asyncio
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from core.database.models import Base
@@ -74,8 +75,10 @@ async def pg_engine():
     try:
         async with asyncio.timeout(CONNECTION_TIMEOUT + 2):
             async with engine.begin() as conn:
-                # Drop all tables for clean state
-                await conn.run_sync(Base.metadata.drop_all)
+                # Drop all tables in FK order (children before parents)
+                await conn.execute(text("DROP TABLE IF EXISTS impls CASCADE"))
+                await conn.execute(text("DROP TABLE IF EXISTS specs CASCADE"))
+                await conn.execute(text("DROP TABLE IF EXISTS libraries CASCADE"))
                 # Create fresh tables
                 await conn.run_sync(Base.metadata.create_all)
     except (TimeoutError, asyncio.TimeoutError, OSError) as e:
@@ -87,13 +90,15 @@ async def pg_engine():
 
     yield engine
 
-    # Cleanup: Drop all tables
+    # Cleanup: Drop all tables in FK order (children before parents)
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+        await conn.execute(text("DROP TABLE IF EXISTS impls CASCADE"))
+        await conn.execute(text("DROP TABLE IF EXISTS specs CASCADE"))
+        await conn.execute(text("DROP TABLE IF EXISTS libraries CASCADE"))
     await engine.dispose()
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(scope="function")
 async def pg_session(pg_engine):
     """Create session for test database."""
     async_session = async_sessionmaker(pg_engine, class_=AsyncSession, expire_on_commit=False)
@@ -102,13 +107,16 @@ async def pg_session(pg_engine):
         await session.rollback()
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(scope="function")
 async def pg_db_with_data(pg_session):
     """
     Seed test database with sample data.
 
     Creates the same test data as tests/conftest.py:test_db_with_data
     but in the PostgreSQL test database.
+
+    Uses atomic commit: libraries + specs flushed first (FK targets),
+    then impls added and everything committed together.
     """
     from core.database.models import Impl, Library, Spec
 
@@ -127,7 +135,6 @@ async def pg_db_with_data(pg_session):
         documentation_url="https://seaborn.pydata.org",
         description="Statistical data visualization",
     )
-    pg_session.add_all([matplotlib_lib, seaborn_lib])
 
     # Create specs
     scatter_spec = Spec(
@@ -152,8 +159,6 @@ async def pg_db_with_data(pg_session):
         issue=43,
         suggested="contributor2",
     )
-    pg_session.add_all([scatter_spec, bar_spec])
-    await pg_session.commit()
 
     # Create implementations
     scatter_matplotlib = Impl(
@@ -188,8 +193,15 @@ async def pg_db_with_data(pg_session):
         python_version="3.13",
         library_version="3.10.0",
     )
+
+    # Add FK targets first (libraries and specs)
+    pg_session.add_all([matplotlib_lib, seaborn_lib])
+    pg_session.add_all([scatter_spec, bar_spec])
+    await pg_session.flush()  # Ensure FK targets exist before adding children
+
+    # Add FK children (implementations)
     pg_session.add_all([scatter_matplotlib, scatter_seaborn, bar_matplotlib])
-    await pg_session.commit()
+    await pg_session.commit()  # Single atomic commit
 
     # Expire all cached objects to ensure fresh loading with relationships
     pg_session.expire_all()

@@ -441,6 +441,122 @@ class TestSeoRouter:
             assert "https://pyplots.ai/scatter-basic/matplotlib</loc>" in response.text
 
 
+class TestSeoProxyRouter:
+    """Tests for SEO proxy endpoints (bot-optimized pages)."""
+
+    def test_seo_home(self, client: TestClient) -> None:
+        """SEO home page should return HTML with og:tags."""
+        response = client.get("/seo-proxy/")
+        assert response.status_code == 200
+        assert "text/html" in response.headers["content-type"]
+        assert "og:title" in response.text
+        assert "pyplots.ai" in response.text
+        assert "og:image" in response.text
+        assert "twitter:card" in response.text
+
+    def test_seo_catalog(self, client: TestClient) -> None:
+        """SEO catalog page should return HTML with og:tags."""
+        response = client.get("/seo-proxy/catalog")
+        assert response.status_code == 200
+        assert "text/html" in response.headers["content-type"]
+        assert "Catalog" in response.text
+        assert "og:title" in response.text
+        assert "https://pyplots.ai/catalog" in response.text
+
+    def test_seo_spec_overview_without_db(self, client: TestClient) -> None:
+        """SEO spec overview should return fallback HTML when DB unavailable."""
+        with patch(DB_CONFIG_PATCH, return_value=False):
+            response = client.get("/seo-proxy/scatter-basic")
+            assert response.status_code == 200
+            assert "og:title" in response.text
+            assert "scatter-basic" in response.text
+            assert "og-image.png" in response.text  # Default image
+
+    def test_seo_spec_overview_with_db(self, db_client, mock_spec) -> None:
+        """SEO spec overview should return HTML with spec title from DB."""
+        client, _ = db_client
+
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
+
+        with patch("api.routers.seo.SpecRepository", return_value=mock_spec_repo):
+            response = client.get("/seo-proxy/scatter-basic")
+            assert response.status_code == 200
+            assert "Basic Scatter Plot" in response.text
+            assert "og:title" in response.text
+            assert "https://pyplots.ai/scatter-basic" in response.text
+
+    def test_seo_spec_overview_not_found(self, db_client) -> None:
+        """SEO spec overview should return 404 when spec not found."""
+        client, _ = db_client
+
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_by_id = AsyncMock(return_value=None)
+
+        with patch("api.routers.seo.SpecRepository", return_value=mock_spec_repo):
+            response = client.get("/seo-proxy/nonexistent-spec")
+            assert response.status_code == 404
+
+    def test_seo_spec_implementation_without_db(self, client: TestClient) -> None:
+        """SEO spec implementation should return fallback HTML when DB unavailable."""
+        with patch(DB_CONFIG_PATCH, return_value=False):
+            response = client.get("/seo-proxy/scatter-basic/matplotlib")
+            assert response.status_code == 200
+            assert "og:title" in response.text
+            assert "scatter-basic" in response.text
+            assert "matplotlib" in response.text
+            assert "og-image.png" in response.text  # Default image
+
+    def test_seo_spec_implementation_with_preview_url(self, db_client, mock_spec) -> None:
+        """SEO spec implementation should use preview_url from implementation."""
+        client, _ = db_client
+
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
+
+        with patch("api.routers.seo.SpecRepository", return_value=mock_spec_repo):
+            response = client.get("/seo-proxy/scatter-basic/matplotlib")
+            assert response.status_code == 200
+            assert "Basic Scatter Plot" in response.text
+            assert "matplotlib" in response.text
+            # Should have actual preview URL from implementation
+            assert TEST_IMAGE_URL in response.text or "og:image" in response.text
+
+    def test_seo_spec_implementation_not_found(self, db_client) -> None:
+        """SEO spec implementation should return 404 when spec not found."""
+        client, _ = db_client
+
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_by_id = AsyncMock(return_value=None)
+
+        with patch("api.routers.seo.SpecRepository", return_value=mock_spec_repo):
+            response = client.get("/seo-proxy/nonexistent-spec/matplotlib")
+            assert response.status_code == 404
+
+    def test_seo_spec_implementation_fallback_image(self, db_client, mock_spec) -> None:
+        """SEO spec implementation should use default image when impl has no preview."""
+        client, _ = db_client
+
+        # Create a spec with implementation that has no preview_url
+        mock_impl_no_preview = MagicMock()
+        mock_impl_no_preview.library_id = "seaborn"
+        mock_impl_no_preview.preview_url = None
+
+        mock_spec_no_preview = MagicMock()
+        mock_spec_no_preview.id = "scatter-basic"
+        mock_spec_no_preview.title = "Basic Scatter Plot"
+        mock_spec_no_preview.description = "A basic scatter plot"
+        mock_spec_no_preview.impls = [mock_impl_no_preview]
+
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec_no_preview)
+
+        with patch("api.routers.seo.SpecRepository", return_value=mock_spec_repo):
+            response = client.get("/seo-proxy/scatter-basic/seaborn")
+            assert response.status_code == 200
+            assert "og-image.png" in response.text  # Default image used
+
+
 class TestPlotsRouter:
     """Tests for plots filter router."""
 

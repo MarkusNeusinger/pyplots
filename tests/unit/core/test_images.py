@@ -203,6 +203,47 @@ class TestErrorCases:
             optimize_png(tmp_path / "nonexistent.png", tmp_path / "out.png")
 
 
+class TestPngquantFallback:
+    """Tests for pngquant fallback behavior."""
+
+    def test_pillow_fallback_when_no_pngquant(self, sample_image: Path, tmp_path: Path) -> None:
+        """Should use Pillow fallback when pngquant is not available."""
+        import core.images
+
+        # Save original value
+        original_has_pngquant = core.images._HAS_PNGQUANT
+        try:
+            # Mock pngquant not being available
+            core.images._HAS_PNGQUANT = False
+
+            output_path = tmp_path / "optimized.png"
+            bytes_saved = optimize_png(sample_image, output_path)
+
+            assert output_path.exists()
+            assert isinstance(bytes_saved, int)
+        finally:
+            # Restore original value
+            core.images._HAS_PNGQUANT = original_has_pngquant
+
+    def test_optimize_png_with_pillow_fallback_inplace(self, tmp_path: Path) -> None:
+        """Should optimize in-place with Pillow fallback."""
+        import core.images
+
+        # Create a test image
+        img_path = tmp_path / "to_optimize.png"
+        img = Image.new("RGB", (800, 600), color=(100, 150, 200))
+        img.save(img_path)
+
+        original_has_pngquant = core.images._HAS_PNGQUANT
+        try:
+            core.images._HAS_PNGQUANT = False
+            bytes_saved = optimize_png(img_path, output_path=None)
+            assert img_path.exists()
+            assert isinstance(bytes_saved, int)
+        finally:
+            core.images._HAS_PNGQUANT = original_has_pngquant
+
+
 class TestImageFormats:
     """Tests for different image formats and edge cases."""
 
@@ -241,3 +282,144 @@ class TestImageFormats:
 
         assert width == 400
         assert height == 300  # Maintains 4:3 ratio
+
+
+class TestCLI:
+    """Tests for command-line interface."""
+
+    def test_cli_thumbnail_command(self, sample_image: Path, tmp_path: Path, monkeypatch, capsys) -> None:
+        """Should run thumbnail command from CLI."""
+        import sys
+
+        output_path = tmp_path / "thumb.png"
+
+        # Mock sys.argv for CLI
+        monkeypatch.setattr(sys, "argv", ["images", "thumbnail", str(sample_image), str(output_path), "300"])
+
+        # Run the module
+        import runpy
+
+        try:
+            runpy.run_module("core.images", run_name="__main__", alter_sys=True)
+        except SystemExit:
+            pass  # Expected if print_usage was called
+
+        # Check output was created
+        assert output_path.exists()
+        captured = capsys.readouterr()
+        assert "300x" in captured.out  # Should print dimensions
+
+    def test_cli_thumbnail_default_width(self, sample_image: Path, tmp_path: Path, monkeypatch, capsys) -> None:
+        """Should use default width of 1200 for thumbnail."""
+        import sys
+
+        output_path = tmp_path / "thumb.png"
+
+        monkeypatch.setattr(sys, "argv", ["images", "thumbnail", str(sample_image), str(output_path)])
+
+        import runpy
+
+        try:
+            runpy.run_module("core.images", run_name="__main__", alter_sys=True)
+        except SystemExit:
+            pass
+
+        assert output_path.exists()
+        result_img = Image.open(output_path)
+        assert result_img.width == 1200
+
+    def test_cli_process_command(self, sample_image: Path, tmp_path: Path, monkeypatch, capsys) -> None:
+        """Should run process command from CLI."""
+        import sys
+
+        output_path = tmp_path / "output.png"
+        thumb_path = tmp_path / "thumb.png"
+
+        monkeypatch.setattr(sys, "argv", ["images", "process", str(sample_image), str(output_path), str(thumb_path)])
+
+        import runpy
+
+        try:
+            runpy.run_module("core.images", run_name="__main__", alter_sys=True)
+        except SystemExit:
+            pass
+
+        assert output_path.exists()
+        assert thumb_path.exists()
+        captured = capsys.readouterr()
+        assert "Processed:" in captured.out
+
+    def test_cli_process_without_thumbnail(self, sample_image: Path, tmp_path: Path, monkeypatch, capsys) -> None:
+        """Should run process command without thumbnail."""
+        import sys
+
+        output_path = tmp_path / "output.png"
+
+        monkeypatch.setattr(sys, "argv", ["images", "process", str(sample_image), str(output_path)])
+
+        import runpy
+
+        try:
+            runpy.run_module("core.images", run_name="__main__", alter_sys=True)
+        except SystemExit:
+            pass
+
+        assert output_path.exists()
+        captured = capsys.readouterr()
+        assert "Processed:" in captured.out
+
+    def test_cli_unknown_command(self, monkeypatch, capsys) -> None:
+        """Should print usage for unknown command."""
+        import sys
+
+        monkeypatch.setattr(sys, "argv", ["images", "unknown"])
+
+        import runpy
+
+        with pytest.raises(SystemExit):
+            runpy.run_module("core.images", run_name="__main__", alter_sys=True)
+
+        captured = capsys.readouterr()
+        assert "Unknown command: unknown" in captured.out
+
+    def test_cli_no_args(self, monkeypatch, capsys) -> None:
+        """Should print usage when no arguments given."""
+        import sys
+
+        monkeypatch.setattr(sys, "argv", ["images"])
+
+        import runpy
+
+        with pytest.raises(SystemExit):
+            runpy.run_module("core.images", run_name="__main__", alter_sys=True)
+
+        captured = capsys.readouterr()
+        assert "Usage:" in captured.out
+
+    def test_cli_thumbnail_missing_args(self, monkeypatch, capsys) -> None:
+        """Should print usage when thumbnail args are missing."""
+        import sys
+
+        monkeypatch.setattr(sys, "argv", ["images", "thumbnail", "input.png"])
+
+        import runpy
+
+        with pytest.raises(SystemExit):
+            runpy.run_module("core.images", run_name="__main__", alter_sys=True)
+
+        captured = capsys.readouterr()
+        assert "Usage:" in captured.out
+
+    def test_cli_process_missing_args(self, monkeypatch, capsys) -> None:
+        """Should print usage when process args are missing."""
+        import sys
+
+        monkeypatch.setattr(sys, "argv", ["images", "process", "input.png"])
+
+        import runpy
+
+        with pytest.raises(SystemExit):
+            runpy.run_module("core.images", run_name="__main__", alter_sys=True)
+
+        captured = capsys.readouterr()
+        assert "Usage:" in captured.out

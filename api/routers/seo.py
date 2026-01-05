@@ -34,14 +34,19 @@ async def get_sitemap(db: AsyncSession | None = Depends(optional_db)):
         "  <url><loc>https://pyplots.ai/catalog</loc></url>",
     ]
 
-    # Add spec URLs (only specs with implementations)
+    # Add spec URLs (overview + all implementations)
     if db is not None:
         repo = SpecRepository(db)
         specs = await repo.get_all()
         for spec in specs:
             if spec.impls:  # Only include specs with implementations
                 spec_id = html.escape(spec.id)
+                # Overview page
                 xml_lines.append(f"  <url><loc>https://pyplots.ai/{spec_id}</loc></url>")
+                # Individual implementation pages
+                for impl in spec.impls:
+                    library_id = html.escape(impl.library_id)
+                    xml_lines.append(f"  <url><loc>https://pyplots.ai/{spec_id}/{library_id}</loc></url>")
 
     xml_lines.append("</urlset>")
     xml = "\n".join(xml_lines)

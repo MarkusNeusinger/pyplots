@@ -420,7 +420,7 @@ class TestSeoRouter:
             assert "<loc>https://pyplots.ai/</loc>" in content
 
     def test_sitemap_with_db(self, db_client, mock_spec) -> None:
-        """Sitemap should include specs from DB."""
+        """Sitemap should include specs and implementations from DB."""
         client, _ = db_client
 
         mock_spec_repo = MagicMock()
@@ -433,9 +433,12 @@ class TestSeoRouter:
         ):
             response = client.get("/sitemap.xml")
             assert response.status_code == 200
-            # New URL format: /, /catalog, /{spec_id}
+            # URL format: /, /catalog, /{spec_id}, /{spec_id}/{library_id}
             assert "https://pyplots.ai/catalog" in response.text
-            assert "https://pyplots.ai/scatter-basic" in response.text
+            # Overview page
+            assert "https://pyplots.ai/scatter-basic</loc>" in response.text
+            # Implementation page
+            assert "https://pyplots.ai/scatter-basic/matplotlib</loc>" in response.text
 
 
 class TestPlotsRouter:

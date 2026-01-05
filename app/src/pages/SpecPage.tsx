@@ -13,8 +13,12 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 
+import MuiLink from '@mui/material/Link';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+
 import { API_URL } from '../constants';
 import { useAnalytics } from '../hooks';
+import { useAppData } from '../components/Layout';
 import { LibraryPills } from '../components/LibraryPills';
 import { SpecTabs } from '../components/SpecTabs';
 import { Footer } from '../components';
@@ -54,14 +58,25 @@ export function SpecPage() {
   const { specId, library: urlLibrary } = useParams();
   const navigate = useNavigate();
   const { trackEvent } = useAnalytics();
+  const { librariesData } = useAppData();
 
   const [specData, setSpecData] = useState<SpecDetail | null>(null);
-  const [selectedLibrary, setSelectedLibrary] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [descExpanded, setDescExpanded] = useState(false);
-  const [codeCopied, setCodeCopied] = useState(false);
+  const [codeCopied, setCodeCopied] = useState<string | null>(null); // library_id or null
+  const [openTooltip, setOpenTooltip] = useState<string | null>(null);
+
+  // Get library metadata by ID
+  const getLibraryMeta = useCallback(
+    (libraryId: string) => librariesData.find((lib) => lib.id === libraryId),
+    [librariesData]
+  );
+
+  // Mode: overview (no library) vs detail (with library)
+  const isOverviewMode = !urlLibrary;
+  const selectedLibrary = urlLibrary || null;
 
   // Fetch spec data
   useEffect(() => {
@@ -86,19 +101,10 @@ export function SpecPage() {
         const data: SpecDetail = await res.json();
         setSpecData(data);
 
-        // Set selected library
-        if (urlLibrary && data.implementations.some((impl) => impl.library_id === urlLibrary)) {
-          setSelectedLibrary(urlLibrary);
-        } else if (data.implementations.length > 0) {
-          // Pick random implementation
-          const randomIdx = Math.floor(Math.random() * data.implementations.length);
-          const randomLib = data.implementations[randomIdx].library_id;
-          setSelectedLibrary(randomLib);
-
-          // Update URL to include the library (without adding to history)
-          if (!urlLibrary) {
-            navigate(`/${specId}/${randomLib}`, { replace: true });
-          }
+        // Validate library if provided
+        if (urlLibrary && !data.implementations.some((impl) => impl.library_id === urlLibrary)) {
+          // Invalid library, redirect to overview
+          navigate(`/${specId}`, { replace: true });
         }
       } catch (err) {
         console.error('Error fetching spec:', err);
@@ -111,16 +117,15 @@ export function SpecPage() {
     fetchSpec();
   }, [specId, urlLibrary, navigate]);
 
-  // Get current implementation
+  // Get current implementation (only in detail mode)
   const currentImpl = useMemo(() => {
     if (!specData || !selectedLibrary) return null;
     return specData.implementations.find((impl) => impl.library_id === selectedLibrary) || null;
   }, [specData, selectedLibrary]);
 
-  // Handle library switch
+  // Handle library switch (in detail mode)
   const handleLibrarySelect = useCallback(
     (libraryId: string) => {
-      setSelectedLibrary(libraryId);
       setImageLoaded(false);
       navigate(`/${specId}/${libraryId}`, { replace: true });
       trackEvent('switch_library', { spec: specId, library: libraryId });
@@ -128,35 +133,60 @@ export function SpecPage() {
     [specId, navigate, trackEvent]
   );
 
-  // Handle download
-  const handleDownload = useCallback(() => {
-    if (!currentImpl?.preview_url) return;
-    const link = document.createElement('a');
-    link.href = currentImpl.preview_url;
-    link.download = `${specId}-${selectedLibrary}.png`;
-    link.click();
-    trackEvent('download_image', { spec: specId, library: selectedLibrary || undefined });
-  }, [currentImpl, specId, selectedLibrary, trackEvent]);
+  // Handle implementation click (in overview mode)
+  const handleImplClick = useCallback(
+    (libraryId: string) => {
+      navigate(`/${specId}/${libraryId}`);
+      trackEvent('select_implementation', { spec: specId, library: libraryId });
+    },
+    [specId, navigate, trackEvent]
+  );
 
-  // Handle copy code
-  const handleCopyCode = useCallback(async () => {
-    if (!currentImpl?.code) return;
-    try {
-      await navigator.clipboard.writeText(currentImpl.code);
-      setCodeCopied(true);
-      trackEvent('copy_code', { spec: specId, library: selectedLibrary || undefined, method: 'image' });
-      setTimeout(() => setCodeCopied(false), 2000);
-    } catch (err) {
-      console.error('Copy failed:', err);
-    }
-  }, [currentImpl, specId, selectedLibrary, trackEvent]);
+  // Handle image click (in detail mode - go back to overview)
+  const handleImageClick = useCallback(() => {
+    navigate(`/${specId}`);
+    trackEvent('back_to_overview', { spec: specId, library: selectedLibrary || undefined });
+  }, [specId, selectedLibrary, navigate, trackEvent]);
+
+  // Handle download (works for both overview and detail mode)
+  const handleDownload = useCallback(
+    (impl: Implementation) => {
+      if (!impl?.preview_url) return;
+      const link = document.createElement('a');
+      link.href = impl.preview_url;
+      link.download = `${specId}-${impl.library_id}.png`;
+      link.click();
+      trackEvent('download_image', { spec: specId, library: impl.library_id });
+    },
+    [specId, trackEvent]
+  );
+
+  // Handle copy code (works for both overview and detail mode)
+  const handleCopyCode = useCallback(
+    async (impl: Implementation) => {
+      if (!impl?.code) return;
+      try {
+        await navigator.clipboard.writeText(impl.code);
+        setCodeCopied(impl.library_id);
+        trackEvent('copy_code', { spec: specId, library: impl.library_id, method: 'image' });
+        setTimeout(() => setCodeCopied(null), 2000);
+      } catch (err) {
+        console.error('Copy failed:', err);
+      }
+    },
+    [specId, trackEvent]
+  );
 
   // Track page view
   useEffect(() => {
-    if (specData && selectedLibrary) {
-      trackEvent('view_spec', { spec: specId, library: selectedLibrary });
+    if (specData) {
+      if (isOverviewMode) {
+        trackEvent('view_spec_overview', { spec: specId });
+      } else if (selectedLibrary) {
+        trackEvent('view_spec', { spec: specId, library: selectedLibrary });
+      }
     }
-  }, [specData, selectedLibrary, specId, trackEvent]);
+  }, [specData, isOverviewMode, selectedLibrary, specId, trackEvent]);
 
   if (loading) {
     return (
@@ -184,15 +214,18 @@ export function SpecPage() {
     );
   }
 
+  // Sort implementations alphabetically
+  const sortedImpls = [...specData.implementations].sort((a, b) => a.library_id.localeCompare(b.library_id));
+
   return (
     <>
       <Helmet>
-        <title>{`${specData.title} - ${selectedLibrary} | pyplots.ai`}</title>
+        <title>{isOverviewMode ? `${specData.title} | pyplots.ai` : `${specData.title} - ${selectedLibrary} | pyplots.ai`}</title>
         <meta name="description" content={specData.description} />
-        <meta property="og:title" content={`${specData.title} - ${selectedLibrary} | pyplots.ai`} />
+        <meta property="og:title" content={isOverviewMode ? `${specData.title} | pyplots.ai` : `${specData.title} - ${selectedLibrary} | pyplots.ai`} />
         <meta property="og:description" content={specData.description} />
         {currentImpl?.preview_url && <meta property="og:image" content={currentImpl.preview_url} />}
-        <meta property="og:url" content={`https://pyplots.ai/${specId}/${selectedLibrary}`} />
+        <meta property="og:url" content={isOverviewMode ? `https://pyplots.ai/${specId}` : `https://pyplots.ai/${specId}/${selectedLibrary}`} />
       </Helmet>
 
       <Box sx={{ pb: 4 }}>
@@ -202,7 +235,7 @@ export function SpecPage() {
             display: 'flex',
             alignItems: 'center',
             mx: { xs: -2, sm: -4, md: -8, lg: -12 },
-            mt: -5, // Compensate for Layout padding
+            mt: -5,
             px: 2,
             py: 1,
             mb: 2,
@@ -236,21 +269,29 @@ export function SpecPage() {
             catalog
           </Box>
           <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
-          <Box
-            component={Link}
-            to={`/${specId}`}
-            sx={{
-              color: '#3776AB',
-              textDecoration: 'none',
-              '&:hover': { textDecoration: 'underline' },
-            }}
-          >
-            {specId}
-          </Box>
-          <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
-          <Box component="span" sx={{ color: '#4b5563' }}>
-            {selectedLibrary}
-          </Box>
+          {isOverviewMode ? (
+            <Box component="span" sx={{ color: '#4b5563' }}>
+              {specId}
+            </Box>
+          ) : (
+            <>
+              <Box
+                component={Link}
+                to={`/${specId}`}
+                sx={{
+                  color: '#3776AB',
+                  textDecoration: 'none',
+                  '&:hover': { textDecoration: 'underline' },
+                }}
+              >
+                {specId}
+              </Box>
+              <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
+              <Box component="span" sx={{ color: '#4b5563' }}>
+                {selectedLibrary}
+              </Box>
+            </>
+          )}
         </Box>
 
         {/* Title */}
@@ -293,165 +334,414 @@ export function SpecPage() {
           {specData.description}
         </Typography>
 
-        {/* Library Carousel */}
-        <LibraryPills
-          implementations={specData.implementations}
-          selectedLibrary={selectedLibrary || ''}
-          onSelect={handleLibrarySelect}
-        />
-
-        {/* Main Image (full width) */}
-        <Box
-          sx={{
-            maxWidth: { xs: '100%', md: 1200, lg: 1400, xl: 1600 },
-            mx: 'auto',
-          }}
-        >
-          <Box
-            sx={{
-              position: 'relative',
-              borderRadius: 2,
-              overflow: 'hidden',
-              bgcolor: '#fff',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-              aspectRatio: '16/9',
-              '&:hover .impl-counter': {
-                opacity: 1,
-              },
-            }}
-          >
-          {!imageLoaded && (
-            <Skeleton
-              variant="rectangular"
-              sx={{
-                position: 'absolute',
-                inset: 0,
-                width: '100%',
-                height: '100%',
-              }}
-            />
-          )}
-          {currentImpl?.preview_url && (
+        {isOverviewMode ? (
+          /* OVERVIEW MODE: Grid of implementations */
+          <>
+            {/* Implementation Grid - same style as home page */}
             <Box
-              component="img"
-              src={currentImpl.preview_url}
-              alt={`${specData.title} - ${selectedLibrary}`}
-              onLoad={() => setImageLoaded(true)}
               sx={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'contain',
-                display: imageLoaded ? 'block' : 'none',
-              }}
-            />
-          )}
-
-          {/* Action Buttons (top-right) */}
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-              display: 'flex',
-              gap: 0.5,
-            }}
-          >
-            {currentImpl?.code && (
-              <Tooltip title={codeCopied ? 'Copied!' : 'Copy Code'}>
-                <IconButton
-                  onClick={handleCopyCode}
-                  sx={{
-                    bgcolor: 'rgba(255,255,255,0.9)',
-                    '&:hover': { bgcolor: '#fff' },
-                  }}
-                  size="small"
-                >
-                  {codeCopied ? <CheckIcon fontSize="small" color="success" /> : <ContentCopyIcon fontSize="small" />}
-                </IconButton>
-              </Tooltip>
-            )}
-            <Tooltip title="Download PNG">
-              <IconButton
-                onClick={handleDownload}
-                sx={{
-                  bgcolor: 'rgba(255,255,255,0.9)',
-                  '&:hover': { bgcolor: '#fff' },
-                }}
-                size="small"
-              >
-                <DownloadIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            {currentImpl?.preview_html && (
-              <Tooltip title="Open Interactive">
-                <IconButton
-                  component={Link}
-                  to={`/interactive/${specId}/${selectedLibrary}`}
-                  onClick={() => trackEvent('open_interactive', { spec: specId, library: selectedLibrary || undefined })}
-                  sx={{
-                    bgcolor: 'rgba(255,255,255,0.9)',
-                    '&:hover': { bgcolor: '#fff' },
-                  }}
-                  size="small"
-                >
-                  <OpenInNewIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            )}
-          </Box>
-
-          {/* Implementation counter (hover) */}
-          {specData.implementations.length > 1 && (
-            <Box
-              className="impl-counter"
-              sx={{
-                position: 'absolute',
-                bottom: 8,
-                right: 8,
-                px: 1,
-                py: 0.25,
-                bgcolor: 'rgba(0,0,0,0.6)',
-                borderRadius: 1,
-                fontSize: '0.75rem',
-                fontFamily: '"MonoLisa", monospace',
-                color: '#fff',
-                opacity: 0,
-                transition: 'opacity 0.2s',
+                maxWidth: { xs: '100%', md: 1200, lg: 1400, xl: 1600 },
+                mx: 'auto',
+                mt: 4,
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: 3,
               }}
             >
-              {[...specData.implementations]
-                .sort((a, b) => a.library_id.localeCompare(b.library_id))
-                .findIndex((impl) => impl.library_id === selectedLibrary) + 1}
-              /{specData.implementations.length}
-            </Box>
-          )}
-          </Box>
-        </Box>
+              {sortedImpls.map((impl) => (
+                <Box key={impl.library_id}>
+                  {/* Card */}
+                  <Box
+                    onClick={() => handleImplClick(impl.library_id)}
+                    sx={{
+                      position: 'relative',
+                      borderRadius: 3,
+                      overflow: 'hidden',
+                      border: '2px solid rgba(55, 118, 171, 0.2)',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        border: '2px solid rgba(55, 118, 171, 0.4)',
+                        boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
+                        transform: 'scale(1.03)',
+                      },
+                      '&:hover .action-buttons': {
+                        opacity: 1,
+                      },
+                    }}
+                  >
+                    {impl.preview_thumb || impl.preview_url ? (
+                      <Box
+                        component="img"
+                        src={impl.preview_thumb || impl.preview_url}
+                        alt={`${specData.title} - ${impl.library_id}`}
+                        sx={{
+                          width: '100%',
+                          aspectRatio: '16/10',
+                          objectFit: 'contain',
+                          bgcolor: '#fff',
+                        }}
+                      />
+                    ) : (
+                      <Skeleton variant="rectangular" sx={{ width: '100%', aspectRatio: '16/10' }} />
+                    )}
 
-        {/* Tabs */}
-        <SpecTabs
-          // Code tab
-          code={currentImpl?.code || null}
-          // Specification tab
-          specId={specData.id}
-          title={specData.title}
-          description={specData.description}
-          applications={specData.applications}
-          data={specData.data}
-          notes={specData.notes}
-          tags={specData.tags}
-          created={specData.created}
-          // Implementation tab
-          imageDescription={currentImpl?.review_image_description}
-          strengths={currentImpl?.review_strengths}
-          weaknesses={currentImpl?.review_weaknesses}
-          // Quality tab
-          qualityScore={currentImpl?.quality_score || null}
-          criteriaChecklist={currentImpl?.review_criteria_checklist}
-          // Common
-          libraryId={selectedLibrary || ''}
-          onTrackEvent={trackEvent}
-        />
+                    {/* Action Buttons (top-right) */}
+                    <Box
+                      className="action-buttons"
+                      onClick={(e) => e.stopPropagation()}
+                      sx={{
+                        position: 'absolute',
+                        top: 8,
+                        right: 8,
+                        display: 'flex',
+                        gap: 0.5,
+                        opacity: 0,
+                        transition: 'opacity 0.2s',
+                      }}
+                    >
+                      {impl.code && (
+                        <Tooltip title={codeCopied === impl.library_id ? 'Copied!' : 'Copy Code'}>
+                          <IconButton
+                            onClick={() => handleCopyCode(impl)}
+                            sx={{
+                              bgcolor: 'rgba(255,255,255,0.9)',
+                              '&:hover': { bgcolor: '#fff' },
+                            }}
+                            size="small"
+                          >
+                            {codeCopied === impl.library_id ? (
+                              <CheckIcon fontSize="small" color="success" />
+                            ) : (
+                              <ContentCopyIcon fontSize="small" />
+                            )}
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      <Tooltip title="Download PNG">
+                        <IconButton
+                          onClick={() => handleDownload(impl)}
+                          sx={{
+                            bgcolor: 'rgba(255,255,255,0.9)',
+                            '&:hover': { bgcolor: '#fff' },
+                          }}
+                          size="small"
+                        >
+                          <DownloadIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      {impl.preview_html && (
+                        <Tooltip title="Open Interactive">
+                          <IconButton
+                            component={Link}
+                            to={`/interactive/${specId}/${impl.library_id}`}
+                            onClick={(e: React.MouseEvent) => {
+                              e.stopPropagation();
+                              trackEvent('open_interactive', { spec: specId, library: impl.library_id });
+                            }}
+                            sx={{
+                              bgcolor: 'rgba(255,255,255,0.9)',
+                              '&:hover': { bgcolor: '#fff' },
+                            }}
+                            size="small"
+                          >
+                            <OpenInNewIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </Box>
+                  </Box>
+                  {/* Label below card with library tooltip */}
+                  {(() => {
+                    const libMeta = getLibraryMeta(impl.library_id);
+                    const tooltipId = `lib-${impl.library_id}`;
+                    const isTooltipOpen = openTooltip === tooltipId;
+
+                    return (
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          mt: 1.5,
+                          gap: 0.5,
+                        }}
+                      >
+                        <ClickAwayListener onClickAway={() => isTooltipOpen && setOpenTooltip(null)}>
+                          <Box component="span">
+                            <Tooltip
+                              title={
+                                <Box>
+                                  <Typography sx={{ fontSize: '0.8rem', mb: libMeta?.documentation_url ? 1 : 0 }}>
+                                    {libMeta?.description || 'No description available'}
+                                  </Typography>
+                                  {libMeta?.documentation_url && (
+                                    <MuiLink
+                                      href={libMeta.documentation_url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      onClick={(e) => e.stopPropagation()}
+                                      sx={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: 0.5,
+                                        fontSize: '0.75rem',
+                                        color: '#90caf9',
+                                        textDecoration: 'underline',
+                                        '&:hover': { color: '#fff' },
+                                      }}
+                                    >
+                                      {libMeta.documentation_url.replace(/^https?:\/\//, '')}
+                                      <OpenInNewIcon sx={{ fontSize: 12 }} />
+                                    </MuiLink>
+                                  )}
+                                </Box>
+                              }
+                              arrow
+                              placement="bottom"
+                              open={isTooltipOpen}
+                              disableFocusListener
+                              disableHoverListener
+                              disableTouchListener
+                              slotProps={{
+                                tooltip: {
+                                  sx: {
+                                    maxWidth: { xs: '80vw', sm: 400 },
+                                    fontFamily: '"MonoLisa", monospace',
+                                    fontSize: '0.8rem',
+                                  },
+                                },
+                              }}
+                            >
+                              <Typography
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setOpenTooltip(isTooltipOpen ? null : tooltipId);
+                                }}
+                                sx={{
+                                  fontSize: '0.8rem',
+                                  fontWeight: 600,
+                                  fontFamily: '"MonoLisa", monospace',
+                                  color: isTooltipOpen ? '#3776AB' : '#9ca3af',
+                                  textTransform: 'lowercase',
+                                  cursor: 'pointer',
+                                  '&:hover': { color: '#3776AB' },
+                                }}
+                              >
+                                {impl.library_id}
+                              </Typography>
+                            </Tooltip>
+                          </Box>
+                        </ClickAwayListener>
+                        {impl.quality_score && (
+                          <>
+                            <Typography sx={{ color: '#d1d5db', fontSize: '0.8rem' }}>·</Typography>
+                            <Typography
+                              sx={{
+                                fontSize: '0.8rem',
+                                fontWeight: 600,
+                                fontFamily: '"MonoLisa", monospace',
+                                color: '#9ca3af',
+                              }}
+                            >
+                              {Math.round(impl.quality_score)}
+                            </Typography>
+                          </>
+                        )}
+                      </Box>
+                    );
+                  })()}
+                </Box>
+              ))}
+            </Box>
+
+            {/* Spec Tabs (without Code/Impl/Quality - just Spec info) */}
+            <SpecTabs
+              code={null}
+              specId={specData.id}
+              title={specData.title}
+              description={specData.description}
+              applications={specData.applications}
+              data={specData.data}
+              notes={specData.notes}
+              tags={specData.tags}
+              created={specData.created}
+              imageDescription={undefined}
+              strengths={undefined}
+              weaknesses={undefined}
+              qualityScore={null}
+              criteriaChecklist={undefined}
+              libraryId=""
+              onTrackEvent={trackEvent}
+              overviewMode={true}
+            />
+          </>
+        ) : (
+          /* DETAIL MODE: Single implementation view */
+          <>
+            {/* Library Carousel */}
+            <LibraryPills
+              implementations={specData.implementations}
+              selectedLibrary={selectedLibrary || ''}
+              onSelect={handleLibrarySelect}
+            />
+
+            {/* Main Image (clickable to go back to overview) */}
+            <Box
+              sx={{
+                maxWidth: { xs: '100%', md: 1200, lg: 1400, xl: 1600 },
+                mx: 'auto',
+              }}
+            >
+              <Box
+                onClick={handleImageClick}
+                sx={{
+                  position: 'relative',
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  bgcolor: '#fff',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  aspectRatio: '16/9',
+                  cursor: 'pointer',
+                  '&:hover .impl-counter': {
+                    opacity: 1,
+                  },
+                }}
+              >
+                {!imageLoaded && (
+                  <Skeleton
+                    variant="rectangular"
+                    sx={{
+                      position: 'absolute',
+                      inset: 0,
+                      width: '100%',
+                      height: '100%',
+                    }}
+                  />
+                )}
+                {currentImpl?.preview_url && (
+                  <Box
+                    component="img"
+                    src={currentImpl.preview_url}
+                    alt={`${specData.title} - ${selectedLibrary}`}
+                    onLoad={() => setImageLoaded(true)}
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                      display: imageLoaded ? 'block' : 'none',
+                    }}
+                  />
+                )}
+
+                {/* Action Buttons (top-right) - stop propagation */}
+                <Box
+                  onClick={(e) => e.stopPropagation()}
+                  sx={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    display: 'flex',
+                    gap: 0.5,
+                  }}
+                >
+                  {currentImpl?.code && (
+                    <Tooltip title={codeCopied === currentImpl.library_id ? 'Copied!' : 'Copy Code'}>
+                      <IconButton
+                        onClick={() => handleCopyCode(currentImpl)}
+                        sx={{
+                          bgcolor: 'rgba(255,255,255,0.9)',
+                          '&:hover': { bgcolor: '#fff' },
+                        }}
+                        size="small"
+                      >
+                        {codeCopied === currentImpl.library_id ? <CheckIcon fontSize="small" color="success" /> : <ContentCopyIcon fontSize="small" />}
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                  {currentImpl && (
+                    <Tooltip title="Download PNG">
+                      <IconButton
+                        onClick={() => handleDownload(currentImpl)}
+                        sx={{
+                          bgcolor: 'rgba(255,255,255,0.9)',
+                          '&:hover': { bgcolor: '#fff' },
+                        }}
+                        size="small"
+                      >
+                        <DownloadIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                  {currentImpl?.preview_html && (
+                    <Tooltip title="Open Interactive">
+                      <IconButton
+                        component={Link}
+                        to={`/interactive/${specId}/${selectedLibrary}`}
+                        onClick={(e: React.MouseEvent) => {
+                          e.stopPropagation();
+                          trackEvent('open_interactive', { spec: specId, library: selectedLibrary || undefined });
+                        }}
+                        sx={{
+                          bgcolor: 'rgba(255,255,255,0.9)',
+                          '&:hover': { bgcolor: '#fff' },
+                        }}
+                        size="small"
+                      >
+                        <OpenInNewIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Box>
+
+                {/* Implementation counter (hover) */}
+                {specData.implementations.length > 1 && (
+                  <Box
+                    className="impl-counter"
+                    sx={{
+                      position: 'absolute',
+                      bottom: 8,
+                      right: 8,
+                      px: 1,
+                      py: 0.25,
+                      bgcolor: 'rgba(0,0,0,0.6)',
+                      borderRadius: 1,
+                      fontSize: '0.75rem',
+                      fontFamily: '"MonoLisa", monospace',
+                      color: '#fff',
+                      opacity: 0,
+                      transition: 'opacity 0.2s',
+                    }}
+                  >
+                    {sortedImpls.findIndex((impl) => impl.library_id === selectedLibrary) + 1}
+                    /{specData.implementations.length}
+                  </Box>
+                )}
+              </Box>
+            </Box>
+
+            {/* Tabs */}
+            <SpecTabs
+              code={currentImpl?.code || null}
+              specId={specData.id}
+              title={specData.title}
+              description={specData.description}
+              applications={specData.applications}
+              data={specData.data}
+              notes={specData.notes}
+              tags={specData.tags}
+              created={specData.created}
+              imageDescription={currentImpl?.review_image_description}
+              strengths={currentImpl?.review_strengths}
+              weaknesses={currentImpl?.review_weaknesses}
+              qualityScore={currentImpl?.quality_score || null}
+              criteriaChecklist={currentImpl?.review_criteria_checklist}
+              libraryId={selectedLibrary || ''}
+              onTrackEvent={trackEvent}
+            />
+          </>
+        )}
 
         {/* Footer */}
         <Footer onTrackEvent={trackEvent} selectedSpec={specId} selectedLibrary={selectedLibrary || ''} />

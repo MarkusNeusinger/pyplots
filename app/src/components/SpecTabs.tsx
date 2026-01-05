@@ -178,7 +178,10 @@ export function SpecTabs({
       onTrackEvent?.('tab_collapse', { library: libraryId });
     } else {
       setTabIndex(newValue);
-      const tabNames = ['code', 'specification', 'implementation', 'quality'];
+      // In overview mode, only Spec tab exists at index 0
+      const tabNames = overviewMode
+        ? ['specification']
+        : ['code', 'specification', 'implementation', 'quality'];
       onTrackEvent?.('tab_click', { tab: tabNames[newValue], library: libraryId });
     }
   };
@@ -242,33 +245,17 @@ export function SpecTabs({
           }}
         >
           {!overviewMode && (
-            <Tab
-              icon={<CodeIcon sx={{ fontSize: '1.1rem' }} />}
-              iconPosition="start"
-              label="Code"
-              onClick={() => tabIndex === 0 && setTabIndex(null)}
-            />
+            <Tab icon={<CodeIcon sx={{ fontSize: '1.1rem' }} />} iconPosition="start" label="Code" />
           )}
-          <Tab
-            icon={<DescriptionIcon sx={{ fontSize: '1.1rem' }} />}
-            iconPosition="start"
-            label="Spec"
-            onClick={() => tabIndex === specTabIndex && setTabIndex(null)}
-          />
+          <Tab icon={<DescriptionIcon sx={{ fontSize: '1.1rem' }} />} iconPosition="start" label="Spec" />
           {!overviewMode && (
-            <Tab
-              icon={<ImageIcon sx={{ fontSize: '1.1rem' }} />}
-              iconPosition="start"
-              label="Impl"
-              onClick={() => tabIndex === 2 && setTabIndex(null)}
-            />
+            <Tab icon={<ImageIcon sx={{ fontSize: '1.1rem' }} />} iconPosition="start" label="Impl" />
           )}
           {!overviewMode && (
             <Tab
               icon={<StarIcon sx={{ fontSize: '1.1rem', color: tabIndex === 3 ? '#3776AB' : '#f59e0b' }} />}
               iconPosition="start"
               label={qualityScore ? `${Math.round(qualityScore)}` : 'Quality'}
-              onClick={() => tabIndex === 3 && setTabIndex(null)}
             />
           )}
         </Tabs>

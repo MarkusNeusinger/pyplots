@@ -1,7 +1,7 @@
 /**
  * Hook for managing filter state and URL synchronization.
  *
- * Encapsulates all filter-related state and callbacks used in App.tsx.
+ * Uses persistent state from Layout context to survive navigation.
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react';
@@ -9,17 +9,45 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import type { PlotImage, FilterCategory, ActiveFilters, FilterCounts } from '../types';
 import { FILTER_CATEGORIES } from '../types';
 import { API_URL, BATCH_SIZE } from '../constants';
+import { useHomeState } from '../components/Layout';
 
 /**
- * Fisher-Yates shuffle algorithm.
+ * Seeded random number generator (mulberry32).
  */
-function shuffleArray<T>(array: T[]): T[] {
+function seededRandom(seed: number): () => number {
+  return () => {
+    let t = (seed += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * Fisher-Yates shuffle algorithm with optional seed for deterministic results.
+ */
+function shuffleArray<T>(array: T[], seed?: number): T[] {
   const shuffled = [...array];
+  const random = seed !== undefined ? seededRandom(seed) : Math.random;
   for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(random() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   return shuffled;
+}
+
+/**
+ * Generate a hash from filter state for deterministic shuffle.
+ */
+function hashFilters(filters: ActiveFilters): number {
+  const str = JSON.stringify(filters);
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash);
 }
 
 /**
@@ -106,19 +134,35 @@ export function useFilterState({
   onTrackPageview,
   onTrackEvent,
 }: UseFilterStateOptions): UseFilterStateReturn {
-  // Filter state - initialize from URL params immediately
-  const [activeFilters, setActiveFilters] = useState<ActiveFilters>(() => parseUrlFilters());
-  const [filterCounts, setFilterCounts] = useState<FilterCounts | null>(null);
-  const [globalCounts, setGlobalCounts] = useState<FilterCounts | null>(null);
-  const [orCounts, setOrCounts] = useState<Record<string, number>[]>([]);
+  const { homeStateRef, setHomeState } = useHomeState();
 
-  // Image state
-  const [allImages, setAllImages] = useState<PlotImage[]>([]);
-  const [displayedImages, setDisplayedImages] = useState<PlotImage[]>([]);
-  const [hasMore, setHasMore] = useState(false);
+  // Initialize from persistent state (ref) or URL params (all using lazy initializers)
+  const [activeFilters, setActiveFilters] = useState<ActiveFilters>(() =>
+    homeStateRef.current.initialized ? homeStateRef.current.activeFilters : parseUrlFilters()
+  );
+  const [filterCounts, setFilterCounts] = useState<FilterCounts | null>(() =>
+    homeStateRef.current.initialized ? homeStateRef.current.filterCounts : null
+  );
+  const [globalCounts, setGlobalCounts] = useState<FilterCounts | null>(() =>
+    homeStateRef.current.initialized ? homeStateRef.current.globalCounts : null
+  );
+  const [orCounts, setOrCounts] = useState<Record<string, number>[]>(() =>
+    homeStateRef.current.initialized ? homeStateRef.current.orCounts : []
+  );
+
+  // Image state - restore from persistent state if available
+  const [allImages, setAllImages] = useState<PlotImage[]>(() =>
+    homeStateRef.current.initialized ? homeStateRef.current.allImages : []
+  );
+  const [displayedImages, setDisplayedImages] = useState<PlotImage[]>(() =>
+    homeStateRef.current.initialized ? homeStateRef.current.displayedImages : []
+  );
+  const [hasMore, setHasMore] = useState(() =>
+    homeStateRef.current.initialized ? homeStateRef.current.hasMore : false
+  );
 
   // UI state
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !homeStateRef.current.initialized);
   const [error, setError] = useState<string>('');
   const [randomAnimation, setRandomAnimation] = useState<{
     index: number;
@@ -129,6 +173,23 @@ export function useFilterState({
   // Refs for stable callbacks
   const activeFiltersRef = useRef(activeFilters);
   activeFiltersRef.current = activeFilters;
+
+  // Sync state changes back to persistent context
+  useEffect(() => {
+    if (allImages.length > 0 || displayedImages.length > 0) {
+      setHomeState((prev) => ({
+        ...prev,
+        allImages,
+        displayedImages,
+        activeFilters,
+        filterCounts,
+        globalCounts,
+        orCounts,
+        hasMore,
+        initialized: true,
+      }));
+    }
+  }, [allImages, displayedImages, activeFilters, filterCounts, globalCounts, orCounts, hasMore, setHomeState]);
 
   // Add a new filter group (creates new chip - AND with other groups)
   const handleAddFilter = useCallback((category: FilterCategory, value: string) => {
@@ -234,8 +295,23 @@ export function useFilterState({
     onTrackPageview();
   }, [activeFilters, onTrackPageview]);
 
+  // Track if we should skip initial fetch (restored from persistent state)
+  const initializedRef = useRef(homeStateRef.current.initialized);
+  const filtersMatchRef = useRef(
+    homeStateRef.current.initialized && JSON.stringify(homeStateRef.current.activeFilters) === JSON.stringify(activeFilters)
+  );
+
   // Load filtered images when filters change
   useEffect(() => {
+    // Skip fetch on first mount if restored from persistent state with same filters
+    if (initializedRef.current && filtersMatchRef.current) {
+      initializedRef.current = false;
+      filtersMatchRef.current = false;
+      return;
+    }
+    initializedRef.current = false;
+    filtersMatchRef.current = false;
+
     const abortController = new AbortController();
 
     const fetchFilteredImages = async () => {
@@ -265,9 +341,12 @@ export function useFilterState({
         setGlobalCounts(data.globalCounts || data.counts);
         setOrCounts(data.orCounts || []);
 
-        // Shuffle and set images
-        const shuffled = shuffleArray<PlotImage>(data.images || []);
+        // Shuffle with deterministic seed based on filters
+        const seed = hashFilters(activeFilters);
+        const shuffled = shuffleArray<PlotImage>(data.images || [], seed);
         setAllImages(shuffled);
+
+        // Initial display count
         setDisplayedImages(shuffled.slice(0, BATCH_SIZE));
         setHasMore(shuffled.length > BATCH_SIZE);
       } catch (err) {

@@ -23,6 +23,12 @@ class ImplementationResponse(BaseModel):
     generated_by: Optional[str] = None
     python_version: Optional[str] = None
     library_version: Optional[str] = None
+    # Review fields
+    review_strengths: list[str] = []
+    review_weaknesses: list[str] = []
+    review_image_description: Optional[str] = None
+    review_criteria_checklist: Optional[dict] = None
+    review_verdict: Optional[str] = None
 
 
 class SpecDetailResponse(BaseModel):
@@ -37,6 +43,8 @@ class SpecDetailResponse(BaseModel):
     tags: Optional[dict] = None
     issue: Optional[int] = None
     suggested: Optional[str] = None
+    created: Optional[str] = None
+    updated: Optional[str] = None
     implementations: list[ImplementationResponse] = []
 
 

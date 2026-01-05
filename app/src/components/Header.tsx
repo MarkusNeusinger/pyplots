@@ -187,6 +187,7 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
         )}
         {isXs ? '. copy. create.' : '. grab the code. make it yours.'}
       </Typography>
+
     </Box>
   );
 });

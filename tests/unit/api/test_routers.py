@@ -68,6 +68,12 @@ def mock_spec():
     mock_impl.generated_by = "claude"
     mock_impl.python_version = "3.13"
     mock_impl.library_version = "3.10.0"
+    # Review fields (must be proper types, not MagicMock)
+    mock_impl.review_image_description = "A scatter plot showing data points"
+    mock_impl.review_criteria_checklist = {"visual_quality": {"score": 36, "max": 40}}
+    mock_impl.review_verdict = "APPROVED"
+    mock_impl.review_strengths = ["Clean code", "Good visualization"]
+    mock_impl.review_weaknesses = ["Could use better labels"]
 
     mock_spec = MagicMock()
     mock_spec.id = "scatter-basic"
@@ -84,6 +90,8 @@ def mock_spec():
     }
     mock_spec.issue = 42
     mock_spec.suggested = "contributor"
+    mock_spec.created = None  # Must be None or datetime, not MagicMock
+    mock_spec.updated = None  # Must be None or datetime, not MagicMock
     mock_spec.impls = [mock_impl]
 
     return mock_spec
@@ -425,7 +433,9 @@ class TestSeoRouter:
         ):
             response = client.get("/sitemap.xml")
             assert response.status_code == 200
-            assert "spec=scatter-basic" in response.text
+            # New URL format: /, /catalog, /{spec_id}
+            assert "https://pyplots.ai/catalog" in response.text
+            assert "https://pyplots.ai/scatter-basic" in response.text
 
 
 class TestPlotsRouter:

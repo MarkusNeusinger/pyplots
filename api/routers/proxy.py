@@ -65,28 +65,45 @@ ALLOWED_HOST = "storage.googleapis.com"
 ALLOWED_BUCKET = "pyplots-images"
 
 
-def validate_gcs_url(url: str) -> bool:
-    """Validate that URL is from allowed GCS bucket with no path traversal."""
+def build_safe_gcs_url(url: str) -> str | None:
+    """
+    Validate URL and return a reconstructed safe GCS URL.
+
+    This prevents SSRF by constructing the URL from hardcoded values
+    instead of passing user input directly.
+
+    Args:
+        url: User-provided URL to validate
+
+    Returns:
+        Reconstructed safe URL or None if validation fails
+    """
     try:
         parsed = urlparse(url)
         # Must be HTTPS
         if parsed.scheme != "https":
-            return False
+            return None
         # Must be exact host (no subdomains)
         if parsed.netloc != ALLOWED_HOST:
-            return False
-        # Path must start with bucket name and not contain traversal
+            return None
+        # Path must start with bucket name
         path_parts = parsed.path.strip("/").split("/")
         if len(path_parts) < 2:
-            return False
+            return None
         if path_parts[0] != ALLOWED_BUCKET:
-            return False
+            return None
         # Check for path traversal attempts
         if ".." in parsed.path:
-            return False
-        return True
+            return None
+        # Validate path contains only safe characters (alphanumeric, hyphens, underscores, dots, slashes)
+        safe_path = parsed.path.strip("/")
+        if not all(c.isalnum() or c in "-_./+" for c in safe_path):
+            return None
+        # Reconstruct URL from hardcoded values to prevent SSRF
+        # This breaks the taint flow by not using the original URL
+        return f"https://{ALLOWED_HOST}/{safe_path}"
     except Exception:
-        return False
+        return None
 
 
 @router.get("/proxy/html", response_class=HTMLResponse)
@@ -105,14 +122,15 @@ async def proxy_html(url: str):
     Returns:
         Modified HTML with size reporting script injected
     """
-    # Security: Validate URL strictly to prevent SSRF and path traversal
-    if not validate_gcs_url(url):
+    # Security: Validate and reconstruct URL to prevent SSRF
+    safe_url = build_safe_gcs_url(url)
+    if safe_url is None:
         raise HTTPException(status_code=400, detail=f"Only URLs from {ALLOWED_HOST}/{ALLOWED_BUCKET} are allowed")
 
     # Fetch the HTML with shorter timeout
     async with httpx.AsyncClient(timeout=10.0) as client:
         try:
-            response = await client.get(url)
+            response = await client.get(safe_url)
             response.raise_for_status()
         except httpx.HTTPStatusError as e:
             raise HTTPException(status_code=e.response.status_code, detail="Failed to fetch HTML") from e

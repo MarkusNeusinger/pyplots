@@ -82,7 +82,7 @@ https://pyplots.ai/{category}/{value}/{category}/{value}/...
 | Event Name | Properties | Where | Description |
 |------------|-----------|-------|-------------|
 | `search` | `query`, `category` | FilterBar | User searches and selects value |
-| `search_no_results` | `query` | FilterBar | Search query returns no results (debounced 500ms) |
+| `search_no_results` | `query` | FilterBar | Search query returns no results (debounced 200ms) |
 | `random` | `category`, `value`, `method` | HomePage | User triggers random filter |
 | `filter_remove` | `category`, `value` | HomePage | User removes a filter |
 | `toggle_grid_size` | `size` | FilterBar | User toggles between normal/compact view |

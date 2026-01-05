@@ -1,15 +1,21 @@
 """Tests for automation.scripts.sync_to_postgres module."""
 
 from datetime import datetime
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 from automation.scripts.sync_to_postgres import (
     convert_datetimes_to_strings,
+    main,
     parse_bullet_points,
     parse_library_metadata_yaml,
     parse_metadata_yaml,
     parse_spec_markdown,
     parse_timestamp,
     scan_plot_directory,
+    sync_to_database,
 )
 
 
@@ -552,3 +558,407 @@ current:
         impl = result["implementations"][0]
         assert impl["quality_score"] == 85
         assert impl["python_version"] == "3.12"
+
+    def test_scan_with_legacy_metadata_yaml(self, tmp_path):
+        """Test scanning with legacy metadata.yaml in spec directory."""
+        plot_dir = tmp_path / "legacy-format"
+        plot_dir.mkdir()
+
+        (plot_dir / "specification.md").write_text("""# legacy-format: Legacy Format
+
+## Description
+Test legacy format.
+
+## Applications
+- Testing
+
+## Data
+- Values
+""")
+
+        # Legacy metadata.yaml (not specification.yaml)
+        (plot_dir / "metadata.yaml").write_text("""spec_id: legacy-format
+title: Legacy Format Title
+created: 2025-01-10T08:00:00Z
+tags:
+  plot_type: [scatter]
+implementations:
+  matplotlib:
+    quality_score: 80
+    python_version: "3.11"
+""")
+
+        impl_dir = plot_dir / "implementations"
+        impl_dir.mkdir()
+        (impl_dir / "matplotlib.py").write_text("# matplotlib code")
+
+        result = scan_plot_directory(plot_dir)
+
+        assert result is not None
+        assert result["spec"]["title"] == "Legacy Format Title"
+        impl = result["implementations"][0]
+        assert impl["quality_score"] == 80
+        assert impl["python_version"] == "3.11"
+
+    def test_scan_with_extended_review_data(self, tmp_path):
+        """Test scanning with extended review data (issue #2845)."""
+        plot_dir = tmp_path / "extended-review"
+        plot_dir.mkdir()
+
+        (plot_dir / "specification.md").write_text("""# extended-review: Extended Review
+
+## Description
+Test extended review data.
+
+## Applications
+- Testing
+
+## Data
+- Values
+""")
+
+        (plot_dir / "specification.yaml").write_text("""spec_id: extended-review
+title: Extended Review Test
+""")
+
+        impl_dir = plot_dir / "implementations"
+        impl_dir.mkdir()
+        (impl_dir / "matplotlib.py").write_text("# matplotlib code")
+
+        meta_dir = plot_dir / "metadata"
+        meta_dir.mkdir()
+        (meta_dir / "matplotlib.yaml").write_text("""library: matplotlib
+specification_id: extended-review
+quality_score: 88
+review:
+  image_description: |
+    The plot shows a scatter chart with blue points.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+  verdict: APPROVED
+  strengths:
+    - Clean layout
+  weaknesses:
+    - Missing grid
+""")
+
+        result = scan_plot_directory(plot_dir)
+
+        assert result is not None
+        impl = result["implementations"][0]
+        assert "scatter chart" in impl["review_image_description"]
+        assert impl["review_criteria_checklist"]["visual_quality"]["score"] == 36
+        assert impl["review_verdict"] == "APPROVED"
+
+
+class TestSyncToDatabase:
+    """Tests for sync_to_database function."""
+
+    def test_sync_specs_and_impls(self):
+        """Should sync specs and implementations to database."""
+        mock_session = MagicMock()
+        mock_session.execute = MagicMock()
+        mock_session.commit = MagicMock()
+
+        # Mock select results for removal check
+        mock_result = MagicMock()
+        mock_result.fetchall.return_value = []
+        mock_session.execute.return_value = mock_result
+
+        plots = [
+            {
+                "spec": {
+                    "id": "scatter-basic",
+                    "title": "Basic Scatter",
+                    "description": "A scatter plot",
+                    "applications": ["testing"],
+                    "data": ["x", "y"],
+                    "notes": [],
+                    "tags": {"plot_type": ["scatter"]},
+                    "created": datetime(2025, 1, 10),
+                    "updated": None,
+                    "issue": 42,
+                    "suggested": "testuser",
+                },
+                "implementations": [
+                    {
+                        "spec_id": "scatter-basic",
+                        "library_id": "matplotlib",
+                        "code": "import matplotlib",
+                        "preview_url": "https://example.com/plot.png",
+                        "preview_thumb": None,
+                        "preview_html": None,
+                        "python_version": "3.13",
+                        "library_version": "3.10.0",
+                        "generated_at": datetime(2025, 1, 10),
+                        "updated": None,
+                        "generated_by": "claude",
+                        "workflow_run": 123,
+                        "issue": 42,
+                        "quality_score": 92,
+                        "review_strengths": ["Clean code"],
+                        "review_weaknesses": [],
+                        "review_image_description": None,
+                        "review_criteria_checklist": None,
+                        "review_verdict": None,
+                    }
+                ],
+            }
+        ]
+
+        stats = sync_to_database(mock_session, plots)
+
+        assert stats["specs_synced"] == 1
+        assert stats["impls_synced"] == 1
+        assert stats["specs_removed"] == 0
+        assert stats["impls_removed"] == 0
+        mock_session.commit.assert_called_once()
+
+    def test_sync_calls_commit(self):
+        """Should commit session after sync."""
+        mock_session = MagicMock()
+        mock_result = MagicMock()
+        mock_result.fetchall.return_value = []
+        mock_session.execute.return_value = mock_result
+
+        plots = [
+            {
+                "spec": {
+                    "id": "test-spec",
+                    "title": "Test",
+                    "description": "",
+                    "applications": [],
+                    "data": [],
+                    "notes": [],
+                    "tags": None,
+                    "created": None,
+                    "updated": None,
+                    "issue": None,
+                    "suggested": None,
+                },
+                "implementations": [],
+            }
+        ]
+
+        sync_to_database(mock_session, plots)
+
+        mock_session.commit.assert_called_once()
+
+    def test_sync_empty_plots(self):
+        """Should handle empty plots list."""
+        mock_session = MagicMock()
+        mock_result = MagicMock()
+        mock_result.fetchall.return_value = []
+        mock_session.execute.return_value = mock_result
+
+        stats = sync_to_database(mock_session, [])
+
+        assert stats["specs_synced"] == 0
+        assert stats["impls_synced"] == 0
+        mock_session.commit.assert_called_once()
+
+    def test_sync_with_extended_review_data(self):
+        """Should sync extended review data fields."""
+        mock_session = MagicMock()
+        mock_result = MagicMock()
+        mock_result.fetchall.return_value = []
+        mock_session.execute.return_value = mock_result
+
+        plots = [
+            {
+                "spec": {
+                    "id": "test-spec",
+                    "title": "Test",
+                    "description": "",
+                    "applications": [],
+                    "data": [],
+                    "notes": [],
+                    "tags": None,
+                    "created": None,
+                    "updated": None,
+                    "issue": None,
+                    "suggested": None,
+                },
+                "implementations": [
+                    {
+                        "spec_id": "test-spec",
+                        "library_id": "matplotlib",
+                        "code": "code",
+                        "preview_url": None,
+                        "preview_thumb": None,
+                        "preview_html": None,
+                        "python_version": None,
+                        "library_version": None,
+                        "generated_at": None,
+                        "updated": None,
+                        "generated_by": None,
+                        "workflow_run": None,
+                        "issue": None,
+                        "quality_score": 90,
+                        "review_strengths": ["Good"],
+                        "review_weaknesses": ["Bad"],
+                        "review_image_description": "A plot with points",
+                        "review_criteria_checklist": {"visual": {"score": 35}},
+                        "review_verdict": "APPROVED",
+                    }
+                ],
+            }
+        ]
+
+        stats = sync_to_database(mock_session, plots)
+
+        assert stats["impls_synced"] == 1
+        mock_session.commit.assert_called_once()
+
+
+class TestMain:
+    """Tests for main function."""
+
+    def test_main_no_database_configured(self):
+        """Should return 1 when no database is configured."""
+        with patch("automation.scripts.sync_to_postgres.is_db_configured", return_value=False):
+            result = main()
+
+        assert result == 1
+
+    def test_main_success(self, tmp_path):
+        """Should return 0 on successful sync."""
+        # Create a minimal plot directory
+        plots_dir = tmp_path / "plots"
+        plots_dir.mkdir()
+        plot_dir = plots_dir / "test-plot"
+        plot_dir.mkdir()
+
+        (plot_dir / "specification.md").write_text("""# test-plot: Test Plot
+
+## Description
+Test.
+
+## Applications
+- Test
+
+## Data
+- Test
+""")
+
+        mock_session = MagicMock()
+        mock_result = MagicMock()
+        mock_result.fetchall.return_value = []
+        mock_session.execute.return_value = mock_result
+
+        with (
+            patch("automation.scripts.sync_to_postgres.is_db_configured", return_value=True),
+            patch("automation.scripts.sync_to_postgres.PLOTS_DIR", plots_dir),
+            patch("automation.scripts.sync_to_postgres.init_db_sync"),
+            patch("automation.scripts.sync_to_postgres.get_db_context_sync") as mock_ctx,
+            patch("automation.scripts.sync_to_postgres.close_db_sync"),
+        ):
+            mock_ctx.return_value.__enter__ = MagicMock(return_value=mock_session)
+            mock_ctx.return_value.__exit__ = MagicMock(return_value=None)
+
+            result = main()
+
+        assert result == 0
+
+    def test_main_exception_returns_1(self, tmp_path):
+        """Should return 1 when sync fails."""
+        plots_dir = tmp_path / "plots"
+        plots_dir.mkdir()
+
+        with (
+            patch("automation.scripts.sync_to_postgres.is_db_configured", return_value=True),
+            patch("automation.scripts.sync_to_postgres.PLOTS_DIR", plots_dir),
+            patch("automation.scripts.sync_to_postgres.init_db_sync", side_effect=Exception("DB error")),
+            patch("automation.scripts.sync_to_postgres.close_db_sync"),
+        ):
+            result = main()
+
+        assert result == 1
+
+    def test_main_skips_hidden_directories(self, tmp_path):
+        """Should skip directories starting with dot."""
+        plots_dir = tmp_path / "plots"
+        plots_dir.mkdir()
+
+        # Create hidden directory
+        hidden_dir = plots_dir / ".hidden"
+        hidden_dir.mkdir()
+        (hidden_dir / "specification.md").write_text("# hidden")
+
+        # Create normal directory
+        normal_dir = plots_dir / "normal-plot"
+        normal_dir.mkdir()
+        (normal_dir / "specification.md").write_text("""# normal-plot: Normal
+
+## Description
+Normal plot.
+
+## Applications
+- Test
+
+## Data
+- Test
+""")
+
+        mock_session = MagicMock()
+        mock_result = MagicMock()
+        mock_result.fetchall.return_value = []
+        mock_session.execute.return_value = mock_result
+
+        with (
+            patch("automation.scripts.sync_to_postgres.is_db_configured", return_value=True),
+            patch("automation.scripts.sync_to_postgres.PLOTS_DIR", plots_dir),
+            patch("automation.scripts.sync_to_postgres.init_db_sync"),
+            patch("automation.scripts.sync_to_postgres.get_db_context_sync") as mock_ctx,
+            patch("automation.scripts.sync_to_postgres.close_db_sync"),
+        ):
+            mock_ctx.return_value.__enter__ = MagicMock(return_value=mock_session)
+            mock_ctx.return_value.__exit__ = MagicMock(return_value=None)
+
+            result = main()
+
+        assert result == 0
+
+    def test_main_skips_non_directories(self, tmp_path):
+        """Should skip files in plots directory."""
+        plots_dir = tmp_path / "plots"
+        plots_dir.mkdir()
+
+        # Create a file (not directory)
+        (plots_dir / "README.md").write_text("# Plots")
+
+        # Create normal directory
+        normal_dir = plots_dir / "test-plot"
+        normal_dir.mkdir()
+        (normal_dir / "specification.md").write_text("""# test-plot: Test
+
+## Description
+Test.
+
+## Applications
+- Test
+
+## Data
+- Test
+""")
+
+        mock_session = MagicMock()
+        mock_result = MagicMock()
+        mock_result.fetchall.return_value = []
+        mock_session.execute.return_value = mock_result
+
+        with (
+            patch("automation.scripts.sync_to_postgres.is_db_configured", return_value=True),
+            patch("automation.scripts.sync_to_postgres.PLOTS_DIR", plots_dir),
+            patch("automation.scripts.sync_to_postgres.init_db_sync"),
+            patch("automation.scripts.sync_to_postgres.get_db_context_sync") as mock_ctx,
+            patch("automation.scripts.sync_to_postgres.close_db_sync"),
+        ):
+            mock_ctx.return_value.__enter__ = MagicMock(return_value=mock_session)
+            mock_ctx.return_value.__exit__ = MagicMock(return_value=None)
+
+            result = main()
+
+        assert result == 0

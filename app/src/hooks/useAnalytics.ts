@@ -64,7 +64,7 @@ export function useAnalytics() {
     [isProduction]
   );
 
-  const trackPageview = useMemo(() => debounce(sendPageview, 300), [sendPageview]);
+  const trackPageview = useMemo(() => debounce(sendPageview, 150), [sendPageview]);
 
   const trackEvent = useCallback(
     (name: string, props?: EventProps) => {

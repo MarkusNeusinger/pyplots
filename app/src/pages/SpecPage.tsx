@@ -156,9 +156,9 @@ export function SpecPage() {
       link.href = impl.preview_url;
       link.download = `${specId}-${impl.library_id}.png`;
       link.click();
-      trackEvent('download_image', { spec: specId, library: impl.library_id });
+      trackEvent('download_image', { spec: specId, library: impl.library_id, page: isOverviewMode ? 'spec_overview' : 'spec_detail' });
     },
-    [specId, trackEvent]
+    [specId, trackEvent, isOverviewMode]
   );
 
   // Handle copy code (works for both overview and detail mode)
@@ -168,13 +168,13 @@ export function SpecPage() {
       try {
         await navigator.clipboard.writeText(impl.code);
         setCodeCopied(impl.library_id);
-        trackEvent('copy_code', { spec: specId, library: impl.library_id, method: 'image' });
+        trackEvent('copy_code', { spec: specId, library: impl.library_id, method: 'image', page: isOverviewMode ? 'spec_overview' : 'spec_detail' });
         setTimeout(() => setCodeCopied(null), 2000);
       } catch (err) {
         console.error('Copy failed:', err);
       }
     },
-    [specId, trackEvent]
+    [specId, trackEvent, isOverviewMode]
   );
 
   // Track page view

@@ -315,10 +315,10 @@ export function CatalogPage() {
                   </Box>
                 </Box>
 
-                {/* Text - Click to navigate */}
+                {/* Text - Click to navigate to overview */}
                 <Box
                   component={Link}
-                  to={`/${spec.id}/${currentImage?.library || ''}`}
+                  to={`/${spec.id}`}
                   onClick={saveScrollPosition}
                   sx={{
                     flex: 1,

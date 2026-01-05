@@ -40,6 +40,8 @@ interface SpecTabsProps {
   // Common
   libraryId: string;
   onTrackEvent?: (name: string, props?: Record<string, string | undefined>) => void;
+  // Overview mode - only show Spec tab
+  overviewMode?: boolean;
 }
 
 interface TabPanelProps {
@@ -52,43 +54,10 @@ function TabPanel({ children, value, index }: TabPanelProps) {
   const isOpen = value === index;
   return (
     <Collapse in={isOpen}>
-      <Box role="tabpanel" sx={{ py: 2 }}>
+      <Box role="tabpanel" sx={{ pt: 2 }}>
         {children}
       </Box>
     </Collapse>
-  );
-}
-
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return (
-    <Typography
-      sx={{
-        fontFamily: '"MonoLisa", monospace',
-        fontSize: '0.75rem',
-        fontWeight: 600,
-        color: '#9ca3af',
-        textTransform: 'uppercase',
-        letterSpacing: '0.05em',
-        mb: 0.5,
-      }}
-    >
-      {children}
-    </Typography>
-  );
-}
-
-function SectionContent({ children }: { children: React.ReactNode }) {
-  return (
-    <Typography
-      sx={{
-        fontFamily: '"MonoLisa", monospace',
-        fontSize: '0.85rem',
-        color: '#374151',
-        lineHeight: 1.6,
-      }}
-    >
-      {children}
-    </Typography>
   );
 }
 
@@ -179,9 +148,11 @@ export function SpecTabs({
   criteriaChecklist,
   libraryId,
   onTrackEvent,
+  overviewMode = false,
 }: SpecTabsProps) {
   const [copied, setCopied] = useState(false);
-  const [tabIndex, setTabIndex] = useState<number | null>(null); // All tabs collapsed by default
+  // In overview mode, start with Spec tab open; in detail mode, all collapsed
+  const [tabIndex, setTabIndex] = useState<number | null>(overviewMode ? 0 : null);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
 
   const toggleCategory = (category: string) => {
@@ -245,13 +216,8 @@ export function SpecTabs({
     }
   };
 
-  // Flatten tags for display
-  const allTags = useMemo(() => {
-    if (!tags) return [];
-    return Object.entries(tags).flatMap(([category, values]) =>
-      values.map((v) => ({ category, value: v }))
-    );
-  }, [tags]);
+  // In overview mode, use different tab indexing (only Spec tab at index 0)
+  const specTabIndex = overviewMode ? 0 : 1;
 
   return (
     <Box sx={{ mt: 3, maxWidth: { xs: '100%', md: 1200, lg: 1400, xl: 1600 }, mx: 'auto' }}>
@@ -275,66 +241,74 @@ export function SpecTabs({
             },
           }}
         >
-          <Tab
-            icon={<CodeIcon sx={{ fontSize: '1.1rem' }} />}
-            iconPosition="start"
-            label="Code"
-            onClick={() => tabIndex === 0 && setTabIndex(null)}
-          />
+          {!overviewMode && (
+            <Tab
+              icon={<CodeIcon sx={{ fontSize: '1.1rem' }} />}
+              iconPosition="start"
+              label="Code"
+              onClick={() => tabIndex === 0 && setTabIndex(null)}
+            />
+          )}
           <Tab
             icon={<DescriptionIcon sx={{ fontSize: '1.1rem' }} />}
             iconPosition="start"
             label="Spec"
-            onClick={() => tabIndex === 1 && setTabIndex(null)}
+            onClick={() => tabIndex === specTabIndex && setTabIndex(null)}
           />
-          <Tab
-            icon={<ImageIcon sx={{ fontSize: '1.1rem' }} />}
-            iconPosition="start"
-            label="Impl"
-            onClick={() => tabIndex === 2 && setTabIndex(null)}
-          />
-          <Tab
-            icon={<StarIcon sx={{ fontSize: '1.1rem', color: tabIndex === 3 ? '#3776AB' : '#f59e0b' }} />}
-            iconPosition="start"
-            label={qualityScore ? `${Math.round(qualityScore)}` : 'Quality'}
-            onClick={() => tabIndex === 3 && setTabIndex(null)}
-          />
+          {!overviewMode && (
+            <Tab
+              icon={<ImageIcon sx={{ fontSize: '1.1rem' }} />}
+              iconPosition="start"
+              label="Impl"
+              onClick={() => tabIndex === 2 && setTabIndex(null)}
+            />
+          )}
+          {!overviewMode && (
+            <Tab
+              icon={<StarIcon sx={{ fontSize: '1.1rem', color: tabIndex === 3 ? '#3776AB' : '#f59e0b' }} />}
+              iconPosition="start"
+              label={qualityScore ? `${Math.round(qualityScore)}` : 'Quality'}
+              onClick={() => tabIndex === 3 && setTabIndex(null)}
+            />
+          )}
         </Tabs>
       </Box>
 
-      {/* Code Tab */}
-      <TabPanel value={tabIndex} index={0}>
-        <Box sx={{ position: 'relative' }}>
-          <Tooltip title={copied ? 'Copied!' : 'Copy code'}>
-            <IconButton
-              onClick={handleCopy}
+      {/* Code Tab - only in detail mode */}
+      {!overviewMode && (
+        <TabPanel value={tabIndex} index={0}>
+          <Box sx={{ position: 'relative' }}>
+            <Tooltip title={copied ? 'Copied!' : 'Copy code'}>
+              <IconButton
+                onClick={handleCopy}
+                sx={{
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  bgcolor: 'rgba(255,255,255,0.9)',
+                  zIndex: 1,
+                  '&:hover': { bgcolor: '#fff' },
+                }}
+                size="small"
+              >
+                {copied ? <CheckIcon color="success" /> : <ContentCopyIcon fontSize="small" />}
+              </IconButton>
+            </Tooltip>
+            <Box
               sx={{
-                position: 'absolute',
-                top: 8,
-                right: 8,
-                bgcolor: 'rgba(255,255,255,0.9)',
-                zIndex: 1,
-                '&:hover': { bgcolor: '#fff' },
+                bgcolor: '#fafafa',
+                p: 3,
+                borderRadius: 1,
               }}
-              size="small"
             >
-              {copied ? <CheckIcon color="success" /> : <ContentCopyIcon fontSize="small" />}
-            </IconButton>
-          </Tooltip>
-          <Box
-            sx={{
-              bgcolor: '#fafafa',
-              p: 3,
-              borderRadius: 1,
-            }}
-          >
-            {highlightedCode}
+              {highlightedCode}
+            </Box>
           </Box>
-        </Box>
-      </TabPanel>
+        </TabPanel>
+      )}
 
       {/* Specification Tab */}
-      <TabPanel value={tabIndex} index={1}>
+      <TabPanel value={tabIndex} index={specTabIndex}>
         <Box
           sx={{
             bgcolor: '#fafafa',
@@ -454,96 +428,99 @@ export function SpecTabs({
         </Box>
       </TabPanel>
 
-      {/* Implementation Tab */}
-      <TabPanel value={tabIndex} index={2}>
-        <Box
-          sx={{
-            bgcolor: '#fafafa',
-            p: 3,
-            borderRadius: 1,
-            fontFamily: '"MonoLisa", monospace',
-          }}
-        >
-          {/* Image Description */}
-          {imageDescription && (
-            <>
-              <MdHeading level={2}>Description</MdHeading>
-              <Typography
-                sx={{
-                  fontFamily: '"MonoLisa", monospace',
-                  fontSize: '0.85rem',
-                  color: '#4b5563',
-                  lineHeight: 1.7,
-                }}
-              >
-                {imageDescription}
+      {/* Implementation Tab - only in detail mode */}
+      {!overviewMode && (
+        <TabPanel value={tabIndex} index={2}>
+          <Box
+            sx={{
+              bgcolor: '#fafafa',
+              p: 3,
+              borderRadius: 1,
+              fontFamily: '"MonoLisa", monospace',
+            }}
+          >
+            {/* Image Description */}
+            {imageDescription && (
+              <>
+                <MdHeading level={2}>Description</MdHeading>
+                <Typography
+                  sx={{
+                    fontFamily: '"MonoLisa", monospace',
+                    fontSize: '0.85rem',
+                    color: '#4b5563',
+                    lineHeight: 1.7,
+                  }}
+                >
+                  {imageDescription}
+                </Typography>
+              </>
+            )}
+
+            {/* Strengths */}
+            {strengths && strengths.length > 0 && (
+              <>
+                <MdHeading level={2}>Strengths</MdHeading>
+                <Box component="ul" sx={{ m: 0, pl: 0, listStyle: 'disc' }}>
+                  {strengths.map((s, i) => (
+                    <Typography
+                      key={i}
+                      component="li"
+                      sx={{
+                        fontFamily: '"MonoLisa", monospace',
+                        fontSize: '0.85rem',
+                        color: '#4b5563',
+                        lineHeight: 1.7,
+                        ml: 2,
+                        mb: 0.25,
+                        '&::marker': { color: '#22c55e' },
+                      }}
+                    >
+                      {s}
+                    </Typography>
+                  ))}
+                </Box>
+              </>
+            )}
+
+            {/* Weaknesses */}
+            {weaknesses && weaknesses.length > 0 && (
+              <>
+                <MdHeading level={2}>Weaknesses</MdHeading>
+                <Box component="ul" sx={{ m: 0, pl: 0, listStyle: 'disc' }}>
+                  {weaknesses.map((w, i) => (
+                    <Typography
+                      key={i}
+                      component="li"
+                      sx={{
+                        fontFamily: '"MonoLisa", monospace',
+                        fontSize: '0.85rem',
+                        color: '#4b5563',
+                        lineHeight: 1.7,
+                        ml: 2,
+                        mb: 0.25,
+                        '&::marker': { color: '#ef4444' },
+                      }}
+                    >
+                      {w}
+                    </Typography>
+                  ))}
+                </Box>
+              </>
+            )}
+
+            {/* No data message */}
+            {!imageDescription && (!strengths || strengths.length === 0) && (!weaknesses || weaknesses.length === 0) && (
+              <Typography sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.85rem', color: '#9ca3af' }}>
+                No implementation review data available.
               </Typography>
-            </>
-          )}
+            )}
+          </Box>
+        </TabPanel>
+      )}
 
-          {/* Strengths */}
-          {strengths && strengths.length > 0 && (
-            <>
-              <MdHeading level={2}>Strengths</MdHeading>
-              <Box component="ul" sx={{ m: 0, pl: 0, listStyle: 'disc' }}>
-                {strengths.map((s, i) => (
-                  <Typography
-                    key={i}
-                    component="li"
-                    sx={{
-                      fontFamily: '"MonoLisa", monospace',
-                      fontSize: '0.85rem',
-                      color: '#4b5563',
-                      lineHeight: 1.7,
-                      ml: 2,
-                      mb: 0.25,
-                      '&::marker': { color: '#22c55e' },
-                    }}
-                  >
-                    {s}
-                  </Typography>
-                ))}
-              </Box>
-            </>
-          )}
-
-          {/* Weaknesses */}
-          {weaknesses && weaknesses.length > 0 && (
-            <>
-              <MdHeading level={2}>Weaknesses</MdHeading>
-              <Box component="ul" sx={{ m: 0, pl: 0, listStyle: 'disc' }}>
-                {weaknesses.map((w, i) => (
-                  <Typography
-                    key={i}
-                    component="li"
-                    sx={{
-                      fontFamily: '"MonoLisa", monospace',
-                      fontSize: '0.85rem',
-                      color: '#4b5563',
-                      lineHeight: 1.7,
-                      ml: 2,
-                      mb: 0.25,
-                      '&::marker': { color: '#ef4444' },
-                    }}
-                  >
-                    {w}
-                  </Typography>
-                ))}
-              </Box>
-            </>
-          )}
-
-          {/* No data message */}
-          {!imageDescription && (!strengths || strengths.length === 0) && (!weaknesses || weaknesses.length === 0) && (
-            <Typography sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.85rem', color: '#9ca3af' }}>
-              No implementation review data available.
-            </Typography>
-          )}
-        </Box>
-      </TabPanel>
-
-      {/* Quality Tab */}
-      <TabPanel value={tabIndex} index={3}>
+      {/* Quality Tab - only in detail mode */}
+      {!overviewMode && (
+        <TabPanel value={tabIndex} index={3}>
         <Box
           sx={{
             bgcolor: '#fafafa',
@@ -678,7 +655,8 @@ export function SpecTabs({
             </Typography>
           )}
         </Box>
-      </TabPanel>
+        </TabPanel>
+      )}
     </Box>
   );
 }

@@ -70,6 +70,7 @@ export function InteractivePage() {
         window.location.origin, // Same origin (development)
         'https://pyplots.ai',
         'https://api.pyplots.ai',
+        'http://localhost:8000', // Local API server
       ];
       if (!allowedOrigins.includes(event.origin)) {
         return;
@@ -147,7 +148,8 @@ export function InteractivePage() {
 
   // Build proxy URL for iframe (injects size reporter script)
   const getProxyUrl = (url: string) => {
-    return `${API_URL}/proxy/html?url=${encodeURIComponent(url)}`;
+    const origin = window.location.origin;
+    return `${API_URL}/proxy/html?url=${encodeURIComponent(url)}&origin=${encodeURIComponent(origin)}`;
   };
 
   if (loading) {

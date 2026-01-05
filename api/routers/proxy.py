@@ -9,13 +9,17 @@ from fastapi.responses import HTMLResponse
 
 router = APIRouter(tags=["proxy"])
 
-# Script injected to report content size to parent window
-# Uses specific origin (pyplots.ai) for postMessage security
-SIZE_REPORTER_SCRIPT = """
+# Allowed origins for postMessage
+ALLOWED_ORIGINS = ["https://pyplots.ai", "http://localhost:3000"]
+
+
+def get_size_reporter_script(target_origin: str) -> str:
+    """Generate size reporter script with specified target origin."""
+    return f"""
 <script>
-(function() {
-  function reportSize() {
-    try {
+(function() {{
+  function reportSize() {{
+    try {{
       // Find the main content element (try common patterns for different libraries)
       var content = document.querySelector(
         '.bk-root, .vega-embed, .plotly, .chart-container, #container, .lp-plot, svg, canvas'
@@ -32,33 +36,37 @@ SIZE_REPORTER_SCRIPT = """
       height += padding;
 
       // Send to parent with specific origin for security
-      if (width > 0 && height > 0 && window.parent !== window) {
-        window.parent.postMessage({
+      if (width > 0 && height > 0 && window.parent !== window) {{
+        window.parent.postMessage({{
           type: 'pyplots-size',
           width: Math.ceil(width),
           height: Math.ceil(height)
-        }, 'https://pyplots.ai');
-      }
-    } catch (e) {
+        }}, '{target_origin}');
+      }}
+    }} catch (e) {{
       // Silently fail if postMessage is blocked
-    }
-  }
+    }}
+  }}
 
   // Report after load and after delays (for async rendering libraries)
-  if (document.readyState === 'complete') {
+  if (document.readyState === 'complete') {{
     setTimeout(reportSize, 100);
     setTimeout(reportSize, 500);
     setTimeout(reportSize, 1000);
-  } else {
-    window.addEventListener('load', function() {
+  }} else {{
+    window.addEventListener('load', function() {{
       setTimeout(reportSize, 100);
       setTimeout(reportSize, 500);
       setTimeout(reportSize, 1000);
-    });
-  }
-})();
+    }});
+  }}
+}})();
 </script>
 """
+
+
+# Legacy constant for backwards compatibility with tests
+SIZE_REPORTER_SCRIPT = get_size_reporter_script("https://pyplots.ai")
 
 # Allowed GCS bucket for security
 ALLOWED_HOST = "storage.googleapis.com"
@@ -107,7 +115,7 @@ def build_safe_gcs_url(url: str) -> str | None:
 
 
 @router.get("/proxy/html", response_class=HTMLResponse)
-async def proxy_html(url: str):
+async def proxy_html(url: str, origin: str | None = None):
     """
     Proxy an HTML file and inject size reporting script.
 
@@ -118,6 +126,7 @@ async def proxy_html(url: str):
 
     Args:
         url: The GCS URL to fetch (must be from allowed bucket)
+        origin: Target origin for postMessage (must be in ALLOWED_ORIGINS)
 
     Returns:
         Modified HTML with size reporting script injected
@@ -126,6 +135,11 @@ async def proxy_html(url: str):
     safe_url = build_safe_gcs_url(url)
     if safe_url is None:
         raise HTTPException(status_code=400, detail=f"Only URLs from {ALLOWED_HOST}/{ALLOWED_BUCKET} are allowed")
+
+    # Validate origin parameter - default to production if not specified or invalid
+    target_origin = "https://pyplots.ai"
+    if origin and origin in ALLOWED_ORIGINS:
+        target_origin = origin
 
     # Fetch the HTML with shorter timeout
     async with httpx.AsyncClient(timeout=10.0) as client:
@@ -139,13 +153,16 @@ async def proxy_html(url: str):
 
     html_content = response.text
 
+    # Generate script with correct target origin
+    size_script = get_size_reporter_script(target_origin)
+
     # Inject the size reporter script before </body>
     if "</body>" in html_content:
-        html_content = html_content.replace("</body>", f"{SIZE_REPORTER_SCRIPT}</body>")
+        html_content = html_content.replace("</body>", f"{size_script}</body>")
     elif "</html>" in html_content:
-        html_content = html_content.replace("</html>", f"{SIZE_REPORTER_SCRIPT}</html>")
+        html_content = html_content.replace("</html>", f"{size_script}</html>")
     else:
         # Fallback: append to end
-        html_content += SIZE_REPORTER_SCRIPT
+        html_content += size_script
 
     return HTMLResponse(content=html_content)

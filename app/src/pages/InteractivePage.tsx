@@ -65,9 +65,19 @@ export function InteractivePage() {
   // Listen for size reports from iframe
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
+      // Validate origin - only accept messages from our API domain
+      const allowedOrigins = [
+        window.location.origin, // Same origin (development)
+        'https://pyplots.ai',
+        'https://api.pyplots.ai',
+      ];
+      if (!allowedOrigins.includes(event.origin)) {
+        return;
+      }
+
       if (event.data?.type === 'pyplots-size') {
         const { width, height } = event.data;
-        if (width > 0 && height > 0) {
+        if (typeof width === 'number' && typeof height === 'number' && width > 0 && height > 0) {
           setContentWidth(width);
           setContentHeight(height);
           setSizeReady(true);

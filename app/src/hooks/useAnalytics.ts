@@ -45,7 +45,17 @@ export function useAnalytics() {
     (urlOverride?: string) => {
       if (!isProduction) return;
 
-      const url = urlOverride ? `https://pyplots.ai${urlOverride}` : buildPlausibleUrl();
+      let url: string;
+      if (urlOverride) {
+        // Validate urlOverride: must start with "/" and contain only safe characters
+        if (!/^\/[\w\-/]*$/.test(urlOverride)) {
+          return; // Invalid URL, skip tracking
+        }
+        url = `https://pyplots.ai${urlOverride}`;
+      } else {
+        url = buildPlausibleUrl();
+      }
+
       if (url === lastPageviewRef.current) return;
       lastPageviewRef.current = url;
 

@@ -490,6 +490,7 @@ export function FilterBar({
             inputRef={inputRef}
             id="filter-search"
             name="filter-search"
+            aria-label={selectedCategory ? `Search ${FILTER_LABELS[selectedCategory]}` : 'Search filters'}
             placeholder={selectedCategory ? FILTER_LABELS[selectedCategory] : ''}
             value={searchQuery}
             onChange={(e) => {

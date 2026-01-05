@@ -257,12 +257,13 @@ class TestSizeReporterScript:
     def test_script_uses_specific_origin(self):
         """Script should use specific origin, not wildcard."""
         assert "'*'" not in SIZE_REPORTER_SCRIPT
+        assert '"*"' not in SIZE_REPORTER_SCRIPT
         # Use regex to verify postMessage uses specific origin, not substring check
         # This avoids CodeQL's "incomplete URL substring sanitization" false positive
-        # Pattern matches: }, 'https://pyplots.ai') - the end of the postMessage call
-        pattern = r"\},\s*'https://pyplots\.ai'\)"
+        # Pattern matches: }, "https://pyplots.ai") - json.dumps() produces double quotes
+        pattern = r'\},\s*"https://pyplots\.ai"\)'
         assert re.search(pattern, SIZE_REPORTER_SCRIPT), (
-            "postMessage must use specific origin 'https://pyplots.ai', not '*'"
+            'postMessage must use specific origin "https://pyplots.ai", not "*"'
         )
 
     def test_script_sends_pyplots_size_message(self):

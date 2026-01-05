@@ -1,5 +1,6 @@
 """HTML proxy endpoint for interactive plots with size reporting."""
 
+import json
 from urllib.parse import urlparse
 
 import httpx
@@ -14,7 +15,13 @@ ALLOWED_ORIGINS = ["https://pyplots.ai", "http://localhost:3000"]
 
 
 def get_size_reporter_script(target_origin: str) -> str:
-    """Generate size reporter script with specified target origin."""
+    """Generate size reporter script with specified target origin.
+
+    Uses json.dumps() to safely encode the origin string for JavaScript context,
+    preventing XSS even if the origin contained special characters.
+    """
+    # Safely encode for JavaScript string context (includes quotes)
+    safe_origin = json.dumps(target_origin)
     return f"""
 <script>
 (function() {{
@@ -41,7 +48,7 @@ def get_size_reporter_script(target_origin: str) -> str:
           type: 'pyplots-size',
           width: Math.ceil(width),
           height: Math.ceil(height)
-        }}, '{target_origin}');
+        }}, {safe_origin});
       }}
     }} catch (e) {{
       // Silently fail if postMessage is blocked

@@ -37,7 +37,9 @@ BOT_HTML_TEMPLATE = """<!DOCTYPE html>
 </html>"""
 
 DEFAULT_IMAGE = "https://pyplots.ai/og-image.png"
-DEFAULT_DESCRIPTION = "Library-agnostic, AI-powered Python plotting examples. Automatically generated, tested, and maintained."
+DEFAULT_DESCRIPTION = (
+    "Library-agnostic, AI-powered Python plotting examples. Automatically generated, tested, and maintained."
+)
 
 
 @router.get("/sitemap.xml")
@@ -93,10 +95,7 @@ async def seo_home():
     """Bot-optimized home page with correct og:tags."""
     return HTMLResponse(
         BOT_HTML_TEMPLATE.format(
-            title="pyplots.ai",
-            description=DEFAULT_DESCRIPTION,
-            image=DEFAULT_IMAGE,
-            url="https://pyplots.ai/",
+            title="pyplots.ai", description=DEFAULT_DESCRIPTION, image=DEFAULT_IMAGE, url="https://pyplots.ai/"
         )
     )
 
@@ -144,11 +143,7 @@ async def seo_spec_overview(spec_id: str, db: AsyncSession | None = Depends(opti
 
 
 @router.get("/seo-proxy/{spec_id}/{library}")
-async def seo_spec_implementation(
-    spec_id: str,
-    library: str,
-    db: AsyncSession | None = Depends(optional_db),
-):
+async def seo_spec_implementation(spec_id: str, library: str, db: AsyncSession | None = Depends(optional_db)):
     """Bot-optimized spec implementation page with dynamic og:image from preview_url."""
     if db is None:
         # Fallback when DB unavailable

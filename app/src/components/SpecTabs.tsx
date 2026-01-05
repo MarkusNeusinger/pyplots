@@ -45,14 +45,17 @@ interface SpecTabsProps {
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
-  value: number;
+  value: number | null;
 }
 
 function TabPanel({ children, value, index }: TabPanelProps) {
+  const isOpen = value === index;
   return (
-    <Box role="tabpanel" hidden={value !== index} sx={{ py: 2 }}>
-      {value === index && children}
-    </Box>
+    <Collapse in={isOpen}>
+      <Box role="tabpanel" sx={{ py: 2 }}>
+        {children}
+      </Box>
+    </Collapse>
   );
 }
 
@@ -89,6 +92,76 @@ function SectionContent({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Clean heading without markdown syntax
+function MdHeading({ level, children }: { level: 1 | 2; children: React.ReactNode }) {
+  return (
+    <Typography
+      component={level === 1 ? 'h1' : 'h2'}
+      sx={{
+        fontFamily: '"MonoLisa", monospace',
+        fontSize: level === 1 ? '1rem' : '0.8rem',
+        fontWeight: 600,
+        color: level === 1 ? '#1f2937' : '#6b7280',
+        textTransform: level === 2 ? 'uppercase' : 'none',
+        letterSpacing: level === 2 ? '0.05em' : 'normal',
+        mt: level === 1 ? 0 : 2.5,
+        mb: 1,
+      }}
+    >
+      {children}
+    </Typography>
+  );
+}
+
+// Parse text with backticks into React nodes with inline code styling
+function parseInlineCode(text: string): React.ReactNode[] {
+  const parts = text.split(/(`[^`]+`)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('`') && part.endsWith('`')) {
+      return (
+        <Box
+          key={i}
+          component="code"
+          sx={{
+            fontFamily: '"MonoLisa", monospace',
+            fontSize: '0.8rem',
+            bgcolor: '#f3f4f6',
+            color: '#be185d',
+            px: 0.5,
+            py: 0.25,
+            borderRadius: 0.5,
+          }}
+        >
+          {part.slice(1, -1)}
+        </Box>
+      );
+    }
+    return part;
+  });
+}
+
+// Clean bullet list item
+function MdListItem({ children }: { children: string }) {
+  return (
+    <Typography
+      component="li"
+      sx={{
+        fontFamily: '"MonoLisa", monospace',
+        fontSize: '0.85rem',
+        color: '#4b5563',
+        lineHeight: 1.7,
+        ml: 2,
+        mb: 0.25,
+        '&::marker': {
+          color: '#d1d5db',
+        },
+      }}
+    >
+      {parseInlineCode(children)}
+    </Typography>
+  );
+}
+
 export function SpecTabs({
   code,
   specId,
@@ -108,7 +181,7 @@ export function SpecTabs({
   onTrackEvent,
 }: SpecTabsProps) {
   const [copied, setCopied] = useState(false);
-  const [tabIndex, setTabIndex] = useState(0); // Code is default (index 0)
+  const [tabIndex, setTabIndex] = useState<number | null>(null); // All tabs collapsed by default
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
 
   const toggleCategory = (category: string) => {
@@ -128,9 +201,15 @@ export function SpecTabs({
   }, [code, libraryId, onTrackEvent]);
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
-    setTabIndex(newValue);
-    const tabNames = ['code', 'specification', 'implementation', 'quality'];
-    onTrackEvent?.('tab_click', { tab: tabNames[newValue], library: libraryId });
+    // Toggle: clicking same tab collapses it
+    if (tabIndex === newValue) {
+      setTabIndex(null);
+      onTrackEvent?.('tab_collapse', { library: libraryId });
+    } else {
+      setTabIndex(newValue);
+      const tabNames = ['code', 'specification', 'implementation', 'quality'];
+      onTrackEvent?.('tab_click', { tab: tabNames[newValue], library: libraryId });
+    }
   };
 
   // Memoize syntax-highlighted code
@@ -178,7 +257,7 @@ export function SpecTabs({
     <Box sx={{ mt: 3, maxWidth: { xs: '100%', md: 1200, lg: 1400, xl: 1600 }, mx: 'auto' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs
-          value={tabIndex}
+          value={tabIndex !== null ? tabIndex : false}
           onChange={handleTabChange}
           variant="fullWidth"
           sx={{
@@ -196,13 +275,29 @@ export function SpecTabs({
             },
           }}
         >
-          <Tab icon={<CodeIcon sx={{ fontSize: '1.1rem' }} />} iconPosition="start" label="Code" />
-          <Tab icon={<DescriptionIcon sx={{ fontSize: '1.1rem' }} />} iconPosition="start" label="Spec" />
-          <Tab icon={<ImageIcon sx={{ fontSize: '1.1rem' }} />} iconPosition="start" label="Impl" />
+          <Tab
+            icon={<CodeIcon sx={{ fontSize: '1.1rem' }} />}
+            iconPosition="start"
+            label="Code"
+            onClick={() => tabIndex === 0 && setTabIndex(null)}
+          />
+          <Tab
+            icon={<DescriptionIcon sx={{ fontSize: '1.1rem' }} />}
+            iconPosition="start"
+            label="Spec"
+            onClick={() => tabIndex === 1 && setTabIndex(null)}
+          />
+          <Tab
+            icon={<ImageIcon sx={{ fontSize: '1.1rem' }} />}
+            iconPosition="start"
+            label="Impl"
+            onClick={() => tabIndex === 2 && setTabIndex(null)}
+          />
           <Tab
             icon={<StarIcon sx={{ fontSize: '1.1rem', color: tabIndex === 3 ? '#3776AB' : '#f59e0b' }} />}
             iconPosition="start"
             label={qualityScore ? `${Math.round(qualityScore)}` : 'Quality'}
+            onClick={() => tabIndex === 3 && setTabIndex(null)}
           />
         </Tabs>
       </Box>
@@ -231,8 +326,6 @@ export function SpecTabs({
               bgcolor: '#fafafa',
               p: 3,
               borderRadius: 1,
-              overflow: 'auto',
-              maxHeight: 400,
             }}
           >
             {highlightedCode}
@@ -242,161 +335,207 @@ export function SpecTabs({
 
       {/* Specification Tab */}
       <TabPanel value={tabIndex} index={1}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {/* ID */}
-          <Box>
-            <SectionTitle>ID</SectionTitle>
-            <SectionContent>{specId}</SectionContent>
-          </Box>
+        <Box
+          sx={{
+            bgcolor: '#fafafa',
+            p: 3,
+            borderRadius: 1,
+            fontFamily: '"MonoLisa", monospace',
+          }}
+        >
+          {/* Title only - spec ID visible in breadcrumb */}
+          <Typography
+            component="h1"
+            sx={{
+              fontFamily: '"MonoLisa", monospace',
+              fontSize: '1.1rem',
+              fontWeight: 600,
+              color: '#1f2937',
+              mb: 1.5,
+            }}
+          >
+            {title}
+          </Typography>
 
-          {/* Title */}
-          <Box>
-            <SectionTitle>Title</SectionTitle>
-            <SectionContent>{title}</SectionContent>
-          </Box>
-
-          {/* Description */}
-          <Box>
-            <SectionTitle>Description</SectionTitle>
-            <SectionContent>{description}</SectionContent>
-          </Box>
+          {/* ## Description */}
+          <MdHeading level={2}>Description</MdHeading>
+          <Typography
+            sx={{
+              fontFamily: '"MonoLisa", monospace',
+              fontSize: '0.85rem',
+              color: '#4b5563',
+              lineHeight: 1.7,
+            }}
+          >
+            {parseInlineCode(description)}
+          </Typography>
 
           {/* Applications */}
           {applications && applications.length > 0 && (
-            <Box>
-              <SectionTitle>Applications</SectionTitle>
-              <Box component="ul" sx={{ m: 0, pl: 2 }}>
+            <>
+              <MdHeading level={2}>Applications</MdHeading>
+              <Box component="ul" sx={{ m: 0, pl: 0, listStyle: 'disc' }}>
                 {applications.map((app, i) => (
-                  <Typography
-                    key={i}
-                    component="li"
-                    sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.85rem', color: '#4b5563', mb: 0.5 }}
-                  >
-                    {app}
-                  </Typography>
+                  <MdListItem key={i}>{app}</MdListItem>
                 ))}
               </Box>
-            </Box>
+            </>
           )}
 
           {/* Data */}
           {data && data.length > 0 && (
-            <Box>
-              <SectionTitle>Data</SectionTitle>
-              <Box component="ul" sx={{ m: 0, pl: 2 }}>
+            <>
+              <MdHeading level={2}>Data</MdHeading>
+              <Box component="ul" sx={{ m: 0, pl: 0, listStyle: 'disc' }}>
                 {data.map((d, i) => (
-                  <Typography
-                    key={i}
-                    component="li"
-                    sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.85rem', color: '#4b5563', mb: 0.5 }}
-                  >
-                    {d}
-                  </Typography>
+                  <MdListItem key={i}>{d}</MdListItem>
                 ))}
               </Box>
-            </Box>
+            </>
           )}
 
           {/* Notes */}
           {notes && notes.length > 0 && (
-            <Box>
-              <SectionTitle>Notes</SectionTitle>
-              <Box component="ul" sx={{ m: 0, pl: 2 }}>
+            <>
+              <MdHeading level={2}>Notes</MdHeading>
+              <Box component="ul" sx={{ m: 0, pl: 0, listStyle: 'disc' }}>
                 {notes.map((note, i) => (
-                  <Typography
-                    key={i}
-                    component="li"
-                    sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.85rem', color: '#4b5563', mb: 0.5 }}
-                  >
-                    {note}
-                  </Typography>
+                  <MdListItem key={i}>{note}</MdListItem>
                 ))}
               </Box>
-            </Box>
+            </>
           )}
 
-          {/* Tags */}
-          {allTags.length > 0 && (
-            <Box>
-              <SectionTitle>Tags</SectionTitle>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
-                {allTags.map(({ value }, i) => (
-                  <Chip
-                    key={i}
-                    label={value}
-                    size="small"
+          {/* Tags grouped by category - compact inline */}
+          {tags && Object.keys(tags).length > 0 && (
+            <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid #e5e7eb', display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+              {Object.entries(tags).map(([category, values]) => (
+                <Box key={category} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Typography
+                    component="span"
                     sx={{
                       fontFamily: '"MonoLisa", monospace',
-                      fontSize: '0.7rem',
-                      bgcolor: '#f3f4f6',
-                      color: '#6b7280',
+                      fontSize: '0.65rem',
+                      color: '#9ca3af',
                     }}
-                  />
-                ))}
-              </Box>
+                  >
+                    {category.replace(/_/g, ' ')}:
+                  </Typography>
+                  {values.map((value, i) => (
+                    <Chip
+                      key={i}
+                      label={value}
+                      size="small"
+                      sx={{
+                        fontFamily: '"MonoLisa", monospace',
+                        fontSize: '0.65rem',
+                        height: 20,
+                        bgcolor: '#f3f4f6',
+                        color: '#4b5563',
+                      }}
+                    />
+                  ))}
+                </Box>
+              ))}
             </Box>
           )}
 
-          {/* Created */}
-          {created && (
-            <Box>
-              <SectionTitle>Created</SectionTitle>
-              <SectionContent>{formatDate(created)}</SectionContent>
-            </Box>
-          )}
+          {/* Metadata footer */}
+          <Typography
+            sx={{
+              fontFamily: '"MonoLisa", monospace',
+              fontSize: '0.75rem',
+              color: '#9ca3af',
+              mt: 2,
+            }}
+          >
+            {specId}{created && ` · ${formatDate(created)}`}
+          </Typography>
         </Box>
       </TabPanel>
 
       {/* Implementation Tab */}
       <TabPanel value={tabIndex} index={2}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box
+          sx={{
+            bgcolor: '#fafafa',
+            p: 3,
+            borderRadius: 1,
+            fontFamily: '"MonoLisa", monospace',
+          }}
+        >
           {/* Image Description */}
           {imageDescription && (
-            <Box>
-              <SectionTitle>AI Description</SectionTitle>
-              <SectionContent>{imageDescription}</SectionContent>
-            </Box>
+            <>
+              <MdHeading level={2}>Description</MdHeading>
+              <Typography
+                sx={{
+                  fontFamily: '"MonoLisa", monospace',
+                  fontSize: '0.85rem',
+                  color: '#4b5563',
+                  lineHeight: 1.7,
+                }}
+              >
+                {imageDescription}
+              </Typography>
+            </>
           )}
 
           {/* Strengths */}
           {strengths && strengths.length > 0 && (
-            <Box>
-              <SectionTitle>Strengths</SectionTitle>
-              <Box component="ul" sx={{ m: 0, pl: 2 }}>
+            <>
+              <MdHeading level={2}>Strengths</MdHeading>
+              <Box component="ul" sx={{ m: 0, pl: 0, listStyle: 'disc' }}>
                 {strengths.map((s, i) => (
                   <Typography
                     key={i}
                     component="li"
-                    sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.85rem', color: '#22c55e', mb: 0.5 }}
+                    sx={{
+                      fontFamily: '"MonoLisa", monospace',
+                      fontSize: '0.85rem',
+                      color: '#4b5563',
+                      lineHeight: 1.7,
+                      ml: 2,
+                      mb: 0.25,
+                      '&::marker': { color: '#22c55e' },
+                    }}
                   >
                     {s}
                   </Typography>
                 ))}
               </Box>
-            </Box>
+            </>
           )}
 
           {/* Weaknesses */}
           {weaknesses && weaknesses.length > 0 && (
-            <Box>
-              <SectionTitle>Weaknesses</SectionTitle>
-              <Box component="ul" sx={{ m: 0, pl: 2 }}>
+            <>
+              <MdHeading level={2}>Weaknesses</MdHeading>
+              <Box component="ul" sx={{ m: 0, pl: 0, listStyle: 'disc' }}>
                 {weaknesses.map((w, i) => (
                   <Typography
                     key={i}
                     component="li"
-                    sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.85rem', color: '#ef4444', mb: 0.5 }}
+                    sx={{
+                      fontFamily: '"MonoLisa", monospace',
+                      fontSize: '0.85rem',
+                      color: '#4b5563',
+                      lineHeight: 1.7,
+                      ml: 2,
+                      mb: 0.25,
+                      '&::marker': { color: '#ef4444' },
+                    }}
                   >
                     {w}
                   </Typography>
                 ))}
               </Box>
-            </Box>
+            </>
           )}
 
           {/* No data message */}
           {!imageDescription && (!strengths || strengths.length === 0) && (!weaknesses || weaknesses.length === 0) && (
-            <Typography sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.9rem', color: '#9ca3af' }}>
+            <Typography sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.85rem', color: '#9ca3af' }}>
               No implementation review data available.
             </Typography>
           )}
@@ -405,27 +544,32 @@ export function SpecTabs({
 
       {/* Quality Tab */}
       <TabPanel value={tabIndex} index={3}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box
+          sx={{
+            bgcolor: '#fafafa',
+            p: 3,
+            borderRadius: 1,
+            fontFamily: '"MonoLisa", monospace',
+          }}
+        >
           {/* Score */}
-          <Box>
-            <SectionTitle>Quality Score</SectionTitle>
-            <Typography
-              sx={{
-                fontFamily: '"MonoLisa", monospace',
-                fontSize: '2rem',
-                fontWeight: 700,
-                color: qualityScore && qualityScore >= 90 ? '#22c55e' : qualityScore && qualityScore >= 70 ? '#f59e0b' : '#ef4444',
-              }}
-            >
-              {qualityScore ? `${Math.round(qualityScore)}/100` : 'N/A'}
-            </Typography>
-          </Box>
+          <MdHeading level={2}>Score</MdHeading>
+          <Typography
+            sx={{
+              fontFamily: '"MonoLisa", monospace',
+              fontSize: '2rem',
+              fontWeight: 700,
+              color: qualityScore && qualityScore >= 90 ? '#22c55e' : qualityScore && qualityScore >= 70 ? '#f59e0b' : '#ef4444',
+            }}
+          >
+            {qualityScore ? `${Math.round(qualityScore)}/100` : 'N/A'}
+          </Typography>
 
           {/* Criteria Checklist */}
           {criteriaChecklist && Object.keys(criteriaChecklist).length > 0 && (
-            <Box>
-              <SectionTitle>Criteria Breakdown</SectionTitle>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, mt: 1 }}>
+            <>
+              <MdHeading level={2}>Breakdown</MdHeading>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                 {Object.entries(criteriaChecklist).map(([category, data]) => {
                   const catData = data as { score?: number; max?: number; items?: Array<{ id: string; name: string; score: number; max: number; passed: boolean; comment?: string }> };
                   const score = catData.score ?? 0;
@@ -456,11 +600,11 @@ export function SpecTabs({
                               <ExpandMoreIcon sx={{ fontSize: '1rem', color: '#9ca3af' }} />
                             )
                           )}
-                          <Typography sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.8rem', color: '#4b5563' }}>
+                          <Typography sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.85rem', color: '#4b5563' }}>
                             {category.replace(/_/g, ' ')}
                           </Typography>
                         </Box>
-                        <Typography sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.8rem', color: '#6b7280' }}>
+                        <Typography sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.85rem', color: '#6b7280' }}>
                           {score}/{max}
                         </Typography>
                       </Box>
@@ -495,11 +639,11 @@ export function SpecTabs({
                                             : '#f59e0b', // yellow for partial
                                     }}
                                   />
-                                  <Typography sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.75rem', color: '#4b5563' }}>
+                                  <Typography sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.85rem', color: '#4b5563' }}>
                                     {item.name}
                                   </Typography>
                                 </Box>
-                                <Typography sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.7rem', color: '#9ca3af' }}>
+                                <Typography sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.8rem', color: '#9ca3af' }}>
                                   {item.score}/{item.max}
                                 </Typography>
                               </Box>
@@ -507,7 +651,7 @@ export function SpecTabs({
                                 <Typography
                                   sx={{
                                     fontFamily: '"MonoLisa", monospace',
-                                    fontSize: '0.7rem',
+                                    fontSize: '0.85rem',
                                     color: '#6b7280',
                                     ml: 1.5,
                                     fontStyle: 'italic',
@@ -524,12 +668,12 @@ export function SpecTabs({
                   );
                 })}
               </Box>
-            </Box>
+            </>
           )}
 
           {/* No data message */}
           {!qualityScore && (!criteriaChecklist || Object.keys(criteriaChecklist).length === 0) && (
-            <Typography sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.9rem', color: '#9ca3af' }}>
+            <Typography sx={{ fontFamily: '"MonoLisa", monospace', fontSize: '0.85rem', color: '#9ca3af' }}>
               No quality data available.
             </Typography>
           )}

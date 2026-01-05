@@ -8,6 +8,7 @@ from api.dependencies import require_db
 from api.exceptions import raise_not_found
 from api.schemas import ImplementationResponse, SpecDetailResponse, SpecListItem
 from core.database import SpecRepository
+from core.utils import strip_noqa_comments
 
 
 router = APIRouter(tags=["specs"])
@@ -76,7 +77,7 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(require_db)):
             preview_thumb=impl.preview_thumb,
             preview_html=impl.preview_html,
             quality_score=impl.quality_score,
-            code=impl.code,
+            code=strip_noqa_comments(impl.code),
             generated_at=impl.generated_at.isoformat() if impl.generated_at else None,
             generated_by=impl.generated_by,
             python_version=impl.python_version,

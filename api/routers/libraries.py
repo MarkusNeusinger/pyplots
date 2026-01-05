@@ -8,6 +8,7 @@ from api.dependencies import optional_db, require_db
 from api.exceptions import raise_not_found
 from core.constants import LIBRARIES_METADATA, SUPPORTED_LIBRARIES
 from core.database import LibraryRepository, SpecRepository
+from core.utils import strip_noqa_comments
 
 
 router = APIRouter(tags=["libraries"])
@@ -82,7 +83,7 @@ async def get_library_images(library_id: str, db: AsyncSession = Depends(require
                         "url": impl.preview_url,
                         "thumb": impl.preview_thumb,
                         "html": impl.preview_html,
-                        "code": impl.code,
+                        "code": strip_noqa_comments(impl.code),
                     }
                 )
 

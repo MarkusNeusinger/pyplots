@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 PLAUSIBLE_ENDPOINT = "https://plausible.io/api/event"
 DOMAIN = "pyplots.ai"
 
-# All platforms from nginx.conf bot detection (25 total)
+# All platforms from nginx.conf bot detection (27 total)
 PLATFORM_PATTERNS = {
     # Social Media
     "twitter": "twitterbot",
@@ -118,10 +118,13 @@ def track_og_image(
         url = "https://pyplots.ai/"
     elif page == "catalog":
         url = "https://pyplots.ai/catalog"
-    elif library:
+    elif spec is not None and library:
         url = f"https://pyplots.ai/{spec}/{library}"
-    else:
+    elif spec is not None:
         url = f"https://pyplots.ai/{spec}"
+    else:
+        # Fallback: missing spec for a spec-based page
+        url = "https://pyplots.ai/"
 
     props: dict[str, str] = {"page": page, "platform": platform}
     if spec:

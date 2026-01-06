@@ -152,7 +152,7 @@ Bot requests page → nginx detects bot → SEO proxy serves HTML with og:image 
 | `library` | Library ID | Only for detail pages |
 | `filter_*` | Filter value | Dynamic props for filtered URLs (e.g., `filter_lib`, `filter_dom`) |
 
-### Platform Detection (25 platforms)
+### Platform Detection (27 platforms)
 
 **Social Media**: twitter, facebook, linkedin, pinterest, reddit, tumblr, mastodon
 

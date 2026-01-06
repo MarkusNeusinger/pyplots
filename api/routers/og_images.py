@@ -24,7 +24,10 @@ def _get_static_og_image() -> bytes:
     global _STATIC_OG_IMAGE
     if _STATIC_OG_IMAGE is None:
         path = Path(__file__).parent.parent.parent / "app" / "public" / "og-image.png"
-        _STATIC_OG_IMAGE = path.read_bytes()
+        try:
+            _STATIC_OG_IMAGE = path.read_bytes()
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=500, detail="Static OG image not found") from exc
     return _STATIC_OG_IMAGE
 
 

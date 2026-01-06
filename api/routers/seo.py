@@ -97,7 +97,8 @@ async def seo_home(request: Request):
     Passes query params (e.g., ?lib=plotly&dom=statistics) to og:image URL for tracking.
     """
     # Pass filter params to og:image URL for tracking shared filtered URLs
-    query_string = str(request.query_params) if request.query_params else ""
+    # Use html.escape to prevent XSS via query params
+    query_string = html.escape(str(request.query_params), quote=True) if request.query_params else ""
     image_url = f"{DEFAULT_HOME_IMAGE}?{query_string}" if query_string else DEFAULT_HOME_IMAGE
     page_url = f"https://pyplots.ai/?{query_string}" if query_string else "https://pyplots.ai/"
 

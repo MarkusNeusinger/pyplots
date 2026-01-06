@@ -560,6 +560,52 @@ class TestSeoProxyRouter:
 class TestOgImagesRouter:
     """Tests for OG image generation endpoints."""
 
+    def test_get_home_og_image(self, client: TestClient) -> None:
+        """Should return static og:image for home page."""
+        with patch("api.routers.og_images.track_og_image"):
+            with patch("api.routers.og_images._get_static_og_image", return_value=b"fake-image"):
+                response = client.get("/og/home.png")
+                assert response.status_code == 200
+                assert response.headers["content-type"] == "image/png"
+                assert "max-age=86400" in response.headers["cache-control"]
+
+    def test_get_home_og_image_with_filters(self, client: TestClient) -> None:
+        """Should pass filter params to tracking."""
+        with patch("api.routers.og_images.track_og_image") as mock_track:
+            with patch("api.routers.og_images._get_static_og_image", return_value=b"fake-image"):
+                response = client.get("/og/home.png?lib=plotly&dom=statistics")
+                assert response.status_code == 200
+                mock_track.assert_called_once()
+                call_kwargs = mock_track.call_args[1]
+                assert call_kwargs["page"] == "home"
+                assert call_kwargs["filters"] == {"lib": "plotly", "dom": "statistics"}
+
+    def test_get_catalog_og_image(self, client: TestClient) -> None:
+        """Should return static og:image for catalog page."""
+        with patch("api.routers.og_images.track_og_image") as mock_track:
+            with patch("api.routers.og_images._get_static_og_image", return_value=b"fake-image"):
+                response = client.get("/og/catalog.png")
+                assert response.status_code == 200
+                assert response.headers["content-type"] == "image/png"
+                mock_track.assert_called_once()
+                call_kwargs = mock_track.call_args[1]
+                assert call_kwargs["page"] == "catalog"
+
+    def test_get_static_og_image_file_not_found(self, client: TestClient) -> None:
+        """Should return 500 when static image file not found."""
+        import api.routers.og_images as og_module
+
+        # Reset cached image
+        og_module._STATIC_OG_IMAGE = None
+
+        with patch("api.routers.og_images.track_og_image"):
+            with patch("pathlib.Path.read_bytes", side_effect=FileNotFoundError("not found")):
+                response = client.get("/og/home.png")
+                assert response.status_code == 500
+
+        # Reset for other tests
+        og_module._STATIC_OG_IMAGE = None
+
     def test_get_branded_impl_image_no_db(self, client: TestClient) -> None:
         """Should return 503 when DB not available."""
         with patch(DB_CONFIG_PATCH, return_value=False):

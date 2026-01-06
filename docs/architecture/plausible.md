@@ -116,6 +116,77 @@ https://pyplots.ai/{category}/{value}/{category}/{value}/...
 
 ---
 
+## Server-Side og:image Tracking
+
+Social media bots (Twitter, WhatsApp, Teams, etc.) don't execute JavaScript, so og:image requests can only be tracked server-side.
+
+### Architecture
+
+All og:images are routed through the API for tracking:
+
+```
+Bot requests page → nginx detects bot → SEO proxy serves HTML with og:image URL
+                                                            ↓
+                                          https://api.pyplots.ai/og/{endpoint}.png
+                                                            ↓
+                                          track_og_image() → Plausible Events API
+                                                            ↓
+                                          Return image (fire-and-forget tracking)
+```
+
+**Implementation**: `api/analytics.py` (server-side Plausible tracking)
+
+### og:image Event
+
+| Event Name | Properties | Description |
+|------------|------------|-------------|
+| `og_image_view` | `page`, `platform`, `spec`?, `library`?, `filter_*`? | Bot requested og:image |
+
+### Properties
+
+| Property | Values | Description |
+|----------|--------|-------------|
+| `page` | `home`, `catalog`, `spec_overview`, `spec_detail` | Page type |
+| `platform` | See list below | Detected platform from User-Agent |
+| `spec` | Specification ID | Only for spec pages |
+| `library` | Library ID | Only for detail pages |
+| `filter_*` | Filter value | Dynamic props for filtered URLs (e.g., `filter_lib`, `filter_dom`) |
+
+### Platform Detection (27 platforms)
+
+**Social Media**: twitter, facebook, linkedin, pinterest, reddit, tumblr, mastodon
+
+**Messaging Apps**: slack, discord, telegram, whatsapp, signal, viber, skype, teams, snapchat
+
+**Search Engines**: google, bing, yandex, duckduckgo, baidu, apple
+
+**Link Preview Services**: embedly, quora, outbrain, rogerbot, showyoubot
+
+**Fallback**: unknown
+
+### API Endpoints
+
+| Endpoint | Description | Tracking |
+|----------|-------------|----------|
+| `/og/home.png` | Static og:image for home page | `page=home`, `filter_*` from query params |
+| `/og/catalog.png` | Static og:image for catalog | `page=catalog` |
+| `/og/{spec_id}.png` | Collage og:image for spec overview | `page=spec_overview`, `spec` |
+| `/og/{spec_id}/{library}.png` | Branded og:image for implementation | `page=spec_detail`, `spec`, `library` |
+
+### Filter Tracking for Shared URLs
+
+When users share filtered URLs (e.g., `https://pyplots.ai/?lib=plotly&dom=statistics`), the filters are passed to the og:image endpoint:
+
+```
+og:image URL: https://api.pyplots.ai/og/home.png?lib=plotly,matplotlib&dom=statistics
+                                                  ↓
+Tracked props: { page: "home", platform: "twitter", filter_lib: "plotly,matplotlib", filter_dom: "statistics" }
+```
+
+**Note**: Each filter category becomes a separate prop (`filter_lib`, `filter_dom`, etc.) to handle comma-separated values.
+
+---
+
 ## Plausible Dashboard Configuration
 
 ### Required Custom Properties
@@ -128,16 +199,22 @@ To see event properties in Plausible dashboard, you **MUST** register them as cu
 
 | Property | Description | Used By Events |
 |----------|-------------|----------------|
-| `spec` | Plot specification ID | `copy_code`, `download_image`, `navigate_to_spec`, `switch_library`, `select_implementation`, `back_to_overview`, `catalog_rotate`, `external_link`, `open_interactive` |
-| `library` | Library name (matplotlib, seaborn, etc.) | `copy_code`, `download_image`, `navigate_to_spec`, `switch_library`, `select_implementation`, `back_to_overview`, `external_link`, `open_interactive`, `tab_click`, `tab_collapse` |
+| `spec` | Plot specification ID | `copy_code`, `download_image`, `navigate_to_spec`, `switch_library`, `select_implementation`, `back_to_overview`, `catalog_rotate`, `external_link`, `open_interactive`, `og_image_view` |
+| `library` | Library name (matplotlib, seaborn, etc.) | `copy_code`, `download_image`, `navigate_to_spec`, `switch_library`, `select_implementation`, `back_to_overview`, `external_link`, `open_interactive`, `tab_click`, `tab_collapse`, `og_image_view` |
 | `method` | Action method (card, image, tab, click, space, doubletap) | `copy_code`, `random` |
-| `page` | Page context (home, spec_overview, spec_detail) | `copy_code`, `download_image` |
+| `page` | Page context (home, catalog, spec_overview, spec_detail) | `copy_code`, `download_image`, `og_image_view` |
+| `platform` | Bot/platform name (twitter, whatsapp, teams, etc.) | `og_image_view` |
 | `category` | Filter category (lib, plot, dom, feat, data, spec) | `search`, `random`, `filter_remove` |
 | `value` | Filter value | `random`, `filter_remove` |
 | `query` | Search query text | `search`, `search_no_results` |
 | `destination` | External link target (linkedin, github, stats) | `external_link` |
 | `tab` | Tab name (code, specification, implementation, quality) | `tab_click` |
 | `size` | Grid size (normal, compact) | `toggle_grid_size` |
+| `filter_lib` | Library filter value (for og:image) | `og_image_view` |
+| `filter_dom` | Domain filter value (for og:image) | `og_image_view` |
+| `filter_plot` | Plot type filter value (for og:image) | `og_image_view` |
+| `filter_feat` | Features filter value (for og:image) | `og_image_view` |
+| `filter_data` | Data type filter value (for og:image) | `og_image_view` |
 
 ### Goals Configuration
 
@@ -158,6 +235,7 @@ To see event properties in Plausible dashboard, you **MUST** register them as cu
 | `external_link` | Custom Event | Track outbound clicks |
 | `open_interactive` | Custom Event | Track interactive mode usage |
 | `tab_click` | Custom Event | Track tab interactions |
+| `og_image_view` | Custom Event | Track og:image requests from social media bots |
 
 ### Funnels (Optional)
 
@@ -239,6 +317,7 @@ User lands on pyplots.ai
 | `open_interactive` | `spec`, `library` | SpecPage.tsx |
 | `view_spec_overview` | `spec` | SpecPage.tsx |
 | `view_spec` | `spec`, `library` | SpecPage.tsx |
+| `og_image_view` | `page`, `platform`, `spec`?, `library`?, `filter_*`? | api/analytics.py (server-side) |
 
 ---
 
@@ -264,9 +343,28 @@ doubletap # Mobile double-tap
 
 ### `page` Values
 ```
-home          # HomePage grid view
+home          # HomePage grid view (client) or og:image home endpoint (server)
+catalog       # CatalogPage (server og:image only)
 spec_overview # SpecPage showing all libraries
 spec_detail   # SpecPage showing single library
+```
+
+### `platform` Values (server-side og:image tracking only)
+```
+# Social Media
+twitter | facebook | linkedin | pinterest | reddit | tumblr | mastodon
+
+# Messaging Apps
+slack | discord | telegram | whatsapp | signal | viber | skype | teams | snapchat
+
+# Search Engines
+google | bing | yandex | duckduckgo | baidu | apple
+
+# Link Preview Services
+embedly | quora | outbrain | rogerbot | showyoubot
+
+# Fallback
+unknown
 ```
 
 ### `category` Values
@@ -341,15 +439,16 @@ window.plausible = function(...args) { console.log('Plausible:', args); };
 - [x] Grid size toggle tracking (`toggle_grid_size`)
 - [x] Tab interaction events (`tab_click`, `tab_collapse`)
 - [x] External link events (`external_link`, `open_interactive`)
+- [x] Server-side og:image tracking (`og_image_view`) with platform detection
 
 ### Plausible Dashboard Checklist
 
-- [ ] Register all 10 custom properties (see table above)
-- [ ] Create goals for key events
+- [ ] Register all custom properties (see table above, including `platform` and `filter_*`)
+- [ ] Create goals for key events (including `og_image_view`)
 - [ ] Set up funnels (optional)
 - [ ] Create custom dashboard widgets (optional)
 
 ---
 
-**Last Updated**: 2025-01-05
-**Status**: Production-ready with full journey tracking
+**Last Updated**: 2026-01-06
+**Status**: Production-ready with full journey tracking and server-side og:image analytics

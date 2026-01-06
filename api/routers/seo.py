@@ -2,7 +2,7 @@
 
 import html
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -36,7 +36,9 @@ BOT_HTML_TEMPLATE = """<!DOCTYPE html>
 <body><h1>{title}</h1><p>{description}</p></body>
 </html>"""
 
-DEFAULT_IMAGE = "https://pyplots.ai/og-image.png"
+# Route through API for tracking (was: pyplots.ai/og-image.png)
+DEFAULT_HOME_IMAGE = "https://api.pyplots.ai/og/home.png"
+DEFAULT_CATALOG_IMAGE = "https://api.pyplots.ai/og/catalog.png"
 DEFAULT_DESCRIPTION = "library-agnostic, ai-powered python plotting."
 
 
@@ -89,12 +91,19 @@ async def get_sitemap(db: AsyncSession | None = Depends(optional_db)):
 
 
 @router.get("/seo-proxy/")
-async def seo_home():
-    """Bot-optimized home page with correct og:tags."""
+async def seo_home(request: Request):
+    """Bot-optimized home page with correct og:tags.
+
+    Passes query params (e.g., ?lib=plotly&dom=statistics) to og:image URL for tracking.
+    """
+    # Pass filter params to og:image URL for tracking shared filtered URLs
+    # Use html.escape to prevent XSS via query params
+    query_string = html.escape(str(request.query_params), quote=True) if request.query_params else ""
+    image_url = f"{DEFAULT_HOME_IMAGE}?{query_string}" if query_string else DEFAULT_HOME_IMAGE
+    page_url = f"https://pyplots.ai/?{query_string}" if query_string else "https://pyplots.ai/"
+
     return HTMLResponse(
-        BOT_HTML_TEMPLATE.format(
-            title="pyplots.ai", description=DEFAULT_DESCRIPTION, image=DEFAULT_IMAGE, url="https://pyplots.ai/"
-        )
+        BOT_HTML_TEMPLATE.format(title="pyplots.ai", description=DEFAULT_DESCRIPTION, image=image_url, url=page_url)
     )
 
 
@@ -105,7 +114,7 @@ async def seo_catalog():
         BOT_HTML_TEMPLATE.format(
             title="Catalog | pyplots.ai",
             description="Browse all Python plotting specifications alphabetically. Find matplotlib, seaborn, plotly, bokeh, altair examples.",
-            image=DEFAULT_IMAGE,
+            image=DEFAULT_CATALOG_IMAGE,
             url="https://pyplots.ai/catalog",
         )
     )
@@ -120,7 +129,7 @@ async def seo_spec_overview(spec_id: str, db: AsyncSession | None = Depends(opti
             BOT_HTML_TEMPLATE.format(
                 title=f"{spec_id} | pyplots.ai",
                 description=DEFAULT_DESCRIPTION,
-                image=DEFAULT_IMAGE,
+                image=DEFAULT_HOME_IMAGE,
                 url=f"https://pyplots.ai/{html.escape(spec_id)}",
             )
         )
@@ -132,7 +141,7 @@ async def seo_spec_overview(spec_id: str, db: AsyncSession | None = Depends(opti
 
     # Use collage og:image if implementations exist, otherwise default
     has_previews = any(i.preview_url for i in spec.impls)
-    image = f"https://api.pyplots.ai/og/{spec_id}.png" if has_previews else DEFAULT_IMAGE
+    image = f"https://api.pyplots.ai/og/{spec_id}.png" if has_previews else DEFAULT_HOME_IMAGE
 
     return HTMLResponse(
         BOT_HTML_TEMPLATE.format(
@@ -153,7 +162,7 @@ async def seo_spec_implementation(spec_id: str, library: str, db: AsyncSession |
             BOT_HTML_TEMPLATE.format(
                 title=f"{html.escape(spec_id)} - {html.escape(library)} | pyplots.ai",
                 description=DEFAULT_DESCRIPTION,
-                image=DEFAULT_IMAGE,
+                image=DEFAULT_HOME_IMAGE,
                 url=f"https://pyplots.ai/{html.escape(spec_id)}/{html.escape(library)}",
             )
         )
@@ -166,7 +175,7 @@ async def seo_spec_implementation(spec_id: str, library: str, db: AsyncSession |
     # Find the implementation for this library
     impl = next((i for i in spec.impls if i.library_id == library), None)
     # Use branded og:image endpoint if implementation has preview
-    image = f"https://api.pyplots.ai/og/{spec_id}/{library}.png" if impl and impl.preview_url else DEFAULT_IMAGE
+    image = f"https://api.pyplots.ai/og/{spec_id}/{library}.png" if impl and impl.preview_url else DEFAULT_HOME_IMAGE
 
     return HTMLResponse(
         BOT_HTML_TEMPLATE.format(

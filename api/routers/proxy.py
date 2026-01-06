@@ -199,6 +199,8 @@ async def proxy_html(url: str, origin: str | None = None):
 
     # Security headers for defense-in-depth (content is from trusted GCS bucket)
     return HTMLResponse(
-        content=_trusted_gcs_content(html_content),
+        # Suppress CodeQL false positive: content is from our controlled GCS bucket (pyplots-images),
+        # validated via build_safe_gcs_url(). This is trusted interactive plot HTML, not user input.
+        content=_trusted_gcs_content(html_content),  # codeql[py/reflective-xss]
         headers={"X-Content-Type-Options": "nosniff", "Referrer-Policy": "strict-origin-when-cross-origin"},
     )

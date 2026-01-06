@@ -165,6 +165,8 @@ uv run pytest tests/unit/api/test_routers.py::test_get_specs
 
 **Both linting and formatting must pass for CI.**
 
+**IMPORTANT: Always run `uv run ruff check <files> && uv run ruff format <files>` on changed files BEFORE every commit!**
+
 ```bash
 # Linting (required for CI)
 uv run ruff check .
@@ -174,6 +176,9 @@ uv run ruff check . --fix
 
 # Formatting (required for CI)
 uv run ruff format .
+
+# Before committing - always run both on changed files:
+uv run ruff check <files> && uv run ruff format <files>
 ```
 
 ### Frontend Development

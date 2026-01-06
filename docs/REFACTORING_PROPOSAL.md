@@ -35,11 +35,11 @@
 ## Proposed New Structure
 
 ### Philosophy
-1. **Process over implementation** - Focus on WHY and WHAT, not HOW
-2. **Single source of truth** - Each fact documented once
-3. **Clear personas** - Docs organized by who needs them
-4. **Let code speak** - Implementation details in code/comments, not docs
-5. **Concise and actionable** - Shorter, clearer, more useful
+1. **Clear separation**: CLAUDE.md for AI (comprehensive), docs/ for humans (organized by persona)
+2. **Single source of truth**: Each fact documented once, no duplication between files
+3. **Better structure**: Reorganize CLAUDE.md sections logically, remove internal redundancy
+4. **Process over implementation**: Focus on WHY and WHAT, let code show HOW
+5. **Maintainability**: Less duplication = easier to keep up-to-date
 
 ---
 
@@ -47,8 +47,8 @@
 
 ```
 /
-├── README.md                    # [STREAMLINED] Quick start for everyone
-├── CLAUDE.md                    # [MINIMAL] AI assistant rules only
+├── README.md                    # [STREAMLINED] Quick start for humans
+├── CLAUDE.md                    # [RESTRUCTURED] Complete AI assistant guide
 │
 ├── docs/
 │   ├── index.md                 # [NEW] Navigation hub - "Start here"
@@ -112,25 +112,82 @@
 
 ---
 
-### `/CLAUDE.md` (200 lines max)
+### `/CLAUDE.md` (600-700 lines - comprehensive but well-structured)
 **Target**: AI assistants (Claude, Copilot, etc.)
 
-**Content**:
-- **Critical rules** (English-only, no manual commits in interactive mode)
-- **Workflow gates** (NEVER bypass automation, WAIT for approvals)
-- **File structure** (plots/, prompts/, where things are)
-- **Key principles** (spec-first, per-library metadata, GCS for images)
-- **Links to detailed docs** (→ docs/workflows/, docs/reference/)
+**Purpose**: Complete reference for AI - all rules, structure, and critical information in one place
+
+**New Structure**:
+```markdown
+# CLAUDE.md
+
+## Critical Rules (MUST READ)
+- English-only output
+- No commits/push in interactive mode
+- NEVER bypass automation
+- Always use workflow system
+
+## Project Overview (100 lines)
+- What pyplots does
+- Core principle: Spec-first, AI-generated
+- Supported libraries (9 total)
+- Architecture overview (high-level only)
+
+## File Structure (150 lines)
+- plots/{spec-id}/ (what goes where)
+- prompts/ (AI generation rules)
+- core/, api/, app/ (backend/frontend)
+- .github/workflows/ (automation)
+- Where to find things (clear navigation)
+
+## Workflows (200 lines)
+- Specification workflow (Issue → Spec → Approve → Merge)
+- Implementation workflow (Generate → Review → Repair → Merge)
+- Label system (what labels mean and when they change)
+- Human approval gates (when to wait)
+- What NEVER to do manually
+
+## Development Essentials (100 lines)
+- Essential commands (setup, test, run)
+- Code standards (Ruff, formatting)
+- Testing approach (unit/integration/e2e)
+- Common tasks (add plot, update impl)
+
+## Key Metadata Systems (100 lines)
+- specification.yaml (spec-level metadata)
+- metadata/{library}.yaml (per-library metadata)
+- Review feedback structure
+- GCS storage structure
+
+## Anti-Patterns (50 lines)
+- Things to NEVER do
+- Common mistakes to avoid
+- Why certain patterns exist
+```
+
+**Keep**:
+- ✅ All critical rules and workflow gates
+- ✅ Complete "where things are" reference
+- ✅ Workflow explanations (AI needs to understand the system)
+- ✅ Essential commands (but concise - one example per concept)
+- ✅ Label system (critical for automation)
+- ✅ Metadata structure (AI generates this)
+
+**Improve**:
+- 📝 Better section organization (logical flow)
+- 📝 Remove duplicate explanations (same thing explained 3x)
+- 📝 Consolidate examples (one clear example, not 5 variations)
+- 📝 Clear headers with line estimates (easier to navigate)
+- 📝 Cross-references to docs/ where humans can read more
 
 **Remove**:
-- ❌ Complete command reference (→ docs/development/setup.md)
-- ❌ Testing details (→ docs/development/testing.md)
-- ❌ Database schema (→ docs/reference/database.md)
-- ❌ API endpoints (→ docs/reference/api.md)
-- ❌ Deployment instructions (→ docs/development/deployment.md)
-- ❌ Example code blocks (code speaks for itself)
+- ❌ Complete database schema (keep overview, details in docs/reference/database.md)
+- ❌ Complete API endpoint list (keep overview, details in docs/reference/api.md)
+- ❌ Multiple code examples for same concept (one clear example enough)
+- ❌ Detailed deployment steps (keep "what deploys where", not "how to deploy")
+- ❌ Outdated/unimplemented features (rules/ system, A/B testing)
 
-**Principle**: Claude should read the detailed docs when needed, not have everything duplicated.
+**Principle**: CLAUDE.md stays comprehensive but becomes better organized with less redundancy
 
 ---
 
@@ -261,19 +318,22 @@
    - docs/workflows/new-plot.md
 3. Keep old files unchanged
 
-### Phase 2: Migrate Content
-1. Streamline README.md (remove duplicated content, add links to new docs)
-2. Minimize CLAUDE.md (remove implementation details, keep only rules)
-3. Move development content to docs/development/
-4. Consolidate architecture docs into docs/concepts/architecture.md
+### Phase 2: Restructure Existing Files
+1. **CLAUDE.md**: Reorganize sections logically, remove duplicate explanations, consolidate examples
+2. **README.md**: Streamline for humans (remove tech details, add persona-based navigation)
+3. **docs/development.md**: Split into docs/development/*.md (setup, testing, deployment)
+4. **docs/workflow.md**: Simplify and move to docs/workflows/overview.md
+5. **docs/architecture/*.md**: Keep detailed, add cross-refs from CLAUDE.md
 
 ### Phase 3: Remove Redundancy
-1. Delete or archive outdated files:
-   - docs/development.md (→ docs/development/*.md)
-   - docs/workflow.md (→ docs/workflows/*.md)
-   - Redundant sections in CLAUDE.md
-2. Update all cross-references
-3. Verify all links work
+1. **Within CLAUDE.md**: Remove duplicate explanations of same concepts
+2. **Between files**: Ensure no duplication between CLAUDE.md and docs/
+3. **Delete outdated content**:
+   - References to unimplemented features (rules/ system if not active)
+   - Outdated workflow descriptions
+   - Unused examples
+4. Update all cross-references
+5. Verify all links work
 
 ### Phase 4: Quality Check
 1. Read through as new user/contributor/developer
@@ -286,18 +346,18 @@
 ## Success Metrics
 
 ### Before Refactoring
-- CLAUDE.md: 937 lines
+- CLAUDE.md: 937 lines (comprehensive but redundant and poorly organized)
 - Total docs: ~3000+ lines
-- Redundancy: High (same info in 3+ places)
-- Time to find info: 5+ minutes
+- Redundancy: High (same info in 3+ places, CLAUDE.md explains things multiple times)
+- Navigation: Poor (no clear sections, info scattered)
 - Outdated content: ~20%
 
 ### After Refactoring
-- CLAUDE.md: <200 lines (rules only)
-- Total docs: ~2000 lines (more focused)
-- Redundancy: Minimal (each fact once)
-- Time to find info: <2 minutes (clear navigation)
-- Outdated content: <5% (less to maintain)
+- CLAUDE.md: 600-700 lines (comprehensive, well-structured, no internal redundancy)
+- Total docs: ~2500 lines (better organized)
+- Redundancy: Minimal (each fact once, no duplication between files)
+- Navigation: Clear (logical sections, cross-references to docs/)
+- Outdated content: <5% (easier to maintain)
 
 ---
 
@@ -311,11 +371,12 @@
 - Keep docs close to what they describe (API docs near API code)
 
 ### ❌ DON'T
-- Duplicate information across files
-- Include implementation details (belongs in code)
+- Duplicate information across files (CLAUDE.md ≠ docs/)
+- Duplicate information within CLAUDE.md (explain once, reference later)
+- Include excessive implementation details (show pattern, not every variation)
 - Document things that change frequently (git history is better)
-- Create docs for planned features (wait until implemented)
-- Mix multiple audiences in one document
+- Create docs for planned/unimplemented features
+- Mix audiences: CLAUDE.md = AI, docs/ = humans
 
 ---
 

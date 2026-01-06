@@ -15,9 +15,6 @@ from core.images import create_branded_og_image, create_og_collage
 
 router = APIRouter(prefix="/og", tags=["og-images"])
 
-# Cache TTL for generated images (1 hour)
-OG_IMAGE_CACHE_TTL = 3600
-
 
 async def _fetch_image(url: str) -> bytes:
     """Fetch an image from a URL."""
@@ -62,7 +59,7 @@ async def get_branded_impl_image(
         branded_bytes = create_branded_og_image(image_bytes, spec_id=spec_id, library=library)
 
         # Cache the result
-        set_cache(key, branded_bytes, ttl=OG_IMAGE_CACHE_TTL)
+        set_cache(key, branded_bytes)
 
         return Response(
             content=branded_bytes, media_type="image/png", headers={"Cache-Control": "public, max-age=3600"}
@@ -113,7 +110,7 @@ async def get_spec_collage_image(spec_id: str, db: AsyncSession | None = Depends
         collage_bytes = create_og_collage(images, labels=labels)
 
         # Cache the result
-        set_cache(key, collage_bytes, ttl=OG_IMAGE_CACHE_TTL)
+        set_cache(key, collage_bytes)
 
         return Response(
             content=collage_bytes, media_type="image/png", headers={"Cache-Control": "public, max-age=3600"}

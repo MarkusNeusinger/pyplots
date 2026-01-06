@@ -164,15 +164,14 @@ Bot requests page → nginx detects bot → SEO proxy serves HTML with og:image 
 
 **Fallback**: unknown
 
-#### WhatsApp vs Signal Detection
+#### WhatsApp Variant Detection
 
-Signal deliberately uses a WhatsApp User-Agent to bypass rate limits on sites like Twitter ([Issue #10060](https://github.com/signalapp/Signal-Android/issues/10060)). We distinguish them by version format:
+Some apps (Signal, others) use a WhatsApp User-Agent to bypass rate limits ([Issue #10060](https://github.com/signalapp/Signal-Android/issues/10060)). We distinguish real WhatsApp from spoofed requests by version format:
 
 | Platform | User-Agent Example | Detection |
 |----------|-------------------|-----------|
-| WhatsApp (iOS) | `WhatsApp/2.23.18.78 i` | 3+ part version → whatsapp |
-| WhatsApp (Android) | `WhatsApp/2.21.22.23 A` | 3+ part version → whatsapp |
-| Signal | `WhatsApp` or `WhatsApp/2` | No full version → signal |
+| `whatsapp` | `WhatsApp/2.23.18.78 i` | 3+ part version = verified WhatsApp |
+| `whatsapp-lite` | `WhatsApp` or `WhatsApp/2` | Simplified UA = Signal or other spoofers |
 
 ### API Endpoints
 

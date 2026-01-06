@@ -60,15 +60,15 @@ PLATFORM_PATTERNS = {
 REAL_WHATSAPP_PATTERN = re.compile(r"whatsapp/\d+\.\d+\.\d+", re.IGNORECASE)
 
 
-def _detect_whatsapp_or_signal(user_agent: str) -> str | None:
-    """Distinguish WhatsApp from Signal based on User-Agent format.
+def _detect_whatsapp_variant(user_agent: str) -> str | None:
+    """Distinguish real WhatsApp from apps spoofing WhatsApp User-Agent.
 
-    Signal deliberately uses 'WhatsApp' User-Agent to bypass rate limits on sites like Twitter.
-    But real WhatsApp includes full version: 'WhatsApp/2.23.18.78 i' (iOS) or 'WhatsApp/2.21.22.23 A' (Android).
-    Signal sends simpler format: 'WhatsApp' or 'WhatsApp/2'.
+    Some apps (Signal, others) use 'WhatsApp' User-Agent to bypass rate limits.
+    Real WhatsApp includes full version: 'WhatsApp/2.23.18.78 i' (iOS) or 'WhatsApp/2.21.22.23 A' (Android).
+    Spoofers send simpler format: 'WhatsApp' or 'WhatsApp/2'.
 
     Returns:
-        'whatsapp' for real WhatsApp, 'signal' for Signal-pretending-to-be-WhatsApp, None if neither.
+        'whatsapp' for verified real WhatsApp, 'whatsapp-lite' for simplified/spoofed UA, None if neither.
     """
     ua_lower = user_agent.lower()
     if "whatsapp" not in ua_lower:
@@ -78,8 +78,8 @@ def _detect_whatsapp_or_signal(user_agent: str) -> str | None:
     if REAL_WHATSAPP_PATTERN.search(user_agent):
         return "whatsapp"
 
-    # Has "whatsapp" but no full version - likely Signal
-    return "signal"
+    # Has "whatsapp" but no full version - could be Signal or other spoofers
+    return "whatsapp-lite"
 
 
 def detect_platform(user_agent: str) -> str:
@@ -89,12 +89,12 @@ def detect_platform(user_agent: str) -> str:
         user_agent: The User-Agent header value
 
     Returns:
-        Platform name (e.g., 'twitter', 'whatsapp', 'signal') or 'unknown'
+        Platform name (e.g., 'twitter', 'whatsapp', 'whatsapp-lite') or 'unknown'
     """
-    # Special handling for WhatsApp vs Signal (Signal uses WhatsApp User-Agent)
-    whatsapp_or_signal = _detect_whatsapp_or_signal(user_agent)
-    if whatsapp_or_signal:
-        return whatsapp_or_signal
+    # Special handling for WhatsApp variants (some apps spoof WhatsApp UA)
+    whatsapp_variant = _detect_whatsapp_variant(user_agent)
+    if whatsapp_variant:
+        return whatsapp_variant
 
     ua_lower = user_agent.lower()
     for platform, pattern in PLATFORM_PATTERNS.items():

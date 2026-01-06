@@ -37,6 +37,7 @@ Issue + [generate:{library}] label  OR  workflow_dispatch
 impl-generate.yml
   |-- Creates branch: implementation/{spec-id}/{library}
   |-- AI generates code
+  |-- Creates metadata/{library}.yaml (initial)
   |-- Tests execution
   |-- Uploads preview to GCS staging
   |-- Creates PR --> main
@@ -45,11 +46,11 @@ impl-generate.yml
 impl-review.yml
   |-- AI evaluates code + image
   |-- Posts review comment with score
+  |-- Updates metadata/{library}.yaml (quality_score, review feedback)
   |-- Adds [quality:XX] label
        |
        |-- Score >= 90 --> [ai-approved] --> impl-merge.yml
        |                                        |-- Squash merge
-       |                                        |-- Creates metadata/{library}.yaml
        |                                        |-- Promotes GCS: staging --> production
        |                                        |-- Triggers sync-postgres.yml
        |

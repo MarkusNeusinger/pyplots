@@ -8,7 +8,7 @@
 [![Ruff](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-lint.yml/badge.svg?branch=main)](https://github.com/MarkusNeusinger/pyplots/actions/workflows/ci-lint.yml)
 [![codecov](https://codecov.io/github/MarkusNeusinger/pyplots/graph/badge.svg?token=4EGPSHH0H0)](https://codecov.io/github/MarkusNeusinger/pyplots)
 
-> library-agnostic, ai-powered python plotting examples. automatically generated, tested, and maintained.
+> library-agnostic, ai-powered python plotting examples.
 
 ---
 

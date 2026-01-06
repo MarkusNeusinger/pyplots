@@ -287,6 +287,17 @@ class TestImageFormats:
 class TestCLI:
     """Tests for command-line interface."""
 
+    @pytest.fixture(autouse=True)
+    def clean_module_cache(self):
+        """Remove core.images from sys.modules to avoid runpy warning."""
+        import sys
+
+        # Remove module before test to allow clean runpy execution
+        sys.modules.pop("core.images", None)
+        yield
+        # Clean up after test as well
+        sys.modules.pop("core.images", None)
+
     def test_cli_thumbnail_command(self, sample_image: Path, tmp_path: Path, monkeypatch, capsys) -> None:
         """Should run thumbnail command from CLI."""
         import sys

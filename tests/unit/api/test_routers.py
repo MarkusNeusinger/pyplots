@@ -557,6 +557,175 @@ class TestSeoProxyRouter:
             assert "og-image.png" in response.text  # Default image used
 
 
+class TestOgImagesRouter:
+    """Tests for OG image generation endpoints."""
+
+    def test_get_branded_impl_image_no_db(self, client: TestClient) -> None:
+        """Should return 503 when DB not available."""
+        with patch(DB_CONFIG_PATCH, return_value=False):
+            response = client.get("/og/scatter-basic/matplotlib.png")
+            assert response.status_code == 503
+
+    def test_get_branded_impl_image_spec_not_found(self, db_client) -> None:
+        """Should return 404 when spec not found."""
+        client, _ = db_client
+
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_by_id = AsyncMock(return_value=None)
+
+        with patch("api.routers.og_images.SpecRepository", return_value=mock_spec_repo):
+            response = client.get("/og/nonexistent/matplotlib.png")
+            assert response.status_code == 404
+
+    def test_get_branded_impl_image_impl_not_found(self, db_client, mock_spec) -> None:
+        """Should return 404 when implementation not found."""
+        client, _ = db_client
+
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
+
+        with patch("api.routers.og_images.SpecRepository", return_value=mock_spec_repo):
+            # Request a library that doesn't exist in mock_spec
+            response = client.get("/og/scatter-basic/nonexistent.png")
+            assert response.status_code == 404
+
+    def test_get_branded_impl_image_cached(self, db_client) -> None:
+        """Should return cached image when available."""
+        client, _ = db_client
+
+        cached_bytes = b"fake png data"
+        with patch("api.routers.og_images.get_cache", return_value=cached_bytes):
+            response = client.get("/og/scatter-basic/matplotlib.png")
+            assert response.status_code == 200
+            assert response.headers["content-type"] == "image/png"
+            assert response.content == cached_bytes
+
+    def test_get_spec_collage_no_db(self, client: TestClient) -> None:
+        """Should return 503 when DB not available."""
+        with patch(DB_CONFIG_PATCH, return_value=False):
+            response = client.get("/og/scatter-basic.png")
+            assert response.status_code == 503
+
+    def test_get_spec_collage_spec_not_found(self, db_client) -> None:
+        """Should return 404 when spec not found."""
+        client, _ = db_client
+
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_by_id = AsyncMock(return_value=None)
+
+        with patch("api.routers.og_images.SpecRepository", return_value=mock_spec_repo):
+            response = client.get("/og/nonexistent.png")
+            assert response.status_code == 404
+
+    def test_get_spec_collage_no_previews(self, db_client) -> None:
+        """Should return 404 when no implementations have previews."""
+        client, _ = db_client
+
+        mock_impl = MagicMock()
+        mock_impl.library_id = "matplotlib"
+        mock_impl.preview_url = None  # No preview
+
+        mock_spec = MagicMock()
+        mock_spec.id = "scatter-basic"
+        mock_spec.impls = [mock_impl]
+
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
+
+        with patch("api.routers.og_images.SpecRepository", return_value=mock_spec_repo):
+            response = client.get("/og/scatter-basic.png")
+            assert response.status_code == 404
+
+    def test_get_spec_collage_cached(self, db_client) -> None:
+        """Should return cached collage when available."""
+        client, _ = db_client
+
+        cached_bytes = b"fake collage png data"
+        with patch("api.routers.og_images.get_cache", return_value=cached_bytes):
+            response = client.get("/og/scatter-basic.png")
+            assert response.status_code == 200
+            assert response.headers["content-type"] == "image/png"
+            assert response.content == cached_bytes
+
+    def test_get_branded_impl_image_success(self, db_client, mock_spec) -> None:
+        """Should generate branded image when not cached."""
+        client, _ = db_client
+
+        fake_image_bytes = b"fake source image"
+        fake_branded_bytes = b"fake branded png"
+
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
+
+        with (
+            patch("api.routers.og_images.get_cache", return_value=None),
+            patch("api.routers.og_images.set_cache"),
+            patch("api.routers.og_images.SpecRepository", return_value=mock_spec_repo),
+            patch("api.routers.og_images._fetch_image", new_callable=AsyncMock, return_value=fake_image_bytes),
+            patch("api.routers.og_images.create_branded_og_image", return_value=fake_branded_bytes),
+        ):
+            response = client.get("/og/scatter-basic/matplotlib.png")
+            assert response.status_code == 200
+            assert response.headers["content-type"] == "image/png"
+            assert response.headers["cache-control"] == "public, max-age=3600"
+            assert response.content == fake_branded_bytes
+
+    def test_get_spec_collage_success(self, db_client) -> None:
+        """Should generate collage when not cached."""
+        client, _ = db_client
+
+        # Create mock implementations with different quality scores
+        mock_impls = []
+        for i, lib in enumerate(["matplotlib", "seaborn", "plotly"]):
+            impl = MagicMock()
+            impl.library_id = lib
+            impl.preview_url = f"https://example.com/{lib}.png"
+            impl.quality_score = 90 - i * 5  # 90, 85, 80
+            mock_impls.append(impl)
+
+        mock_spec = MagicMock()
+        mock_spec.id = "scatter-basic"
+        mock_spec.impls = mock_impls
+
+        mock_spec_repo = MagicMock()
+        mock_spec_repo.get_by_id = AsyncMock(return_value=mock_spec)
+
+        fake_collage_bytes = b"fake collage png"
+
+        with (
+            patch("api.routers.og_images.get_cache", return_value=None),
+            patch("api.routers.og_images.set_cache"),
+            patch("api.routers.og_images.SpecRepository", return_value=mock_spec_repo),
+            patch("api.routers.og_images._fetch_image", new_callable=AsyncMock, return_value=b"fake image"),
+            patch("api.routers.og_images.create_og_collage", return_value=fake_collage_bytes),
+        ):
+            response = client.get("/og/scatter-basic.png")
+            assert response.status_code == 200
+            assert response.headers["content-type"] == "image/png"
+            assert response.headers["cache-control"] == "public, max-age=3600"
+            assert response.content == fake_collage_bytes
+
+    def test_get_branded_impl_image_cached_has_cache_control(self, db_client) -> None:
+        """Cached response should include Cache-Control header."""
+        client, _ = db_client
+
+        cached_bytes = b"fake png data"
+        with patch("api.routers.og_images.get_cache", return_value=cached_bytes):
+            response = client.get("/og/scatter-basic/matplotlib.png")
+            assert response.status_code == 200
+            assert response.headers["cache-control"] == "public, max-age=3600"
+
+    def test_get_spec_collage_cached_has_cache_control(self, db_client) -> None:
+        """Cached collage response should include Cache-Control header."""
+        client, _ = db_client
+
+        cached_bytes = b"fake collage png data"
+        with patch("api.routers.og_images.get_cache", return_value=cached_bytes):
+            response = client.get("/og/scatter-basic.png")
+            assert response.status_code == 200
+            assert response.headers["cache-control"] == "public, max-age=3600"
+
+
 class TestPlotsRouter:
     """Tests for plots filter router."""
 

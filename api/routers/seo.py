@@ -37,9 +37,7 @@ BOT_HTML_TEMPLATE = """<!DOCTYPE html>
 </html>"""
 
 DEFAULT_IMAGE = "https://pyplots.ai/og-image.png"
-DEFAULT_DESCRIPTION = (
-    "Library-agnostic, AI-powered Python plotting examples. Automatically generated, tested, and maintained."
-)
+DEFAULT_DESCRIPTION = "library-agnostic, ai-powered python plotting."
 
 
 @router.get("/sitemap.xml")
@@ -115,7 +113,7 @@ async def seo_catalog():
 
 @router.get("/seo-proxy/{spec_id}")
 async def seo_spec_overview(spec_id: str, db: AsyncSession | None = Depends(optional_db)):
-    """Bot-optimized spec overview page with correct og:tags."""
+    """Bot-optimized spec overview page with collage og:image."""
     if db is None:
         # Fallback when DB unavailable
         return HTMLResponse(
@@ -132,11 +130,15 @@ async def seo_spec_overview(spec_id: str, db: AsyncSession | None = Depends(opti
     if not spec:
         raise HTTPException(status_code=404, detail="Spec not found")
 
+    # Use collage og:image if implementations exist, otherwise default
+    has_previews = any(i.preview_url for i in spec.impls)
+    image = f"https://api.pyplots.ai/og/{spec_id}.png" if has_previews else DEFAULT_IMAGE
+
     return HTMLResponse(
         BOT_HTML_TEMPLATE.format(
             title=f"{html.escape(spec.title)} | pyplots.ai",
             description=html.escape(spec.description or DEFAULT_DESCRIPTION),
-            image=DEFAULT_IMAGE,
+            image=html.escape(image, quote=True),
             url=f"https://pyplots.ai/{html.escape(spec_id)}",
         )
     )
@@ -144,7 +146,7 @@ async def seo_spec_overview(spec_id: str, db: AsyncSession | None = Depends(opti
 
 @router.get("/seo-proxy/{spec_id}/{library}")
 async def seo_spec_implementation(spec_id: str, library: str, db: AsyncSession | None = Depends(optional_db)):
-    """Bot-optimized spec implementation page with dynamic og:image from preview_url."""
+    """Bot-optimized spec implementation page with branded og:image."""
     if db is None:
         # Fallback when DB unavailable
         return HTMLResponse(
@@ -163,7 +165,8 @@ async def seo_spec_implementation(spec_id: str, library: str, db: AsyncSession |
 
     # Find the implementation for this library
     impl = next((i for i in spec.impls if i.library_id == library), None)
-    image = impl.preview_url if impl and impl.preview_url else DEFAULT_IMAGE
+    # Use branded og:image endpoint if implementation has preview
+    image = f"https://api.pyplots.ai/og/{spec_id}/{library}.png" if impl and impl.preview_url else DEFAULT_IMAGE
 
     return HTMLResponse(
         BOT_HTML_TEMPLATE.format(

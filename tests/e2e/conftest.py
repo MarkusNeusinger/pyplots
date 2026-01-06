@@ -2,19 +2,18 @@
 E2E test fixtures with real PostgreSQL database.
 
 Uses a separate 'test' database to isolate test data from production.
+Each test gets its own schema for complete isolation, allowing parallel execution.
 Tests are skipped if DATABASE_URL is not set or database is unreachable.
 
 Connection modes:
 - Local: Direct DATABASE_URL from .env (auto-derives test database)
 - CI: DATABASE_URL via Cloud SQL Proxy (localhost:5432 -> Cloud SQL)
 - Explicit: TEST_DATABASE_URL for custom test database
-
-Note: These tests must NOT be run with pytest-xdist parallelization
-as multiple workers would conflict on the shared test database.
 """
 
 import asyncio
 import os
+import uuid
 
 import pytest
 import pytest_asyncio
@@ -58,28 +57,32 @@ def _get_database_url():
 
 
 @pytest_asyncio.fixture(scope="function")
-async def pg_engine():
+async def pg_engine_with_schema():
     """
-    Create PostgreSQL engine for test database.
+    Create PostgreSQL engine for test database with isolated schema.
 
-    Uses a separate 'test' database to isolate tests from production.
-    Tables are dropped and recreated for each test.
+    Each test gets its own schema (test_<uuid>) for complete isolation,
+    allowing tests to run in parallel without conflicts.
     Skips tests if database is unreachable.
+
+    Returns tuple of (engine, schema_name).
     """
     database_url = _get_database_url()
     if not database_url:
         pytest.skip("DATABASE_URL not set - skipping PostgreSQL E2E tests")
+
+    # Generate unique schema name for this test
+    schema_name = f"test_{uuid.uuid4().hex[:8]}"
 
     engine = create_async_engine(database_url, echo=False, connect_args={"timeout": CONNECTION_TIMEOUT})
 
     try:
         async with asyncio.timeout(CONNECTION_TIMEOUT + 2):
             async with engine.begin() as conn:
-                # Drop all tables in FK order (children before parents)
-                await conn.execute(text("DROP TABLE IF EXISTS impls CASCADE"))
-                await conn.execute(text("DROP TABLE IF EXISTS specs CASCADE"))
-                await conn.execute(text("DROP TABLE IF EXISTS libraries CASCADE"))
-                # Create fresh tables
+                # Create isolated schema for this test
+                await conn.execute(text(f"CREATE SCHEMA IF NOT EXISTS {schema_name}"))
+                await conn.execute(text(f"SET search_path TO {schema_name}"))
+                # Create tables in this schema
                 await conn.run_sync(Base.metadata.create_all)
     except (TimeoutError, asyncio.TimeoutError, OSError) as e:
         await engine.dispose()
@@ -88,21 +91,33 @@ async def pg_engine():
         await engine.dispose()
         pytest.skip(f"Database connection failed - skipping E2E tests: {e}")
 
-    yield engine
+    yield engine, schema_name
 
-    # Cleanup: Drop all tables in FK order (children before parents)
-    async with engine.begin() as conn:
-        await conn.execute(text("DROP TABLE IF EXISTS impls CASCADE"))
-        await conn.execute(text("DROP TABLE IF EXISTS specs CASCADE"))
-        await conn.execute(text("DROP TABLE IF EXISTS libraries CASCADE"))
+    # Cleanup: Drop the test schema
+    try:
+        async with engine.begin() as conn:
+            await conn.execute(text(f"DROP SCHEMA IF EXISTS {schema_name} CASCADE"))
+    except Exception:
+        pass  # Ignore cleanup errors
     await engine.dispose()
 
 
 @pytest_asyncio.fixture(scope="function")
-async def pg_session(pg_engine):
-    """Create session for test database."""
-    async_session = async_sessionmaker(pg_engine, class_=AsyncSession, expire_on_commit=False)
+async def pg_engine(pg_engine_with_schema):
+    """Get just the engine from pg_engine_with_schema."""
+    engine, _ = pg_engine_with_schema
+    return engine
+
+
+@pytest_asyncio.fixture(scope="function")
+async def pg_session(pg_engine_with_schema):
+    """Create session for test database with isolated schema."""
+    engine, schema_name = pg_engine_with_schema
+
+    async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
     async with async_session() as session:
+        # Set search_path to the test schema
+        await session.execute(text(f"SET search_path TO {schema_name}"))
         yield session
         await session.rollback()
 
@@ -113,7 +128,7 @@ async def pg_db_with_data(pg_session):
     Seed test database with sample data.
 
     Creates the same test data as tests/conftest.py:test_db_with_data
-    but in the PostgreSQL test database.
+    but in the PostgreSQL test database (in an isolated schema).
 
     Uses atomic commit: libraries + specs flushed first (FK targets),
     then impls added and everything committed together.

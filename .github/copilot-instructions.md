@@ -38,7 +38,7 @@ This file provides guidance to GitHub Copilot when working with code in this rep
 **Supported Libraries** (9 total):
 - matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts, lets-plot
 
-**Core Principle**: Community proposes plot ideas via GitHub Issues → AI generates code → Multi-LLM quality checks → Deployed.
+**Core Principle**: Community proposes plot ideas via GitHub Issues → AI generates code → AI quality review → Deployed.
 
 ## Development Setup
 
@@ -135,8 +135,8 @@ Examples: `scatter-basic`, `scatter-color-mapped`, `bar-grouped-horizontal`, `he
 ### PR Labels (set by workflows)
 
 - **`approved`** - Human approved specification for merge
-- **`ai-approved`** - AI quality check passed (score >= 90)
-- **`ai-rejected`** - AI quality check failed (score < 90)
+- **`ai-approved`** - AI quality check passed (score >= 90, or >= 50 after 3 attempts)
+- **`ai-rejected`** - AI quality check failed (score < 90), triggers repair loop
 - **`quality:XX`** - Quality score (e.g., `quality:92`)
 
 **Specification Lifecycle:**
@@ -146,8 +146,8 @@ Examples: `scatter-basic`, `scatter-color-mapped`, `bar-grouped-horizontal`, `he
 
 **Implementation PR Lifecycle:**
 ```
-[open] → impl-review → ai-approved → impl-merge → impl:{library}:done
-                     → ai-rejected → impl-repair (×3)
+[open] → impl-review → ai-approved (≥90) → impl-merge → impl:{library}:done
+                     → ai-rejected (<90) → impl-repair (×3) → ai-approved (≥50) or failed (<50)
 ```
 
 ## Code Standards
@@ -205,8 +205,7 @@ plt.savefig('plot.png', dpi=300, bbox_inches='tight')
 
 ### Anti-Patterns to Avoid
 
-- No `preview.png` files in repository (use GCS)
-- No `quality_report.json` files (use GitHub Issues)
+- No `preview.png` files in repository (stored in GCS)
 - No hardcoded API keys (use environment variables)
 
 ## Tech Stack

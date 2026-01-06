@@ -12,10 +12,9 @@ Git history shows all changes (`git log -p prompts/plot-generator.md`).
 | File | Agent | Task |
 |------|-------|------|
 | `plot-generator.md` | Plot Generator | Base rules for all plot implementations |
-| `library/*.md` | Plot Generator | Library-specific rules (8 files) |
+| `library/*.md` | Plot Generator | Library-specific rules (9 files) |
 | `quality-criteria.md` | All | Definition of what "good code" means |
-| `quality-evaluator.md` | Quality Checker | Multi-LLM evaluation (Claude/Gemini/GPT) |
-| `auto-tagger.md` | Auto-Tagger | Automatic tagging across 5 dimensions |
+| `quality-evaluator.md` | Quality Checker | AI quality evaluation |
 | `spec-validator.md` | Spec Validator | Validates plot request issues |
 | `spec-id-generator.md` | Spec ID Generator | Assigns unique spec IDs |
 | `workflow-prompts/*.md` | GitHub Actions | Workflow-specific prompts (see below) |
@@ -26,9 +25,9 @@ Located in `workflow-prompts/` - templates for GitHub Actions workflows:
 
 | File | Workflow | Purpose |
 |------|----------|---------|
-| `generate-implementation.md` | gen-library-impl.yml | Initial code generation |
-| `improve-from-feedback.md` | gen-update-plot.yml | Code improvement after rejection |
-| `ai-quality-review.md` | bot-ai-review.yml | Quality evaluation |
+| `generate-implementation.md` | impl-generate.yml | Initial code generation |
+| `improve-from-feedback.md` | impl-repair.yml | Code improvement after rejection |
+| `ai-quality-review.md` | impl-review.yml | Quality evaluation |
 
 See `workflow-prompts/README.md` for variable reference and usage.
 
@@ -46,7 +45,7 @@ See `workflow-prompts/README.md` for variable reference and usage.
     ${PROMPT_LIB}
 
     ## Spec
-    $(cat plots/${{ inputs.spec_id }}/spec.md)"
+    $(cat plots/${{ inputs.spec_id }}/specification.md)"
 ```
 
 ## Prompt Structure

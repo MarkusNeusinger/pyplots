@@ -117,7 +117,7 @@ jobs:
             6. **Create specification files:**
                - Read template: `prompts/templates/specification.md`
                - Read metadata template: `prompts/templates/specification.yaml`
-               - Read tagging guide: `docs/concepts/tagging-system.md`
+               - Read tagging guide: `docs/reference/tagging-system.md`
                - Create directory: `plots/{specification-id}/`
                - Create: `plots/{specification-id}/specification.md` (follow template structure)
                - Create: `plots/{specification-id}/specification.yaml` with:
@@ -213,7 +213,7 @@ jobs:
             6. **Create specification files:**
                - Read template: `prompts/templates/specification.md`
                - Read metadata template: `prompts/templates/specification.yaml`
-               - Read tagging guide: `docs/concepts/tagging-system.md`
+               - Read tagging guide: `docs/reference/tagging-system.md`
                - Create directory: `plots/{specification-id}/`
                - Create: `plots/{specification-id}/specification.md` (follow template structure)
                - Create: `plots/{specification-id}/specification.yaml` with:

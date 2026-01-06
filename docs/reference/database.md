@@ -2,9 +2,9 @@
 
 ## Overview
 
-pyplots uses **PostgreSQL** (Cloud SQL) to store metadata about plots, specs, and implementations. The database stores **references and metadata only** - not code or images.
+pyplots uses **PostgreSQL** (Cloud SQL) as the primary data store for the website. The database contains **all data needed to serve the frontend** - specs, implementations (including full code), and metadata.
 
-**Key Principle**: Lightweight metadata store, not a code repository.
+**Key Principle**: Repository is source of truth, database is derived via `sync-postgres.yml`.
 
 ---
 
@@ -12,33 +12,45 @@ pyplots uses **PostgreSQL** (Cloud SQL) to store metadata about plots, specs, an
 
 | Database | Status | Use Case | When to Consider |
 |----------|--------|----------|------------------|
-| **PostgreSQL** | ✅ **Current** | All data: specs, implementations, tags, quality scores, promotion queue | Start here - handles everything |
+| **PostgreSQL** | ✅ **Current** | All data: specs, implementations, tags, quality scores | Start here - handles everything |
 | **Google Cloud Storage** | ✅ **Current** | Preview images, user-generated plots | Already implemented |
-| **GitHub** | ✅ **Current** | Code, specs, quality reports (as Issue comments) | Already implemented |
-| **Firestore** | 📋 **Future Optimization** | Multi-dimensional tag queries (5-level hierarchy) | IF tag search becomes performance bottleneck with >10,000 specs |
+| **GitHub** | ✅ **Current** | Code, specs, workflow state (via labels) | Already implemented |
 
-**Current Approach**: All data in PostgreSQL + GCS + GitHub. This is sufficient for MVP and beyond.
-
-**Future Optimization**: See [Firestore for Advanced Tagging](#future-optimization-firestore-for-advanced-tagging) section at the end of this document.
+**Current Approach**: All data in PostgreSQL + GCS + GitHub.
 
 ---
 
-## What's Stored vs. What's Not
+## What's Stored Where
 
-### ✅ Stored in Database
+### ✅ Stored in Database (PostgreSQL)
 
-- Spec metadata (title, description, tags)
-- Implementation metadata (library, variant, quality score)
-- GCS URLs (preview images)
-- Promotion queue (social media posts)
-- Library information
-- Usage analytics (optional)
+**Specs:**
+- Full spec content (title, description, applications, data, notes)
+- Tags (JSONB with plot_type, domain, features, data_type)
+- Metadata (created, updated, issue, suggested)
 
-### ❌ NOT Stored in Database
+**Implementations:**
+- Full Python source code (`impls.code`)
+- GCS URLs for preview images
+- Quality scores and review feedback
+- Generation metadata (model, workflow run, versions)
 
-- Plot code (stored in GitHub repository)
-- Preview images (stored in Google Cloud Storage)
-- Quality reports (stored in GitHub Issues as comments)
+**Other:**
+- Library information (name, version, docs URL)
+
+### ✅ Stored in GCS (Google Cloud Storage)
+
+- Preview images (PNG, thumbnails)
+- Interactive HTML plots (plotly, bokeh, altair, etc.)
+
+### ✅ Stored in GitHub
+
+- Source of truth for all code and specs (`plots/` directory)
+- Quality reports (as Issue comments)
+- Workflow state (via labels on Issues/PRs)
+
+### ❌ NOT Stored Anywhere Permanently
+
 - User uploaded data (processed in-memory only)
 
 ---
@@ -90,7 +102,8 @@ CREATE TABLE libraries
     id                VARCHAR PRIMARY KEY,      -- "matplotlib", "seaborn", "plotly"
     name              VARCHAR NOT NULL,         -- "Matplotlib"
     version           VARCHAR,                  -- "3.9.0"
-    documentation_url VARCHAR                   -- "https://matplotlib.org"
+    documentation_url VARCHAR,                  -- "https://matplotlib.org"
+    description       TEXT                      -- Short library description
 );
 
 -- Library-specific implementations
@@ -127,6 +140,11 @@ CREATE TABLE impls
     review_strengths  VARCHAR[],                -- What's good about this implementation
     review_weaknesses VARCHAR[],                -- What needs improvement
 
+    -- Extended review data (issue #2845)
+    review_image_description TEXT,              -- AI's visual description of the plot
+    review_criteria_checklist JSONB,            -- Detailed scoring breakdown
+    review_verdict  VARCHAR(20),                -- "APPROVED" or "REJECTED"
+
     updated_at      TIMESTAMP DEFAULT NOW(),
 
     UNIQUE (spec_id, library_id)
@@ -137,7 +155,7 @@ CREATE INDEX idx_impls_spec ON impls (spec_id);
 CREATE INDEX idx_impls_library ON impls (library_id);
 ```
 
-**Note**: The `tags` and `promotion_queue` tables are planned but not yet implemented.
+**Note**: Tags are stored as JSONB in the `specs` table (not a separate table).
 
 ---
 
@@ -275,7 +293,7 @@ Use **Alembic** for schema migrations:
 
 ```bash
 # Create new migration
-alembic revision -m "add promotion queue table"
+alembic revision -m "add new column"
 
 # Apply migrations
 alembic upgrade head
@@ -451,97 +469,6 @@ await session.execute(f"SELECT * FROM specs WHERE id = '{spec_id}'")
 - Anonymous session IDs only
 - Usage data auto-deleted after 90 days
 - GDPR-compliant (no personal data)
-
----
-
-## Future Optimization: Firestore for Advanced Tagging
-
-**Status**: 📋 **Planned** (not currently implemented)
-
-**Current State**: Tags are stored as JSONB in the `specs.tags` column with structured categories (plot_type, domain, features, audience, data_type). This is sufficient for MVP and early growth.
-
-**Future Consideration**: As the platform scales beyond 10,000+ specs with complex multi-dimensional search requirements, consider adding Firestore for advanced tag functionality.
-
----
-
-### Why Firestore Could Help (Future)
-
-**Problem it solves**:
-- Multi-dimensional tag queries (5-level hierarchy: Library → Plot Type → Data Type → Domain → Features)
-- Filtering across multiple dimensions simultaneously (e.g., "matplotlib + timeseries + finance + beginner")
-- Real-time search index updates
-- Automatic scaling for high-volume tag searches
-
-**When to implement**:
-- PostgreSQL tag queries become slow (>500ms for common searches)
-- Need for complex tag hierarchy beyond simple array
-- User feedback requests advanced filtering
-- Catalog grows beyond 10,000 specs
-
----
-
-### Proposed Architecture (When Implemented)
-
-**Data Split**:
-- **PostgreSQL**: Spec metadata, implementation records, quality scores, promotion queue (no change)
-- **Firestore**: Multi-dimensional tags, search keywords, similarity clusters
-
-**Example Document Structure**:
-```javascript
-{
-  "plot_id": "matplotlib-scatter-basic-001-default",
-  "spec_id": "scatter-basic-001",
-  "tags": {
-    "library": "matplotlib",
-    "plot_type": "scatter",
-    "data_type": "tabular",
-    "domain": "data-science",
-    "features": {"complexity": "beginner", "interactivity": "static"}
-  },
-  "search_keywords": ["scatter", "matplotlib", "basic", "2d"],
-  "confidence_scores": {"overall": 0.89}
-}
-```
-
-**Query Example**:
-```javascript
-// Find all beginner matplotlib plots for data-science
-db.collection('plot_tags')
-  .where('tags.library', '==', 'matplotlib')
-  .where('tags.domain', '==', 'data-science')
-  .where('tags.features.complexity', '==', 'beginner')
-  .get();
-```
-
----
-
-### Implementation Checklist (When Ready)
-
-- [ ] Confirm PostgreSQL performance is actually bottleneck
-- [ ] Design detailed Firestore schema (based on actual usage patterns)
-- [ ] Create composite indices for common query combinations
-- [ ] Implement sync mechanism (PostgreSQL → Firestore)
-- [ ] Add consistency checks (daily verification)
-- [ ] Monitor costs (estimated <$1/month for 10K docs)
-- [ ] Migrate existing tags from PostgreSQL to Firestore
-- [ ] Update API to query Firestore for tag searches
-- [ ] Keep PostgreSQL tags as backup/audit trail
-
----
-
-### Cost Estimate (For Future Reference)
-
-**Storage**: 10,000 documents × 3 KB = ~30 MB → <$0.50/month
-**Reads**: 1M reads/month → ~$0.36/month
-**Writes**: 100K writes/month → ~$0.18/month
-**Total**: <$1/month
-
----
-
-**See Also**:
-- **Tag Taxonomy**: `docs/concepts/tagging-system.md`
-- **Tagging Rules**: `rules/generation/v1.0.0-draft/tagging-rules.md`
-- **Auto-Tagging Workflow**: `docs/workflow.md` (Flow 4.5)
 
 ---
 

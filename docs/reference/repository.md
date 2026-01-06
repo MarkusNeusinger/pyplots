@@ -18,7 +18,7 @@ plots/{specification-id}/
     └── ...
 ```
 
-**Key Principle**: The repository contains **only production code and final specs**. Quality reports and workflow state are managed in GitHub Issues. Preview images are stored in GCS.
+**Key Principle**: The repository is the **source of truth** for all code, specs, and quality data. Preview images are stored in GCS. Database is derived via sync.
 
 **Key Benefit**: Per-library metadata files eliminate merge conflicts when multiple implementations are generated in parallel.
 
@@ -64,23 +64,32 @@ pyplots/
 ├── prompts/                           # AI agent prompts
 │   ├── plot-generator.md              # Base rules for code generation
 │   ├── quality-criteria.md            # Quality evaluation criteria
-│   ├── quality-evaluator.md           # Multi-LLM evaluation prompt
-│   ├── auto-tagger.md                 # Automatic tagging
+│   ├── quality-evaluator.md           # AI quality evaluation prompt
 │   ├── spec-validator.md              # Validates plot requests
 │   ├── spec-id-generator.md           # Assigns spec IDs
-│   └── library/                       # Library-specific rules
-│       ├── matplotlib.md
-│       ├── seaborn.md
+│   ├── default-style-guide.md         # Default visual style rules
+│   ├── library/                       # Library-specific rules (9 files)
+│   │   ├── matplotlib.md
+│   │   ├── seaborn.md
+│   │   └── ...
+│   ├── templates/                     # Templates for new specs
+│   │   ├── specification.md
+│   │   └── specification.yaml
+│   └── workflow-prompts/              # Workflow-specific prompts
 │       └── ...
 │
 ├── core/                              # Shared business logic
 │   ├── __init__.py
 │   ├── config.py                      # Configuration (.env-based)
+│   ├── constants.py                   # Library metadata, constants
+│   ├── images.py                      # Image processing utilities
+│   ├── utils.py                       # General utilities
 │   ├── database/                      # Database layer
 │   │   ├── __init__.py
 │   │   ├── connection.py              # Async connection management
 │   │   ├── models.py                  # SQLAlchemy ORM models
-│   │   └── repositories.py            # Repository pattern
+│   │   ├── repositories.py            # Repository pattern
+│   │   └── types.py                   # Custom SQLAlchemy types
 │   └── generators/                    # Reusable code generators
 │       └── plot_generator.py          # Plot code generation utilities
 │
@@ -105,11 +114,13 @@ pyplots/
 │       └── workflow_cli.py            # CLI for workflows
 │
 ├── tests/                             # Test suite
-│   └── unit/
-│       ├── api/
-│       ├── core/
-│       ├── prompts/
-│       └── workflows/
+│   ├── conftest.py                    # Shared fixtures
+│   ├── unit/                          # Fast, mocked tests
+│   │   ├── api/
+│   │   ├── core/
+│   │   └── ...
+│   ├── integration/                   # SQLite in-memory tests
+│   └── e2e/                           # Real PostgreSQL tests
 │
 ├── .github/
 │   └── workflows/                     # GitHub Actions CI/CD
@@ -136,10 +147,11 @@ pyplots/
 │   └── upgrade_specs*.py              # Spec upgrade utilities
 │
 ├── docs/                              # Documentation
-│   ├── architecture/
-│   ├── workflow.md
-│   ├── specs-guide.md
-│   └── development.md
+│   ├── concepts/
+│   ├── reference/
+│   ├── workflows/
+│   ├── contributing.md
+│   └── index.md
 │
 ├── pyproject.toml                     # Python project config (uv)
 ├── uv.lock                            # Dependency lock file
@@ -171,12 +183,12 @@ plots/{specification-id}/
 ```
 
 **Characteristics**:
-- ✅ Self-contained (spec + metadata + code together)
+- ✅ Self-contained (spec + metadata + code + quality reports together)
 - ✅ Easy to navigate (one folder = one plot type)
 - ✅ Synced to PostgreSQL via `sync-postgres.yml`
 - ✅ No merge conflicts (per-library metadata files)
+- ✅ Quality reports in `metadata/{library}.yaml` (review section)
 - ❌ NO preview images (stored in GCS)
-- ❌ NO quality reports (stored in GitHub Issues)
 
 **Example**: `plots/scatter-basic/` contains everything for the basic scatter plot.
 
@@ -391,14 +403,17 @@ plt.savefig('plot.png', dpi=300)
 **Purpose**: AI agent prompts for code generation and quality evaluation
 
 **Subdirectories**:
-- `templates/` - Templates for new specs (`spec.md`, `metadata.yaml`)
+- `library/` - Library-specific rules (9 files: matplotlib, seaborn, plotly, etc.)
+- `templates/` - Templates for new specs (`specification.md`, `specification.yaml`)
+- `workflow-prompts/` - Workflow-specific prompt templates
 
 **Files**:
 - `plot-generator.md` - Base rules for all implementations
 - `quality-criteria.md` - Definition of quality
-- `quality-evaluator.md` - Multi-LLM evaluation
-- `auto-tagger.md` - Automatic tagging
-- `library/*.md` - Library-specific rules (9 files)
+- `quality-evaluator.md` - AI quality evaluation
+- `spec-validator.md` - Validates plot requests
+- `spec-id-generator.md` - Assigns spec IDs
+- `default-style-guide.md` - Default visual style rules
 
 ---
 
@@ -508,14 +523,12 @@ Always named by library: `{library}.py`
 - **Where**: Google Cloud Storage (`gs://pyplots-images/plots/...`)
 - **Why**: Binary files bloat git history
 
-### ❌ Quality Reports
-- **Where**: GitHub Issues (as bot comments)
-- **Why**: Keeps repo clean, increases transparency
-
 ### ❌ Secrets
 - **Where**: Environment variables, Cloud Secret Manager
 - **Why**: Security
 - **Note**: `.env.example` shows required variables without values
+
+**Note**: Quality reports ARE stored in the repository in `metadata/{library}.yaml` (the `review:` section with strengths, weaknesses, criteria_checklist, verdict).
 
 ---
 
@@ -529,9 +542,10 @@ The `sync-postgres.yml` workflow syncs `plots/` to PostgreSQL on push to main:
 - Implementation code (full Python source)
 - Implementation metadata (quality score, generation info from metadata/*.yaml)
 - Preview URLs from per-library metadata files
+- Quality review data (strengths, weaknesses, criteria_checklist, verdict)
 
 **Source of Truth**: The `plots/` directory is authoritative. Database is derived.
 
 ---
 
-*For implementation details, see [specs-guide.md](../specs-guide.md) and [development.md](../development.md)*
+*For contribution guidelines, see [contributing.md](../contributing.md)*

@@ -1,19 +1,59 @@
 """OG Image endpoints for branded social media preview images."""
 
 import asyncio
+from pathlib import Path
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.analytics import track_og_image
 from api.cache import cache_key, get_cache, set_cache
 from api.dependencies import optional_db
 from core.database import SpecRepository
 from core.images import create_branded_og_image, create_og_collage
 
 
+# Static og:image (loaded once at startup)
+_STATIC_OG_IMAGE: bytes | None = None
+
+
+def _get_static_og_image() -> bytes:
+    """Load static og-image.png (cached in memory)."""
+    global _STATIC_OG_IMAGE
+    if _STATIC_OG_IMAGE is None:
+        path = Path(__file__).parent.parent.parent / "app" / "public" / "og-image.png"
+        _STATIC_OG_IMAGE = path.read_bytes()
+    return _STATIC_OG_IMAGE
+
+
 router = APIRouter(prefix="/og", tags=["og-images"])
+
+
+@router.get("/home.png")
+async def get_home_og_image(request: Request) -> Response:
+    """OG image for home page with tracking.
+
+    Supports filter params (e.g., ?lib=plotly&dom=statistics) for tracking shared filtered URLs.
+    """
+    # Capture filter params for tracking (e.g., ?lib=plotly&dom=statistics)
+    filters = dict(request.query_params) if request.query_params else None
+    track_og_image(request, page="home", filters=filters)
+
+    return Response(
+        content=_get_static_og_image(), media_type="image/png", headers={"Cache-Control": "public, max-age=86400"}
+    )
+
+
+@router.get("/catalog.png")
+async def get_catalog_og_image(request: Request) -> Response:
+    """OG image for catalog page with tracking."""
+    track_og_image(request, page="catalog")
+
+    return Response(
+        content=_get_static_og_image(), media_type="image/png", headers={"Cache-Control": "public, max-age=86400"}
+    )
 
 
 async def _fetch_image(url: str) -> bytes:
@@ -26,12 +66,15 @@ async def _fetch_image(url: str) -> bytes:
 
 @router.get("/{spec_id}/{library}.png")
 async def get_branded_impl_image(
-    spec_id: str, library: str, db: AsyncSession | None = Depends(optional_db)
+    spec_id: str, library: str, request: Request, db: AsyncSession | None = Depends(optional_db)
 ) -> Response:
     """Get a branded OG image for an implementation.
 
     Returns a 1200x630 PNG with pyplots.ai header and the plot image.
     """
+    # Track og:image request (fire-and-forget)
+    track_og_image(request, page="spec_detail", spec=spec_id, library=library)
+
     # Check cache first
     key = cache_key("og", spec_id, library)
     cached = get_cache(key)
@@ -70,12 +113,17 @@ async def get_branded_impl_image(
 
 
 @router.get("/{spec_id}.png")
-async def get_spec_collage_image(spec_id: str, db: AsyncSession | None = Depends(optional_db)) -> Response:
+async def get_spec_collage_image(
+    spec_id: str, request: Request, db: AsyncSession | None = Depends(optional_db)
+) -> Response:
     """Get a collage OG image for a spec (showing top 6 implementations by quality).
 
     Returns a 1200x630 PNG with pyplots.ai branding and a 2x3 grid of implementations,
     sorted by quality_score descending.
     """
+    # Track og:image request (fire-and-forget)
+    track_og_image(request, page="spec_overview", spec=spec_id)
+
     # Check cache first
     key = cache_key("og", spec_id, "collage")
     cached = get_cache(key)

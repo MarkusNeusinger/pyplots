@@ -470,7 +470,7 @@ class TestSeoProxyRouter:
             assert response.status_code == 200
             assert "og:title" in response.text
             assert "scatter-basic" in response.text
-            assert "og-image.png" in response.text  # Default image
+            assert "api.pyplots.ai/og/home.png" in response.text  # Default image via API
 
     def test_seo_spec_overview_with_db(self, db_client, mock_spec) -> None:
         """SEO spec overview should return HTML with spec title from DB."""
@@ -505,7 +505,7 @@ class TestSeoProxyRouter:
             assert "og:title" in response.text
             assert "scatter-basic" in response.text
             assert "matplotlib" in response.text
-            assert "og-image.png" in response.text  # Default image
+            assert "api.pyplots.ai/og/home.png" in response.text  # Default image via API
 
     def test_seo_spec_implementation_with_preview_url(self, db_client, mock_spec) -> None:
         """SEO spec implementation should use preview_url from implementation."""
@@ -554,7 +554,7 @@ class TestSeoProxyRouter:
         with patch("api.routers.seo.SpecRepository", return_value=mock_spec_repo):
             response = client.get("/seo-proxy/scatter-basic/seaborn")
             assert response.status_code == 200
-            assert "og-image.png" in response.text  # Default image used
+            assert "api.pyplots.ai/og/home.png" in response.text  # Default image via API
 
 
 class TestOgImagesRouter:

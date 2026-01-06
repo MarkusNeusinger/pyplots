@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from api.analytics import PLATFORM_PATTERNS, detect_platform, track_og_image
+from api.analytics import PLATFORM_PATTERNS, _detect_whatsapp_or_signal, detect_platform, track_og_image
 
 
 class TestDetectPlatform:
@@ -14,9 +14,29 @@ class TestDetectPlatform:
         """Should detect Twitter bot."""
         assert detect_platform("Twitterbot/1.0") == "twitter"
 
-    def test_detects_whatsapp(self) -> None:
-        """Should detect WhatsApp."""
-        assert detect_platform("WhatsApp/2.21.4.22") == "whatsapp"
+    def test_detects_whatsapp_ios(self) -> None:
+        """Should detect real WhatsApp iOS."""
+        assert detect_platform("WhatsApp/2.23.18.78 i") == "whatsapp"
+
+    def test_detects_whatsapp_android(self) -> None:
+        """Should detect real WhatsApp Android."""
+        assert detect_platform("WhatsApp/2.21.22.23 A") == "whatsapp"
+
+    def test_detects_whatsapp_desktop(self) -> None:
+        """Should detect real WhatsApp Desktop."""
+        assert detect_platform("WhatsApp/2.2336.9 N") == "whatsapp"
+
+    def test_detects_signal_as_fake_whatsapp(self) -> None:
+        """Should detect Signal (which uses fake WhatsApp User-Agent).
+
+        Signal deliberately uses 'WhatsApp' User-Agent to bypass rate limits,
+        but without full version number like real WhatsApp.
+        See: https://github.com/signalapp/Signal-Android/issues/10060
+        """
+        # Signal sends simple "WhatsApp" or "WhatsApp/2" without full version
+        assert detect_platform("WhatsApp") == "signal"
+        assert detect_platform("WhatsApp/2") == "signal"
+        assert detect_platform("WhatsApp/2.1") == "signal"  # Only 2-part version
 
     def test_detects_facebook(self) -> None:
         """Should detect Facebook."""
@@ -60,8 +80,49 @@ class TestDetectPlatform:
         assert detect_platform("twitterbot/1.0") == "twitter"
 
     def test_all_platforms_have_patterns(self) -> None:
-        """Should have 27 platform patterns defined."""
-        assert len(PLATFORM_PATTERNS) == 27
+        """Should have 25 platform patterns in dict (whatsapp/signal handled separately)."""
+        # 27 total platforms: 25 in PLATFORM_PATTERNS + whatsapp + signal (special handling)
+        assert len(PLATFORM_PATTERNS) == 25
+
+
+class TestWhatsAppSignalDetection:
+    """Tests for WhatsApp vs Signal detection logic."""
+
+    def test_real_whatsapp_ios(self) -> None:
+        """Real WhatsApp iOS should return 'whatsapp'."""
+        assert _detect_whatsapp_or_signal("WhatsApp/2.23.18.78 i") == "whatsapp"
+
+    def test_real_whatsapp_android(self) -> None:
+        """Real WhatsApp Android should return 'whatsapp'."""
+        assert _detect_whatsapp_or_signal("WhatsApp/2.21.22.23 A") == "whatsapp"
+
+    def test_real_whatsapp_cfnetwork(self) -> None:
+        """Real WhatsApp with CFNetwork should return 'whatsapp'."""
+        assert _detect_whatsapp_or_signal("WhatsApp/2.18.31.32 CFNetwork/894 Darwin/17.4.0") == "whatsapp"
+
+    def test_signal_simple(self) -> None:
+        """Signal's simple WhatsApp UA should return 'signal'."""
+        assert _detect_whatsapp_or_signal("WhatsApp") == "signal"
+
+    def test_signal_with_major_version(self) -> None:
+        """Signal's WhatsApp/2 should return 'signal'."""
+        assert _detect_whatsapp_or_signal("WhatsApp/2") == "signal"
+
+    def test_signal_with_two_part_version(self) -> None:
+        """Signal's WhatsApp/2.1 (only 2 parts) should return 'signal'."""
+        assert _detect_whatsapp_or_signal("WhatsApp/2.1") == "signal"
+
+    def test_non_whatsapp_returns_none(self) -> None:
+        """Non-WhatsApp User-Agent should return None."""
+        assert _detect_whatsapp_or_signal("Twitterbot/1.0") is None
+        assert _detect_whatsapp_or_signal("Mozilla/5.0") is None
+        assert _detect_whatsapp_or_signal("") is None
+
+    def test_case_insensitive(self) -> None:
+        """Should handle case-insensitive matching."""
+        assert _detect_whatsapp_or_signal("WHATSAPP/2.23.18.78") == "whatsapp"
+        assert _detect_whatsapp_or_signal("whatsapp/2.23.18.78") == "whatsapp"
+        assert _detect_whatsapp_or_signal("WHATSAPP") == "signal"
 
 
 class TestTrackOgImage:

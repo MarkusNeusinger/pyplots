@@ -1,5 +1,7 @@
 """OG Image endpoints for branded social media preview images."""
 
+import asyncio
+
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import Response
@@ -37,7 +39,7 @@ async def get_branded_impl_image(
     key = cache_key("og", spec_id, library)
     cached = get_cache(key)
     if cached:
-        return Response(content=cached, media_type="image/png")
+        return Response(content=cached, media_type="image/png", headers={"Cache-Control": "public, max-age=3600"})
 
     if db is None:
         raise HTTPException(status_code=503, detail="Database not available")
@@ -62,7 +64,9 @@ async def get_branded_impl_image(
         # Cache the result
         set_cache(key, branded_bytes, ttl=OG_IMAGE_CACHE_TTL)
 
-        return Response(content=branded_bytes, media_type="image/png")
+        return Response(
+            content=branded_bytes, media_type="image/png", headers={"Cache-Control": "public, max-age=3600"}
+        )
 
     except httpx.HTTPError as e:
         raise HTTPException(status_code=502, detail=f"Failed to fetch image: {e}") from e
@@ -79,7 +83,7 @@ async def get_spec_collage_image(spec_id: str, db: AsyncSession | None = Depends
     key = cache_key("og", spec_id, "collage")
     cached = get_cache(key)
     if cached:
-        return Response(content=cached, media_type="image/png")
+        return Response(content=cached, media_type="image/png", headers={"Cache-Control": "public, max-age=3600"})
 
     if db is None:
         raise HTTPException(status_code=503, detail="Database not available")
@@ -101,22 +105,19 @@ async def get_spec_collage_image(spec_id: str, db: AsyncSession | None = Depends
     selected_impls = sorted_impls[:6]
 
     try:
-        # Fetch all images
-        images: list[bytes] = []
-        labels: list[str] = []
-        for impl in selected_impls:
-            image_bytes = await _fetch_image(impl.preview_url)
-            images.append(image_bytes)
-            # Label format: "spec_id · library" like in og-image.png
-            labels.append(f"{spec_id} · {impl.library_id}")
+        # Fetch all images in parallel for better performance
+        images = list(await asyncio.gather(*[_fetch_image(impl.preview_url) for impl in selected_impls]))
+        labels = [f"{spec_id} · {impl.library_id}" for impl in selected_impls]
 
         # Create collage
-        collage_bytes = create_og_collage(images, spec_id=spec_id, labels=labels)
+        collage_bytes = create_og_collage(images, labels=labels)
 
         # Cache the result
         set_cache(key, collage_bytes, ttl=OG_IMAGE_CACHE_TTL)
 
-        return Response(content=collage_bytes, media_type="image/png")
+        return Response(
+            content=collage_bytes, media_type="image/png", headers={"Cache-Control": "public, max-age=3600"}
+        )
 
     except httpx.HTTPError as e:
         raise HTTPException(status_code=502, detail=f"Failed to fetch images: {e}") from e

@@ -438,7 +438,6 @@ def create_branded_og_image(
 def create_og_collage(
     images: list[str | Path | Image.Image | bytes],
     output_path: str | Path | None = None,
-    spec_id: str | None = None,
     labels: list[str] | None = None,
 ) -> Image.Image | bytes:
     """Create a collage OG image from multiple plot images.
@@ -451,7 +450,6 @@ def create_og_collage(
     Args:
         images: List of plot images (paths, PIL Images, or bytes), up to 6
         output_path: If provided, save to this path
-        spec_id: Optional spec ID for subtitle
         labels: Optional list of labels for each image (e.g., library names)
 
     Returns:

@@ -70,9 +70,9 @@ async def get_branded_impl_image(
 
 @router.get("/{spec_id}.png")
 async def get_spec_collage_image(spec_id: str, db: AsyncSession | None = Depends(optional_db)) -> Response:
-    """Get a collage OG image for a spec (showing top 3 implementations by quality).
+    """Get a collage OG image for a spec (showing top 6 implementations by quality).
 
-    Returns a 1200x630 PNG with pyplots.ai branding and a row of 3 implementations,
+    Returns a 1200x630 PNG with pyplots.ai branding and a 2x3 grid of implementations,
     sorted by quality_score descending.
     """
     # Check cache first
@@ -94,13 +94,11 @@ async def get_spec_collage_image(spec_id: str, db: AsyncSession | None = Depends
     if not impls_with_preview:
         raise HTTPException(status_code=404, detail="No implementations with previews")
 
-    # Sort by quality_score (descending) and take top 3
+    # Sort by quality_score (descending) and take top 6 for 2x3 grid
     sorted_impls = sorted(
-        impls_with_preview,
-        key=lambda i: i.quality_score if i.quality_score is not None else 0,
-        reverse=True,
+        impls_with_preview, key=lambda i: i.quality_score if i.quality_score is not None else 0, reverse=True
     )
-    selected_impls = sorted_impls[:3]
+    selected_impls = sorted_impls[:6]
 
     try:
         # Fetch all images

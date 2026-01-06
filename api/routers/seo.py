@@ -37,9 +37,7 @@ BOT_HTML_TEMPLATE = """<!DOCTYPE html>
 </html>"""
 
 DEFAULT_IMAGE = "https://pyplots.ai/og-image.png"
-DEFAULT_DESCRIPTION = (
-    "Library-agnostic, AI-powered Python plotting examples. Automatically generated, tested, and maintained."
-)
+DEFAULT_DESCRIPTION = "library-agnostic, ai-powered python plotting."
 
 
 @router.get("/sitemap.xml")

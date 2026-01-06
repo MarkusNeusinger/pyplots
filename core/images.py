@@ -208,12 +208,7 @@ def _get_font(size: int = 32, weight: int = 700) -> ImageFont.FreeTypeFont | Ima
             pass
 
     # Fallback to system fonts
-    fallback_fonts = [
-        "DejaVuSansMono-Bold.ttf",
-        "DejaVuSansMono.ttf",
-        "LiberationMono-Bold.ttf",
-        "FreeMono.ttf",
-    ]
+    fallback_fonts = ["DejaVuSansMono-Bold.ttf", "DejaVuSansMono.ttf", "LiberationMono-Bold.ttf", "FreeMono.ttf"]
 
     for font_name in fallback_fonts:
         try:
@@ -311,21 +306,13 @@ def _draw_rounded_card(
     shadow_color = "#d1d5db"  # Light gray shadow
     shadow = Image.new("RGBA", (card_width, card_height), (0, 0, 0, 0))
     shadow_draw = ImageDraw.Draw(shadow)
-    shadow_draw.rounded_rectangle(
-        [0, 0, card_width - 1, card_height - 1],
-        radius=radius,
-        fill=shadow_color,
-    )
+    shadow_draw.rounded_rectangle([0, 0, card_width - 1, card_height - 1], radius=radius, fill=shadow_color)
     base.paste(shadow, (x + shadow_offset, y + shadow_offset), shadow)
 
     # Create card background (white)
     card = Image.new("RGBA", (card_width, card_height), (0, 0, 0, 0))
     card_draw = ImageDraw.Draw(card)
-    card_draw.rounded_rectangle(
-        [0, 0, card_width - 1, card_height - 1],
-        radius=radius,
-        fill="#ffffff",
-    )
+    card_draw.rounded_rectangle([0, 0, card_width - 1, card_height - 1], radius=radius, fill="#ffffff")
     base.paste(card, (x, y), card)
 
     # Paste content
@@ -376,7 +363,7 @@ def create_branded_og_image(
     label_height = 30
 
     # Available space for the card
-    header_total = top_margin + logo_height + tagline_height + 15  # Gap after tagline
+    header_total = top_margin + logo_height + tagline_height + 25  # More gap after tagline
     footer_total = label_height + bottom_margin
     available_height = OG_HEIGHT - header_total - footer_total - 2 * card_padding
     available_width = OG_WIDTH - 120  # 60px margin on each side
@@ -403,13 +390,13 @@ def create_branded_og_image(
     logo_y = top_margin
     _draw_pyplots_logo(draw, logo_x, logo_y, logo_font_size)
 
-    # Draw tagline (with gap after logo)
-    tagline = "Beautiful Python plotting made easy."
+    # Draw tagline (matches website style - lowercase)
+    tagline = "library-agnostic, ai-powered python plotting."
     tagline_font = _get_font(22, weight=400)
     tagline_bbox = draw.textbbox((0, 0), tagline, font=tagline_font)
     tagline_width = tagline_bbox[2] - tagline_bbox[0]
     tagline_x = (OG_WIDTH - tagline_width) // 2
-    tagline_y = top_margin + logo_height + 10  # Extra gap after logo
+    tagline_y = top_margin + logo_height + 18  # More space after logo
     draw.text((tagline_x, tagline_y), tagline, fill="#6b7280", font=tagline_font)
 
     # Draw card with plot
@@ -456,13 +443,13 @@ def create_og_collage(
 ) -> Image.Image | bytes:
     """Create a collage OG image from multiple plot images.
 
-    Creates a grid with pyplots.ai branding matching og-image.png style:
-    - Logo and tagline at top
-    - Plots in rounded cards with shadows
+    Creates a 2x3 grid (2 rows, 3 columns) with pyplots.ai branding:
+    - Large dominant logo and tagline at top
+    - 6 plots in 16:9 rounded cards arranged in 2 rows
     - Labels below each card
 
     Args:
-        images: List of plot images (paths, PIL Images, or bytes)
+        images: List of plot images (paths, PIL Images, or bytes), up to 6
         output_path: If provided, save to this path
         spec_id: Optional spec ID for subtitle
         labels: Optional list of labels for each image (e.g., library names)
@@ -473,9 +460,9 @@ def create_og_collage(
     if not images:
         raise ValueError("At least one image is required")
 
-    # Load all images
+    # Load all images (max 6 for 2x3 grid)
     loaded_images: list[Image.Image] = []
-    for img_input in images[:4]:  # Max 4 images for 2x2 grid
+    for img_input in images[:6]:
         if isinstance(img_input, bytes):
             img = Image.open(BytesIO(img_input))
         elif isinstance(img_input, Image.Image):
@@ -486,21 +473,18 @@ def create_og_collage(
             img = img.convert("RGB")
         loaded_images.append(img)
 
-    # Layout constants
-    top_margin = 20
-    logo_height = 55
-    tagline_height = 30
-    bottom_margin = 20
-    card_padding = 8
-    label_height = 22
-    card_gap = 20
-
-    # Header area
-    header_total = top_margin + logo_height + tagline_height + 15
-
     # Create final image (RGBA for card transparency)
     final = Image.new("RGBA", (OG_WIDTH, OG_HEIGHT), PYPLOTS_BG)
     draw = ImageDraw.Draw(final)
+
+    # Layout constants
+    top_margin = 20
+    side_margin = 40
+    card_gap_x = 20  # Horizontal gap between cards
+    card_gap_y = 8  # Vertical gap between rows
+    card_padding = 6
+    label_gap = 4  # Gap between card and label
+    bottom_margin = 15
 
     # Draw logo (centered at top)
     logo_font_size = 38
@@ -512,78 +496,84 @@ def create_og_collage(
     logo_y = top_margin
     _draw_pyplots_logo(draw, logo_x, logo_y, logo_font_size)
 
-    # Draw tagline (with gap after logo)
-    tagline = "Beautiful Python plotting made easy."
+    # Draw tagline (matches website style - lowercase)
+    tagline = "library-agnostic, ai-powered python plotting."
     tagline_font = _get_font(18, weight=400)
     tagline_bbox = draw.textbbox((0, 0), tagline, font=tagline_font)
     tagline_width = tagline_bbox[2] - tagline_bbox[0]
     tagline_x = (OG_WIDTH - tagline_width) // 2
-    tagline_y = top_margin + logo_height + 8  # Extra gap after logo
+    tagline_y = top_margin + 58  # More space after logo
     draw.text((tagline_x, tagline_y), tagline, fill="#6b7280", font=tagline_font)
 
-    # Calculate grid layout
-    num_images = len(loaded_images)
-    if num_images == 1:
-        cols, rows = 1, 1
-    elif num_images == 2:
-        cols, rows = 2, 1
-    elif num_images == 3:
-        cols, rows = 3, 1
+    # Grid layout: 2 rows x 3 columns
+    cols = 3
+    rows = 2
+
+    # Label font and height
+    label_font = _get_font(13, weight=400)
+    label_height = 18
+
+    # Calculate card area
+    header_height = tagline_y + 35
+    grid_top = header_height
+    grid_bottom = OG_HEIGHT - bottom_margin
+
+    # Available space for grid
+    available_width = OG_WIDTH - 2 * side_margin - (cols - 1) * card_gap_x
+    available_height = grid_bottom - grid_top - (rows - 1) * card_gap_y - rows * (label_height + label_gap)
+
+    # Card slot dimensions
+    slot_width = available_width // cols
+    slot_height = available_height // rows
+
+    # Card inner dimensions (16:9 aspect ratio)
+    # Calculate max inner size that fits in slot while being 16:9
+    inner_aspect = 16 / 9
+    slot_inner_width = slot_width - 2 * card_padding
+    slot_inner_height = slot_height - 2 * card_padding
+
+    if slot_inner_width / slot_inner_height > inner_aspect:
+        # Slot is wider than 16:9, constrain by height
+        inner_height = slot_inner_height
+        inner_width = int(inner_height * inner_aspect)
     else:
-        cols, rows = 2, 2
-
-    # Available space for cards
-    cards_area_top = header_total
-    cards_area_bottom = OG_HEIGHT - bottom_margin
-    cards_area_height = cards_area_bottom - cards_area_top
-    side_margin = 40
-
-    # Calculate cell dimensions
-    total_gap_x = (cols - 1) * card_gap
-    cell_width = (OG_WIDTH - 2 * side_margin - total_gap_x) // cols
-    total_gap_y = (rows - 1) * card_gap if rows > 1 else 0
-    cell_height = (cards_area_height - total_gap_y) // rows
-
-    label_font = _get_font(14, weight=400)
+        # Slot is taller than 16:9, constrain by width
+        inner_width = slot_inner_width
+        inner_height = int(inner_width / inner_aspect)
 
     for i, img in enumerate(loaded_images):
-        col = i % cols
         row = i // cols
+        col = i % cols
 
-        # Calculate cell position
-        cell_x = side_margin + col * (cell_width + card_gap)
-        cell_y = cards_area_top + row * (cell_height + card_gap)
+        # Slot position
+        slot_x = side_margin + col * (slot_width + card_gap_x)
+        slot_y = grid_top + row * (slot_height + card_gap_y + label_height + label_gap)
 
-        # Space for card content (minus label)
-        content_height = cell_height - label_height - 5
-
-        # Scale image to fit
-        available_width = cell_width - 2 * card_padding
-        available_height = content_height - 2 * card_padding
-        scale = min(available_width / img.width, available_height / img.height)
+        # Scale image to fit in 16:9 inner area
+        scale = min(inner_width / img.width, inner_height / img.height)
         new_width = int(img.width * scale)
         new_height = int(img.height * scale)
 
         # Resize image
         resized = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
 
-        # Center card in cell
-        card_total_width = new_width + 2 * card_padding
-        card_total_height = new_height + 2 * card_padding
-        card_x = cell_x + (cell_width - card_total_width) // 2
-        card_y = cell_y + (content_height - card_total_height) // 2
+        # Center card in slot
+        actual_card_width = new_width + 2 * card_padding
+        actual_card_height = new_height + 2 * card_padding
+        card_x = slot_x + (slot_width - actual_card_width) // 2
+        card_y = slot_y + (slot_height - actual_card_height) // 2
 
         # Draw card
-        _draw_rounded_card(final, resized, card_x, card_y, padding=card_padding, radius=12, shadow_offset=3)
+        _draw_rounded_card(final, resized, card_x, card_y, padding=card_padding, radius=10, shadow_offset=2)
 
         # Add label below card
         if labels and i < len(labels):
             label = labels[i]
-            draw = ImageDraw.Draw(final)  # Refresh after card paste
+            draw = ImageDraw.Draw(final)
             bbox = draw.textbbox((0, 0), label, font=label_font)
-            label_width = bbox[2] - bbox[0]
-            label_x = cell_x + (cell_width - label_width) // 2
-            label_y = cell_y + content_height + 2
+            lbl_width = bbox[2] - bbox[0]
+            label_x = slot_x + (slot_width - lbl_width) // 2
+            label_y = card_y + actual_card_height + label_gap
             draw.text((label_x, label_y), label, fill=PYPLOTS_DARK, font=label_font)
 
     # Convert to RGB for PNG output

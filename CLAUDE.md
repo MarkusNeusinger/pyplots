@@ -109,7 +109,7 @@ done
 - **highcharts** - Interactive web charts, stock charts (requires license for commercial use)
 - **lets-plot** - ggplot2 grammar of graphics by JetBrains, interactive
 
-**Core Principle**: Community proposes plot ideas via GitHub Issues → AI generates code → Multi-LLM quality checks → Deployed.
+**Core Principle**: Community proposes plot ideas via GitHub Issues → AI generates code → AI quality review → Deployed.
 
 ## Essential Commands
 
@@ -261,7 +261,7 @@ Example: `plots/scatter-basic/` contains everything for the basic scatter plot.
 
 1. **Repository Pattern**: Data access layer in `core/repositories/`
 2. **Async Everything**: FastAPI + SQLAlchemy async + asyncpg
-3. **Clean Repo**: Only production code in git. Quality reports → GitHub Issues. Preview images → GCS.
+3. **Clean Repo**: Only production code in git. Quality reports → `metadata/{library}.yaml`. Preview images → GCS.
 4. **Issue-Based Workflow**: GitHub Issues as state machine for plot lifecycle
 
 ### Metadata System
@@ -399,8 +399,8 @@ gs://pyplots-images/
 - **Plotting**: matplotlib, seaborn, plotly, bokeh, altair, plotnine, pygal, highcharts, lets-plot
 - **Package Manager**: uv (fast Python installer)
 - **Infrastructure**: Google Cloud Run, Cloud SQL, Cloud Storage
-- **Automation**: GitHub Actions (code workflows) + n8n Cloud (external services)
-- **AI**: Claude (code generation), Vertex AI (multi-LLM quality checks)
+- **Automation**: GitHub Actions
+- **AI**: Claude (code generation + quality review)
 
 ## Code Standards
 
@@ -475,7 +475,6 @@ uv run python -c "from core.database import is_db_configured; print(is_db_config
 - Implementation code (full Python source)
 - Implementation metadata (library, variant, quality score, generation info from metadata/*.yaml)
 - GCS URLs for preview images
-- Social media promotion queue
 
 **What's in Repository** (source of truth):
 - Everything in `plots/{specification-id}/`:
@@ -486,7 +485,6 @@ uv run python -c "from core.database import is_db_configured; print(is_db_config
 
 **What's NOT Stored in DB**:
 - Preview images (in GCS)
-- Detailed quality reports (in GitHub Issues, summary in metadata)
 
 **Migrations**: Managed with Alembic
 ```bash
@@ -511,8 +509,7 @@ The `prompts/` directory contains AI agent prompts for code generation, quality 
 | `plot-generator.md` | Base rules for all plot implementations |
 | `library/*.md` | Library-specific rules (9 files) |
 | `quality-criteria.md` | Definition of code/visual quality |
-| `quality-evaluator.md` | Multi-LLM evaluation prompt |
-| `auto-tagger.md` | Automatic tagging across 5 dimensions |
+| `quality-evaluator.md` | AI quality evaluation prompt |
 | `spec-validator.md` | Validates plot request issues |
 | `spec-id-generator.md` | Assigns unique spec IDs |
 
@@ -918,12 +915,12 @@ pytest --pdb       # Debug on failure
 
 ## Key Documentation Files
 
-- **docs/development.md**: Development setup, testing, deployment
-- **docs/workflow.md**: Automation flows (Discovery → Deployment → Social)
-- **docs/specs-guide.md**: How to write plot specifications
-- **docs/architecture/repository.md**: Directory structure
-- **docs/architecture/api.md**: API endpoints reference
-- **docs/architecture/database.md**: Database schema
+- **docs/contributing.md**: How to add/improve specs and implementations
+- **docs/workflows/overview.md**: Automation flows and label system
+- **docs/concepts/vision.md**: Product vision
+- **docs/reference/repository.md**: Directory structure
+- **docs/reference/api.md**: API endpoints reference
+- **docs/reference/database.md**: Database schema
 - **prompts/README.md**: AI agent prompt system
 
 ## Project Philosophy
@@ -932,5 +929,5 @@ pytest --pdb       # Debug on failure
 - **Spec improvements over code fixes**: If a plot has issues, improve the spec, not the code
 - **Your data first**: Examples work with real user data, not fake data
 - **Community-driven**: Anyone can propose plots via GitHub Issues
-- **Multi-LLM quality**: Claude + Gemini + GPT ensure quality (score ≥90 required)
-- **Full transparency**: All feedback documented in GitHub Issues, not hidden in repo files
+- **AI quality review**: Claude evaluates quality (≥90 instant merge, <90 repair loop, ≥50 minimum)
+- **Full transparency**: All quality feedback stored in repository (`metadata/{library}.yaml`)

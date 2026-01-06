@@ -11,7 +11,7 @@ issue: null            # GitHub issue number
 suggested: null        # GitHub username or 'pyplots' for seed plots
 
 # Classification tags (applies to all library implementations)
-# See docs/concepts/tagging-system.md for detailed guidelines
+# See docs/reference/tagging-system.md for detailed guidelines
 tags:
   plot_type:
     - {type}           # Primary plot type (scatter, bar, line, heatmap, etc.)

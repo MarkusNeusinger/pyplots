@@ -820,7 +820,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 **Description:** A quiver plot displays vector fields using arrows positioned at grid points. Each arrow represents a vector at that location, with direction indicating the vector's angle and length proportional to its magnitude.
 
 ### streamline-basic 📋
-**Description:** Strömungslinien eines Vektorfelds als glatte Kurven.
+**Description:** Streamlines of a vector field as smooth curves.
 
 ### stem-basic ✅
 **Description:** A stem plot displays data points as markers connected to a baseline by vertical lines (stems).
@@ -871,7 +871,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ## 30. Printable & Fun
 
-Druckbare Vorlagen und spielerische Visualisierungen.
+Printable templates and playful visualizations.
 
 ### Puzzles & Games
 

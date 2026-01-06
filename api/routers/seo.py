@@ -127,7 +127,7 @@ async def seo_spec_overview(spec_id: str, db: AsyncSession | None = Depends(opti
         # Fallback when DB unavailable
         return HTMLResponse(
             BOT_HTML_TEMPLATE.format(
-                title=f"{spec_id} | pyplots.ai",
+                title=f"{html.escape(spec_id)} | pyplots.ai",
                 description=DEFAULT_DESCRIPTION,
                 image=DEFAULT_HOME_IMAGE,
                 url=f"https://pyplots.ai/{html.escape(spec_id)}",

@@ -164,6 +164,27 @@ class TestProxyHtmlEndpoint:
         assert response.text.index("<script>") < response.text.index("</body>")
 
     @patch("api.routers.proxy.httpx.AsyncClient")
+    def test_security_headers_present(self, mock_client_class, client):
+        """Response should include security headers."""
+        mock_response = AsyncMock()
+        mock_response.text = "<html><body><h1>Test</h1></body></html>"
+        mock_response.raise_for_status = lambda: None
+
+        mock_client = AsyncMock()
+        mock_client.get = AsyncMock(return_value=mock_response)
+        mock_client.__aenter__ = AsyncMock(return_value=mock_client)
+        mock_client.__aexit__ = AsyncMock(return_value=None)
+        mock_client_class.return_value = mock_client
+
+        response = client.get(
+            "/proxy/html", params={"url": "https://storage.googleapis.com/pyplots-images/plots/test/plot.html"}
+        )
+
+        assert response.status_code == 200
+        assert response.headers.get("x-content-type-options") == "nosniff"
+        assert response.headers.get("referrer-policy") == "strict-origin-when-cross-origin"
+
+    @patch("api.routers.proxy.httpx.AsyncClient")
     def test_valid_url_injects_script_before_html_if_no_body(self, mock_client_class, client):
         """If no </body>, inject before </html>."""
         mock_response = AsyncMock()

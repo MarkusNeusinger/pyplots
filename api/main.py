@@ -26,6 +26,7 @@ from api.routers import (  # noqa: E402
     download_router,
     health_router,
     libraries_router,
+    og_images_router,
     plots_router,
     proxy_router,
     seo_router,
@@ -129,6 +130,7 @@ app.include_router(libraries_router)
 app.include_router(plots_router)
 app.include_router(download_router)
 app.include_router(seo_router)
+app.include_router(og_images_router)
 app.include_router(proxy_router)
 
 

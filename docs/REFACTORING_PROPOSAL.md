@@ -388,41 +388,85 @@
 
 ---
 
-## Features to Remove from Docs → Move to GitHub Issues
+## Code Analysis: What Exists vs What's Documented
 
-The following are currently documented but NOT implemented. They should be:
-1. Removed from documentation
-2. Created as GitHub Issues (if not already existing)
-3. Organized in Milestones for future planning
+**Analysis completed by reviewing actual codebase**
 
-### To Remove:
-- **Multi-LLM Quality Review** (docs/workflow.md mentions "Claude + Gemini + GPT" but only Claude is active)
-- **User Data Upload / "Try with YOUR data"** (vision.md, api.md describe endpoints that don't exist)
-- **Premium Features** (vision.md describes premium tier that doesn't exist)
-- **Rules Versioning System** (docs/workflow.md "Rule Versioning & Testing" section)
-- **A/B Testing for Rules** (docs/concepts/ab-testing-rules.md - entire file)
-- **Claude Skill** (docs/concepts/claude-skill-plot-generation.md - concept only)
-- **Firestore for Tagging** (docs/architecture/database.md "Future Optimization" section)
-- **API Client SDKs** (docs/architecture/api.md shows Python/JS clients that don't exist)
-- **Social Media Promotion** (partially implemented? Verify what's real)
-- **n8n Cloud Workflows** (mentioned but not public/documented)
+### ✅ VERIFIED: Features That EXIST
 
-### Files to Delete/Archive:
-- `docs/concepts/ab-testing-rules.md` → DELETE (concept only)
-- `docs/concepts/claude-skill-plot-generation.md` → DELETE (concept only)
-- Sections in other files marked "Future", "Planned", "Coming Soon"
+| Feature | Evidence |
+|---------|----------|
+| **Single LLM Review (Claude)** | `impl-review.yml` uses `anthropics/claude-code-action@v1` |
+| **Thumbnails** | `impl-generate.yml` calls `core/images.py` → `process_plot_image()` |
+| **GCS staging/production** | Full workflow in `impl-generate.yml`, `impl-merge.yml` |
+| **Tagging in specification.yaml** | JSONB tags stored in PostgreSQL `specs.tags` |
+| **Basic API** | Routers: `specs`, `plots`, `libraries`, `health`, `download`, `stats` |
+| **OG Image branding** | `core/images.py` → `create_branded_og_image()` |
+| **Full spec/impl workflow** | Complete GitHub Actions pipeline working |
 
-### Questions to Verify:
-1. **What's actually working?**
-   - Is impl-review.yml using single LLM or multiple?
-   - Is social media posting automated or manual?
-   - Are thumbnails generated automatically?
-   - Is n8n actually running workflows?
+### ❌ VERIFIED: Features That DO NOT Exist
 
-2. **What should stay?**
-   - docs/concepts/tagging-system.md - is tagging implemented?
-   - docs/specs-guide.md - is this accurate?
-   - docs/vision.md - keep aspirational goals or remove unbuilt features?
+| Documented Feature | Reality |
+|-------------------|---------|
+| **"Claude + Gemini + GPT"** | Only Claude via `anthropics/claude-code-action` |
+| **`/plots/generate` endpoint** | Does not exist in `api/routers/` |
+| **Premium tier** | Not implemented |
+| **n8n workflows** | No n8n integration in codebase |
+| **Rules versioning** | Not implemented |
+| **A/B testing** | Only concept doc, no code |
+| **Claude Skill** | Only concept doc, no code |
+| **Python/JS Client SDKs** | Do not exist |
+| **Firestore** | Using PostgreSQL JSONB only |
+| **Promotion queue** | Table exists but not used |
+
+---
+
+## Files to DELETE
+
+```bash
+rm docs/concepts/ab-testing-rules.md           # concept only, no implementation
+rm docs/concepts/claude-skill-plot-generation.md  # concept only, no implementation
+```
+
+---
+
+## Sections to REMOVE from Existing Docs
+
+### CLAUDE.md
+- Change "Multi-LLM quality: Claude + Gemini + GPT ensure quality" → "Claude AI quality review"
+- Remove n8n workflow references
+- Remove rule versioning/A/B testing mentions
+
+### docs/vision.md
+- Move "Premium (Future)" section → GitHub Milestone
+- Remove "Multi-LLM quality" claims
+
+### docs/architecture/api.md
+- Remove `/plots/generate` endpoint documentation
+- Remove Python/JS Client SDK sections
+- Remove `/internal/promotion-queue` endpoints
+
+### docs/architecture/database.md
+- Remove "Future Optimization: Firestore" section
+- Remove promotion_queue references (if not used)
+
+### docs/workflow.md
+- Remove "Rule Versioning & Testing" section
+- Remove n8n workflow references
+- Change Multi-LLM claims to single-LLM reality
+
+---
+
+## GitHub Issues to CREATE (Future Features)
+
+These should be tracked as issues, not documented as existing:
+
+1. **Multi-LLM Quality Review** - Add Gemini/GPT as secondary reviewers
+2. **User Data Upload** - Implement `/plots/generate` with user data
+3. **Premium Tier** - Define and implement premium features
+4. **Social Media Automation** - Implement n8n or alternative
+5. **API Client SDKs** - Create Python and JavaScript clients
+6. **Firestore for Tags** - Consider when scale requires it
 
 ---
 

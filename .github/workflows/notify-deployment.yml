@@ -45,6 +45,6 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: api
-      url: https://api.pyplots.ai
+      url: https://api.pyplots.ai/docs
     steps:
       - run: echo "API deployed via Cloud Build"

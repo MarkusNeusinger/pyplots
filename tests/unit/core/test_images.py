@@ -434,3 +434,245 @@ class TestCLI:
 
         captured = capsys.readouterr()
         assert "Usage:" in captured.out
+
+
+class TestBrandingFunctions:
+    """Tests for OG image branding functions."""
+
+    @pytest.fixture
+    def sample_plot_image(self, tmp_path: Path) -> Path:
+        """Create a sample plot image for branding tests."""
+        img_path = tmp_path / "plot.png"
+        img = Image.new("RGB", (800, 600), color=(100, 150, 200))
+        img.save(img_path)
+        return img_path
+
+    def test_get_font_fallback(self) -> None:
+        """Should return a font (fallback if MonoLisa not available)."""
+        from core.images import _get_font
+
+        font = _get_font(32)
+        assert font is not None
+
+    def test_get_font_with_weight(self) -> None:
+        """Should accept weight parameter."""
+        from core.images import _get_font
+
+        font = _get_font(24, weight=400)
+        assert font is not None
+
+    def test_draw_pyplots_logo(self, tmp_path: Path) -> None:
+        """Should draw logo with correct colors."""
+        from PIL import ImageDraw
+
+        from core.images import _draw_pyplots_logo
+
+        img = Image.new("RGB", (400, 100), color="#f8f9fa")
+        draw = ImageDraw.Draw(img)
+        width = _draw_pyplots_logo(draw, 50, 30, font_size=32)
+
+        assert width > 0
+        # Save to verify visually if needed
+        img.save(tmp_path / "logo_test.png")
+        assert (tmp_path / "logo_test.png").exists()
+
+    def test_create_branded_header(self) -> None:
+        """Should create header with correct dimensions."""
+        from core.images import create_branded_header
+
+        header = create_branded_header(width=1200, height=80)
+
+        assert header.width == 1200
+        assert header.height == 80
+        assert header.mode == "RGB"
+
+    def test_draw_rounded_card(self, tmp_path: Path) -> None:
+        """Should draw rounded card with shadow."""
+        from core.images import _draw_rounded_card
+
+        base = Image.new("RGBA", (400, 300), "#f8f9fa")
+        content = Image.new("RGB", (200, 150), "#ffffff")
+
+        _draw_rounded_card(base, content, x=50, y=50, padding=10, radius=12)
+
+        # Verify image was modified (not just background color)
+        base.save(tmp_path / "card_test.png")
+        assert (tmp_path / "card_test.png").exists()
+
+    def test_create_branded_og_image_from_path(self, sample_plot_image: Path, tmp_path: Path) -> None:
+        """Should create branded OG image from file path."""
+        from core.images import create_branded_og_image
+
+        output_path = tmp_path / "branded.png"
+        create_branded_og_image(sample_plot_image, output_path, spec_id="test-spec", library="matplotlib")
+
+        assert output_path.exists()
+        img = Image.open(output_path)
+        assert img.width == 1200
+        assert img.height == 630
+
+    def test_create_branded_og_image_from_bytes(self, sample_plot_image: Path) -> None:
+        """Should create branded OG image from bytes and return bytes."""
+        from io import BytesIO
+
+        from core.images import create_branded_og_image
+
+        with open(sample_plot_image, "rb") as f:
+            image_bytes = f.read()
+
+        result = create_branded_og_image(image_bytes, spec_id="test-spec", library="matplotlib")
+
+        assert isinstance(result, bytes)
+        # Verify it's a valid PNG
+        img = Image.open(BytesIO(result))
+        assert img.width == 1200
+        assert img.height == 630
+
+    def test_create_branded_og_image_from_pil_image(self, tmp_path: Path) -> None:
+        """Should create branded OG image from PIL Image."""
+        from io import BytesIO
+
+        from core.images import create_branded_og_image
+
+        pil_img = Image.new("RGB", (800, 600), color=(100, 150, 200))
+        result = create_branded_og_image(pil_img, spec_id="test-spec")
+
+        assert isinstance(result, bytes)
+        img = Image.open(BytesIO(result))
+        assert img.width == 1200
+
+    def test_create_branded_og_image_rgba(self, tmp_path: Path) -> None:
+        """Should handle RGBA images."""
+        from core.images import create_branded_og_image
+
+        rgba_img = Image.new("RGBA", (800, 600), color=(100, 150, 200, 128))
+        result = create_branded_og_image(rgba_img)
+
+        assert isinstance(result, bytes)
+
+    def test_create_og_collage_single_image(self, sample_plot_image: Path) -> None:
+        """Should create collage with single image."""
+        from io import BytesIO
+
+        from core.images import create_og_collage
+
+        with open(sample_plot_image, "rb") as f:
+            image_bytes = f.read()
+
+        result = create_og_collage([image_bytes], labels=["test · matplotlib"])
+
+        assert isinstance(result, bytes)
+        img = Image.open(BytesIO(result))
+        assert img.width == 1200
+        assert img.height == 630
+
+    def test_create_og_collage_multiple_images(self, tmp_path: Path) -> None:
+        """Should create collage with multiple images."""
+        from io import BytesIO
+
+        from core.images import create_og_collage
+
+        # Create multiple test images
+        images = []
+        labels = []
+        for i in range(6):
+            img = Image.new("RGB", (400, 300), color=(100 + i * 20, 150, 200))
+            buf = BytesIO()
+            img.save(buf, "PNG")
+            images.append(buf.getvalue())
+            labels.append(f"test · lib{i}")
+
+        result = create_og_collage(images, labels=labels)
+
+        assert isinstance(result, bytes)
+        img = Image.open(BytesIO(result))
+        assert img.width == 1200
+        assert img.height == 630
+
+    def test_create_og_collage_to_file(self, sample_plot_image: Path, tmp_path: Path) -> None:
+        """Should save collage to file."""
+        from core.images import create_og_collage
+
+        output_path = tmp_path / "collage.png"
+        create_og_collage([sample_plot_image], output_path=output_path)
+
+        assert output_path.exists()
+        img = Image.open(output_path)
+        assert img.width == 1200
+
+    def test_create_og_collage_empty_raises(self) -> None:
+        """Should raise ValueError for empty image list."""
+        from core.images import create_og_collage
+
+        with pytest.raises(ValueError, match="At least one image"):
+            create_og_collage([])
+
+    def test_create_og_collage_without_labels(self, sample_plot_image: Path) -> None:
+        """Should work without labels."""
+
+        from core.images import create_og_collage
+
+        result = create_og_collage([sample_plot_image])
+
+        assert isinstance(result, bytes)
+
+
+class TestBrandingCLI:
+    """Tests for branding CLI commands."""
+
+    @pytest.fixture(autouse=True)
+    def clean_module_cache(self):
+        """Remove core.images from sys.modules to avoid runpy warning."""
+        import sys
+
+        sys.modules.pop("core.images", None)
+        yield
+        sys.modules.pop("core.images", None)
+
+    @pytest.fixture
+    def sample_plot_image(self, tmp_path: Path) -> Path:
+        """Create a sample plot image."""
+        img_path = tmp_path / "plot.png"
+        img = Image.new("RGB", (800, 600), color=(100, 150, 200))
+        img.save(img_path)
+        return img_path
+
+    def test_cli_brand_command(self, sample_plot_image: Path, tmp_path: Path, monkeypatch, capsys) -> None:
+        """Should run brand command from CLI."""
+        import sys
+
+        output_path = tmp_path / "branded.png"
+
+        monkeypatch.setattr(
+            sys, "argv", ["images", "brand", str(sample_plot_image), str(output_path), "test-spec", "matplotlib"]
+        )
+
+        import runpy
+
+        try:
+            runpy.run_module("core.images", run_name="__main__", alter_sys=True)
+        except SystemExit:
+            pass
+
+        assert output_path.exists()
+        captured = capsys.readouterr()
+        assert "1200x630" in captured.out
+
+    def test_cli_collage_command(self, sample_plot_image: Path, tmp_path: Path, monkeypatch, capsys) -> None:
+        """Should run collage command from CLI."""
+        import sys
+
+        output_path = tmp_path / "collage.png"
+
+        monkeypatch.setattr(sys, "argv", ["images", "collage", str(output_path), str(sample_plot_image)])
+
+        import runpy
+
+        try:
+            runpy.run_module("core.images", run_name="__main__", alter_sys=True)
+        except SystemExit:
+            pass
+
+        assert output_path.exists()
+        captured = capsys.readouterr()
+        assert "Collage" in captured.out

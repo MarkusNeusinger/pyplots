@@ -64,8 +64,8 @@ async def lifespan(app: FastAPI):
 # Create FastAPI application
 app = FastAPI(
     title="pyplots API",
-    description="AI-powered Python plotting examples that work with YOUR data",
-    version="0.2.0",
+    description="Backend API for pyplots.ai - Python plotting gallery across 9 libraries",
+    version="1.0.0",
     lifespan=lifespan,
     docs_url="/docs",
     redoc_url="/redoc",

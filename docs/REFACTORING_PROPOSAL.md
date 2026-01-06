@@ -14,11 +14,13 @@
 - Code examples, command snippets, exact file structures
 - This belongs in code comments and READMEs, not high-level docs
 
-### 3. Outdated/Orphaned Content
-- References to `rules/` system (mentioned but not fully implemented)
-- A/B testing concepts (planned, not active)
-- Versioning systems that may not exist
-- Development.md references pre-commit hooks not in use
+### 3. Planned/Unimplemented Features Documented as Real
+- Multi-LLM quality review (mentioned but not implemented)
+- User data upload / "Try with YOUR data" (planned premium feature)
+- Rules versioning system (partial/incomplete)
+- A/B testing for rules (concept only)
+- Various "Future Optimization" sections in docs
+- Features described in vision.md that don't exist yet
 
 ### 4. Unclear Target Audiences
 - README: Mix of users, contributors, and developers
@@ -35,11 +37,11 @@
 ## Proposed New Structure
 
 ### Philosophy
-1. **Clear separation**: CLAUDE.md for AI (comprehensive), docs/ for humans (organized by persona)
-2. **Single source of truth**: Each fact documented once, no duplication between files
-3. **Better structure**: Reorganize CLAUDE.md sections logically, remove internal redundancy
-4. **Process over implementation**: Focus on WHY and WHAT, let code show HOW
-5. **Maintainability**: Less duplication = easier to keep up-to-date
+1. **Document what exists**: Only describe implemented features, not plans or wishes
+2. **Clear separation**: CLAUDE.md for AI (comprehensive), docs/ for humans (organized by persona)
+3. **Single source of truth**: Each fact documented once, no duplication between files
+4. **Better structure**: Reorganize CLAUDE.md sections logically, remove internal redundancy
+5. **Plans belong in GitHub**: Future features → Issues/Milestones, not documentation
 
 ---
 
@@ -185,7 +187,13 @@
 - ❌ Complete API endpoint list (keep overview, details in docs/reference/api.md)
 - ❌ Multiple code examples for same concept (one clear example enough)
 - ❌ Detailed deployment steps (keep "what deploys where", not "how to deploy")
-- ❌ Outdated/unimplemented features (rules/ system, A/B testing)
+- ❌ ALL unimplemented features:
+  - Multi-LLM quality review (if not active)
+  - User data upload features
+  - Rules versioning/A/B testing
+  - Premium features that don't exist
+  - "Future Optimization" sections
+  - Any "planned" or "coming soon" content
 
 **Principle**: CLAUDE.md stays comprehensive but becomes better organized with less redundancy
 
@@ -380,25 +388,41 @@
 
 ---
 
-## Questions to Resolve
+## Features to Remove from Docs → Move to GitHub Issues
 
-1. **Keep or remove?**
-   - docs/concepts/ab-testing-rules.md (planned feature, not implemented)
-   - docs/concepts/claude-skill-plot-generation.md (concept doc, unclear status)
-   - docs/concepts/tagging-system.md (implementation detail?)
-   - docs/specs-guide.md (move to workflows/?)
+The following are currently documented but NOT implemented. They should be:
+1. Removed from documentation
+2. Created as GitHub Issues (if not already existing)
+3. Organized in Milestones for future planning
 
-2. **Frontend docs:**
-   - Keep in app/README.md or duplicate in docs/?
-   - Currently no app/README.md exists
+### To Remove:
+- **Multi-LLM Quality Review** (docs/workflow.md mentions "Claude + Gemini + GPT" but only Claude is active)
+- **User Data Upload / "Try with YOUR data"** (vision.md, api.md describe endpoints that don't exist)
+- **Premium Features** (vision.md describes premium tier that doesn't exist)
+- **Rules Versioning System** (docs/workflow.md "Rule Versioning & Testing" section)
+- **A/B Testing for Rules** (docs/concepts/ab-testing-rules.md - entire file)
+- **Claude Skill** (docs/concepts/claude-skill-plot-generation.md - concept only)
+- **Firestore for Tagging** (docs/architecture/database.md "Future Optimization" section)
+- **API Client SDKs** (docs/architecture/api.md shows Python/JS clients that don't exist)
+- **Social Media Promotion** (partially implemented? Verify what's real)
+- **n8n Cloud Workflows** (mentioned but not public/documented)
 
-3. **Prompts documentation:**
-   - Currently prompts/README.md doesn't exist
-   - Should we document the prompt system?
+### Files to Delete/Archive:
+- `docs/concepts/ab-testing-rules.md` → DELETE (concept only)
+- `docs/concepts/claude-skill-plot-generation.md` → DELETE (concept only)
+- Sections in other files marked "Future", "Planned", "Coming Soon"
 
-4. **Archive old content:**
-   - Create docs/archive/ for outdated but historical docs?
-   - Or just delete and rely on git history?
+### Questions to Verify:
+1. **What's actually working?**
+   - Is impl-review.yml using single LLM or multiple?
+   - Is social media posting automated or manual?
+   - Are thumbnails generated automatically?
+   - Is n8n actually running workflows?
+
+2. **What should stay?**
+   - docs/concepts/tagging-system.md - is tagging implemented?
+   - docs/specs-guide.md - is this accurate?
+   - docs/vision.md - keep aspirational goals or remove unbuilt features?
 
 ---
 

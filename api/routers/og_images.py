@@ -23,7 +23,8 @@ def _get_static_og_image() -> bytes:
     """Load static og-image.png (cached in memory)."""
     global _STATIC_OG_IMAGE
     if _STATIC_OG_IMAGE is None:
-        path = Path(__file__).parent.parent.parent / "app" / "public" / "og-image.png"
+        # Use api/static/ which is bundled in the Docker image
+        path = Path(__file__).parent.parent / "static" / "og-image.png"
         try:
             _STATIC_OG_IMAGE = path.read_bytes()
         except FileNotFoundError as exc:

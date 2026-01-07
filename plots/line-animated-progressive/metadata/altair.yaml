@@ -1,0 +1,220 @@
+library: altair
+specification_id: line-animated-progressive
+created: '2026-01-07T20:19:39Z'
+updated: '2026-01-07T20:26:43Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20795216362
+issue: 3238
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-animated-progressive/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-animated-progressive/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-animated-progressive/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of progressive reveal concept using marker size/color
+    gradient
+  - Well-designed HTML version with interactive slider for frame-by-frame animation
+  - Clear visual hierarchy with highlighted final point in contrasting yellow
+  - Clean, readable code structure following KISS principle
+  - Realistic temperature data with seasonal patterns demonstrates the time series
+    nature well
+  weaknesses:
+  - The Progression annotation is placed in a somewhat awkward position and is purely
+    text rather than an actual visual legend
+  - No proper legend explaining the visual encoding (size/color gradient meaning)
+  image_description: The plot displays a time series line chart showing monthly temperature
+    readings from February 2022 to December 2024. The main line is rendered in blue
+    (#306998) with a stroke width of approximately 4px. Data points are shown as circles
+    overlaid on the line, with size and color intensity increasing progressively from
+    left to right (smaller/lighter blue at the start, larger/darker blue at the end)
+    to indicate the direction of progression. The final data point (December 2024)
+    is highlighted with a prominent yellow circle (#FFD43B) with a blue border, marking
+    the "current" position. A text annotation "← Progression →" appears in the upper-left
+    area of the chart. The y-axis shows "Temperature (°C)" ranging from 0 to 34, and
+    the x-axis shows "Date" with labels formatted as "Mon YYYY". The title reads "Monthly
+    Temperature Readings · line-animated-progressive · altair · pyplots.ai". The seasonal
+    pattern (peaks in summer, troughs in winter) is clearly visible across the 3 years.
+    The background has subtle grid lines and the overall layout is clean with good
+    proportions.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at ~28pt, axis labels at ~22pt, tick labels at ~18pt - all
+          clearly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping elements, x-axis date labels well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Line and markers visible; progression markers work well but could
+          be slightly more differentiated
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue color scheme is colorblind-safe, yellow highlight provides good
+          contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, though slight gap at top due to y-axis domain extending
+          to 35
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Temperature (°C) and Date with proper units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle, but no legend for the progression annotation; text
+          annotation is informational but not a proper legend
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct line plot with progressive reveal indication
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Time on x-axis, temperature on y-axis, correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Progressive markers, final point highlight, direction annotation
+          present; HTML version has slider controls
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 36 data points visible, axis ranges appropriate
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No multi-series legend needed
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: {desc} · {spec-id} · {library} · pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows seasonal pattern, trend, noise - demonstrates time series progression
+          well, but only single series
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly temperature readings over 3 years is a plausible, neutral
+          scientific scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Temperature range 0-35°C is realistic, though domain could be tighter
+          to the actual data range
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) is set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only altair, numpy, pandas - all used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Altair API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses Altair's declarative encoding, layering, params/binding for
+          interactive slider in HTML version. Good use of tooltips. Could leverage
+          more Altair-specific features like selections for highlighting.
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - annotations
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - time-series
+  styling:
+  - alpha-blending
+  - custom-colormap

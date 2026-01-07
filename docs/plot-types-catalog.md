@@ -72,7 +72,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### line-annotated-events ✅
 **Description:** A line plot with annotations marking significant events or milestones along the time series.
 
-### line-interactive 📋
+### line-interactive ✅
 **Description:** Line plot with hover tooltips and zoom capability.
 
 ### line-loss-training ✅
@@ -80,6 +80,9 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ### line-timeseries-rolling ✅
 **Description:** Time series plot with rolling average overlay for trend smoothing.
+
+### line-animated-progressive ✅
+**Description:** Animated line plot that progressively draws over time.
 
 ---
 
@@ -115,7 +118,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### lollipop-basic ✅
 **Description:** A lollipop chart displays categorical data with thin lines (stems) extending from a baseline to circular markers (dots) at each data point.
 
-### bar-interactive 📋
+### bar-interactive ✅
 **Description:** Bar chart with hover details and click interactions.
 
 ### bar-feature-importance ✅
@@ -127,9 +130,6 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ### histogram-basic ✅
 **Description:** A histogram displays the distribution of a single continuous variable by dividing the data range into bins and showing the frequency of observations in each bin.
-
-### histogram-normalized ✅
-**Description:** Histogram normalized to show density instead of count.
 
 ### histogram-overlapping ✅
 **Description:** Multiple overlapping histograms for comparison.
@@ -293,9 +293,6 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### regression-linear 📋
 **Description:** Scatter with linear regression fit and confidence band.
 
-### regression-polynomial ✅
-**Description:** Non-linear regression curve fit.
-
 ### regression-lowess 📋
 **Description:** Locally weighted regression smoothing.
 
@@ -305,17 +302,11 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### qq-basic ✅
 **Description:** A Q-Q (Quantile-Quantile) plot compares the distribution of a dataset against a theoretical distribution. Points along a diagonal reference line indicate perfect distribution match.
 
-### bland-altman ✅
-**Description:** Agreement plot between two measurements with limits of agreement.
-
 ### bland-altman-basic ✅
 **Description:** Bland-Altman agreement plot comparing two measurement methods with mean difference and limits of agreement.
 
 ### errorbar-basic ✅
 **Description:** An error bar plot displays data points with associated uncertainty or variability represented by bars extending above and below each point.
-
-### error-asymmetric ✅
-**Description:** Error bars with different upper/lower bounds.
 
 ### errorbar-asymmetric ✅
 **Description:** Asymmetric error bars plot with different upper and lower error values for each data point.
@@ -368,17 +359,14 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### timeseries-decomposition ✅
 **Description:** A time series decomposition plot showing the original series broken down into trend, seasonal, and residual components.
 
-### timeseries-rolling ✅
-**Description:** Time series with rolling average overlay.
-
 ### candlestick-basic ✅
 **Description:** A candlestick chart displays open, high, low, and close (OHLC) price data for financial instruments over time.
 
 ### timeseries-ohlc 📋
 **Description:** Open-high-low-close bar chart.
 
-### timeseries-forecast 📋
-**Description:** Historical data with forecast and uncertainty.
+### timeseries-forecast-uncertainty ✅
+**Description:** Time series plot with forecast line and uncertainty/confidence band.
 
 ### sparkline-basic ✅
 **Description:** A sparkline is a small, condensed line chart designed to be embedded inline with text or in dashboard cells. Pure data visualization in minimal space.
@@ -415,14 +403,14 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### wireframe-3d-basic ✅
 **Description:** A 3D wireframe plot displays a mathematical surface as a mesh of lines connecting grid points, creating a see-through visualization.
 
-### contour-3d 📋
+### contour-3d ✅
 **Description:** 3D contour plot.
 
 ### bar-3d ✅
 **Description:** 3D bar chart.
 
-### line-3d 📋
-**Description:** 3D line plot or trajectory.
+### line-3d-trajectory ✅
+**Description:** 3D line plot or trajectory visualization in three-dimensional space.
 
 ---
 
@@ -447,7 +435,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### network-basic ✅
 **Description:** A network graph (node-link diagram) visualizes relationships between entities as nodes connected by edges.
 
-### network-directed 📋
+### network-directed ✅
 **Description:** Directed graph with arrows.
 
 ### network-weighted 📋
@@ -487,9 +475,6 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### icicle-basic ✅
 **Description:** Rectangular hierarchy visualization with stacked rectangles.
 
-### circle-packing ✅
-**Description:** Nested circles showing hierarchy.
-
 ### circlepacking-basic ✅
 **Description:** Circle packing chart displaying hierarchical data as nested circles.
 
@@ -515,9 +500,6 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ---
 
 ## 20. Animation & Interactive
-
-### animation-line 📋
-**Description:** Animated line plot building over time.
 
 ### scatter-animated-controls ✅
 **Description:** An animated scatter plot with play/pause controls, showing data evolution over time with smooth transitions.
@@ -575,9 +557,6 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### wordcloud-basic ✅
 **Description:** A word cloud displays text data where word size represents frequency or importance.
 
-### annotated-scatter ✅
-**Description:** Scatter plot with text labels on points.
-
 ### annotated-line 📋
 **Description:** Line plot with annotations at key points.
 
@@ -587,9 +566,6 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ### parallel-basic ✅
 **Description:** A parallel coordinates plot visualizes multivariate data by representing each variable as a vertical axis and each observation as a line connecting values across all axes.
-
-### parallel-categories ✅
-**Description:** Parallel coordinates for categorical data.
 
 ### parallel-categories-basic ✅
 **Description:** Basic parallel categories plot for visualizing flows between categorical variables.
@@ -619,13 +595,13 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### stock-volume 📋
 **Description:** Stock price with volume bars in synchronized panes.
 
-### indicator-macd 📋
+### indicator-macd ✅
 **Description:** MACD technical indicator chart.
 
-### indicator-rsi 📋
+### indicator-rsi ✅
 **Description:** Relative Strength Index indicator.
 
-### indicator-bollinger 📋
+### indicator-bollinger ✅
 **Description:** Bollinger Bands overlay on price chart.
 
 ### indicator-sma 📋
@@ -749,14 +725,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### precision-recall ✅
 **Description:** Precision-Recall curve for evaluating classification models, especially useful for imbalanced datasets.
 
-### learning-curve ✅
-**Description:** Learning curve showing model performance (training and validation scores) vs training set size for bias-variance diagnosis.
-
 ### learning-curve-basic ✅
 **Description:** Model learning curve showing training and validation performance across different training set sizes.
-
-### feature-importance ✅
-**Description:** Horizontal bar chart showing feature importances from machine learning models, sorted by importance value.
 
 ### calibration-curve ✅
 **Description:** Calibration curve (reliability diagram) visualizing how well predicted probabilities match actual outcomes for probability calibration.
@@ -767,11 +737,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### gain-curve ✅
 **Description:** Cumulative gains chart for evaluating classification model effectiveness.
 
-### shap-summary 📋
+### shap-summary ✅
 **Description:** SHAP (SHapley Additive exPlanations) summary plot showing feature impact on model predictions.
-
-### partial-dependence ✅
-**Description:** Partial dependence plot showing marginal effect of features on predicted outcome.
 
 ### pdp-basic ✅
 **Description:** Partial dependence plot showing the marginal effect of a feature on model predictions.
@@ -788,9 +755,6 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### residual-plot ✅
 **Description:** Residual plot displaying difference between observed and predicted values for regression model diagnostics.
 
-### decision-boundary ✅
-**Description:** Decision boundary visualization showing classifier regions in 2D feature space.
-
 ### contour-decision-boundary ✅
 **Description:** Decision boundary classifier visualization using contour plot to show classification regions.
 
@@ -801,14 +765,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ## 29. Scientific & Domain-Specific
 
-### spectrum-plot ✅
-**Description:** Frequency spectrum visualization.
-
 ### spectrum-basic ✅
 **Description:** Frequency spectrum plot showing signal power or amplitude across frequencies.
-
-### spectrogram ✅
-**Description:** Time-frequency heatmap for audio/signals.
 
 ### spectrogram-basic ✅
 **Description:** Spectrogram time-frequency heatmap showing signal intensity over time and frequency.
@@ -819,7 +777,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### quiver-basic ✅
 **Description:** A quiver plot displays vector fields using arrows positioned at grid points. Each arrow represents a vector at that location, with direction indicating the vector's angle and length proportional to its magnitude.
 
-### streamline-basic 📋
+### streamline-basic ✅
 **Description:** Streamlines of a vector field as smooth curves.
 
 ### stem-basic ✅
@@ -834,23 +792,14 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### skewt-basic 📋
 **Description:** A Skew-T Log-P diagram displays atmospheric thermodynamic profiles with logarithmic pressure axis and 45-degree skewed temperature isotherms.
 
-### survival-curve ✅
-**Description:** Kaplan-Meier survival analysis plot.
-
 ### survival-kaplan-meier ✅
 **Description:** Kaplan-Meier survival plot showing probability of survival over time with censored data.
 
 ### forest-basic ✅
 **Description:** Meta-analysis effect sizes with confidence intervals.
 
-### volcano-plot ✅
-**Description:** Statistical significance vs fold change.
-
 ### volcano-basic ✅
 **Description:** Volcano plot for statistical significance showing -log10(p-value) vs fold change.
-
-### manhattan-plot ✅
-**Description:** Genome-wide association study visualization.
 
 ### manhattan-gwas ✅
 **Description:** Manhattan plot for genome-wide association studies showing chromosomal positions vs -log10(p-values).
@@ -881,8 +830,8 @@ Printable templates and playful visualizations.
 ### sudoku-filled 📋
 **Description:** Sudoku-Rätsel mit vorgegebenen Zahlen und eindeutiger Lösung. Vorgegebene Zahlen optisch hervorgehoben.
 
-### maze-basic 📋
-**Description:** Rechteckiges Labyrinth mit Start und Ziel. Algorithmisch generiert mit genau einem Lösungsweg. Schwarz-weiß zum Ausdrucken.
+### maze-printable ✅
+**Description:** Rectangular maze puzzle with start and goal, algorithmically generated with exactly one solution path.
 
 ### maze-circular 📋
 **Description:** Rundes Labyrinth aus konzentrischen Ringen. Eingang außen, Ziel im Zentrum.
@@ -895,8 +844,8 @@ Printable templates and playful visualizations.
 
 ### Codes & Identification
 
-### qr-code 📋
-**Description:** QR-Code generiert aus Text oder URL. Quadratisches Muster mit Positionsmarkierungen, scanbar mit Smartphone.
+### qrcode-basic ✅
+**Description:** QR code generated from text or URL, scannable with smartphone.
 
 ### barcode-ean 📋
 **Description:** EAN-13 Barcode (europäischer Produktcode). Vertikale Striche mit 13 Ziffern darunter, scanbar im Einzelhandel.
@@ -911,9 +860,9 @@ Printable templates and playful visualizations.
 
 ## Statistics
 
-- **Total Plot Types:** 245+
-- **Implemented:** 191 ✅
-- **Planned:** 54+ 📋
+- **Total Plot Types:** 242
+- **Implemented:** 181 ✅
+- **Planned:** 61 📋
 - **Categories:** 30
 
 ---

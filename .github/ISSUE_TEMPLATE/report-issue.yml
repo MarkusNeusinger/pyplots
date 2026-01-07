@@ -1,5 +1,6 @@
 name: Report Issue
 description: Report an issue with an existing plot spec or implementation
+title: "Report: "
 labels: ["report-pending"]
 body:
   - type: markdown

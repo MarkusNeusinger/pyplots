@@ -15,25 +15,34 @@ From the issue body, extract:
 - **category**: Visual, Data, Functional, or Other
 - **description**: User's description of the issue
 
+## Input Validation (Security)
+
+**CRITICAL:** Before using any user-supplied values in commands, validate them:
+
+1. **spec_id** must match pattern `^[a-z0-9-]+$` (lowercase letters, numbers, hyphens only)
+2. **library** must be one of: `matplotlib`, `seaborn`, `plotly`, `bokeh`, `altair`, `plotnine`, `pygal`, `highcharts`, `letsplot`
+
+If validation fails → post comment explaining invalid input, close issue, STOP.
+
 ## Validation Steps
 
-1. **Verify spec exists:**
-   ```bash
-   ls plots/{spec_id}/
-   ```
-   If not found → post comment, close issue, STOP
+1. **Validate spec_id format:**
+   - Must match `^[a-z0-9-]+$`
+   - If invalid → post comment, close issue, STOP
 
-2. **If implementation issue, verify library exists:**
-   ```bash
-   ls plots/{spec_id}/implementations/{library}.py
-   ```
-   If not found → post comment, close issue, STOP
+2. **Verify spec exists:**
+   - Check if directory `plots/{spec_id}/` exists
+   - If not found → post comment, close issue, STOP
 
-3. **Read relevant files:**
+3. **If implementation issue, verify library exists:**
+   - Check if file `plots/{spec_id}/implementations/{library}.py` exists
+   - If not found → post comment, close issue, STOP
+
+4. **Read relevant files:**
    - `plots/{spec_id}/specification.md`
    - `plots/{spec_id}/metadata/{library}.yaml` (if impl)
 
-4. **Analyze the issue:**
+5. **Analyze the issue:**
    - Is this a legitimate issue or misunderstanding?
    - Does the described problem match what's in the spec/metadata?
    - What might be the root cause?
@@ -83,12 +92,11 @@ After posting the comment, update labels:
 
 ## Title Update
 
-Update the issue title to include the spec ID:
-```bash
-gh issue edit {number} --title "[{spec_id}] {brief description of the issue}"
-```
+Update the issue title to format: `[{spec_id}] {brief description}`
 
-Keep the description under 60 characters.
+Example: `[qrcode-basic] QR code not scannable`
+
+Keep the description under 60 characters. Only use the validated spec_id.
 
 ## Important Notes
 

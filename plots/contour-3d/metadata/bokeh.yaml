@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: contour-3d
 created: '2026-01-07T20:25:01Z'
-updated: '2026-01-07T20:51:18Z'
+updated: '2026-01-07T21:03:41Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20795211097
 issue: 3230
@@ -13,77 +13,77 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-3d/bok
 quality_score: 88
 review:
   strengths:
-  - Creative 3D projection implementation using painter's algorithm for depth sorting
-  - Excellent use of Bokeh's ColorBar, HoverTool, and HTML export features
-  - Clean isometric projection with custom axis arrows
-  - Base plane contour projection provides good reference per spec requirements
-  - Viridis colormap is accessible and perceptually uniform
+  - Impressive manual 3D projection implementation using painter algorithm for correct
+    depth ordering
+  - Excellent use of Viridis colormap for colorblind accessibility
+  - Both PNG and interactive HTML output provided
+  - Clean contour line visualization on the surface
+  - Base plane contour projections add reference value
+  - Good use of Bokeh-specific features (ColorBar, HoverTool, interactive toolbar)
   weaknesses:
-  - Text elements (title, axis labels, colorbar) appear small relative to the high-resolution
-    output
-  - Uses deprecated matplotlib allsegs API; should use get_paths() for future compatibility
-  - Axis labels lack descriptive context (just X, Y, Z instead of meaningful variable
-    names with units)
-  - Layout leaves significant white space at the bottom of the canvas
-  image_description: The plot displays a 3D contour surface visualization using an
-    isometric projection technique. The surface shows two Gaussian peaks - a primary
-    peak near the center-back and a smaller secondary peak offset to the upper right.
-    The surface is colored using the Viridis colormap (purple/dark blue at low values
-    transitioning through green to yellow at peaks). Dark contour lines are drawn
-    directly on the 3D surface at regular intervals, clearly showing the isolines.
-    Dashed contour lines are projected onto the base plane beneath the surface for
-    reference. Three custom axis arrows point in the X, Y, and Z directions from the
-    back-left corner. A colorbar on the right displays "Height (Z)" ranging from approximately
-    0.2 to 1.0. The title "contour-3d · bokeh · pyplots.ai" appears at the top left.
+  - Axis labels (X, Y, Z) appear smaller than specified in code - may be a rendering/export
+    issue
+  - Relies on matplotlib for contour extraction instead of a pure Bokeh solution
+  - Base plane dashed contours are quite subtle and hard to see
+  - The Z-axis label inconsistency (Amplitude vs Height)
+  image_description: The plot displays a 3D contour visualization using an isometric
+    projection technique. A surface composed of two Gaussian peaks (one primary peak
+    near the center-left and a secondary smaller peak) is rendered using the Viridis
+    colormap, transitioning from dark purple (low values ~0.2) to yellow (high values
+    ~1.0). Dark contour lines are drawn on the surface showing isolines at regular
+    intervals. The 3D coordinate system is indicated by three axis arrows (X, Y, Z)
+    at the bottom-left corner. A vertical colorbar labeled "Height (Z)" is positioned
+    on the right side. Dashed contour lines are projected onto the base plane for
+    reference. The title "contour-3d · bokeh · pyplots.ai" appears in the top-left
+    corner.
   criteria_checklist:
     visual_quality:
-      score: 34
+      score: 35
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 10
         passed: true
-        comment: Title and axis labels readable but relatively small for 4800x2700
-          output
+        comment: Title and colorbar labels readable, but axis labels appear small
+          in rendered output
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements; all labels positioned clearly
+        comment: No overlapping elements, all text clearly separated
       - id: VQ-03
         name: Element Visibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: Surface quads, contour lines, and base plane contours all clearly
-          visible
+        comment: Surface and contour lines visible, base plane contours subtle
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Viridis colormap is colorblind-safe with excellent perceptual uniformity
+        comment: Viridis colormap is colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Plot well-centered but significant white space at bottom
+        comment: Good 3D placement, some empty space appropriate for isometric view
       - id: VQ-06
         name: Axis Labels
         score: 1
         max: 2
-        passed: true
-        comment: Labels show X, Y, Z but lack descriptive context with units
+        passed: false
+        comment: Shows only X, Y, Z without units visible in rendered output
       - id: VQ-07
         name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Subtle grid lines, colorbar well-placed on right
+        comment: Subtle grid, colorbar well-positioned
     spec_compliance:
       score: 23
       max: 25
@@ -99,32 +99,31 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: X, Y, Z correctly assigned; proper meshgrid structure
+        comment: X, Y grid correctly mapped to Z surface values
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Has surface contours, base plane projection, colorbar; rotation not
-          applicable for static PNG
+        comment: Has contour lines, colorbar, base projections; no rotation (static)
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within the projected view
+        comment: All data visible, 40x40 grid appropriate
       - id: SC-05
         name: Legend Accuracy
+        score: 1
+        max: 2
+        passed: false
+        comment: Colorbar shows Height but code uses Amplitude in some places
+      - id: SC-06
+        name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Colorbar correctly shows amplitude scale
-      - id: SC-06
-        name: Title Format
-        score: 1
-        max: 2
-        passed: true
-        comment: Format correct but title text appears too small in final render
+        comment: 'Correct format: contour-3d · bokeh · pyplots.ai'
     data_quality:
       score: 18
       max: 20
@@ -134,22 +133,21 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows multiple peaks with different heights, clear contour gradients
+        comment: Shows multiple peaks, contour levels, base projections
       - id: DQ-02
         name: Realistic Context
         score: 6
         max: 7
         passed: true
-        comment: Generic amplitude surface suitable for many domains
+        comment: Mathematical/physics Gaussian peaks, generic scientific context
       - id: DQ-03
         name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Normalized 0-1 amplitude scale is appropriate; grid points (40x40)
-          provide clear detail
+        comment: Normalized 0-1 values, coordinates -3 to 3
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -157,58 +155,56 @@ review:
         score: 2
         max: 3
         passed: true
-        comment: Code is linear but uses loops for projection; necessarily complex
-          for 3D simulation
+        comment: Mostly linear, but uses matplotlib for contour extraction
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) set correctly
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used; matplotlib only for contour extraction
+        comment: All imports used
       - id: CQ-04
         name: No Deprecated API
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Uses contour_set.allsegs which is deprecated in matplotlib 3.8+
+        passed: true
+        comment: Current Bokeh API
       - id: CQ-05
         name: Output Correct
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
+        comment: Saves plot.png and plot.html
     library_features:
-      score: 5
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 5
+        score: 3
         max: 5
         passed: true
-        comment: Implements HoverTool, ColorBar, LinearColorMapper, export_png, interactive
-          HTML export with CDN resources
+        comment: Uses Bokeh patches, ColorBar, HoverTool, toolbar; but relies on matplotlib
+          for contours
   verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - colorbar
   - 3d-projection
+  - colorbar
+  - patches
   - hover-tooltips
   - html-export
-  - patches
   patterns:
   - data-generation
   - matrix-construction
   - iteration-over-groups
-  dataprep:
-  - normalization
+  dataprep: []
   styling:
   - custom-colormap
   - alpha-blending

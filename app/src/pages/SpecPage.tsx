@@ -324,6 +324,7 @@ export function SpecPage() {
               href={buildReportUrl()}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackEvent('report_issue', { spec: specId, library: selectedLibrary || undefined })}
               sx={{
                 color: '#9ca3af',
                 textDecoration: 'none',

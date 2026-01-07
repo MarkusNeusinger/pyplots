@@ -197,6 +197,7 @@ export function CatalogPage() {
             href={`${GITHUB_URL}/issues/new?template=spec-request.yml`}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackEvent('suggest_spec')}
             sx={{
               color: '#9ca3af',
               textDecoration: 'none',

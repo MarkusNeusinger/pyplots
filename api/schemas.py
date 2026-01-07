@@ -82,11 +82,11 @@ class FilterCountsResponse(BaseModel):
     dom: dict[str, int] = {}
     feat: dict[str, int] = {}
     # Impl-level filters (issue #2434)
-    impl_dep: dict[str, int] = {}
-    impl_tech: dict[str, int] = {}
-    impl_pat: dict[str, int] = {}
-    impl_prep: dict[str, int] = {}
-    impl_style: dict[str, int] = {}
+    dep: dict[str, int] = {}
+    tech: dict[str, int] = {}
+    pat: dict[str, int] = {}
+    prep: dict[str, int] = {}
+    style: dict[str, int] = {}
 
 
 class FilteredPlotsResponse(BaseModel):

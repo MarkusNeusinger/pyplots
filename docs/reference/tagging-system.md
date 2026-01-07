@@ -155,7 +155,6 @@ impl_tags:
     - iteration-over-groups
   dataprep: []
   styling:
-    - publication-ready
     - alpha-blending
 ```
 

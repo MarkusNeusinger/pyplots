@@ -114,12 +114,7 @@ def _create_direct_engine_sync():
     elif url.startswith("postgres://"):
         url = url.replace("postgres://", "postgresql+pg8000://")
 
-    engine_kwargs = {
-        "echo": ENVIRONMENT == "development",
-        "pool_size": 5,
-        "max_overflow": 10,
-        "pool_pre_ping": True,
-    }
+    engine_kwargs = {"echo": ENVIRONMENT == "development", "pool_size": 5, "max_overflow": 10, "pool_pre_ping": True}
 
     engine = create_engine(url, **engine_kwargs)
 

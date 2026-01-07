@@ -46,23 +46,23 @@ def _image_matches_groups(spec_id: str, library: str, groups: list[dict], spec_l
             if not any(v in spec_features for v in values):
                 return False
         # Impl-level tag filters (issue #2434)
-        elif category == "impl_dep":
+        elif category == "dep":
             impl_deps = impl_tags.get("dependencies", [])
             if not any(v in impl_deps for v in values):
                 return False
-        elif category == "impl_tech":
+        elif category == "tech":
             impl_techs = impl_tags.get("techniques", [])
             if not any(v in impl_techs for v in values):
                 return False
-        elif category == "impl_pat":
+        elif category == "pat":
             impl_pats = impl_tags.get("patterns", [])
             if not any(v in impl_pats for v in values):
                 return False
-        elif category == "impl_prep":
+        elif category == "prep":
             impl_preps = impl_tags.get("dataprep", [])
             if not any(v in impl_preps for v in values):
                 return False
-        elif category == "impl_style":
+        elif category == "style":
             impl_styles = impl_tags.get("styling", [])
             if not any(v in impl_styles for v in values):
                 return False
@@ -79,11 +79,11 @@ def _calculate_global_counts(all_specs: list) -> dict:
         "dom": {},
         "feat": {},
         # Impl-level tag counts (issue #2434)
-        "impl_dep": {},
-        "impl_tech": {},
-        "impl_pat": {},
-        "impl_prep": {},
-        "impl_style": {},
+        "dep": {},
+        "tech": {},
+        "pat": {},
+        "prep": {},
+        "style": {},
     }
 
     for spec_obj in all_specs:
@@ -117,15 +117,15 @@ def _calculate_global_counts(all_specs: list) -> dict:
             # Count impl-level tags (issue #2434)
             impl_tags = impl.impl_tags or {}
             for dep in impl_tags.get("dependencies", []):
-                global_counts["impl_dep"][dep] = global_counts["impl_dep"].get(dep, 0) + 1
+                global_counts["dep"][dep] = global_counts["dep"].get(dep, 0) + 1
             for tech in impl_tags.get("techniques", []):
-                global_counts["impl_tech"][tech] = global_counts["impl_tech"].get(tech, 0) + 1
+                global_counts["tech"][tech] = global_counts["tech"].get(tech, 0) + 1
             for pat in impl_tags.get("patterns", []):
-                global_counts["impl_pat"][pat] = global_counts["impl_pat"].get(pat, 0) + 1
+                global_counts["pat"][pat] = global_counts["pat"].get(pat, 0) + 1
             for prep in impl_tags.get("dataprep", []):
-                global_counts["impl_prep"][prep] = global_counts["impl_prep"].get(prep, 0) + 1
+                global_counts["prep"][prep] = global_counts["prep"].get(prep, 0) + 1
             for style in impl_tags.get("styling", []):
-                global_counts["impl_style"][style] = global_counts["impl_style"].get(style, 0) + 1
+                global_counts["style"][style] = global_counts["style"].get(style, 0) + 1
 
     # Sort counts
     for category in global_counts:
@@ -144,11 +144,11 @@ def _calculate_contextual_counts(filtered_images: list[dict], spec_id_to_tags: d
         "dom": {},
         "feat": {},
         # Impl-level tag counts (issue #2434)
-        "impl_dep": {},
-        "impl_tech": {},
-        "impl_pat": {},
-        "impl_prep": {},
-        "impl_style": {},
+        "dep": {},
+        "tech": {},
+        "pat": {},
+        "prep": {},
+        "style": {},
     }
 
     for img in filtered_images:
@@ -178,15 +178,15 @@ def _calculate_contextual_counts(filtered_images: list[dict], spec_id_to_tags: d
 
         # Count impl-level tags (issue #2434)
         for dep in impl_tags.get("dependencies", []):
-            counts["impl_dep"][dep] = counts["impl_dep"].get(dep, 0) + 1
+            counts["dep"][dep] = counts["dep"].get(dep, 0) + 1
         for tech in impl_tags.get("techniques", []):
-            counts["impl_tech"][tech] = counts["impl_tech"].get(tech, 0) + 1
+            counts["tech"][tech] = counts["tech"].get(tech, 0) + 1
         for pat in impl_tags.get("patterns", []):
-            counts["impl_pat"][pat] = counts["impl_pat"].get(pat, 0) + 1
+            counts["pat"][pat] = counts["pat"].get(pat, 0) + 1
         for prep in impl_tags.get("dataprep", []):
-            counts["impl_prep"][prep] = counts["impl_prep"].get(prep, 0) + 1
+            counts["prep"][prep] = counts["prep"].get(prep, 0) + 1
         for style in impl_tags.get("styling", []):
-            counts["impl_style"][style] = counts["impl_style"].get(style, 0) + 1
+            counts["style"][style] = counts["style"].get(style, 0) + 1
 
     # Sort counts
     for category in counts:
@@ -239,19 +239,19 @@ def _calculate_or_counts(
                 for v in spec_tags.get("features", []):
                     group_counts[v] = group_counts.get(v, 0) + 1
             # Impl-level tag counts (issue #2434)
-            elif category == "impl_dep":
+            elif category == "dep":
                 for v in impl_tags.get("dependencies", []):
                     group_counts[v] = group_counts.get(v, 0) + 1
-            elif category == "impl_tech":
+            elif category == "tech":
                 for v in impl_tags.get("techniques", []):
                     group_counts[v] = group_counts.get(v, 0) + 1
-            elif category == "impl_pat":
+            elif category == "pat":
                 for v in impl_tags.get("patterns", []):
                     group_counts[v] = group_counts.get(v, 0) + 1
-            elif category == "impl_prep":
+            elif category == "prep":
                 for v in impl_tags.get("dataprep", []):
                     group_counts[v] = group_counts.get(v, 0) + 1
-            elif category == "impl_style":
+            elif category == "style":
                 for v in impl_tags.get("styling", []):
                     group_counts[v] = group_counts.get(v, 0) + 1
 
@@ -284,11 +284,11 @@ def _parse_filter_groups(request: Request) -> list[dict]:
         "dom",
         "feat",
         # Impl-level categories (issue #2434)
-        "impl_dep",
-        "impl_tech",
-        "impl_pat",
-        "impl_prep",
-        "impl_style",
+        "dep",
+        "tech",
+        "pat",
+        "prep",
+        "style",
     )
     for key, value in query_params:
         if key in valid_categories and value:
@@ -421,11 +421,11 @@ async def get_filtered_plots(request: Request, db: AsyncSession = Depends(requir
     - data: Data type tag (numeric, categorical, etc.)
     - dom: Domain tag (statistics, finance, etc.)
     - feat: Features tag (basic, 3d, interactive, etc.)
-    - impl_dep: Impl dependencies filter (scipy, sklearn, etc.)
-    - impl_tech: Impl techniques filter (twin-axes, colorbar, etc.)
-    - impl_pat: Impl patterns filter (data-generation, etc.)
-    - impl_prep: Impl dataprep filter (kde, binning, etc.)
-    - impl_style: Impl styling filter (publication-ready, etc.)
+    - dep: Impl dependencies filter (scipy, sklearn, etc.)
+    - tech: Impl techniques filter (twin-axes, colorbar, etc.)
+    - pat: Impl patterns filter (data-generation, etc.)
+    - prep: Impl dataprep filter (kde, binning, etc.)
+    - style: Impl styling filter (minimal-chrome, etc.)
 
     Returns:
         FilteredPlotsResponse with images, counts, and orCounts per group

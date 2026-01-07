@@ -31,11 +31,11 @@ function buildPlausibleUrl(): string {
     "data",
     "dom",
     "feat",
-    "impl_dep",
-    "impl_tech",
-    "impl_pat",
-    "impl_prep",
-    "impl_style",
+    "dep",
+    "tech",
+    "pat",
+    "prep",
+    "style",
   ];
 
   for (const key of orderedKeys) {

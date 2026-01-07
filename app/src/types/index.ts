@@ -19,11 +19,11 @@ export type FilterCategory =
   | 'data'
   | 'dom'
   | 'feat'
-  | 'impl_dep'
-  | 'impl_tech'
-  | 'impl_pat'
-  | 'impl_prep'
-  | 'impl_style';
+  | 'dep'
+  | 'tech'
+  | 'pat'
+  | 'prep'
+  | 'style';
 
 // Display labels for filter categories
 export const FILTER_LABELS: Record<FilterCategory, string> = {
@@ -35,11 +35,28 @@ export const FILTER_LABELS: Record<FilterCategory, string> = {
   dom: 'field',
   feat: 'extras',
   // Impl-level (issue #2434)
-  impl_dep: 'uses',
-  impl_tech: 'technique',
-  impl_pat: 'pattern',
-  impl_prep: 'dataprep',
-  impl_style: 'style',
+  dep: 'uses',
+  tech: 'technique',
+  pat: 'pattern',
+  prep: 'dataprep',
+  style: 'style',
+};
+
+// Tooltip descriptions for filter categories
+export const FILTER_TOOLTIPS: Record<FilterCategory, string> = {
+  // Spec-level: WHAT is visualized
+  lib: 'python plotting library',
+  spec: 'specific plot example by identifier',
+  plot: 'type of visualization or chart',
+  data: 'structure of the input data',
+  dom: 'application domain or field',
+  feat: 'special plot features and capabilities',
+  // Impl-level: HOW the code implements it
+  dep: 'external packages beyond the plotting library',
+  tech: 'advanced visualization techniques in the code',
+  pat: 'code structure and organization patterns',
+  prep: 'statistical or mathematical data transformations',
+  style: 'visual styling choices that differ from defaults',
 };
 
 // All filter categories in display order
@@ -52,11 +69,11 @@ export const FILTER_CATEGORIES: FilterCategory[] = [
   'dom',
   'feat',
   // Impl-level (issue #2434)
-  'impl_dep',
-  'impl_tech',
-  'impl_pat',
-  'impl_prep',
-  'impl_style',
+  'dep',
+  'tech',
+  'pat',
+  'prep',
+  'style',
 ];
 
 // A single filter group (one chip) - values within are OR-linked

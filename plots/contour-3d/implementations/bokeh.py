@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-3d: 3D Contour Plot
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-07
@@ -90,56 +90,57 @@ fig_temp, ax_temp = plt.subplots()
 contour_set = ax_temp.contour(x, y, Z, levels=levels)
 plt.close(fig_temp)
 
-# Generate 3D contour lines on the surface
+# Generate 3D contour lines on the surface using get_paths() (modern matplotlib 3.8+ API)
+# get_paths() returns all paths in order matching the levels array
 contour_lines_3d = []
+all_paths = contour_set.get_paths()
 for level_idx, level in enumerate(levels):
     z_height = (level - z_min) / (z_max - z_min) * 2  # Scale to same range as surface
 
-    # Get contour segments from matplotlib
-    for _path in contour_set.get_paths() if hasattr(contour_set, "get_paths") else []:
-        pass  # Matplotlib 3.8+ uses different API
+    # Each path index corresponds to a level in contour_set.levels
+    if level_idx < len(all_paths):
+        path = all_paths[level_idx]
+        vertices = path.vertices
+        if len(vertices) > 1:
+            line_xs = []
+            line_ys = []
+            line_depths = []
+            for pt in vertices:
+                x_pt, y_pt = pt
+                x_rot = x_pt * cos_azim - y_pt * sin_azim
+                y_rot = x_pt * sin_azim + y_pt * cos_azim
+                line_xs.append(x_rot)
+                line_ys.append(y_rot * sin_elev + z_height * cos_elev)
+                line_depths.append(y_rot * cos_elev - z_height * sin_elev)
 
-    # Use allsegs attribute for contour data
-    if hasattr(contour_set, "allsegs") and level_idx < len(contour_set.allsegs):
-        for segment in contour_set.allsegs[level_idx]:
-            if len(segment) > 1:
-                line_xs = []
-                line_ys = []
-                line_depths = []
-                for pt in segment:
-                    x_pt, y_pt = pt
-                    x_rot = x_pt * cos_azim - y_pt * sin_azim
-                    y_rot = x_pt * sin_azim + y_pt * cos_azim
-                    line_xs.append(x_rot)
-                    line_ys.append(y_rot * sin_elev + z_height * cos_elev)
-                    line_depths.append(y_rot * cos_elev - z_height * sin_elev)
+            avg_depth = np.mean(line_depths)
+            contour_lines_3d.append((avg_depth, line_xs, line_ys, level_idx, level))
 
-                avg_depth = np.mean(line_depths)
-                contour_lines_3d.append((avg_depth, line_xs, line_ys, level_idx, level))
-
-# Generate projected contours on the base plane (z=0)
+# Generate projected contours on the base plane (z=0) using get_paths()
 base_contours = []
 for level_idx, level in enumerate(levels):
-    if hasattr(contour_set, "allsegs") and level_idx < len(contour_set.allsegs):
-        for segment in contour_set.allsegs[level_idx]:
-            if len(segment) > 1:
-                line_xs = []
-                line_ys = []
-                line_depths = []
-                for pt in segment:
-                    x_pt, y_pt = pt
-                    # Inline projection with z=0 for base plane
-                    x_rot = x_pt * cos_azim - y_pt * sin_azim
-                    y_rot = x_pt * sin_azim + y_pt * cos_azim
-                    line_xs.append(x_rot)
-                    line_ys.append(y_rot * sin_elev)
-                    line_depths.append(y_rot * cos_elev)
+    # Each path index corresponds to a level
+    if level_idx < len(all_paths):
+        path = all_paths[level_idx]
+        vertices = path.vertices
+        if len(vertices) > 1:
+            line_xs = []
+            line_ys = []
+            line_depths = []
+            for pt in vertices:
+                x_pt, y_pt = pt
+                # Inline projection with z=0 for base plane
+                x_rot = x_pt * cos_azim - y_pt * sin_azim
+                y_rot = x_pt * sin_azim + y_pt * cos_azim
+                line_xs.append(x_rot)
+                line_ys.append(y_rot * sin_elev)
+                line_depths.append(y_rot * cos_elev)
 
-                avg_depth = np.mean(line_depths)
-                # Color based on level
-                idx = int(level_idx * 255 / (n_levels - 1))
-                color = Viridis256[idx]
-                base_contours.append((avg_depth, line_xs, line_ys, color, level))
+            avg_depth = np.mean(line_depths)
+            # Color based on level
+            idx = int(level_idx * 255 / (n_levels - 1))
+            color = Viridis256[idx]
+            base_contours.append((avg_depth, line_xs, line_ys, color, level))
 
 # Create Bokeh figure
 p = figure(
@@ -176,8 +177,9 @@ y_min_plot, y_max_plot = min(all_y_coords), max(all_y_coords)
 x_pad = (x_max_plot - x_min_plot) * 0.15
 y_pad = (y_max_plot - y_min_plot) * 0.12
 
-p.x_range = Range1d(x_min_plot - x_pad * 1.2, x_max_plot + x_pad * 2.0)
-p.y_range = Range1d(y_min_plot - y_pad * 0.8, y_max_plot + y_pad * 1.4)
+# Adjusted ranges to reduce white space at bottom and improve centering
+p.x_range = Range1d(x_min_plot - x_pad * 1.5, x_max_plot + x_pad * 2.5)
+p.y_range = Range1d(y_min_plot - y_pad * 0.5, y_max_plot + y_pad * 1.8)
 
 # Custom 3D axis lines (inline projection)
 ox, oy, oz = -3.5, -3.5, 0
@@ -267,30 +269,30 @@ p.patch(
 
 # Axis labels - repositioned for better visibility with larger font
 x_label = Label(
-    x=x_axis_end_x + 0.25,
-    y=x_axis_end_y - 0.55,
-    text="Position X (units)",
-    text_font_size="44pt",
+    x=x_axis_end_x - 0.2,
+    y=x_axis_end_y - 0.50,
+    text="Position X (m)",
+    text_font_size="54pt",
     text_color="#222222",
     text_font_style="bold",
 )
 p.add_layout(x_label)
 
 y_label = Label(
-    x=y_axis_end_x - 1.5,
+    x=y_axis_end_x - 0.8,
     y=y_axis_end_y + 0.35,
-    text="Position Y (units)",
-    text_font_size="44pt",
+    text="Position Y (m)",
+    text_font_size="54pt",
     text_color="#222222",
     text_font_style="bold",
 )
 p.add_layout(y_label)
 
 z_label = Label(
-    x=z_axis_end_x + 0.3,
-    y=z_axis_end_y + 0.2,
+    x=z_axis_end_x + 0.30,
+    y=z_axis_end_y + 0.20,
     text="Amplitude (a.u.)",
-    text_font_size="44pt",
+    text_font_size="54pt",
     text_color="#222222",
     text_font_style="bold",
 )
@@ -299,19 +301,19 @@ p.add_layout(z_label)
 # Add colorbar for surface amplitude
 color_bar = ColorBar(
     color_mapper=color_mapper,
-    width=80,
+    width=100,
     location=(0, 0),
-    title="Amplitude (a.u.)",
-    title_text_font_size="40pt",
-    major_label_text_font_size="32pt",
-    title_standoff=30,
-    margin=50,
-    padding=25,
+    title="Signal Amplitude (a.u.)",
+    title_text_font_size="48pt",
+    major_label_text_font_size="38pt",
+    title_standoff=35,
+    margin=60,
+    padding=30,
 )
 p.add_layout(color_bar, "right")
 
-# Title styling - larger for better visibility
-p.title.text_font_size = "68pt"
+# Title styling - larger for better visibility at 4800x2700 resolution
+p.title.text_font_size = "78pt"
 p.title.text_font_style = "bold"
 p.title.text_color = "#222222"
 
@@ -327,7 +329,10 @@ p.ygrid.grid_line_dash = [6, 4]
 p.background_fill_color = "#f8f8f8"
 p.border_fill_color = "white"
 p.outline_line_color = None
-p.min_border_right = 250
+p.min_border_right = 350
+p.min_border_top = 140
+p.min_border_left = 280
+p.min_border_bottom = 100
 
 # Add hover tool for interactive exploration (Bokeh distinctive feature)
 hover = HoverTool(tooltips=[("Position", "($x{0.00}, $y{0.00})")], mode="mouse")

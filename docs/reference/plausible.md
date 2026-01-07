@@ -111,6 +111,8 @@ https://pyplots.ai/{category}/{value}/{category}/{value}/...
 |------------|-----------|-------|-------------|
 | `external_link` | `destination`, `spec`, `library` | Footer | User clicks external link in footer |
 | `open_interactive` | `spec`, `library` | SpecPage | User opens interactive HTML view |
+| `suggest_spec` | - | CatalogPage | User clicks "suggest spec" link |
+| `report_issue` | `spec`, `library`? | SpecPage | User clicks "report issue" link |
 
 **Destinations**: `linkedin`, `github`, `stats`
 
@@ -249,6 +251,8 @@ To see event properties in Plausible dashboard, you **MUST** register them as cu
 | `toggle_grid_size` | Custom Event | Track view preference |
 | `external_link` | Custom Event | Track outbound clicks |
 | `open_interactive` | Custom Event | Track interactive mode usage |
+| `suggest_spec` | Custom Event | Track spec suggestion clicks |
+| `report_issue` | Custom Event | Track issue report clicks |
 | `tab_click` | Custom Event | Track tab interactions |
 | `og_image_view` | Custom Event | Track og:image requests from social media bots |
 
@@ -330,6 +334,8 @@ User lands on pyplots.ai
 | `tab_collapse` | `library` | SpecTabs.tsx |
 | `external_link` | `destination`, `spec`, `library` | Footer.tsx |
 | `open_interactive` | `spec`, `library` | SpecPage.tsx |
+| `suggest_spec` | - | CatalogPage.tsx |
+| `report_issue` | `spec`, `library`? | SpecPage.tsx |
 | `view_spec_overview` | `spec` | SpecPage.tsx |
 | `view_spec` | `spec`, `library` | SpecPage.tsx |
 | `og_image_view` | `page`, `platform`, `spec`?, `library`?, `filter_*`? | api/analytics.py (server-side) |
@@ -462,6 +468,7 @@ window.plausible = function(...args) { console.log('Plausible:', args); };
 - [x] Grid size toggle tracking (`toggle_grid_size`)
 - [x] Tab interaction events (`tab_click`, `tab_collapse`)
 - [x] External link events (`external_link`, `open_interactive`)
+- [x] Contribution link events (`suggest_spec`, `report_issue`)
 - [x] Server-side og:image tracking (`og_image_view`) with platform detection
 
 ### Plausible Dashboard Checklist
@@ -473,5 +480,5 @@ window.plausible = function(...args) { console.log('Plausible:', args); };
 
 ---
 
-**Last Updated**: 2026-01-06
+**Last Updated**: 2026-01-07
 **Status**: Production-ready with full journey tracking and server-side og:image analytics

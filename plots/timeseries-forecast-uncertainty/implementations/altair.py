@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 timeseries-forecast-uncertainty: Time Series Forecast with Uncertainty Band
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 85/100 | Created: 2026-01-07
+Quality: 77/100 | Created: 2026-01-07
 """
 
 import altair as alt

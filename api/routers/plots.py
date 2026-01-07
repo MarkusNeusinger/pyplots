@@ -198,7 +198,18 @@ def _calculate_contextual_counts(filtered_images: list[dict], spec_id_to_tags: d
 def _calculate_or_counts(
     filter_groups: list[dict], all_images: list[dict], spec_id_to_tags: dict, spec_lookup: dict, impl_lookup: dict
 ) -> list[dict]:
-    """Calculate OR preview counts for each filter group."""
+    """Calculate OR preview counts for each filter group.
+
+    Args:
+        filter_groups: List of filter group dictionaries defining categories and values.
+        all_images: List of image dictionaries to evaluate against the filter groups.
+        spec_id_to_tags: Mapping from specification IDs to their associated tag metadata.
+        spec_lookup: Mapping from specification IDs to full specification metadata.
+        impl_lookup: Mapping from (spec_id, library) pairs to implementation-level tags.
+
+    Returns:
+        List of dicts, one per filter group, mapping values to matching image counts.
+    """
     or_counts: list[dict] = []
 
     for group_idx, group in enumerate(filter_groups):

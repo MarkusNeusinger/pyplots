@@ -16,7 +16,6 @@ impl_tags:
   techniques:
     - custom-legend
     - bezier-curves
-    - columndatasource
     - html-export
   patterns:
     - data-generation

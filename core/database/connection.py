@@ -71,7 +71,7 @@ def _create_cloud_sql_engine_sync():
 
 
 def _create_direct_engine():
-    """Create async engine using direct DATABASE_URL connection."""
+    """Create sync engine using direct DATABASE_URL connection."""
     url = DATABASE_URL
 
     # Ensure async driver

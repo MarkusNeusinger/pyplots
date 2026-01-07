@@ -1,7 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 line-3d-trajectory: 3D Line Plot for Trajectory Visualization
-Library: bokeh 3.8.2 | Python 3.13.11
-Quality: 87/100 | Created: 2026-01-07
+Library: bokeh 3.8.2 | Python 3.13
 """
 
 import numpy as np
@@ -55,19 +54,23 @@ z_proj = y_rot * np.sin(elev_rad) + z * np.cos(elev_rad)
 time_progress = np.linspace(0, 1, n_points)
 time_seconds = np.linspace(0, n_points * dt, n_points)
 
-# Color mapping using time progression
-color_mapper = LinearColorMapper(palette=Viridis256, low=0, high=n_points * dt)
+# Simulation time range for colorbar (0 to 15 seconds)
+max_time = n_points * dt  # 15 seconds
+
+# Color mapping using actual simulation time values
+color_mapper = LinearColorMapper(palette=Viridis256, low=0, high=max_time)
 
 # Create segments for multi-colored line with gradient
 n_segments = n_points - 1
 xs = [[x_proj[i], x_proj[i + 1]] for i in range(n_segments)]
 ys = [[z_proj[i], z_proj[i + 1]] for i in range(n_segments)]
 
-# Map time values to colors
+# Map time values (in seconds) to colors
 colors = []
 for i in range(n_segments):
-    t_val = time_progress[i]
-    idx = int(t_val * 255)
+    t_seconds = time_seconds[i]
+    # Map time to color index (0 to 255)
+    idx = int((t_seconds / max_time) * 255)
     idx = max(0, min(255, idx))
     colors.append(Viridis256[idx])
 
@@ -98,8 +101,8 @@ p = figure(
 # Draw trajectory as multi-line with color gradient showing time progression
 p.multi_line(xs="xs", ys="ys", line_color="color", line_width=3, line_alpha=0.85, source=source)
 
-# Add invisible scatter points for hover interaction
-scatter = p.scatter(x="x", y="y", source=hover_source, size=20, alpha=0, hover_alpha=0.8, hover_color="orange")
+# Add subtle scatter points for hover interaction (visible so users know where to hover)
+scatter = p.scatter(x="x", y="y", source=hover_source, size=18, alpha=0.15, hover_alpha=0.9, hover_color="orange")
 
 # Add HoverTool for interactivity (Bokeh distinctive feature)
 hover = HoverTool(
@@ -115,9 +118,9 @@ y_min, y_max = z_proj.min(), z_proj.max()
 x_pad = (x_max - x_min) * 0.15
 y_pad = (y_max - y_min) * 0.15
 
-# Center the plot with balanced padding
-p.x_range = Range1d(x_min - x_pad * 1.5, x_max + x_pad * 1.2)
-p.y_range = Range1d(y_min - y_pad * 1.2, y_max + y_pad)
+# Center the plot with balanced padding (reduced left padding for better balance)
+p.x_range = Range1d(x_min - x_pad * 0.8, x_max + x_pad * 1.0)
+p.y_range = Range1d(y_min - y_pad * 1.0, y_max + y_pad * 1.0)
 
 # Hide default axes for cleaner 3D projection look
 p.xaxis.visible = False
@@ -253,7 +256,7 @@ color_bar = ColorBar(
     color_mapper=color_mapper,
     width=60,
     location=(0, 0),
-    title="Simulation Time (seconds)",
+    title="Time (s)",
     title_text_font_size="32pt",
     major_label_text_font_size="24pt",
     title_standoff=20,

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 indicator-bollinger: Bollinger Bands Indicator Chart
-Library: matplotlib | Python 3.13
-Quality: pending | Created: 2025-01-07
+Library: matplotlib 3.10.8 | Python 3.13.11
+Quality: 93/100 | Created: 2026-01-07
 """
 
 import matplotlib.pyplot as plt

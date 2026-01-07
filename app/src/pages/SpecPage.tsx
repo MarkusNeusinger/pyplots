@@ -39,6 +39,8 @@ interface Implementation {
   review_image_description?: string;
   review_criteria_checklist?: Record<string, unknown>;
   review_verdict?: string;
+  // Implementation-level tags
+  impl_tags?: Record<string, string[]>;
 }
 
 interface SpecDetail {
@@ -735,6 +737,7 @@ export function SpecPage() {
               imageDescription={currentImpl?.review_image_description}
               strengths={currentImpl?.review_strengths}
               weaknesses={currentImpl?.review_weaknesses}
+              implTags={currentImpl?.impl_tags}
               qualityScore={currentImpl?.quality_score || null}
               criteriaChecklist={currentImpl?.review_criteria_checklist}
               libraryId={selectedLibrary || ''}

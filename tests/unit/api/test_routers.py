@@ -74,6 +74,8 @@ def mock_spec():
     mock_impl.review_verdict = "APPROVED"
     mock_impl.review_strengths = ["Clean code", "Good visualization"]
     mock_impl.review_weaknesses = ["Could use better labels"]
+    # Implementation-level tags
+    mock_impl.impl_tags = {"patterns": ["data-generation"], "styling": ["alpha-blending"]}
 
     mock_spec = MagicMock()
     mock_spec.id = "scatter-basic"

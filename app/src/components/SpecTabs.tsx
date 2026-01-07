@@ -34,6 +34,7 @@ interface SpecTabsProps {
   imageDescription?: string;
   strengths?: string[];
   weaknesses?: string[];
+  implTags?: Record<string, string[]>;
   // Quality tab
   qualityScore: number | null;
   criteriaChecklist?: Record<string, unknown>;
@@ -144,6 +145,7 @@ export function SpecTabs({
   imageDescription,
   strengths,
   weaknesses,
+  implTags,
   qualityScore,
   criteriaChecklist,
   libraryId,
@@ -493,6 +495,42 @@ export function SpecTabs({
                   ))}
                 </Box>
               </>
+            )}
+
+            {/* Implementation Tags - only show non-empty categories */}
+            {implTags && Object.entries(implTags).some(([, values]) => values && values.length > 0) && (
+              <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid #e5e7eb', display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                {Object.entries(implTags)
+                  .filter(([, values]) => values && values.length > 0)
+                  .map(([category, values]) => (
+                    <Box key={category} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Typography
+                        component="span"
+                        sx={{
+                          fontFamily: '"MonoLisa", monospace',
+                          fontSize: '0.65rem',
+                          color: '#9ca3af',
+                        }}
+                      >
+                        {category}:
+                      </Typography>
+                      {values.map((value, i) => (
+                        <Chip
+                          key={i}
+                          label={value}
+                          size="small"
+                          sx={{
+                            fontFamily: '"MonoLisa", monospace',
+                            fontSize: '0.65rem',
+                            height: 20,
+                            bgcolor: '#f3f4f6',
+                            color: '#4b5563',
+                          }}
+                        />
+                      ))}
+                    </Box>
+                  ))}
+              </Box>
             )}
 
             {/* No data message */}

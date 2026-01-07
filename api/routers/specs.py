@@ -87,6 +87,7 @@ async def get_spec(spec_id: str, db: AsyncSession = Depends(require_db)):
             review_image_description=impl.review_image_description,
             review_criteria_checklist=impl.review_criteria_checklist,
             review_verdict=impl.review_verdict,
+            impl_tags=impl.impl_tags,
         )
         for impl in spec.impls
     ]

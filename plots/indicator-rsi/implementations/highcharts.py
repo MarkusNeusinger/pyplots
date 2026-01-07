@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 indicator-rsi: RSI Technical Indicator Chart
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-07
@@ -97,28 +97,28 @@ chart.options.y_axis = {
     "plotLines": [
         {
             "value": 70,
-            "color": "#DC2626",
+            "color": "#D97706",
             "width": 4,
             "dashStyle": "Dash",
             "zIndex": 5,
             "label": {
                 "text": "Overbought (70)",
-                "align": "right",
-                "style": {"fontSize": "28px", "color": "#DC2626", "fontWeight": "bold"},
-                "x": -10,
+                "align": "left",
+                "style": {"fontSize": "28px", "color": "#D97706", "fontWeight": "bold"},
+                "x": 10,
             },
         },
         {
             "value": 30,
-            "color": "#059669",
+            "color": "#2563EB",
             "width": 4,
             "dashStyle": "Dash",
             "zIndex": 5,
             "label": {
                 "text": "Oversold (30)",
-                "align": "right",
-                "style": {"fontSize": "28px", "color": "#059669", "fontWeight": "bold"},
-                "x": -10,
+                "align": "left",
+                "style": {"fontSize": "28px", "color": "#2563EB", "fontWeight": "bold"},
+                "x": 10,
             },
         },
         {
@@ -129,9 +129,9 @@ chart.options.y_axis = {
             "zIndex": 5,
             "label": {
                 "text": "Centerline (50)",
-                "align": "right",
+                "align": "left",
                 "style": {"fontSize": "24px", "color": "#6B7280"},
-                "x": -10,
+                "x": 10,
             },
         },
     ],
@@ -139,24 +139,24 @@ chart.options.y_axis = {
         {
             "from": 70,
             "to": 100,
-            "color": "rgba(220, 38, 38, 0.12)",
+            "color": "rgba(217, 119, 6, 0.15)",
             "label": {
                 "text": "Overbought Zone",
-                "style": {"fontSize": "24px", "color": "#DC2626"},
-                "align": "left",
-                "x": 20,
+                "style": {"fontSize": "24px", "color": "#B45309"},
+                "align": "right",
+                "x": -20,
                 "y": 30,
             },
         },
         {
             "from": 0,
             "to": 30,
-            "color": "rgba(5, 150, 105, 0.12)",
+            "color": "rgba(37, 99, 235, 0.15)",
             "label": {
                 "text": "Oversold Zone",
-                "style": {"fontSize": "24px", "color": "#059669"},
-                "align": "left",
-                "x": 20,
+                "style": {"fontSize": "24px", "color": "#1D4ED8"},
+                "align": "right",
+                "x": -20,
                 "y": -10,
             },
         },

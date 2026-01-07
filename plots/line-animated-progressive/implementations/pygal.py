@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-animated-progressive: Animated Line Plot Over Time
-Library: pygal | Python 3.13
-Quality: pending | Created: 2026-01-07
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 62/100 | Created: 2026-01-07
 """
 
 import numpy as np

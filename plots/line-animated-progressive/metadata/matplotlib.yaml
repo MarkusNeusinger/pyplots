@@ -1,0 +1,219 @@
+library: matplotlib
+specification_id: line-animated-progressive
+created: '2026-01-07T20:20:56Z'
+updated: '2026-01-07T20:29:04Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20795211117
+issue: 3238
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-animated-progressive/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-animated-progressive/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of LineCollection for smooth gradient coloring effect showing temporal
+    progression
+  - Creative marker size progression reinforces the building over time concept
+  - Well-designed final point highlight with yellow glow effect draws attention to
+    endpoint
+  - Good explanatory annotation helps viewers understand the visualization technique
+  - Clean, publication-ready visual quality with appropriate font sizes
+  - Realistic and engaging temperature data with clear seasonal patterns
+  weaknesses:
+  - Missing formal legend to explain the marker size and color gradient meaning
+  - Static implementation only; spec mentions animation should be smooth with configurable
+    speed (though static output with progression indicator is acceptable per spec
+    notes)
+  image_description: The plot displays a progressive line chart showing monthly temperature
+    readings from 2020 to 2024. The line uses a gradient colormap transitioning from
+    light blue (earlier months) to dark/Python blue (later months), effectively conveying
+    the temporal direction of the data. Circular markers are placed at each data point,
+    with marker sizes progressively increasing from left to right (smaller at start,
+    larger at end). The final data point is highlighted with a yellow circle and glow
+    effect, accompanied by an arrow pointing right to emphasize progression direction.
+    A text annotation box in the top-left corner explains the visualization technique.
+    The y-axis shows "Temperature (°C)" ranging from 0 to ~30, and the x-axis shows
+    years 2020-2024. Clear seasonal patterns are visible with temperatures oscillating
+    between winter lows (~5°C) and summer highs (~27°C). A subtle dashed grid aids
+    readability.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text or elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers well-sized and visible; line thickness appropriate; slight
+          deduction as growing marker sizes make early points smaller
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue gradient is colorblind-safe, good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well, balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Temperature (°C) with units, Year descriptive
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is good (alpha 0.3, dashed), but no legend present for explaining
+          the marker size/color meaning
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct progressive line plot type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Time on x-axis, temperature on y-axis correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Progressive reveal via gradient, trailing highlight on final point,
+          visual indicator of direction, annotation explaining visualization; minor
+          deduction for not implementing small multiples alternative
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 1
+        max: 2
+        passed: false
+        comment: No formal legend, but annotation provides context
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: line-animated-progressive · matplotlib · pyplots.ai'
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows seasonal patterns, progression, trend; only single series shown
+          (spec mentions optional multi-series)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly temperature readings over 5 years is a real, neutral, comprehensible
+          scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Temperature values 0-30°C are realistic for seasonal climate data
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure, no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used (matplotlib.pyplot, numpy, LineCollection, LinearSegmentedColormap)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib APIs
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses LineCollection for gradient effect, LinearSegmentedColormap
+          for custom colormap; could have used more advanced matplotlib animation
+          features but static output is acceptable per spec
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - custom-legend
+  - manual-ticks
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - custom-colormap
+  - alpha-blending
+  - edge-highlighting
+  - gradient-fill
+  - grid-styling

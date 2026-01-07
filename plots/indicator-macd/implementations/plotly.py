@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 indicator-macd: MACD Technical Indicator Chart
-Library: plotly | Python 3.13
-Quality: pending | Created: 2026-01-07
+Library: plotly 6.5.0 | Python 3.13.11
+Quality: 93/100 | Created: 2026-01-07
 """
 
 import numpy as np

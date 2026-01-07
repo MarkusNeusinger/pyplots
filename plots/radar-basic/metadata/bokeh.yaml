@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/radar-basic/bok
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/radar-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/radar-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - manual-ticks
+  - custom-legend
+  - html-export
+  patterns:
+  - data-generation
+  - columndatasource
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent radar chart implementation with proper polar-to-cartesian coordinate

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-styled/bok
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-styled/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-styled/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - columndatasource
+  - custom-legend
+  - html-export
+  - manual-ticks
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent text sizing for the 4800×2700 canvas with 48pt title and 36pt axis labels

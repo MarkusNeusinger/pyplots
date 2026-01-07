@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/alt
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - hover-tooltips
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent visual clarity with well-sized bars, clear color coding, and readable

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/choropleth-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/choropleth-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 88
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - custom-colormap
 review:
   strengths:
   - Excellent creative solution using tile grid cartogram approach for choropleth

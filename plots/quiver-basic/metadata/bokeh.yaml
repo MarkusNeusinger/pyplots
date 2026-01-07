@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/bo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - patches
+  patterns:
+    - columndatasource
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of quiver plot using Bokeh segment and patches primitives

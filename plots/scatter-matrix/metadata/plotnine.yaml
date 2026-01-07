@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-matrix/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-matrix/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - faceting
+  patterns:
+  - data-generation
+  - wide-to-long
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Excellent implementation of scatter matrix using plotnine facet_grid approach

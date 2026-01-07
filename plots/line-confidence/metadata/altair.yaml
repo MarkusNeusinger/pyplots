@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-confidence
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-confidence/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-confidence/altair/plot.html
 quality_score: 78
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+    - layer-composition
+  patterns:
+    - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clean code structure following KISS principles with clear data generation logic

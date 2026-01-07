@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/a
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - faceting
+  - html-export
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of the horizon chart concept with proper band folding

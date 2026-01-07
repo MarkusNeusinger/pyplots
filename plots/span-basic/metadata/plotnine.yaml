@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/span-basic/plot
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/span-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of plotnine grammar of graphics with geom_rect for span regions

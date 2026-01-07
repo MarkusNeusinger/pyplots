@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-basic/al
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-basic/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+    - faceting
+  patterns:
+    - data-generation
+    - groupby-aggregation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visualization of distribution shapes with the bimodal Sales distribution

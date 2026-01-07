@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - wide-to-long
+  - data-generation
+  dataprep:
+  - time-series
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of plotnine grammar of graphics with proper geom_area stacking

@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-overl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-overlapping/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-overlapping/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - alpha-blending
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep:
+  - binning
+  styling: []
 review:
   strengths:
   - 'Excellent implementation of overlapping effect using grouping: false in plot
@@ -24,13 +37,23 @@ review:
     to the chart area
   - Y-axis label Frequency (Count) is slightly redundant
   - Image height is 2561px instead of target 2700px
-  image_description: |-
-    The plot displays three overlapping histograms showing employee performance score distributions across three departments. The chart uses semi-transparent column bars with:
+  image_description: 'The plot displays three overlapping histograms showing employee
+    performance score distributions across three departments. The chart uses semi-transparent
+    column bars with:
+
     - **Yellow** (Sales, n=150) - widest distribution, lower center
+
     - **Purple** (Marketing, n=150) - middle layer
+
     - **Blue** (Engineering, n=150) - highest concentration around 71-78 range
 
-    The title reads "histogram-overlapping · highcharts · pyplots.ai" with subtitle "Employee Performance Score Distribution by Department". X-axis shows "Performance Score" (ranging from 16 to 125), Y-axis shows "Frequency (Count)" (0-56). A boxed legend in the upper right identifies each department with sample sizes. Bars overlap correctly with transparency (~0.55 alpha), allowing visibility of all three distributions. The overlapping regions show blended colors where distributions intersect.
+
+    The title reads "histogram-overlapping · highcharts · pyplots.ai" with subtitle
+    "Employee Performance Score Distribution by Department". X-axis shows "Performance
+    Score" (ranging from 16 to 125), Y-axis shows "Frequency (Count)" (0-56). A boxed
+    legend in the upper right identifies each department with sample sizes. Bars overlap
+    correctly with transparency (~0.55 alpha), allowing visibility of all three distributions.
+    The overlapping regions show blended colors where distributions intersect.'
   criteria_checklist:
     visual_quality:
       score: 36

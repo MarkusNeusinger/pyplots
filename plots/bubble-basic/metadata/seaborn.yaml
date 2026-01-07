@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent size legend implementation with proxy bubbles showing three reference

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/a
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of diverging colormap (blueorange) with domainMid=50 to center the

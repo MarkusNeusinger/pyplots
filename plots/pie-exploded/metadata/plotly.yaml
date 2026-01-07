@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - hover-tooltips
+  - custom-legend
+  patterns:
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Plotly pull parameter to achieve exploded effect with per-slice

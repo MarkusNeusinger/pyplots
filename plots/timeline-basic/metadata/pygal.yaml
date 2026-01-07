@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/timeline-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/timeline-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/timeline-basic/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - cairosvg
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent alternating above/below layout prevents text overlap and creates clear

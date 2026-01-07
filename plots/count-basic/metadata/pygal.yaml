@@ -11,6 +11,12 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/count-basic/pyg
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/count-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/count-basic/pygal/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns: []
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of logical category ordering (satisfaction scale from negative to

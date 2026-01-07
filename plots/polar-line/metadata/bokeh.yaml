@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-line/boke
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-line/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/polar-line/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - columndatasource
+    - html-export
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent simulation of polar coordinates in Bokeh (which lacks native polar support)

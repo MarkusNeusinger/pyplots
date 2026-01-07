@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-basic/plot
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-basic/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent title format following the exact spec-id · library · pyplots.ai convention

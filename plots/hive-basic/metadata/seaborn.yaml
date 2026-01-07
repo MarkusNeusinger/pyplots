@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/hive-basic/seab
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hive-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - bezier-curves
+  - layer-composition
+  patterns:
+  - data-generation
+  - groupby-aggregation
+  - explicit-figure
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Excellent implementation of hive plot concept using seaborn scatterplot and lineplot

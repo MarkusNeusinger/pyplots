@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regress
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-polynomial/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-polynomial/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+    - hover-tooltips
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - regression
+  styling: []
 review:
   strengths:
   - Excellent R² and equation annotation implementation using separate text marks

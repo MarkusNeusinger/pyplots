@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - html-export
+  patterns:
+  - data-generation
+  - groupby-aggregation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent polar coordinate implementation with correct North orientation and clockwise

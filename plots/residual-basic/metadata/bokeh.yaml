@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/residual-basic/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  - columndatasource
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - 'Excellent use of Bokeh-specific features: ColumnDataSource, HoverTool with custom

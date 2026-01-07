@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  patterns:
+  - dataset-loading
+  - iteration-over-groups
+  dataprep:
+  - normalization
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of Andrews curves Fourier transformation algorithm

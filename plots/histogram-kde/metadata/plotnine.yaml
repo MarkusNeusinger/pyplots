@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 98
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  dataprep:
+  - kde
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of after_stat("density") for proper histogram-KDE scaling

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrogram-bas
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - scipy
+  - selenium
+  techniques:
+  - colorbar
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clear visualization of the chirp signal with frequency increasing over time (diagonal

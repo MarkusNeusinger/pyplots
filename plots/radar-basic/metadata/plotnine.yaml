@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/radar-basic/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/radar-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - layer-composition
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of radar chart using plotnine cartesian coordinates with

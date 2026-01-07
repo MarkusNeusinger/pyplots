@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-categorical
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-categorical/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-categorical/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - groupby-aggregation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of categorical counting with pandas value_counts()

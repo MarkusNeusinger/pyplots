@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/shap-summary/ma
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/shap-summary/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - manual-ticks
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - custom-colormap
 review:
   strengths:
   - Excellent implementation of the SHAP summary plot concept with proper sorting

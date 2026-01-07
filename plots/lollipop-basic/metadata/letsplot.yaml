@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/lollipop-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/lollipop-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/lollipop-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Clean, minimalist lollipop chart that perfectly matches the spec requirements

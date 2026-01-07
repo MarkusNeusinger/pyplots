@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/ma
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - edge-highlighting
+  - minimal-chrome
 review:
   strengths:
   - Excellent trapezoid geometry calculation with proper width proportions relative

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-error/seabo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-error/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - edge-highlighting
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent text sizing following the 24/20/16pt guideline for large canvas

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/l
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - kde
+  styling:
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
   - Excellent color contrast between histogram (blue) and KDE (yellow) ensures clear

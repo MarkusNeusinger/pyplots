@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/parallel-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parallel-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/parallel-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - html-export
+  patterns:
+  - dataset-loading
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of parallel coordinates using lets-plot ggplot2 grammar

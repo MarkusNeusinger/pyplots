@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/parliament-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - matrix-construction
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent semicircular parliament visualization with clean concentric arcs

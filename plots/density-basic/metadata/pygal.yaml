@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/density-basic/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/density-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/density-basic/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - kde
+  styling: []
 review:
   strengths:
   - Excellent implementation of KDE using manual Gaussian kernel computation with

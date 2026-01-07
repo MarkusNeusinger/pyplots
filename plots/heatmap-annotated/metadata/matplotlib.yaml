@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-annotat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-annotated/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  - manual-ticks
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep:
+  - correlation-matrix
+  styling:
+  - custom-colormap
 review:
   strengths:
   - Excellent automatic text contrast algorithm (white on dark, black on light backgrounds)

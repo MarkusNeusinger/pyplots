@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-cumul
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/letsplot/plot.html
 quality_score: 99
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - cumulative-sum
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent visual quality with proper text sizing and canvas utilization

@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-basic/pyg
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/polar-basic/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - manual-ticks
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of pygal Radar chart as polar-like visualization for cyclical data

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/learning-curve-
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/learning-curve-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/learning-curve-basic/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  - pillow
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Highcharts arearange series for confidence bands with proper
@@ -26,11 +36,24 @@ review:
   - Legend does not include entries for the confidence bands (±1 std) - only shows
     the line series
   - Y-axis could start at 0.65 instead of 0.60 to reduce empty space at the bottom
-  image_description: |-
-    The plot displays a learning curve visualization on a white background. The title "learning-curve-basic · highcharts · pyplots.ai" appears at the top in bold black text, with a subtitle "Model Performance vs Training Set Size" below it. The X-axis shows "Training Set Size (samples)" ranging from 0 to 1700, and the Y-axis shows "Accuracy Score" ranging from 0.60 to 1.02. Two lines are displayed:
-    - A **blue line with square markers** representing Training Score, starting high (~0.99) and gradually decreasing to ~0.94
-    - A **yellow/gold line with triangle markers** representing Validation Score, starting low (~0.72) and increasing toward ~0.93
-    Both lines have semi-transparent shaded confidence bands showing ±1 standard deviation. The blue band is narrower (training is more consistent), while the yellow band is wider at low training sizes and narrows as training size increases. A legend in the top-right corner clearly identifies both series. Dashed grid lines provide reference.
+  image_description: 'The plot displays a learning curve visualization on a white
+    background. The title "learning-curve-basic · highcharts · pyplots.ai" appears
+    at the top in bold black text, with a subtitle "Model Performance vs Training
+    Set Size" below it. The X-axis shows "Training Set Size (samples)" ranging from
+    0 to 1700, and the Y-axis shows "Accuracy Score" ranging from 0.60 to 1.02. Two
+    lines are displayed:
+
+    - A **blue line with square markers** representing Training Score, starting high
+    (~0.99) and gradually decreasing to ~0.94
+
+    - A **yellow/gold line with triangle markers** representing Validation Score,
+    starting low (~0.72) and increasing toward ~0.93
+
+    Both lines have semi-transparent shaded confidence bands showing ±1 standard deviation.
+    The blue band is narrower (training is more consistent), while the yellow band
+    is wider at low training sizes and narrows as training size increases. A legend
+    in the top-right corner clearly identifies both series. Dashed grid lines provide
+    reference.'
   criteria_checklist:
     visual_quality:
       score: 36

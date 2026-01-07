@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/venn-basic/plot
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/venn-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/venn-basic/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - custom-legend
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of Plotly graph_objects for custom shape drawing with go.Scatter

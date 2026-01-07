@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/bok
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - custom-legend
+  patterns:
+  - columndatasource
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clean grouped bar implementation using Bokeh FactorRange and factor_cmap

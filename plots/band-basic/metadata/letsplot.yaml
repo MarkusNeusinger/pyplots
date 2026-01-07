@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/band-basic/lets
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/band-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/band-basic/letsplot/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of band plot with proper geom_ribbon for confidence interval

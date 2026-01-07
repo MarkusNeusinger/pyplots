@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - html-export
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent mosaic layout implementation using Plotly make_subplots with colspan
@@ -29,16 +39,30 @@ review:
     spec
   - Bottom row metric panels feel slightly cramped; row_heights could be adjusted
     for better balance
-  image_description: |-
-    The plot displays a dashboard-style mosaic layout with 7 subplots arranged in a 3-row structure. The title "subplot-mosaic · plotly · pyplots.ai" appears at the top center.
+  image_description: 'The plot displays a dashboard-style mosaic layout with 7 subplots
+    arranged in a 3-row structure. The title "subplot-mosaic · plotly · pyplots.ai"
+    appears at the top center.
 
-    **Row 1:** A wide "Revenue Trend (Overview)" line chart with blue fill spans 2 columns on the left, showing an upward trend from ~50k to ~62k over Jan-Apr 2024. A narrower "Monthly Sales" bar chart (yellow bars) occupies the right column, displaying Jan-Jun sales data.
 
-    **Row 2:** A "Product Performance" scatter plot with blue markers spans 2 columns showing Feature X vs Feature Y distribution (80 points). A "Category Distribution" horizontal bar chart with multi-colored bars (blue, yellow, gray, brown) shows Electronics, Clothing, Food, Books, Sports categories on the right.
+    **Row 1:** A wide "Revenue Trend (Overview)" line chart with blue fill spans 2
+    columns on the left, showing an upward trend from ~50k to ~62k over Jan-Apr 2024.
+    A narrower "Monthly Sales" bar chart (yellow bars) occupies the right column,
+    displaying Jan-Jun sales data.
 
-    **Row 3:** Three smaller metric panels - "Efficiency" (blue area chart, 0-100%), "Quality Score" (yellow area chart, 0-70 Score), and "Response Time" (blue line chart, 0-60 ms), each showing 30-day trends.
 
-    Colors are consistent (blue #306998, yellow #FFD43B). All text is legible. Layout shows clear visual hierarchy with larger panels for primary data.
+    **Row 2:** A "Product Performance" scatter plot with blue markers spans 2 columns
+    showing Feature X vs Feature Y distribution (80 points). A "Category Distribution"
+    horizontal bar chart with multi-colored bars (blue, yellow, gray, brown) shows
+    Electronics, Clothing, Food, Books, Sports categories on the right.
+
+
+    **Row 3:** Three smaller metric panels - "Efficiency" (blue area chart, 0-100%),
+    "Quality Score" (yellow area chart, 0-70 Score), and "Response Time" (blue line
+    chart, 0-60 ms), each showing 30-day trends.
+
+
+    Colors are consistent (blue #306998, yellow #FFD43B). All text is legible. Layout
+    shows clear visual hierarchy with larger panels for primary data.'
   criteria_checklist:
     visual_quality:
       score: 36

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-color-m
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/plotly/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+    - colorbar
+    - hover-tooltips
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - custom-colormap
+    - alpha-blending
 review:
   strengths:
   - Excellent use of Viridis colormap with clear colorbar labeling including units

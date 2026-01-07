@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/forest-basic/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/forest-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  - manual-ticks
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - 'Excellent implementation of all forest plot requirements: diamond pooled estimate,

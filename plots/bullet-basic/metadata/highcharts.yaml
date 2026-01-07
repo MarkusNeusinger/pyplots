@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bullet-basic/hi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bullet-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bullet-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - pillow
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - normalization
+  styling: []
 review:
   strengths:
   - Excellent use of Highcharts native bullet chart module with proper targetOptions

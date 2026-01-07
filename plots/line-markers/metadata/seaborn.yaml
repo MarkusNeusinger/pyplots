@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-markers/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-markers/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of seaborn's lineplot with style parameter for automatic marker

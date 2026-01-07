@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/le
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - edge-highlighting
+  - minimal-chrome
 review:
   strengths:
   - Excellent visual design with clean trapezoid geometry and smooth color progression

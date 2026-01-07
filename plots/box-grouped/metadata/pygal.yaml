@@ -11,6 +11,13 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/box-grouped/pyg
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-grouped/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/box-grouped/pygal/plot.html
 quality_score: 85
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Colorblind-safe color palette (blue, orange, teal) provides excellent accessibility

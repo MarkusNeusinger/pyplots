@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/hi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+    - pillow
+    - selenium
+  techniques:
+    - html-export
+  patterns: []
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent real-world energy flow scenario with realistic TWh values

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymme
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - columndatasource
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent asymmetric error bar visualization with clear visual distinction between

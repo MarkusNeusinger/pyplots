@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-basic/h
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - colorbar
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep:
+  - normalization
+  styling: []
 review:
   strengths:
   - Excellent visual implementation of contour plot using heatmap + line series overlay

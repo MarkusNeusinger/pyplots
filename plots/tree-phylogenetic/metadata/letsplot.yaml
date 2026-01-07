@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenet
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of rectangular phylogenetic tree using lets-plot grammar

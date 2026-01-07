@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - bezier-curves
+  - custom-legend
+  - annotations
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of alluvial diagram from scratch using Bokeh low-level
@@ -25,16 +38,31 @@ review:
   - Legend is positioned far right creating slight visual imbalance
   - Node labels only shown for first and last time points; middle time points could
     benefit from value annotations
-  image_description: |-
-    The plot displays a basic alluvial diagram showing voter migration between four political parties (Democratic, Republican, Independent, Other) across four election years (2012, 2016, 2020, 2024). The visualization uses:
-    - **Colors**: Blue (#306998) for Democratic, Red (#D62728) for Republican, Yellow (#FFD43B) for Independent, Gray (#7F7F7F) for Other
+  image_description: 'The plot displays a basic alluvial diagram showing voter migration
+    between four political parties (Democratic, Republican, Independent, Other) across
+    four election years (2012, 2016, 2020, 2024). The visualization uses:
+
+    - **Colors**: Blue (#306998) for Democratic, Red (#D62728) for Republican, Yellow
+    (#FFD43B) for Independent, Gray (#7F7F7F) for Other
+
     - **Title**: "alluvial-basic · bokeh · pyplots.ai" centered at top
-    - **Subtitle**: "Voter Migration Between Parties (values in millions)" in gray below the title
-    - **Layout**: Four vertical time columns with rectangular nodes representing party sizes, connected by smooth Bezier curve bands showing flow transitions
-    - **Labels**: Left side shows starting values (Democratic 42M, Republican 37M, Independent 15M, Other 6M), right side shows ending values (Democratic 48M, Republican 40M, Independent 13M, Other 2M)
+
+    - **Subtitle**: "Voter Migration Between Parties (values in millions)" in gray
+    below the title
+
+    - **Layout**: Four vertical time columns with rectangular nodes representing party
+    sizes, connected by smooth Bezier curve bands showing flow transitions
+
+    - **Labels**: Left side shows starting values (Democratic 42M, Republican 37M,
+    Independent 15M, Other 6M), right side shows ending values (Democratic 48M, Republican
+    40M, Independent 13M, Other 2M)
+
     - **Time labels**: Bold year labels (2012, 2016, 2020, 2024) at the bottom
+
     - **Legend**: Located on the right side showing all four party colors
-    - **Flow bands**: Semi-transparent (alpha 0.5) with color matching the source category, clearly showing transitions between parties
+
+    - **Flow bands**: Semi-transparent (alpha 0.5) with color matching the source
+    category, clearly showing transitions between parties'
   criteria_checklist:
     visual_quality:
       score: 37

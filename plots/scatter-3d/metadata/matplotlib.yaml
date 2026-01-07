@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/matp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - 3d-projection
+  - colorbar
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
+  - custom-colormap
 review:
   strengths:
   - Excellent scientific context using protein structure data with realistic Angstrom

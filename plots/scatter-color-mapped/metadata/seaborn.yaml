@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-color-m
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - colorbar
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - custom-colormap
+    - alpha-blending
 review:
   strengths:
   - Excellent visual clarity with proper font sizes and colorblind-safe viridis palette

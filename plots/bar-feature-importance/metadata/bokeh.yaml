@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-feature-imp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-feature-importance/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-feature-importance/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  - html-export
+  patterns:
+  - columndatasource
+  dataprep: []
+  styling:
+  - custom-colormap
+  - grid-styling
 review:
   strengths:
   - Excellent color gradient implementation using LinearColorMapper with Blues9 palette

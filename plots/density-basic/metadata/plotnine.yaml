@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/density-basic/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/density-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+  patterns:
+    - data-generation
+  dataprep:
+    - kde
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Clean plotnine grammar of graphics implementation using geom_density with appropriate

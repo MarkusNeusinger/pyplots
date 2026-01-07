@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-correla
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-correlation/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - manual-ticks
+  - annotations
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep:
+  - correlation-matrix
+  styling:
+  - custom-colormap
 review:
   strengths:
   - Excellent implementation of all spec requirements including upper triangle masking,

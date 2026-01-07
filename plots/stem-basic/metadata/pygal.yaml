@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/stem-basic/pyga
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/stem-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/stem-basic/pygal/plot.html
 quality_score: 86
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Correct stem plot visualization with vertical lines from baseline to data markers

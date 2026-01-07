@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/parallel-catego
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/pygal/plot.html
 quality_score: 90
+impl_tags:
+  dependencies:
+  - cairosvg
+  techniques:
+  - bezier-curves
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent parallel categories visualization with clear flow ribbons connecting

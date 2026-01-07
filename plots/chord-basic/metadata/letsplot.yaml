@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/chord-basic/let
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/chord-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/chord-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - bezier-curves
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent chord diagram construction using geom_polygon with smooth Bezier curves

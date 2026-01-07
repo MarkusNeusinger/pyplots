@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-cumul
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - columndatasource
+  patterns:
+    - data-generation
+  dataprep:
+    - cumulative-sum
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent step function implementation using manual coordinate construction

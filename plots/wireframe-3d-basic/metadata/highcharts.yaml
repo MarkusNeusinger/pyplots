@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/wireframe-3d-ba
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/wireframe-3d-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/wireframe-3d-basic/highcharts/plot.html
 quality_score: 90
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - 3d-projection
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of wireframe effect using scatter3d with line connections

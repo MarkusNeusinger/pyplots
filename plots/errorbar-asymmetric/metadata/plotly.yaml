@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymme
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/plotly/plot.html
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+    - annotations
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of asymmetric error bars with clear visual distinction

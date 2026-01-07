@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/confusion-matri
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/bokeh/plot.html
 quality_score: 96
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - colorbar
+  - manual-ticks
+  patterns:
+  - data-generation
+  - columndatasource
+  dataprep: []
+  styling: []
 review:
   strengths:
   - 'Excellent use of Bokeh-specific features: ColumnDataSource for data management,

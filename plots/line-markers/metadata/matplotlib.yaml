@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-markers/ma
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-markers/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent marker visibility with white edge borders creating strong contrast against
@@ -26,13 +35,25 @@ review:
     cases
   - Does not leverage more distinctive matplotlib features like annotations or custom
     styling
-  image_description: |-
-    The plot displays a line chart showing temperature readings (°C) over 14 days from three weather stations. Three distinct lines with markers are shown:
-    - **Coastal Station** (blue circles): Highest temperatures, ranging from ~18°C to ~22°C, showing an upward trend mid-period then declining
-    - **Inland Station** (yellow squares): Mid-range temperatures, starting at ~13°C and declining to ~7°C over the period
-    - **Mountain Station** (red triangles): Lowest temperatures, ranging from ~6°C to ~10°C with a general downward trend
+  image_description: 'The plot displays a line chart showing temperature readings
+    (°C) over 14 days from three weather stations. Three distinct lines with markers
+    are shown:
 
-    The title follows the required format "line-markers · matplotlib · pyplots.ai". Axis labels are "Day" (x-axis) and "Temperature (°C)" (y-axis). A legend is positioned in the upper left. Grid lines are visible with subtle alpha. Markers are clearly visible with white edge borders for contrast. The layout is well-balanced with good use of the 16:9 canvas.
+    - **Coastal Station** (blue circles): Highest temperatures, ranging from ~18°C
+    to ~22°C, showing an upward trend mid-period then declining
+
+    - **Inland Station** (yellow squares): Mid-range temperatures, starting at ~13°C
+    and declining to ~7°C over the period
+
+    - **Mountain Station** (red triangles): Lowest temperatures, ranging from ~6°C
+    to ~10°C with a general downward trend
+
+
+    The title follows the required format "line-markers · matplotlib · pyplots.ai".
+    Axis labels are "Day" (x-axis) and "Temperature (°C)" (y-axis). A legend is positioned
+    in the upper left. Grid lines are visible with subtle alpha. Markers are clearly
+    visible with white edge borders for contrast. The layout is well-balanced with
+    good use of the 16:9 canvas.'
   criteria_checklist:
     visual_quality:
       score: 38

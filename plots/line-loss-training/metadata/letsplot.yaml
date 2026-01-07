@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-loss-train
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-loss-training/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-loss-training/letsplot/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent demonstration of overfitting concept with training/validation loss divergence

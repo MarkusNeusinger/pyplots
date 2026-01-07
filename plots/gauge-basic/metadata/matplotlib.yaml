@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/gauge-basic/mat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gauge-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 95
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  - manual-ticks
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent use of matplotlib low-level primitives (Wedge, Circle) for custom gauge

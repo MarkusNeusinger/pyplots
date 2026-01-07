@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+    - matrix-construction
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent creative solution using XY chart to achieve box plot with strip overlay

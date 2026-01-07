@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent ggplot2 grammar of graphics implementation with clean layer composition

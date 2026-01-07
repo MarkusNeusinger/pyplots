@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-2d/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-2d/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - subplots
+    - colorbar
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - custom-colormap
 review:
   strengths:
   - Excellent use of seaborn JointGrid to create marginal histograms alongside the

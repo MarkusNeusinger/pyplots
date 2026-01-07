@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/s
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - annotations
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - grid-styling
+  - minimal-chrome
 review:
   strengths:
   - Excellent implementation of ternary coordinate transformation with clean vectorized

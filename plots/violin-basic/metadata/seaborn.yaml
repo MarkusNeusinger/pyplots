@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-basic/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent demonstration of violin plot with bimodal Sales distribution showing

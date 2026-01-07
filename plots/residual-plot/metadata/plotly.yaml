@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-plot/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-plot/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/residual-plot/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - hover-tooltips
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - rolling-window
+  styling:
+    - alpha-blending
 review:
   strengths:
   - 'Excellent implementation of all key residual plot features: zero reference line,

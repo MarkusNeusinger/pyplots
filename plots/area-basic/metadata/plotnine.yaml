@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-basic/plot
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+  patterns:
+    - data-generation
+    - explicit-figure
+  dataprep: []
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Excellent use of ggplot2 grammar with proper layering (geom_area + geom_line)

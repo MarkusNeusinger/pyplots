@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/span-basic/plot
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/span-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/span-basic/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent demonstration of both vertical and horizontal spans with realistic economic
@@ -26,12 +36,23 @@ review:
   - Axis labels lack units (e.g. Economic Index base=100 would be more informative)
   - HTML output could leverage plotly interactive features (hover info on spans, range
     slider) but these are optional enhancements
-  image_description: |-
-    The plot displays a line chart with an Economic Index (y-axis, range ~85-120) plotted against Year (x-axis, 2005-2014). The data is shown as a blue line with circular markers (#306998 color). Two span regions are clearly visible:
-    1. A **vertical span** (light blue, semi-transparent) marking the "Recession" period from approximately 2007.5 to 2009.5, with a text label in the top-left corner
-    2. A **horizontal span** (light yellow, semi-transparent) marking the "Target Zone" between values 105-115, also labeled in the top-left corner
+  image_description: 'The plot displays a line chart with an Economic Index (y-axis,
+    range ~85-120) plotted against Year (x-axis, 2005-2014). The data is shown as
+    a blue line with circular markers (#306998 color). Two span regions are clearly
+    visible:
 
-    The title "span-basic · plotly · pyplots.ai" is centered at the top. The legend shows "Economic Index" in the bottom-left corner with a white background. The plot uses the plotly_white template with subtle gray gridlines. The overlapping region of both spans creates a greenish tint where they intersect.
+    1. A **vertical span** (light blue, semi-transparent) marking the "Recession"
+    period from approximately 2007.5 to 2009.5, with a text label in the top-left
+    corner
+
+    2. A **horizontal span** (light yellow, semi-transparent) marking the "Target
+    Zone" between values 105-115, also labeled in the top-left corner
+
+
+    The title "span-basic · plotly · pyplots.ai" is centered at the top. The legend
+    shows "Economic Index" in the bottom-left corner with a white background. The
+    plot uses the plotly_white template with subtle gray gridlines. The overlapping
+    region of both spans creates a greenish tint where they intersect.'
   criteria_checklist:
     visual_quality:
       score: 37

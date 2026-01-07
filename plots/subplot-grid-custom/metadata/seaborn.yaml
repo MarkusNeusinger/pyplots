@@ -11,6 +11,21 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-cu
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - colorbar
+  - annotations
+  - manual-ticks
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep:
+  - correlation-matrix
+  styling:
+  - custom-colormap
+  - grid-styling
 review:
   strengths:
   - Excellent dashboard layout demonstrating GridSpec with main plot spanning 2x2

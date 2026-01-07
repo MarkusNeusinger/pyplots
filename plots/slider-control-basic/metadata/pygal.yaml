@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/slider-control-
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/slider-control-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/slider-control-basic/pygal/plot.html
 quality_score: 55
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent HTML implementation with functional slider control, year display, and

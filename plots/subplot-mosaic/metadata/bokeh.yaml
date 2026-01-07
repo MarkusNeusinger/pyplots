@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/bokeh/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  patterns:
+  - data-generation
+  - columndatasource
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent demonstration of mosaic layout concept with 6 diverse subplots of varying
@@ -31,16 +41,31 @@ review:
     larger for better readability
   - Could demonstrate Bokeh interactive features (hover tools, linked brushing) for
     richer dashboard experience
-  image_description: |-
-    The plot displays a business dashboard mosaic layout with 6 subplots of varying sizes:
-    1. **Top-left (large, ~2/3 width)**: "Quarterly Revenue Overview" - Blue line chart with markers showing daily revenue ($50k-$62k) over 90 days
-    2. **Top-right (~1/3 width)**: "Product Profitability" - Scatter plot with blue (Premium Line) and yellow (Standard Line) dots showing profit margin vs units sold
-    3. **Middle-left (~half width)**: "Sales by Category" - Blue vertical bar chart for Electronics, Clothing, Food, Books
-    4. **Middle-right top (small)**: "Conversion Rate (%)" - Line chart with blue and yellow lines tracking weekly conversion rates
-    5. **Middle-right bottom (small)**: "Customer Satisfaction" - Yellow bar chart showing quarterly scores (Q1-Q4: 78-88)
-    6. **Bottom (full width)**: Main title "subplot-mosaic · bokeh · pyplots.ai" - Dual line chart comparing 2023 (blue) vs 2024 (green) monthly orders
+  image_description: 'The plot displays a business dashboard mosaic layout with 6
+    subplots of varying sizes:
 
-    Colors: Python Blue (#306998), Python Yellow (#FFD43B), Accent Green (#4CAF50). Legends present on most subplots. Dashed subtle grids. Clean professional appearance.
+    1. **Top-left (large, ~2/3 width)**: "Quarterly Revenue Overview" - Blue line
+    chart with markers showing daily revenue ($50k-$62k) over 90 days
+
+    2. **Top-right (~1/3 width)**: "Product Profitability" - Scatter plot with blue
+    (Premium Line) and yellow (Standard Line) dots showing profit margin vs units
+    sold
+
+    3. **Middle-left (~half width)**: "Sales by Category" - Blue vertical bar chart
+    for Electronics, Clothing, Food, Books
+
+    4. **Middle-right top (small)**: "Conversion Rate (%)" - Line chart with blue
+    and yellow lines tracking weekly conversion rates
+
+    5. **Middle-right bottom (small)**: "Customer Satisfaction" - Yellow bar chart
+    showing quarterly scores (Q1-Q4: 78-88)
+
+    6. **Bottom (full width)**: Main title "subplot-mosaic · bokeh · pyplots.ai" -
+    Dual line chart comparing 2023 (blue) vs 2024 (green) monthly orders
+
+
+    Colors: Python Blue (#306998), Python Yellow (#FFD43B), Accent Green (#4CAF50).
+    Legends present on most subplots. Dashed subtle grids. Clean professional appearance.'
   criteria_checklist:
     visual_quality:
       score: 35

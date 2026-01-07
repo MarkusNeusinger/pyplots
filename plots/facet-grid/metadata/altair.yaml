@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/facet-grid/alta
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/facet-grid/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/facet-grid/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - faceting
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Altair's declarative faceting syntax with .facet() for clean

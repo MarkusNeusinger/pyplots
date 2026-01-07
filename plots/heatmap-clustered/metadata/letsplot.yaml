@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-cluster
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - scipy
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - wide-to-long
+  dataprep:
+  - hierarchical-clustering
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent implementation of composite plot using ggbunch to combine dendrograms

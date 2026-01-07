@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-decisio
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+    - sklearn
+  techniques:
+    - colorbar
+    - html-export
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep:
+    - normalization
+  styling: []
 review:
   strengths:
   - Excellent use of probability-based contour coloring rather than just discrete

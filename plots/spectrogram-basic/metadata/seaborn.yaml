@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrogram-bas
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies:
+    - scipy
+  techniques:
+    - colorbar
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - custom-colormap
 review:
   strengths:
   - Excellent visualization of chirp signal showing clear time-frequency relationship

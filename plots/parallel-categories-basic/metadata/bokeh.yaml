@@ -11,6 +11,21 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/parallel-catego
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - bezier-curves
+  - patches
+  - custom-legend
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  - columndatasource
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of parallel categories from first principles using Bokeh

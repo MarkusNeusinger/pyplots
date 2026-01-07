@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/bo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - custom-legend
+  - patches
+  patterns:
+  - data-generation
+  - matrix-construction
+  - columndatasource
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Clean implementation of exploded pie chart using Bokeh wedge glyph with manual

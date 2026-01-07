@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-cumul
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+    - selenium
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - cumulative-sum
+  styling:
+    - gradient-fill
 review:
   strengths:
   - Excellent step-area visualization that clearly shows cumulative distribution behavior

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/elbow-curve/alt
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/elbow-curve/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/elbow-curve/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent elbow visualization with clear annotation of optimal k=4

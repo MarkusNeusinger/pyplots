@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/al
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - faceting
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of 4 distinct plot types in a cohesive 2x2 grid demonstrating

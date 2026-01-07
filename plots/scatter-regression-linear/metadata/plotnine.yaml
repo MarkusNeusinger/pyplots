@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regress
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies:
+    - scipy
+  techniques:
+    - annotations
+    - layer-composition
+  patterns:
+    - data-generation
+  dataprep:
+    - regression
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Excellent use of plotnine geom_smooth(method="lm", se=True) for built-in regression

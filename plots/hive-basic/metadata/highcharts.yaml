@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/hive-basic/high
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hive-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hive-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - bezier-curves
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of hive plot using Highcharts SVGRenderer API for custom

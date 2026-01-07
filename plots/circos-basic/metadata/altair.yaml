@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/circos-basic/al
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/circos-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/circos-basic/altair/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+    - bezier-curves
+    - layer-composition
+    - hover-tooltips
+    - html-export
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent circular layout with proper segment proportions and gaps

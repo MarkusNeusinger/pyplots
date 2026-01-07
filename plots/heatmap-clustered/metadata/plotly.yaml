@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-cluster
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - scipy
+  techniques:
+  - hover-tooltips
+  - html-export
+  - colorbar
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep:
+  - hierarchical-clustering
+  styling:
+  - custom-colormap
 review:
   strengths:
   - Excellent use of scipy hierarchical clustering with proper Ward's method and Euclidean
@@ -27,15 +41,28 @@ review:
     labels are present
   - No row/column color bars for group annotations as suggested in spec Notes (could
     annotate gene pathways or tumor/normal status)
-  image_description: |-
-    The plot shows a clustered heatmap displaying gene expression data for 20 genes across 12 samples. The visualization features:
-    - **Dendrograms**: Blue hierarchical clustering trees on both the top (column clustering) and left (row clustering) sides
-    - **Heatmap**: A well-proportioned central heatmap using the RdBu_r diverging colormap (red=high expression ~3, blue=low expression ~-3)
-    - **Title**: Correctly formatted as "heatmap-clustered · plotly · pyplots.ai" centered at top
-    - **Gene labels** (rows): PLK1, CDK1, MYC, BUB1, AURKA, CCNB1, VEGFA, EGFR, BRCA1, TP53, PKM, HK2, LDHA, ENO1, GAPDH, CXCL8, IL1B, IFNG, TNF, IL6
-    - **Sample labels** (columns): N2_C, N2_A, N2_B, N1_C, N1_A, N1_B, T1_C, T1_A, T1_B, T2_C, T2_A, T2_B (rotated 45°)
+  image_description: 'The plot shows a clustered heatmap displaying gene expression
+    data for 20 genes across 12 samples. The visualization features:
+
+    - **Dendrograms**: Blue hierarchical clustering trees on both the top (column
+    clustering) and left (row clustering) sides
+
+    - **Heatmap**: A well-proportioned central heatmap using the RdBu_r diverging
+    colormap (red=high expression ~3, blue=low expression ~-3)
+
+    - **Title**: Correctly formatted as "heatmap-clustered · plotly · pyplots.ai"
+    centered at top
+
+    - **Gene labels** (rows): PLK1, CDK1, MYC, BUB1, AURKA, CCNB1, VEGFA, EGFR, BRCA1,
+    TP53, PKM, HK2, LDHA, ENO1, GAPDH, CXCL8, IL1B, IFNG, TNF, IL6
+
+    - **Sample labels** (columns): N2_C, N2_A, N2_B, N1_C, N1_A, N1_B, T1_C, T1_A,
+    T1_B, T2_C, T2_A, T2_B (rotated 45°)
+
     - **Colorbar**: On the right with "Expression (z-score)" title, range -3 to 3
-    - **Clear clustering**: Normal samples (N) cluster together on the left, Tumor samples (T) on the right, demonstrating successful hierarchical clustering
+
+    - **Clear clustering**: Normal samples (N) cluster together on the left, Tumor
+    samples (T) on the right, demonstrating successful hierarchical clustering'
   criteria_checklist:
     visual_quality:
       score: 36

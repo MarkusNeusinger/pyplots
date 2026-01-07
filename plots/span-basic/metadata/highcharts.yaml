@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/span-basic/high
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/span-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/span-basic/highcharts/plot.html
 quality_score: 93
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent demonstration of BOTH vertical and horizontal spans in a single plot
@@ -25,14 +36,26 @@ review:
     with categories)
   - Stock price values are somewhat generic; could reference a specific index for
     more realism
-  image_description: |-
-    The plot displays a line chart showing stock price data over time from January 2007 to October 2010. The title "span-basic · highcharts · pyplots.ai" appears at the top in bold black text, with a subtitle "Stock Price with Recession Period Highlighted" below it. The y-axis is labeled "Stock Price ($)" ranging from 50 to 180. The x-axis shows quarterly dates from Jan 2007 to Oct 2010. A blue line with circular markers traces the stock price movement.
+  image_description: 'The plot displays a line chart showing stock price data over
+    time from January 2007 to October 2010. The title "span-basic · highcharts · pyplots.ai"
+    appears at the top in bold black text, with a subtitle "Stock Price with Recession
+    Period Highlighted" below it. The y-axis is labeled "Stock Price ($)" ranging
+    from 50 to 180. The x-axis shows quarterly dates from Jan 2007 to Oct 2010. A
+    blue line with circular markers traces the stock price movement.
+
 
     Two span regions are clearly visible:
-    1. A **vertical span** (light blue, ~25% opacity) highlighting the "Recession Period" from Jan 2008 to Jan 2009, with a label at the top
-    2. A **horizontal span** (light yellow, ~25% opacity) highlighting the "Below Target Price" zone from $50 to $100, with a label on the left side
 
-    The data shows the stock price declining from ~$155 peak in mid-2007 down to ~$78 during the recession (Apr 2009), then recovering to ~$135 by Oct 2010. The overlapping spans create a visual intersection where both highlighted regions meet.
+    1. A **vertical span** (light blue, ~25% opacity) highlighting the "Recession
+    Period" from Jan 2008 to Jan 2009, with a label at the top
+
+    2. A **horizontal span** (light yellow, ~25% opacity) highlighting the "Below
+    Target Price" zone from $50 to $100, with a label on the left side
+
+
+    The data shows the stock price declining from ~$155 peak in mid-2007 down to ~$78
+    during the recession (Apr 2009), then recovering to ~$135 by Oct 2010. The overlapping
+    spans create a visual intersection where both highlighted regions meet.'
   criteria_checklist:
     visual_quality:
       score: 37

@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-filled/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-filled/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-filled/bokeh/plot.html
 quality_score: 90
+impl_tags:
+  dependencies:
+  - contourpy
+  techniques:
+  - colorbar
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent use of Viridis colormap for colorblind accessibility and visual appeal

@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-correla
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-correlation/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-correlation/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep:
+  - correlation-matrix
+  styling: []
 review:
   strengths:
   - Excellent diverging color scheme (redblue) properly centered at zero with domain

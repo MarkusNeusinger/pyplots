@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/pyg
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - cairosvg
+  techniques:
+  - html-export
+  patterns:
+  - explicit-figure
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent visual presentation with clear horizontal bars and proper spacing between

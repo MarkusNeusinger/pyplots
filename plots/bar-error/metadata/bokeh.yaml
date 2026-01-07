@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-error/bokeh
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-error/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-error/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - edge-highlighting
+  patterns:
+  - data-generation
+  - columndatasource
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent use of Bokeh Whisker model with TeeHead for professional error bar caps

@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-basic/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/donut-basic/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of center annotation for total budget display

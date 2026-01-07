@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/l
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - manual-ticks
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent implementation of ternary coordinates from scratch using Cartesian transformation

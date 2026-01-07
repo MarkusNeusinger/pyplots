@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-cu
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - layer-composition
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent dashboard layout demonstrating custom grid with non-uniform cell sizes

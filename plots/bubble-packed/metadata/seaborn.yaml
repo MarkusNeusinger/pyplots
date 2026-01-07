@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/s
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - custom-legend
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
+  - edge-highlighting
+  - minimal-chrome
 review:
   strengths:
   - Excellent circle packing algorithm that produces non-overlapping bubbles packed

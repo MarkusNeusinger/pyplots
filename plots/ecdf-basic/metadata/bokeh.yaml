@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/boke
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - columndatasource
+  - html-export
+  - grid-styling
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Correct ECDF step function implementation with proper horizontal-then-vertical

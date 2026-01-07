@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/ma
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns: []
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Excellent use of matplotlib Sankey module with two connected diagrams showing

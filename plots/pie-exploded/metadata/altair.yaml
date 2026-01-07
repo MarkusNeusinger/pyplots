@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/al
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/altair/plot.html
 quality_score: 75
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - layer-composition
+  - custom-legend
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clean code structure with clear comments explaining the explosion technique

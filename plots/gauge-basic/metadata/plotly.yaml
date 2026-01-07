@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/gauge-basic/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gauge-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/gauge-basic/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Plotly native gauge indicator (go.Indicator) with proper mode=gauge+number

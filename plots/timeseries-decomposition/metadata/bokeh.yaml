@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/timeseries-deco
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - statsmodels
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - time-series
+  styling: []
 review:
   strengths:
   - Excellent implementation of all four decomposition components with clear visual
@@ -26,15 +36,29 @@ review:
   - Y-axis label rotation on Passengers (thousands) makes it slightly harder to read
   - Panel heights (620px each) leave some unused vertical space in 2700px target
   - Could use ColumnDataSource for more idiomatic Bokeh code
-  image_description: |-
-    The plot displays four vertically stacked panels showing a time series decomposition of airline passenger data from 2018-2028. The main title "timeseries-decomposition · bokeh · pyplots.ai" appears at the top. All panels use the Python blue color (#306998) for the line plots with dashed grid lines at 0.3 alpha.
+  image_description: 'The plot displays four vertically stacked panels showing a time
+    series decomposition of airline passenger data from 2018-2028. The main title
+    "timeseries-decomposition · bokeh · pyplots.ai" appears at the top. All panels
+    use the Python blue color (#306998) for the line plots with dashed grid lines
+    at 0.3 alpha.
 
-    - **Original Series** (top): Shows the raw data with clear upward trend and seasonal fluctuations, ranging from ~80 to ~280 thousand passengers. Y-axis labeled "Passengers (thousands)".
-    - **Trend Component**: Displays a smooth monotonically increasing line from ~110 to ~240, capturing the long-term growth.
-    - **Seasonal Component**: Shows a repeating sinusoidal pattern oscillating between approximately -30 and +30, with consistent annual cycles.
-    - **Residual Component** (bottom): Shows random noise fluctuating around zero (approximately -20 to +20), with the x-axis labeled "Date".
 
-    All panels share a linked x-axis from 2018 to 2028. The Bokeh toolbar is visible on the right side of each panel with interactive tools.
+    - **Original Series** (top): Shows the raw data with clear upward trend and seasonal
+    fluctuations, ranging from ~80 to ~280 thousand passengers. Y-axis labeled "Passengers
+    (thousands)".
+
+    - **Trend Component**: Displays a smooth monotonically increasing line from ~110
+    to ~240, capturing the long-term growth.
+
+    - **Seasonal Component**: Shows a repeating sinusoidal pattern oscillating between
+    approximately -30 and +30, with consistent annual cycles.
+
+    - **Residual Component** (bottom): Shows random noise fluctuating around zero
+    (approximately -20 to +20), with the x-axis labeled "Date".
+
+
+    All panels share a linked x-axis from 2018 to 2028. The Bokeh toolbar is visible
+    on the right side of each panel with interactive tools.'
   criteria_checklist:
     visual_quality:
       score: 36

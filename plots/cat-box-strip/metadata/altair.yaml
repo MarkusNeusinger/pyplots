@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/a
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent data variety showing different distribution shapes (tight, wide, bimodal,

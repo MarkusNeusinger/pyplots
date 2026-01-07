@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/network-directe
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-directed/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/network-directed/altair/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - bezier-curves
+  - layer-composition
+  - hover-tooltips
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent hierarchical layout algorithm that calculates node depths based on topological

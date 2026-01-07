@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/point-basic/mat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/point-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 99
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - explicit-figure
+  dataprep: []
+  styling:
+  - alpha-blending
+  - edge-highlighting
 review:
   strengths:
   - Excellent horizontal layout following spec recommendation for readable category

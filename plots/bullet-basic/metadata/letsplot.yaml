@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bullet-basic/le
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bullet-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bullet-basic/letsplot/plot.html
 quality_score: 97
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - normalization
+  styling: []
 review:
   strengths:
   - Excellent implementation of bullet chart using lets-plot ggplot2 grammar with

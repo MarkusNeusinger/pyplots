@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-margina
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-marginal/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-marginal/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - subplots
+    - layer-composition
+  patterns:
+    - columndatasource
+    - data-generation
+    - matrix-construction
+  dataprep:
+    - binning
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent axis alignment between scatter and marginal plots using shared x_range/y_range

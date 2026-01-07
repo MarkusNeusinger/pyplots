@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  - pillow
+  techniques:
+  - annotations
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Highcharts variwide chart type for the Marimekko visualization

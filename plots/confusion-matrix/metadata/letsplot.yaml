@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/confusion-matri
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - colorbar
+  - hover-tooltips
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent text contrast using scale_color_identity() for dynamic white/black text

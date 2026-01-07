@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-bar/plotn
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-bar/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - patches
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent manual construction of polar coordinate system using geom_polygon wedges

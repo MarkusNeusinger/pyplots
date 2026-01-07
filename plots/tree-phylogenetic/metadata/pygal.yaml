@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenet
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/pygal/plot.html
 quality_score: 82
+impl_tags:
+  dependencies:
+  - cairosvg
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Creative use of pygal XY chart to represent phylogenetic tree structure

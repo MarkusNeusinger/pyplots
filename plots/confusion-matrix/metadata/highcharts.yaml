@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/confusion-matri
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - annotations
+  - colorbar
+  - hover-tooltips
+  - html-export
+  - manual-ticks
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual clarity with well-sized text and cell annotations

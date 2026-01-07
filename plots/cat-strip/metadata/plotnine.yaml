@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/cat-strip/plotn
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/cat-strip/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent text sizing with clear title, axis labels, and tick marks all easily

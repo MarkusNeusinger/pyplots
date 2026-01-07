@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-filled/alt
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-filled/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-filled/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+    - hover-tooltips
+    - gradient-fill
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - gradient-fill
+    - grid-styling
 review:
   strengths:
   - Excellent use of Altair gradient feature for the fill, creating a visually appealing

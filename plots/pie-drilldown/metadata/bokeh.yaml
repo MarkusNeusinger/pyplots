@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/b
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/bokeh/plot.html
 quality_score: 72
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - hover-tooltips
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Good canvas utilization with large 3600x3600 square format - pie chart fills significant
@@ -29,14 +39,24 @@ review:
     shades
   - The Human Resources slice label text is partially difficult to read due to smaller
     slice size and label positioning
-  image_description: |-
-    The plot displays a pie chart for "Total Expenses" with 4 slices representing company departments. The title "pie-drilldown · bokeh · pyplots.ai" appears at the top in blue. A breadcrumb showing "Total Expenses" is positioned above the pie. The four slices are:
+  image_description: 'The plot displays a pie chart for "Total Expenses" with 4 slices
+    representing company departments. The title "pie-drilldown · bokeh · pyplots.ai"
+    appears at the top in blue. A breadcrumb showing "Total Expenses" is positioned
+    above the pie. The four slices are:
+
     - **Operations**: $1320K (34.1%) - Large teal/green slice on the right
+
     - **Marketing**: $900K (23.3%) - Teal/green slice at the bottom
+
     - **Research**: $1000K (25.8%) - Pink/magenta slice on the left
+
     - **Human Resources**: $650K (16.8%) - Coral/red slice at the top-left
 
-    Each slice has white bold text labels showing category name, dollar value, and percentage. The text "Click a slice to drill down" appears at the bottom in gray. The background is a light off-white (#fafafa). The pie chart is well-proportioned and fills a good portion of the canvas (square 3600x3600 format).
+
+    Each slice has white bold text labels showing category name, dollar value, and
+    percentage. The text "Click a slice to drill down" appears at the bottom in gray.
+    The background is a light off-white (#fafafa). The pie chart is well-proportioned
+    and fills a good portion of the canvas (square 3600x3600 format).'
   criteria_checklist:
     visual_quality:
       score: 33

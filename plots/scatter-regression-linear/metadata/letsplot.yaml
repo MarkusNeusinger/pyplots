@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regress
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/letsplot/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+    - annotations
+    - hover-tooltips
+    - layer-composition
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - regression
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - 'Excellent implementation of all spec requirements: regression line, 95% CI band,

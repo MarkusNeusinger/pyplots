@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/point-basic/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/point-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent use of plotnine grammar of graphics with proper layer composition (vline

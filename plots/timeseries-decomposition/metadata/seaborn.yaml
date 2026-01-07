@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/timeseries-deco
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies:
+  - statsmodels
+  techniques:
+  - subplots
+  - grid-styling
+  patterns:
+  - data-generation
+  - rolling-window
+  - groupby-aggregation
+  dataprep:
+  - time-series
+  styling: []
 review:
   strengths:
   - Excellent four-panel layout perfectly matching the specification requirements

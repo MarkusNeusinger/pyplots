@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/facet-grid/boke
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/facet-grid/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/facet-grid/bokeh/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - columndatasource
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Well-organized 4×3 grid layout that clearly shows patterns across regions and

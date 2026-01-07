@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/a
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - groupby-aggregation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent manual treemap layout algorithm that correctly calculates strip widths

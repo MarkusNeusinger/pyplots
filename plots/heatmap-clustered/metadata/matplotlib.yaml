@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-cluster
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies:
+  - scipy
+  techniques:
+  - subplots
+  - colorbar
+  - manual-ticks
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep:
+  - hierarchical-clustering
+  styling:
+  - custom-colormap
 review:
   strengths:
   - Excellent realistic gene expression data scenario with proper biological context

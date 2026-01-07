@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/slope-basic/pyg
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/slope-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/slope-basic/pygal/plot.html
 quality_score: 86
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Colorblind-friendly color scheme with blue for increasing and orange-red for decreasing

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - manual-ticks
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - matrix-construction
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent manual implementation of raincloud plot using pygal XY chart primitives

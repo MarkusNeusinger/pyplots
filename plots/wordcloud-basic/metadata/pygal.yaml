@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/wordcloud-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/wordcloud-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/wordcloud-basic/pygal/plot.html
 quality_score: 86
+impl_tags:
+  dependencies:
+  - pillow
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Creative approach using pygal XY chart as SVG canvas for word cloud rendering

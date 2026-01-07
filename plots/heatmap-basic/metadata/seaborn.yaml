@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/s
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+    - colorbar
+    - annotations
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling:
+    - custom-colormap
+    - grid-styling
 review:
   strengths:
   - Excellent use of diverging RdBu colormap centered at 50, making it easy to distinguish

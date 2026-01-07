@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-animate
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-animated-controls/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-animated-controls/pygal/plot.html
 quality_score: 90
+impl_tags:
+  dependencies:
+  - pillow
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of Gapminder-style visualization with proper size encoding

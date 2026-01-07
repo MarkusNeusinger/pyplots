@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/stem-basic/boke
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/stem-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/stem-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - columndatasource
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clean stem plot implementation using segment + scatter combination

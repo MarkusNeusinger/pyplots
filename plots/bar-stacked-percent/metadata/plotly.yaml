@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-per
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/plotly/plot.html
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - explicit-figure
+  dataprep:
+  - normalization
+  styling: []
 review:
   strengths:
   - Excellent use of realistic energy data showing diverse compositions across countries

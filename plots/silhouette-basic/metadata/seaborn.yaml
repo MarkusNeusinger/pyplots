@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/silhouette-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/silhouette-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies:
+  - sklearn
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  - dataset-loading
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of silhouette plot with proper sorted bars within each

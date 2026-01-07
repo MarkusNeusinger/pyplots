@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - annotations
+    - hover-tooltips
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent implementation of volcano plot with all required threshold lines and

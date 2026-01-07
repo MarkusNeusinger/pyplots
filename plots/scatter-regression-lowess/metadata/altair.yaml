@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regress
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-lowess/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-lowess/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+    - statsmodels
+  techniques:
+    - layer-composition
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - regression
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent visual clarity with properly sized text elements and good color contrast

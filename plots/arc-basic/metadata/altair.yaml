@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/arc-basic/altai
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/arc-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/arc-basic/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+    - html-export
+  patterns:
+    - data-generation
+    - iteration-over-groups
+    - matrix-construction
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent implementation of arc diagram using Altairs declarative grammar with

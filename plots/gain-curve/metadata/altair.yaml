@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/gain-curve/alta
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gain-curve/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/gain-curve/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - custom-legend
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Altair's layered composition pattern with separate charts for

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-basic/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+    - manual-ticks
+  patterns:
+    - data-generation
+    - matrix-construction
+    - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent creative solution for polar coordinates in plotnine by manually converting

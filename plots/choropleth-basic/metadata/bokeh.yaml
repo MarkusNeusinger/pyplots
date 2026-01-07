@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/choropleth-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/choropleth-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/choropleth-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - custom-colormap
 review:
   strengths:
   - Excellent use of Bokeh-specific features including LogColorMapper for better differentiation

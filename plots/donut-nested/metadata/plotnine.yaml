@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-nested/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-nested/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent hierarchical data representation with clear parent-child relationships

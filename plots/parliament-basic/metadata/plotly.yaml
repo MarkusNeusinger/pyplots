@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/parliament-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/plotly/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent semicircular seat arrangement algorithm that properly distributes seats

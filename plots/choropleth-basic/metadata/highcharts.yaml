@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/choropleth-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/choropleth-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/choropleth-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - colorbar
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Highmaps TopoJSON topology for Europe map

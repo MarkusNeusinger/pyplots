@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/b
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+    - columndatasource
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent step line implementation with manual coordinate transformation for post

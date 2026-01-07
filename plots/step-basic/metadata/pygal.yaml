@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/step-basic/pyga
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/step-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/step-basic/pygal/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent step visualization technique using intermediate points with zero-width

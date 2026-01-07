@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ridgeline-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ridgeline-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - faceting
+  patterns:
+  - data-generation
+  dataprep:
+  - kde
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent visual design with the coolwarm color gradient that intuitively maps

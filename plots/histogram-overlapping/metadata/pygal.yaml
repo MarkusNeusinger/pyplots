@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-overl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-overlapping/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-overlapping/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - alpha-blending
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep:
+  - binning
+  styling: []
 review:
   strengths:
   - Excellent choice of real-world data scenario (human heights by gender) with realistic

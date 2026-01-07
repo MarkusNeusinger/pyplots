@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/parallel-catego
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - bezier-curves
+  - layer-composition
+  - custom-legend
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Clean KISS flat structure without functions or classes (addressed previous feedback)

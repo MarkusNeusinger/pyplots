@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-basic/alta
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-basic/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Excellent weekly pattern simulation showing realistic website traffic with weekday

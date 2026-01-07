@@ -11,6 +11,21 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-3d/bokeh/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-3d/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-3d/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - custom-legend
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - explicit-figure
+  dataprep: []
+  styling:
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
   - Excellent 3D isometric projection with proper painter's algorithm for correct

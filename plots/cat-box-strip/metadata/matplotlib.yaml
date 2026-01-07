@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/m
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+    - explicit-figure
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent data design showing different distributions, spreads, and outliers across

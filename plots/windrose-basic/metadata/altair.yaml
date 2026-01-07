@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/altair/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent creative approach constructing polar wind rose in Altair using Cartesian-to-polar

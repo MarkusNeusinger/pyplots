@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/lift-curve/seab
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/lift-curve/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual clarity with appropriate font sizes and line widths for high-resolution

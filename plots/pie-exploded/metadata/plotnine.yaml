@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  - annotations
+  - custom-legend
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - matrix-construction
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent visual execution with clear explosion effect on the market leader slice

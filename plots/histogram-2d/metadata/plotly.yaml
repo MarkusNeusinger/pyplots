@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-2d/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-2d/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-2d/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - subplots
+    - colorbar
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - custom-colormap
 review:
   strengths:
   - Excellent implementation of marginal histograms using make_subplots with shared_xaxes/shared_yaxes

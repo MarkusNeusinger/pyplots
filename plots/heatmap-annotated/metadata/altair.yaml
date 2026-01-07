@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-annotat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-annotated/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-annotated/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep:
+  - correlation-matrix
+  styling: []
 review:
   strengths:
   - Excellent text contrast implementation using conditional color encoding for annotations

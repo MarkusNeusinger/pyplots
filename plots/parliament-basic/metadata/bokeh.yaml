@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/parliament-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/bokeh/plot.html
 quality_score: null
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent semicircular parliament visualization with proper concentric arc arrangement
@@ -30,17 +41,30 @@ review:
   - Political party names (Progressive, Conservative, etc.) could potentially be replaced
     with more neutral terminology (e.g., "Party A", "Party B") to avoid any political
     connotations
-  image_description: |-
-    The plot displays a semicircular parliament seat chart with 300 total seats arranged in concentric arcs. Seven parties are represented with distinct colors:
+  image_description: 'The plot displays a semicircular parliament seat chart with
+    300 total seats arranged in concentric arcs. Seven parties are represented with
+    distinct colors:
+
     - **Progressive Party (85 seats)** - Blue (#306998) - positioned on the left side
+
     - **Conservative Union (72 seats)** - Red (#E74C3C) - center-left area
+
     - **Green Alliance (45 seats)** - Green (#27AE60) - center area
+
     - **Liberal Democrats (38 seats)** - Yellow (#FFD43B) - center-right area
+
     - **Social Democrats (32 seats)** - Purple (#9B59B6) - right-center area
+
     - **Regional Party (18 seats)** - Orange (#E67E22) - right side
+
     - **Independents (10 seats)** - Gray (#95A5A6) - far right side
 
-    The title reads "parliament-basic · bokeh · pyplots.ai" at the top. A large "300" with "seats" label appears in the center of the semicircle. Below the chart, "Majority threshold: 151 seats" is displayed. The legend is positioned on the right side showing all parties with their seat counts. Individual seats are rendered as circular dots arranged in multiple concentric arcs.
+
+    The title reads "parliament-basic · bokeh · pyplots.ai" at the top. A large "300"
+    with "seats" label appears in the center of the semicircle. Below the chart, "Majority
+    threshold: 151 seats" is displayed. The legend is positioned on the right side
+    showing all parties with their seat counts. Individual seats are rendered as circular
+    dots arranged in multiple concentric arcs.'
   criteria_checklist:
     visual_quality:
       score: 36

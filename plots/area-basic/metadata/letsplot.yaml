@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-basic/lets
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Excellent realistic data generation with trend, weekly cyclical pattern, and noise

@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bullet-basic/py
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bullet-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bullet-basic/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - cairosvg
+  techniques: []
+  patterns:
+  - data-generation
+  dataprep:
+  - normalization
+  styling: []
 review:
   strengths:
   - Excellent creative solution using HorizontalStackedBar with custom SVG injection

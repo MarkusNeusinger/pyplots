@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-permutation
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-permutation-importance/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-permutation-importance/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - columndatasource
+  - data-generation
+  dataprep: []
+  styling:
+  - custom-colormap
 review:
   strengths:
   - 'Excellent implementation of all spec requirements: sorted bars, error bars, color

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/timeseries-deco
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - statsmodels
+  techniques:
+  - subplots
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - time-series
+  styling: []
 review:
   strengths:
   - Clean four-panel layout with well-differentiated components using distinct colors

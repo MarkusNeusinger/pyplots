@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenet
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - manual-ticks
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent clade coloring with three distinct, colorblind-safe colors (blue, yellow,

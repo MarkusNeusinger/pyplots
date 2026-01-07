@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - columndatasource
+  - custom-legend
+  - html-export
+  patterns:
+  - dataset-loading
+  - iteration-over-groups
+  dataprep:
+  - normalization
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of the Andrews curves mathematical transformation with

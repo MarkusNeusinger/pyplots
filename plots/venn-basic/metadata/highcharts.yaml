@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/venn-basic/high
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/venn-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/venn-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+    - selenium
+  techniques:
+    - html-export
+    - custom-legend
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent use of Highcharts VennSeries with proper data structure for sets and

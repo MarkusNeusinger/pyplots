@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/sudoku-basic/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sudoku-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - colorbar
+    - annotations
+    - manual-ticks
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling:
+    - custom-colormap
+    - minimal-chrome
 review:
   strengths:
   - Excellent visual hierarchy with clear distinction between 3×3 box boundaries and

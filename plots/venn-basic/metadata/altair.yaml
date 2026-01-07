@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/venn-basic/alta
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/venn-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/venn-basic/altair/plot.html
 quality_score: 88
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+    - html-export
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent creative implementation of Venn diagram using Altair point marks and

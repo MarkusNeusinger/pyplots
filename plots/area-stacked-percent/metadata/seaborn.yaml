@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked-pe
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - custom-legend
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep:
+  - normalization
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent data storytelling showing realistic renewable energy market evolution

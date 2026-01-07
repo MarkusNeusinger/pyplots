@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent use of plotnine composition operators (| and /) to create mosaic-like

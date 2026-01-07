@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/s
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  - groupby-aggregation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of the classic volcano plot pattern with clear visual

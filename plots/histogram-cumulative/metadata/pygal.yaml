@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-cumul
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - cumulative-sum
+  styling: []
 review:
   strengths:
   - Clean, professional appearance with appropriate font sizes for 4800x2700 canvas

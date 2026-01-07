@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/b
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - custom-legend
+  - annotations
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Implements squarify treemap algorithm from scratch since bokeh lacks native treemap

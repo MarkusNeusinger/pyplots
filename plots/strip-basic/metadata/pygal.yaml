@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/strip-basic/pyg
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/strip-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/strip-basic/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of strip plot using pygal XY chart with manual jitter

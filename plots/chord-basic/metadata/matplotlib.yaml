@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/chord-basic/mat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/chord-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 98
+impl_tags:
+  dependencies: []
+  techniques:
+  - bezier-curves
+  - patches
+  - manual-ticks
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths: []
   weaknesses: []

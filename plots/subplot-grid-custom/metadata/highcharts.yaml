@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-cu
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - subplots
+  - html-export
+  - annotations
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent custom grid layout with CSS Grid demonstrating colspan/rowspan effectively

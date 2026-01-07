@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/streamline-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/streamline-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/streamline-basic/pygal/plot.html
 quality_score: 77
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Creative workaround for pygal lack of native streamline support using XY connected

@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/mat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 95
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - edge-highlighting
+  patterns:
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual clarity with well-sized text and properly spaced bars

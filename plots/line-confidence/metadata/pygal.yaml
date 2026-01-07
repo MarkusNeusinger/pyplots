@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-confidence
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-confidence/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-confidence/pygal/plot.html
 quality_score: 58
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clean KISS code structure with proper random seed for reproducibility

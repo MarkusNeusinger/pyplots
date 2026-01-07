@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/venn-basic/plot
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/venn-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent implementation of a Venn diagram using plotnine grammar of graphics

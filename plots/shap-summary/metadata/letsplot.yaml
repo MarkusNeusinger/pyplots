@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/shap-summary/le
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/shap-summary/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/shap-summary/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - html-export
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of SHAP summary plot with proper feature importance ordering

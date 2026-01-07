@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/rose-basic/alta
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/rose-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/rose-basic/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - pillow
+  techniques:
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Proper rose chart implementation with radial segments where radius represents

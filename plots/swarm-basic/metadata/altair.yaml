@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/swarm-basic/alt
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/swarm-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/swarm-basic/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+    - hover-tooltips
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Excellent data design with four distinct distribution patterns (tight, wide, bimodal,

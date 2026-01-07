@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  - pillow
+  techniques:
+  - html-export
+  - annotations
+  - hover-tooltips
+  - custom-legend
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of alluvial structure using Highcharts sankey with explicit

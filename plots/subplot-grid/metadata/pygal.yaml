@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/py
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - pillow
+  - cairosvg
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent demonstration of pygal versatility with four distinct chart types (Line,

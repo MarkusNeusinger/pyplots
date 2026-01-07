@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/elbow-curve/hig
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/elbow-curve/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/elbow-curve/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual clarity with appropriate font sizes and marker visibility

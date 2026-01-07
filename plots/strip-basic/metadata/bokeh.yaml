@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/strip-basic/bok
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/strip-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/strip-basic/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - manual-ticks
+  patterns:
+    - data-generation
+    - columndatasource
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Good use of jitter to prevent overplotting while keeping points within category

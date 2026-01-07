@@ -11,6 +11,13 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/sea
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 96
+impl_tags:
+  dependencies: []
+  techniques:
+  - edge-highlighting
+  patterns: []
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of seaborn's native barplot with hue parameter for clean grouped

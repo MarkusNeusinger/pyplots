@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-basic/a
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-basic/altair/plot.html
 quality_score: 98
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent creative solution for a plot type Altair does not natively support

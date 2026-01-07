@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/parallel-catego
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns:
+  - dataset-loading
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Titanic dataset providing realistic, well-known categorical data

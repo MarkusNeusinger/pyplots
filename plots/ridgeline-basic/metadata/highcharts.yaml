@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ridgeline-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ridgeline-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ridgeline-basic/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - kde
+  styling:
+  - gradient-fill
 review:
   strengths:
   - Excellent color scheme that smoothly transitions from cool winter blues to warm

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ridgeline-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ridgeline-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ridgeline-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - custom-colormap
+    - alpha-blending
 review:
   strengths:
   - Excellent use of lets-plot's native geom_area_ridges for true ridgeline visualization

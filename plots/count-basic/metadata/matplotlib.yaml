@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/count-basic/mat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/count-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - annotations
+  patterns:
+    - data-generation
+    - explicit-figure
+  dataprep: []
+  styling:
+    - edge-highlighting
 review:
   strengths:
   - Excellent survey response scenario with realistic Likert scale data

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/pygal/plot.html
 quality_score: 88
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - normalization
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent colorblind-safe color palette (blue/orange/purple)

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrogram-bas
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/plotly/plot.html
 quality_score: 93
+impl_tags:
+  dependencies:
+    - scipy
+  techniques:
+    - colorbar
+    - hover-tooltips
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - custom-colormap
 review:
   strengths:
   - Excellent visual clarity with the Viridis colormap showing the chirp signal frequency

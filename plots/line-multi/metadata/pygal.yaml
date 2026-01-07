@@ -11,6 +11,13 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-multi/pyga
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-multi/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-multi/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns: []
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent data storytelling with four distinct trend patterns (steady growth,

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/forest-basic/ma
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/forest-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  - manual-ticks
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - 'Excellent implementation of the forest plot with all key elements: effect sizes,

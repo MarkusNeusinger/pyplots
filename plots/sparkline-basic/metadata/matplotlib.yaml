@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/sparkline-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sparkline-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+    - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - 'Perfect sparkline aesthetic: no axes, gridlines, or chart chrome - exactly as

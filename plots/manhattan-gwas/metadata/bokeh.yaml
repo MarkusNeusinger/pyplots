@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  - columndatasource
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of Manhattan plot with proper chromosome coloring and

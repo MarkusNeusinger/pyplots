@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas/pygal/plot.html
 quality_score: 82
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - layer-composition
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent alternating blue/gray color scheme for chromosome distinction that is

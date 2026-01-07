@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/streamgraph-bas
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/streamgraph-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/streamgraph-basic/pygal/plot.html
 quality_score: 75
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Successfully implements a centered streamgraph using pygal StackedLine chart with

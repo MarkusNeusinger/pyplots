@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/network-force-d
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-force-directed/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/network-force-directed/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - custom-legend
+  - html-export
+  patterns:
+  - columndatasource
+  - data-generation
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent implementation of Fruchterman-Reingold force-directed layout algorithm

@@ -11,6 +11,13 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/pyga
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns: []
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent sorting implementation with proper reversal for pygal bottom-to-top

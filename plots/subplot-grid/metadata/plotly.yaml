@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent demonstration of Plotly's make_subplots capability with different chart

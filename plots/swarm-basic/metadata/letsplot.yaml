@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/swarm-basic/let
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/swarm-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/swarm-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Excellent use of geom_sina which is lets-plot native swarm/beeswarm geometry

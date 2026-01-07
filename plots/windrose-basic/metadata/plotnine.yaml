@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - custom-legend
+  - annotations
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of wind rose using manual polygon geometry in plotnine

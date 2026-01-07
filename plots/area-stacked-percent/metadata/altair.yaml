@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked-pe
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - hover-tooltips
+  - layer-composition
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep:
+  - normalization
+  styling: []
 review:
   strengths:
   - Excellent use of Altair's declarative grammar with stack="normalize" for proper

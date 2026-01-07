@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/density-basic/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/density-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/density-basic/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - hover-tooltips
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - kde
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent manual KDE implementation using Silverman's rule of thumb for bandwidth

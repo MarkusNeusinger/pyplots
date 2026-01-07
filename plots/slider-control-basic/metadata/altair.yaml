@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/slider-control-
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/slider-control-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/slider-control-basic/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Altair declarative selection and binding system for the slider

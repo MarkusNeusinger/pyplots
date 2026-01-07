@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/network-basic/b
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/network-basic/bokeh/plot.html
 quality_score: 88
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  - columndatasource
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of Bokeh interactive features (HoverTool showing name and connections,

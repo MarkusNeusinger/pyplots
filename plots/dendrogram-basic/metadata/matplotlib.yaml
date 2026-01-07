@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies:
+  - scipy
+  techniques: []
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - hierarchical-clustering
+  styling: []
 review:
   strengths:
   - Excellent hierarchical clustering visualization with clear species separation

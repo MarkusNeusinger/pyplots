@@ -11,6 +11,13 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 98
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual output showing three distinct density clusters

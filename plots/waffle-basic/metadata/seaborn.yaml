@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - manual-ticks
+  patterns:
+  - data-generation
+  - matrix-construction
+  - wide-to-long
+  dataprep: []
+  styling:
+  - custom-colormap
 review:
   strengths:
   - Excellent use of sns.heatmap with custom colormap to create waffle chart effect

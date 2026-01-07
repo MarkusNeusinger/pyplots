@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/span-basic/pyga
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/span-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/span-basic/pygal/plot.html
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - layer-composition
+  - patches
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths: []
   weaknesses: []

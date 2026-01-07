@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-basic/letsp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-basic/letsplot/plot.html
 quality_score: 99
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - layer-composition
+  patterns: []
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent use of geom_text with label_format for currency formatting ($X,XXX)

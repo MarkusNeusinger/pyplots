@@ -11,6 +11,13 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/sparkline-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sparkline-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sparkline-basic/pygal/plot.html
 quality_score: 78
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns: []
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of sparkline minimalism with no axes, labels, or gridlines

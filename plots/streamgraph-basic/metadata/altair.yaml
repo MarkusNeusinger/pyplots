@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/streamgraph-bas
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/streamgraph-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/streamgraph-basic/altair/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent use of Altair's declarative grammar with proper encoding types (T, Q,

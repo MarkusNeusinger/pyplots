@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 78
+impl_tags:
+  dependencies: []
+  techniques:
+  - bezier-curves
+  - custom-legend
+  patterns:
+  - groupby-aggregation
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Excellent manual implementation of Sankey diagram using bezier curves for smooth

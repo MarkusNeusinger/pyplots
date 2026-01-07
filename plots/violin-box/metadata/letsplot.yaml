@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-box/lets
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-box/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-box/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent combination of violin and box plot showing both KDE density and summary

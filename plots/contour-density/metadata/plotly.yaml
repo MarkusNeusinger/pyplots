@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-density
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-density/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-density/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - colorbar
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - custom-colormap
+    - alpha-blending
 review:
   strengths:
   - Excellent use of filled contours with custom colorscale transitioning from transparent

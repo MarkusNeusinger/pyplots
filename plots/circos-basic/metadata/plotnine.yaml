@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/circos-basic/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/circos-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - bezier-curves
+  patterns:
+    - matrix-construction
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent implementation of a complex circos plot using only plotnine native grammar

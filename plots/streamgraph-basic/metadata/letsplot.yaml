@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/streamgraph-bas
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/streamgraph-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/streamgraph-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent implementation of centered baseline algorithm for authentic streamgraph

@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-per
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - iteration-over-groups
+  dataprep:
+  - normalization
+  styling: []
 review:
   strengths:
   - Excellent real-world data scenario showing energy mix by country with meaningful

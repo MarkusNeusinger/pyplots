@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/precision-recal
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/precision-recall/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/precision-recall/pygal/plot.html
 quality_score: 95
+impl_tags:
+  dependencies:
+  - sklearn
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of stepped precision-recall curves showing threshold-based

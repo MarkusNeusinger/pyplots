@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/qq-basic/seabor
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/qq-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent visual quality with proper font sizes and colorblind-safe palette

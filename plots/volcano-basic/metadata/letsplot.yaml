@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/l
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Clear visual distinction between significance categories using blue/gray/red color

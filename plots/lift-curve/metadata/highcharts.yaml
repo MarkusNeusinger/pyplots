@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/lift-curve/high
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/lift-curve/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/lift-curve/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Highcharts plotLines feature for the reference line with label

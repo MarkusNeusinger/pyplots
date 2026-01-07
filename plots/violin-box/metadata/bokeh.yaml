@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-box/boke
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-box/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-box/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+    - custom-legend
+  patterns:
+    - data-generation
+  dataprep:
+    - kde
+  styling:
+    - grid-styling
+    - alpha-blending
 review:
   strengths:
   - Excellent manual implementation of violin plot using KDE calculation and patch

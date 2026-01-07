@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/box-grouped/bok
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-grouped/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/box-grouped/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - columndatasource
+    - custom-legend
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent visual clarity with well-sized text elements (36pt title, 28pt labels,

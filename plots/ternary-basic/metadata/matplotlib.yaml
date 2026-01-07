@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/m
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - annotations
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - grid-styling
+  - minimal-chrome
 review:
   strengths:
   - Excellent implementation of ternary coordinates with proper Cartesian transformation

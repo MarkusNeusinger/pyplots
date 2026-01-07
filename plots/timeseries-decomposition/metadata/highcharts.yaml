@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/timeseries-deco
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - statsmodels
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - time-series
+  styling: []
 review:
   strengths:
   - Excellent colorblind-safe palette with distinct colors for each component (blue,

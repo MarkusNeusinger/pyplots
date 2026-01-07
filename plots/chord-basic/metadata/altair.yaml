@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/chord-basic/alt
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/chord-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/chord-basic/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent manual implementation of chord diagram using Altair mark_line for both

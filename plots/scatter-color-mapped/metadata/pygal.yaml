@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-color-m
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-color-mapped/pygal/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - binning
+  styling: []
 review:
   strengths:
   - Effective workaround for pygal lack of continuous colormap by using discrete temperature

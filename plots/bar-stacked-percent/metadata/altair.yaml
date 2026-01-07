@@ -11,6 +11,13 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-per
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/altair/plot.html
 quality_score: 98
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  patterns: []
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Altair's declarative grammar with proper encoding types (:N,

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/radar-multi/let
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/radar-multi/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/radar-multi/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+    - html-export
+  patterns:
+    - data-generation
+    - wide-to-long
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent radar chart construction using polar-to-cartesian coordinate transformation

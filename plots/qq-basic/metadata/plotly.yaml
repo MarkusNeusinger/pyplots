@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/qq-basic/plotly
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/qq-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/qq-basic/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual presentation with proper font sizing for high-resolution output

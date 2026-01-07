@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-decisio
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+    - sklearn
+  techniques:
+    - hover-tooltips
+    - html-export
+    - custom-legend
+  patterns:
+    - columndatasource
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent visual clarity with well-chosen Python blue/yellow color scheme that

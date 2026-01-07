@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-nested/hi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-nested/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/donut-nested/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  - pillow
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent color scheme using consistent hue families (blue gradients for Engineering,

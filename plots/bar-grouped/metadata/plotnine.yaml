@@ -11,6 +11,12 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns: []
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clean, professional visual presentation with well-proportioned bars and spacing

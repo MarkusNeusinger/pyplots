@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - manual-ticks
+  - layer-composition
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Correct Manhattan plot type with cumulative genomic positions and alternating

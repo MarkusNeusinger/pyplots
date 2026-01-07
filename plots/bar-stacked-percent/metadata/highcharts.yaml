@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-per
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - iteration-over-groups
+  dataprep:
+  - normalization
+  styling: []
 review:
   strengths:
   - Excellent colorblind-safe color palette with good contrast between segments

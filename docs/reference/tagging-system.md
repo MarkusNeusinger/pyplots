@@ -132,10 +132,12 @@ Statistical or mathematical transformations.
 
 #### 5. styling - "Which visual style?"
 
-Visual/aesthetic approach.
+Distinctive visual/aesthetic choices that deviate from defaults.
 
 **Typical Values:**
-`publication-ready`, `minimal-chrome`, `custom-colormap`, `alpha-blending`, `edge-highlighting`, `gradient-fill`, `grid-styling`, `dark-theme`
+`minimal-chrome`, `custom-colormap`, `alpha-blending`, `edge-highlighting`, `gradient-fill`, `grid-styling`, `dark-theme`
+
+**Note:** `custom-colormap` is only for continuous color scales (cmap=), not manual color definitions.
 
 ### Impl Tag Example
 

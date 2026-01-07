@@ -133,26 +133,27 @@ These tags describe **HOW** the code is implemented, not **WHAT** is visualized.
 
 ### 5. styling - "Which visual style is used?"
 
-**Purpose:** Describes the visual/aesthetic approach.
+**Purpose:** Describes distinctive visual/aesthetic choices that deviate from defaults.
 
-**Question:** "What makes the visual style distinctive?"
+**Question:** "Was the default styling explicitly changed?"
 
 **Recommended Values:**
 
 | Tag | Description | Detection Pattern |
 |-----|-------------|-------------------|
-| `publication-ready` | High quality, print-ready | Large fonts, clean layout |
-| `minimal-chrome` | Reduced visual elements | `ax.axis('off')`, `theme_void()` |
-| `custom-colormap` | Non-standard color scheme | `cmap='viridis'` or custom |
-| `alpha-blending` | Transparency for density | `alpha=0.7` |
-| `edge-highlighting` | Marker/bar edges | `edgecolor='white'` |
+| `minimal-chrome` | Axes/frames hidden | `ax.axis('off')`, `theme_void()`, `frameon=False` |
+| `custom-colormap` | Continuous color scale | `cmap=`, `color_continuous_scale=`, `colorscale=` |
+| `alpha-blending` | Transparency for overlapping elements | `alpha=0.X` (not default) |
+| `edge-highlighting` | Explicit edge colors on markers/bars | `edgecolor='white'`, `linewidth` on shapes |
 | `gradient-fill` | Color gradients in fills | Gradient-based styling |
-| `grid-styling` | Custom grid | `ax.grid(alpha=0.3, linestyle='--')` |
+| `grid-styling` | Custom grid appearance | `ax.grid(alpha=..., linestyle=...)` |
 | `dark-theme` | Dark background | `plt.style.use('dark_background')` |
 
 **Rules:**
 - Most plots use standard styling (empty list is OK)
-- Only tag distinctive styling decisions
+- Only tag when styling is explicitly customized
+- Do NOT tag `custom-colormap` for manual color definitions (e.g., `colors = ['red', 'blue']`)
+- `custom-colormap` is ONLY for continuous colormaps (heatmaps, scatter color-mapping, etc.)
 
 ---
 

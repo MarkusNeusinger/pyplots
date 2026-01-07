@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/pyga
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/pygal/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-colormap
+  - html-export
+  - grid-styling
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths: []
   weaknesses: []

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies:
+  - scipy
+  techniques:
+  - manual-ticks
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - kde
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Correct raincloud layout with cloud on top, boxplot centered, and rain points
@@ -24,13 +36,25 @@ review:
   - No legend showing color-to-condition mapping (relies solely on y-axis labels)
   - Uses scipy for KDE instead of native plotnine density geoms (geom_violin with
     half-violin trimming would be more idiomatic)
-  image_description: |-
-    The plot shows a horizontal raincloud visualization with three experimental conditions (Control, Treatment A, Treatment B) displayed vertically. Each condition has three components arranged from top to bottom:
-    - **Cloud (half-violin/KDE)**: Blue for Control, Yellow for Treatment A, Green for Treatment B - positioned above the boxplot showing distribution density
-    - **Boxplot**: White-filled narrow boxplots centered on each row showing median, quartiles, and whiskers
-    - **Rain (jittered points)**: Scattered points below the boxplot in matching colors with moderate transparency
+  image_description: 'The plot shows a horizontal raincloud visualization with three
+    experimental conditions (Control, Treatment A, Treatment B) displayed vertically.
+    Each condition has three components arranged from top to bottom:
 
-    The title "raincloud-basic · plotnine · pyplots.ai" appears at the top. X-axis shows "Reaction Time (ms)" ranging from ~300-600, Y-axis shows "Experimental Condition" with the three group labels. Treatment B clearly shows a bimodal distribution in both the cloud and rain points. The visual metaphor of "rain falling from clouds" is achieved correctly.
+    - **Cloud (half-violin/KDE)**: Blue for Control, Yellow for Treatment A, Green
+    for Treatment B - positioned above the boxplot showing distribution density
+
+    - **Boxplot**: White-filled narrow boxplots centered on each row showing median,
+    quartiles, and whiskers
+
+    - **Rain (jittered points)**: Scattered points below the boxplot in matching colors
+    with moderate transparency
+
+
+    The title "raincloud-basic · plotnine · pyplots.ai" appears at the top. X-axis
+    shows "Reaction Time (ms)" ranging from ~300-600, Y-axis shows "Experimental Condition"
+    with the three group labels. Treatment B clearly shows a bimodal distribution
+    in both the cloud and rain points. The visual metaphor of "rain falling from clouds"
+    is achieved correctly.'
   criteria_checklist:
     visual_quality:
       score: 36

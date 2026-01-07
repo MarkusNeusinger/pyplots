@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/h
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/volcano-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+    - selenium
+  techniques:
+    - annotations
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent colorblind-safe palette with blue (#306998), orange (#E07B00), and gray

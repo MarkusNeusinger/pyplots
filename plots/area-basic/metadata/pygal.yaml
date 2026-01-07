@@ -11,6 +11,13 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-basic/pyga
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-basic/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns: []
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent implementation of the area chart concept with proper fill transparency

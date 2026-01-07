@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/confusion-matri
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - colorbar
+  - layer-composition
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent text contrast logic using alt.condition to switch between white and

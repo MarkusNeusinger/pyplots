@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/streamline-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/streamline-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 90
+impl_tags:
+  dependencies:
+  - scipy
+  techniques:
+  - colorbar
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent vortex flow visualization with concentric circular streamlines that

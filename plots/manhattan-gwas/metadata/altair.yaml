@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - manual-ticks
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent Manhattan plot with clear alternating chromosome colors (blue/gray)

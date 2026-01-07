@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/point-basic/sea
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/point-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  - explicit-figure
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent horizontal orientation for category label readability as recommended

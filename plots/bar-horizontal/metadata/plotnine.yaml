@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-horizontal/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-horizontal/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 97
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of plotnine grammar of graphics with proper layering (geom_bar +

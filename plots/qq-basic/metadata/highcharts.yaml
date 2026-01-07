@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/qq-basic/highch
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/qq-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/qq-basic/highcharts/plot.html
 quality_score: 90
+impl_tags:
+  dependencies:
+  - scipy
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Good Q-Q plot implementation with clear visualization of quantile comparison

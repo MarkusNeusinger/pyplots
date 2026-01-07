@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/roc-curve/letsp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/roc-curve/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/roc-curve/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual clarity with properly sized text elements and colorblind-safe
@@ -24,12 +33,24 @@ review:
   - Code contains a function definition (compute_roc) which violates the KISS principle
     - should be inline calculations
   - Grid alpha not explicitly set (could be more subtle)
-  image_description: |-
-    The plot displays an ROC curve visualization with three curves on a 16:9 aspect ratio canvas. The plot uses a clean minimal theme with a light gray grid. The title "roc-curve · letsplot · pyplots.ai" is displayed at the top. The X-axis shows "False Positive Rate" (0 to 1) and the Y-axis shows "True Positive Rate" (0 to 1). Three curves are shown:
-    - **Model A (AUC = 0.97)** - Blue curve (#306998) showing excellent classifier performance, hugging the top-left corner
-    - **Model B (AUC = 0.71)** - Yellow/gold curve (#FFD43B) showing moderate classifier performance
-    - **Random (AUC = 0.50)** - Gray diagonal line (#888888) representing the random baseline
-    The legend is positioned at the bottom with the label "Classifier". The plot has equal 1:1 aspect ratio for the axes (coord_fixed). All text is legible and appropriately sized. Lines are thick enough (size=2) to be clearly visible.
+  image_description: 'The plot displays an ROC curve visualization with three curves
+    on a 16:9 aspect ratio canvas. The plot uses a clean minimal theme with a light
+    gray grid. The title "roc-curve · letsplot · pyplots.ai" is displayed at the top.
+    The X-axis shows "False Positive Rate" (0 to 1) and the Y-axis shows "True Positive
+    Rate" (0 to 1). Three curves are shown:
+
+    - **Model A (AUC = 0.97)** - Blue curve (#306998) showing excellent classifier
+    performance, hugging the top-left corner
+
+    - **Model B (AUC = 0.71)** - Yellow/gold curve (#FFD43B) showing moderate classifier
+    performance
+
+    - **Random (AUC = 0.50)** - Gray diagonal line (#888888) representing the random
+    baseline
+
+    The legend is positioned at the bottom with the label "Classifier". The plot has
+    equal 1:1 aspect ratio for the axes (coord_fixed). All text is legible and appropriately
+    sized. Lines are thick enough (size=2) to be clearly visible.'
   criteria_checklist:
     visual_quality:
       score: 38

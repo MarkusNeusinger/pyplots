@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-bar/highc
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-bar/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/polar-bar/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - polar-projection
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - edge-highlighting
 review:
   strengths:
   - Excellent polar bar chart implementation with proper stacking for wind speed categories

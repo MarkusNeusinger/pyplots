@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-densi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-density/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-density/plotly/plot.html
 quality_score: 94
+impl_tags:
+  dependencies:
+  - scipy
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - kde
+  styling: []
 review:
   strengths:
   - Excellent implementation of density histogram with proper histnorm=probability

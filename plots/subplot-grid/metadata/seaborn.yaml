@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - colorbar
+  - grid-styling
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - custom-colormap
 review:
   strengths:
   - Excellent 2x2 grid layout with four distinct plot types (line, bar, histogram,

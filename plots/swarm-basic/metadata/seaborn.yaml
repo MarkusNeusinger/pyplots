@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/swarm-basic/sea
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/swarm-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+    - groupby-aggregation
+  dataprep: []
+  styling:
+    - alpha-blending
+    - edge-highlighting
 review:
   strengths:
   - Excellent data design showing diverse distributions (tight, wide, bimodal, outliers)

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/network-basic/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/network-basic/pygal/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Creative use of pygal XY chart to represent network graph despite pygal lacking

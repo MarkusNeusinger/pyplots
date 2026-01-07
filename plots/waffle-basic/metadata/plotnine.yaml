@@ -11,19 +11,36 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 95
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths: []
   weaknesses: []
   improvements: []
-  image_description: |-
-    The plot displays a 10x10 waffle grid (100 squares total) representing budget allocation across 5 categories. The grid is filled from top-left, reading left-to-right then row-by-row downward. Categories are:
+  image_description: 'The plot displays a 10x10 waffle grid (100 squares total) representing
+    budget allocation across 5 categories. The grid is filled from top-left, reading
+    left-to-right then row-by-row downward. Categories are:
+
     - **Housing (35%)**: Dark blue (#306998) - occupies 35 squares in the top portion
+
     - **Food (25%)**: Yellow (#FFD43B) - occupies 25 squares in the middle
+
     - **Transport (18%)**: Teal/cyan (#4ECDC4) - occupies 18 squares
+
     - **Entertainment (12%)**: Coral/orange-red (#E76F51) - occupies 12 squares
+
     - **Savings (10%)**: Gray (#95A5A6) - occupies 10 squares at the bottom
 
-    The title "waffle-basic · plotnine · pyplots.ai" is centered at the top. A legend on the right shows each category with its percentage. The squares have white borders separating them. No axis labels or ticks are shown (appropriate for this chart type). The overall layout is clean with good proportions.
+
+    The title "waffle-basic · plotnine · pyplots.ai" is centered at the top. A legend
+    on the right shows each category with its percentage. The squares have white borders
+    separating them. No axis labels or ticks are shown (appropriate for this chart
+    type). The overall layout is clean with good proportions.'
   criteria_checklist:
     code_quality:
       score: 13

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/parallel-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parallel-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/parallel-basic/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep: []
+  styling:
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
   - Excellent data transformation approach using melt() to create long-format data

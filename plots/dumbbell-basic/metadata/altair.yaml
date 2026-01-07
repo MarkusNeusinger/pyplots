@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/dumbbell-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/dumbbell-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/dumbbell-basic/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+    - html-export
+  patterns:
+    - data-generation
+    - wide-to-long
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent horizontal dumbbell chart matching spec requirements perfectly

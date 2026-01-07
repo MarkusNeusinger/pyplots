@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-split/bo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-split/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-split/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent split violin implementation with halves meeting cleanly at the center

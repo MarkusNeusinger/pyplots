@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-permutation
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-permutation-importance/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-permutation-importance/pygal/plot.html
 quality_score: 83
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Creative use of HorizontalStackedBar to simulate error bars by stacking std on

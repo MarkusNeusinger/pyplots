@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/seab
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  - groupby-aggregation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent horizontal layout choice for long category labels, following spec recommendation

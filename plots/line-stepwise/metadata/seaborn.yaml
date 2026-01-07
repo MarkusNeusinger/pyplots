@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/s
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - manual-ticks
+  patterns:
+    - data-generation
+    - explicit-figure
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent visualization of step function with clear horizontal and vertical transitions

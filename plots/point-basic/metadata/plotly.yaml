@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/point-basic/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/point-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/point-basic/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent horizontal orientation matching spec recommendation for readability

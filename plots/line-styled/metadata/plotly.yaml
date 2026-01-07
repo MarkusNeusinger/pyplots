@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-styled/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-styled/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-styled/plotly/plot.html
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - manual-ticks
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual clarity with all four line styles (solid, dashed, dotted, dash-dot)
@@ -28,14 +37,27 @@ review:
   - Could utilize Plotly-specific features like custom hover templates to enhance
     interactivity
   - Grid alpha at 0.1 is at the very low end of visibility
-  image_description: |-
-    The plot displays a line chart with temperature readings from four different sensors over a 24-hour period (0-23 hours). The chart uses a white background with a subtle grid. Four distinct line styles are clearly visible:
-    - **Outdoor Sensor**: Solid blue line (#306998) showing the largest temperature swing (~7°C to ~23°C)
-    - **Indoor Sensor**: Dashed yellow/gold line (#FFD43B) with moderate variation (~17°C to ~23°C)
-    - **Greenhouse Sensor**: Dotted green line (#4CAF50) with medium variation (~12°C to ~22°C)
-    - **Storage Sensor**: Dash-dot purple line (#9C27B0) with the smallest variation (~20°C to ~24°C)
+  image_description: 'The plot displays a line chart with temperature readings from
+    four different sensors over a 24-hour period (0-23 hours). The chart uses a white
+    background with a subtle grid. Four distinct line styles are clearly visible:
 
-    The title "line-styled · plotly · pyplots.ai" is centered at the top. The x-axis shows "Hour of Day" (0-23 in increments of 4), and the y-axis shows "Temperature (°C)" (6-24). A well-positioned legend in the upper-left corner clearly maps each line style to its sensor name.
+    - **Outdoor Sensor**: Solid blue line (#306998) showing the largest temperature
+    swing (~7°C to ~23°C)
+
+    - **Indoor Sensor**: Dashed yellow/gold line (#FFD43B) with moderate variation
+    (~17°C to ~23°C)
+
+    - **Greenhouse Sensor**: Dotted green line (#4CAF50) with medium variation (~12°C
+    to ~22°C)
+
+    - **Storage Sensor**: Dash-dot purple line (#9C27B0) with the smallest variation
+    (~20°C to ~24°C)
+
+
+    The title "line-styled · plotly · pyplots.ai" is centered at the top. The x-axis
+    shows "Hour of Day" (0-23 in increments of 4), and the y-axis shows "Temperature
+    (°C)" (6-24). A well-positioned legend in the upper-left corner clearly maps each
+    line style to its sensor name.'
   criteria_checklist:
     visual_quality:
       score: 38

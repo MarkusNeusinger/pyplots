@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/sparkline-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sparkline-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sparkline-basic/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent minimalist sparkline design with no axes or labels as specified

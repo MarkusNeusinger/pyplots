@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/choropleth-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/choropleth-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/choropleth-basic/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - vega-datasets
+  techniques:
+  - colorbar
+  - hover-tooltips
+  - html-export
+  patterns:
+  - dataset-loading
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Altair's declarative grammar for geographic visualization with

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  - groupby-aggregation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual hierarchy with clear color progression from dark to light across

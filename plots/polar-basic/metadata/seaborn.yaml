@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-basic/sea
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - polar-projection
+    - colorbar
+    - layer-composition
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - custom-colormap
 review:
   strengths:
   - Excellent data scenario using website traffic by hour which perfectly demonstrates

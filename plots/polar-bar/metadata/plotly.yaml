@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-bar/plotl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-bar/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/polar-bar/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - custom-legend
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - edge-highlighting
 review:
   strengths:
   - Excellent wind rose visualization with properly stacked bars for three wind speed

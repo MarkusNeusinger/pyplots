@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/sudoku-basic/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sudoku-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent visual hierarchy with thick/thin line differentiation for 3×3 boxes

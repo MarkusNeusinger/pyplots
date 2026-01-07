@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-box/seab
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-box/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 95
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent data design showing four distinct distribution shapes (normal, bimodal,

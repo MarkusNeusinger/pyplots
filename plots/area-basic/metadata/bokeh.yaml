@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-basic/boke
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-basic/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+    - columndatasource
+  dataprep: []
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Excellent text sizing scaled appropriately for 4800x2700 canvas

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-stack
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - edge-highlighting
+  - custom-legend
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent text sizing scaled appropriately for 4800x2700 canvas

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/band-basic/seab
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/band-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 98
+impl_tags:
+  dependencies: []
+  techniques:
+  - grid-styling
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent visual design with perfect text legibility and color accessibility

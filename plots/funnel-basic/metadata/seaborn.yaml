@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent visual design with well-proportioned trapezoidal segments

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/chernoff-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/chernoff-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/chernoff-basic/pygal/plot.html
 quality_score: 90
+impl_tags:
+  dependencies:
+  - pillow
+  techniques:
+  - custom-shapes
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual representation of Chernoff faces with clear differentiation between

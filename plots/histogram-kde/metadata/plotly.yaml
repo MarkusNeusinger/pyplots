@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/plotly/plot.html
 quality_score: 98
+impl_tags:
+  dependencies:
+  - scipy
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - kde
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of scipy.stats.gaussian_kde for proper KDE calculation

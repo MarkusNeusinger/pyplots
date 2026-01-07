@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/le
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent circular rotation pattern clearly demonstrates the vector field concept

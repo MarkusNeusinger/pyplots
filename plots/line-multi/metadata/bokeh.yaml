@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-multi/boke
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-multi/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-multi/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+    - manual-ticks
+  patterns:
+    - data-generation
+    - columndatasource
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent text sizing and readability at 4800x2700 resolution

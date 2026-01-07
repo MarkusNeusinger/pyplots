@@ -11,6 +11,21 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/l
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  - custom-legend
+  - annotations
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Clean squarify algorithm implementation creates well-proportioned rectangles

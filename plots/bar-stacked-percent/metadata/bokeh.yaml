@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-per
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/bokeh/plot.html
 quality_score: 98
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - html-export
+  - columndatasource
+  patterns:
+  - explicit-figure
+  - iteration-over-groups
+  dataprep:
+  - normalization
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent use of ColumnDataSource and LabelSet for in-segment percentage labels

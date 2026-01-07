@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  patterns:
+  - data-generation
+  dataprep:
+  - time-series
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent visual design with harmonious color palette including Python blue as

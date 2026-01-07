@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-plot/m
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-plot/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep:
+  - regression
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of all spec requirements including reference line, ±2σ

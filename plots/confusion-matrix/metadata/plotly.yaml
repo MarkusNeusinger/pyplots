@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/confusion-matri
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/plotly/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+    - annotations
+    - colorbar
+    - hover-tooltips
+    - html-export
+    - manual-ticks
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - custom-colormap
 review:
   strengths:
   - Excellent use of Plotly hovertemplate for interactive tooltips showing True/Predicted/Count

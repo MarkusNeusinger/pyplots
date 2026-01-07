@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-cu
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - html-export
+  - annotations
+  - layer-composition
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep:
+  - correlation-matrix
+  styling: []
 review:
   strengths:
   - Excellent demonstration of ggbunch for flexible subplot positioning with relative

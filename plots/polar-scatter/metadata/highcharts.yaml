@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/h
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/highcharts/plot.html
 quality_score: 95
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - polar-projection
+  - html-export
+  - annotations
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of Highcharts polar chart with proper compass direction

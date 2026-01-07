@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/timeline-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/timeline-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - custom-legend
+  - manual-ticks
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent alternating label placement above/below axis eliminates text overlap

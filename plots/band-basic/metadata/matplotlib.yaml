@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/band-basic/matp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/band-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - grid-styling
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of band plot with widening confidence interval demonstrating

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/chernoff-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/chernoff-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/chernoff-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - sklearn
+  - selenium
+  techniques:
+  - custom-shapes
+  - html-export
+  patterns:
+  - dataset-loading
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual design with clear, distinguishable faces for each species

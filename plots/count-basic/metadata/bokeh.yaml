@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/count-basic/bok
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/count-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/count-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - manual-ticks
+  patterns:
+    - data-generation
+    - columndatasource
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of ColumnDataSource and LabelSet for clean data binding and annotations

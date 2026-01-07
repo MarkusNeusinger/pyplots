@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/box-horizontal/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-horizontal/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent data variety showcasing different distribution types (tight, wide, skewed,

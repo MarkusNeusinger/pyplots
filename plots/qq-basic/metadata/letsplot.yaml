@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/qq-basic/letspl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/qq-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/qq-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent manual implementation of the inverse normal CDF (ppf) using Abramowitz

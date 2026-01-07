@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/calibration-cur
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - columndatasource
+  dataprep:
+  - binning
+  styling: []
 review:
   strengths:
   - Correct implementation of calibration curve with all required elements (diagonal

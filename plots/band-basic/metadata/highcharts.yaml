@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/band-basic/high
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/band-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/band-basic/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - pillow
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of Highcharts arearange series for band visualization with proper

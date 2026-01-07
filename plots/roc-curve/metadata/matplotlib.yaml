@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/roc-curve/matpl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/roc-curve/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent visual clarity with properly sized lines (linewidth=3.5) and readable

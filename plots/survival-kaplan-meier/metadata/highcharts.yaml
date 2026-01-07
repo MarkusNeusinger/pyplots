@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Inline Kaplan-Meier calculation with Greenwood formula for CI (KISS principle

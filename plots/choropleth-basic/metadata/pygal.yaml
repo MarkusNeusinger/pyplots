@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/choropleth-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/choropleth-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/choropleth-basic/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - pygal-maps-world
+  techniques:
+  - colorbar
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of pygal_maps_world extension for creating a world choropleth map

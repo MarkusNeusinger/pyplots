@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/strip-basic/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/strip-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/strip-basic/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - manual-ticks
+    - hover-tooltips
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Clean implementation with well-structured code following KISS principles

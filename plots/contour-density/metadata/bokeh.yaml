@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-density
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-density/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-density/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - scipy
+  techniques:
+  - columndatasource
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep:
+  - kde
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent contour visualization with 8 clearly visible density levels

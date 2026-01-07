@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/pygal/plot.html
 quality_score: 78
+impl_tags:
+  dependencies:
+  - cairosvg
+  techniques:
+  - manual-ticks
+  - annotations
+  - html-export
+  patterns:
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Creative implementation of ternary plot using pygal XY chart type since pygal

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ridgeline-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ridgeline-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ridgeline-basic/plotly/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - hover-tooltips
+  patterns:
+  - data-generation
+  dataprep:
+  - kde
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of manual KDE calculation using Silverman's rule for

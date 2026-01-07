@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-cumul
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - annotations
+  patterns:
+    - data-generation
+  dataprep:
+    - cumulative-sum
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent use of step histogram with filled area for clear visualization of cumulative

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stacked/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - time-series
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of stacked area chart with proper use of plotly stackgroup

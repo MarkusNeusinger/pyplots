@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-decisio
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies:
+    - sklearn
+  techniques:
+    - custom-legend
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent decision boundary visualization with clear class separation using make_moons

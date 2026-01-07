@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies:
+  - scipy
+  - sklearn
+  techniques:
+  - custom-legend
+  patterns:
+  - dataset-loading
+  - iteration-over-groups
+  dataprep:
+  - hierarchical-clustering
+  styling: []
 review:
   strengths:
   - Excellent use of colorblind-safe palette for species differentiation

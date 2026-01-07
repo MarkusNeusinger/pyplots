@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/s
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  patterns:
+  - data-generation
+  - groupby-aggregation
+  dataprep: []
+  styling:
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
   - Excellent implementation of horizon chart concept with proper band folding algorithm

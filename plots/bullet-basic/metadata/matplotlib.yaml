@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bullet-basic/ma
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bullet-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent multi-metric bullet chart implementation showing diverse KPIs with different
@@ -22,13 +31,24 @@ review:
   - Realistic business dashboard scenario with meaningful metrics
   weaknesses:
   - No x-axis label (though justified by different units per metric)
-  image_description: |-
-    The plot displays 4 horizontal bullet charts stacked vertically, each representing a different KPI metric. From top to bottom: Revenue (275$K actual vs 250 target), Profit (45% actual vs 50 target), New Customers (85 actual vs 100 target), and Satisfaction (4.2/5 actual vs 4.5 target). Each bullet chart features:
+  image_description: 'The plot displays 4 horizontal bullet charts stacked vertically,
+    each representing a different KPI metric. From top to bottom: Revenue (275$K actual
+    vs 250 target), Profit (45% actual vs 50 target), New Customers (85 actual vs
+    100 target), and Satisfaction (4.2/5 actual vs 4.5 target). Each bullet chart
+    features:
+
     - A blue (#306998) horizontal bar showing the actual value
+
     - A black vertical marker line indicating the target
-    - Three grayscale background bands (light gray for Poor, medium gray for Satisfactory, darker gray for Good)
+
+    - Three grayscale background bands (light gray for Poor, medium gray for Satisfactory,
+    darker gray for Good)
+
     - Value labels displayed to the right of each bar with appropriate units
-    The title "bullet-basic · matplotlib · pyplots.ai" is centered at the top. A legend in the lower right corner explains the color coding. The layout is clean with subtle dotted vertical grid lines.
+
+    The title "bullet-basic · matplotlib · pyplots.ai" is centered at the top. A legend
+    in the lower right corner explains the color coding. The layout is clean with
+    subtle dotted vertical grid lines.'
   criteria_checklist:
     visual_quality:
       score: 37

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/radar-multi/mat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/radar-multi/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - polar-projection
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - 'Excellent data design showing three distinct product profiles with clear trade-offs

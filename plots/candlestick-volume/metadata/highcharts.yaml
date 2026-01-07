@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/candlestick-vol
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/candlestick-volume/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/candlestick-volume/highcharts/plot.html
 quality_score: 90
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - subplots
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - time-series
+  styling: []
 review:
   strengths:
   - Excellent use of Highstock for synchronized dual-pane layout

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/roc-curve/bokeh
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/roc-curve/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/roc-curve/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  - columndatasource
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual clarity with appropriate line widths and font sizes for the 3600x3600

@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/precision-recal
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/precision-recall/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies:
+    - sklearn
+  techniques: []
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent visual clarity with properly sized fonts and stepped line visualization

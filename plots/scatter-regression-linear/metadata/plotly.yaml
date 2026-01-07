@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regress
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/plotly/plot.html
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+    - annotations
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - regression
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent implementation of confidence interval band using polygon fill technique

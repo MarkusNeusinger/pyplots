@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-plot/b
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-plot/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/residual-plot/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  - columndatasource
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Bokeh-specific features (Band, Span, Label, ColumnDataSource)

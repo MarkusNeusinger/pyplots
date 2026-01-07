@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - grid-styling
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of all spec requirements including y=0 reference line,

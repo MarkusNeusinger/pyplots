@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/facet-grid/matp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/facet-grid/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - annotations
+  - grid-styling
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - explicit-figure
+  dataprep: []
+  styling:
+  - edge-highlighting
 review:
   strengths:
   - Excellent two-way faceting implementation with clear row and column structure

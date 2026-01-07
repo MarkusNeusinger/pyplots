@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenet
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/tree-phylogenetic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies:
+  - scipy
+  techniques:
+  - custom-legend
+  - annotations
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - hierarchical-clustering
+  styling: []
 review:
   strengths:
   - Excellent visual presentation with clear clade-based color coding throughout branches

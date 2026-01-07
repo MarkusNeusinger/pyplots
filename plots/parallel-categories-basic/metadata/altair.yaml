@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/parallel-catego
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/altair/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - bezier-curves
+  - layer-composition
+  - custom-legend
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Column headers now correctly positioned above boxes, improving readability

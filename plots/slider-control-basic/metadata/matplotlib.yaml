@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/slider-control-
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/slider-control-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of matplotlib Slider widget with proper update callback

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-box/high
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-box/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-box/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - scipy
+  - selenium
+  techniques:
+  - html-export
+  - patches
+  patterns:
+  - data-generation
+  dataprep:
+  - kde
+  styling: []
 review:
   strengths:
   - Excellent implementation of a complex visualization using polygon primitives

@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/chord-basic/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/chord-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/chord-basic/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - bezier-curves
+  - html-export
+  - hover-tooltips
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent chord diagram implementation from scratch using Plotly low-level primitives

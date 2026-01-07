@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-basic/altai
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-basic/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - edge-highlighting
 review:
   strengths:
   - Excellent use of Altair declarative syntax with theta encoding for pie chart

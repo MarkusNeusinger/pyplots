@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pdp-basic/highc
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pdp-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pdp-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - sklearn
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Correct implementation of PDP with confidence intervals computed from individual

@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/elbow-curve/mat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/elbow-curve/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent elbow curve visualization with clear elbow point identification at k=4

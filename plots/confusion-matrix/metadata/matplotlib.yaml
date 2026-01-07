@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/confusion-matri
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+    - annotations
+    - colorbar
+    - manual-ticks
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling:
+    - custom-colormap
+    - grid-styling
 review:
   strengths:
   - Excellent text contrast with adaptive white/black text based on background intensity

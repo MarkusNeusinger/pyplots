@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/qq-basic/altair
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/qq-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/qq-basic/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of inverse normal CDF without scipy dependency (self-contained)

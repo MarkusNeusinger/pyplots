@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/step-basic/plot
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/step-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/step-basic/plotly/plot.html
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - cumulative-sum
+  styling: []
 review:
   strengths: []
   weaknesses: []

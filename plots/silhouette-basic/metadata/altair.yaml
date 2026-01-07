@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/silhouette-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/silhouette-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/silhouette-basic/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - sklearn
+  techniques:
+  - layer-composition
+  - annotations
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - dataset-loading
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Altair declarative grammar with proper encoding types (Q for

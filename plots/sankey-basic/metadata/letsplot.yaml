@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/le
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - bezier-curves
+    - layer-composition
+    - html-export
+  patterns:
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent manual Sankey implementation using geom_polygon for smooth bezier flows

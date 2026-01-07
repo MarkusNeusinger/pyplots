@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/gain-curve/lets
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gain-curve/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/gain-curve/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of the gain curve with all three required reference lines
@@ -26,13 +35,25 @@ review:
   - X-axis scale extends slightly beyond 100% which looks unintended
   - Model curve appears stepped/jagged due to discrete data points rather than smoothly
     interpolated
-  image_description: |-
-    The plot displays a cumulative gains chart with three lines on a white background with subtle gray grid lines:
-    - **Model curve (blue, #306998)**: A jagged/stepped blue line showing the model's cumulative gain, starting from origin and rising steeply initially before gradually flattening as it approaches 100%
-    - **Random baseline (gray, #888888)**: A straight diagonal line from (0,0) to (100,100) representing random selection
-    - **Perfect model (yellow, #FFD43B)**: Shows the theoretical perfect classifier - rises steeply vertically until reaching 100% gain at ~20% population, then remains horizontal at 100%
+  image_description: 'The plot displays a cumulative gains chart with three lines
+    on a white background with subtle gray grid lines:
 
-    The X-axis shows "Population Targeted (%)" ranging from -5 to 100+, Y-axis shows "Positive Cases Captured (%)" from 0 to 100. Title reads "gain-curve · letsplot · pyplots.ai". Legend is positioned in the lower right area, clearly labeled "Curve" with entries for Model, Random, and Perfect.
+    - **Model curve (blue, #306998)**: A jagged/stepped blue line showing the model''s
+    cumulative gain, starting from origin and rising steeply initially before gradually
+    flattening as it approaches 100%
+
+    - **Random baseline (gray, #888888)**: A straight diagonal line from (0,0) to
+    (100,100) representing random selection
+
+    - **Perfect model (yellow, #FFD43B)**: Shows the theoretical perfect classifier
+    - rises steeply vertically until reaching 100% gain at ~20% population, then remains
+    horizontal at 100%
+
+
+    The X-axis shows "Population Targeted (%)" ranging from -5 to 100+, Y-axis shows
+    "Positive Cases Captured (%)" from 0 to 100. Title reads "gain-curve · letsplot
+    · pyplots.ai". Legend is positioned in the lower right area, clearly labeled "Curve"
+    with entries for Model, Random, and Perfect.'
   criteria_checklist:
     visual_quality:
       score: 36

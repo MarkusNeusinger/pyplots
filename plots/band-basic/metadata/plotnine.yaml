@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/band-basic/plot
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/band-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - grid-styling
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of plotnine grammar of graphics with geom_ribbon + geom_line combination

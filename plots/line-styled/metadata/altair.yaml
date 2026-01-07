@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-styled/alt
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-styled/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-styled/altair/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of all four standard line styles (solid, dashed, dotted, dash-dot)

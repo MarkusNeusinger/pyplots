@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  patterns:
+  - dataset-loading
+  - iteration-over-groups
+  - matrix-construction
+  dataprep:
+  - normalization
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of Andrews curves algorithm using Fourier basis functions

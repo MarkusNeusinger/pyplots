@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/qq-basic/matplo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/qq-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - annotations
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent visual presentation with proper font sizes and element visibility

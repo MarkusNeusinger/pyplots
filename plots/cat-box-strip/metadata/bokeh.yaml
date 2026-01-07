@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/b
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+    - columndatasource
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent manual box plot construction using Bokeh primitives (Whisker, vbar,

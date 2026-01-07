@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-filled/hig
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-filled/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-filled/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+    - selenium
+  techniques:
+    - html-export
+    - gradient-fill
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - gradient-fill
+    - edge-highlighting
 review:
   strengths:
   - Excellent gradient fill implementation that fades from top to bottom, creating

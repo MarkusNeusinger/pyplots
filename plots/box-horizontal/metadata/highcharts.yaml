@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/box-horizontal/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-horizontal/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/box-horizontal/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent realistic data scenario using API response times by service type

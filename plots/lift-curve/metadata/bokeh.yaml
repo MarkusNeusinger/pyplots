@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/lift-curve/boke
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/lift-curve/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/lift-curve/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - columndatasource
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent text sizing with 42pt title, 32pt axis labels, 24pt tick labels - perfectly

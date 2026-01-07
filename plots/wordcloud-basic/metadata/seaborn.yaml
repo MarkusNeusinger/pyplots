@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/wordcloud-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/wordcloud-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 68
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Creative approach using seaborn scatterplot as subtle background visualization

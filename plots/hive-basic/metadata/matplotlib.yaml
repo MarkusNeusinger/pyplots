@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/hive-basic/matp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hive-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - bezier-curves
+  - patches
+  - manual-ticks
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Excellent implementation of hive plot concept with proper radial axis arrangement

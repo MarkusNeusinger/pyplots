@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-cluster
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - subplots
+  patterns:
+  - data-generation
+  - groupby-aggregation
+  dataprep:
+  - hierarchical-clustering
+  styling:
+  - custom-colormap
 review:
   strengths:
   - Excellent use of seaborn clustermap function with all key parameters (method,

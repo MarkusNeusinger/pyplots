@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-animate
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-animated-controls/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-animated-controls/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - faceting
+    - hover-tooltips
+  patterns:
+    - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent adaptation of animated concept to static faceted view, following spec

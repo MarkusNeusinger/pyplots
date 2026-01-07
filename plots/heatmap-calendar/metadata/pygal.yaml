@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-calenda
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-calendar/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-calendar/pygal/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - html-export
+  - custom-legend
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent GitHub-style visual design with authentic green color palette

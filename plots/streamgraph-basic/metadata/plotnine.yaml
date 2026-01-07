@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/streamgraph-bas
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/streamgraph-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 98
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths: []
   weaknesses: []

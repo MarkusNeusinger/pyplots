@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-calenda
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-calendar/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-calendar/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - colorbar
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent GitHub-style contribution graph aesthetic with appropriate green gradient
@@ -24,15 +35,28 @@ review:
   - Bottom portion of canvas has noticeable empty space; layout could be more balanced
   - Legend title could include a subtitle explaining the scale
   - PNG has slight aspect ratio issue (2661px instead of 2700px)
-  image_description: |-
-    The plot displays a GitHub-style calendar heatmap showing daily activity for the year 2024. The visualization uses a grid layout with:
+  image_description: 'The plot displays a GitHub-style calendar heatmap showing daily
+    activity for the year 2024. The visualization uses a grid layout with:
+
     - **Y-axis**: Weekday labels (Mon through Sun) on the left side
+
     - **X-axis**: Month labels (Jan through Dec) along the top
-    - **Colors**: A sequential green gradient from light gray (#ebedf0) for no activity to dark green (#216e39) for high activity, mimicking GitHub contribution graphs
-    - **Title**: "Daily Activity 2024 · heatmap-calendar · highcharts · pyplots.ai" at the top center
-    - **Legend**: Vertical color scale on the right showing "Commits" with values 0-16
-    - **Layout**: Each cell represents one day, with weeks as columns and days of the week as rows. White borders separate individual cells with rounded corners.
-    - **Data pattern**: Clear weekday vs weekend pattern visible (top rows for Sat/Sun show more gray/light cells), with seasonal variation showing higher activity in spring/fall months.
+
+    - **Colors**: A sequential green gradient from light gray (#ebedf0) for no activity
+    to dark green (#216e39) for high activity, mimicking GitHub contribution graphs
+
+    - **Title**: "Daily Activity 2024 · heatmap-calendar · highcharts · pyplots.ai"
+    at the top center
+
+    - **Legend**: Vertical color scale on the right showing "Commits" with values
+    0-16
+
+    - **Layout**: Each cell represents one day, with weeks as columns and days of
+    the week as rows. White borders separate individual cells with rounded corners.
+
+    - **Data pattern**: Clear weekday vs weekend pattern visible (top rows for Sat/Sun
+    show more gray/light cells), with seasonal variation showing higher activity in
+    spring/fall months.'
   criteria_checklist:
     visual_quality:
       score: 36

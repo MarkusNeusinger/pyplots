@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/qq-basic/plotni
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/qq-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies:
+  - scipy
+  techniques:
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Clean, professional visualization following ggplot2 grammar of graphics

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/surface-basic/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/surface-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/surface-basic/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - 3d-projection
+  - colorbar
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - custom-colormap
 review:
   strengths:
   - Excellent use of Viridis colormap for colorblind accessibility and depth perception

@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/facet-grid/plot
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/facet-grid/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - faceting
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent 3x3 facet grid demonstrating plotnine grammar of graphics with facet_grid

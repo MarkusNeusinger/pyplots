@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-interactiv
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-interactive/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-interactive/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - layer-composition
+  - manual-ticks
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent seasonal temperature data that clearly demonstrates the time series

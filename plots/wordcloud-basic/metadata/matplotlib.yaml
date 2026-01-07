@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/wordcloud-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/wordcloud-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies:
+  - wordcloud
+  techniques: []
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - 'Excellent data choice: Tech skills survey provides relatable, realistic context

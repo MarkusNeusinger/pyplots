@@ -1,0 +1,216 @@
+library: plotly
+specification_id: line-animated-progressive
+created: '2026-01-07T20:20:52Z'
+updated: '2026-01-07T20:29:38Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20795211000
+issue: 3238
+python_version: 3.13.11
+library_version: 6.5.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-animated-progressive/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-animated-progressive/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-animated-progressive/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent progressive visualization with opacity gradient and marker size progression
+  - Clear start and end point indicators with annotations
+  - Full animation implementation with play/pause/reset controls and timeline slider
+  - Professional styling with appropriate font sizes for 4800x2700 output
+  - Creates both static (PNG) and interactive (HTML) outputs leveraging Plotly strengths
+  - Realistic business scenario with seasonal patterns
+  weaknesses:
+  - Grid opacity (0.1) is quite faint - could be 0.2-0.3 for better readability
+  - The static PNG could benefit from more visual stages of progression beyond just
+    the gradient
+  image_description: 'The plot displays a progressive line chart showing monthly sales
+    data ($K) from January 2021 to December 2023. The visualization uses a blue color
+    scheme (#306998) with a gradient effect - earlier data points appear lighter (low
+    opacity) while recent points are darker and more prominent. Markers increase in
+    size from ~8px at the start to ~20px at the end, creating a visual progression
+    effect. The starting point (Jan 2021 at ~$102K) is marked with a subtle outlined
+    circle and "Start" label below. The final point (Dec 2023 at ~$174K) features
+    a prominent marker with a yellow/gold border (#FFD43B) and a "Latest" annotation
+    with an arrow pointing down to it. The plot shows an overall upward trend with
+    seasonal fluctuations (roughly annual cycles). The title "line-animated-progressive
+    · plotly · pyplots.ai" is centered at the top. Axes are clearly labeled: "Date"
+    on x-axis with 6-month tick intervals (Jan/Jul format) and "Monthly Sales ($K)"
+    on y-axis. The background is white with subtle gray gridlines (alpha ~0.1).'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 28pt, axis titles at 22pt, tick labels at 18pt - all perfectly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: 'Markers well-sized and progressive, line width appropriate. Minor:
+          some middle markers could be slightly more distinct'
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color scheme, no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of canvas space, plot well-centered with appropriate
+          margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Monthly Sales ($K) includes units, Date is appropriate for temporal
+          axis
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is very subtle (alpha 0.1 is quite faint), no legend but acceptable
+          for single series
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct line plot with progressive reveal indication
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Time on x-axis, values on y-axis correctly
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Progressive reveal via gradient, start/end markers, direction indication.
+          Minor: static output could show more distinct stages'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 36 data points visible with appropriate axis range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for single series, annotations are accurate
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: Correct format using middot separator
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows upward trend with seasonal patterns, demonstrates time series
+          progression well
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly sales figures is a realistic, neutral business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values $100K-$180K range is realistic for business sales
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports, data, plot, save. No functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) present
+      - id: CQ-03
+        name: Clean Imports
+        score: 1
+        max: 2
+        passed: true
+        comment: 'All imports used. Minor: pandas only used for date_range'
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves to plot.png (correct) but also plot.html (acceptable for interactive
+          library)
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Excellent use of Plotly features: frames for animation, updatemenus
+          for controls, sliders, hover templates, annotations'
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - time-series
+  styling:
+  - alpha-blending
+  - edge-highlighting
+  - grid-styling

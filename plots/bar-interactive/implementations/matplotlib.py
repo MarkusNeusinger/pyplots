@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-interactive: Interactive Bar Chart with Hover and Click
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 87/100 | Created: 2026-01-07
+Quality: 97/100 | Created: 2026-01-07
 """
 
 import matplotlib.pyplot as plt

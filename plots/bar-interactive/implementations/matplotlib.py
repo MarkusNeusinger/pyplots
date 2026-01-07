@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-interactive: Interactive Bar Chart with Hover and Click
 Library: matplotlib 3.10.8 | Python 3.13.11
 Quality: 87/100 | Created: 2026-01-07
@@ -95,13 +95,6 @@ ax.set_axisbelow(True)
 
 # Set y-axis limit to accommodate annotations
 ax.set_ylim(0, max(values) * 1.35)
-
-# Add legend explaining the interaction
-legend_elements = [
-    plt.Rectangle((0, 0), 1, 1, facecolor="#306998", edgecolor="#1a3a52", label="Normal bar"),
-    plt.Rectangle((0, 0), 1, 1, facecolor="#FFD43B", edgecolor="#1a3a52", label="Hovered bar (highlighted)"),
-]
-ax.legend(handles=legend_elements, loc="upper right", fontsize=14)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

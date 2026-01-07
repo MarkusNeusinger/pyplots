@@ -1,0 +1,33 @@
+# Specification-level metadata for timeseries-forecast-uncertainty
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: timeseries-forecast-uncertainty
+title: Time Series Forecast with Uncertainty Band
+
+# Specification tracking
+created: 2026-01-07T16:20:29Z
+updated: null
+issue: 3188
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - line
+    - area
+  data_type:
+    - timeseries
+    - numeric
+    - datetime
+  domain:
+    - general
+    - business
+    - finance
+    - statistics
+  features:
+    - temporal
+    - forecast
+    - uncertainty
+    - confidence-interval
+    - annotated

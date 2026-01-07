@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 timeseries-forecast-uncertainty: Time Series Forecast with Uncertainty Band
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-07
@@ -33,7 +33,7 @@ lower_95 = forecast_values - 1.96 * forecast_std
 upper_95 = forecast_values + 1.96 * forecast_std
 
 # Create DataFrames
-historical_df = pd.DataFrame({"date": historical_dates, "actual": historical_values, "type": "Historical"})
+historical_df = pd.DataFrame({"date": historical_dates, "actual": historical_values, "series": "Historical"})
 
 forecast_df = pd.DataFrame(
     {
@@ -43,39 +43,77 @@ forecast_df = pd.DataFrame(
         "upper_80": upper_80,
         "lower_95": lower_95,
         "upper_95": upper_95,
-        "type": "Forecast",
+        "series": "Forecast",
     }
 )
 
-# Historical line chart
+# Shared Y-axis scale to focus on data range (avoiding wasted space at 0)
+y_scale = alt.Scale(domain=[50, 270])
+
+# Historical line chart with legend
 historical_line = (
     alt.Chart(historical_df)
-    .mark_line(strokeWidth=3, color="#306998")
+    .mark_line(strokeWidth=3)
     .encode(
         x=alt.X("date:T", title="Date"),
-        y=alt.Y("actual:Q", title="Sales (thousands USD)", scale=alt.Scale(domain=[50, 270])),
+        y=alt.Y("actual:Q", title="Sales (thousands USD)", scale=y_scale),
+        color=alt.Color(
+            "series:N",
+            scale=alt.Scale(domain=["Historical"], range=["#306998"]),
+            legend=alt.Legend(title="Series", orient="right", titleFontSize=16, labelFontSize=14),
+        ),
     )
 )
 
-# 95% confidence band (lighter)
+# 95% confidence band (lighter) with legend entry
+band_95_df = forecast_df.copy()
+band_95_df["band"] = "95% CI"
 band_95 = (
-    alt.Chart(forecast_df)
-    .mark_area(opacity=0.2, color="#FFD43B")
-    .encode(x=alt.X("date:T"), y=alt.Y("lower_95:Q"), y2=alt.Y2("upper_95:Q"))
+    alt.Chart(band_95_df)
+    .mark_area(opacity=0.2)
+    .encode(
+        x=alt.X("date:T"),
+        y=alt.Y("lower_95:Q", scale=y_scale),
+        y2=alt.Y2("upper_95:Q"),
+        color=alt.Color(
+            "band:N",
+            scale=alt.Scale(domain=["95% CI"], range=["#FFD43B"]),
+            legend=alt.Legend(title="Confidence", orient="right", titleFontSize=16, labelFontSize=14),
+        ),
+    )
 )
 
-# 80% confidence band (darker)
+# 80% confidence band (darker) with legend entry
+band_80_df = forecast_df.copy()
+band_80_df["band"] = "80% CI"
 band_80 = (
-    alt.Chart(forecast_df)
-    .mark_area(opacity=0.35, color="#FFD43B")
-    .encode(x=alt.X("date:T"), y=alt.Y("lower_80:Q"), y2=alt.Y2("upper_80:Q"))
+    alt.Chart(band_80_df)
+    .mark_area(opacity=0.35)
+    .encode(
+        x=alt.X("date:T"),
+        y=alt.Y("lower_80:Q", scale=y_scale),
+        y2=alt.Y2("upper_80:Q"),
+        color=alt.Color(
+            "band:N",
+            scale=alt.Scale(domain=["80% CI"], range=["#FFD43B"]),
+            legend=alt.Legend(title="Confidence", orient="right", titleFontSize=16, labelFontSize=14),
+        ),
+    )
 )
 
-# Forecast line (dashed)
+# Forecast line (dashed) with legend entry
 forecast_line = (
     alt.Chart(forecast_df)
-    .mark_line(strokeWidth=3, strokeDash=[8, 4], color="#E67E22")
-    .encode(x=alt.X("date:T"), y=alt.Y("forecast:Q"))
+    .mark_line(strokeWidth=3, strokeDash=[8, 4])
+    .encode(
+        x=alt.X("date:T"),
+        y=alt.Y("forecast:Q", scale=y_scale),
+        color=alt.Color(
+            "series:N",
+            scale=alt.Scale(domain=["Forecast"], range=["#E67E22"]),
+            legend=alt.Legend(title="Series", orient="right", titleFontSize=16, labelFontSize=14),
+        ),
+    )
 )
 
 # Vertical line at forecast start
@@ -84,18 +122,10 @@ vertical_rule = (
     alt.Chart(forecast_start).mark_rule(strokeWidth=2, strokeDash=[6, 3], color="#555555").encode(x="date:T")
 )
 
-# Legend data for manual legend
-legend_data = pd.DataFrame(
-    {
-        "label": ["Historical", "Forecast", "80% CI", "95% CI"],
-        "color": ["#306998", "#E67E22", "#FFD43B", "#FFD43B"],
-        "opacity": [1.0, 1.0, 0.5, 0.25],
-    }
-)
-
 # Combine all layers
 chart = (
     alt.layer(band_95, band_80, historical_line, forecast_line, vertical_rule)
+    .resolve_scale(color="independent")
     .properties(
         width=1600,
         height=900,

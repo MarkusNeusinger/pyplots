@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 indicator-macd: MACD Technical Indicator Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 83/100 | Created: 2026-01-07
@@ -47,19 +47,19 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    # Colors: hist+, hist-, MACD line, Signal line, zero line
-    colors=("#2CA02C", "#D62728", "#306998", "#FF7F0E", "#333333"),
+    # Colors: Hist+ (green), Hist- (red), MACD (blue), Signal (orange), Zero (gray)
+    colors=("#2CA02C", "#D62728", "#306998", "#FF7F0E", "#888888"),
     title_font_size=72,
-    label_font_size=40,
-    major_label_font_size=36,
-    legend_font_size=40,
-    value_font_size=32,
-    tooltip_font_size=28,
-    stroke_width=6,
+    label_font_size=44,
+    major_label_font_size=40,
+    legend_font_size=44,
+    value_font_size=36,
+    tooltip_font_size=32,
+    stroke_width=8,
 )
 
-# Create Bar chart for histogram bars
-chart = pygal.Bar(
+# Create Line chart for proper line rendering of MACD and Signal
+chart = pygal.Line(
     width=4800,
     height=2700,
     style=custom_style,
@@ -70,35 +70,34 @@ chart = pygal.Bar(
     show_y_guides=True,
     x_label_rotation=45,
     legend_at_bottom=True,
-    legend_box_size=30,
-    margin=50,
-    spacing=0,
+    legend_box_size=36,
+    margin=60,
+    show_dots=False,
+    fill=False,
+    zero=0,
 )
 
-# Format dates for x-axis labels (show every 15th date to reduce crowding)
-date_labels = [d.strftime("%b %d") if i % 15 == 0 else "" for i, d in enumerate(dates)]
+# Format dates for x-axis labels (show every 20th date to reduce crowding)
+date_labels = [d.strftime("%b %d") if i % 20 == 0 else "" for i, d in enumerate(dates)]
 chart.x_labels = date_labels
 
-# Add histogram as discrete bars with color per value
-# Use None for values of wrong sign to create discrete colored bars
-hist_positive = [{"value": h, "color": "#2CA02C"} if h >= 0 else None for h in histogram]
-hist_negative = [{"value": h, "color": "#D62728"} if h < 0 else None for h in histogram]
+# Add histogram as filled area from zero line
+# Positive histogram (green) - fill from zero up
+hist_positive = [h if h >= 0 else 0 for h in histogram]
+# Negative histogram (red) - fill from zero down
+hist_negative = [h if h < 0 else 0 for h in histogram]
 
-chart.add("Histogram (+)", hist_positive)
-chart.add("Histogram (-)", hist_negative)
+# Add histogram series with fill enabled (creates area from zero)
+chart.add("Histogram (+)", hist_positive, fill=True, stroke_style={"width": 0})
+chart.add("Histogram (−)", hist_negative, fill=True, stroke_style={"width": 0})
 
-# Add MACD and Signal lines as secondary series (stroke only, no fill)
-# Using explicit stroke configuration to avoid fill
-chart.add(
-    "MACD (12,26)", list(macd_line), stroke=True, show_dots=False, fill=False, secondary=True, stroke_style={"width": 6}
-)
-chart.add(
-    "Signal (9)", list(signal_line), stroke=True, show_dots=False, fill=False, secondary=True, stroke_style={"width": 6}
-)
+# Add MACD and Signal lines (rendered as proper lines)
+chart.add("MACD (12,26)", list(macd_line), stroke_style={"width": 8})
+chart.add("Signal (9)", list(signal_line), stroke_style={"width": 8})
 
 # Add zero reference line (dashed)
 zero_line = [0] * len(macd_line)
-chart.add("Zero", zero_line, stroke=True, show_dots=False, fill=False, stroke_style={"width": 3, "dasharray": "10, 5"})
+chart.add("Zero", zero_line, stroke_style={"width": 4, "dasharray": "15, 8"})
 
 # Save as PNG
 chart.render_to_png("plot.png")

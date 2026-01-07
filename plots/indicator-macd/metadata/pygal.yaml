@@ -1,7 +1,7 @@
 library: pygal
 specification_id: indicator-macd
 created: '2026-01-07T16:29:07Z'
-updated: '2026-01-07T16:36:18Z'
+updated: '2026-01-07T16:46:06Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20788388725
 issue: 3181
@@ -10,34 +10,37 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/indicator-macd/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/indicator-macd/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/indicator-macd/pygal/plot.html
-quality_score: 78
+quality_score: 82
 review:
   strengths:
-  - Correct MACD calculation with standard 12, 26, 9 parameters clearly labeled
-  - Good color choices with blue MACD, orange signal, green/red histogram
-  - Zero reference line with dashed styling helps identify crossovers
-  - Proper use of pygal Style class for customization at 4800x2700
-  - Legend clearly shows all components with parameter values
+  - Clean MACD calculation using pandas EWM for exponential moving averages
+  - Good color scheme with green/red histogram and blue/orange lines
+  - Proper use of pygal secondary series feature for overlaying lines on bars
+  - Zero reference line implemented with dashed stroke style
+  - Date formatting shows every 15th date to prevent crowding
   weaknesses:
-  - Histogram should be rendered as discrete bars, not filled line areas (spec says
-    Display histogram as bars)
-  - Contains a function definition (calc_ema) which violates KISS code structure principle
-  - Unnecessary HTML file generation (plot.html) beyond requirements
-  - X-axis date labels slightly crowded despite rotation
-  image_description: |-
-    The plot displays a MACD (Moving Average Convergence Divergence) technical indicator chart with a white background. The title "indicator-macd · pygal · pyplots.ai" is shown at the top. The chart contains:
-    - MACD line (blue): A solid blue line showing the MACD values (12,26 EMA difference), ranging from approximately -3.5 to +1.5
-    - Signal line (orange): A solid orange line showing the 9-day EMA of MACD
-    - Histogram positive (green): Green filled areas above the zero line representing positive histogram values
-    - Histogram negative (red): Red filled areas below the zero line representing negative histogram values
-    - Zero reference line (black dashed): A horizontal dashed line at y=0
-    - X-axis: Shows dates from Feb 20 to May 20 with rotated labels
-    - Y-axis: Labeled "MACD Value" ranging from -3 to +1
-    - Legend: Positioned at bottom showing all 5 series (MACD, Signal, Histogram +/-, Zero)
-    The data shows realistic MACD behavior with multiple crossovers between MACD and signal lines, and corresponding histogram expansions/contractions.
+  - Histogram should be rendered as discrete bars rather than filled areas (spec explicitly
+    states Display histogram as bars)
+  - The MACD and Signal lines appear to have fill enabled rather than being clean
+    stroke-only lines
+  - Legend labels could better describe the series
+  image_description: 'The plot displays a MACD technical indicator chart on a white
+    background at 4800×2700 resolution. The title "indicator-macd · pygal · pyplots.ai"
+    appears at the top center in large font. The chart shows five data series over
+    approximately 100 trading days (Feb 20 - May 20): a blue MACD line labeled "MACD
+    (12,26)", an orange Signal line labeled "Signal (9)", green filled areas for positive
+    histogram values labeled "Histogram (+)", red filled areas for negative histogram
+    values labeled "Histogram (-)", and a black dashed zero reference line labeled
+    "Zero". The legend is positioned at the bottom of the chart with all five series
+    clearly labeled. The X-axis shows dates with labels every ~15 days rotated at
+    45 degrees for readability (Feb 20, Mar 01, Mar 11, Mar 21, Mar 31, Apr 10, Apr
+    20, Apr 30, May 10, May 20), and the Y-axis displays MACD values ranging from
+    approximately -3.5 to +1.5. The histogram shows clear transitions between positive
+    (green) and negative (red) regions, indicating momentum shifts. The MACD and signal
+    line crossovers are visible, providing trading signal context.'
   criteria_checklist:
     visual_quality:
-      score: 30
+      score: 32
       max: 40
       items:
       - id: VQ-01
@@ -45,57 +48,54 @@ review:
         score: 7
         max: 10
         passed: true
-        comment: Title and axis labels readable, but tick labels on x-axis are somewhat
-          small
+        comment: Title and axis labels readable but tick labels slightly small
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: X-axis date labels are rotated but some crowding visible
+        comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: Lines and filled areas visible, but histogram as filled area rather
-          than bars is less ideal
+        comment: Lines and histogram areas visible but histogram should be bars per
+          spec
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Blue, orange, green, red are distinguishable; not relying solely
-          on red-green
+        comment: Blue, orange, green, red are clearly distinguishable
       - id: VQ-05
         name: Layout Balance
         score: 4
         max: 5
         passed: true
-        comment: Good use of canvas, minor margin issues
+        comment: Good canvas utilization, slight margin imbalance
       - id: VQ-06
         name: Axis Labels
         score: 1
         max: 2
         passed: true
-        comment: MACD Value and Date are descriptive but no units
+        comment: Labels present but no units shown
       - id: VQ-07
         name: Grid & Legend
         score: 1
         max: 2
         passed: true
-        comment: Legend at bottom is clear, but y-grid only is somewhat sparse
+        comment: Legend well placed at bottom, horizontal grid visible
     spec_compliance:
-      score: 21
+      score: 19
       max: 25
       items:
       - id: SC-01
         name: Plot Type
-        score: 6
+        score: 5
         max: 8
-        passed: true
-        comment: MACD chart present, but histogram rendered as filled area instead
-          of discrete bars
+        passed: false
+        comment: Shows MACD components but histogram is area chart instead of bars
       - id: SC-02
         name: Data Mapping
         score: 5
@@ -107,8 +107,7 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Has MACD line, signal line, histogram, zero line; histogram not as
-          bars per spec
+        comment: Has MACD line, signal line, histogram, zero line; missing bar representation
       - id: SC-04
         name: Data Range
         score: 3
@@ -117,18 +116,18 @@ review:
         comment: All data visible within axes
       - id: SC-05
         name: Legend Accuracy
+        score: 0
+        max: 2
+        passed: false
+        comment: Legend shows Histogram but representation is filled area not bars
+      - id: SC-06
+        name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Legend labels correctly identify all series with parameters
-      - id: SC-06
-        name: Title Format
-        score: 1
-        max: 2
-        passed: true
-        comment: Uses correct format but could have better spacing
+        comment: 'Correct format: indicator-macd · pygal · pyplots.ai'
     data_quality:
-      score: 17
+      score: 18
       max: 20
       items:
       - id: DQ-01
@@ -136,53 +135,53 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows crossovers, positive/negative histogram, varying momentum
+        comment: Shows bullish/bearish signals, crossovers, divergence; good variety
       - id: DQ-02
         name: Realistic Context
         score: 6
         max: 7
         passed: true
-        comment: Simulated stock price data with realistic MACD behavior
+        comment: Simulated stock price data is plausible, 150 days appropriate
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: MACD values in reasonable range for stock data
+        comment: MACD values in realistic range for stock data
     code_quality:
-      score: 7
+      score: 10
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: Has a function definition (calc_ema) which violates KISS principle
+        passed: true
+        comment: Clean imports → data → plot → save structure
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) ensures reproducibility
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: Only necessary imports
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: No deprecated functions
+        comment: Uses current pygal API
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Saves as plot.png but also plot.html unnecessarily
+        passed: true
+        comment: Saves as plot.png
     library_features:
       score: 3
       max: 5
@@ -192,13 +191,12 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses pygal Style customization, fill property, stroke_style; could
-          better leverage pygal native bar chart for histogram
-  verdict: REJECTED
+        comment: Uses custom Style, secondary series, stroke_style for dashed line
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - html-export
+  - manual-ticks
   patterns:
   - data-generation
   dataprep:

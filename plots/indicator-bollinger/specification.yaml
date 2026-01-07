@@ -1,0 +1,29 @@
+# Specification-level metadata for indicator-bollinger
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: indicator-bollinger
+title: Bollinger Bands Indicator Chart
+
+# Specification tracking
+created: 2026-01-07T20:11:29Z
+updated: null
+issue: 3237
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - line
+    - band
+    - indicator
+  data_type:
+    - timeseries
+    - numeric
+  domain:
+    - finance
+    - trading
+  features:
+    - volatility
+    - technical-analysis
+    - overlay

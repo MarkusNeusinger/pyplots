@@ -3,10 +3,10 @@
 
 library: highcharts
 specification_id: timeseries-forecast-uncertainty
-created: '2026-01-07T21:14:47Z'
-updated: '2026-01-07T21:14:47Z'
+created: '2026-01-07T21:26:48Z'
+updated: '2026-01-07T21:26:48Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20796526213
+workflow_run: 20796951136
 issue: 3188
 python_version: 3.13.11
 library_version: unknown

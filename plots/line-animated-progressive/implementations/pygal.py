@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-animated-progressive: Animated Line Plot Over Time
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-07
@@ -22,24 +22,6 @@ noise = np.random.normal(0, 2000, 12)
 visitors = base_traffic + trend + seasonal + noise
 visitors = np.maximum(visitors, 10000).astype(int)
 
-# Custom style for consistent appearance across all panels
-custom_style = Style(
-    background="white",
-    plot_background="white",
-    foreground="#333333",
-    foreground_strong="#333333",
-    foreground_subtle="#666666",
-    colors=("#306998",),
-    font_family="sans-serif",
-    title_font_size=56,
-    label_font_size=36,
-    major_label_font_size=36,
-    legend_font_size=36,
-    value_font_size=32,
-    stroke_width=8,
-    opacity=0.9,
-)
-
 # Fixed y-axis range for all panels (ensures visual consistency)
 y_min = int(min(visitors) * 0.9)
 y_max = int(max(visitors) * 1.1)
@@ -48,55 +30,74 @@ y_max = int(max(visitors) * 1.1)
 panel_width = 2300
 panel_height = 1200
 
-# Chart config shared across all panels
-chart_config = {
-    "width": panel_width,
-    "height": panel_height,
-    "style": custom_style,
-    "show_x_guides": False,
-    "show_y_guides": True,
-    "show_dots": True,
-    "dots_size": 14,
-    "stroke_style": {"width": 8, "linecap": "round", "linejoin": "round"},
-    "fill": False,
-    "show_legend": False,
-    "margin": 60,
-    "spacing": 40,
-    "x_label_rotation": 0,
-    "print_values": False,
-    "interpolate": "cubic",
-    "range": (y_min, y_max),
-}
+# Style with highlight color for the trailing point
+highlight_color = "#FF6B35"  # Orange highlight for current point
+base_color = "#306998"  # Python blue for main line
 
-# Stage 1: Q1 Data (January - March)
-chart1 = pygal.Line(title="Stage 1: Q1 Data", x_title="January - March", y_title="Visitors", **chart_config)
-chart1.x_labels = months
-chart1.add("Traffic", list(visitors[:3]) + [None] * 9)
-img1 = Image.open(io.BytesIO(chart1.render_to_png()))
+# Stage configurations: (title, subtitle, num_points)
+stages = [
+    ("Stage 1: Q1 Data", "January - March", 3),
+    ("Stage 2: H1 Data", "January - June", 6),
+    ("Stage 3: 9 Months", "January - September", 9),
+    ("Stage 4: Full Year", "January - December", 12),
+]
 
-# Stage 2: H1 Data (January - June)
-chart2 = pygal.Line(title="Stage 2: H1 Data", x_title="January - June", y_title="Visitors", **chart_config)
-chart2.x_labels = months
-chart2.add("Traffic", list(visitors[:6]) + [None] * 6)
-img2 = Image.open(io.BytesIO(chart2.render_to_png()))
+panels = []
+for title, subtitle, n_points in stages:
+    # Style with two colors: base color for line, highlight for trailing point
+    panel_style = Style(
+        background="white",
+        plot_background="white",
+        foreground="#333333",
+        foreground_strong="#333333",
+        foreground_subtle="#666666",
+        colors=(base_color, highlight_color),
+        font_family="sans-serif",
+        title_font_size=56,
+        label_font_size=36,
+        major_label_font_size=36,
+        legend_font_size=36,
+        value_font_size=32,
+        stroke_width=8,
+        opacity=0.9,
+    )
 
-# Stage 3: 9 Months (January - September)
-chart3 = pygal.Line(title="Stage 3: 9 Months", x_title="January - September", y_title="Visitors", **chart_config)
-chart3.x_labels = months
-chart3.add("Traffic", list(visitors[:9]) + [None] * 3)
-img3 = Image.open(io.BytesIO(chart3.render_to_png()))
+    chart = pygal.Line(
+        title=title,
+        x_title=subtitle,
+        y_title="Visitors",
+        width=panel_width,
+        height=panel_height,
+        style=panel_style,
+        show_x_guides=False,
+        show_y_guides=True,
+        show_dots=True,
+        dots_size=14,
+        stroke_style={"width": 8, "linecap": "round", "linejoin": "round"},
+        fill=False,
+        show_legend=False,
+        margin=60,
+        spacing=40,
+        x_label_rotation=0,
+        print_values=False,
+        interpolate="cubic",
+        range=(y_min, y_max),
+    )
+    chart.x_labels = months
 
-# Stage 4: Full Year (January - December)
-chart4 = pygal.Line(title="Stage 4: Full Year", x_title="January - December", y_title="Visitors", **chart_config)
-chart4.x_labels = months
-chart4.add("Traffic", list(visitors))
-img4 = Image.open(io.BytesIO(chart4.render_to_png()))
+    # Main line series (all points except the last visible one)
+    main_data = list(visitors[: n_points - 1]) + [None] * (13 - n_points)
+    chart.add("Traffic", main_data)
+
+    # Highlight series: just the last two points to show continuation with highlight
+    highlight_data = [None] * (n_points - 2) + list(visitors[n_points - 2 : n_points]) + [None] * (12 - n_points)
+    chart.add("Current", highlight_data)
+
+    panels.append(Image.open(io.BytesIO(chart.render_to_png())))
 
 # Create small multiples layout (2x2 grid)
 margin = 100
 title_height = 150
-
-# Final canvas: 4800x2700
 final_width = 4800
 final_height = 2700
 final_image = Image.new("RGB", (final_width, final_height), "white")
@@ -108,18 +109,18 @@ x_offset = (final_width - grid_width) // 2
 y_offset = title_height + (final_height - title_height - grid_height) // 2
 
 # Paste panels in 2x2 grid
-# Top-left: Stage 1
-final_image.paste(img1, (x_offset, y_offset))
-# Top-right: Stage 2
-final_image.paste(img2, (x_offset + panel_width + margin, y_offset))
-# Bottom-left: Stage 3
-final_image.paste(img3, (x_offset, y_offset + panel_height + margin))
-# Bottom-right: Stage 4
-final_image.paste(img4, (x_offset + panel_width + margin, y_offset + panel_height + margin))
+positions = [
+    (x_offset, y_offset),  # Top-left: Stage 1
+    (x_offset + panel_width + margin, y_offset),  # Top-right: Stage 2
+    (x_offset, y_offset + panel_height + margin),  # Bottom-left: Stage 3
+    (x_offset + panel_width + margin, y_offset + panel_height + margin),  # Bottom-right: Stage 4
+]
+for panel, pos in zip(panels, positions, strict=True):
+    final_image.paste(panel, pos)
 
-# Add title at top center using PIL
+# Add title at top center
 draw = ImageDraw.Draw(final_image)
-title_text = "line-animated-progressive \u00b7 pygal \u00b7 pyplots.ai"
+title_text = "line-animated-progressive · pygal · pyplots.ai"
 try:
     font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 72)
 except OSError:
@@ -139,7 +140,7 @@ html_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998", "#FFD43B", "#5A9BD5", "#70AD47"),
+    colors=(base_color, "#5A9BD5", "#70AD47", highlight_color),
     font_family="sans-serif",
     title_font_size=72,
     label_font_size=48,
@@ -156,7 +157,7 @@ html_chart = pygal.Line(
     width=4800,
     height=2700,
     style=html_style,
-    title="line-animated-progressive \u00b7 pygal \u00b7 pyplots.ai",
+    title="line-animated-progressive · pygal · pyplots.ai",
     x_title="Month",
     y_title="Website Visitors",
     show_x_guides=False,

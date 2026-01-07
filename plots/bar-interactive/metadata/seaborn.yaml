@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: bar-interactive
 created: '2026-01-07T16:28:56Z'
-updated: '2026-01-07T16:35:42Z'
+updated: '2026-01-07T16:44:59Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20788380524
 issue: 3189
@@ -10,35 +10,32 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-interactive/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-interactive/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 80
+quality_score: 82
 review:
   strengths:
-  - Clean, professional visual appearance with appropriate font sizes
-  - Good acknowledgment of seaborn limitations for interactive features
-  - Realistic sales data scenario with appropriate value ranges
-  - Annotations simulating hover data show dollar amounts and percentages
-  - Proper use of seaborn modern API (hue parameter to avoid deprecation warnings)
+  - Excellent use of seaborn statistical features (error bars showing standard deviation)
+  - Clean annotation formatting that simulates tooltip data display
+  - Color intensity encodes value magnitude (darker = higher)
+  - Professional styling with despined axes and subtle grid
+  - Good canvas utilization and readable text sizes
   weaknesses:
-  - Seaborn fundamentally cannot implement the core spec requirement for interactive
-    hover and click features
-  - Alternating blue-yellow color scheme serves no data purpose and could confuse
-    viewers
-  - Disclaimer note box detracts from the visualization
-  - No meaningful use of seaborn distinctive statistical features
-  image_description: 'The plot displays a bar chart showing sales revenue by product
-    category. There are 6 bars representing Electronics ($4,850, 29.9%), Clothing
-    ($3,200, 19.8%), Home & Garden ($2,750, 17.0%), Sports ($2,100, 13.0%), Books
-    ($1,850, 11.4%), and Toys ($1,450, 9.0%). The bars alternate between two colors:
-    a steel blue (#306998) and a golden yellow (#FFD43B). Each bar has value and percentage
-    annotations positioned above it in bold dark text. The title reads "bar-interactive
-    · seaborn · pyplots.ai". An informational box in the upper right corner states
-    "Static visualization (seaborn) - For interactivity, use: plotly, bokeh, altair".
-    The y-axis is labeled "Sales Revenue ($)" and the x-axis is labeled "Product Category".
-    A subtle dashed gray grid is visible on the y-axis. The top and right spines are
-    removed for a cleaner appearance.'
+  - Missing legend to explain the color intensity encoding
+  - Seaborn cannot provide true hover/click interactivity - the spec notes this is
+    best suited for interactive libraries
+  - Annotations are static and do not respond to user interaction
+  - No visual feedback mechanism for hover states
+  image_description: The plot displays a vertical bar chart showing sales revenue
+    by product category. Six categories are shown (Electronics, Clothing, Home & Garden,
+    Sports, Books, Toys) with bars colored using a sequential blue palette where darker
+    shades represent higher values. Each bar includes error bars showing standard
+    deviation and text annotations above displaying the mean value ± standard deviation
+    and percentage of total (e.g., "5,024±281 (31.3%)"). The title correctly uses
+    the format "bar-interactive · seaborn · pyplots.ai". Axis labels are descriptive
+    ("Product Category", "Sales Revenue ($)"). The layout is clean with despined axes,
+    subtle y-axis grid lines, and good use of canvas space.
   criteria_checklist:
     visual_quality:
-      score: 33
+      score: 35
       max: 40
       items:
       - id: VQ-01
@@ -46,49 +43,49 @@ review:
         score: 10
         max: 10
         passed: true
-        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt, annotations
-          at 16pt bold - all clearly readable
+        comment: All text is clearly readable with appropriate font sizes (title 24pt,
+          labels 20pt, annotations 16pt)
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements, annotations are well-positioned above
+        comment: No overlapping elements; annotations well-positioned above error
           bars
       - id: VQ-03
         name: Element Visibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: Bars are well-sized and clearly visible
+        comment: Bars clearly visible; error bars and caps appropriately sized, caps
+          slightly thin
       - id: VQ-04
         name: Color Accessibility
-        score: 2
+        score: 5
         max: 5
-        passed: false
-        comment: Blue-yellow alternating pattern is colorblind-safe but serves no
-          data purpose and can be confusing
+        passed: true
+        comment: Sequential blue palette is colorblind-safe with good contrast
       - id: VQ-05
         name: Layout Balance
         score: 3
         max: 5
-        passed: false
-        comment: Good utilization of canvas but extra whitespace at top due to annotation
-          note box
+        passed: true
+        comment: Good canvas utilization but some wasted space at top
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Product Category and Sales Revenue ($) are descriptive with units
+        comment: 'Descriptive with units: Sales Revenue ($), Product Category'
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: Informational note box is distracting and takes up valuable space
+        comment: Grid alpha 0.3 is good, but no legend explaining color intensity
+          meaning
     spec_compliance:
-      score: 17
+      score: 18
       max: 25
       items:
       - id: SC-01
@@ -102,55 +99,56 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: X/Y correctly assigned (categories on x, values on y)
+        comment: Categories on X, values on Y correctly mapped
       - id: SC-03
         name: Required Features
-        score: 0
+        score: 2
         max: 5
         passed: false
-        comment: Seaborn cannot provide true interactivity (hover, click) which is
-          the core specification requirement
+        comment: Static annotations simulate tooltips but NO actual hover interactivity,
+          NO click actions, NO visual feedback on hover
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Y-axis appropriately scaled showing all data
+        comment: Y-axis shows full range of data with headroom for annotations
       - id: SC-05
         name: Legend Accuracy
         score: 0
         max: 2
         passed: false
-        comment: Alternating colors suggest categories when none exist
+        comment: No legend present to explain color encoding
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Correctly uses bar-interactive · seaborn · pyplots.ai
+        comment: Correctly formatted as {spec-id} · {library} · pyplots.ai
     data_quality:
-      score: 18
+      score: 17
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
         score: 6
         max: 8
-        passed: false
-        comment: Shows variety in values and includes percentage data but lacks the
-          interactive drill-down aspect
+        passed: true
+        comment: Shows value variation via error bars and percentage breakdown; missing
+          demonstration of drill-down/click capability
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Product category sales is a realistic business scenario
+        comment: Sales by product category is a realistic, neutral business scenario
       - id: DQ-03
         name: Appropriate Scale
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Sales values in thousands are realistic for product categories
+        comment: Values are realistic for retail sales; percentages sum to approximately
+          100%
     code_quality:
       score: 10
       max: 10
@@ -160,31 +158,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → data → plot → save'
+        comment: 'Clean linear flow: imports → data → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) ensures reproducible results
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib, numpy, seaborn used
+        comment: All imports are used (matplotlib, numpy, pandas, seaborn)
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current seaborn API with hue parameter
+        comment: Uses current seaborn API with hue for palette
       - id: CQ-05
         name: Output Correct
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png
+        comment: Saves as plot.png with correct parameters
     library_features:
       score: 2
       max: 5
@@ -194,16 +192,20 @@ review:
         score: 2
         max: 5
         passed: false
-        comment: Uses sns.barplot correctly but seaborn statistical features not utilized
-          meaningfully
+        comment: Uses seaborn's statistical aggregation with errorbar='sd' and capsize,
+          sequential palette, despine(). However, seaborn fundamentally cannot provide
+          interactivity which is the core spec requirement.
   verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
+  - manual-ticks
   patterns:
   - data-generation
-  - explicit-figure
+  - groupby-aggregation
+  - iteration-over-groups
   dataprep: []
   styling:
   - grid-styling
+  - alpha-blending

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-interactive: Interactive Bar Chart with Hover and Click
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-07
@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.cm import ScalarMappable
+from matplotlib.colors import Normalize
 
 
 # Data - Sales by product category with multiple samples (for error bars)
@@ -32,15 +34,15 @@ summary = summary.sort_values("category")
 total = summary["mean"].sum()
 summary["pct"] = summary["mean"] / total * 100
 
-# Create figure
+# Create figure with space for colorbar
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Create bar chart with seaborn using statistical aggregation (shows mean + CI)
-# Use a sequential palette where color intensity represents value magnitude
-palette = sns.color_palette("Blues_d", n_colors=len(categories))
-# Reverse palette so higher values are darker (more saturated)
-palette_ordered = [palette[i] for i in np.argsort(base_values)]
+# Create sequential colormap based on values
+cmap = plt.cm.Blues
+norm = Normalize(vmin=min(base_values) * 0.8, vmax=max(base_values) * 1.1)
+colors = [cmap(norm(val)) for val in base_values]
 
+# Create bar chart with seaborn using statistical aggregation (shows mean + SD)
 sns.barplot(
     data=df,
     x="category",
@@ -48,35 +50,44 @@ sns.barplot(
     order=categories,
     hue="category",
     hue_order=categories,
-    palette=palette_ordered,
+    palette=colors,
     errorbar="sd",  # Show standard deviation as error bars
     capsize=0.15,
-    err_kws={"linewidth": 2},
+    err_kws={"linewidth": 2.5},
     legend=False,
     ax=ax,
 )
 
-# Add value labels on bars (simulating hover tooltip data)
+# Add colorbar to explain color intensity encoding
+sm = ScalarMappable(cmap=cmap, norm=norm)
+sm.set_array([])
+cbar = fig.colorbar(sm, ax=ax, shrink=0.7, aspect=25, pad=0.02)
+cbar.set_label("Sales Magnitude ($)", fontsize=18)
+cbar.ax.tick_params(labelsize=14)
+
+# Add value annotations on bars (simulating hover tooltip data)
 for i, (_cat, row) in enumerate(summary.iterrows()):
     mean_val = row["mean"]
     std_val = row["std"]
     pct_val = row["pct"]
+    # Format annotation like an interactive tooltip
     ax.annotate(
-        f"${mean_val:,.0f} ± ${std_val:,.0f}\n({pct_val:.1f}%)",
-        xy=(i, mean_val + std_val + 100),
+        f"${mean_val:,.0f} ± ${std_val:,.0f}\n({pct_val:.1f}% of total)",
+        xy=(i, mean_val + std_val + 80),
         ha="center",
         va="bottom",
-        fontsize=16,
+        fontsize=15,
         fontweight="bold",
         color="#333333",
+        bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "#888888", "alpha": 0.9},
     )
 
 # Styling
 ax.set_xlabel("Product Category", fontsize=20)
 ax.set_ylabel("Sales Revenue ($)", fontsize=20)
-ax.set_title("bar-interactive · seaborn · pyplots.ai", fontsize=24)
+ax.set_title("bar-interactive · seaborn · pyplots.ai", fontsize=24, fontweight="bold")
 ax.tick_params(axis="both", labelsize=16)
-ax.set_ylim(0, df["sales"].max() * 1.35)
+ax.set_ylim(0, df["sales"].max() * 1.4)
 ax.grid(True, axis="y", alpha=0.3, linestyle="--")
 
 # Remove top and right spines for cleaner look

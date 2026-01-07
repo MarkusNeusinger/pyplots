@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-3d: 3D Contour Plot
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-07
@@ -32,30 +32,27 @@ z_min, z_max = Z.min(), Z.max()
 # 3D to 2D isometric projection parameters
 elev_rad = np.radians(25)
 azim_rad = np.radians(45)
-
-
-# Projection function: 3D coordinates to 2D screen coordinates
-def project_3d_to_2d(x_3d, y_3d, z_3d):
-    """Project 3D point to 2D using isometric projection."""
-    x_rot = x_3d * np.cos(azim_rad) - y_3d * np.sin(azim_rad)
-    y_rot = x_3d * np.sin(azim_rad) + y_3d * np.cos(azim_rad)
-    x_proj = x_rot
-    z_proj = y_rot * np.sin(elev_rad) + z_3d * np.cos(elev_rad)
-    depth = y_rot * np.cos(elev_rad) - z_3d * np.sin(elev_rad)
-    return x_proj, z_proj, depth
-
+cos_azim = np.cos(azim_rad)
+sin_azim = np.sin(azim_rad)
+sin_elev = np.sin(elev_rad)
+cos_elev = np.cos(elev_rad)
 
 # Scale Z for visualization (height range 0-2 for proportion)
 Z_scaled = (Z - z_min) / (z_max - z_min) * 2
 
-# Project surface grid to 2D
+# Project surface grid to 2D using inline isometric projection
 X_proj = np.zeros_like(X)
 Z_proj = np.zeros_like(X)
 Depth = np.zeros_like(X)
 
 for i in range(n_points):
     for j in range(n_points):
-        X_proj[i, j], Z_proj[i, j], Depth[i, j] = project_3d_to_2d(X[i, j], Y[i, j], Z_scaled[i, j])
+        x_3d, y_3d, z_3d = X[i, j], Y[i, j], Z_scaled[i, j]
+        x_rot = x_3d * cos_azim - y_3d * sin_azim
+        y_rot = x_3d * sin_azim + y_3d * cos_azim
+        X_proj[i, j] = x_rot
+        Z_proj[i, j] = y_rot * sin_elev + z_3d * cos_elev
+        Depth[i, j] = y_rot * cos_elev - z_3d * sin_elev
 
 # Generate contour levels for the surface
 n_levels = 10
@@ -99,16 +96,17 @@ for level_idx, level in enumerate(levels):
     lines, codes = cont_gen.lines(level)
     for line in lines:
         if len(line) > 1:
-            # Project each point of the contour to 3D then to 2D
+            # Project each point of the contour to 3D then to 2D (inline projection)
             line_xs = []
             line_ys = []
             line_depths = []
             for pt in line:
                 x_pt, y_pt = pt
-                x_proj, z_proj, depth = project_3d_to_2d(x_pt, y_pt, z_height)
-                line_xs.append(x_proj)
-                line_ys.append(z_proj)
-                line_depths.append(depth)
+                x_rot = x_pt * cos_azim - y_pt * sin_azim
+                y_rot = x_pt * sin_azim + y_pt * cos_azim
+                line_xs.append(x_rot)
+                line_ys.append(y_rot * sin_elev + z_height * cos_elev)
+                line_depths.append(y_rot * cos_elev - z_height * sin_elev)
 
             avg_depth = np.mean(line_depths)
             contour_lines_3d.append((avg_depth, line_xs, line_ys, level_idx))
@@ -124,10 +122,12 @@ for level_idx, level in enumerate(levels):
             line_depths = []
             for pt in line:
                 x_pt, y_pt = pt
-                x_proj, z_proj, depth = project_3d_to_2d(x_pt, y_pt, 0)  # z=0 for base plane
-                line_xs.append(x_proj)
-                line_ys.append(z_proj)
-                line_depths.append(depth)
+                # Inline projection with z=0 for base plane
+                x_rot = x_pt * cos_azim - y_pt * sin_azim
+                y_rot = x_pt * sin_azim + y_pt * cos_azim
+                line_xs.append(x_rot)
+                line_ys.append(y_rot * sin_elev)
+                line_depths.append(y_rot * cos_elev)
 
             avg_depth = np.mean(line_depths)
             # Color based on level
@@ -167,32 +167,36 @@ all_y_coords = [y for quad in surface_quads for y in quad[2]]
 x_min_plot, x_max_plot = min(all_x_coords), max(all_x_coords)
 y_min_plot, y_max_plot = min(all_y_coords), max(all_y_coords)
 
-x_pad = (x_max_plot - x_min_plot) * 0.18
-y_pad = (y_max_plot - y_min_plot) * 0.15
+x_pad = (x_max_plot - x_min_plot) * 0.12
+y_pad = (y_max_plot - y_min_plot) * 0.10
 
-p.x_range = Range1d(x_min_plot - x_pad * 1.5, x_max_plot + x_pad * 1.5)
-p.y_range = Range1d(y_min_plot - y_pad * 2.0, y_max_plot + y_pad)
+p.x_range = Range1d(x_min_plot - x_pad * 1.2, x_max_plot + x_pad * 1.8)
+p.y_range = Range1d(y_min_plot - y_pad * 0.8, y_max_plot + y_pad * 1.2)
 
-# Custom 3D axis lines
-origin_3d = (-3.5, -3.5, 0)
-origin_x, origin_y, _ = project_3d_to_2d(*origin_3d)
+# Custom 3D axis lines (inline projection)
+ox, oy, oz = -3.5, -3.5, 0
+origin_x = ox * cos_azim - oy * sin_azim
+origin_y = (ox * sin_azim + oy * cos_azim) * sin_elev + oz * cos_elev
 
 axis_color = "#444444"
 axis_width = 5
 
-# X-axis
-x_axis_end_3d = (3.5, -3.5, 0)
-x_axis_end_x, x_axis_end_y, _ = project_3d_to_2d(*x_axis_end_3d)
+# X-axis end point
+ax, ay, az = 3.5, -3.5, 0
+x_axis_end_x = ax * cos_azim - ay * sin_azim
+x_axis_end_y = (ax * sin_azim + ay * cos_azim) * sin_elev + az * cos_elev
 p.line(x=[origin_x, x_axis_end_x], y=[origin_y, x_axis_end_y], line_color=axis_color, line_width=axis_width)
 
-# Y-axis
-y_axis_end_3d = (-3.5, 3.5, 0)
-y_axis_end_x, y_axis_end_y, _ = project_3d_to_2d(*y_axis_end_3d)
+# Y-axis end point
+bx, by, bz = -3.5, 3.5, 0
+y_axis_end_x = bx * cos_azim - by * sin_azim
+y_axis_end_y = (bx * sin_azim + by * cos_azim) * sin_elev + bz * cos_elev
 p.line(x=[origin_x, y_axis_end_x], y=[origin_y, y_axis_end_y], line_color=axis_color, line_width=axis_width)
 
-# Z-axis
-z_axis_end_3d = (-3.5, -3.5, 2.5)
-z_axis_end_x, z_axis_end_y, _ = project_3d_to_2d(*z_axis_end_3d)
+# Z-axis end point
+cx, cy, cz = -3.5, -3.5, 2.5
+z_axis_end_x = cx * cos_azim - cy * sin_azim
+z_axis_end_y = (cx * sin_azim + cy * cos_azim) * sin_elev + cz * cos_elev
 p.line(x=[origin_x, z_axis_end_x], y=[origin_y, z_axis_end_y], line_color=axis_color, line_width=axis_width)
 
 # Axis arrows
@@ -255,22 +259,22 @@ p.patch(
     line_color=axis_color,
 )
 
-# Axis labels
+# Axis labels (descriptive with units)
 x_label = Label(
-    x=x_axis_end_x + 0.2,
-    y=x_axis_end_y - 0.3,
-    text="X",
-    text_font_size="48pt",
+    x=x_axis_end_x + 0.15,
+    y=x_axis_end_y - 0.4,
+    text="Position X (units)",
+    text_font_size="36pt",
     text_color="#333333",
     text_font_style="bold",
 )
 p.add_layout(x_label)
 
 y_label = Label(
-    x=y_axis_end_x - 0.5,
-    y=y_axis_end_y + 0.2,
-    text="Y",
-    text_font_size="48pt",
+    x=y_axis_end_x - 0.3,
+    y=y_axis_end_y + 0.25,
+    text="Position Y (units)",
+    text_font_size="36pt",
     text_color="#333333",
     text_font_style="bold",
 )
@@ -278,30 +282,30 @@ p.add_layout(y_label)
 
 z_label = Label(
     x=z_axis_end_x + 0.2,
-    y=z_axis_end_y + 0.1,
-    text="Z",
-    text_font_size="48pt",
+    y=z_axis_end_y + 0.15,
+    text="Amplitude (a.u.)",
+    text_font_size="36pt",
     text_color="#333333",
     text_font_style="bold",
 )
 p.add_layout(z_label)
 
-# Add colorbar for surface height
+# Add colorbar for surface amplitude
 color_bar = ColorBar(
     color_mapper=color_mapper,
-    width=60,
+    width=70,
     location=(0, 0),
-    title="Height (Z)",
-    title_text_font_size="32pt",
-    major_label_text_font_size="24pt",
-    title_standoff=20,
+    title="Amplitude (a.u.)",
+    title_text_font_size="36pt",
+    major_label_text_font_size="28pt",
+    title_standoff=25,
     margin=40,
     padding=20,
 )
 p.add_layout(color_bar, "right")
 
-# Title styling
-p.title.text_font_size = "48pt"
+# Title styling (larger for visibility at 4800x2700)
+p.title.text_font_size = "56pt"
 p.title.text_font_style = "bold"
 
 # Grid styling - subtle

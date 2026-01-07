@@ -1,0 +1,207 @@
+library: pygal
+specification_id: qrcode-basic
+created: '2026-01-07T16:30:49Z'
+updated: '2026-01-07T16:41:00Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20788388854
+issue: 3184
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/qrcode-basic/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/qrcode-basic/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/qrcode-basic/pygal/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent creative use of pygal SVG capabilities to render QR codes by extending
+    the Graph class
+  - Clean visual presentation with proper QR code structure including finder patterns
+    and quiet zone
+  - Informative labels showing encoded URL, error correction level, and matrix dimensions
+  - High contrast black/white for maximum scannability
+  - Outputs both PNG and interactive HTML formats
+  weaknesses:
+  - Code uses a custom class (QRCodeChart) which violates the KISS principle of no
+    functions/classes
+  - Requires path manipulation hack to avoid import collision
+  image_description: 'The plot displays a QR code on a white background with the title
+    "qrcode-basic · pygal · pyplots.ai" at the top. The QR code itself is a 25x25
+    module matrix rendered in black squares on a white background with a subtle gray
+    border around it. The three finder patterns (large squares with nested squares)
+    are visible in the top-left, top-right, and bottom-left corners as required by
+    the QR code specification. Below the QR code, there are three lines of text: "https://pyplots.ai"
+    in blue/Python blue color (#306998), "Error Correction: M (15%)" in gray, and
+    "Matrix: 25 x 25 modules" also in gray. The QR code is well-centered and takes
+    up a good portion of the square canvas. The quiet zone (white border) around the
+    QR code is properly maintained.'
+  criteria_checklist:
+    visual_quality:
+      score: 38
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title is large and clear, URL label is bold and readable, info text
+          is appropriately sized
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping elements, all text is well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: QR code modules are crisp and clearly visible, high contrast black
+          on white
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: High contrast black/white for QR code, blue accent for URL is accessible
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: QR code is well-centered, good use of square canvas, balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: true
+        comment: Not applicable for QR code visualization
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Clean presentation without unnecessary chrome, subtle border around
+          QR code
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct QR code visualization with proper finder patterns
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: URL correctly encoded in QR matrix
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Quiet zone present, error correction level shown
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Complete QR code visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 1
+        max: 2
+        passed: true
+        comment: Shows error correction and matrix size info
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: qrcode-basic · pygal · pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows QR code with finder patterns, encoded URL, error correction
+          level, matrix size info
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Real URL (pyplots.ai) as practical example
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: 25x25 modules appropriate for URL length, M error correction is reasonable
+    code_quality:
+      score: 7
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 0
+        max: 3
+        passed: false
+        comment: Uses custom class extending Graph, violates KISS principle
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic QR code generation from fixed input string
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Creative extension of pygal Graph class to render SVG QR code, uses
+          pygal SVG generation capabilities
+  verdict: APPROVED
+impl_tags:
+  dependencies:
+  - qrcode
+  techniques:
+  - annotations
+  - html-export
+  - patches
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - edge-highlighting

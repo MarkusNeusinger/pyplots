@@ -23,7 +23,7 @@ Filters create dynamic URLs with the following format:
 https://pyplots.ai/{category}/{value}/{category}/{value}/...
 ```
 
-**Ordered categories**: `lib`, `spec`, `plot`, `data`, `dom`, `feat`
+**Ordered categories**: `lib`, `spec`, `plot`, `data`, `dom`, `feat`, `dep`, `tech`, `pat`, `prep`, `style`
 
 **Examples**:
 - `/?lib=matplotlib` → `https://pyplots.ai/lib/matplotlib`
@@ -213,17 +213,23 @@ To see event properties in Plausible dashboard, you **MUST** register them as cu
 | `method` | Action method (card, image, tab, click, space, doubletap) | `copy_code`, `random` |
 | `page` | Page context (home, catalog, spec_overview, spec_detail) | `copy_code`, `download_image`, `og_image_view` |
 | `platform` | Bot/platform name (twitter, whatsapp, teams, etc.) | `og_image_view` |
-| `category` | Filter category (lib, plot, dom, feat, data, spec) | `search`, `random`, `filter_remove` |
+| `category` | Filter category (lib, spec, plot, data, dom, feat, dep, tech, pat, prep, style) | `search`, `random`, `filter_remove` |
 | `value` | Filter value | `random`, `filter_remove` |
 | `query` | Search query text | `search`, `search_no_results` |
 | `destination` | External link target (linkedin, github, stats) | `external_link` |
 | `tab` | Tab name (code, specification, implementation, quality) | `tab_click` |
 | `size` | Grid size (normal, compact) | `toggle_grid_size` |
 | `filter_lib` | Library filter value (for og:image) | `og_image_view` |
-| `filter_dom` | Domain filter value (for og:image) | `og_image_view` |
+| `filter_spec` | Specification filter value (for og:image) | `og_image_view` |
 | `filter_plot` | Plot type filter value (for og:image) | `og_image_view` |
-| `filter_feat` | Features filter value (for og:image) | `og_image_view` |
 | `filter_data` | Data type filter value (for og:image) | `og_image_view` |
+| `filter_dom` | Domain filter value (for og:image) | `og_image_view` |
+| `filter_feat` | Features filter value (for og:image) | `og_image_view` |
+| `filter_dep` | Dependencies filter value (for og:image) | `og_image_view` |
+| `filter_tech` | Techniques filter value (for og:image) | `og_image_view` |
+| `filter_pat` | Patterns filter value (for og:image) | `og_image_view` |
+| `filter_prep` | Dataprep filter value (for og:image) | `og_image_view` |
+| `filter_style` | Styling filter value (for og:image) | `og_image_view` |
 
 ### Goals Configuration
 
@@ -378,12 +384,20 @@ unknown
 
 ### `category` Values
 ```
+# Spec-level (WHAT is visualized)
 lib   # library filter
+spec  # specification filter
 plot  # plot_type filter
+data  # data_type filter
 dom   # domain filter
 feat  # features filter
-data  # data_type filter
-spec  # specification filter
+
+# Impl-level (HOW it is implemented)
+dep   # dependencies filter
+tech  # techniques filter
+pat   # patterns filter
+prep  # dataprep filter
+style # styling filter
 ```
 
 ### `tab` Values

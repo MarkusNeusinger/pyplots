@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked-pe
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep:
+  - normalization
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent visual clarity with well-chosen colors that are colorblind-friendly

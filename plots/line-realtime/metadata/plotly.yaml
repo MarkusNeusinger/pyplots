@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-realtime/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-realtime/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-realtime/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - gradient-fill
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of real-time visualization indicators (LIVE badge, current

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent demonstration of ggbunch() for complex mosaic layouts with precise region

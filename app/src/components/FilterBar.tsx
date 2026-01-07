@@ -19,7 +19,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 
 import type { FilterCategory, ActiveFilters, FilterCounts } from '../types';
-import { FILTER_LABELS, FILTER_CATEGORIES } from '../types';
+import { FILTER_LABELS, FILTER_TOOLTIPS, FILTER_CATEGORIES } from '../types';
 import type { ImageSize } from '../constants';
 import { getAvailableValues, getAvailableValuesForGroup, getSearchResults } from '../utils';
 
@@ -653,26 +653,32 @@ export function FilterBar({
               // Calculate actual index among visible items
               const visibleIdx = dropdownItems.findIndex((item) => item.type === 'category' && item.category === category);
               return (
-                <MenuItem
+                <Tooltip
                   key={category}
-                  onClick={() => handleCategorySelect(category)}
-                  selected={visibleIdx === highlightedIndex}
-                  sx={{ fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace' }}
+                  title={FILTER_TOOLTIPS[category]}
+                  placement="right"
+                  arrow
                 >
-                  <ListItemText
-                    primary={FILTER_LABELS[category]}
-                    secondary={`${availableVals.length} options`}
-                    primaryTypographyProps={{
-                      fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
-                      fontSize: '0.9rem',
-                    }}
-                    secondaryTypographyProps={{
-                      fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
-                      fontSize: '0.75rem',
-                      color: '#9ca3af',
-                    }}
-                  />
-                </MenuItem>
+                  <MenuItem
+                    onClick={() => handleCategorySelect(category)}
+                    selected={visibleIdx === highlightedIndex}
+                    sx={{ fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace' }}
+                  >
+                    <ListItemText
+                      primary={FILTER_LABELS[category]}
+                      secondary={`${availableVals.length} options`}
+                      primaryTypographyProps={{
+                        fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
+                        fontSize: '0.9rem',
+                      }}
+                      secondaryTypographyProps={{
+                        fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
+                        fontSize: '0.75rem',
+                        color: '#9ca3af',
+                      }}
+                    />
+                  </MenuItem>
+                </Tooltip>
               );
             })
           : // Show search results or category values

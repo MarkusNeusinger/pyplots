@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ridgeline-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ridgeline-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ridgeline-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - kde
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of manual KDE calculation with Silverman rule for bandwidth

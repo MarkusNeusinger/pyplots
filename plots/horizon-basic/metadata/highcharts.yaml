@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/h
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of horizon chart concept with 3 bands per direction

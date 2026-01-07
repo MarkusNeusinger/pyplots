@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-margina
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-marginal/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of seaborn jointplot for this plot type, which is specifically designed

@@ -168,8 +168,9 @@ class TestInitDbSync:
 
         importlib.reload(conn)
         conn.engine = None  # Ensure clean state
+        conn._sync_session_factory = None  # Reset sync session factory
 
-        with patch.object(conn, "_create_direct_engine") as mock_create:
+        with patch.object(conn, "_create_direct_engine_sync") as mock_create:
             mock_engine = MagicMock()
             mock_create.return_value = mock_engine
 
@@ -180,6 +181,7 @@ class TestInitDbSync:
 
         # Cleanup
         conn.engine = None
+        conn._sync_session_factory = None
 
     def test_warns_when_no_config(self, monkeypatch, caplog):
         """Should warn when no database configuration found."""

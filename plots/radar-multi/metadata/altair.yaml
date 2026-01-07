@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/radar-multi/alt
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/radar-multi/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/radar-multi/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+    - html-export
+    - hover-tooltips
+  patterns:
+    - data-generation
+    - wide-to-long
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent implementation of radar chart using Altair layered approach with manual

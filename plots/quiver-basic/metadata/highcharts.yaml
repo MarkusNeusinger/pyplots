@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/hi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Creative implementation of quiver plot using line series with null separators

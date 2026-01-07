@@ -11,6 +11,13 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/pyg
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-grouped/pygal/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns: []
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of pygal Style class for comprehensive visual customization

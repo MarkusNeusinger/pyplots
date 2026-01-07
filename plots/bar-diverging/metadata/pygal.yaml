@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-diverging/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-diverging/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-diverging/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - manual-ticks
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of horizontal orientation for long category labels, enhancing readability

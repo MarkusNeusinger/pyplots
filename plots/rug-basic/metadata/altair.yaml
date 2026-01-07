@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/rug-basic/altai
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/rug-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/rug-basic/altair/plot.html
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent bimodal data choice that clearly demonstrates clustering patterns and

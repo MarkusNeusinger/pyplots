@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/point-basic/let
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/point-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/point-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of geom_pointrange for clean point-and-interval visualization

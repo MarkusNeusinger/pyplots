@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-basic/let
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/donut-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent use of geom_pie with hole parameter for native donut chart creation

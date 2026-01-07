@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-markers/py
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-markers/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-markers/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent text legibility with well-scaled font sizes for the large canvas

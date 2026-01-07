@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-styled/hig
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-styled/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-styled/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of all 4 required line styles (Solid, Dash, Dot, DashDot)

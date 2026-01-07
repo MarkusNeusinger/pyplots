@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-basic/mat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent center text implementation with Total $100K providing summary information

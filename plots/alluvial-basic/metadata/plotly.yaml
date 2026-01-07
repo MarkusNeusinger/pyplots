@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  - annotations
+  - custom-legend
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent alluvial/Sankey diagram implementation using Plotly go.Sankey

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/forest-basic/bo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/forest-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/forest-basic/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  - html-export
+  patterns:
+  - columndatasource
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of all forest plot elements (diamond, whiskers, reference

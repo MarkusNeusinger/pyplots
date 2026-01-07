@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/gain-curve/high
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gain-curve/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/gain-curve/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - gradient-fill
 review:
   strengths:
   - Excellent compliance with specification including both gain curve and random baseline

@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-box/pyga
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-box/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-box/pygal/plot.html
 quality_score: 88
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - kde
+  styling: []
 review:
   strengths:
   - Excellent manual KDE implementation using Gaussian kernel with Silverman's rule

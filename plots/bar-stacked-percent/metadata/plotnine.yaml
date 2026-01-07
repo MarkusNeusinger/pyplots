@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-per
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - groupby-aggregation
+  dataprep:
+  - normalization
+  styling: []
 review:
   strengths:
   - Excellent use of position_fill() for 100% stacking with matching text positioning

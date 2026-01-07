@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked-pe
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - patches
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - columndatasource
+  dataprep:
+  - normalization
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent text legibility with appropriately scaled fonts for the 4800x2700 canvas

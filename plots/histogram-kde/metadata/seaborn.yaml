@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/s
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  dataprep:
+  - kde
+  styling:
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
   - Excellent use of seaborn histplot and kdeplot functions separately for fine-grained

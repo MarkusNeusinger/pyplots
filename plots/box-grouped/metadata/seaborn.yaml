@@ -11,6 +11,13 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/box-grouped/sea
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-grouped/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent data generation with realistic department/experience level scenario

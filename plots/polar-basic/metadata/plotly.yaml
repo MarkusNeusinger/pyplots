@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-basic/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/polar-basic/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - polar-projection
+    - html-export
+    - layer-composition
+  patterns:
+    - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of realistic hourly temperature data showing clear cyclical pattern

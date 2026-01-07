@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/hi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  - hover-tooltips
+  - custom-legend
+  - annotations
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Highcharts sliced property and slicedOffset for controlling explosion

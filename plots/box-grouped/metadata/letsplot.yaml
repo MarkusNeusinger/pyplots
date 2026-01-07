@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/box-grouped/let
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-grouped/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/box-grouped/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent text legibility with well-sized fonts throughout (28pt title, 22pt labels,

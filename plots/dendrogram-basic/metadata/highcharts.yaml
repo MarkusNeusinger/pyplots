@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/dendrogram-basic/highcharts/plot.html
 quality_score: 93
+impl_tags:
+  dependencies:
+    - scipy
+    - selenium
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep:
+    - hierarchical-clustering
+  styling: []
 review:
   strengths: []
   weaknesses: []

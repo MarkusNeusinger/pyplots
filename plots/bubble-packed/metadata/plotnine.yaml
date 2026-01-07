@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Excellent implementation of circle packing algorithm with force simulation for

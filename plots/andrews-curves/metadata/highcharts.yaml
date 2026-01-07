@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/andrews-curves/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - dataset-loading
+  dataprep:
+  - normalization
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent colorblind-safe palette choice (blue/yellow/purple)

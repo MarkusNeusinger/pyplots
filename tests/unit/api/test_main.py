@@ -239,11 +239,11 @@ class TestAppConfiguration:
 
     def test_app_version(self) -> None:
         """App should have correct version."""
-        assert app.version == "0.2.0"
+        assert app.version == "1.0.0"
 
     def test_app_description(self) -> None:
         """App should have description."""
-        assert "AI-powered" in app.description
+        assert "pyplots" in app.description.lower()
         assert "plotting" in app.description.lower()
 
 

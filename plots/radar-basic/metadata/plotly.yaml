@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/radar-basic/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/radar-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/radar-basic/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of Plotly Scatterpolar for radar charts with proper fill and line

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/box-basic/matpl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - edge-highlighting
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent text sizing with proper font hierarchy (24/20/16pt)

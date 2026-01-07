@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-per
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - explicit-figure
+  - iteration-over-groups
+  dataprep:
+  - normalization
+  styling: []
 review:
   strengths:
   - Excellent visual presentation with clear percentage labels inside each segment
@@ -24,14 +33,25 @@ review:
     used for sns.despine() styling - should leverage seaborn native bar plotting functions
     more
   - Legend placement outside the plot creates additional whitespace on the right side
-  image_description: |-
-    The plot shows a 100% stacked bar chart displaying market share data across 6 quarters (Q1 2023 to Q2 2024) for 4 companies. Each bar reaches exactly 100% and is divided into 4 colored segments:
+  image_description: 'The plot shows a 100% stacked bar chart displaying market share
+    data across 6 quarters (Q1 2023 to Q2 2024) for 4 companies. Each bar reaches
+    exactly 100% and is divided into 4 colored segments:
+
     - **Company A** (dark blue, #306998) - at the bottom, declining from 35% to 24%
+
     - **Company B** (yellow, #FFD43B) - second from bottom, growing from 25% to 34%
-    - **Company C** (teal, #4ECDC4) - third segment, growing slightly from 22% to 27%
+
+    - **Company C** (teal, #4ECDC4) - third segment, growing slightly from 22% to
+    27%
+
     - **Company D** (coral/salmon, #E76F51) - top segment, declining from 18% to 15%
 
-    The title reads "bar-stacked-percent · seaborn · pyplots.ai" at the top. X-axis shows "Quarter" with 6 quarter labels, Y-axis shows "Market Share (%)" from 0-100. Percentage labels are displayed inside each segment (white text on dark colors, dark text on yellow). The legend is positioned outside the plot on the upper right. A subtle horizontal grid is visible. The layout is clean and professional.
+
+    The title reads "bar-stacked-percent · seaborn · pyplots.ai" at the top. X-axis
+    shows "Quarter" with 6 quarter labels, Y-axis shows "Market Share (%)" from 0-100.
+    Percentage labels are displayed inside each segment (white text on dark colors,
+    dark text on yellow). The legend is positioned outside the plot on the upper right.
+    A subtle horizontal grid is visible. The layout is clean and professional.'
   criteria_checklist:
     visual_quality:
       score: 36

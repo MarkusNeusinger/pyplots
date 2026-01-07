@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-annotat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - 'Excellent use of Highcharts dataLabels with allowOverlap: false to prevent label

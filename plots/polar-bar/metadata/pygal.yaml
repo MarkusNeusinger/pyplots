@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-bar/pygal
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-bar/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/polar-bar/pygal/plot.html
 quality_score: 88
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - custom-legend
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of pygal Radar chart as the closest approximation to polar bar functionality

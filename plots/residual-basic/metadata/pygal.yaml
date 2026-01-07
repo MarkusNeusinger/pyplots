@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/residual-basic/pygal/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Correct title format following the spec-id · library · pyplots.ai convention

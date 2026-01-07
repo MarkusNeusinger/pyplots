@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/span-basic/lets
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/span-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/span-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent real-world scenario using the 2008-2009 recession as the highlighted

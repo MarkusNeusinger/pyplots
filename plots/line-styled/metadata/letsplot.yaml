@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-styled/let
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-styled/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-styled/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of all four standard line styles (solid, dashed, dotted, longdash)

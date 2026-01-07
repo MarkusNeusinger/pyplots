@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-calenda
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-calendar/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - colorbar
+    - manual-ticks
+  patterns:
+    - data-generation
+    - long-to-wide
+  dataprep: []
+  styling:
+    - custom-colormap
+    - edge-highlighting
 review:
   strengths:
   - Excellent calendar layout with weeks as columns and weekdays as rows

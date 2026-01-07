@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/s
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+    - explicit-figure
+  dataprep: []
+  styling:
+    - alpha-blending
+    - edge-highlighting
+    - grid-styling
 review:
   strengths:
   - Excellent visual presentation with properly sized text elements following the

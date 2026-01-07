@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - annotations
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent use of plotnine grammar of graphics with clean ggplot syntax

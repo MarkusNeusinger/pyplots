@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/sudoku-basic/py
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sudoku-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sudoku-basic/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent visual execution of Sudoku grid with clear visual hierarchy between

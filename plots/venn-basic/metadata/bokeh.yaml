@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/venn-basic/boke
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/venn-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/venn-basic/bokeh/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+    - patches
+    - hover-tooltips
+    - html-export
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent visual clarity with well-chosen transparency (alpha=0.4) creating distinct

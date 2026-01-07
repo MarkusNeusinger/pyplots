@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-timeseries
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-timeseries/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-timeseries/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  - custom-legend
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent seasonal temperature pattern with realistic daily variation demonstrates

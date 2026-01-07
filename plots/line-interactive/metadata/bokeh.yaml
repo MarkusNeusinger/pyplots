@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-interactiv
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-interactive/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-interactive/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - hover-tooltips
+    - custom-legend
+  patterns:
+    - columndatasource
+    - data-generation
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent use of Bokeh interactive tools (WheelZoom, BoxZoom, PanTool, ResetTool)

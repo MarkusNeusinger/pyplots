@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-categor
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-categorical/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-categorical/altair/plot.html
 quality_score: 100
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Perfect use of redundant encoding (color + shape) for maximum accessibility

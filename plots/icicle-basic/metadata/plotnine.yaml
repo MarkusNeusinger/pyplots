@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/icicle-basic/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/icicle-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent hierarchical visualization with clear parent-child relationships visible

@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/lollipop-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/lollipop-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Clean, minimalist aesthetic that exemplifies the lollipop chart concept

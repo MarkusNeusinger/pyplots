@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-margina
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-marginal/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-marginal/pygal/plot.html
 quality_score: 88
+impl_tags:
+  dependencies:
+  - pillow
+  techniques:
+  - subplots
+  - annotations
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep:
+  - binning
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Creative solution using pygal chart compositing with PIL to achieve marginal distributions

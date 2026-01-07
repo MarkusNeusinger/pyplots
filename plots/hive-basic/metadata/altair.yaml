@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/hive-basic/alta
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hive-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hive-basic/altair/plot.html
 quality_score: 78
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - bezier-curves
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Clean implementation of hive plot concept using Altairs layered chart approach

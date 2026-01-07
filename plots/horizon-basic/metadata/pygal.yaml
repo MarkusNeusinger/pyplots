@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/pygal/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Title format now correctly follows the specification (horizon-basic · pygal ·

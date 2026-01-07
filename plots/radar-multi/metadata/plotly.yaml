@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/radar-multi/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/radar-multi/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/radar-multi/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent use of Plotly Scatterpolar trace with proper polygon closing technique

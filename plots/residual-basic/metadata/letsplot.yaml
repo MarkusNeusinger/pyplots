@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/residual-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of core residual plot features including reference line

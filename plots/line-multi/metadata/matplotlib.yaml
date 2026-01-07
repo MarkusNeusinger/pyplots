@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-multi/matp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-multi/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+    - manual-ticks
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - 'Excellent data diversity showing three distinct patterns: steady growth, mid-year

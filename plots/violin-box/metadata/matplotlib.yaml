@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-box/matp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-box/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 95
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent demonstration of combining violin and box plots with clear visual hierarchy

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/hive-basic/pyga
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hive-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hive-basic/pygal/plot.html
 quality_score: 88
+impl_tags:
+  dependencies:
+  - cairosvg
+  techniques:
+  - bezier-curves
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent creative implementation of hive plot using pygal XY chart as a foundation

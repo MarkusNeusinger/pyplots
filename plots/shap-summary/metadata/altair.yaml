@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/shap-summary/al
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/shap-summary/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/shap-summary/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of SHAP summary plot matching specification requirements

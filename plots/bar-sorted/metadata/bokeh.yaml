@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/boke
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  - columndatasource
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clean descending sort visualization with excellent visual hierarchy

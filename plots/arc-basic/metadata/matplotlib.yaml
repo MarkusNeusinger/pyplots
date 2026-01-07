@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/arc-basic/matpl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/arc-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  - manual-ticks
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Excellent implementation of arc diagram with proper proportional arc heights based

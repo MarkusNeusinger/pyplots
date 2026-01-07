@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-3d/plotly/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-3d/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-3d/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - 3d-projection
+    - hover-tooltips
+    - html-export
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - custom-colormap
+    - alpha-blending
 review:
   strengths:
   - Excellent implementation of 3D bars using Mesh3d with proper vertex and face definitions

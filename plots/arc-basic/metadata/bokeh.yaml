@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/arc-basic/bokeh
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/arc-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/arc-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - custom-legend
+    - bezier-curves
+    - html-export
+  patterns:
+    - data-generation
+    - iteration-over-groups
+    - columndatasource
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent implementation of quadratic bezier curves for smooth arcs with height

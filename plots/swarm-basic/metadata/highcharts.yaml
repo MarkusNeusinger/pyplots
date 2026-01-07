@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/swarm-basic/hig
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/swarm-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/swarm-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+    - selenium
+  techniques:
+    - hover-tooltips
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - edge-highlighting
+    - grid-styling
 review:
   strengths:
   - Excellent swarm algorithm implementation that spreads points horizontally to avoid

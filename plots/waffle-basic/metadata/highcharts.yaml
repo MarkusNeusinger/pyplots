@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/hi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation using scatter plot with square markers to create waffle

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/strip-basic/let
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/strip-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/strip-basic/letsplot/plot.html
 quality_score: 96
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
+    - minimal-chrome
+    - grid-styling
 review:
   strengths:
   - Excellent use of lets-plot ggplot2-style grammar with geom_jitter for strip plot

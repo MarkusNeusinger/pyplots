@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/timeline-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/timeline-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/timeline-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - columndatasource
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent alternating label positioning above/below axis prevents text overlap

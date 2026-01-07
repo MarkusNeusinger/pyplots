@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-annotated-
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-annotated-events/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of alternating label heights to prevent overlap with dense events

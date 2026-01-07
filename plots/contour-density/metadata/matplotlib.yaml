@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-density
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-density/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies:
+    - scipy
+  techniques:
+    - colorbar
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep:
+    - kde
+  styling:
+    - custom-colormap
+    - alpha-blending
 review:
   strengths:
   - Excellent combination of filled contours with contour lines for visual clarity

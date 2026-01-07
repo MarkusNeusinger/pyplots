@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/slope-basic/alt
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/slope-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/slope-basic/altair/plot.html
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths: []
   weaknesses: []

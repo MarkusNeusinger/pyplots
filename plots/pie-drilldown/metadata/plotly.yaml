@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - hover-tooltips
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Plotly interactive capabilities with custom JavaScript for drilldown

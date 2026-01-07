@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/mat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - annotations
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - explicit-figure
+  dataprep: []
+  styling:
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
   - Excellent text legibility with appropriate font sizes throughout

@@ -11,6 +11,13 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/plot
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of pd.Categorical to enforce sort order in plotnine

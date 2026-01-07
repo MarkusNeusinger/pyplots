@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/ma
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  - edge-highlighting
+  patterns:
+  - explicit-figure
+  dataprep: []
+  styling:
+  - edge-highlighting
 review:
   strengths:
   - Clean, professional visualization with excellent color choices using Python Blue

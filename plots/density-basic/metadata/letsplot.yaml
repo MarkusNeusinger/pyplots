@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/density-basic/l
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/density-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/density-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - kde
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Clean ggplot2-style grammar implementation with proper layering

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/b
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - hover-tooltips
+    - html-export
+    - columndatasource
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
+    - edge-highlighting
 review:
   strengths:
   - Excellent force-directed circle packing simulation with proper area-based scaling

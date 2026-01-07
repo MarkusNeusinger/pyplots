@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-basic/bo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - patches
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of violin plot from first principles using Bokeh patch

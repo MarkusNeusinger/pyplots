@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/high
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - 3d-projection
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent title format following the required pattern with clear subtitle

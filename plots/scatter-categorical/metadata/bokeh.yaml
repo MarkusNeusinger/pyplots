@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-categor
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-categorical/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-categorical/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  - alpha-blending
+  - edge-highlighting
+  - columndatasource
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent text sizing for the large canvas (48pt title, 36pt axis labels, 28pt

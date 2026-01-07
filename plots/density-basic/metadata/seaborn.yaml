@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/density-basic/s
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/density-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+  dataprep:
+    - kde
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent use of seaborn kdeplot with fill and rugplot combination for statistical

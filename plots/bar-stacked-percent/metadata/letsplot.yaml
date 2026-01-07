@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-per
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked-percent/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - iteration-over-groups
+  dataprep:
+  - normalization
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of position=fill for proper 100% stacking normalization

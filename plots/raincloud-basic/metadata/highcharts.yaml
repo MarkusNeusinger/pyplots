@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  - hover-tooltips
+  - manual-ticks
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent raincloud metaphor with cloud (KDE) clearly on right, boxplot centered,

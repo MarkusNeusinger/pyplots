@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/b
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  - columndatasource
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of horizon chart technique with proper band folding and

@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-annotat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-annotated/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-annotated/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  - custom-legend
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep:
+  - correlation-matrix
+  styling: []
 review:
   strengths:
   - Excellent implementation of an annotated heatmap in pygal, which does not natively

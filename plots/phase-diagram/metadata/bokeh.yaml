@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/phase-diagram/b
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/phase-diagram/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/phase-diagram/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - html-export
+  patterns:
+  - columndatasource
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent physics simulation showing damped harmonic oscillator behavior

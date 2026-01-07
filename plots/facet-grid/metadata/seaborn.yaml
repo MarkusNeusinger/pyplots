@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/facet-grid/seab
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/facet-grid/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - faceting
+  - grid-styling
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of seaborn FacetGrid for creating a 3×4 grid layout with row and

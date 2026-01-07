@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pdp-basic/seabo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pdp-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies:
+  - sklearn
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of a PDP with proper confidence intervals and rug plot

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/parallel-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parallel-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  patterns:
+  - dataset-loading
+  - wide-to-long
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Clean grammar-of-graphics implementation using geom_line and geom_point for parallel

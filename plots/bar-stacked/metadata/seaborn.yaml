@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/sea
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - groupby-aggregation
+  - explicit-figure
+  dataprep: []
+  styling:
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
   - Excellent visual design with clear color differentiation and white edge lines

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-decisio
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies:
+    - sklearn
+  techniques:
+    - colorbar
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent implementation of decision boundary visualization meeting all specification

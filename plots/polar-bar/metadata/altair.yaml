@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-bar/altai
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-bar/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/polar-bar/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - hover-tooltips
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of mark_arc for creating polar bar chart wedges with proper theta/theta2

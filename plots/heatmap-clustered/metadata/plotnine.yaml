@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-cluster
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies:
+  - scipy
+  techniques:
+  - subplots
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep:
+  - hierarchical-clustering
+  styling: []
 review:
   strengths:
   - Excellent implementation of clustered heatmap using pure plotnine grammar of graphics
@@ -24,14 +35,25 @@ review:
   - Sample labels at bottom could be slightly larger for better readability at full
     resolution
   - Code is necessarily complex due to manual dendrogram coordinate calculation
-  image_description: |-
-    The plot displays a clustered heatmap showing gene expression data for 12 genes (rows) across 8 samples (columns). The visualization features:
-    - **Color scheme**: Diverging palette using Python Blue (#306998) for low expression, white for zero, and Python Yellow (#FFD43B) for high expression
-    - **Dendrograms**: Row dendrogram on the left showing hierarchical gene clustering; column dendrogram on top showing sample clustering
-    - **Labels**: Gene names (Gene1-Gene12) on the right side; sample names (SampleA-SampleH) at the bottom, rotated 45°
+  image_description: 'The plot displays a clustered heatmap showing gene expression
+    data for 12 genes (rows) across 8 samples (columns). The visualization features:
+
+    - **Color scheme**: Diverging palette using Python Blue (#306998) for low expression,
+    white for zero, and Python Yellow (#FFD43B) for high expression
+
+    - **Dendrograms**: Row dendrogram on the left showing hierarchical gene clustering;
+    column dendrogram on top showing sample clustering
+
+    - **Labels**: Gene names (Gene1-Gene12) on the right side; sample names (SampleA-SampleH)
+    at the bottom, rotated 45°
+
     - **Title**: "heatmap-clustered · plotnine · pyplots.ai" centered at top
+
     - **Legend**: Colorbar labeled "Expression Level" showing scale from -2 to 2
-    - **Clustering patterns**: Clear groupings visible - genes 1-4 cluster together (high in samples A-D), genes 5-8 form another cluster (opposite pattern), genes 9-12 show mixed patterns
+
+    - **Clustering patterns**: Clear groupings visible - genes 1-4 cluster together
+    (high in samples A-D), genes 5-8 form another cluster (opposite pattern), genes
+    9-12 show mixed patterns'
   criteria_checklist:
     visual_quality:
       score: 36

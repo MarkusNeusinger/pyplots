@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regress
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-lowess/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-lowess/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+    - statsmodels
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+    - columndatasource
+  dataprep:
+    - regression
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent biological data example (enzyme activity curve) that perfectly demonstrates

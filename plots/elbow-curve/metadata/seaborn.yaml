@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/elbow-curve/sea
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/elbow-curve/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clear elbow point annotation with arrow makes the key insight immediately visible

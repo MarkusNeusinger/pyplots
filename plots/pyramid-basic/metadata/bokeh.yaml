@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pyramid-basic/b
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pyramid-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pyramid-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - columndatasource
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent pyramid visualization with clear symmetric layout

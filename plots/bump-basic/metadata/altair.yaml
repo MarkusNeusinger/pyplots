@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bump-basic/alta
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bump-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bump-basic/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - hover-tooltips
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent choice of Premier League standings as realistic bump chart scenario

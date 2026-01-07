@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-matrix/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-matrix/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-matrix/altair/plot.html
 quality_score: 85
+impl_tags:
+  dependencies: []
+  techniques:
+  - faceting
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Altair's declarative repeat() pattern for idiomatic SPLOM construction

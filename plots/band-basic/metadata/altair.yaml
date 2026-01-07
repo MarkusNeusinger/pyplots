@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/band-basic/alta
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/band-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/band-basic/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of Altair declarative grammar with mark_area and y/y2 encoding for

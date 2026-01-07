@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-correla
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-correlation/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-correlation/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  - hover-tooltips
+  - html-export
+  patterns:
+  - columndatasource
+  - iteration-over-groups
+  dataprep:
+  - correlation-matrix
+  styling: []
 review:
   strengths:
   - Excellent implementation of lower triangle masking to reduce visual redundancy

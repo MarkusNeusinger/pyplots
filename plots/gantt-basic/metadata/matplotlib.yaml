@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/mat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 95
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - custom-legend
+  patterns:
+  - explicit-figure
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent color scheme using Python-branded colors with good accessibility

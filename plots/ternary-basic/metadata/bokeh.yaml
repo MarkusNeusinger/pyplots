@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/b
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/bokeh/plot.html
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - annotations
+  - columndatasource
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths: []
   weaknesses: []

@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/rug-basic/matpl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/rug-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent demonstration of rug plot concept with trimodal data showing clustering

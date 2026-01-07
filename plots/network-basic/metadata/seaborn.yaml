@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/network-basic/s
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Excellent implementation of force-directed layout algorithm from scratch

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/plot
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - 3d-projection
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Plotly's Scatter3d with proper colorscale and colorbar

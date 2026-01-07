@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-overl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-overlapping/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-overlapping/plotly/plot.html
 quality_score: 96
+impl_tags:
+  dependencies: []
+  techniques:
+  - alpha-blending
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of overlay barmode for true overlapping histograms with proper transparency

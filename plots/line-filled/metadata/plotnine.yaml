@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-filled/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-filled/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+    - explicit-figure
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Excellent layering of geom_area and geom_line to create the filled effect with

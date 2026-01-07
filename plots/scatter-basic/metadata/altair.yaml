@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/a
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - hover-tooltips
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Clean declarative Altair syntax with proper encoding types (:Q for quantitative)

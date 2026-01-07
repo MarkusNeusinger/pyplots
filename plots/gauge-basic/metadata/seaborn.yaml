@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/gauge-basic/sea
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gauge-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Creative use of seaborn scatterplot to build gauge arc with dense point markers

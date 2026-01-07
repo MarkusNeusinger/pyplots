@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/parallel-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parallel-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - custom-legend
+  patterns:
+  - dataset-loading
+  - wide-to-long
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent visualization clarity with well-separated species clusters visible in

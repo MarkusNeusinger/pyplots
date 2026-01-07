@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymme
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/pygal/plot.html
 quality_score: 88
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clear visualization of asymmetric error bars using pygal XY chart creatively

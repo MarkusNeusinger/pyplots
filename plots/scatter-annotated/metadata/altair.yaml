@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-annotat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - layer-composition
+  - html-export
+  patterns: []
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent text legibility with appropriate font sizes for high-resolution output

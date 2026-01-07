@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/bo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/bokeh/plot.html
 quality_score: 96
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  - custom-legend
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Bokeh patch() method to create custom trapezoidal funnel segments

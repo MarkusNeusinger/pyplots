@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/learning-curve-
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/learning-curve-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/learning-curve-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual clarity with well-chosen blue/yellow color scheme that provides
@@ -23,11 +31,22 @@ review:
   - Y-axis label could include units/scale indicator (e.g., Accuracy Score 0-1)
   - Could demonstrate more lets-plot specific features like tooltips or interactive
     elements
-  image_description: |-
-    The plot shows a learning curve with two distinct lines on a light gray background. The title "learning-curve-basic · letsplot · pyplots.ai" appears at the top. The x-axis displays "Training Set Size (samples)" ranging from 0 to 1,600, and the y-axis shows "Accuracy Score" ranging from 0.55 to 1.0. Two curves are visible:
-    - A **blue line** (Training Score) starting around 0.88 and quickly rising to plateau near 0.99
-    - A **yellow/gold line** (Validation Score) starting around 0.67 and gradually rising to about 0.84
-    Both curves have shaded confidence bands showing standard deviation. The legend is positioned at the bottom center, clearly labeling "Training Score" and "Validation Score". The plot demonstrates a classic overfitting pattern with a gap between training and validation scores.
+  image_description: 'The plot shows a learning curve with two distinct lines on a
+    light gray background. The title "learning-curve-basic · letsplot · pyplots.ai"
+    appears at the top. The x-axis displays "Training Set Size (samples)" ranging
+    from 0 to 1,600, and the y-axis shows "Accuracy Score" ranging from 0.55 to 1.0.
+    Two curves are visible:
+
+    - A **blue line** (Training Score) starting around 0.88 and quickly rising to
+    plateau near 0.99
+
+    - A **yellow/gold line** (Validation Score) starting around 0.67 and gradually
+    rising to about 0.84
+
+    Both curves have shaded confidence bands showing standard deviation. The legend
+    is positioned at the bottom center, clearly labeling "Training Score" and "Validation
+    Score". The plot demonstrates a classic overfitting pattern with a gap between
+    training and validation scores.'
   criteria_checklist:
     visual_quality:
       score: 36

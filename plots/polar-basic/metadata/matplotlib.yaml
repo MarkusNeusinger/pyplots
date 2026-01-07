@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-basic/mat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - manual-ticks
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of hourly temperature as a realistic application perfectly suited

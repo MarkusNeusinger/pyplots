@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/plot
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - grid-styling
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clean, professional appearance with excellent text legibility

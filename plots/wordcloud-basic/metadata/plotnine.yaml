@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/wordcloud-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/wordcloud-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 78
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent no-overlap word placement with hand-crafted positions

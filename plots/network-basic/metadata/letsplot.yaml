@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/network-basic/l
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/network-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent force-directed layout implementation with group clustering (200 iterations,

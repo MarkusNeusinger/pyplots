@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-decisio
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-decision-boundary/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+    - sklearn
+  techniques:
+    - layer-composition
+    - html-export
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual representation of the decision boundary using geom_tile for filled

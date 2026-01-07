@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/a
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+    - scipy
+  techniques:
+    - layer-composition
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - kde
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent bimodal data choice that clearly demonstrates the value of KDE smoothing

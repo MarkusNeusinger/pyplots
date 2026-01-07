@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/swarm-basic/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/swarm-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/swarm-basic/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - hover-tooltips
+    - html-export
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
+    - edge-highlighting
 review:
   strengths:
   - Excellent custom beeswarm algorithm that effectively spreads points to avoid overlap

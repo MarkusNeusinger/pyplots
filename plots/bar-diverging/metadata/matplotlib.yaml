@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-diverging/m
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-diverging/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 97
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - annotations
+  - custom-legend
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
   - 'Excellent implementation of all spec requirements: horizontal orientation, contrasting

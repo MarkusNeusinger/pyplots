@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/cat-strip/pygal
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/cat-strip/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/cat-strip/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent jitter implementation using XY chart with calculated x-positions

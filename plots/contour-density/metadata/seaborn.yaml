@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-density
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-density/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+    - colorbar
+  patterns:
+    - data-generation
+  dataprep:
+    - kde
+  styling:
+    - custom-colormap
+    - alpha-blending
 review:
   strengths:
   - Excellent use of seaborn kdeplot for 2D kernel density estimation with both filled

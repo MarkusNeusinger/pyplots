@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-overl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-overlapping/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-overlapping/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - alpha-blending
+    - hover-tooltips
+    - html-export
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep:
+    - binning
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent use of aligned bins across all three distributions for accurate comparison

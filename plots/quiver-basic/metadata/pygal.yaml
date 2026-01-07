@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/py
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/pygal/plot.html
 quality_score: 82
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Creative approach to simulate quiver plot using pygal XY chart with line segments

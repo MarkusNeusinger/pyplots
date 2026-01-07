@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/wireframe-3d-ba
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/wireframe-3d-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - 3d-projection
+    - manual-ticks
+  patterns:
+    - data-generation
+    - matrix-construction
+    - explicit-figure
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent implementation of the ripple function z = sin(sqrt(x² + y²)) as specified

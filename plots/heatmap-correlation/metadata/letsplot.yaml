@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-correla
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-correlation/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-correlation/letsplot/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep:
+  - correlation-matrix
+  styling: []
 review:
   strengths:
   - Excellent diverging color scheme (blue-white-red) with proper midpoint at 0

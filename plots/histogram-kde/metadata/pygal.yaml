@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep:
+  - kde
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of histogram-KDE visualization using pygal XY chart capabilities

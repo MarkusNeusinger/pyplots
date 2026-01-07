@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-bar/letsp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-bar/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/polar-bar/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Correct polar bar/wind rose implementation using coord_polar

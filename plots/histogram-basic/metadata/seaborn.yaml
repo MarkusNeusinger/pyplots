@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - edge-highlighting
+    - grid-styling
 review:
   strengths:
   - Excellent visual clarity with properly sized text and well-proportioned layout

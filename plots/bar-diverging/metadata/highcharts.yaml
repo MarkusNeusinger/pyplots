@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-diverging/h
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-diverging/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-diverging/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  - manual-ticks
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - 'Excellent colorblind-safe color scheme (blue #306998 and yellow #FFD43B)'

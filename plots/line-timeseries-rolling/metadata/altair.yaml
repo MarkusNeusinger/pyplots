@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-timeseries
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/altair/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep:
+  - rolling-window
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of Altair declarative grammar with conditional encoding for strokeWidth

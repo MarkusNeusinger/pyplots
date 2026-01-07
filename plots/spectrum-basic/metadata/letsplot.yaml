@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrum-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrum-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/spectrum-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - fill-under-curve
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent visual clarity with three distinct frequency peaks clearly visible

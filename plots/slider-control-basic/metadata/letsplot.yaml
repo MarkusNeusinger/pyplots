@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/slider-control-
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/slider-control-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/slider-control-basic/letsplot/plot.html
 quality_score: 55
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - hover-tooltips
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual presentation with clear, readable text at all sizes

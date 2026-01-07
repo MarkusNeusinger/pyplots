@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/silhouette-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/silhouette-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies:
+  - sklearn
+  techniques:
+  - annotations
+  - custom-legend
+  patterns:
+  - data-generation
+  - dataset-loading
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of matplotlib fill_betweenx for creating characteristic silhouette

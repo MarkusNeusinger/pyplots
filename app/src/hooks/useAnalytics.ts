@@ -1,10 +1,13 @@
-import { useCallback, useRef, useMemo } from 'react';
+import { useCallback, useRef, useMemo } from "react";
 
 interface EventProps {
   [key: string]: string | undefined;
 }
 
-function debounce<T extends (...args: never[]) => void>(fn: T, delay: number): T {
+function debounce<T extends (...args: never[]) => void>(
+  fn: T,
+  delay: number,
+): T {
   let timeoutId: ReturnType<typeof setTimeout>;
   return ((...args: Parameters<T>) => {
     clearTimeout(timeoutId);
@@ -20,8 +23,20 @@ function buildPlausibleUrl(): string {
   const params = new URLSearchParams(window.location.search);
   const segments: string[] = [];
 
-  // Definierte Reihenfolge der Filter-Kategorien
-  const orderedKeys = ['lib', 'spec', 'plot', 'data', 'dom', 'feat'];
+  // Definierte Reihenfolge der Filter-Kategorien (inkl. impl-level tags)
+  const orderedKeys = [
+    "lib",
+    "spec",
+    "plot",
+    "data",
+    "dom",
+    "feat",
+    "dep",
+    "tech",
+    "pat",
+    "prep",
+    "style",
+  ];
 
   for (const key of orderedKeys) {
     // getAll() für mehrfache Params mit gleichem Key (AND-Logik)
@@ -34,12 +49,15 @@ function buildPlausibleUrl(): string {
     }
   }
 
-  return segments.length > 0 ? `https://pyplots.ai/${segments.join('/')}` : 'https://pyplots.ai/';
+  return segments.length > 0
+    ? `https://pyplots.ai/${segments.join("/")}`
+    : "https://pyplots.ai/";
 }
 
 export function useAnalytics() {
-  const lastPageviewRef = useRef<string>('');
-  const isProduction = typeof window !== 'undefined' && window.location.hostname === 'pyplots.ai';
+  const lastPageviewRef = useRef<string>("");
+  const isProduction =
+    typeof window !== "undefined" && window.location.hostname === "pyplots.ai";
 
   const sendPageview = useCallback(
     (urlOverride?: string) => {
@@ -59,22 +77,32 @@ export function useAnalytics() {
       if (url === lastPageviewRef.current) return;
       lastPageviewRef.current = url;
 
-      window.plausible?.('pageview', { url });
+      window.plausible?.("pageview", { url });
     },
-    [isProduction]
+    [isProduction],
   );
 
-  const trackPageview = useMemo(() => debounce(sendPageview, 150), [sendPageview]);
+  const trackPageview = useMemo(
+    () => debounce(sendPageview, 150),
+    [sendPageview],
+  );
 
   const trackEvent = useCallback(
     (name: string, props?: EventProps) => {
       if (!isProduction) return;
       const cleanProps = props
-        ? Object.fromEntries(Object.entries(props).filter(([, v]) => v !== undefined))
+        ? Object.fromEntries(
+            Object.entries(props).filter(([, v]) => v !== undefined),
+          )
         : undefined;
-      window.plausible?.(name, cleanProps ? { props: cleanProps as Record<string, string> } : undefined);
+      window.plausible?.(
+        name,
+        cleanProps
+          ? { props: cleanProps as Record<string, string> }
+          : undefined,
+      );
     },
-    [isProduction]
+    [isProduction],
   );
 
   return { trackPageview, trackEvent };

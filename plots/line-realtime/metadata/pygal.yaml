@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-realtime/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-realtime/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-realtime/pygal/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - gradient-fill
+  - custom-legend
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clean implementation with good CPU monitoring scenario and realistic data patterns

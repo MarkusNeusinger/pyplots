@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/bo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - custom-legend
+  patterns:
+  - data-generation
+  - columndatasource
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of the waffle chart concept with proper 10×10 grid layout

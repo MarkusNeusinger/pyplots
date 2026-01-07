@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/chernoff-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/chernoff-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/chernoff-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - sklearn
+  techniques:
+  - layer-composition
+  - custom-shapes
+  - html-export
+  patterns:
+  - dataset-loading
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of Chernoff faces using lets-plot grammar of graphics

@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-line/seab
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-line/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - manual-ticks
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent color accessibility using seaborn colorblind palette (blue/orange contrast)

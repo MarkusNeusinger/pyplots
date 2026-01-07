@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/lollipop-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/lollipop-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/lollipop-basic/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of lollipop chart using clever combination of scatter

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/surface-basic/a
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/surface-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/surface-basic/altair/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - 3d-projection
+  - hover-tooltips
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Impressive creative solution implementing 3D surface in a 2D library using manual

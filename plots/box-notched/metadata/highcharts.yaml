@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/box-notched/hig
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-notched/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/box-notched/highcharts/plot.html
 quality_score: 90
+impl_tags:
+  dependencies:
+    - selenium
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent clinical trial context with dose-response relationship clearly visible

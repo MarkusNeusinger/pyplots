@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/box-grouped/mat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-grouped/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  - manual-ticks
+  - edge-highlighting
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent grouped box plot with clear visual separation between experience levels

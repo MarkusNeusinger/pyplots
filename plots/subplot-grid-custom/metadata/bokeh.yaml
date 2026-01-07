@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-cu
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - html-export
+  - custom-legend
+  patterns:
+  - data-generation
+  - columndatasource
+  - explicit-figure
+  dataprep: []
+  styling:
+  - grid-styling
+  - edge-highlighting
 review:
   strengths:
   - Excellent dashboard-style layout demonstrating non-uniform subplot sizes with

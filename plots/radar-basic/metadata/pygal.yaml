@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/radar-basic/pyg
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/radar-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/radar-basic/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of employee performance comparison scenario matching specification

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/hive-basic/plot
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hive-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hive-basic/plotly/plot.html
 quality_score: 88
+impl_tags:
+  dependencies: []
+  techniques:
+  - bezier-curves
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - groupby-aggregation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of hive plot concept using Plotly scatter traces and

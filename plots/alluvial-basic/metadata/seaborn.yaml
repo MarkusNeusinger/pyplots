@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - bezier-curves
+  - patches
+  - annotations
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of colorblind-safe palette from seaborn

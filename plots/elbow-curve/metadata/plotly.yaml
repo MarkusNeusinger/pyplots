@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/elbow-curve/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/elbow-curve/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/elbow-curve/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent elbow point annotation with arrow, bordered text box, and contrasting

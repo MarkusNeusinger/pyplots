@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
+  - edge-highlighting
 review:
   strengths:
   - Excellent creative implementation using pygal XML filter to draw custom packed

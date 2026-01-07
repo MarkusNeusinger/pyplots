@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/venn-basic/lets
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/venn-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/venn-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Excellent visual clarity with well-positioned labels and counts in all 7 regions

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent color palette with Python Blue (#306998) as primary color and complementary

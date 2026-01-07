@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pdp-basic/plotl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pdp-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pdp-basic/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - sklearn
+  techniques:
+  - html-export
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of real sklearn diabetes dataset providing meaningful, interpretable

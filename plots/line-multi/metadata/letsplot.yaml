@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-multi/lets
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-multi/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-multi/letsplot/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent text sizing with explicit font sizes for all elements (28pt title, 22pt

@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-horizontal/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-horizontal/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent visual clarity with well-sized text and properly sorted bars

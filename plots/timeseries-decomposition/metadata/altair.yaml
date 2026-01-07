@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/timeseries-deco
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - statsmodels
+  techniques:
+  - faceting
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - time-series
+  styling: []
 review:
   strengths:
   - Excellent use of Altair declarative faceting to create vertically stacked subplots

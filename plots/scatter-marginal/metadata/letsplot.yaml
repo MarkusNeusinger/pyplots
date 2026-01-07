@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-margina
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-marginal/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-marginal/letsplot/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of ggbunch to combine three separate plots into a cohesive composite

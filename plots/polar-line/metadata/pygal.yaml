@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-line/pyga
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-line/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/polar-line/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent choice of monthly temperature data demonstrating cyclical patterns perfectly

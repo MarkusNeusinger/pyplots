@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/parliament-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - pillow
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual representation of parliament seats in semicircular arcs

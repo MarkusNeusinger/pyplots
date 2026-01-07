@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-stepw
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-stepwise/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-stepwise/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of step histogram using XY chart with carefully constructed

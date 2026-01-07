@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/rug-basic/plotn
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/rug-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
+    - minimal-chrome
 review:
   strengths:
   - Excellent data design showing three distinct clusters plus outliers, perfectly

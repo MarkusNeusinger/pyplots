@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/rose-basic/seab
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/rose-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - manual-ticks
+  - annotations
+  - custom-colormap
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual design with well-chosen Blues gradient palette creating an intuitive

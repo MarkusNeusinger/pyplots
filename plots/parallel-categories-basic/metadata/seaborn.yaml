@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/parallel-catego
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parallel-categories-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 88
+impl_tags:
+  dependencies: []
+  techniques:
+  - bezier-curves
+  - patches
+  - custom-legend
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Excellent colorblind-safe palette choice using seaborn colorblind palette

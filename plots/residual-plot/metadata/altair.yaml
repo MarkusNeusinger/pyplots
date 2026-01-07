@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-plot/a
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-plot/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/residual-plot/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of all specification requirements including zero reference

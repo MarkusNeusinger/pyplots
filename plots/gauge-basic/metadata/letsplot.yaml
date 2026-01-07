@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/gauge-basic/let
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gauge-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/gauge-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of a gauge chart using lets-plot polygon and segment

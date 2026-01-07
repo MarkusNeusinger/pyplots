@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/roc-curve/plotn
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/roc-curve/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual clarity with well-sized text elements and line thickness

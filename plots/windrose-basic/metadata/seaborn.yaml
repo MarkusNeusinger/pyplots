@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - manual-ticks
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent wind rose visualization with proper meteorological conventions (North

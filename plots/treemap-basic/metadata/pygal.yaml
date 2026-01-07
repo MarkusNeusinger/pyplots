@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of pygal native Treemap chart type with proper hierarchical data

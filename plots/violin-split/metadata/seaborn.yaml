@@ -11,6 +11,13 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-split/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-split/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of seaborn split violin feature with inner quartile markers

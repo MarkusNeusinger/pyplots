@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-permutation
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-permutation-importance/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-permutation-importance/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  - hover-tooltips
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of horizontal bar chart with proper sorting by importance

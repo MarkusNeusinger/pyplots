@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/streamgraph-bas
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/streamgraph-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+    - manual-ticks
+  patterns:
+    - data-generation
+    - wide-to-long
+    - long-to-wide
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent implementation of centered baseline streamgraph algorithm

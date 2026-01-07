@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/windrose-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  - manual-ticks
+  - custom-legend
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent polar coordinate handling by manually constructing wedge polygons with

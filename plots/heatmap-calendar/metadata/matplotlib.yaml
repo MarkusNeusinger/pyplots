@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-calenda
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-calendar/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - colorbar
+    - manual-ticks
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling:
+    - custom-colormap
+    - edge-highlighting
 review:
   strengths:
   - Excellent GitHub-style calendar heatmap implementation with proper week/day structure

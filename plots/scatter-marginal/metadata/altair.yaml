@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-margina
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-marginal/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-marginal/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - layer-composition
+  - hover-tooltips
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent compositional layout using vconcat/hconcat for proper marginal plot

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/lets
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep:
+  - normalization
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent isometric projection implementation with proper rotation angles and

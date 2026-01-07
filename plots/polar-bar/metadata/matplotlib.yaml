@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-bar/matpl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-bar/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - manual-ticks
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - edge-highlighting
 review:
   strengths:
   - Excellent implementation of classic wind rose visualization with proper compass

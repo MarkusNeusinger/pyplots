@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/parliament-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  - annotations
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - matrix-construction
+  dataprep: []
+  styling:
+  - edge-highlighting
+  - minimal-chrome
 review:
   strengths:
   - Excellent semicircular layout with 5 well-proportioned concentric arcs

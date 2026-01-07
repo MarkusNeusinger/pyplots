@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-horizontal/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-horizontal/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-horizontal/letsplot/plot.html
 quality_score: 98
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent use of lets-plot ggplot2 grammar with coord_flip for horizontal bars

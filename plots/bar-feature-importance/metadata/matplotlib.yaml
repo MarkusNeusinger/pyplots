@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-feature-imp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-feature-importance/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - custom-colormap
+  - grid-styling
 review:
   strengths:
   - 'Excellent implementation of all spec requirements: sorted bars, color gradient,

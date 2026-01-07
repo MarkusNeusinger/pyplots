@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/bo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/bokeh/plot.html
 quality_score: 95
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent manual hexbin implementation using patches for full control

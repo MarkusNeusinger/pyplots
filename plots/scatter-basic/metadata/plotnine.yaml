@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Excellent text legibility with proper font sizing following library guidelines

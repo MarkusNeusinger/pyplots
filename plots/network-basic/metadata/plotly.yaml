@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/network-basic/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/network-basic/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of force-directed layout algorithm from scratch

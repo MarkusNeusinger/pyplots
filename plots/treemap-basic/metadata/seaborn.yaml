@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/s
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies:
+  - squarify
+  techniques:
+  - custom-legend
+  - annotations
+  patterns:
+  - data-generation
+  - groupby-aggregation
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Excellent use of seaborn colorblind palette for accessibility

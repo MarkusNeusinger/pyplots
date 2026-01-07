@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/network-force-d
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-force-directed/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent Fruchterman-Reingold force-directed layout implementation that creates

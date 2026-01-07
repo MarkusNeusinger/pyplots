@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-annotat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies:
+  - adjusttext
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of adjustText library for automatic label positioning with subtle

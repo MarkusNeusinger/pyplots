@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of plotly figure_factory.create_quiver for native quiver plot support

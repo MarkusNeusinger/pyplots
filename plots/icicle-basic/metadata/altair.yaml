@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/icicle-basic/al
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/icicle-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/icicle-basic/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent hierarchical visualization with clear parent-child relationships visible

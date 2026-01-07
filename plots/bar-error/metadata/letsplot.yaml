@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-error/letsp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-error/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-error/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - edge-highlighting
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Clean, professional visualization with excellent text legibility at target resolution

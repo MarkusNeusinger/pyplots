@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/precision-recal
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/precision-recall/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/precision-recall/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+    - sklearn
+  techniques:
+    - columndatasource
+  patterns:
+    - dataset-loading
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent use of stepped line style (mode="after") which accurately represents

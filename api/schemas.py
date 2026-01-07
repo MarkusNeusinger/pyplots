@@ -29,6 +29,8 @@ class ImplementationResponse(BaseModel):
     review_image_description: Optional[str] = None
     review_criteria_checklist: Optional[dict] = None
     review_verdict: Optional[str] = None
+    # Implementation-level tags (issue #2434)
+    impl_tags: Optional[dict] = None
 
 
 class SpecDetailResponse(BaseModel):
@@ -72,12 +74,19 @@ class ImageResponse(BaseModel):
 class FilterCountsResponse(BaseModel):
     """Counts for filter categories."""
 
+    # Spec-level filters
     lib: dict[str, int] = {}
     spec: dict[str, int] = {}
     plot: dict[str, int] = {}
     data: dict[str, int] = {}
     dom: dict[str, int] = {}
     feat: dict[str, int] = {}
+    # Impl-level filters (issue #2434)
+    dep: dict[str, int] = {}
+    tech: dict[str, int] = {}
+    pat: dict[str, int] = {}
+    prep: dict[str, int] = {}
+    style: dict[str, int] = {}
 
 
 class FilteredPlotsResponse(BaseModel):

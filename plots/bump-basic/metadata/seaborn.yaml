@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bump-basic/seab
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bump-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual design with inverted Y-axis correctly placing rank 1 at top

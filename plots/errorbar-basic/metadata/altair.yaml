@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/errorbar-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/errorbar-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/errorbar-basic/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent use of Altair layering to compose error bars from rule + tick marks

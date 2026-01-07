@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/let
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/letsplot/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - annotations
+  - hover-tooltips
+  - html-export
+  patterns:
+  - groupby-aggregation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent use of lets-plot ggplot2-style grammar with clean, readable code

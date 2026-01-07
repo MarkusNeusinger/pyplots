@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-loss-train
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-loss-training/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent demonstration of overfitting pattern with clear divergence between training
@@ -26,11 +34,23 @@ review:
     consider upper center or outside plot
   - Could use matplotlib-specific features like fill_between for confidence intervals
     or secondary annotations
-  image_description: |-
-    The plot displays two line curves on a 16:9 canvas with a white background. The title "line-loss-training · matplotlib · pyplots.ai" appears at the top in italicized black text. The X-axis is labeled "Epoch" (ranging from 0 to 50), and the Y-axis is labeled "Cross-Entropy Loss" (ranging from 0.0 to 2.5+). Two distinct lines with markers are shown:
-    - **Training Loss** (blue line with circular markers): Starts at ~2.5 and decays exponentially to ~0.2 by epoch 50
-    - **Validation Loss** (yellow/golden line with square markers): Starts similarly high but shows overfitting behavior after epoch ~28, where it begins increasing while training loss continues to decrease
-    A large red circular marker with black border highlights "Best: Epoch 29" - the optimal early stopping point - with an arrow annotation pointing to it. The legend is positioned in the upper right corner. The grid is subtle with dashed gray lines at alpha 0.3.
+  image_description: 'The plot displays two line curves on a 16:9 canvas with a white
+    background. The title "line-loss-training · matplotlib · pyplots.ai" appears at
+    the top in italicized black text. The X-axis is labeled "Epoch" (ranging from
+    0 to 50), and the Y-axis is labeled "Cross-Entropy Loss" (ranging from 0.0 to
+    2.5+). Two distinct lines with markers are shown:
+
+    - **Training Loss** (blue line with circular markers): Starts at ~2.5 and decays
+    exponentially to ~0.2 by epoch 50
+
+    - **Validation Loss** (yellow/golden line with square markers): Starts similarly
+    high but shows overfitting behavior after epoch ~28, where it begins increasing
+    while training loss continues to decrease
+
+    A large red circular marker with black border highlights "Best: Epoch 29" - the
+    optimal early stopping point - with an arrow annotation pointing to it. The legend
+    is positioned in the upper right corner. The grid is subtle with dashed gray lines
+    at alpha 0.3.'
   criteria_checklist:
     visual_quality:
       score: 38

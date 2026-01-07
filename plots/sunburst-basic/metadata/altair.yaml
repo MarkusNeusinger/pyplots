@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sunburst-basic/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - groupby-aggregation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent hierarchical color scheme with consistent lighter shades for child levels

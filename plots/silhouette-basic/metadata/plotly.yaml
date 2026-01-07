@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/silhouette-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/silhouette-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/silhouette-basic/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - sklearn
+  techniques:
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  - dataset-loading
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual clarity with well-sized fonts and properly sorted bars within

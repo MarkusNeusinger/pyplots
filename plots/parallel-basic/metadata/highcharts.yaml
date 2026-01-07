@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/parallel-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parallel-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/parallel-basic/highcharts/plot.html
 quality_score: 97
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns: []
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of the Highcharts parallel-coordinates module with proper axis configuration

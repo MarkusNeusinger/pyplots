@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/candlestick-vol
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/candlestick-volume/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/candlestick-volume/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - columndatasource
+  dataprep:
+  - time-series
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent dual-pane layout with proper 70/30 split as specified

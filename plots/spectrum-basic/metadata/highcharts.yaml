@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrum-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrum-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/spectrum-basic/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - gradient-fill
 review:
   strengths:
   - Excellent visualization of frequency spectrum with clear identification of fundamental

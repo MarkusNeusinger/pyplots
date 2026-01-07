@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/calibration-cur
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/calibration-curve/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - binning
+  styling: []
 review:
   strengths:
   - Excellent implementation of all spec requirements including diagonal reference

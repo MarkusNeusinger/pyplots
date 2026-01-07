@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-density
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-density/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-density/altair/plot.html
 quality_score: 88
+impl_tags:
+  dependencies:
+  - scipy
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep:
+  - kde
+  styling: []
 review:
   strengths:
   - Good visual design with blues color scheme providing clear density gradient

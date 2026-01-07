@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrogram-bas
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent STFT implementation from scratch using numpy FFT, demonstrating understanding

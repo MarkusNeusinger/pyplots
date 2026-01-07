@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/sudoku-basic/hi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sudoku-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sudoku-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - pillow
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent implementation of the Sudoku grid visual hierarchy with thick 3×3 box

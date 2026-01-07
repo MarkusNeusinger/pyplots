@@ -160,12 +160,21 @@ The pyplots API is a **FastAPI-based REST API** serving plot data to the fronten
 **Purpose**: Filter plots with faceted counts for all filter categories
 
 **Query Parameters** (combinable):
+
+*Spec-level filters (WHAT is visualized):*
 - `lib` - Library filter (matplotlib, seaborn, etc.)
 - `spec` - Spec ID filter
 - `plot` - Plot type tag filter
 - `data` - Data type tag filter
 - `dom` - Domain tag filter
 - `feat` - Features tag filter
+
+*Impl-level filters (HOW it is implemented):*
+- `dep` - Dependencies filter (scipy, sklearn, etc.)
+- `tech` - Techniques filter (twin-axes, annotations, etc.)
+- `pat` - Patterns filter (data-generation, groupby-aggregation, etc.)
+- `prep` - Dataprep filter (kde, binning, regression, etc.)
+- `style` - Styling filter (minimal-chrome, alpha-blending, etc.)
 
 **Filter Logic**:
 - Comma-separated values: OR (`lib=matplotlib,seaborn`)
@@ -192,7 +201,12 @@ The pyplots API is a **FastAPI-based REST API** serving plot data to the fronten
     "plot": {"scatter": 10},
     "data": {"numeric": 15},
     "dom": {"statistics": 8},
-    "feat": {"basic": 12}
+    "feat": {"basic": 12},
+    "dep": {"scipy": 3},
+    "tech": {"annotations": 5},
+    "pat": {"data-generation": 8},
+    "prep": {"kde": 2},
+    "style": {"alpha-blending": 4}
   },
   "globalCounts": {...},
   "orCounts": [...]

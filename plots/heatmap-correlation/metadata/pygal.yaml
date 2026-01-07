@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-correla
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-correlation/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-correlation/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  - html-export
+  - patches
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep:
+  - correlation-matrix
+  styling: []
 review:
   strengths:
   - Excellent implementation of a non-native chart type by extending pygal Graph class

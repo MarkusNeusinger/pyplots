@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/sparkline-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sparkline-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sparkline-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Excellent adherence to sparkline minimalist design (no axes, labels, or gridlines)

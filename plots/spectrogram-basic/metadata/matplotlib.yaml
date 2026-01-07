@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrogram-bas
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - colorbar
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - custom-colormap
 review:
   strengths:
   - Excellent spectrogram visualization with clear chirp signal and tone burst demonstration

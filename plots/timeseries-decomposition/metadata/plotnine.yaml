@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/timeseries-deco
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/timeseries-decomposition/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies:
+  - statsmodels
+  techniques:
+  - faceting
+  patterns:
+  - data-generation
+  dataprep:
+  - time-series
+  styling: []
 review:
   strengths:
   - Excellent use of plotnine facet_wrap for creating the four-panel decomposition

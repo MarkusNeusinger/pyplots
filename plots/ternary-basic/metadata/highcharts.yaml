@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/h
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - manual-ticks
+  - annotations
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent implementation of custom ternary plot using Highcharts renderer API

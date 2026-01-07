@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/lets
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/letsplot/plot.html
 quality_score: 96
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - grid-styling
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent realistic data scenario with web service response times showing mixed

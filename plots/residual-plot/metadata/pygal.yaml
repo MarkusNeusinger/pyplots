@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-plot/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-plot/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/residual-plot/pygal/plot.html
 quality_score: 88
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of all spec requirements including zero reference line,

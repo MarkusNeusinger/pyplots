@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/waterfall-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/waterfall-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/waterfall-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent waterfall chart structure with proper floating bars and connector lines
@@ -26,17 +35,30 @@ review:
     values between labeled ticks
   - Could use more distinct colorblind-safe palette (e.g., blue/orange instead of
     green/red)
-  image_description: |-
-    The waterfall chart displays a quarterly financial breakdown from Starting Balance to Net Profit. The chart uses:
-    - **Blue bars** (#306998) for totals (Starting Balance at $50,000 and Net Profit at $61,000)
-    - **Green bars** (#22C55E) for increases (Product Sales +$35,000, Service Revenue +$18,000)
-    - **Red bars** (#EF4444) for decreases (Operating Costs -$22,000, Marketing -$8,000, Taxes -$12,000)
-    - **White value labels** centered on each bar with proper formatting (totals show $XX,XXX, changes show +/-XX,XXX)
+  image_description: 'The waterfall chart displays a quarterly financial breakdown
+    from Starting Balance to Net Profit. The chart uses:
+
+    - **Blue bars** (#306998) for totals (Starting Balance at $50,000 and Net Profit
+    at $61,000)
+
+    - **Green bars** (#22C55E) for increases (Product Sales +$35,000, Service Revenue
+    +$18,000)
+
+    - **Red bars** (#EF4444) for decreases (Operating Costs -$22,000, Marketing -$8,000,
+    Taxes -$12,000)
+
+    - **White value labels** centered on each bar with proper formatting (totals show
+    $XX,XXX, changes show +/-XX,XXX)
+
     - **Dashed connector lines** between bars showing cumulative flow
+
     - **Title** at top: "waterfall-basic · letsplot · pyplots.ai"
+
     - **Y-axis** labeled "Amount ($)" with dollar formatting from $0 to $100,000
+
     - **X-axis** labels rotated 30 degrees for readability
-    - **Legend** on right showing Change Type (Increase, Decrease, Total)
+
+    - **Legend** on right showing Change Type (Increase, Decrease, Total)'
   criteria_checklist:
     visual_quality:
       score: 36

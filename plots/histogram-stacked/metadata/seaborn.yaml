@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-stack
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - edge-highlighting
+  - custom-legend
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent use of seaborn histplot with multiple=stack for native stacked histogram

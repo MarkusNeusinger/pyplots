@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-2d/py
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-2d/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-2d/pygal/plot.html
 quality_score: 90
+impl_tags:
+  dependencies:
+  - cairosvg
+  techniques:
+  - colorbar
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of marginal histograms as specified in the notes (optional

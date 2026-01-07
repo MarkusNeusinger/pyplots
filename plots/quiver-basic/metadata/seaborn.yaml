@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent creative solution using sns.lineplot with units parameter to draw individual

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-box/alta
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-box/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-box/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - layer-composition
+  - faceting
+  patterns:
+  - data-generation
+  dataprep:
+  - kde
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent use of Altair declarative layering to combine violin (mark_area with

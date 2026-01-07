@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/manhattan-gwas/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - layer-composition
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
   - Excellent biological realism with chromosome-specific significant peaks mimicking

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/box-basic/bokeh
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/box-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - columndatasource
+    - manual-ticks
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent data design with varied distributions showcasing all box plot features

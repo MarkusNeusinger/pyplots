@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/density-basic/b
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/density-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/density-basic/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+    - columndatasource
+  dataprep:
+    - kde
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent manual KDE implementation using Silverman's rule for bandwidth selection

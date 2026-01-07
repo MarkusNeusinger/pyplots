@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bullet-basic/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bullet-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual design following spec recommendations (grayscale bands, contrasting
@@ -24,14 +33,25 @@ review:
   - Seaborn is minimally utilized - only sns.barplot for the actual value bars, while
     most visualization work is done with matplotlib. Could better leverage seaborn
     DataFrame-centric approach or styling capabilities.
-  image_description: |-
-    The plot displays a horizontal bullet chart with four KPI metrics (Revenue, Customer Satisfaction, Efficiency, Quality Score) stacked vertically. Each metric shows:
-    - **Grayscale background bands** in three shades (light gray for Poor, medium gray for Satisfactory, dark gray for Good)
-    - **Blue horizontal bars** (#306998 Python Blue) representing actual values
-    - **Black vertical marker lines** indicating targets
-    - **Blue percentage labels** (78%, 85%, 62%, 91%) positioned to the right of each bar
+  image_description: 'The plot displays a horizontal bullet chart with four KPI metrics
+    (Revenue, Customer Satisfaction, Efficiency, Quality Score) stacked vertically.
+    Each metric shows:
 
-    The title "bullet-basic · seaborn · pyplots.ai" is displayed at the top in bold. X-axis shows "Performance (%)" from 0-100. A well-positioned legend in the upper right explains all elements. The layout is clean with subtle vertical grid lines and no overlapping elements.
+    - **Grayscale background bands** in three shades (light gray for Poor, medium
+    gray for Satisfactory, dark gray for Good)
+
+    - **Blue horizontal bars** (#306998 Python Blue) representing actual values
+
+    - **Black vertical marker lines** indicating targets
+
+    - **Blue percentage labels** (78%, 85%, 62%, 91%) positioned to the right of each
+    bar
+
+
+    The title "bullet-basic · seaborn · pyplots.ai" is displayed at the top in bold.
+    X-axis shows "Performance (%)" from 0-100. A well-positioned legend in the upper
+    right explains all elements. The layout is clean with subtle vertical grid lines
+    and no overlapping elements.'
   criteria_checklist:
     visual_quality:
       score: 38

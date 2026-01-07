@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/cat-strip/altai
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/cat-strip/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/cat-strip/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - hover-tooltips
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent use of Altair transform_calculate for implementing jitter with Box-Muller

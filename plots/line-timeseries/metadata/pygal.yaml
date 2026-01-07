@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-timeseries
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-timeseries/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-timeseries/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - custom-legend
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent date label handling using x_labels_major to show only first of each

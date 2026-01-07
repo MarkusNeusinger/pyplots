@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-annotated-
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-annotated-events/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-annotated-events/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - columndatasource
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent spec compliance with all required features (vertical lines, event labels,

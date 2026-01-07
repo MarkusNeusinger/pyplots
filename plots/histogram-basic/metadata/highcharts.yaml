@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+    - selenium
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - binning
+  styling:
+    - grid-styling
 review:
   strengths:
   - 'Excellent histogram representation with no gaps between bars (pointPadding: 0,

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/m
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  - annotations
+  patterns:
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Custom squarify algorithm implementation demonstrating matplotlib flexibility

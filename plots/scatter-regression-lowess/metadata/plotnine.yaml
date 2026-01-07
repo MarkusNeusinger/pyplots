@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regress
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-lowess/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+  dataprep:
+    - regression
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent choice of agricultural context (temperature vs crop yield) that naturally

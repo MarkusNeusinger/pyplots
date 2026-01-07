@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/gauge-basic/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gauge-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths: []
   weaknesses: []

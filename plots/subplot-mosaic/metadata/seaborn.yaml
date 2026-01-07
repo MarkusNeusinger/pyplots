@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - manual-ticks
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent implementation of complex mosaic layout demonstrating the ASCII-art
@@ -29,16 +40,34 @@ review:
     or statistical annotations
   - Feature coverage could include additional plot types to better demonstrate mosaic
     flexibility
-  image_description: |-
-    The plot displays a 7-panel mosaic dashboard layout with the title "subplot-mosaic · seaborn · pyplots.ai" at the top. The layout follows an "AAB;CCD;EFG" pattern:
-    - **Panel A (top-left, spanning 2 columns)**: A blue line chart showing "Revenue Trend Overview" from late December 2023 to early April 2024, with revenue ranging from ~50,000 to ~65,000 dollars.
-    - **Panel B (top-right)**: A yellow scatter plot titled "Marketing ROI" showing Marketing Spend ($K) vs Conversions with blue-edged circular markers.
-    - **Panel C (middle-left, spanning 2 columns)**: A bar chart "Sales by Channel" showing four bars (Online, Retail, Partner, Direct) in blue and yellow colors.
-    - **Panel D (middle-right)**: A histogram "Response Times" showing a bimodal distribution of response times in milliseconds.
-    - **Panel E (bottom-left)**: A small blue line chart "CPU Usage" showing hourly CPU percentage.
-    - **Panel F (bottom-center)**: A small yellow line chart "Memory Usage" showing hourly memory percentage.
-    - **Panel G (bottom-right)**: A box plot "Latency" showing latency distribution across four regions (North, South, East, West) with different colored boxes.
-    All panels have subtle gray grid lines, clear axis labels with units, and appropriate font sizes.
+  image_description: 'The plot displays a 7-panel mosaic dashboard layout with the
+    title "subplot-mosaic · seaborn · pyplots.ai" at the top. The layout follows an
+    "AAB;CCD;EFG" pattern:
+
+    - **Panel A (top-left, spanning 2 columns)**: A blue line chart showing "Revenue
+    Trend Overview" from late December 2023 to early April 2024, with revenue ranging
+    from ~50,000 to ~65,000 dollars.
+
+    - **Panel B (top-right)**: A yellow scatter plot titled "Marketing ROI" showing
+    Marketing Spend ($K) vs Conversions with blue-edged circular markers.
+
+    - **Panel C (middle-left, spanning 2 columns)**: A bar chart "Sales by Channel"
+    showing four bars (Online, Retail, Partner, Direct) in blue and yellow colors.
+
+    - **Panel D (middle-right)**: A histogram "Response Times" showing a bimodal distribution
+    of response times in milliseconds.
+
+    - **Panel E (bottom-left)**: A small blue line chart "CPU Usage" showing hourly
+    CPU percentage.
+
+    - **Panel F (bottom-center)**: A small yellow line chart "Memory Usage" showing
+    hourly memory percentage.
+
+    - **Panel G (bottom-right)**: A box plot "Latency" showing latency distribution
+    across four regions (North, South, East, West) with different colored boxes.
+
+    All panels have subtle gray grid lines, clear axis labels with units, and appropriate
+    font sizes.'
   criteria_checklist:
     visual_quality:
       score: 37

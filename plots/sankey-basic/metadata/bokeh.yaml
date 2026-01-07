@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/bo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - bezier-curves
+    - annotations
+  patterns: []
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent custom implementation of Sankey diagram using Bokeh primitives (patches

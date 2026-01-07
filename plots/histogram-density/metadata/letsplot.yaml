@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-densi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-density/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-density/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - scipy
+  techniques:
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep:
+  - kde
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent implementation of density histogram with proper ..density.. stat transformation

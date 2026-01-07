@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/learning-curve-
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/learning-curve-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/learning-curve-basic/bokeh/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns:
+  - columndatasource
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clean implementation with proper use of Bokeh's Band model for confidence intervals

@@ -11,6 +11,21 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/surface-basic/b
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/surface-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/surface-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - 3d-projection
+  - patches
+  - colorbar
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - 'Excellent creative solution: Bokeh lacks native 3D support, but the implementation

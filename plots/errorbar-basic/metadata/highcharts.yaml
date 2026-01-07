@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/errorbar-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/errorbar-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/errorbar-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  - pillow
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Highcharts native errorbar series type with proper whisker and

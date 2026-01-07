@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/lift-curve/lets
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/lift-curve/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/lift-curve/letsplot/plot.html
 quality_score: 98
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent lift curve implementation with proper mathematical calculation of cumulative

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - long-to-wide
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of variable-width stacked bars using geom_rect with precise

@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/network-basic/m
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  - custom-legend
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Excellent force-directed layout implementation from scratch - nodes cluster by

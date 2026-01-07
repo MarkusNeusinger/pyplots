@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrum-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrum-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent signal processing implementation with realistic mechanical vibration

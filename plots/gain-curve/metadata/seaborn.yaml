@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/gain-curve/seab
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gain-curve/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - fill-between
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent visual clarity with proper font sizing and colorblind-safe palette

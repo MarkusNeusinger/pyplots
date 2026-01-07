@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-filled/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-filled/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - colorbar
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep: []
+  styling:
+    - custom-colormap
 review:
   strengths:
   - Excellent visual clarity with smooth color transitions from 80x80 grid resolution

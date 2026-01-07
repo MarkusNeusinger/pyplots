@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/icicle-basic/bo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/icicle-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/icicle-basic/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - columndatasource
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent hierarchical visualization with clear parent-child relationships through

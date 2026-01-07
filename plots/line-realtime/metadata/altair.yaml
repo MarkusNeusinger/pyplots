@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-realtime/a
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-realtime/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-realtime/altair/plot.html
 quality_score: null
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - 'Excellent visual indicators for real-time effect: LIVE badge, scroll direction

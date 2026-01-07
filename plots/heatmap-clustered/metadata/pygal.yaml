@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-cluster
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-clustered/pygal/plot.html
 quality_score: 88
+impl_tags:
+  dependencies:
+  - scipy
+  techniques:
+  - annotations
+  - colorbar
+  - custom-legend
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep:
+  - hierarchical-clustering
+  styling: []
 review:
   strengths:
   - Excellent implementation of a complex visualization type (clustered heatmap) that

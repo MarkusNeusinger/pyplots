@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/choropleth-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/choropleth-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - patches
+  - custom-legend
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - custom-colormap
+  - minimal-chrome
 review:
   strengths:
   - 'Successfully addressed all previous review feedback: Alaska/Hawaii now included,

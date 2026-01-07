@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/le
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - annotations
+  - custom-legend
+  patterns:
+  - explicit-figure
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Explosion effect is clearly visible with R&D (0.3) and Sales (0.2) noticeably

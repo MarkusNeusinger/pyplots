@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrum-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrum-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/spectrum-basic/plotly/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - fill-under-curve
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent peak annotation with clear yellow arrows pointing to dominant frequencies

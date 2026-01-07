@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/circos-basic/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/circos-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 82
+impl_tags:
+  dependencies: []
+  techniques:
+  - bezier-curves
+  - manual-ticks
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Excellent circular layout with well-proportioned segments and gaps

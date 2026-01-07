@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/parliament-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - matrix-construction
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent semicircular seat arrangement algorithm with proper left-to-right party

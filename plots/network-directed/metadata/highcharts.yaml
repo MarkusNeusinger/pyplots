@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/network-directe
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-directed/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/network-directed/highcharts/plot.html
 quality_score: 90
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clear hierarchical layout showing software module dependencies in logical layers

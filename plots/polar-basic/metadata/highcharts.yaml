@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-basic/hig
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/polar-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+    - selenium
+  techniques:
+    - polar-projection
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Highcharts polar chart capability with proper configuration

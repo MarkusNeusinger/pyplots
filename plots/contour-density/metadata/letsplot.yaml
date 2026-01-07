@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-density
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-density/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-density/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent visualization of three distinct density clusters with clear concentric

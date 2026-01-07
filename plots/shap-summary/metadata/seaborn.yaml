@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/shap-summary/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/shap-summary/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 90
+impl_tags:
+  dependencies:
+  - sklearn
+  techniques:
+  - colorbar
+  patterns:
+  - dataset-loading
+  - groupby-aggregation
+  - wide-to-long
+  dataprep: []
+  styling:
+  - custom-colormap
 review:
   strengths:
   - Good use of seaborn stripplot with jitter for SHAP value distribution visualization

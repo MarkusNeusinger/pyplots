@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/band-basic/boke
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/band-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/band-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - columndatasource
+  dataprep: []
+  styling:
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
   - Excellent implementation of growing uncertainty band that widens over time

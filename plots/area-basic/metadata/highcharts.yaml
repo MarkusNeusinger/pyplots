@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-basic/high
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+    - selenium
+  techniques: []
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - gradient-fill
 review:
   strengths:
   - Excellent implementation of gradient fill from specification notes (alpha 0.3-0.5)

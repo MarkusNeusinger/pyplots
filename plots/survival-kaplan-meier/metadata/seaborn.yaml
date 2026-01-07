@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - custom-legend
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent Kaplan-Meier step function implementation with proper survival probability

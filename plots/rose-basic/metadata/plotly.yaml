@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/rose-basic/plot
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/rose-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/rose-basic/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - hover-tooltips
+  - custom-colormap
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of plotly's barpolar trace type for creating the rose chart

@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-styled/mat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-styled/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - All four standard line styles (solid, dashed, dotted, dash-dot) are clearly visible

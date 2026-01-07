@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/al
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stacked/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - hover-tooltips
+  patterns:
+  - wide-to-long
+  - data-generation
+  dataprep:
+  - time-series
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of Altair declarative encoding with proper type annotations (T,

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - manual-ticks
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - edge-highlighting
 review:
   strengths:
   - Excellent implementation of the Marimekko concept with proportional bar widths

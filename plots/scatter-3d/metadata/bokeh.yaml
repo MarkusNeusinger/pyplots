@@ -11,6 +11,21 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/boke
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  - patches
+  - html-export
+  patterns:
+  - data-generation
+  - columndatasource
+  - matrix-construction
+  - iteration-over-groups
+  dataprep:
+  - normalization
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent creative solution for 3D in a 2D library using isometric projection

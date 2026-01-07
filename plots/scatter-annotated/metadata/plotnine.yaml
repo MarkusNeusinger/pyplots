@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-annotat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent label placement with nudge_y preventing overlap

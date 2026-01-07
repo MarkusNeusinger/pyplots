@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-basic/bok
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/donut-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - numpy
+  techniques:
+  - html-export
+  patterns:
+  - columndatasource
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Bokeh annular_wedge for creating donut shape with proper inner/outer

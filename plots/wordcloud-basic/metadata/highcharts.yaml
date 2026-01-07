@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/wordcloud-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/wordcloud-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/wordcloud-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of Highcharts wordcloud module with proper configuration (archimedean

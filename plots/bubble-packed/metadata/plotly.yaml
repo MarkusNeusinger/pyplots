@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bubble-packed/plotly/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent force-directed circle packing algorithm implementation that correctly

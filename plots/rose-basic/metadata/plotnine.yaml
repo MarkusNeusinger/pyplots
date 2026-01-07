@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/rose-basic/plot
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/rose-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of rose chart using plotnine polygon geometry approach

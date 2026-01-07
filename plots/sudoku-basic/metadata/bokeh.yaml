@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/sudoku-basic/bo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sudoku-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sudoku-basic/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent visual hierarchy with clear thick/thin line distinction for 3×3 boxes

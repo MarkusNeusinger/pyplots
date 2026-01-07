@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - custom-legend
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent use of plotly.express px.timeline for Gantt chart creation - the right

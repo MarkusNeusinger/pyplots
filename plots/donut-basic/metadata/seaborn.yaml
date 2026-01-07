@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-basic/sea
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of center space for total budget display

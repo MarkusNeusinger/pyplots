@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/cat-strip/matpl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/cat-strip/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - manual-ticks
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent data design showing varied distributions with meaningful outliers across

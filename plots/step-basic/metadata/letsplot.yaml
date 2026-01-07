@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/step-basic/lets
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/step-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/step-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+    - layer-composition
+  patterns:
+    - data-generation
+  dataprep:
+    - cumulative-sum
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent use of geom_step with hv direction parameter creating proper stair-step

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-categor
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-categorical/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - alpha-blending
+  - edge-highlighting
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of different marker shapes (circle, square, triangle) for additional

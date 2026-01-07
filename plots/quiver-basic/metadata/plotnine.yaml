@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/quiver-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of vector field using geom_segment with arrow aesthetics

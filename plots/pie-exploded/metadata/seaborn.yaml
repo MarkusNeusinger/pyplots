@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-exploded/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  - edge-highlighting
+  patterns:
+  - explicit-figure
+  dataprep: []
+  styling:
+  - edge-highlighting
 review:
   strengths:
   - Clean and professional visual appearance with well-styled legend (shadow, fancybox)

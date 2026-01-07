@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/confusion-matri
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - custom-legend
+  - manual-ticks
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - edge-highlighting
 review:
   strengths:
   - Excellent visual design with proper colorbar, cell annotations, and diagonal highlighting

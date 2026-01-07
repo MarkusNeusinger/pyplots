@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-basic/seab
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+    - explicit-figure
+  dataprep:
+    - time-series
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Excellent visual design with proper font sizes, color choices, and layout

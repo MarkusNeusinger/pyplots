@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-timeseries
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - rolling-window
+  styling: []
 review:
   strengths:
   - Excellent visual distinction between raw data (thin blue line) and rolling average

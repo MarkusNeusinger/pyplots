@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-nested/se
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-nested/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent hierarchical color scheme using seaborn light_palette() to create cohesive

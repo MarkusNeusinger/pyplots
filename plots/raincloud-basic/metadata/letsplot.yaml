@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
   - Excellent implementation of the raincloud visual metaphor with cloud (half-violin)
@@ -26,16 +38,30 @@ review:
     top-right or outside placement
   - Jittered rain points are uniformly dark gray instead of matching condition colors,
     which reduces visual cohesion
-  image_description: |-
-    The plot displays a raincloud visualization for three experimental conditions (Control, Treatment A, Treatment B) comparing reaction times in milliseconds. Each condition shows:
-    - **Half-violin (cloud)**: Positioned on the right side of each category in distinct colors - blue for Control, yellow for Treatment A, and green for Treatment B
-    - **Box plot**: White/gray boxplots centered-left showing median, quartiles, and whiskers
-    - **Jittered points (rain)**: Dark gray scatter points positioned to the left of the boxplots
-    - **Colors**: Blue (#306998), Yellow (#FFD43B), Green (#5BA85B) - colorblind-friendly palette
+  image_description: 'The plot displays a raincloud visualization for three experimental
+    conditions (Control, Treatment A, Treatment B) comparing reaction times in milliseconds.
+    Each condition shows:
+
+    - **Half-violin (cloud)**: Positioned on the right side of each category in distinct
+    colors - blue for Control, yellow for Treatment A, and green for Treatment B
+
+    - **Box plot**: White/gray boxplots centered-left showing median, quartiles, and
+    whiskers
+
+    - **Jittered points (rain)**: Dark gray scatter points positioned to the left
+    of the boxplots
+
+    - **Colors**: Blue (#306998), Yellow (#FFD43B), Green (#5BA85B) - colorblind-friendly
+    palette
+
     - **Title**: "raincloud-basic · letsplot · pyplots.ai" at top
-    - **Axes**: Y-axis "Reaction Time (ms)" ranging 200-700, X-axis "Experimental Condition"
+
+    - **Axes**: Y-axis "Reaction Time (ms)" ranging 200-700, X-axis "Experimental
+    Condition"
+
     - **Legend**: Positioned in bottom-right showing condition colors
-    - **Layout**: Clean minimal theme with subtle horizontal grid lines
+
+    - **Layout**: Clean minimal theme with subtle horizontal grid lines'
   criteria_checklist:
     visual_quality:
       score: 36

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-timeseries
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-timeseries/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-timeseries/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent text legibility with properly sized fonts (28pt title, 22pt axis titles,

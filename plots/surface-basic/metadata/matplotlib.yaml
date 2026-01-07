@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/surface-basic/m
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/surface-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - 3d-projection
+  - colorbar
+  - manual-ticks
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - custom-colormap
 review:
   strengths:
   - Excellent use of viridis colormap for colorblind accessibility

@@ -11,6 +11,21 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/bo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stacked/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - columndatasource
+  - custom-legend
+  - manual-ticks
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep:
+  - time-series
+  - cumulative-sum
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent stacking implementation using Bokeh varea with proper cumulative calculations

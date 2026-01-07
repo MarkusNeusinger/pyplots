@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymme
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+    - annotations
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - Clear visualization of asymmetric error bars with visible caps and appropriate

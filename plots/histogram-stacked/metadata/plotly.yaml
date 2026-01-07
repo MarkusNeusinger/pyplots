@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-stack
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/plotly/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual clarity with well-sized text and balanced layout

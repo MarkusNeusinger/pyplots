@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/strip-basic/sea
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/strip-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - manual-ticks
+    - custom-legend
+  patterns:
+    - data-generation
+    - explicit-figure
+    - groupby-aggregation
+  dataprep: []
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Excellent use of modern seaborn API with hue parameter to avoid FutureWarning

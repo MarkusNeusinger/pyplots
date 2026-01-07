@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/al
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/altair/plot.html
 quality_score: 72
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - binning
+  styling: []
 review:
   strengths:
   - Excellent realistic data scenario using actual Seattle GPS coordinates with believable

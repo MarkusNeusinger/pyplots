@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-matrix/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-matrix/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - subplots
+    - manual-ticks
+    - custom-legend
+  patterns:
+    - data-generation
+    - matrix-construction
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
+    - edge-highlighting
 review:
   strengths:
   - Excellent implementation of the scatter plot matrix with clear visual separation

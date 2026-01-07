@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/hi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/funnel-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent funnel visualization with clear stage progression from Awareness (1000)
@@ -29,15 +38,27 @@ review:
     for better balance
   - VQ-07 could be improved with subtle background styling or stage separators
   - Library features score could be higher by adding hover tooltips or animation effects
-  image_description: |-
-    The plot displays a funnel chart with 5 sequential stages of a sales funnel. The title "funnel-basic · highcharts · pyplots.ai" appears at the top in bold black text. The funnel narrows from top to bottom with distinct colors for each stage:
-    - **Awareness** (dark blue #306998): Widest segment at top, labeled "Awareness: 1,000 (43.5%)"
+  image_description: 'The plot displays a funnel chart with 5 sequential stages of
+    a sales funnel. The title "funnel-basic · highcharts · pyplots.ai" appears at
+    the top in bold black text. The funnel narrows from top to bottom with distinct
+    colors for each stage:
+
+    - **Awareness** (dark blue #306998): Widest segment at top, labeled "Awareness:
+    1,000 (43.5%)"
+
     - **Interest** (yellow #FFD43B): Second segment, labeled "Interest: 600 (26.1%)"
-    - **Consideration** (purple #9467BD): Middle segment, labeled "Consideration: 400 (17.4%)"
+
+    - **Consideration** (purple #9467BD): Middle segment, labeled "Consideration:
+    400 (17.4%)"
+
     - **Intent** (cyan #17BECF): Narrow segment, labeled "Intent: 200 (8.7%)"
+
     - **Purchase** (brown #8C564B): Narrowest at bottom, labeled "Purchase: 100 (4.3%)"
 
-    Data labels are positioned to the right of each segment with connector lines. The funnel shape is well-proportioned with a neck at the bottom. White background with good canvas utilization.
+
+    Data labels are positioned to the right of each segment with connector lines.
+    The funnel shape is well-proportioned with a neck at the bottom. White background
+    with good canvas utilization.'
   criteria_checklist:
     visual_quality:
       score: 36

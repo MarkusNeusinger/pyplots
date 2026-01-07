@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/facet-grid/high
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/facet-grid/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/facet-grid/highcharts/plot.html
 quality_score: 90
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - subplots
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of a complex 3×3 faceted grid using Highcharts multi-axis

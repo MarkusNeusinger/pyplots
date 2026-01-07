@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/raincloud-basic/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent demonstration of bimodal distribution in Treatment B - clearly visible

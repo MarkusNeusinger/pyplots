@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-annotat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-annotated/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  - layer-composition
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep:
+  - correlation-matrix
+  styling: []
 review:
   strengths:
   - Excellent implementation of contrasting text colors based on background intensity

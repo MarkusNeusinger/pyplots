@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-stack
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-stacked/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent declarative encoding with proper use of Altair grammar (alt.X with bin,

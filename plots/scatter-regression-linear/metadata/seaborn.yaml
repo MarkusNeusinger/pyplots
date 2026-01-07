@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regress
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+    - annotations
+  patterns:
+    - data-generation
+  dataprep:
+    - regression
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Excellent use of seaborn regplot function with built-in confidence interval

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/candlestick-vol
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/candlestick-volume/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/candlestick-volume/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - layer-composition
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - time-series
+  styling: []
 review:
   strengths:
   - Excellent dual-pane layout with proper 75/25 vertical split between price and

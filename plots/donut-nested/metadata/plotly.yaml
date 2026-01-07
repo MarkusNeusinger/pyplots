@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-nested/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-nested/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/donut-nested/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - 'Excellent use of color families: each department has its own hue with lighter

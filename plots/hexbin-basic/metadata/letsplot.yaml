@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/le
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hexbin-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent use of viridis colormap for perceptually uniform density visualization

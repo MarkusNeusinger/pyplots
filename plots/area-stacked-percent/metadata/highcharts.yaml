@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked-pe
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stacked-percent/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - normalization
+  styling: []
 review:
   strengths:
   - 'Excellent implementation of 100% stacked area chart using Highcharts native stacking:

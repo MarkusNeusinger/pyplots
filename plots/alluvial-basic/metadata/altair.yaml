@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/alluvial-basic/altair/plot.html
 quality_score: 95
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - bezier-curves
+  - hover-tooltips
+  - html-export
+  - custom-legend
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of a complex alluvial diagram using Altairs declarative

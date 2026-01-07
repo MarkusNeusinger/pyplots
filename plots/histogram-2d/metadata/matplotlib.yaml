@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-2d/ma
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-2d/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling:
+  - custom-colormap
 review:
   strengths:
   - Excellent use of viridis colormap for perceptually uniform density representation

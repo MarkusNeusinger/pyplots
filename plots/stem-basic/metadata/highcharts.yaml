@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/stem-basic/high
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/stem-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/stem-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent stem plot implementation using creative combination of LineSeries for

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-mosaic/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - pillow
+  techniques:
+  - subplots
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent demonstration of mosaic layout concept with 5 diverse chart types showing
@@ -24,14 +35,30 @@ review:
   - Uses helper functions (render_chart_to_image, get_svg_content) which violates
     KISS principle for plot implementations
   - Does not demonstrate empty cell placeholder feature mentioned in spec
-  image_description: |-
-    The plot displays a mosaic dashboard layout with 5 panels arranged in an "AAB;AAC;DDE" pattern:
-    - **Panel A (top-left, 2×2)**: Line chart showing "Monthly Revenue vs Costs" with blue revenue line and yellow costs line over 12 months (Jan-Dec). Both lines show upward trends with revenue ranging ~120-218 and costs ~85-135. Dots mark data points, legend at bottom.
-    - **Panel B (top-right)**: Horizontal bar chart "Sales by Category" showing 5 categories (Electronics: 450, Clothing: 320, Home: 280, Sports: 195, Books: 165) with values printed in bars using pyplots color palette.
-    - **Panel C (middle-right)**: Donut chart "Regional Share" showing North (blue, ~35%), South (yellow), East (green), West (orange) with legend at bottom.
-    - **Panel D (bottom-left, 2×1)**: XY scatter plot "Marketing ROI Correlation" with Marketing Spend ($K) on x-axis and Sales ($K) on y-axis, showing positive correlation with ~40 blue dots.
-    - **Panel E (bottom-right)**: Half-pie solid gauge "Target Achievement" showing 78% progress with blue fill.
-    - Main title "subplot-mosaic · pygal · pyplots.ai" centered at top in dark gray. White background with light gray plot backgrounds.
+  image_description: 'The plot displays a mosaic dashboard layout with 5 panels arranged
+    in an "AAB;AAC;DDE" pattern:
+
+    - **Panel A (top-left, 2×2)**: Line chart showing "Monthly Revenue vs Costs" with
+    blue revenue line and yellow costs line over 12 months (Jan-Dec). Both lines show
+    upward trends with revenue ranging ~120-218 and costs ~85-135. Dots mark data
+    points, legend at bottom.
+
+    - **Panel B (top-right)**: Horizontal bar chart "Sales by Category" showing 5
+    categories (Electronics: 450, Clothing: 320, Home: 280, Sports: 195, Books: 165)
+    with values printed in bars using pyplots color palette.
+
+    - **Panel C (middle-right)**: Donut chart "Regional Share" showing North (blue,
+    ~35%), South (yellow), East (green), West (orange) with legend at bottom.
+
+    - **Panel D (bottom-left, 2×1)**: XY scatter plot "Marketing ROI Correlation"
+    with Marketing Spend ($K) on x-axis and Sales ($K) on y-axis, showing positive
+    correlation with ~40 blue dots.
+
+    - **Panel E (bottom-right)**: Half-pie solid gauge "Target Achievement" showing
+    78% progress with blue fill.
+
+    - Main title "subplot-mosaic · pygal · pyplots.ai" centered at top in dark gray.
+    White background with light gray plot backgrounds.'
   criteria_checklist:
     visual_quality:
       score: 36

@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/alta
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-3d/altair/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+    - hover-tooltips
+    - html-export
+    - custom-legend
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep:
+    - normalization
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Creative isometric 3D projection technique that works excellently within Altair

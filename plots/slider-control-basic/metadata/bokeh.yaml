@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/slider-control-
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/slider-control-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/slider-control-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - layer-composition
+  patterns:
+  - columndatasource
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent implementation of interactive slider control with CustomJS callback

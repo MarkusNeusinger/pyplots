@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/box-notched/let
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-notched/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/box-notched/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Clear notched box plot with visible notches around medians for statistical comparison

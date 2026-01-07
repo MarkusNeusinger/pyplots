@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-basic/bokeh
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-basic/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - columndatasource
+  - explicit-figure
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent text sizing for high-resolution output (36pt title, 28pt labels, 24pt

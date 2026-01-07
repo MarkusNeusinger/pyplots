@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/network-force-d
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-force-directed/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Excellent implementation of Fruchterman-Reingold force-directed layout algorithm

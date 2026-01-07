@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/slope-basic/bok
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/slope-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/slope-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - html-export
+  - manual-ticks
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent implementation of the slope chart concept with clear visual distinction

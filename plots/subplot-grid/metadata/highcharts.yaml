@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/hi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  - subplots
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of a financial dashboard subplot grid with 4 distinct

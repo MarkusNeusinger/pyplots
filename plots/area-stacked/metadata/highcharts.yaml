@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stacked/hi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stacked/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stacked/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent colorblind-safe palette choice with high contrast between series
@@ -23,14 +34,25 @@ review:
   weaknesses:
   - Legend background color creates slight visual disconnection from the chart area
   - Grid lines could be slightly more subtle (currently visible but not distracting)
-  image_description: |-
-    The plot displays a stacked area chart showing monthly revenue by product category from January 2023 through December 2024. Four distinct colored areas are stacked vertically:
+  image_description: 'The plot displays a stacked area chart showing monthly revenue
+    by product category from January 2023 through December 2024. Four distinct colored
+    areas are stacked vertically:
+
     - **Blue (#306998)** - Electronics (largest area, top of stack)
+
     - **Yellow (#FFD43B)** - Software (second from top)
+
     - **Purple (#9467BD)** - Services (third from top)
+
     - **Cyan (#17BECF)** - Accessories (smallest, at bottom)
 
-    The chart has clear axis labels ("Revenue ($ thousands)" on Y-axis, month labels on X-axis), a title "area-stacked · highcharts · pyplots.ai" with subtitle "Monthly Revenue by Product Category (2023-2024)", and a legend positioned in the top-right corner. The stacked areas show cumulative totals reaching peaks around 625 in Dec 2023 and 735 in Dec 2024. The baseline starts at zero and the chart effectively demonstrates both individual category contributions and overall trends.
+
+    The chart has clear axis labels ("Revenue ($ thousands)" on Y-axis, month labels
+    on X-axis), a title "area-stacked · highcharts · pyplots.ai" with subtitle "Monthly
+    Revenue by Product Category (2023-2024)", and a legend positioned in the top-right
+    corner. The stacked areas show cumulative totals reaching peaks around 625 in
+    Dec 2023 and 735 in Dec 2024. The baseline starts at zero and the chart effectively
+    demonstrates both individual category contributions and overall trends.'
   criteria_checklist:
     visual_quality:
       score: 37

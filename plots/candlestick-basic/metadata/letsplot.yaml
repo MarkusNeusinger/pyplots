@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/candlestick-bas
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/candlestick-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/candlestick-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - cairosvg
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent candlestick implementation using geom_segment for wicks and geom_rect

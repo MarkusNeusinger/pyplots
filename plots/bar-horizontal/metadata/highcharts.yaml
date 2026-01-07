@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-horizontal/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-horizontal/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-horizontal/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent text readability with appropriately scaled font sizes for 4800×2700

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regress
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-polynomial/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-polynomial/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - regression
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent real-world economics example (advertising diminishing returns) that

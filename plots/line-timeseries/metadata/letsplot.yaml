@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-timeseries
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-timeseries/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-timeseries/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent seasonal temperature pattern with realistic daily variation using sine

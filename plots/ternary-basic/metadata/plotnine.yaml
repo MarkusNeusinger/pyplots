@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ternary-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - manual-ticks
+  - annotations
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - grid-styling
+  - minimal-chrome
 review:
   strengths:
   - Excellent use of Dirichlet distribution to create realistic, varied soil composition

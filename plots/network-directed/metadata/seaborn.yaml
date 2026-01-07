@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/network-directe
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-directed/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  - layer-composition
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent visual clarity with well-sized nodes and clearly visible directed arrows

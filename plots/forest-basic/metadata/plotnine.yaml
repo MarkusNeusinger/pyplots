@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/forest-basic/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/forest-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of forest plot structure with clear visual hierarchy

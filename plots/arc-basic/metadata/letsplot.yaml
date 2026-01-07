@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/arc-basic/letsp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/arc-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/arc-basic/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - matrix-construction
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent visual design with clear proportional arc heights showing connection

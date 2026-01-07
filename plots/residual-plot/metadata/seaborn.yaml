@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/residual-plot/s
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/residual-plot/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep:
+  - regression
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of housing price prediction as a realistic regression context that

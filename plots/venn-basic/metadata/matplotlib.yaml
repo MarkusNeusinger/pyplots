@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/venn-basic/matp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/venn-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent choice of square figure format (12x12) which is ideal for circular Venn

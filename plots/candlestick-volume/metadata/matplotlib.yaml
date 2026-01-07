@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/candlestick-vol
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/candlestick-volume/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - manual-ticks
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep:
+  - time-series
+  styling:
+  - grid-styling
 review:
   strengths:
   - Clean dual-pane layout with proper 75%/25% height ratio

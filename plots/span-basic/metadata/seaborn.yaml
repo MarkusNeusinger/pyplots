@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/span-basic/seab
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/span-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent demonstration of both vertical and horizontal spans with meaningful

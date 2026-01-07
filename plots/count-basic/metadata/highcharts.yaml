@@ -11,6 +11,13 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/count-basic/hig
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/count-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/count-basic/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+    - selenium
+  techniques: []
+  patterns: []
+  dataprep: []
+  styling: []
 review:
   strengths:
   - 'Excellent adherence to specification: automatically counts raw categorical data

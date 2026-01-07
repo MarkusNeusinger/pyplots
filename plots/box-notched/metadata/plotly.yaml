@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/box-notched/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-notched/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/box-notched/plotly/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual clarity with properly sized text elements and well-chosen font

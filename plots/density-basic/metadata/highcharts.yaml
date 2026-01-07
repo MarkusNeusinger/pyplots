@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/density-basic/h
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/density-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/density-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+    - selenium
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - kde
+  styling:
+    - gradient-fill
+    - alpha-blending
 review:
   strengths:
   - Excellent implementation of KDE from scratch using Silverman's bandwidth rule

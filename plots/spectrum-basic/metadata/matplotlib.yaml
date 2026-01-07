@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrum-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrum-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - fill-under-curve
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent signal processing implementation with proper FFT computation and normalization

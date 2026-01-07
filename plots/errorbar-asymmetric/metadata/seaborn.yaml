@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymme
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/errorbar-asymmetric/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - annotations
+    - manual-ticks
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent visual clarity with properly sized text elements following the guidelines

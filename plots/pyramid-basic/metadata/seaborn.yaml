@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pyramid-basic/s
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pyramid-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 98
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of population pyramid using seaborn barplot with hue

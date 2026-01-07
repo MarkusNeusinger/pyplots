@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/strip-basic/hig
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/strip-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/strip-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - manual-ticks
+  - html-export
+  - hover-tooltips
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent colorblind-safe palette with distinct, well-chosen colors

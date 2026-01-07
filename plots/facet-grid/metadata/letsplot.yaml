@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/facet-grid/lets
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/facet-grid/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/facet-grid/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - faceting
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - regression
+  styling: []
 review:
   strengths:
   - Excellent facet_grid implementation demonstrating lets-plot's ggplot2 grammar

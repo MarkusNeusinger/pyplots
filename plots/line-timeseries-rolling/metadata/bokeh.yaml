@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-timeseries
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+    - columndatasource
+  dataprep:
+    - rolling-window
+  styling:
+    - grid-styling
+    - alpha-blending
 review:
   strengths:
   - Excellent visual distinction between raw data (blue, semi-transparent) and rolling

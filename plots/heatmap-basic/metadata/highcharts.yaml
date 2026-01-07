@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/h
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - colorbar
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clean heatmap visualization with excellent cell color differentiation

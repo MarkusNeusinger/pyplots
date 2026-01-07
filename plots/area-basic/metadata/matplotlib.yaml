@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/area-basic/matp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+    - explicit-figure
+  dataprep: []
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - 'Excellent adherence to spec requirements: semi-transparent fill, gridlines, clear

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/treemap-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  - annotations
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent implementation of treemap using plotnine primitives (geom_rect + geom_text)

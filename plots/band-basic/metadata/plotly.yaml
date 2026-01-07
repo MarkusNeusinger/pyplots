@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/band-basic/plot
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/band-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/band-basic/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent visual clarity with proper font sizing throughout

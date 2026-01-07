@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regress
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/highcharts/plot.html
 quality_score: 93
+impl_tags:
+  dependencies:
+    - selenium
+  techniques:
+    - annotations
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - regression
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent visual design with proper font scaling for 4800x2700 resolution

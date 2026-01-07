@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/donut-basic/pyg
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/donut-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/donut-basic/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clean donut chart implementation with proper inner_radius creating the hollow

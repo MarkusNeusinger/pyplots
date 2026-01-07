@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-interactiv
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-interactive/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-interactive/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clean seasonal temperature pattern with realistic daily variation demonstrates

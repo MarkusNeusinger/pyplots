@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/alt
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/altair/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep: []
+  styling:
+  - edge-highlighting
 review:
   strengths:
   - Excellent use of Altair declarative grammar with proper encoding types (O, Q,

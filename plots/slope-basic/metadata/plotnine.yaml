@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/slope-basic/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/slope-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - minimal-chrome
+  - grid-styling
 review:
   strengths:
   - Excellent implementation of slope chart using plotnine grammar of graphics

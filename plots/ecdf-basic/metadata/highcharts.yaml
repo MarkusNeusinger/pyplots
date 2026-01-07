@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/high
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  - grid-styling
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Correct ECDF implementation with step=left creating proper vertical jumps at each

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/circlepacking-b
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/circlepacking-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  - layer-composition
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome
 review:
   strengths:
   - Excellent visual hierarchy with clear color differentiation between levels (gray

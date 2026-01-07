@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/contour-filled/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/contour-filled/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-filled/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - cairosvg
+  techniques:
+  - colorbar
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - gradient-fill
 review:
   strengths:
   - Excellent filled contour visualization achieved despite pygal not natively supporting

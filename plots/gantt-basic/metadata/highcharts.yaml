@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/hig
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - explicit-figure
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent use of Highcharts xrange series type for Gantt chart implementation

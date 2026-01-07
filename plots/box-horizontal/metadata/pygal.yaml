@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/box-horizontal/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-horizontal/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/box-horizontal/pygal/plot.html
 quality_score: 68
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Creative solution using dynamic class creation to achieve horizontal box plot

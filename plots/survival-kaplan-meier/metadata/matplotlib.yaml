@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - custom-legend
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of Kaplan-Meier step functions using ax.step with correct

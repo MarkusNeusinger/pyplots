@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-overl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-overlapping/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-overlapping/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - alpha-blending
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent real-world scenario (A/B testing response times) that directly matches

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/rose-basic/boke
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/rose-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/rose-basic/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - patches
+  - manual-ticks
+  patterns:
+  - data-generation
+  - columndatasource
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of rose chart using Bokeh wedge glyph with correct angle

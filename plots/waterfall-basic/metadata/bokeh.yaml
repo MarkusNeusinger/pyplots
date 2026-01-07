@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/waterfall-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/waterfall-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/waterfall-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - columndatasource
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of waterfall chart logic with proper bar positioning

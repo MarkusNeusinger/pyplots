@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/h
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/histogram-kde/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - kde
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent use of semi-transparent histogram bars allowing KDE overlay visibility

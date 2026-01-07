@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/box-basic/pygal
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/box-basic/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent data choice with realistic salary distributions across departments

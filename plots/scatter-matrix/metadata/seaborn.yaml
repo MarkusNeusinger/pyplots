@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-matrix/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-matrix/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - faceting
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
+  - edge-highlighting
 review:
   strengths:
   - Excellent use of seaborn pairplot function, which is specifically designed for

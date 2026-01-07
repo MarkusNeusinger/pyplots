@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/m
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+    - manual-ticks
+  patterns:
+    - data-generation
+    - explicit-figure
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent visual representation of step function behavior with clear horizontal

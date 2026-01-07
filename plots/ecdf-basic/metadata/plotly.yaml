@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/plot
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - grid-styling
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent text legibility with appropriately scaled fonts for 4800x2700 output

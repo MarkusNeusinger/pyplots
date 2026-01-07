@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/silhouette-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/silhouette-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/silhouette-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - html-export
+  patterns:
+  - columndatasource
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent text sizing scaled appropriately for 4800x2700 canvas (42pt title, 32pt
@@ -27,13 +38,26 @@ review:
   - Could benefit from hover tooltips showing individual sample silhouette values
     for interactivity
   - No explicit legend element though cluster labels serve the purpose adequately
-  image_description: |-
-    The plot displays a silhouette plot with three distinct clusters visualized as horizontal bars. From bottom to top:
-    - **Cluster 0** (blue, #306998): 50 samples with the highest silhouette scores, bars extending mostly from 0.4 to 0.95
-    - **Cluster 1** (yellow/gold, #FFD43B): 55 samples with medium-high scores, bars ranging roughly 0.25 to 0.85
-    - **Cluster 2** (green, #2ECC71): 45 samples with more variable scores, including some approaching negative values, ranging from ~-0.1 to 0.75
+  image_description: 'The plot displays a silhouette plot with three distinct clusters
+    visualized as horizontal bars. From bottom to top:
 
-    A red dashed vertical line marks the average silhouette score (0.609). Each cluster is labeled on the left with "Cluster X" in matching colors, and on the right with sample count and average (e.g., "n=50, avg=0.82"). The title "silhouette-basic · bokeh · pyplots.ai" appears at top-left. X-axis labeled "Silhouette Coefficient", Y-axis labeled "Cluster (samples sorted by silhouette score)". Light gray background with subtle vertical grid lines. The bars are sorted within each cluster from lowest to highest silhouette value.
+    - **Cluster 0** (blue, #306998): 50 samples with the highest silhouette scores,
+    bars extending mostly from 0.4 to 0.95
+
+    - **Cluster 1** (yellow/gold, #FFD43B): 55 samples with medium-high scores, bars
+    ranging roughly 0.25 to 0.85
+
+    - **Cluster 2** (green, #2ECC71): 45 samples with more variable scores, including
+    some approaching negative values, ranging from ~-0.1 to 0.75
+
+
+    A red dashed vertical line marks the average silhouette score (0.609). Each cluster
+    is labeled on the left with "Cluster X" in matching colors, and on the right with
+    sample count and average (e.g., "n=50, avg=0.82"). The title "silhouette-basic
+    · bokeh · pyplots.ai" appears at top-left. X-axis labeled "Silhouette Coefficient",
+    Y-axis labeled "Cluster (samples sorted by silhouette score)". Light gray background
+    with subtle vertical grid lines. The bars are sorted within each cluster from
+    lowest to highest silhouette value.'
   criteria_checklist:
     visual_quality:
       score: 36

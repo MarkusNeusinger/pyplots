@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-realtime/l
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-realtime/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-realtime/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
   - Excellent visual representation of real-time monitoring concept with clear current

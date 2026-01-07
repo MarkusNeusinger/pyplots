@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-filled/bok
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-filled/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-filled/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+    - hover-tooltips
+    - columndatasource
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Excellent use of Bokeh's varea glyph for the filled area effect

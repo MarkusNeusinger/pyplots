@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/l
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent polar coordinate implementation with proper compass direction labels

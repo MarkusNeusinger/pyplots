@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/network-directe
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-directed/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/network-directed/plotly/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent circular layout algorithm that positions nodes evenly and prevents overlap

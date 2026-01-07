@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - columndatasource
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of Kaplan-Meier algorithm with proper step functions

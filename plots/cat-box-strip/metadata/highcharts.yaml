@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/h
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/cat-box-strip/highcharts/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+    - selenium
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent combination of box plot and strip plot overlay demonstrating the spec

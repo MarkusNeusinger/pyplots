@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-categor
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-categorical/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-categorical/highcharts/plot.html
 quality_score: 92
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  - hover-tooltips
+  - edge-highlighting
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent colorblind-safe palette (blue/yellow/purple)

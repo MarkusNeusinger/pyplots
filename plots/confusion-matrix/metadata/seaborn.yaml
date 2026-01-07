@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/confusion-matri
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - annotations
+    - colorbar
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - custom-colormap
 review:
   strengths:
   - Excellent visual clarity with well-sized annotations and contrasting text colors

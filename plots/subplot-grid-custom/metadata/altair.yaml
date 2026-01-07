@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-cu
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-grid-custom/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - faceting
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of dashboard-style grid using Altair's native vconcat/hconcat

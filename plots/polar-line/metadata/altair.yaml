@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-line/alta
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-line/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/polar-line/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - layer-composition
+    - html-export
+  patterns:
+    - data-generation
+    - matrix-construction
+  dataprep:
+    - normalization
+  styling: []
 review:
   strengths:
   - Excellent creative workaround for Altair's lack of native polar coordinates by

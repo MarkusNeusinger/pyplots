@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - faceting
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent implementation of horizon chart concept using plotnine grammar of graphics

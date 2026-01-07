@@ -11,6 +11,13 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/count-basic/let
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/count-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/count-basic/letsplot/plot.html
 quality_score: 97
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of lets-plot ggplot2 grammar with geom_bar for automatic counting

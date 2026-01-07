@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/hive-basic/boke
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hive-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hive-basic/bokeh/plot.html
 quality_score: 85
+impl_tags:
+  dependencies: []
+  techniques:
+  - bezier-curves
+  - columndatasource
+  - html-export
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of hive plot concept with 3 radial axes at 120° separation

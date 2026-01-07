@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/chernoff-basic/
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/chernoff-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 82
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  patterns:
+  - dataset-loading
+  - iteration-over-groups
+  - groupby-aggregation
+  dataprep: []
+  styling:
+  - custom-colormap
+  - minimal-chrome
 review:
   strengths:
   - Excellent use of the Iris dataset with intelligent sample selection to maximize

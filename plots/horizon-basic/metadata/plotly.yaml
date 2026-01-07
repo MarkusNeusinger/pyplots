@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/horizon-basic/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent horizon chart implementation with proper band folding technique showing

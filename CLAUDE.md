@@ -311,6 +311,14 @@ preview_html: null
 # Quality
 quality_score: 92
 
+# Implementation-level tags (describes HOW the code implements the plot)
+impl_tags:
+  dependencies: []  # External packages (scipy, sklearn, etc.)
+  techniques: [colorbar, annotations]  # Visualization techniques
+  patterns: [data-generation]  # Code patterns
+  dataprep: []  # Data transformations
+  styling: [publication-ready]  # Visual style
+
 # Review feedback (used for regeneration)
 review:
   # AI's visual description of the generated plot
@@ -364,8 +372,8 @@ Quality: 92/100 | Created: 2025-01-10
 - **Review feedback** stored in metadata for regeneration (AI reads previous feedback to improve)
 - **Extended review data**: `image_description`, `criteria_checklist`, and `verdict` for targeted fixes
 - Contributors credited via `suggested` field
-- Tags are at spec level (same for all libraries)
-- Per-library metadata updated automatically by `impl-review.yml` (quality score, review feedback)
+- **Two-level tagging**: Spec-level `tags` describe WHAT is visualized (same for all libraries), impl-level `impl_tags` describe HOW code implements it (per-library)
+- Per-library metadata updated automatically by `impl-review.yml` (quality score, review feedback, impl_tags)
 - `sync-postgres.yml` workflow syncs to database on push to main
 - Database stores full spec content (markdown) and implementation code (Python source)
 
@@ -473,7 +481,7 @@ uv run python -c "from core.database import is_db_configured; print(is_db_config
 - Spec content (full markdown from specification.md)
 - Spec metadata (title, description, tags, structured_tags from specification.yaml)
 - Implementation code (full Python source)
-- Implementation metadata (library, variant, quality score, generation info from metadata/*.yaml)
+- Implementation metadata (library, variant, quality score, impl_tags, generation info from metadata/*.yaml)
 - GCS URLs for preview images
 
 **What's in Repository** (source of truth):
@@ -512,6 +520,8 @@ The `prompts/` directory contains AI agent prompts for code generation, quality 
 | `quality-evaluator.md` | AI quality evaluation prompt |
 | `spec-validator.md` | Validates plot request issues |
 | `spec-id-generator.md` | Assigns unique spec IDs |
+| `spec-tags-generator.md` | AI rules for spec-level tag assignment |
+| `impl-tags-generator.md` | AI rules for impl-level tag assignment |
 
 ### Using Prompts
 

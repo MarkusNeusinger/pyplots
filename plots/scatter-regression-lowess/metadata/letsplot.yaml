@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regress
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-lowess/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-lowess/letsplot/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - regression
+  styling:
+    - alpha-blending
+    - gradient-fill
 review:
   strengths:
   - Excellent LOWESS implementation using geom_smooth with loess method and confidence

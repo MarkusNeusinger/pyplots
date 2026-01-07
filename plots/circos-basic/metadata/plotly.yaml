@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/circos-basic/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/circos-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/circos-basic/plotly/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+    - bezier-curves
+    - html-export
+  patterns:
+    - data-generation
+    - matrix-construction
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent implementation of Circos visualization using Plotly Scatter with fill=toself

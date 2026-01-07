@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pdp-basic/letsp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pdp-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pdp-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - sklearn
+  techniques:
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of PDP with comprehensive visualization including ICE

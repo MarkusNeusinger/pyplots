@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/network-directe
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-directed/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  - custom-legend
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent directed graph visualization with clear arrow directions showing import

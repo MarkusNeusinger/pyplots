@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/histogram-cumul
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/histogram-cumulative/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - annotations
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - grid-styling
 review:
   strengths:
   - Excellent use of seaborn histplot with cumulative=True and stat=proportion for

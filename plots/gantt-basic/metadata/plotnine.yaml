@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/plo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  patterns:
+  - explicit-figure
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent use of geom_segment with appropriate sizing for Gantt bars

@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/plotly/plot.html
 quality_score: 98
+impl_tags:
+  dependencies: []
+  techniques:
+    - hover-tooltips
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Perfect implementation of step function using Plotly shape=hv parameter

@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/point-basic/pyg
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/point-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/point-basic/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent horizontal orientation matching spec recommendation for readable category

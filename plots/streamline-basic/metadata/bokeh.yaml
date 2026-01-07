@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/streamline-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/streamline-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/streamline-basic/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - scipy
+  techniques:
+  - patches
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of streamline tracing using Euler integration with proper

@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-calenda
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-calendar/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-calendar/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - layer-composition
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent GitHub-style calendar heatmap that perfectly matches the spec requirements

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/matp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/ecdf-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - grid-styling
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clean, correct ECDF implementation with proper step function using where="post"

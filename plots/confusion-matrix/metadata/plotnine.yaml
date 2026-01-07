@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/confusion-matri
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/confusion-matrix/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - colorbar
+  - layer-composition
+  patterns:
+  - data-generation
+  - wide-to-long
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent text contrast with adaptive color (white on dark, dark blue on light

@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/pygal/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent hierarchical data structure with company budget breakdown across departments

@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/point-basic/alt
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/point-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/point-basic/altair/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of layered Altair chart combining points, rules, and

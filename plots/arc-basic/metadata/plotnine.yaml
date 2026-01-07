@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/arc-basic/plotn
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/arc-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - matrix-construction
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of arc diagram using plotnine grammar of graphics with

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/survival-kaplan-meier/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  - matrix-construction
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent implementation of the Kaplan-Meier algorithm with Greenwood formula

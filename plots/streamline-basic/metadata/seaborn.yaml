@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/streamline-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/streamline-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
+  - grid-styling
 review:
   strengths:
   - Excellent visual clarity with well-sized streamlines and viridis color encoding

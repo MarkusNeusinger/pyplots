@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/roc-curve/altai
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/roc-curve/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/roc-curve/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent color scheme with blue/yellow/gray that is accessible and visually appealing

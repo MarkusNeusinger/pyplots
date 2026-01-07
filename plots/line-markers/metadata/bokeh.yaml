@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-markers/bo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-markers/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-markers/bokeh/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - manual-ticks
+  patterns:
+  - data-generation
+  - columndatasource
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent use of different marker shapes (circle, square, triangle) for series

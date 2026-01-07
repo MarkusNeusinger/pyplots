@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-calenda
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-calendar/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-calendar/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - hover-tooltips
+  - html-export
+  - manual-ticks
+  patterns:
+  - data-generation
+  - columndatasource
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent calendar grid layout with proper week/weekday structure

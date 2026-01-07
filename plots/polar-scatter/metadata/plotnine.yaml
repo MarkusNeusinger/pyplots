@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - layer-composition
+  - annotations
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent creative implementation using Cartesian coordinates to simulate polar

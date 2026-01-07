@@ -11,6 +11,21 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/m
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+    - colorbar
+    - annotations
+    - manual-ticks
+  patterns:
+    - data-generation
+    - matrix-construction
+    - iteration-over-groups
+  dataprep:
+    - correlation-matrix
+  styling:
+    - custom-colormap
+    - edge-highlighting
 review:
   strengths:
   - Excellent use of adaptive text colors (white on dark, black on light) for cell

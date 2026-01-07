@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-annotat
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-annotated/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  patterns:
+  - columndatasource
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent text sizing throughout - all elements perfectly legible at 4800x2700

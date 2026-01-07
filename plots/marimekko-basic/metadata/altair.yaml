@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic/altair/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - hover-tooltips
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  - long-to-wide
+  dataprep: []
+  styling:
+  - edge-highlighting
 review:
   strengths:
   - Excellent implementation of Marimekko chart concept using rect marks with calculated

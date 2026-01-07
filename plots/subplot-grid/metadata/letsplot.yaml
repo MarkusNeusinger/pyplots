@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/le
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent financial dashboard theme demonstrating diverse plot types in a cohesive
@@ -27,15 +36,26 @@ review:
   - Does not leverage lets-plot distinctive interactive features (tooltips, coordinated
     brushing) even in static output
   - Scatter points in bottom-right plot could be slightly larger for better visibility
-  image_description: |-
-    The plot displays a 2x2 grid of financial dashboard visualizations:
-    - **Top-left**: Stock price line chart (blue solid line) with 10-day moving average (yellow dashed line), showing prices from ~$85-$110 over 60 trading days
-    - **Top-right**: Daily trading volume bar chart (blue bars) showing volume in millions, ranging from ~0.5-2.2M
-    - **Bottom-left**: Histogram of daily returns (blue bars with darker border) centered around 0%, with a yellow dashed vertical line at zero
-    - **Bottom-right**: Scatter plot with linear regression showing volume vs absolute return relationship, blue points with yellow trend line and gray confidence band
+  image_description: 'The plot displays a 2x2 grid of financial dashboard visualizations:
+
+    - **Top-left**: Stock price line chart (blue solid line) with 10-day moving average
+    (yellow dashed line), showing prices from ~$85-$110 over 60 trading days
+
+    - **Top-right**: Daily trading volume bar chart (blue bars) showing volume in
+    millions, ranging from ~0.5-2.2M
+
+    - **Bottom-left**: Histogram of daily returns (blue bars with darker border) centered
+    around 0%, with a yellow dashed vertical line at zero
+
+    - **Bottom-right**: Scatter plot with linear regression showing volume vs absolute
+    return relationship, blue points with yellow trend line and gray confidence band
+
     - Overall title: "subplot-grid · lets-plot · pyplots.ai" at top
-    - Each subplot has its own descriptive title, and all use consistent blue (#306998) and yellow (#FFD43B) color scheme
-    - Clean minimal theme with subtle gray gridlines
+
+    - Each subplot has its own descriptive title, and all use consistent blue (#306998)
+    and yellow (#FFD43B) color scheme
+
+    - Clean minimal theme with subtle gray gridlines'
   criteria_checklist:
     visual_quality:
       score: 37

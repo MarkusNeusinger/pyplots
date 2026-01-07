@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/l
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/letsplot/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+    - hover-tooltips
+    - html-export
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Clean ggplot2-style grammar of graphics implementation

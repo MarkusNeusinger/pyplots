@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sankey-basic/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - bezier-curves
+    - annotations
+  patterns:
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - alpha-blending
 review:
   strengths:
   - Excellent creative implementation of Sankey diagram using plotnine grammar of

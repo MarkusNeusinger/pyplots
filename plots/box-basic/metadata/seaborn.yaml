@@ -11,6 +11,14 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/box-basic/seabo
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/box-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent realistic data scenario with salary distributions across departments

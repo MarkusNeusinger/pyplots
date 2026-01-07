@@ -11,6 +11,13 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-annotated-
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-annotated-events/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of alternating y-positions for event labels to avoid

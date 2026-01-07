@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/sea
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  - custom-legend
+  patterns:
+  - explicit-figure
+  - data-generation
+  dataprep: []
+  styling:
+  - grid-styling
 review:
   strengths:
   - Excellent implementation of a Gantt chart using seaborn barplot with creative

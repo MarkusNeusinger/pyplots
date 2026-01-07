@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/learning-curve-
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/learning-curve-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/learning-curve-basic/pygal/plot.html
 quality_score: 90
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clear visualization of learning curve with appropriate training vs validation

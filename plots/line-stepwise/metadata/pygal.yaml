@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-stepwise/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+    - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent step visualization achieved through clever data point duplication for

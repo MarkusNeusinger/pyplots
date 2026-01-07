@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-split/ma
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-split/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+  - manual-ticks
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
 review:
   strengths:
   - Excellent split violin implementation using path clipping technique (manual vertex

@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/ma
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/waffle-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  - custom-legend
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - edge-highlighting
+  - minimal-chrome
 review:
   strengths:
   - Excellent visual design with rounded squares (FancyBboxPatch) giving a polished,

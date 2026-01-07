@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/a
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-drilldown/altair/plot.html
 quality_score: 84
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - layer-composition
+  - hover-tooltips
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual layout with central main pie and surrounding drilldown charts
@@ -25,10 +35,21 @@ review:
     instead of one level at a time with click to reveal)
   - Uses helper function violating KISS principle (no functions/classes rule)
   - Minor text truncation on DevOps label in Engineering drilldown
-  image_description: |-
-    The plot displays a central donut chart showing "Company Budget Breakdown with Drilldown Navigation" with the subtitle "pie-drilldown · altair · pyplots.ai". The main central pie shows four departments: Engineering ($1.75M, 54.8% in blue), Marketing ($0.74M, 23.1% in orange), Operations ($0.48M, 15.2% in teal), and HR ($0.22M, 6.9% in purple). The center displays "Total Budget $3.20M".
+  image_description: 'The plot displays a central donut chart showing "Company Budget
+    Breakdown with Drilldown Navigation" with the subtitle "pie-drilldown · altair
+    · pyplots.ai". The main central pie shows four departments: Engineering ($1.75M,
+    54.8% in blue), Marketing ($0.74M, 23.1% in orange), Operations ($0.48M, 15.2%
+    in teal), and HR ($0.22M, 6.9% in purple). The center displays "Total Budget $3.20M".
 
-    Four smaller drilldown pie charts surround the main chart - Engineering breakdown (left top: Frontend, Backend, DevOps), Operations breakdown (left bottom: Facilities, IT Support), Marketing breakdown (right top: Digital, Content, Events), and HR breakdown (right bottom: Recruiting, Training). Each drilldown shows percentages and dollar amounts. A breadcrumb appears at top: "All Departments › Click any slice to explore team breakdown". An instruction line at the bottom explains interactivity. The colors use consistent shades within each department's drilldown. All text is legible and the layout effectively shows the hierarchical relationship.
+
+    Four smaller drilldown pie charts surround the main chart - Engineering breakdown
+    (left top: Frontend, Backend, DevOps), Operations breakdown (left bottom: Facilities,
+    IT Support), Marketing breakdown (right top: Digital, Content, Events), and HR
+    breakdown (right bottom: Recruiting, Training). Each drilldown shows percentages
+    and dollar amounts. A breadcrumb appears at top: "All Departments › Click any
+    slice to explore team breakdown". An instruction line at the bottom explains interactivity.
+    The colors use consistent shades within each department''s drilldown. All text
+    is legible and the layout effectively shows the hierarchical relationship.'
   criteria_checklist:
     visual_quality:
       score: 33

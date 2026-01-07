@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/marimekko-basic/seaborn/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - patches
+  - manual-ticks
+  patterns:
+  - data-generation
+  - groupby-aggregation
+  dataprep: []
+  styling:
+  - edge-highlighting
 review:
   strengths:
   - Excellent implementation of Marimekko chart with correctly proportioned variable-width

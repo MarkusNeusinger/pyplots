@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/polar-scatter/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - html-export
+  - layer-composition
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent compass-oriented polar layout with North at top (rotation=90, clockwise

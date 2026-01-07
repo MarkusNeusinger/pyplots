@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-regress
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-regression-linear/altair/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - annotations
+    - layer-composition
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - regression
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Excellent implementation of all spec requirements including R², regression equation,

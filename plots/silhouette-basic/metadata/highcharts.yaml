@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/silhouette-basi
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/silhouette-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/silhouette-basic/highcharts/plot.html
 quality_score: 90
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent visual representation of silhouette analysis with clear cluster separation
@@ -25,13 +36,26 @@ review:
   - X-axis (silhouette coefficient axis) label text not visible in the rendered image
   - Y-axis label font could be slightly larger for optimal readability at full resolution
   - Legend text could be larger for better visibility
-  image_description: |-
-    The plot displays a silhouette visualization for a 3-cluster K-means solution on the Iris dataset. Three distinct color-coded clusters are shown with horizontal bars representing individual sample silhouette scores:
-    - **Cluster 0 (blue)**: 50 samples at top with Avg: 0.758 - consistently high scores indicating well-separated cluster
-    - **Cluster 1 (yellow)**: 50 samples in middle with Avg: 0.555 - moderate scores showing decent separation
-    - **Cluster 2 (purple)**: 50 samples at bottom with Avg: 0.361 - lower scores with visible negative values indicating some overlap/misclassification
+  image_description: 'The plot displays a silhouette visualization for a 3-cluster
+    K-means solution on the Iris dataset. Three distinct color-coded clusters are
+    shown with horizontal bars representing individual sample silhouette scores:
 
-    A vertical dashed red line marks the average silhouette score (0.558) with label. Title follows the correct format "silhouette-basic · highcharts · pyplots.ai". Subtitle shows "Iris Dataset Clustering (K=3) | Average Silhouette Score: 0.558". Y-axis labeled "Samples (sorted by silhouette score within cluster)". Light background bands distinguish cluster regions. Legend positioned on right side showing sample counts.
+    - **Cluster 0 (blue)**: 50 samples at top with Avg: 0.758 - consistently high
+    scores indicating well-separated cluster
+
+    - **Cluster 1 (yellow)**: 50 samples in middle with Avg: 0.555 - moderate scores
+    showing decent separation
+
+    - **Cluster 2 (purple)**: 50 samples at bottom with Avg: 0.361 - lower scores
+    with visible negative values indicating some overlap/misclassification
+
+
+    A vertical dashed red line marks the average silhouette score (0.558) with label.
+    Title follows the correct format "silhouette-basic · highcharts · pyplots.ai".
+    Subtitle shows "Iris Dataset Clustering (K=3) | Average Silhouette Score: 0.558".
+    Y-axis labeled "Samples (sorted by silhouette score within cluster)". Light background
+    bands distinguish cluster regions. Legend positioned on right side showing sample
+    counts.'
   criteria_checklist:
     visual_quality:
       score: 36

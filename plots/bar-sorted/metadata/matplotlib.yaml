@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/matp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-sorted/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 94
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - edge-highlighting
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent horizontal bar orientation making category labels highly readable

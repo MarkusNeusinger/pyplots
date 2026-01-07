@@ -11,6 +11,20 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/bok
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-stacked/bokeh/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  - custom-legend
+  patterns:
+  - columndatasource
+  - iteration-over-groups
+  - matrix-construction
+  dataprep: []
+  styling:
+  - edge-highlighting
+  - grid-styling
 review:
   strengths:
   - Excellent text legibility with appropriately scaled font sizes for the 4800×2700

@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/precision-recal
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/precision-recall/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/precision-recall/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - html-export
+  - annotations
+  patterns:
+  - data-generation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of stepped line style for PR curve using manual step-wise

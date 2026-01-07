@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-basic/plotl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-basic/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - explicit-figure
+  dataprep: []
+  styling:
+  - edge-highlighting
 review:
   strengths:
   - 'Excellent use of the spec-required features: percentage labels on slices, distinct

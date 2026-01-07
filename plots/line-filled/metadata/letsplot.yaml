@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-filled/let
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-filled/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-filled/letsplot/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+    - layer-composition
+  patterns:
+    - data-generation
+  dataprep: []
+  styling:
+    - alpha-blending
+    - grid-styling
 review:
   strengths:
   - Excellent use of geom_area + geom_line + geom_point combination for a complete

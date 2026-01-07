@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-basic/matpl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  - annotations
+  patterns:
+  - explicit-figure
+  dataprep: []
+  styling:
+  - edge-highlighting
 review:
   strengths:
   - 'Excellent use of spec-required features: percentage labels, distinct colors,

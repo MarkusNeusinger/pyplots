@@ -71,7 +71,7 @@ def _create_cloud_sql_engine_sync():
 
 
 def _create_direct_engine():
-    """Create engine using direct DATABASE_URL connection."""
+    """Create sync engine using direct DATABASE_URL connection."""
     url = DATABASE_URL
 
     # Ensure async driver
@@ -100,25 +100,50 @@ def _create_direct_engine():
     return engine
 
 
+def _create_direct_engine_sync():
+    """Create sync engine using direct DATABASE_URL connection (for sync scripts)."""
+    from sqlalchemy import create_engine
+
+    url = DATABASE_URL
+
+    # Use pg8000 sync driver (already installed for Cloud SQL)
+    if url.startswith("postgresql+asyncpg://"):
+        url = url.replace("postgresql+asyncpg://", "postgresql+pg8000://")
+    elif url.startswith("postgresql://"):
+        url = url.replace("postgresql://", "postgresql+pg8000://")
+    elif url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql+pg8000://")
+
+    engine_kwargs = {"echo": ENVIRONMENT == "development", "pool_size": 5, "max_overflow": 10, "pool_pre_ping": True}
+
+    engine = create_engine(url, **engine_kwargs)
+
+    # Log without exposing password
+    safe_url = url.split("@")[-1] if "@" in url else "local"
+    logger.info(f"Created direct sync database engine: {safe_url}")
+    return engine
+
+
 def init_db_sync() -> None:
     """
-    Initialize sync database connection (for scripts in GitHub Actions).
+    Initialize sync database connection (for scripts like sync_to_postgres.py).
 
-    Uses pg8000 sync driver with Cloud SQL Connector to avoid event loop issues.
+    Uses sync drivers for both local (psycopg2) and Cloud SQL (pg8000).
     """
     global engine, _sync_session_factory
 
-    if engine is not None:
+    if _sync_session_factory is not None:
         return  # Already initialized
 
+    from sqlalchemy.orm import sessionmaker
+
     if DATABASE_URL:
-        # For DATABASE_URL, create async engine (used locally)
-        engine = _create_direct_engine()
+        # Use sync engine for local development
+        engine = _create_direct_engine_sync()
+        _sync_session_factory = sessionmaker(engine, expire_on_commit=False)
     elif INSTANCE_CONNECTION_NAME:
         # Use sync pg8000 driver for Cloud SQL Connector
         engine = _create_cloud_sql_engine_sync()
-        from sqlalchemy.orm import sessionmaker
-
         _sync_session_factory = sessionmaker(engine, expire_on_commit=False)
     else:
         logger.warning("No database configuration found - running without database")

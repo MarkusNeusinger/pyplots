@@ -11,6 +11,18 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/spectrogram-bas
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/spectrogram-basic/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies:
+  - scipy
+  techniques:
+  - colorbar
+  - patches
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent implementation of a custom heatmap chart type by extending pygal Graph

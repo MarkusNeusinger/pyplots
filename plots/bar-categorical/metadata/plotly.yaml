@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-categorical
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-categorical/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-categorical/plotly/plot.html
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - groupby-aggregation
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Clean, professional appearance with excellent text legibility at all sizes

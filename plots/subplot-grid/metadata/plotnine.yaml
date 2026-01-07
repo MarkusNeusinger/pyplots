@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/pl
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/plotnine/plot_thumb.png
 preview_html: null
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - layer-composition
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent use of plotnine native patchwork-style composition operators (| and
@@ -23,13 +33,25 @@ review:
   - Main title positioning overlaps slightly with Sales Trend subplot title - could
     benefit from more vertical spacing
   - The legend in the sales trend plot consumes plot area; consider positioning outside
-  image_description: |-
-    The plot displays a well-organized 2x2 grid layout showcasing a product performance dashboard:
-    - **Top-left (Sales Trend)**: Line chart with two product series (A in blue, B in yellow) showing sales over 40 days. Points are connected by solid lines with dashed linear trend lines. Legend on the right shows "Product" with A and B entries.
-    - **Top-right (Quarterly Revenue)**: Vertical bar chart with Q1-Q4 quarters. Bars gradient from dark blue (Q1=45) through lighter blues (Q2, Q3) to yellow (Q4=18).
-    - **Bottom-left (Sales Distribution Product A)**: Histogram with ~8 blue bars showing frequency distribution of sales units, ranging roughly 85-130 units.
-    - **Bottom-right (Units vs Margin)**: Scatter plot with blue points showing relationship between units sold (100-500) and profit margin (20-45%). Yellow regression line with light yellow confidence band.
-    The main title "subplot-grid · plotnine · pyplots.ai" appears prominently in bold at the top center. All text is legible with good contrast against white backgrounds.
+  image_description: 'The plot displays a well-organized 2x2 grid layout showcasing
+    a product performance dashboard:
+
+    - **Top-left (Sales Trend)**: Line chart with two product series (A in blue, B
+    in yellow) showing sales over 40 days. Points are connected by solid lines with
+    dashed linear trend lines. Legend on the right shows "Product" with A and B entries.
+
+    - **Top-right (Quarterly Revenue)**: Vertical bar chart with Q1-Q4 quarters. Bars
+    gradient from dark blue (Q1=45) through lighter blues (Q2, Q3) to yellow (Q4=18).
+
+    - **Bottom-left (Sales Distribution Product A)**: Histogram with ~8 blue bars
+    showing frequency distribution of sales units, ranging roughly 85-130 units.
+
+    - **Bottom-right (Units vs Margin)**: Scatter plot with blue points showing relationship
+    between units sold (100-500) and profit margin (20-45%). Yellow regression line
+    with light yellow confidence band.
+
+    The main title "subplot-grid · plotnine · pyplots.ai" appears prominently in bold
+    at the top center. All text is legible with good contrast against white backgrounds.'
   criteria_checklist:
     visual_quality:
       score: 36

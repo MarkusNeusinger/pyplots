@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/m
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-basic/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+    - explicit-figure
+  dataprep: []
+  styling:
+    - alpha-blending
+    - edge-highlighting
+    - grid-styling
 review:
   strengths:
   - Excellent educational context (study hours vs exam scores) that is immediately

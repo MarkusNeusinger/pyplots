@@ -11,6 +11,19 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/ma
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/subplot-grid/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - colorbar
+  - manual-ticks
+  - grid-styling
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - custom-colormap
 review:
   strengths:
   - Excellent financial dashboard example perfectly demonstrating the subplot-grid

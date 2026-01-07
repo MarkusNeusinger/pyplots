@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/pie-basic/letsp
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/pie-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/pie-basic/letsplot/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - minimal-chrome
 review:
   strengths:
   - Excellent use of lets-plot geom_pie() with layer_labels() for percentage formatting

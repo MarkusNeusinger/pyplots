@@ -11,6 +11,15 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/phase-diagram/p
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/phase-diagram/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/phase-diagram/pygal/plot.html
 quality_score: 91
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling: []
 review:
   strengths:
   - Excellent demonstration of phase space concepts with both damped and undamped

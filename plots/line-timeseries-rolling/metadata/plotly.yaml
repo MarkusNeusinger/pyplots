@@ -11,6 +11,17 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-timeseries
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/plotly/plot.html
 quality_score: 93
+impl_tags:
+  dependencies: []
+  techniques:
+    - html-export
+  patterns:
+    - data-generation
+  dataprep:
+    - rolling-window
+  styling:
+    - grid-styling
+    - alpha-blending
 review:
   strengths:
   - Excellent visual clarity with well-chosen colors (blue raw data, yellow rolling

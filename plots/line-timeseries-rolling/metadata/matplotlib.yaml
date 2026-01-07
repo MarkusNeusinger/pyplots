@@ -11,6 +11,16 @@ preview_url: https://storage.googleapis.com/pyplots-images/plots/line-timeseries
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-timeseries-rolling/matplotlib/plot_thumb.png
 preview_html: null
 quality_score: 92
+impl_tags:
+  dependencies: []
+  techniques: []
+  patterns:
+    - data-generation
+  dataprep:
+    - rolling-window
+  styling:
+    - grid-styling
+    - alpha-blending
 review:
   strengths:
   - Excellent dual-layer visualization with clear contrast between raw data and rolling

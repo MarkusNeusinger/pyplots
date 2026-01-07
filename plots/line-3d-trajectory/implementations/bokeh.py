@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-3d-trajectory: 3D Line Plot for Trajectory Visualization
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-07
@@ -6,7 +6,7 @@ Quality: 82/100 | Created: 2026-01-07
 
 import numpy as np
 from bokeh.io import export_png, save
-from bokeh.models import ColorBar, ColumnDataSource, Label, LinearColorMapper, Range1d
+from bokeh.models import ColorBar, ColumnDataSource, HoverTool, Label, LinearColorMapper, Range1d
 from bokeh.palettes import Viridis256
 from bokeh.plotting import figure
 from bokeh.resources import CDN
@@ -20,29 +20,19 @@ sigma = 10.0
 rho = 28.0
 beta = 8.0 / 3.0
 
-
-# Lorenz equations
-def lorenz_step(x, y, z, dt):
-    dx = sigma * (y - x) * dt
-    dy = (x * (rho - z) - y) * dt
-    dz = (x * y - beta * z) * dt
-    return x + dx, y + dy, z + dz
-
-
-# Generate trajectory with 1500 points for smooth visualization
+# Generate trajectory with 1500 points for smooth visualization (inline Euler integration)
 n_points = 1500
 dt = 0.01
-x, y, z = [0.1], [0.0], [0.0]  # Initial conditions
+x, y, z = np.zeros(n_points), np.zeros(n_points), np.zeros(n_points)
+x[0], y[0], z[0] = 0.1, 0.0, 0.0  # Initial conditions
 
-for _ in range(n_points - 1):
-    x_new, y_new, z_new = lorenz_step(x[-1], y[-1], z[-1], dt)
-    x.append(x_new)
-    y.append(y_new)
-    z.append(z_new)
-
-x = np.array(x)
-y = np.array(y)
-z = np.array(z)
+for i in range(n_points - 1):
+    dx = sigma * (y[i] - x[i]) * dt
+    dy = (x[i] * (rho - z[i]) - y[i]) * dt
+    dz = (x[i] * y[i] - beta * z[i]) * dt
+    x[i + 1] = x[i] + dx
+    y[i + 1] = y[i] + dy
+    z[i + 1] = z[i] + dz
 
 # Normalize coordinates for better visualization
 x = (x - x.mean()) / x.std() * 2
@@ -63,12 +53,12 @@ z_proj = y_rot * np.sin(elev_rad) + z * np.cos(elev_rad)
 
 # Time/progression for color gradient (shows trajectory evolution)
 time_progress = np.linspace(0, 1, n_points)
+time_seconds = np.linspace(0, n_points * dt, n_points)
 
 # Color mapping using time progression
-color_mapper = LinearColorMapper(palette=Viridis256, low=0, high=1)
+color_mapper = LinearColorMapper(palette=Viridis256, low=0, high=n_points * dt)
 
 # Create segments for multi-colored line with gradient
-# Each line segment has its own color based on time
 n_segments = n_points - 1
 xs = [[x_proj[i], x_proj[i + 1]] for i in range(n_segments)]
 ys = [[z_proj[i], z_proj[i + 1]] for i in range(n_segments)]
@@ -84,6 +74,18 @@ for i in range(n_segments):
 # Create ColumnDataSource for line segments
 source = ColumnDataSource(data={"xs": xs, "ys": ys, "color": colors})
 
+# Create scatter points for hover functionality
+hover_source = ColumnDataSource(
+    data={
+        "x": x_proj[::10],
+        "y": z_proj[::10],
+        "time": time_seconds[::10],
+        "x_coord": x[::10],
+        "y_coord": y[::10],
+        "z_coord": z[::10],
+    }
+)
+
 # Create Bokeh figure with interactive tools
 p = figure(
     width=4800,
@@ -95,6 +97,17 @@ p = figure(
 
 # Draw trajectory as multi-line with color gradient showing time progression
 p.multi_line(xs="xs", ys="ys", line_color="color", line_width=3, line_alpha=0.85, source=source)
+
+# Add invisible scatter points for hover interaction
+scatter = p.scatter(x="x", y="y", source=hover_source, size=20, alpha=0, hover_alpha=0.8, hover_color="orange")
+
+# Add HoverTool for interactivity (Bokeh distinctive feature)
+hover = HoverTool(
+    renderers=[scatter],
+    tooltips=[("Time", "@time{0.2f} s"), ("X", "@x_coord{0.2f}"), ("Y", "@y_coord{0.2f}"), ("Z", "@z_coord{0.2f}")],
+    mode="mouse",
+)
+p.add_tools(hover)
 
 # Set appropriate ranges with padding
 x_min, x_max = x_proj.min(), x_proj.max()
@@ -204,22 +217,22 @@ p.patch(
     line_color=axis_color,
 )
 
-# Add descriptive axis labels
+# Add descriptive axis labels with context
 x_label = Label(
-    x=x_axis_end_x + 0.2,
-    y=x_axis_end_y - 0.15,
-    text="X",
-    text_font_size="40pt",
+    x=x_axis_end_x + 0.15,
+    y=x_axis_end_y - 0.2,
+    text="X (state)",
+    text_font_size="36pt",
     text_color="#333333",
     text_font_style="bold",
 )
 p.add_layout(x_label)
 
 y_label = Label(
-    x=y_axis_end_x - 0.35,
-    y=y_axis_end_y - 0.35,
-    text="Y",
-    text_font_size="40pt",
+    x=y_axis_end_x - 0.6,
+    y=y_axis_end_y - 0.4,
+    text="Y (state)",
+    text_font_size="36pt",
     text_color="#333333",
     text_font_style="bold",
 )
@@ -228,19 +241,19 @@ p.add_layout(y_label)
 z_label = Label(
     x=z_axis_end_x + 0.15,
     y=z_axis_end_y + 0.1,
-    text="Z",
-    text_font_size="40pt",
+    text="Z (state)",
+    text_font_size="36pt",
     text_color="#333333",
     text_font_style="bold",
 )
 p.add_layout(z_label)
 
-# Add color bar for time progression
+# Add color bar for time progression with specific units
 color_bar = ColorBar(
     color_mapper=color_mapper,
     width=60,
     location=(0, 0),
-    title="Time Progression",
+    title="Simulation Time (seconds)",
     title_text_font_size="32pt",
     major_label_text_font_size="24pt",
     title_standoff=20,

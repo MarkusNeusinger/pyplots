@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-interactive: Interactive Bar Chart with Hover and Click
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 84/100 | Created: 2026-01-07
@@ -54,9 +54,13 @@ sns.barplot(
     errorbar="sd",  # Show standard deviation as error bars
     capsize=0.15,
     err_kws={"linewidth": 2.5},
-    legend=False,
+    legend=True,
     ax=ax,
 )
+
+# Configure legend
+handles, labels = ax.get_legend_handles_labels()
+ax.legend(handles, labels, title="Product Category", title_fontsize=16, fontsize=14, loc="upper right", framealpha=0.9)
 
 # Add colorbar to explain color intensity encoding
 sm = ScalarMappable(cmap=cmap, norm=norm)
@@ -71,9 +75,10 @@ for i, (_cat, row) in enumerate(summary.iterrows()):
     std_val = row["std"]
     pct_val = row["pct"]
     # Format annotation like an interactive tooltip
+    # Position above error bar with extra clearance to avoid overlap
     ax.annotate(
-        f"${mean_val:,.0f} ± ${std_val:,.0f}\n({pct_val:.1f}% of total)",
-        xy=(i, mean_val + std_val + 80),
+        f"${mean_val:,.0f} ± {std_val:,.0f}\n({pct_val:.1f}% of total)",
+        xy=(i, mean_val + std_val + 200),
         ha="center",
         va="bottom",
         fontsize=15,

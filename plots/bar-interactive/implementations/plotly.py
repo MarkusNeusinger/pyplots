@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-interactive: Interactive Bar Chart with Hover and Click
-Library: plotly | Python 3.13
-Quality: pending | Created: 2026-01-07
+Library: plotly 6.5.0 | Python 3.13.11
+Quality: 92/100 | Created: 2026-01-07
 """
 
 import pandas as pd

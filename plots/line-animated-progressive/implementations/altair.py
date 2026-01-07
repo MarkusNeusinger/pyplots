@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-animated-progressive: Animated Line Plot Over Time
-Library: altair | Python 3.13
-Quality: pending | Created: 2025-01-07
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-07
 """
 
 import altair as alt

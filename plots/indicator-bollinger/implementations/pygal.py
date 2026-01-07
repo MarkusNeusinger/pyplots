@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 indicator-bollinger: Bollinger Bands Indicator Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-07
@@ -30,14 +30,14 @@ lower_band = np.array([sma[i] - 2 * std[i] if sma[i] is not None else None for i
 # Create x-axis labels (trading days)
 x_labels = [f"Day {i + 1}" for i in range(n_days)]
 
-# Custom style for 4800x2700 canvas
+# Custom style for 4800x2700 canvas with subtle grid
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
-    colors=("#306998", "#FFD43B", "#7EB3D4", "#7EB3D4"),  # Price, SMA, Upper, Lower (bands same color)
+    foreground_subtle="#CCCCCC",  # Subtle gray for grid lines
+    colors=("#306998", "#FFD43B", "#5A9BD4", "#8BC34A"),  # Price (blue), SMA (gold), Upper (steel blue), Lower (green)
     title_font_size=72,
     label_font_size=42,
     major_label_font_size=36,
@@ -47,9 +47,11 @@ custom_style = Style(
     stroke_width=4,
     opacity=0.9,
     opacity_hover=1.0,
+    guide_stroke_color="#E0E0E0",  # Very subtle guide lines
+    guide_stroke_dasharray="4,4",
 )
 
-# Create line chart
+# Create line chart with filled band area
 chart = pygal.Line(
     width=4800,
     height=2700,
@@ -67,7 +69,6 @@ chart = pygal.Line(
     truncate_label=10,
     show_minor_x_labels=False,
     x_labels_major_every=20,
-    fill=False,
     interpolate="cubic",
     margin=50,
     spacing=30,
@@ -76,11 +77,26 @@ chart = pygal.Line(
 # Set x labels
 chart.x_labels = x_labels
 
-# Add data series - convert to list and handle None values
-chart.add("Close Price", prices.tolist(), stroke_style={"width": 5, "dasharray": "0"})
-chart.add("SMA (20)", [float(v) if v is not None else None for v in sma], stroke_style={"width": 3, "dasharray": "8,4"})
-chart.add("Upper Band", [float(v) if v is not None else None for v in upper_band], stroke_style={"width": 3})
-chart.add("Lower Band", [float(v) if v is not None else None for v in lower_band], stroke_style={"width": 3})
+# Prepare band data with fill between upper and lower bands
+upper_band_list = [float(v) if v is not None else None for v in upper_band]
+lower_band_list = [float(v) if v is not None else None for v in lower_band]
+
+# Add upper band with fill to create visual band area
+chart.add("Upper Band", upper_band_list, stroke_style={"width": 3}, fill=True, allow_interruptions=True)
+
+# Add lower band with fill (fills down, but creates visual contrast)
+chart.add("Lower Band", lower_band_list, stroke_style={"width": 3}, fill=True, allow_interruptions=True)
+
+# Add SMA as dashed line (middle band)
+chart.add(
+    "SMA (20)",
+    [float(v) if v is not None else None for v in sma],
+    stroke_style={"width": 4, "dasharray": "10,5"},
+    fill=False,
+)
+
+# Add close price on top for visibility
+chart.add("Close Price", prices.tolist(), stroke_style={"width": 5, "dasharray": "0"}, fill=False)
 
 # Save as PNG and HTML
 chart.render_to_png("plot.png")

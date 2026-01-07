@@ -1,0 +1,212 @@
+library: seaborn
+specification_id: bar-interactive
+created: '2026-01-07T16:28:56Z'
+updated: '2026-01-07T16:57:58Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20788380524
+issue: 3189
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-interactive/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-interactive/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 86
+review:
+  strengths:
+  - Excellent visual quality with well-sized text, clear annotations, and readable
+    error bars
+  - Creative simulation of hover tooltips using static annotations with tooltip-like
+    styling
+  - Good use of seaborn statistical features (errorbar=sd, capsize)
+  - Colorbar provides additional context for color-value mapping
+  - Professional styling with despine() and grid customization
+  weaknesses:
+  - Seaborn cannot provide true interactivity (hover/click) as specified - library
+    limitation
+  - Legend position could overlap with annotations in certain layouts
+  image_description: The plot displays a bar chart showing sales revenue across 6
+    product categories (Electronics, Clothing, Home & Garden, Sports, Books, Toys).
+    Bars are colored using a sequential Blues colormap where darker blue indicates
+    higher sales values. Each bar includes error bars (standard deviation) and tooltip-like
+    annotations positioned above each bar showing the mean value ± standard deviation
+    and percentage of total sales. A colorbar on the right explains the color intensity
+    mapping to sales magnitude. The title follows the correct format "bar-interactive
+    · seaborn · pyplots.ai". Axes are clearly labeled with "Product Category" on X
+    and "Sales Revenue ($)" on Y. The legend in the upper right shows category colors.
+    Grid lines are visible with subtle dashed styling.
+  criteria_checklist:
+    visual_quality:
+      score: 35
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt, annotations
+          at 15pt - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: All annotations positioned above error bars with proper clearance,
+          no overlapping elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are well-sized, error bars clearly visible with 2.5pt linewidth
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Sequential Blues colormap is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: false
+        comment: Good plot area utilization but colorbar adds some asymmetry; legend
+          position could overlap with annotation area
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: Sales Revenue ($), Product Category'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: false
+        comment: Grid subtle at alpha 0.3, but legend position overlaps with rightmost
+          annotation area
+    spec_compliance:
+      score: 21
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bar chart implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X, values on Y correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 3
+        max: 5
+        passed: false
+        comment: Spec requires interactive hover and click functionality which seaborn/matplotlib
+          cannot provide; annotations simulate tooltips statically
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full range with appropriate ylim to accommodate annotations
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows all categories
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: bar-interactive · seaborn · pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variation across categories, includes uncertainty (SD), percentages
+          - good coverage but similar error bar proportions
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Product sales by category is a realistic and neutral business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values in reasonable $1,400-$5,000 range for sales data
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports, data, plot, save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn API with hue parameter
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses sns.barplot with statistical aggregation (errorbar=sd), sns.despine(),
+          hue parameter correctly. However, interactive features are not possible
+          in seaborn.
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  patterns:
+  - data-generation
+  - groupby-aggregation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - custom-colormap
+  - grid-styling
+  - alpha-blending

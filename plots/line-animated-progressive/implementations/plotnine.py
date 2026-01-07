@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 line-animated-progressive: Animated Line Plot Over Time
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-07
@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
+    element_line,
     element_rect,
     element_text,
     facet_wrap,
@@ -15,6 +16,7 @@ from plotnine import (
     geom_point,
     ggplot,
     labs,
+    scale_color_manual,
     scale_x_continuous,
     scale_y_continuous,
     theme,
@@ -26,7 +28,6 @@ from plotnine import (
 np.random.seed(42)
 
 n_months = 24
-dates = pd.date_range("2023-01-01", periods=n_months, freq="ME")
 month_numbers = np.arange(1, n_months + 1)
 
 # Generate realistic sales data with seasonal pattern and growth trend
@@ -57,15 +58,20 @@ for stage, label in zip(stages, stage_labels, strict=True):
 df_current = pd.DataFrame(current_data)
 df_current["stage"] = pd.Categorical(df_current["stage"], categories=stage_labels, ordered=True)
 
+# Add point_type column for legend
+df["point_type"] = "Historical"
+df_current["point_type"] = "Current"
+
 # Create the small multiples plot showing progressive line building
 plot = (
     ggplot(df, aes(x="month", y="sales"))
     + geom_line(color="#306998", size=1.5, alpha=0.9)
-    + geom_point(color="#306998", size=3, alpha=0.8)
-    + geom_point(data=df_current, mapping=aes(x="month", y="sales"), color="#FFD43B", size=5, stroke=1.5)
+    + geom_point(aes(color="point_type"), size=3, alpha=0.8)
+    + geom_point(data=df_current, mapping=aes(x="month", y="sales", color="point_type"), size=5, stroke=1.5)
     + facet_wrap("~stage", ncol=2)
     + scale_x_continuous(breaks=[1, 6, 12, 18, 24], labels=["Jan '23", "Jun '23", "Jan '24", "Jun '24", "Dec '24"])
     + scale_y_continuous(labels=lambda x: [f"${v / 1000:.0f}K" for v in x])
+    + scale_color_manual(values={"Historical": "#306998", "Current": "#FFD43B"}, name="Data Point")
     + labs(
         title="line-animated-progressive · plotnine · pyplots.ai",
         subtitle="Progressive Line Reveal: Monthly Sales Growth Over Time",
@@ -85,9 +91,13 @@ plot = (
         panel_spacing=0.15,
         plot_background=element_rect(fill="white", color=None),
         panel_background=element_rect(fill="white", color=None),
-        legend_position="none",
+        panel_grid_major=element_line(color="#cccccc", alpha=0.3),
+        panel_grid_minor=element_line(color="#e0e0e0", alpha=0.2),
+        legend_position="bottom",
+        legend_title=element_text(size=14, weight="bold"),
+        legend_text=element_text(size=12),
     )
 )
 
 # Save
-plot.save("plot.png", dpi=300, width=16, height=9)
+plot.save("plot.png", dpi=300)

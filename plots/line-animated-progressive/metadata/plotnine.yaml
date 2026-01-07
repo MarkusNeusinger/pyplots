@@ -1,0 +1,224 @@
+library: plotnine
+specification_id: line-animated-progressive
+created: '2026-01-07T20:21:36Z'
+updated: '2026-01-07T20:36:31Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20795217381
+issue: 3238
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-animated-progressive/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-animated-progressive/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent interpretation of the spec for a library without animation support -
+    small multiples effectively convey progressive reveal
+  - Clean, professional visual design with appropriate Python blue (#306998) and contrasting
+    yellow highlight
+  - Well-structured code following KISS principles
+  - Effective use of facet_wrap to show 4 stages of progression
+  - Current point highlighting clearly indicates the most recent point being drawn
+    as specified
+  - Realistic business data scenario with seasonal patterns
+  weaknesses:
+  - X-axis tick labels are rotated 45 degrees which works but creates slight crowding
+    in smaller facet panels
+  - Legend at bottom takes vertical space; could potentially be integrated more elegantly
+  - The direction of progression could be enhanced with a gradient effect on the line
+    rather than just highlighting the endpoint
+  image_description: 'The plot displays a 2x2 small multiples layout showing the progressive
+    reveal of a line chart depicting monthly sales growth over 24 months. Each facet
+    panel shows a different stage of completion: "6 Months" (top-left), "12 Months"
+    (top-right), "18 Months" (bottom-left), and "24 Months (Complete)" (bottom-right).
+    The line is rendered in a deep blue color (#306998) with small blue circular markers
+    at each data point. A larger yellow/gold highlighted point (#FFD43B) marks the
+    current (most recent) position in each panel, clearly indicating the progression
+    point. The Y-axis displays "Monthly Sales (USD)" with values formatted as $50K,
+    $60K, $70K. The X-axis shows "Time Period" with labels like "Jan ''23", "Jun ''23",
+    "Jan ''24", "Jun ''24", "Dec ''24" rotated 45 degrees. The title "line-animated-progressive
+    · plotnine · pyplots.ai" is prominently displayed at the top with a subtitle "Progressive
+    Line Reveal: Monthly Sales Growth Over Time". A legend at the bottom distinguishes
+    "Historical" (blue) from "Current" (yellow) data points. The background is clean
+    white with subtle gray grid lines.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: All text readable; title bold and large (22pt), axis labels 18pt,
+          tick labels 14pt. Slightly below perfect due to x-axis tick rotation crowding
+          in smaller facets.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements. Facet labels, axis labels, and tick
+          marks are all well-separated.
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Line and points clearly visible. Historical points (size=3) appropriately
+          small, current point (size=5) stands out. Points could be slightly larger
+          for optimal visibility.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue (#306998) and yellow (#FFD43B) provide excellent contrast and
+          are colorblind-safe.
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good 2x2 layout with reasonable spacing. Minor whitespace between
+          panels could be reduced.
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: Monthly Sales (USD) and Time Period.'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle (alpha 0.3, 0.2). Legend functional but takes vertical
+          space.
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Correct implementation: small multiples showing progressive line
+          reveal as specified for libraries without animation support.'
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Time correctly on X-axis, value (sales) correctly on Y-axis.
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Shows progressive reveal, highlights current point. Minor: spec
+          suggests gradient for direction, only endpoint highlighted.'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, axes accommodate full range.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly distinguishes Historical vs Current points.
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: Uses correct format {spec-id} · {library} · pyplots.ai with helpful
+          subtitle.
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows seasonal pattern, upward trend, and noise. Demonstrates progression
+          well across 4 stages.
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly product sales is a perfect, neutral business scenario with
+          realistic seasonal patterns.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values ($45K-$73K monthly sales) are realistic for a business context.
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure. No functions or classes.
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42) for reproducible random data.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used. No unnecessary imports.
+      - id: CQ-04
+        name: No Deprecated API
+        score: 0
+        max: 1
+        passed: false
+        comment: Uses strict=True in zip() which is Python 3.10+ only.
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png.
+    library_features:
+      score: 4
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Good use of plotnine grammar: facet_wrap for small multiples, scale_color_manual,
+          theme customization, multiple geom layers.'
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - faceting
+  - layer-composition
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
+  - grid-styling

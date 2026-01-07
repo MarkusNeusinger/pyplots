@@ -1,0 +1,217 @@
+library: bokeh
+specification_id: line-animated-progressive
+created: '2026-01-07T20:22:21Z'
+updated: '2026-01-07T20:31:49Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20795216059
+issue: 3238
+python_version: 3.13.11
+library_version: 3.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-animated-progressive/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-animated-progressive/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-animated-progressive/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of Viridis gradient to show temporal progression on both line and
+    markers
+  - Comprehensive implementation with both static PNG and interactive HTML with animation
+    controls
+  - Good marker size progression indicating time (larger = more recent)
+  - Clear highlighting of the most recent data point with distinct styling
+  - Interactive version includes play/pause, reset, and slider controls for animation
+  weaknesses:
+  - Legend position top_left slightly overlaps with early data points in the upper
+    left
+  - Some imports (Slider, Button, row, column) are only used in the HTML version,
+    making the static code slightly less clean
+  image_description: The plot displays a time series of monthly temperature readings
+    spanning from January 2019 to late 2023. The visualization uses a Viridis color
+    gradient that transitions from dark purple (earliest data points) through blue/teal
+    to yellow/green (most recent data points), effectively communicating temporal
+    progression. Line segments are colored according to this gradient, and circular
+    markers are placed at each data point with sizes increasing over time (larger
+    = more recent). The final data point is prominently highlighted with a larger
+    yellow marker with a blue border, labeled "Current" in the legend. A vertical
+    colorbar on the right side indicates "Time Progression" with values from 0 to
+    approximately 59. The seasonal temperature pattern (sinusoidal with ~5 cycles)
+    is clearly visible, ranging from approximately 5°C to 27°C. Axis labels show "Date"
+    (x-axis) and "Temperature (°C)" (y-axis) with appropriate font sizes for the 4800x2700
+    canvas.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: 'Title at 36pt, axis labels at 28pt, tick labels at 22pt - all clearly
+          readable. Minor deduction: colorbar title slightly small for canvas.'
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text or elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers well-sized with gradient from 12-30px, line width of 5 appropriate.
+          Some early markers could be slightly larger.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Viridis is colorblind-safe by design
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Good proportions, plot fills canvas appropriately, colorbar positioned
+          well
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Temperature (°C) and Date are descriptive with units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Legend position top_left overlaps with early data points
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct line plot with progressive reveal via gradient
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Time on X, temperature on Y correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has gradient, highlighted current point, colorbar. Animation controls
+          only in HTML.
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, axes show full range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Current label accurately describes the final point
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: Uses correct format but middle dot character not bullet
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows seasonal pattern, warming trend, noise variation
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly temperature readings over 5 years is realistic and neutral
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Temperatures 5-27°C plausible for temperate climate
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports, data, plot, save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) is set
+      - id: CQ-03
+        name: Clean Imports
+        score: 1
+        max: 2
+        passed: true
+        comment: Some imports only used in HTML version
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh APIs
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of ColumnDataSource, LinearColorMapper, ColorBar, CustomJS
+          callbacks, Slider and Button widgets
+  verdict: APPROVED
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - colorbar
+  - html-export
+  - hover-tooltips
+  patterns:
+  - data-generation
+  - columndatasource
+  - iteration-over-groups
+  dataprep:
+  - time-series
+  styling:
+  - custom-colormap
+  - alpha-blending
+  - edge-highlighting
+  - grid-styling

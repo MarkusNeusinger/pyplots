@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 indicator-rsi: RSI Technical Indicator Chart
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2025-01-07
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 92/100 | Created: 2026-01-07
 """
 
 import numpy as np

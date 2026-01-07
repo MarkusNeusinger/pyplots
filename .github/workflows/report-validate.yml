@@ -1,0 +1,164 @@
+name: "Report: Validate"
+run-name: "Validate Report: ${{ github.event.issue.title }}"
+
+# Validates and structures user-submitted issue reports
+# Flow:
+# 1. User submits report → report-pending label auto-added
+# 2. AI validates spec/impl exists, analyzes issue, posts structured comment
+# 3. Labels updated: report-validated + category + report:spec/impl
+
+on:
+  issues:
+    types: [labeled]
+
+concurrency:
+  group: report-validate-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    if: github.event.label.name == 'report-pending'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: Check if already validated
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Check if already has report-validated label
+          LABELS=$(gh issue view ${{ github.event.issue.number }} --json labels -q '.labels[].name' | tr '\n' ' ')
+          if echo "$LABELS" | grep -q "report-validated"; then
+            echo "::notice::Skipping: Issue already validated"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "should_run=true" >> $GITHUB_OUTPUT
+
+      - name: Checkout repository
+        if: steps.check.outputs.should_run == 'true'
+        uses: actions/checkout@v6
+
+      - name: React with eyes emoji
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/reactions \
+            -f content=eyes
+
+      - name: Validate with Claude
+        if: steps.check.outputs.should_run == 'true'
+        id: validate
+        continue-on-error: true
+        timeout-minutes: 10
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--model sonnet"
+          prompt: |
+            ## Task: Validate Issue Report
+
+            You are validating a user-submitted issue report for pyplots.
+
+            ### Issue Details
+            - **Title:** ${{ github.event.issue.title }}
+            - **Number:** #${{ github.event.issue.number }}
+            - **Author:** ${{ github.event.issue.user.login }}
+            - **Body:**
+            ```
+            ${{ github.event.issue.body }}
+            ```
+
+            ---
+
+            ## Instructions
+
+            1. **Read the prompt:** `prompts/workflow-prompts/report-analysis.md`
+
+            2. **Parse the issue body** to extract:
+               - spec_id (from "Specification ID" field)
+               - target (Specification or Implementation)
+               - library (if implementation)
+               - category (Visual/Data/Functional/Other)
+               - description
+
+            3. **Validate the spec exists:**
+               ```bash
+               ls plots/{spec_id}/
+               ```
+               If NOT found:
+               - Post comment: "Spec `{spec_id}` not found. Please check the ID."
+               - Remove `report-pending` label
+               - Close issue
+               - STOP
+
+            4. **If implementation issue, validate the library exists:**
+               ```bash
+               ls plots/{spec_id}/implementations/{library}.py
+               ```
+               If NOT found:
+               - Post comment: "Implementation `{library}` not found for `{spec_id}`."
+               - Remove `report-pending` label
+               - Close issue
+               - STOP
+
+            5. **Read relevant files:**
+               - `plots/{spec_id}/specification.md`
+               - `plots/{spec_id}/metadata/{library}.yaml` (if impl issue)
+
+            6. **Post structured analysis comment** following the format in the prompt file.
+
+            7. **Update issue title:**
+               ```bash
+               gh issue edit ${{ github.event.issue.number }} --title "[{spec_id}] {brief description}"
+               ```
+
+            8. **Update labels:**
+               ```bash
+               # Remove pending, add validated
+               gh issue edit ${{ github.event.issue.number }} --remove-label "report-pending" --add-label "report-validated"
+
+               # Add target label
+               gh issue edit ${{ github.event.issue.number }} --add-label "report:spec"
+               # OR for impl:
+               gh issue edit ${{ github.event.issue.number }} --add-label "report:impl" --add-label "report:impl:{library}"
+
+               # Add category label (map from dropdown value)
+               # Visual → category:visual
+               # Data → category:data
+               # Functional → category:functional
+               # Other → category:other
+               gh issue edit ${{ github.event.issue.number }} --add-label "category:{category}"
+               ```
+
+            ### Important
+            - Do NOT add the `approved` label
+            - Do NOT trigger any fixes
+            - Keep the analysis comment concise but informative
+
+      - name: Add reaction on success
+        if: steps.check.outputs.should_run == 'true' && steps.validate.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/reactions \
+            -f content=rocket
+
+      - name: Handle failure
+        if: steps.check.outputs.should_run == 'true' && steps.validate.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} --body "## :x: Validation Failed
+
+          The AI validation workflow encountered an error. A maintainer will review this manually.
+
+          ---
+          :robot: *[report-validate](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+          gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/reactions \
+            -f content=confused

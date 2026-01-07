@@ -8,6 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Skeleton from '@mui/material/Skeleton';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import BugReportIcon from '@mui/icons-material/BugReport';
 import DownloadIcon from '@mui/icons-material/Download';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -16,7 +17,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import MuiLink from '@mui/material/Link';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 
-import { API_URL } from '../constants';
+import { API_URL, GITHUB_URL } from '../constants';
 import { useAnalytics } from '../hooks';
 import { useAppData } from '../components/Layout';
 import { LibraryPills } from '../components/LibraryPills';
@@ -179,6 +180,23 @@ export function SpecPage() {
     [specId, trackEvent, isOverviewMode]
   );
 
+  // Build report issue URL
+  const buildReportUrl = useCallback(() => {
+    const params = new URLSearchParams({
+      template: 'report-issue.yml',
+      spec_id: specId || '',
+    });
+
+    if (selectedLibrary) {
+      params.set('target', 'Implementation (specific library)');
+      params.set('library', selectedLibrary);
+    } else {
+      params.set('target', 'Specification (affects all libraries)');
+    }
+
+    return `${GITHUB_URL}/issues/new?${params.toString()}`;
+  }, [specId, selectedLibrary]);
+
   // Track page view
   useEffect(() => {
     if (specData) {
@@ -235,6 +253,7 @@ export function SpecPage() {
         <Box
           sx={{
             display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
             mx: { xs: -2, sm: -4, md: -8, lg: -12 },
             mt: -5,
@@ -247,53 +266,92 @@ export function SpecPage() {
             fontSize: '0.85rem',
           }}
         >
-          <Box
-            component={Link}
-            to="/"
-            sx={{
-              color: '#3776AB',
-              textDecoration: 'none',
-              '&:hover': { textDecoration: 'underline' },
-            }}
-          >
-            pyplots.ai
-          </Box>
-          <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
-          <Box
-            component={Link}
-            to="/catalog"
-            sx={{
-              color: '#3776AB',
-              textDecoration: 'none',
-              '&:hover': { textDecoration: 'underline' },
-            }}
-          >
-            catalog
-          </Box>
-          <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
-          {isOverviewMode ? (
-            <Box component="span" sx={{ color: '#4b5563' }}>
-              {specId}
+          {/* Breadcrumb links */}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box
+              component={Link}
+              to="/"
+              sx={{
+                color: '#3776AB',
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' },
+              }}
+            >
+              pyplots.ai
             </Box>
-          ) : (
-            <>
-              <Box
-                component={Link}
-                to={`/${specId}`}
-                sx={{
-                  color: '#3776AB',
-                  textDecoration: 'none',
-                  '&:hover': { textDecoration: 'underline' },
-                }}
-              >
+            <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
+            <Box
+              component={Link}
+              to="/catalog"
+              sx={{
+                color: '#3776AB',
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' },
+              }}
+            >
+              catalog
+            </Box>
+            <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
+            {isOverviewMode ? (
+              <Box component="span" sx={{ color: '#4b5563' }}>
                 {specId}
               </Box>
-              <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
-              <Box component="span" sx={{ color: '#4b5563' }}>
-                {selectedLibrary}
+            ) : (
+              <>
+                <Box
+                  component={Link}
+                  to={`/${specId}`}
+                  sx={{
+                    color: '#3776AB',
+                    textDecoration: 'none',
+                    '&:hover': { textDecoration: 'underline' },
+                  }}
+                >
+                  {specId}
+                </Box>
+                <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
+                <Box component="span" sx={{ color: '#4b5563' }}>
+                  {selectedLibrary}
+                </Box>
+              </>
+            )}
+          </Box>
+
+          {/* Report issue link - responsive */}
+          <Tooltip title="report issue">
+            <Box
+              component="a"
+              href={buildReportUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{
+                color: '#9ca3af',
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                '&:hover': { color: '#3776AB' },
+              }}
+            >
+              {/* Icon for mobile (xs, sm) */}
+              <BugReportIcon
+                sx={{
+                  fontSize: '1.1rem',
+                  display: { xs: 'block', md: 'none' },
+                }}
+              />
+              {/* Text for desktop (md+) */}
+              <Box
+                component="span"
+                sx={{
+                  display: { xs: 'none', md: 'block' },
+                  fontFamily: '"MonoLisa", monospace',
+                  fontSize: '0.85rem',
+                }}
+              >
+                report issue
               </Box>
-            </>
-          )}
+            </Box>
+          </Tooltip>
         </Box>
 
         {/* Title */}

@@ -1,0 +1,85 @@
+name: Report Issue
+description: Report an issue with an existing plot spec or implementation
+title: "Report: "
+labels: ["report-pending"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Report an Issue
+
+        Found a problem with an existing plot? Let us know!
+
+        Our AI will validate and structure your report, then queue it for maintainer review.
+
+  - type: input
+    id: spec_id
+    attributes:
+      label: Specification ID
+      description: "The spec ID of the affected plot"
+      placeholder: "e.g., scatter-basic, qrcode-basic, heatmap-correlation"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: target
+    attributes:
+      label: What has the issue?
+      description: "Is this an issue with the specification itself or a specific library implementation?"
+      options:
+        - Specification (affects all libraries)
+        - Implementation (specific library)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: library
+    attributes:
+      label: Library (only for implementation issues)
+      description: "Which library implementation has the issue? Select N/A for spec issues."
+      options:
+        - N/A (spec issue)
+        - matplotlib
+        - seaborn
+        - plotly
+        - bokeh
+        - altair
+        - plotnine
+        - pygal
+        - highcharts
+        - letsplot
+    validations:
+      required: false
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Issue Category
+      description: "What type of issue is this?"
+      options:
+        - Visual (ugly, unclear, hard to read)
+        - Data (unrealistic values, inappropriate context)
+        - Functional (doesn't work as expected, e.g., QR code not scannable)
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Issue Description
+      description: "Describe the issue. What's wrong? What should it look like instead?"
+      placeholder: |
+        Example: The QR code generated looks like a QR code but cannot be scanned by any QR reader app.
+
+        Expected: The QR code should be a valid, scannable code that links to the specified URL.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context (optional)
+      description: "Screenshots, comparison images, or other helpful information"
+    validations:
+      required: false

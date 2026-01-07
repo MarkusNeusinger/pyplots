@@ -1,7 +1,7 @@
 name: Plot Update
 description: Request updates or regeneration of an existing plot
 title: "[SPEC-ID] [update] "
-labels: ["plot-request", "update"]
+labels: ["spec-update"]
 body:
   - type: markdown
     attributes:

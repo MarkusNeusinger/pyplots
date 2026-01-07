@@ -6,7 +6,19 @@ pyplots is a specification-driven platform where **AI generates all plot impleme
 
 ---
 
-## How to Propose a New Plot Type
+## Three Ways to Contribute
+
+| Action | When to Use | From pyplots.ai |
+|--------|-------------|-----------------|
+| **[Suggest Spec](#suggest-a-new-plot-type)** | Propose a new plot type | Click "suggest spec" in catalog |
+| **[Report Spec Issue](#report-a-spec-issue)** | Problem with a specification | Click "report issue" on spec page |
+| **[Report Impl Issue](#report-an-impl-issue)** | Problem with a library implementation | Click "report issue" on impl page |
+
+All contributions go through GitHub Issues with AI-powered validation and processing.
+
+---
+
+## Suggest a New Plot Type
 
 1. **Create a GitHub Issue** with a descriptive title (e.g., "Radar Chart with Multiple Series")
    - Do NOT include spec-id in the title
@@ -21,7 +33,36 @@ pyplots is a specification-driven platform where **AI generates all plot impleme
 
 ---
 
-## How to Improve an Existing Spec
+## Report a Spec Issue
+
+Found a problem with a specification (affects all libraries)?
+
+1. **From pyplots.ai**: Navigate to the spec page (e.g., `/scatter-basic`) and click "report issue"
+2. **From GitHub**: Create issue using the [Report Issue](https://github.com/MarkusNeusinger/pyplots/issues/new?template=report-issue.yml) template
+3. **Select "Specification"** as the target
+4. **Choose a category**: Visual, Data, Functional, or Other
+5. **Describe the issue**
+
+AI validates your report and adds structured analysis. Maintainers review and approve fixes.
+
+---
+
+## Report an Impl Issue
+
+Found a problem with a specific library implementation?
+
+1. **From pyplots.ai**: Navigate to the impl page (e.g., `/scatter-basic/matplotlib`) and click "report issue"
+2. **From GitHub**: Create issue using the [Report Issue](https://github.com/MarkusNeusinger/pyplots/issues/new?template=report-issue.yml) template
+3. **Select "Implementation"** as the target
+4. **Select the library** (matplotlib, seaborn, etc.)
+5. **Choose a category**: Visual, Data, Functional, or Other
+6. **Describe the issue**
+
+AI validates your report and adds structured analysis. Maintainers review and approve fixes.
+
+---
+
+## Update an Existing Spec
 
 1. **Create a GitHub Issue** referencing the spec to update
 2. **Add the `spec-update` label**
@@ -30,7 +71,7 @@ pyplots is a specification-driven platform where **AI generates all plot impleme
 
 ---
 
-## How to Trigger Implementation Generation
+## Trigger Implementation Generation
 
 After a spec has the `spec-ready` label:
 

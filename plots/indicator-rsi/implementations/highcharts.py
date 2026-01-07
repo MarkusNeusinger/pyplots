@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 indicator-rsi: RSI Technical Indicator Chart
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2025-01-07
+Library: highcharts unknown | Python 3.13.11
+Quality: 88/100 | Created: 2026-01-07
 """
 
 import tempfile

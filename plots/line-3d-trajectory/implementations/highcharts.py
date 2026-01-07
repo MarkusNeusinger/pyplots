@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-3d-trajectory: 3D Line Plot for Trajectory Visualization
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2026-01-07
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-07
 """
 
 import json

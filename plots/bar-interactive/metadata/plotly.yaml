@@ -1,0 +1,210 @@
+library: plotly
+specification_id: bar-interactive
+created: '2026-01-07T16:28:58Z'
+updated: '2026-01-07T16:36:06Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20788380904
+issue: 3189
+python_version: 3.13.11
+library_version: 6.5.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-interactive/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-interactive/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-interactive/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of Plotly hovertemplate with customdata for rich, formatted tooltips
+    showing revenue, market share, units sold, and YoY growth
+  - Clean visual design with appropriate font sizes for the 4800x2700 canvas
+  - Proper title format following the spec-id · library · pyplots.ai convention
+  - Good annotation guiding users to hover for details
+  - Both PNG and HTML outputs provided for static preview and full interactivity
+  weaknesses:
+  - Grid present but no legend (minor - single series does not require legend)
+  - The annotation positioning could be improved - slightly low on the canvas
+  image_description: The plot displays a vertical bar chart with 8 product categories
+    on the x-axis (Electronics, Clothing, Home & Garden, Sports, Books, Toys, Food,
+    Health) and Revenue ($K) on the y-axis ranging from 0 to approximately 4250. Bars
+    are rendered in a consistent blue color (#306998) with darker blue edge outlines
+    (#1f4d6b). The bars are arranged in descending order by revenue, with Electronics
+    having the highest bar (~4250) and Health the lowest (~1290). The title "bar-interactive
+    · plotly · pyplots.ai" is centered at the top in dark gray text (size 32). Axis
+    labels are clearly readable with "Product Category" on the x-axis and "Revenue
+    ($K)" on the y-axis, both with appropriate font sizes (24pt for labels, 18pt for
+    ticks). A subtle gray annotation at the bottom reads "Hover over bars for detailed
+    breakdown" to guide user interaction. The background is white with light gray
+    horizontal gridlines (alpha 0.1). The layout is well-balanced with appropriate
+    margins (l=100, r=60, t=120, b=100) and good bar spacing (bargap=0.3).
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels are all clearly readable at full
+          size with appropriate font sizes (title 32pt, labels 24pt, ticks 18pt)
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; category labels are well-spaced with
+          bargap=0.3
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars are well-sized and clearly visible with good spacing and edge
+          highlighting
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme with good contrast; no colorblind issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, plot fills canvas well, slight deduction for annotation
+          placement
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: Revenue ($K) and Product Category'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is appropriate but no legend present (acceptable for single
+          series)
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bar chart type using go.Bar
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X-axis, values on Y-axis correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Hover tooltips with rich data present via hovertemplate, visual feedback
+          configured, but click actions not demonstrable in static image
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, Y-axis starts at 0
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for single series, no legend needed
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: bar-interactive · plotly · pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variety of categories with different values, includes additional
+          tooltip data (percentage, units, growth)
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Product sales by category is a realistic business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Revenue values in thousands are realistic for product categories
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple linear flow: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 2
+        max: 3
+        passed: true
+        comment: Data is deterministic (hardcoded), no random operations used
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only pandas and plotly.graph_objects imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 4
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of Plotly hovertemplate with customdata, hoverlabel styling,
+          and HTML export for full interactivity
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - annotations
+  - html-export
+  patterns: []
+  dataprep: []
+  styling:
+  - edge-highlighting
+  - grid-styling

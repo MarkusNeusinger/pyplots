@@ -1,0 +1,30 @@
+# Specification-level metadata for indicator-macd
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: indicator-macd
+title: MACD Technical Indicator Chart
+
+# Specification tracking
+created: 2026-01-07T16:13:17Z
+updated: null
+issue: 3181
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - line
+    - bar
+    - indicator
+  data_type:
+    - timeseries
+    - numeric
+  domain:
+    - finance
+    - trading
+  features:
+    - technical-analysis
+    - momentum
+    - crossover
+    - multi-component

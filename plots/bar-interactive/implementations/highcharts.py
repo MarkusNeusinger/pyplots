@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-interactive: Interactive Bar Chart with Hover and Click
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2026-01-07
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-07
 """
 
 import tempfile

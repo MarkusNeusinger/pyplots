@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 maze-printable: Printable Maze Puzzle
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 85/100 | Created: 2026-01-07
+Quality: 90/100 | Created: 2026-01-07
 """
 
 import os

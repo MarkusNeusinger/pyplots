@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-3d-trajectory: 3D Line Plot for Trajectory Visualization
-Library: plotly | Python 3.13
-Quality: pending | Created: 2026-01-07
+Library: plotly 6.5.0 | Python 3.13.11
+Quality: 92/100 | Created: 2026-01-07
 """
 
 import numpy as np

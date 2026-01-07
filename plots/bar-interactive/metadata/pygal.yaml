@@ -1,0 +1,208 @@
+library: pygal
+specification_id: bar-interactive
+created: '2026-01-07T16:29:37Z'
+updated: '2026-01-07T16:37:20Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20788390613
+issue: 3189
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-interactive/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-interactive/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-interactive/pygal/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of pygal Style class for comprehensive customization (font sizes,
+    colors, transitions)
+  - Custom tooltips with detailed information (value + YoY growth percentage) via
+    label parameter
+  - Clean, professional visual appearance with appropriate spacing and margins
+  - Dual output format (PNG for static, HTML for full interactivity)
+  - Good data context with realistic product sales scenario
+  weaknesses:
+  - Legend placement in top-left corner appears isolated from the main chart area
+  - Grid lines are somewhat prominent (dotted style) and could be more subtle
+  - Font sizes in the Style definition are much larger than the library guide suggests
+    (72 vs 28 for title)
+  image_description: 'The plot displays an interactive bar chart showing Q4 sales
+    data across 8 product categories. The bars are rendered in a consistent blue color
+    (#306998) with the categories arranged horizontally: Electronics ($12,500), Clothing
+    ($8,900), Home & Garden ($6,700), Sports ($5,400), Books ($4,200), Toys ($3,800),
+    Health ($3,100), and Food ($2,800). The title "bar-interactive · pygal · pyplots.ai"
+    is centered at the top. The Y-axis shows "Sales (USD)" with values ranging from
+    0 to 12,000+, and the X-axis displays "Product Category". A legend labeled "Q4
+    Sales" appears in the top-left corner. Horizontal dotted grid lines aid value
+    reading. The layout is clean with good use of whitespace and balanced margins.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: 'All text clearly readable: title, axis labels, tick labels, and
+          legend appropriately sized for 4800x2700 canvas'
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping elements; category labels well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Bars well-proportioned and clearly visible with appropriate spacing
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color scheme is accessible; no color differentiation
+          issues
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good overall layout but legend placement in top-left creates slight
+          imbalance
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: Sales (USD) and Product Category'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid dotted pattern is prominent; legend placement could be better
+          integrated
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct bar chart type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Categories on X-axis, values on Y-axis correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Hover tooltips with detailed values present in HTML; click interactions
+          limited in pygal
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows full range from 0 to beyond max value
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly labeled as Q4 Sales
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: Title follows format with middle dot correctly
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variation in bar heights with clear ranking; could include
+          more diverse tooltip data
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Product sales by category is a realistic, neutral business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Sales values ($2,800-$12,500) are realistic for product category
+          comparisons
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports, data, style, chart, save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (no random generation needed)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only pygal and Style imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current pygal API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as plot.png AND plot.html (correct outputs)
+    library_features:
+      score: 4
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Uses pygal Style class, hover transitions, human_readable formatting,
+          and dual PNG/HTML output
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns: []
+  dataprep: []
+  styling:
+  - alpha-blending
+  - grid-styling

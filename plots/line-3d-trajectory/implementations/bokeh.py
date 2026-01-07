@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 line-3d-trajectory: 3D Line Plot for Trajectory Visualization
 Library: bokeh 3.8.2 | Python 3.13.11
-Quality: 82/100 | Created: 2026-01-07
+Quality: 87/100 | Created: 2026-01-07
 """
 
 import numpy as np

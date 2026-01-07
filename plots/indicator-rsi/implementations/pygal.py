@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 indicator-rsi: RSI Technical Indicator Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-07
@@ -16,17 +16,16 @@ n_days = 120
 lookback = 14
 
 # Generate price changes that produce RSI entering both overbought (>70) and oversold (<30) zones
-# Create trending periods to get extreme RSI values
-base_changes = np.random.randn(n_days) * 1.5
+# Use stronger trending to ensure RSI reaches extreme values
+base_changes = np.random.randn(n_days) * 0.8
 
-# Add trending segments to push RSI into extreme zones
-# Strong uptrend periods (push RSI above 70)
-base_changes[20:35] += 2.5  # Bullish phase
-base_changes[80:95] += 2.8  # Another bullish phase
+# Strong uptrend periods (push RSI above 70) - increased magnitude
+base_changes[15:32] += 4.0  # Strong bullish phase
+base_changes[75:92] += 4.5  # Another strong bullish phase
 
-# Strong downtrend periods (push RSI below 30)
-base_changes[45:60] -= 2.5  # Bearish phase
-base_changes[105:115] -= 2.2  # Another bearish phase
+# Strong downtrend periods (push RSI below 30) - increased magnitude
+base_changes[40:57] -= 4.0  # Strong bearish phase
+base_changes[100:115] -= 3.5  # Another bearish phase
 
 price_changes = base_changes
 
@@ -55,8 +54,7 @@ rsi = 100 - (100 / (1 + rs))
 rsi[:lookback] = 50  # Fill initial values with neutral
 
 
-# Custom style for large canvas with zone colors
-# Series order: Overbought zone, Oversold zone, Overbought line, Oversold line, Centerline, RSI
+# Custom style for large canvas
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -64,8 +62,6 @@ custom_style = Style(
     foreground_strong="#333333",
     foreground_subtle="#666666",
     colors=(
-        "#FFCCCC",  # Overbought zone fill (light red)
-        "#CCFFCC",  # Oversold zone fill (light green)
         "#D04040",  # Overbought line (red)
         "#30A030",  # Oversold line (green)
         "#888888",  # Centerline (gray)
@@ -81,7 +77,7 @@ custom_style = Style(
     opacity_hover=1.0,
 )
 
-# Create chart
+# Create chart with custom configuration for zone rendering
 chart = pygal.Line(
     width=4800,
     height=2700,
@@ -92,7 +88,6 @@ chart = pygal.Line(
     show_dots=False,
     show_x_guides=False,
     show_y_guides=True,
-    stroke_style={"width": 6},
     range=(0, 100),
     interpolate="cubic",
     legend_at_bottom=True,
@@ -102,28 +97,26 @@ chart = pygal.Line(
     show_x_labels=False,
 )
 
-# Add zone shading for overbought (70-100) and oversold (0-30) zones
-# Overbought zone (70-100) - light red fill
-overbought_zone = [100] * n_days
-chart.add(
-    "Overbought Zone (70-100)", overbought_zone, fill=True, secondary=False, stroke_style={"width": 0}, show_dots=False
-)
+# Create RSI data with zone-based coloring approach
+# Since pygal doesn't support horizontal bands natively, we'll use secondary value lines
+# and visual indication through dashed threshold lines with clear colors
 
-# Oversold zone (0-30) - light green fill
-oversold_zone = [30] * n_days
-chart.add("Oversold Zone (0-30)", oversold_zone, fill=True, secondary=False, stroke_style={"width": 0}, show_dots=False)
-
-# Add threshold lines (constant values across all days) - thicker for visibility
+# Add threshold lines (constant values across all days)
 overbought_line = [70] * n_days
 oversold_line = [30] * n_days
 centerline = [50] * n_days
 
-chart.add("Overbought (70)", overbought_line, stroke_style={"width": 4, "dasharray": "15,8"})
-chart.add("Oversold (30)", oversold_line, stroke_style={"width": 4, "dasharray": "15,8"})
-chart.add("Centerline (50)", centerline, stroke_style={"width": 3, "dasharray": "8,8"})
+# Add overbought threshold line (red, dashed)
+chart.add("Overbought (70)", overbought_line, stroke_style={"width": 5, "dasharray": "20,10"}, show_dots=False)
 
-# Add RSI data last so it appears on top
-chart.add("RSI (14)", list(rsi), stroke_style={"width": 7})
+# Add oversold threshold line (green, dashed)
+chart.add("Oversold (30)", oversold_line, stroke_style={"width": 5, "dasharray": "20,10"}, show_dots=False)
+
+# Add centerline (gray, dotted)
+chart.add("Centerline (50)", centerline, stroke_style={"width": 3, "dasharray": "10,10"}, show_dots=False)
+
+# Add RSI data last so it appears on top with thicker line
+chart.add("RSI (14)", list(rsi), stroke_style={"width": 8}, show_dots=False)
 
 # Save as PNG and HTML
 chart.render_to_png("plot.png")

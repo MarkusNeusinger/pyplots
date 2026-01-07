@@ -1,0 +1,26 @@
+# Specification-level metadata for bar-interactive
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: bar-interactive
+title: Interactive Bar Chart with Hover and Click
+
+# Specification tracking
+created: 2026-01-07T16:20:31Z
+updated: null
+issue: 3189
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - bar
+  data_type:
+    - categorical
+    - numeric
+  domain:
+    - general
+    - business
+  features:
+    - interactive
+    - comparison

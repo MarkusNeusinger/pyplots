@@ -1,0 +1,207 @@
+library: seaborn
+specification_id: line-animated-progressive
+created: '2026-01-07T20:19:24Z'
+updated: '2026-01-07T20:25:26Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20795210966
+issue: 3238
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-animated-progressive/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-animated-progressive/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of small multiples approach for static progressive reveal
+  - Clear visual indicator (yellow highlighted point) showing current position in
+    each stage
+  - Consistent axis limits across all panels enables easy comparison
+  - Realistic temperature data with seasonal pattern demonstrates the plot type well
+  - Clean KISS code structure with proper seaborn/pandas integration
+  weaknesses:
+  - Grid styling uses alpha=0.3 which is slightly prominent; could be more subtle
+    (0.2)
+  - Missing legend explaining what the yellow marker represents (though visually intuitive)
+  image_description: 'The plot displays a 2x3 grid of small multiples showing the
+    progressive reveal of a temperature time series over 24 months. Each panel ("Month
+    4", "Month 8", "Month 12", "Month 16", "Month 20", "Month 24") shows an increasing
+    portion of the data. The line is rendered in Python blue (#306998) with blue circular
+    markers at each data point. The most recent point in each panel is highlighted
+    with a larger yellow (#FFD43B) marker with a blue edge, clearly indicating the
+    "current" position. The data shows a seasonal sinusoidal pattern (temperature
+    cycling between ~5°C and ~30°C) with a slight warming trend. All panels share
+    consistent axis limits (x: -1 to 25, y: 0 to 35), a subtle dashed grid, and proper
+    axis labels with units ("Month" and "Temperature (°C)"). The main title correctly
+    follows the format "line-animated-progressive · seaborn · pyplots.ai".'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title and labels are readable, though tick labels could be slightly
+          larger
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text or elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers and lines are well-sized; yellow highlight is effective
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue/yellow color scheme is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: 2x3 grid fills canvas well with balanced margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: Temperature (°C), Month'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is slightly prominent at alpha=0.3
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correctly implements small multiples for progressive reveal per spec
+          note
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Time on x-axis, value on y-axis correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has progressive reveal and highlighted current point; missing gradient
+          suggestion
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Consistent axis limits show all data clearly
+      - id: SC-05
+        name: Legend Accuracy
+        score: 1
+        max: 2
+        passed: true
+        comment: No legend present but not strictly needed
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: line-animated-progressive · seaborn · pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows seasonal pattern and progression well; could show multiple
+          series
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Monthly temperature readings over 2 years is realistic and neutral
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Temperature values (5-30°C) are realistic for monthly averages
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Clean imports → data → plot → save structure
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 4
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Uses sns.lineplot and sns.scatterplot with DataFrame integration;
+          sns.set_style for theming
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - time-series
+  styling:
+  - grid-styling
+  - edge-highlighting

@@ -1,130 +1,206 @@
 # Tagging System
 
-A 4-dimensional tagging system for plot specifications. Tags are assigned by the spec-create workflow and help users find plots by type, data, domain, and features.
+pyplots uses a two-level tagging system:
+- **Spec-Level Tags** (4 dimensions) - describe WHAT is visualized
+- **Impl-Level Tags** (5 dimensions) - describe HOW it is implemented
 
 ---
 
-## The 4 Tag Dimensions
+## Naming Convention
 
-### 1. plot_type - "What is being visualized?"
-
-**Purpose:** Describes the visual form and structure. Answers: "What kind of chart is this?"
-
-**Principle:** Use established data visualization vocabulary. If a plot type has a known name, use it. Combine multiple tags when applicable.
-
-**Typical values:**
-- Basic shapes: `scatter`, `line`, `bar`, `pie`, `area`
-- Distributions: `histogram`, `density`, `box`, `violin`, `strip`, `swarm`
-- Matrices: `heatmap`, `contour`, `hexbin`
-- Hierarchies: `treemap`, `sunburst`, `dendrogram`, `icicle`
-- Networks: `network`, `chord`, `arc`, `sankey`
-- Specialized: `candlestick`, `gauge`, `funnel`, `waterfall`, `radar`
-
-**How to derive:** Ask yourself: "How would a data visualization expert name this plot?" Use terminology from matplotlib/seaborn/plotly documentation.
+**For ALL tags (both levels):**
+- All lowercase
+- Hyphens for multi-word: `color-mapped`, `twin-axes`, `time-series`
+- No underscores, no spaces
+- Prefer established terms
 
 ---
 
-### 2. data_type - "What data is being visualized?"
+## Part 1: Spec-Level Tags
 
-**Purpose:** Describes the structure and type of input data. Answers: "What kind of data does this plot need?"
+Spec-Level Tags are assigned during specification creation and apply to ALL library implementations of a plot.
 
-**Principle:** Focus on logical data structure, not technical format. A user wanting to "visualize time series" should find this plot.
+Stored in: `plots/{spec-id}/specification.yaml`
 
-**Typical values:**
-- Numbers: `numeric`, `continuous`, `discrete`
-- Categories: `categorical`, `ordinal`
-- Time: `timeseries`, `datetime`
-- Structure: `hierarchical`, `network`, `relational`
-- Space: `geospatial`, `spatial`
-- Text: `text`, `frequency`
+### The 4 Spec Tag Dimensions
 
-**How to derive:** Ask yourself: "If someone has this type of data, would they search for this plot?" Think about the typical use case.
+#### 1. plot_type - "What is visualized?"
 
----
+Describes the visual form and structure of the plot.
 
-### 3. domain - "Where is it used?"
+**Typical Values:**
+- **Basic Forms:** `scatter`, `line`, `bar`, `pie`, `area`, `point`
+- **Distributions:** `histogram`, `density`, `box`, `violin`, `strip`, `swarm`
+- **Matrices:** `heatmap`, `contour`, `hexbin`
+- **Hierarchies:** `treemap`, `sunburst`, `dendrogram`, `icicle`
+- **Networks:** `network`, `chord`, `arc`, `sankey`, `alluvial`
+- **Specialized:** `candlestick`, `gauge`, `funnel`, `waterfall`, `radar`
 
-**Purpose:** Describes typical application areas. Answers: "In which industry/discipline is this plot commonly used?"
+#### 2. data_type - "What data is visualized?"
 
-**Principle:** `general` is the default for universally applicable plots. Use specific domains only when the plot is particularly established there.
+Describes the structure and nature of the input data.
 
-**Typical values:**
-- Universal: `general`
-- Science: `statistics`, `science`, `research`
-- Business: `business`, `finance`, `marketing`
-- Technical: `engineering`, `technology`
-- Other: `healthcare`, `education`, `energy`, `environment`
+**Typical Values:**
+- **Numbers:** `numeric`, `continuous`, `discrete`
+- **Categories:** `categorical`, `ordinal`
+- **Time:** `timeseries`, `datetime`
+- **Structure:** `hierarchical`, `network`, `relational`
+- **Space:** `geospatial`, `spatial`
 
-**How to derive:** Ask yourself: "Is there an industry where this plot type is particularly common?" Candlestick → finance. Forest plot → healthcare/research. If unclear → `general`.
+#### 3. domain - "Where is it used?"
 
----
+Describes typical application areas.
 
-### 4. features - "What are special characteristics?"
+**Typical Values:**
+- **Universal:** `general`
+- **Science:** `statistics`, `science`, `research`
+- **Business:** `business`, `finance`, `marketing`
+- **Technology:** `engineering`, `technology`
+- **Other:** `healthcare`, `education`, `machine-learning`
 
-**Purpose:** Describes variants, modifications, and special attributes. Answers: "What distinguishes this variant from the basic version?"
+#### 4. features - "What are special properties?"
 
-**Principle:** Describe what makes the plot SPECIAL. Multiple tags allowed. Consider what a user would search for.
+Describes variants and special attributes.
 
-**Typical values:**
-- Complexity: `basic`, `advanced`
-- Layout: `grouped`, `stacked`, `horizontal`, `multi`
-- Dimensions: `2d`, `3d`
-- Interaction: `interactive`, `animated`, `static`
-- Function: `comparison`, `distribution`, `correlation`, `ranking`
-- Display: `annotated`, `color-mapped`, `proportional`
+**Typical Values:**
+- **Complexity:** `basic`, `advanced`
+- **Layout:** `grouped`, `stacked`, `horizontal`, `multi`
+- **Dimensions:** `2d`, `3d`
+- **Interaction:** `interactive`, `animated`
+- **Function:** `comparison`, `distribution`, `correlation`
 
-**How to derive:** Ask yourself: "What adjectives describe this plot?" and "What would someone type into a search engine to find exactly this variant?"
-
----
-
-## Example
-
-**For `sankey-basic`:**
+### Spec Tag Example
 
 ```yaml
+# plots/scatter-basic/specification.yaml
 tags:
   plot_type:
-    - sankey          # Established name
-    - flow            # Alternative term
+    - scatter
   data_type:
-    - categorical     # Nodes are categories
-    - numeric         # Flows have values
+    - numeric
+    - continuous
   domain:
-    - general         # Universally applicable
-    - business        # Common for process analysis
-    - energy          # Classic for energy flows
+    - statistics
+    - general
   features:
-    - basic           # Base variant
-    - flow-visualization
-    - proportional    # Width shows quantity
+    - basic
+    - 2d
+    - correlation
 ```
 
 ---
 
-## Format in specification.yaml
+## Part 2: Impl-Level Tags
+
+Impl-Level Tags are assigned during implementation review and vary PER LIBRARY.
+
+Stored in: `plots/{spec-id}/metadata/{library}.yaml`
+
+### The 5 Impl Tag Dimensions
+
+#### 1. dependencies - "Which external packages?"
+
+External libraries beyond the main plotting library.
+
+**Typical Values:**
+`scipy`, `sklearn`, `statsmodels`, `networkx`, `selenium`, `pillow`, `geopandas`, `shapely`, `wordcloud`
+
+**Rules:**
+- Only tag when library is actually imported
+- Do NOT tag numpy, pandas, and main plotting library
+
+#### 2. techniques - "Which visualization techniques?"
+
+Specific visualization and coding techniques.
+
+**Typical Values:**
+`twin-axes`, `manual-ticks`, `annotations`, `colorbar`, `subplots`, `faceting`, `layer-composition`, `custom-legend`, `inset-axes`, `polar-projection`, `3d-projection`, `bezier-curves`, `patches`, `hover-tooltips`, `html-export`
+
+#### 3. patterns - "Which code structure patterns?"
+
+Coding patterns and data organization.
+
+**Typical Values:**
+`data-generation`, `dataset-loading`, `wide-to-long`, `long-to-wide`, `groupby-aggregation`, `iteration-over-groups`, `matrix-construction`, `columndatasource`, `explicit-figure`
+
+#### 4. dataprep - "Which data transformations?"
+
+Statistical or mathematical transformations.
+
+**Typical Values:**
+`hierarchical-clustering`, `kde`, `binning`, `normalization`, `correlation-matrix`, `cumulative-sum`, `time-series`, `interpolation`, `rolling-window`, `pca`, `regression`
+
+#### 5. styling - "Which visual style?"
+
+Visual/aesthetic approach.
+
+**Typical Values:**
+`publication-ready`, `minimal-chrome`, `custom-colormap`, `alpha-blending`, `edge-highlighting`, `gradient-fill`, `grid-styling`, `dark-theme`
+
+### Impl Tag Example
 
 ```yaml
-tags:
-  plot_type:
-    - {primary type}
-    - {secondary type if applicable}
-  data_type:
-    - {primary data type}
-    - {secondary if applicable}
-  domain:
-    - general         # Always include if universally applicable
-    - {specific domain if applicable}
-  features:
-    - basic           # Or specific features
-    - {additional features}
+# plots/chord-basic/metadata/matplotlib.yaml
+impl_tags:
+  dependencies: []
+  techniques:
+    - bezier-curves
+    - patches
+    - manual-ticks
+  patterns:
+    - data-generation
+    - matrix-construction
+    - iteration-over-groups
+  dataprep: []
+  styling:
+    - publication-ready
+    - alpha-blending
 ```
+
+---
+
+## Comparison: Spec vs Impl Tags
+
+| Aspect | Spec-Level Tags | Impl-Level Tags |
+|--------|-----------------|-----------------|
+| **Describes** | WHAT is visualized | HOW it is implemented |
+| **Storage Location** | `specification.yaml` | `metadata/{library}.yaml` |
+| **Applies to** | All 9 libraries | Only this library |
+| **Assigned by** | `spec-create.yml` | `impl-review.yml` |
+| **Dimensions** | 4 (plot_type, data_type, domain, features) | 5 (dependencies, techniques, patterns, dataprep, styling) |
+| **Example** | "This is a scatter plot" | "This code uses twin-axes and scipy" |
+
+---
+
+## Use Cases
+
+### Spec-Level Tags
+- "Show all scatter plots" → `plot_type: scatter`
+- "Plots for finance data" → `domain: finance`
+- "3D visualizations" → `features: 3d`
+
+### Impl-Level Tags
+- "Which plots use scipy?" → `dependencies: scipy`
+- "Implementations with twin-axes" → `techniques: twin-axes`
+- "Code with clustering" → `dataprep: hierarchical-clustering`
+
+---
+
+## AI Prompts
+
+For AI agents, there are separate, detailed prompt files:
+- **Spec-Tags:** `prompts/spec-tags-generator.md`
+- **Impl-Tags:** `prompts/impl-tags-generator.md`
+
+These contain complete vocabulary, detection patterns, and examples.
 
 ---
 
 ## Best Practices
 
-1. **Be specific but not excessive** - 2-4 tags per dimension is typical
-2. **Think like a user** - What would someone search for?
-3. **Use established vocabulary** - Standard data viz terminology
-4. **general is fine** - Not every plot needs a specialized domain
-5. **basic is informative** - It tells users this is the foundational variant
+1. **Consistent naming convention** - lowercase, kebab-case
+2. **Tag conservatively** - Only what is clearly recognizable
+3. **Empty lists are OK** - Not every dimension needs to be filled
+4. **2-4 tags per dimension** - Typical for spec tags
+5. **3-8 tags total** - Typical for impl tags
+6. **Use established terms** - Prefer listed vocabulary, but any recognized term from the data-viz/programming community is valid (e.g., unlisted libraries should still be tagged)

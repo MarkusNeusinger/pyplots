@@ -105,6 +105,11 @@ class Impl(Base):
     review_criteria_checklist: Mapped[Optional[dict]] = mapped_column(UniversalJSON, nullable=True)  # Detailed scoring
     review_verdict: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # "APPROVED" or "REJECTED"
 
+    # Implementation-level tags (from impl-review)
+    impl_tags: Mapped[Optional[dict]] = mapped_column(
+        UniversalJSON, nullable=True
+    )  # {dependencies, techniques, patterns, dataprep, styling}
+
     # System
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 

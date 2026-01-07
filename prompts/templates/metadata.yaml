@@ -25,7 +25,25 @@ preview_html: null     # Interactive HTML (plotly, bokeh, altair, etc.)
 # Quality score (0-100, filled by impl-review)
 quality_score: null
 
+# Implementation-level tags (filled by impl-review, describes HOW the code implements)
+impl_tags:
+  dependencies: []     # External packages (scipy, sklearn, etc.)
+  techniques: []       # Visualization techniques (twin-axes, colorbar, etc.)
+  patterns: []         # Code patterns (data-generation, iteration-over-groups, etc.)
+  dataprep: []         # Data transformations (kde, binning, correlation-matrix, etc.)
+  styling: []          # Visual style (publication-ready, alpha-blending, etc.)
+
 # Review feedback (filled by impl-review, read by impl-generate for regeneration)
 review:
+  # AI's visual description of the generated plot
+  image_description: null
+
+  # Detailed scoring breakdown by category
+  criteria_checklist: null
+
+  # Final verdict (APPROVED, REJECTED, etc.)
+  verdict: null
+
+  # Summary feedback
   strengths: []        # What's good about this implementation
   weaknesses: []       # What needs improvement (AI decides HOW to fix)

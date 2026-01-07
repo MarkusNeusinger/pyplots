@@ -10,20 +10,54 @@ export interface PlotImage {
 }
 
 // Filter system types
-export type FilterCategory = 'lib' | 'spec' | 'plot' | 'data' | 'dom' | 'feat';
+// Spec-level categories describe WHAT is visualized
+// Impl-level categories describe HOW the code implements it (issue #2434)
+export type FilterCategory =
+  | 'lib'
+  | 'spec'
+  | 'plot'
+  | 'data'
+  | 'dom'
+  | 'feat'
+  | 'impl_dep'
+  | 'impl_tech'
+  | 'impl_pat'
+  | 'impl_prep'
+  | 'impl_style';
 
 // Display labels for filter categories
 export const FILTER_LABELS: Record<FilterCategory, string> = {
+  // Spec-level
   lib: 'library',
   spec: 'example',
   plot: 'type',
   data: 'data',
   dom: 'field',
   feat: 'extras',
+  // Impl-level (issue #2434)
+  impl_dep: 'uses',
+  impl_tech: 'technique',
+  impl_pat: 'pattern',
+  impl_prep: 'dataprep',
+  impl_style: 'style',
 };
 
 // All filter categories in display order
-export const FILTER_CATEGORIES: FilterCategory[] = ['lib', 'spec', 'plot', 'data', 'dom', 'feat'];
+export const FILTER_CATEGORIES: FilterCategory[] = [
+  // Spec-level
+  'lib',
+  'spec',
+  'plot',
+  'data',
+  'dom',
+  'feat',
+  // Impl-level (issue #2434)
+  'impl_dep',
+  'impl_tech',
+  'impl_pat',
+  'impl_prep',
+  'impl_style',
+];
 
 // A single filter group (one chip) - values within are OR-linked
 export interface FilterGroup {

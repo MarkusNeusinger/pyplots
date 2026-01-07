@@ -288,6 +288,8 @@ def scan_plot_directory(plot_dir: Path) -> dict | None:
                     "review_image_description": review.get("image_description"),
                     "review_criteria_checklist": review.get("criteria_checklist"),
                     "review_verdict": review.get("verdict"),
+                    # Implementation-level tags (issue #2434)
+                    "impl_tags": impl_meta.get("impl_tags"),
                 }
             )
 
@@ -380,6 +382,10 @@ def sync_to_database(session: Session, plots: list[dict]) -> dict:
                 update_set["review_criteria_checklist"] = impl["review_criteria_checklist"]
             if impl.get("review_verdict") is not None:
                 update_set["review_verdict"] = impl["review_verdict"]
+
+            # Implementation-level tags (issue #2434)
+            if impl.get("impl_tags") is not None:
+                update_set["impl_tags"] = impl["impl_tags"]
 
             stmt = insert(Impl).values(**impl).on_conflict_do_update(constraint="uq_impl", set_=update_set)
             session.execute(stmt)

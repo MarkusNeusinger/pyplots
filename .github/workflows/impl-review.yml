@@ -144,15 +144,17 @@ jobs:
 
             3. **Read library rules**: `prompts/library/${{ steps.pr.outputs.library }}.md`
 
-            4. **MANDATORY: View the plot image**
+            4. **Read impl-tags guide**: `prompts/impl-tags-generator.md` (for step 8)
+
+            5. **MANDATORY: View the plot image**
                - You MUST use the Read tool to open `plot_images/plot.png`
                - Visually analyze the image - this is critical for the review
                - DO NOT skip this step - a review without seeing the image is invalid
                - If the image cannot be read, STOP and report the error
 
-            5. **Evaluate against quality criteria** from `prompts/quality-criteria.md`
+            6. **Evaluate against quality criteria** from `prompts/quality-criteria.md`
 
-            6. **Post verdict as PR comment** on PR #${{ steps.pr.outputs.pr_number }}:
+            7. **Post verdict as PR comment** on PR #${{ steps.pr.outputs.pr_number }}:
 
             ```markdown
             ## AI Review - Attempt ${{ steps.attempts.outputs.display }}/3
@@ -199,7 +201,7 @@ jobs:
             ### Verdict: APPROVED / REJECTED
             ```
 
-            7. **Save review data to files** (for the workflow to parse):
+            8. **Save review data to files** (for the workflow to parse):
                ```bash
                echo "XX" > quality_score.txt
 
@@ -235,7 +237,27 @@ jobs:
                EOF
                ```
 
-            8. **DO NOT add ai-approved or ai-rejected labels** - the workflow will add them after updating metadata.
+            9. **Generate impl_tags** (based on prompts/impl-tags-generator.md):
+               Analyze the implementation code and create impl_tags with 5 dimensions:
+               - `dependencies`: External packages beyond numpy/pandas/plotting library
+               - `techniques`: Visualization techniques (twin-axes, colorbar, etc.)
+               - `patterns`: Code patterns (data-generation, iteration-over-groups, etc.)
+               - `dataprep`: Data transformations (kde, binning, correlation-matrix, etc.)
+               - `styling`: Visual style (publication-ready, alpha-blending, etc.)
+
+               ```bash
+               cat > review_impl_tags.json << 'EOF'
+               {
+                 "dependencies": [],
+                 "techniques": ["colorbar", "annotations"],
+                 "patterns": ["data-generation"],
+                 "dataprep": [],
+                 "styling": ["publication-ready"]
+               }
+               EOF
+               ```
+
+            10. **DO NOT add ai-approved or ai-rejected labels** - the workflow will add them after updating metadata.
 
             **IMPORTANT**: Your review MUST include the "Image Description" section. A review without an image description will be considered invalid.
             **IMPORTANT**: All review data (strengths, weaknesses, image_description, criteria_checklist) is saved to metadata for future regeneration. Be specific!
@@ -314,6 +336,7 @@ jobs:
           image_description = None
           criteria_checklist = None
           verdict = None
+          impl_tags = None
 
           if Path('review_strengths.json').exists():
               try:
@@ -350,6 +373,13 @@ jobs:
               except:
                   pass
 
+          if Path('review_impl_tags.json').exists():
+              try:
+                  with open('review_impl_tags.json') as f:
+                      impl_tags = json.load(f)
+              except:
+                  pass
+
           # Load existing metadata
           with open(metadata_file, 'r') as f:
               data = yaml.safe_load(f)
@@ -371,6 +401,10 @@ jobs:
               data['review']['criteria_checklist'] = criteria_checklist
           if verdict:
               data['review']['verdict'] = verdict
+
+          # Add impl_tags (issue #2434)
+          if impl_tags:
+              data['impl_tags'] = impl_tags
 
           def str_representer(dumper, data):
               if isinstance(data, str) and data.endswith('Z') and 'T' in data:

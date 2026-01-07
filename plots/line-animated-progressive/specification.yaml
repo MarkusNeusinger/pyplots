@@ -1,0 +1,27 @@
+# Specification-level metadata for line-animated-progressive
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: line-animated-progressive
+title: Animated Line Plot Over Time
+
+# Specification tracking
+created: 2026-01-07T20:11:43Z
+updated: null
+issue: 3238
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - line
+  data_type:
+    - timeseries
+    - numeric
+  domain:
+    - general
+    - business
+  features:
+    - animated
+    - temporal
+    - interactive

@@ -844,54 +844,54 @@ class TestPlotsHelperFunctions:
     def test_image_matches_groups_empty(self) -> None:
         """Empty groups should match any image."""
         spec_lookup = {"scatter-basic": {"tags": {"plot_type": ["scatter"]}}}
-        assert _image_matches_groups("scatter-basic", "matplotlib", [], spec_lookup) is True
+        assert _image_matches_groups("scatter-basic", "matplotlib", [], spec_lookup, {}) is True
 
     def test_image_matches_groups_lib_match(self) -> None:
         """Library filter should match correct library."""
         spec_lookup = {"scatter-basic": {"tags": {}}}
         groups = [{"category": "lib", "values": ["matplotlib"]}]
-        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup) is True
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup, {}) is True
 
     def test_image_matches_groups_lib_no_match(self) -> None:
         """Library filter should not match wrong library."""
         spec_lookup = {"scatter-basic": {"tags": {}}}
         groups = [{"category": "lib", "values": ["seaborn"]}]
-        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup) is False
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup, {}) is False
 
     def test_image_matches_groups_spec_match(self) -> None:
         """Spec filter should match correct spec."""
         spec_lookup = {"scatter-basic": {"tags": {}}}
         groups = [{"category": "spec", "values": ["scatter-basic"]}]
-        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup) is True
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup, {}) is True
 
     def test_image_matches_groups_plot_type_match(self) -> None:
         """Plot type filter should match correct tag."""
         spec_lookup = {"scatter-basic": {"tags": {"plot_type": ["scatter"]}}}
         groups = [{"category": "plot", "values": ["scatter"]}]
-        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup) is True
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup, {}) is True
 
     def test_image_matches_groups_data_type_match(self) -> None:
         """Data type filter should match correct tag."""
         spec_lookup = {"scatter-basic": {"tags": {"data_type": ["numeric"]}}}
         groups = [{"category": "data", "values": ["numeric"]}]
-        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup) is True
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup, {}) is True
 
     def test_image_matches_groups_domain_match(self) -> None:
         """Domain filter should match correct tag."""
         spec_lookup = {"scatter-basic": {"tags": {"domain": ["statistics"]}}}
         groups = [{"category": "dom", "values": ["statistics"]}]
-        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup) is True
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup, {}) is True
 
     def test_image_matches_groups_features_match(self) -> None:
         """Features filter should match correct tag."""
         spec_lookup = {"scatter-basic": {"tags": {"features": ["basic"]}}}
         groups = [{"category": "feat", "values": ["basic"]}]
-        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup) is True
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup, {}) is True
 
     def test_image_matches_groups_spec_not_in_lookup(self) -> None:
         """Spec not in lookup should not match."""
         spec_lookup = {}
-        assert _image_matches_groups("unknown", "matplotlib", [], spec_lookup) is False
+        assert _image_matches_groups("unknown", "matplotlib", [], spec_lookup, {}) is False
 
     def test_calculate_global_counts(self) -> None:
         """Global counts should tally all implementations."""
@@ -940,8 +940,9 @@ class TestPlotsHelperFunctions:
             {"spec_id": "scatter-basic", "library": "seaborn"},
         ]
         spec_tags = {"scatter-basic": {"plot_type": ["scatter"]}}
+        impl_lookup = {}  # Empty impl_lookup for this test
 
-        counts = _calculate_contextual_counts(images, spec_tags)
+        counts = _calculate_contextual_counts(images, spec_tags, impl_lookup)
         assert counts["lib"]["matplotlib"] == 1
         assert counts["lib"]["seaborn"] == 1
         assert counts["spec"]["scatter-basic"] == 2
@@ -949,7 +950,7 @@ class TestPlotsHelperFunctions:
 
     def test_calculate_or_counts_empty_groups(self) -> None:
         """Empty groups should return empty or_counts."""
-        counts = _calculate_or_counts([], [], {}, {})
+        counts = _calculate_or_counts([], [], {}, {}, {})
         assert counts == []
 
     def test_calculate_or_counts_single_group(self) -> None:
@@ -961,8 +962,9 @@ class TestPlotsHelperFunctions:
         ]
         spec_lookup = {"scatter-basic": {"tags": {}}}
         spec_tags = {"scatter-basic": {}}
+        impl_lookup = {}
 
-        counts = _calculate_or_counts(groups, images, spec_tags, spec_lookup)
+        counts = _calculate_or_counts(groups, images, spec_tags, spec_lookup, impl_lookup)
         assert len(counts) == 1
         # Each library appears once across all images
         assert counts[0]["matplotlib"] == 1

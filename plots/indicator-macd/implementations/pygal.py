@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 indicator-macd: MACD Technical Indicator Chart
-Library: pygal | Python 3.13
-Quality: pending | Created: 2025-01-07
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 78/100 | Created: 2026-01-07
 """
 
 import numpy as np

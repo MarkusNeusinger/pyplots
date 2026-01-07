@@ -1084,3 +1084,164 @@ class TestPlotsHelperFunctions:
         # Each library appears once across all images
         assert counts[0]["matplotlib"] == 1
         assert counts[0]["seaborn"] == 1
+
+    def test_calculate_or_counts_spec_category(self) -> None:
+        """OR counts for spec category."""
+        groups = [{"category": "spec", "values": ["scatter-basic"]}]
+        images = [{"spec_id": "scatter-basic", "library": "matplotlib"}]
+        spec_lookup = {"scatter-basic": {"tags": {}}}
+        spec_tags = {"scatter-basic": {}}
+        impl_lookup = {}
+        counts = _calculate_or_counts(groups, images, spec_tags, spec_lookup, impl_lookup)
+        assert counts[0]["scatter-basic"] == 1
+
+    def test_calculate_or_counts_plot_category(self) -> None:
+        """OR counts for plot category."""
+        groups = [{"category": "plot", "values": ["scatter"]}]
+        images = [{"spec_id": "scatter-basic", "library": "matplotlib"}]
+        spec_lookup = {"scatter-basic": {"tags": {"plot_type": ["scatter"]}}}
+        spec_tags = {"scatter-basic": {"plot_type": ["scatter"]}}
+        impl_lookup = {}
+        counts = _calculate_or_counts(groups, images, spec_tags, spec_lookup, impl_lookup)
+        assert counts[0]["scatter"] == 1
+
+    def test_calculate_or_counts_data_category(self) -> None:
+        """OR counts for data category."""
+        groups = [{"category": "data", "values": ["numeric"]}]
+        images = [{"spec_id": "scatter-basic", "library": "matplotlib"}]
+        spec_lookup = {"scatter-basic": {"tags": {"data_type": ["numeric"]}}}
+        spec_tags = {"scatter-basic": {"data_type": ["numeric"]}}
+        impl_lookup = {}
+        counts = _calculate_or_counts(groups, images, spec_tags, spec_lookup, impl_lookup)
+        assert counts[0]["numeric"] == 1
+
+    def test_calculate_or_counts_dom_category(self) -> None:
+        """OR counts for dom category."""
+        groups = [{"category": "dom", "values": ["statistics"]}]
+        images = [{"spec_id": "scatter-basic", "library": "matplotlib"}]
+        spec_lookup = {"scatter-basic": {"tags": {"domain": ["statistics"]}}}
+        spec_tags = {"scatter-basic": {"domain": ["statistics"]}}
+        impl_lookup = {}
+        counts = _calculate_or_counts(groups, images, spec_tags, spec_lookup, impl_lookup)
+        assert counts[0]["statistics"] == 1
+
+    def test_calculate_or_counts_feat_category(self) -> None:
+        """OR counts for feat category."""
+        groups = [{"category": "feat", "values": ["basic"]}]
+        images = [{"spec_id": "scatter-basic", "library": "matplotlib"}]
+        spec_lookup = {"scatter-basic": {"tags": {"features": ["basic"]}}}
+        spec_tags = {"scatter-basic": {"features": ["basic"]}}
+        impl_lookup = {}
+        counts = _calculate_or_counts(groups, images, spec_tags, spec_lookup, impl_lookup)
+        assert counts[0]["basic"] == 1
+
+    def test_calculate_or_counts_dep_category(self) -> None:
+        """OR counts for dep (dependencies) category."""
+        groups = [{"category": "dep", "values": ["scipy"]}]
+        images = [{"spec_id": "scatter-basic", "library": "matplotlib"}]
+        spec_lookup = {"scatter-basic": {"tags": {}}}
+        spec_tags = {"scatter-basic": {}}
+        impl_lookup = {("scatter-basic", "matplotlib"): {"dependencies": ["scipy", "sklearn"]}}
+        counts = _calculate_or_counts(groups, images, spec_tags, spec_lookup, impl_lookup)
+        assert counts[0]["scipy"] == 1
+        assert counts[0]["sklearn"] == 1
+
+    def test_calculate_or_counts_tech_category(self) -> None:
+        """OR counts for tech (techniques) category."""
+        groups = [{"category": "tech", "values": ["annotations"]}]
+        images = [{"spec_id": "scatter-basic", "library": "matplotlib"}]
+        spec_lookup = {"scatter-basic": {"tags": {}}}
+        spec_tags = {"scatter-basic": {}}
+        impl_lookup = {("scatter-basic", "matplotlib"): {"techniques": ["annotations", "colorbar"]}}
+        counts = _calculate_or_counts(groups, images, spec_tags, spec_lookup, impl_lookup)
+        assert counts[0]["annotations"] == 1
+        assert counts[0]["colorbar"] == 1
+
+    def test_calculate_or_counts_pat_category(self) -> None:
+        """OR counts for pat (patterns) category."""
+        groups = [{"category": "pat", "values": ["data-generation"]}]
+        images = [{"spec_id": "scatter-basic", "library": "matplotlib"}]
+        spec_lookup = {"scatter-basic": {"tags": {}}}
+        spec_tags = {"scatter-basic": {}}
+        impl_lookup = {("scatter-basic", "matplotlib"): {"patterns": ["data-generation"]}}
+        counts = _calculate_or_counts(groups, images, spec_tags, spec_lookup, impl_lookup)
+        assert counts[0]["data-generation"] == 1
+
+    def test_calculate_or_counts_prep_category(self) -> None:
+        """OR counts for prep (dataprep) category."""
+        groups = [{"category": "prep", "values": ["kde"]}]
+        images = [{"spec_id": "scatter-basic", "library": "matplotlib"}]
+        spec_lookup = {"scatter-basic": {"tags": {}}}
+        spec_tags = {"scatter-basic": {}}
+        impl_lookup = {("scatter-basic", "matplotlib"): {"dataprep": ["kde", "binning"]}}
+        counts = _calculate_or_counts(groups, images, spec_tags, spec_lookup, impl_lookup)
+        assert counts[0]["kde"] == 1
+        assert counts[0]["binning"] == 1
+
+    def test_calculate_or_counts_style_category(self) -> None:
+        """OR counts for style (styling) category."""
+        groups = [{"category": "style", "values": ["alpha-blending"]}]
+        images = [{"spec_id": "scatter-basic", "library": "matplotlib"}]
+        spec_lookup = {"scatter-basic": {"tags": {}}}
+        spec_tags = {"scatter-basic": {}}
+        impl_lookup = {("scatter-basic", "matplotlib"): {"styling": ["alpha-blending"]}}
+        counts = _calculate_or_counts(groups, images, spec_tags, spec_lookup, impl_lookup)
+        assert counts[0]["alpha-blending"] == 1
+
+    def test_image_matches_groups_spec_no_match(self) -> None:
+        """Spec filter should not match wrong spec_id."""
+        spec_lookup = {"scatter-basic": {"tags": {}}}
+        groups = [{"category": "spec", "values": ["bar-basic"]}]
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup, {}) is False
+
+    def test_image_matches_groups_plot_no_match(self) -> None:
+        """Plot type filter should not match wrong type."""
+        spec_lookup = {"scatter-basic": {"tags": {"plot_type": ["scatter"]}}}
+        groups = [{"category": "plot", "values": ["bar"]}]
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup, {}) is False
+
+    def test_image_matches_groups_data_no_match(self) -> None:
+        """Data type filter should not match wrong type."""
+        spec_lookup = {"scatter-basic": {"tags": {"data_type": ["numeric"]}}}
+        groups = [{"category": "data", "values": ["categorical"]}]
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup, {}) is False
+
+    def test_image_matches_groups_dom_no_match(self) -> None:
+        """Domain filter should not match wrong domain."""
+        spec_lookup = {"scatter-basic": {"tags": {"domain": ["statistics"]}}}
+        groups = [{"category": "dom", "values": ["finance"]}]
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup, {}) is False
+
+    def test_image_matches_groups_feat_no_match(self) -> None:
+        """Features filter should not match wrong feature."""
+        spec_lookup = {"scatter-basic": {"tags": {"features": ["basic"]}}}
+        groups = [{"category": "feat", "values": ["advanced"]}]
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup, {}) is False
+
+    def test_image_matches_groups_tech_no_match(self) -> None:
+        """Techniques filter should not match if not in impl_tags."""
+        spec_lookup = {"scatter-basic": {"tags": {}}}
+        impl_lookup = {("scatter-basic", "matplotlib"): {"techniques": ["annotations"]}}
+        groups = [{"category": "tech", "values": ["colorbar"]}]
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup, impl_lookup) is False
+
+    def test_image_matches_groups_pat_no_match(self) -> None:
+        """Patterns filter should not match if not in impl_tags."""
+        spec_lookup = {"scatter-basic": {"tags": {}}}
+        impl_lookup = {("scatter-basic", "matplotlib"): {"patterns": ["data-generation"]}}
+        groups = [{"category": "pat", "values": ["iteration-over-groups"]}]
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup, impl_lookup) is False
+
+    def test_image_matches_groups_prep_no_match(self) -> None:
+        """Dataprep filter should not match if not in impl_tags."""
+        spec_lookup = {"scatter-basic": {"tags": {}}}
+        impl_lookup = {("scatter-basic", "matplotlib"): {"dataprep": ["kde"]}}
+        groups = [{"category": "prep", "values": ["binning"]}]
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup, impl_lookup) is False
+
+    def test_image_matches_groups_style_no_match(self) -> None:
+        """Styling filter should not match if not in impl_tags."""
+        spec_lookup = {"scatter-basic": {"tags": {}}}
+        impl_lookup = {("scatter-basic", "matplotlib"): {"styling": ["alpha-blending"]}}
+        groups = [{"category": "style", "values": ["minimal-chrome"]}]
+        assert _image_matches_groups("scatter-basic", "matplotlib", groups, spec_lookup, impl_lookup) is False

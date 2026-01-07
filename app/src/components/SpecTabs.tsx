@@ -18,6 +18,22 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+// Map tag category names to URL parameter names
+const SPEC_TAG_PARAM_MAP: Record<string, string> = {
+  plot_type: 'plot',
+  data_type: 'data',
+  domain: 'dom',
+  features: 'feat',
+};
+
+const IMPL_TAG_PARAM_MAP: Record<string, string> = {
+  dependencies: 'dep',
+  techniques: 'tech',
+  patterns: 'pat',
+  dataprep: 'prep',
+  styling: 'style',
+};
+
 interface SpecTabsProps {
   // Code tab
   code: string | null;
@@ -156,6 +172,15 @@ export function SpecTabs({
   // In overview mode, start with Spec tab open; in detail mode, all collapsed
   const [tabIndex, setTabIndex] = useState<number | null>(overviewMode ? 0 : null);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+
+  // Handle tag click - navigate to filtered catalog (full page navigation)
+  const handleTagClick = useCallback(
+    (paramName: string, value: string) => {
+      onTrackEvent?.('tag_click', { param: paramName, value, source: 'spec_detail' });
+      window.location.href = `/?${paramName}=${encodeURIComponent(value)}`;
+    },
+    [onTrackEvent]
+  );
 
   const toggleCategory = (category: string) => {
     setExpandedCategories((prev) => ({ ...prev, [category]: !prev[category] }));
@@ -369,37 +394,43 @@ export function SpecTabs({
             </>
           )}
 
-          {/* Tags grouped by category - compact inline */}
+          {/* Tags grouped by category - compact inline, clickable */}
           {tags && Object.keys(tags).length > 0 && (
             <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid #e5e7eb', display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-              {Object.entries(tags).map(([category, values]) => (
-                <Box key={category} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <Typography
-                    component="span"
-                    sx={{
-                      fontFamily: '"MonoLisa", monospace',
-                      fontSize: '0.65rem',
-                      color: '#9ca3af',
-                    }}
-                  >
-                    {category.replace(/_/g, ' ')}:
-                  </Typography>
-                  {values.map((value, i) => (
-                    <Chip
-                      key={i}
-                      label={value}
-                      size="small"
+              {Object.entries(tags).map(([category, values]) => {
+                const paramName = SPEC_TAG_PARAM_MAP[category];
+                return (
+                  <Box key={category} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography
+                      component="span"
                       sx={{
                         fontFamily: '"MonoLisa", monospace',
                         fontSize: '0.65rem',
-                        height: 20,
-                        bgcolor: '#f3f4f6',
-                        color: '#4b5563',
+                        color: '#9ca3af',
                       }}
-                    />
-                  ))}
-                </Box>
-              ))}
+                    >
+                      {category.replace(/_/g, ' ')}:
+                    </Typography>
+                    {values.map((value, i) => (
+                      <Chip
+                        key={i}
+                        label={value}
+                        size="small"
+                        onClick={paramName ? () => handleTagClick(paramName, value) : undefined}
+                        sx={{
+                          fontFamily: '"MonoLisa", monospace',
+                          fontSize: '0.65rem',
+                          height: 20,
+                          bgcolor: '#f3f4f6',
+                          color: '#4b5563',
+                          cursor: paramName ? 'pointer' : 'default',
+                          '&:hover': paramName ? { bgcolor: '#e5e7eb' } : {},
+                        }}
+                      />
+                    ))}
+                  </Box>
+                );
+              })}
             </Box>
           )}
 
@@ -497,39 +528,45 @@ export function SpecTabs({
               </>
             )}
 
-            {/* Implementation Tags - only show non-empty categories */}
+            {/* Implementation Tags - only show non-empty categories, clickable */}
             {implTags && Object.entries(implTags).some(([, values]) => values && values.length > 0) && (
               <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid #e5e7eb', display: 'flex', flexWrap: 'wrap', gap: 2 }}>
                 {Object.entries(implTags)
                   .filter(([, values]) => values && values.length > 0)
-                  .map(([category, values]) => (
-                    <Box key={category} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                      <Typography
-                        component="span"
-                        sx={{
-                          fontFamily: '"MonoLisa", monospace',
-                          fontSize: '0.65rem',
-                          color: '#9ca3af',
-                        }}
-                      >
-                        {category}:
-                      </Typography>
-                      {values.map((value, i) => (
-                        <Chip
-                          key={i}
-                          label={value}
-                          size="small"
+                  .map(([category, values]) => {
+                    const paramName = IMPL_TAG_PARAM_MAP[category];
+                    return (
+                      <Box key={category} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <Typography
+                          component="span"
                           sx={{
                             fontFamily: '"MonoLisa", monospace',
                             fontSize: '0.65rem',
-                            height: 20,
-                            bgcolor: '#f3f4f6',
-                            color: '#4b5563',
+                            color: '#9ca3af',
                           }}
-                        />
-                      ))}
-                    </Box>
-                  ))}
+                        >
+                          {category}:
+                        </Typography>
+                        {values.map((value, i) => (
+                          <Chip
+                            key={i}
+                            label={value}
+                            size="small"
+                            onClick={paramName ? () => handleTagClick(paramName, value) : undefined}
+                            sx={{
+                              fontFamily: '"MonoLisa", monospace',
+                              fontSize: '0.65rem',
+                              height: 20,
+                              bgcolor: '#f3f4f6',
+                              color: '#4b5563',
+                              cursor: paramName ? 'pointer' : 'default',
+                              '&:hover': paramName ? { bgcolor: '#e5e7eb' } : {},
+                            }}
+                          />
+                        ))}
+                      </Box>
+                    );
+                  })}
               </Box>
             )}
 

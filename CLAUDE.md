@@ -618,6 +618,12 @@ Located in `.github/workflows/`:
 | **impl-merge.yml** | `ai-approved` label OR workflow_dispatch | Merges approved PR, creates metadata/{library}.yaml |
 | **bulk-generate.yml** | workflow_dispatch only | Dispatches multiple implementations (max 3 parallel) |
 
+### Report Workflows (`report-*.yml`)
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| **report-validate.yml** | `report-pending` label | Validates and structures user-submitted issue reports |
+
 ### Workflow Data Flow
 
 **Flow A: New Specification (with approval gate)**
@@ -672,6 +678,29 @@ impl-review.yml
             ├── Reads AI feedback
             ├── Fixes implementation
             └── Re-triggers impl-review.yml
+```
+
+**Flow C: Report Issue**
+
+```
+User submits report issue (from pyplots.ai or GitHub)
+    │
+    ▼ (report-pending label auto-added)
+    │
+report-validate.yml
+    ├── Validates spec/impl exists
+    ├── Reads specification and metadata
+    ├── AI analyzes the issue
+    ├── Posts structured analysis comment
+    ├── Updates title: [{spec-id}] {brief description}
+    └── Updates labels: report-validated + category:* + report:spec/impl
+    │
+    ▼
+Issue ready for maintainer review
+    │
+    ▼ (maintainer adds `approved` label)
+    │
+(Fix workflow - future implementation)
 ```
 
 ### Supporting Workflows
@@ -756,6 +785,20 @@ These are set automatically by `impl-review.yml` after AI evaluation and used by
 - **`infrastructure`** - Workflow, backend, or frontend issues
 - **`documentation`** - Documentation improvements
 - **`enhancement`** - New feature or improvement
+
+### Report Labels
+
+| Label | Purpose |
+|-------|---------|
+| `report:spec` | Issue with the specification (affects all libraries) |
+| `report:impl` | Issue with a specific implementation |
+| `report:impl:{library}` | Specific library affected (e.g., `report:impl:matplotlib`) |
+| `category:visual` | Design/visual issues |
+| `category:data` | Data quality issues |
+| `category:functional` | Non-functional elements |
+| `category:other` | Other issues |
+| `report-pending` | Report submitted, awaiting AI validation |
+| `report-validated` | AI validated, ready for maintainer review |
 
 ### New Specification Workflow
 

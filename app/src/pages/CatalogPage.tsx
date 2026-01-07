@@ -7,7 +7,7 @@ import Skeleton from '@mui/material/Skeleton';
 import Fab from '@mui/material/Fab';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
-import { API_URL } from '../constants';
+import { API_URL, GITHUB_URL } from '../constants';
 import { useAnalytics } from '../hooks';
 import { useAppData, useHomeState } from '../components/Layout';
 import { Footer } from '../components';
@@ -156,6 +156,7 @@ export function CatalogPage() {
         <Box
           sx={{
             display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
             mx: { xs: -2, sm: -4, md: -8, lg: -12 },
             mt: -5,
@@ -171,20 +172,38 @@ export function CatalogPage() {
             zIndex: 100,
           }}
         >
+          {/* Breadcrumb links */}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box
+              component={Link}
+              to="/"
+              sx={{
+                color: '#3776AB',
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' },
+              }}
+            >
+              pyplots.ai
+            </Box>
+            <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
+            <Box component="span" sx={{ color: '#4b5563' }}>
+              catalog
+            </Box>
+          </Box>
+
+          {/* Suggest spec link */}
           <Box
-            component={Link}
-            to="/"
+            component="a"
+            href={`${GITHUB_URL}/issues/new?template=spec-request.yml`}
+            target="_blank"
+            rel="noopener noreferrer"
             sx={{
-              color: '#3776AB',
+              color: '#9ca3af',
               textDecoration: 'none',
-              '&:hover': { textDecoration: 'underline' },
+              '&:hover': { color: '#3776AB' },
             }}
           >
-            pyplots.ai
-          </Box>
-          <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
-          <Box component="span" sx={{ color: '#4b5563' }}>
-            catalog
+            suggest spec
           </Box>
         </Box>
 

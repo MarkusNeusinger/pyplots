@@ -28,7 +28,26 @@ spec-create.yml (merge job)
   |-- Triggers sync-postgres.yml
 ```
 
-### 2. Implementation Pipeline
+### 2. Report Pipeline
+
+See [Report Issues](report-issue.md) for details.
+
+```
+User reports issue (from pyplots.ai or GitHub)
+       |
+       v (report-pending label auto-added)
+       |
+report-validate.yml
+  |-- Validates spec/impl exists
+  |-- AI analyzes the issue
+  |-- Posts structured analysis comment
+  |-- Updates labels: report-validated + category:*
+       |
+       v
+Ready for maintainer review
+```
+
+### 3. Implementation Pipeline
 
 ```
 Issue + [generate:{library}] label  OR  workflow_dispatch
@@ -98,6 +117,20 @@ impl-review.yml
 | `approved` | Human approved specification | Maintainer |
 | `rejected` | Human rejected | Maintainer |
 
+### Report Labels (on Issues)
+
+| Label | Meaning | Set By |
+|-------|---------|--------|
+| `report-pending` | Report submitted, awaiting validation | Auto (template) |
+| `report-validated` | AI validated, ready for review | Workflow |
+| `report:spec` | Issue with specification | Workflow |
+| `report:impl` | Issue with implementation | Workflow |
+| `report:impl:{library}` | Specific library affected | Workflow |
+| `category:visual` | Design/visual issues | Workflow |
+| `category:data` | Data quality issues | Workflow |
+| `category:functional` | Non-functional elements | Workflow |
+| `category:other` | Other issues | Workflow |
+
 ---
 
 ## Quality Workflow
@@ -134,6 +167,7 @@ Located in `.github/workflows/`:
 | `impl-merge.yml` | Merges approved PRs |
 | `bulk-generate.yml` | Batch implementation generation |
 | `sync-postgres.yml` | Syncs plots/ to database |
+| `report-validate.yml` | Validates user-submitted issue reports |
 
 ---
 

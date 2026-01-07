@@ -118,24 +118,23 @@ pyplots/
 
 We welcome contributions! **All code is AI-generated** - you propose ideas, AI implements them.
 
-**How to contribute**:
+**Three ways to contribute** (from [pyplots.ai](https://pyplots.ai) or GitHub):
 
-1. **Propose plot ideas** - Create GitHub Issue with plot description (what you want to visualize)
-2. **Improve specs** - Suggest better descriptions for existing plots
-3. **Report issues** - Found bugs or quality problems? Open an Issue
-4. **Improve docs** - Help others understand the project
+| Action | When to Use | From pyplots.ai |
+|--------|-------------|-----------------|
+| **Suggest Spec** | Propose a new plot type | "suggest spec" link in catalog |
+| **Report Spec Issue** | Problem with a specification | "report issue" link on spec page |
+| **Report Impl Issue** | Problem with a library implementation | "report issue" link on impl page |
 
-**The workflow**:
+**How it works**:
 
-1. You create Issue with plot idea + add `spec-request` label
-2. AI generates spec, creates feature branch
-3. Maintainer reviews and adds `approved` label
-4. 9 library implementations generate in parallel (tracked via live status table)
-5. AI quality review per library (≥ 90 instant, < 90 repair loop, ≥ 50 final threshold)
-6. Auto-merge to feature branch, then to main
+1. You create Issue (or click link on pyplots.ai)
+2. AI validates and processes your input
+3. Maintainer reviews and approves
+4. AI generates/fixes the code
+5. Automated quality review ensures excellence
 
-**Important**: Don't submit code directly! If a plot has quality issues, it means the spec needs improvement, not the
-code.
+**Important**: Don't submit code directly! If a plot has quality issues, it means the spec needs improvement, not the code.
 
 See [contributing.md](docs/contributing.md) for details.
 
@@ -167,6 +166,6 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 **Built by [Markus Neusinger](https://linkedin.com/in/markus-neusinger/)**
 
-[⭐ Star us on GitHub](https://github.com/MarkusNeusinger/pyplots) • [🐛 Report Bug](https://github.com/MarkusNeusinger/pyplots/issues) • [💡 Request Feature](https://github.com/MarkusNeusinger/pyplots/issues)
+[⭐ Star us on GitHub](https://github.com/MarkusNeusinger/pyplots) • [💡 Suggest Spec](https://github.com/MarkusNeusinger/pyplots/issues/new?template=spec-request.yml) • [🐛 Report Issue](https://github.com/MarkusNeusinger/pyplots/issues/new?template=report-issue.yml)
 
 </div>

@@ -29,7 +29,7 @@ export type FilterCategory =
 export const FILTER_LABELS: Record<FilterCategory, string> = {
   // Spec-level
   lib: 'library',
-  spec: 'example',
+  spec: 'spec',
   plot: 'type',
   data: 'data',
   dom: 'field',
@@ -46,7 +46,7 @@ export const FILTER_LABELS: Record<FilterCategory, string> = {
 export const FILTER_TOOLTIPS: Record<FilterCategory, string> = {
   // Spec-level: WHAT is visualized
   lib: 'python plotting library',
-  spec: 'specific plot example by identifier',
+  spec: 'plot specification by identifier',
   plot: 'type of visualization or chart',
   data: 'structure of the input data',
   dom: 'application domain or field',

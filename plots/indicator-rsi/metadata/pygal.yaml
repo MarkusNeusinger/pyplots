@@ -1,7 +1,7 @@
 library: pygal
 specification_id: indicator-rsi
 created: '2026-01-07T20:21:37Z'
-updated: '2026-01-07T20:29:49Z'
+updated: '2026-01-07T20:38:13Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20795216382
 issue: 3229
@@ -10,36 +10,35 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/indicator-rsi/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/indicator-rsi/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/indicator-rsi/pygal/plot.html
-quality_score: 85
+quality_score: 78
 review:
   strengths:
   - Correct RSI calculation using EMA method with 14-period lookback
-  - All three threshold lines (30, 50, 70) properly implemented with distinct colors
-    and dashed styling
-  - Clean, readable layout with proper axis labeling including lookback period info
-  - Good use of pygal interpolation for smooth RSI line
-  - Proper Y-axis range fixed at 0-100 as required
+  - Clean code structure following KISS principles
+  - Proper title format and descriptive axis labels
+  - Good use of dashed lines for threshold visualization
+  - Reproducible with fixed random seed
   weaknesses:
-  - RSI data never enters overbought zone (>70), limiting demonstration of full indicator
-    utility
-  - Specification suggests shading overbought/oversold zones for visual clarity, which
-    is not implemented
-  - Legend at bottom with small box sizes could be more prominent
-  - RSI line and threshold lines could be slightly thicker for better visibility
-  image_description: 'The plot displays an RSI (Relative Strength Index) technical
-    indicator chart on a white background. The title "indicator-rsi · pygal · pyplots.ai"
-    is shown at the top in a legible font. The Y-axis is labeled "RSI Value (0-100)"
-    with a proper 0-100 scale. The X-axis is labeled "Trading Period (120 days, 14-period
-    RSI lookback)". A blue RSI line oscillates across 120 periods, showing values
-    ranging roughly from 25 to 65, with typical momentum indicator behavior. Three
-    horizontal threshold lines are displayed: a green dashed line at 70 (overbought),
-    a red dashed line at 30 (oversold), and a gray dashed line at 50 (centerline).
-    The legend at the bottom clearly identifies all four series: RSI (14), Overbought
-    (70), Oversold (30), and Centerline (50). The chart uses cubic interpolation for
-    smooth lines and has subtle horizontal grid lines.'
+  - Zone shading (overbought 70-100 red, oversold 0-30 green) is not visible in output
+    despite being coded - the fill=True approach creates filled area from 0 to the
+    line value, not a horizontal band
+  - RSI data never enters overbought zone (>70) - maximum value is approximately 66,
+    missing half of the key feature demonstration
+  - Legend is incomplete - zone fill series entries not showing
+  image_description: 'The plot displays an RSI (Relative Strength Index) line chart
+    on a white background. The blue RSI line oscillates between approximately 26 and
+    66 over 120 trading periods, using cubic interpolation for smooth curves. Horizontal
+    dashed reference lines are present: green at 70 (overbought threshold), red at
+    30 (oversold threshold), and gray at 50 (centerline). The Y-axis is correctly
+    fixed from 0 to 100 with label "RSI Value (0-100)". The X-axis shows "Trading
+    Period (120 days, 14-period RSI lookback)". Title correctly formatted as "indicator-rsi
+    · pygal · pyplots.ai". Legend at bottom shows RSI (14), Overbought (70), Oversold
+    (30), and Centerline (50). However, the overbought/oversold zone shading is NOT
+    visible despite being coded, and the RSI line never enters the overbought zone
+    (>70).'
   criteria_checklist:
     visual_quality:
-      score: 33
+      score: 32
       max: 40
       items:
       - id: VQ-01
@@ -47,8 +46,8 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Title and axis labels are readable, but Y-axis label uses monospace
-          font that could be cleaner
+        comment: Text is readable but title and labels could be larger for 4800x2700
+          canvas
       - id: VQ-02
         name: No Overlap
         score: 8
@@ -60,34 +59,34 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: RSI line is visible but could be thicker; threshold lines are somewhat
-          thin
+        comment: RSI line visible with good stroke width, but zone shading not rendering
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Blue/green/red/gray are distinguishable and colorblind-safe
+        comment: Blue RSI line, red/green thresholds with dashed patterns distinguish
+          them
       - id: VQ-05
         name: Layout Balance
         score: 3
         max: 5
         passed: true
-        comment: Good use of canvas but legend placement at bottom creates extra whitespace
+        comment: Good canvas use but legend items appear incomplete
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units (0-100 scale)
+        comment: Descriptive labels with context
       - id: VQ-07
         name: Grid & Legend
-        score: 1
+        score: 0
         max: 2
-        passed: true
-        comment: Grid is subtle but legend could be more prominent
+        passed: false
+        comment: Zone fill series not visible; legend missing zone entries
     spec_compliance:
-      score: 24
+      score: 18
       max: 25
       items:
       - id: SC-01
@@ -101,58 +100,56 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: RSI values correctly mapped over time periods
+        comment: RSI values correctly mapped to Y-axis over time
       - id: SC-03
         name: Required Features
-        score: 5
+        score: 2
         max: 5
-        passed: true
-        comment: Has overbought (70), oversold (30), and optional centerline (50)
+        passed: false
+        comment: Missing visible zone shading for overbought and oversold zones
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Y-axis properly fixed from 0-100
+        comment: Y-axis correctly fixed 0-100
       - id: SC-05
         name: Legend Accuracy
+        score: 0
+        max: 2
+        passed: false
+        comment: Legend missing zone fill entries
+      - id: SC-06
+        name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Legend labels correctly identify all series
-      - id: SC-06
-        name: Title Format
-        score: 1
-        max: 2
-        passed: true
-        comment: Uses correct format but title font could be larger
+        comment: Correct format indicator-rsi · pygal · pyplots.ai
     data_quality:
-      score: 16
+      score: 15
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 8
-        passed: true
-        comment: RSI shows variation but doesn't cross into overbought zone (>70);
-          only approaches oversold
+        passed: false
+        comment: RSI enters oversold but never overbought zone (max ~66), should show
+          both extremes
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Technical trading indicator with realistic RSI calculation using
-          14-period lookback
+        comment: Plausible RSI scenario with trending periods
       - id: DQ-03
         name: Appropriate Scale
         score: 3
         max: 5
         passed: true
-        comment: RSI values are valid (0-100) but data never demonstrates overbought
-          condition
+        comment: Values within valid RSI range but missing overbought excursions
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -160,7 +157,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple imports → data → plot → save structure
+        comment: 'Linear structure: imports → data → chart → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -172,19 +169,19 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Only numpy, pygal, and Style are imported
+        comment: Only numpy, pygal, and Style imported
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Current pygal API used
+        comment: Current pygal API usage
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Saves plot.png but spec recommends shading for visual clarity
+        passed: true
+        comment: Saves as plot.png and plot.html
     library_features:
       score: 3
       max: 5
@@ -194,8 +191,8 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses pygal custom Style, cubic interpolation, and stroke_style for
-          dashed lines, but doesn't utilize fill_between or other advanced features
+        comment: Uses pygal Style customization, cubic interpolation, stroke_style;
+          but fill=True for zones not working as intended
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -203,6 +200,8 @@ impl_tags:
   - html-export
   patterns:
   - data-generation
+  - iteration-over-groups
   dataprep:
   - rolling-window
-  styling: []
+  styling:
+  - grid-styling

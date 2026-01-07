@@ -1,0 +1,28 @@
+# Specification-level metadata for indicator-rsi
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: indicator-rsi
+title: RSI Technical Indicator Chart
+
+# Specification tracking
+created: 2026-01-07T20:05:43Z
+updated: null
+issue: 3229
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - line
+    - indicator
+  data_type:
+    - timeseries
+    - numeric
+  domain:
+    - finance
+    - trading
+  features:
+    - basic
+    - threshold
+    - oscillator

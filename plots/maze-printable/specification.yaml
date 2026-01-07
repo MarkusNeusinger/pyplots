@@ -1,0 +1,28 @@
+# Specification-level metadata for maze-printable
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: maze-printable
+title: Printable Maze Puzzle
+
+# Specification tracking
+created: 2026-01-07T20:05:58Z
+updated: null
+issue: 3232
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - maze
+    - grid
+  data_type:
+    - discrete
+    - matrix
+  domain:
+    - general
+    - education
+  features:
+    - basic
+    - algorithmic
+    - printable

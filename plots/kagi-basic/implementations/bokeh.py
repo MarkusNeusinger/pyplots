@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 kagi-basic: Basic Kagi Chart
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-08
@@ -129,7 +129,7 @@ for xs, ys in zip(yin_xs, yin_ys, strict=True):
     r = p.line(xs, ys, line_width=4, line_color=YIN_COLOR, line_cap="round")
     yin_renderers.append(r)
 
-# Add legend
+# Add legend inside the plot area
 legend = Legend(
     items=[
         LegendItem(label="Yang (Bullish)", renderers=[yang_renderers[0]] if yang_renderers else []),
@@ -137,8 +137,12 @@ legend = Legend(
     ],
     location="top_left",
     label_text_font_size="20pt",
+    background_fill_alpha=0.8,
+    background_fill_color="white",
+    border_line_color="gray",
+    border_line_width=1,
 )
-p.add_layout(legend, "right")
+p.add_layout(legend)
 
 # Style configuration
 p.title.text_font_size = "32pt"

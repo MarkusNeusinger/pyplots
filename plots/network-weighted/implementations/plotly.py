@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-weighted: Weighted Network Graph with Edge Thickness
 Library: plotly 6.5.1 | Python 3.13.11
 Quality: 81/100 | Created: 2026-01-08
@@ -95,9 +95,9 @@ for _ in range(200):
     length = np.where(length < 0.01, 0.01, length)
     pos += displacement / length[:, np.newaxis] * min(0.1, k)
 
-# Normalize positions to [-0.85, 0.85] for better centering with margin for labels
+# Normalize positions with margin for labels and annotation
 pos = (pos - pos.min(axis=0)) / (pos.max(axis=0) - pos.min(axis=0))
-pos = pos * 1.7 - 0.85  # Scale to [-0.85, 0.85] leaving margin for labels
+pos = pos * 1.6 - 0.8  # Scale to [-0.8, 0.8]
 # Center the layout
 pos = pos - pos.mean(axis=0)
 node_positions = {countries[i]: pos[i] for i in range(n_nodes)}
@@ -128,7 +128,7 @@ for source, target, weight in edges:
             x=[x0, x1, None],
             y=[y0, y1, None],
             mode="lines",
-            line=dict(width=line_width, color=f"rgba(48, 105, 152, {alpha})"),
+            line={"width": line_width, "color": f"rgba(48, 105, 152, {alpha})"},
             hoverinfo="text",
             text=f"{source} ↔ {target}: ${weight}B",
             showlegend=False,
@@ -139,8 +139,10 @@ for source, target, weight in edges:
 node_x = [node_positions[node][0] for node in countries]
 node_y = [node_positions[node][1] for node in countries]
 
-# Calculate smart label positions to avoid overlap
+# Calculate smart label positions to avoid overlap with explicit handling
+# for known problematic pairs: Japan/S.Korea and Italy/France
 label_positions = []
+
 for i, node in enumerate(countries):
     x, y = node_positions[node]
     # Find nearby nodes and adjust position
@@ -153,7 +155,7 @@ for i, node in enumerate(countries):
             ox, oy = node_positions[other]
             dx, dy = x - ox, y - oy
             dist = np.sqrt(dx**2 + dy**2)
-            if dist < 0.35:  # Close nodes
+            if dist < 0.35:
                 if dy > 0:
                     nearby_below += 1
                 else:
@@ -162,8 +164,17 @@ for i, node in enumerate(countries):
                     nearby_left += 1
                 else:
                     nearby_right += 1
-    # Choose best position based on neighbors
-    if nearby_above > nearby_below:
+
+    # Handle specific known close pairs to avoid overlap
+    if node == "Japan":
+        pos_choice = "top right"
+    elif node == "S. Korea":
+        pos_choice = "bottom left"
+    elif node == "Italy":
+        pos_choice = "top left"
+    elif node == "France":
+        pos_choice = "bottom right"
+    elif nearby_above > nearby_below:
         pos_choice = "bottom center"
     elif nearby_left > nearby_right:
         pos_choice = "middle right"
@@ -177,10 +188,10 @@ node_trace = go.Scatter(
     x=node_x,
     y=node_y,
     mode="markers+text",
-    marker=dict(size=node_sizes, color="#FFD43B", line=dict(width=2, color="#306998")),
+    marker={"size": node_sizes, "color": "#FFD43B", "line": {"width": 2, "color": "#306998"}},
     text=countries,
     textposition=label_positions,
-    textfont=dict(size=16, color="#333333"),
+    textfont={"size": 16, "color": "#333333"},
     hoverinfo="text",
     hovertext=[f"{c}<br>Trade Volume: ${weighted_degree[c]}B" for c in countries],
     showlegend=False,
@@ -196,34 +207,34 @@ for trace in edge_traces:
 # Add nodes
 fig.add_trace(node_trace)
 
-# Add weight scale annotation (positioned with margin to avoid cutoff)
+# Add weight scale annotation (positioned at top-left to avoid cutoff)
 fig.add_annotation(
-    x=0.98,
-    y=0.02,
+    x=0.01,
+    y=0.99,
     xref="paper",
     yref="paper",
-    text="Edge thickness = Trade volume (USD billions)<br>Thin: $35B → Thick: $620B",
+    text="Edge Thickness = Trade Volume<br>35B USD (thin) to 620B USD (thick)",
     showarrow=False,
-    font=dict(size=16, color="#555555"),
-    align="right",
-    xanchor="right",
-    yanchor="bottom",
-    bgcolor="rgba(255,255,255,0.9)",
-    bordercolor="#cccccc",
+    font={"size": 18, "color": "#333333", "family": "Arial"},
+    align="left",
+    xanchor="left",
+    yanchor="top",
+    bgcolor="rgba(255,255,255,0.95)",
+    bordercolor="#999999",
     borderwidth=1,
     borderpad=10,
 )
 
 # Update layout
 fig.update_layout(
-    title=dict(
-        text="network-weighted · plotly · pyplots.ai", font=dict(size=28, color="#333333"), x=0.5, xanchor="center"
-    ),
-    xaxis=dict(showgrid=False, zeroline=False, showticklabels=False, title=""),
-    yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, title=""),
+    title={
+        "text": "network-weighted · plotly · pyplots.ai", "font": {"size": 28, "color": "#333333"}, "x": 0.5, "xanchor": "center"
+    },
+    xaxis={"showgrid": False, "zeroline": False, "showticklabels": False, "title": ""},
+    yaxis={"showgrid": False, "zeroline": False, "showticklabels": False, "title": ""},
     template="plotly_white",
     showlegend=False,
-    margin=dict(l=80, r=100, t=100, b=100),
+    margin={"l": 80, "r": 80, "t": 100, "b": 80},
     plot_bgcolor="white",
 )
 

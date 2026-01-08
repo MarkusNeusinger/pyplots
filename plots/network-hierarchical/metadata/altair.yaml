@@ -1,7 +1,7 @@
 library: altair
 specification_id: network-hierarchical
 created: '2026-01-08T21:56:31Z'
-updated: '2026-01-08T22:10:31Z'
+updated: '2026-01-08T22:18:32Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20832958550
 issue: 3343
@@ -10,78 +10,84 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/network-hierarchical/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-hierarchical/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/network-hierarchical/altair/plot.html
-quality_score: 85
+quality_score: 91
 review:
   strengths:
-  - Excellent hierarchical layout algorithm with subtree-width-based positioning
-  - Good color scheme using Python colors (blue/yellow) that is colorblind-accessible
-  - Proper use of layer composition for edges, nodes, and labels
-  - Custom legend with human-readable level names using labelExpr
-  - Interactive tooltips for hover information
-  - Title and subtitle follow the correct format exactly
+  - Excellent hierarchical tree layout algorithm that properly positions nodes based
+    on subtree widths
+  - Layer composition (edge_layer, node_layer, label_layer) demonstrates Altair declarative
+    layering
+  - Color scheme effectively differentiates hierarchy levels with semantic legend
+    labels
+  - Interactive tooltips available on hover for node details
+  - Clean subtitle provides context about the visualization
   weaknesses:
-  - Bottom-level labels are crowded - some adjacent labels nearly touch each other
-  - Saves both PNG and HTML but specification only requires PNG output
-  - Layout calculation code is complex (necessary for the algorithm but reduces simplicity)
-  image_description: 'The plot shows a hierarchical organizational chart with 30 nodes
-    arranged across 4 vertical levels (CEO at top, VPs, Directors, and Managers/Leads
-    at bottom). Nodes are represented as circles with white strokes. Color coding
-    by level: dark blue (#306998) for Executive (CEO), lighter blue (#4B8BBE) for
-    VPs, yellow (#FFD43B) for Directors, and gray (#646464) for Managers. Gray edges
-    connect parent-child relationships as straight lines with ~40% opacity. Labels
-    appear above each node in dark gray text. The legend on the right shows the 4
-    levels (Executive, VP, Director, Manager). Title follows the correct format with
-    a subtitle explaining the data context. The tree layout properly positions nodes
-    to avoid overlap with subtree-width-based horizontal spacing.'
+  - Some label overlap at the bottom level between adjacent nodes (e.g., Lead Cloud
+    Lead Security)
+  - Code comments indicate 25 employees but the actual implementation and subtitle
+    say 30
+  image_description: The plot displays a hierarchical network graph representing an
+    organizational chart with 30 employees distributed across 4 management levels.
+    The CEO node is positioned at the top center in dark blue (#306998). Four VP nodes
+    (VP Engineering, VP Sales, VP Marketing, VP Operations) are shown in lighter blue
+    (#4B8BBE) at level 1. Eight Director nodes appear in yellow (#FFD43B) at level
+    2 (Dir Frontend, Dir Backend, Dir DevOps, Dir East, Dir West, Dir Digital, Dir
+    Brand, Dir Logistics, Dir Facilities). Seventeen Manager/Lead nodes are displayed
+    in gray (#646464) at the bottom level (Lead UI, Lead UX, Lead API, Lead Data,
+    Lead Cloud, Lead Security, Mgr Northeast, Mgr Southeast, Mgr Northwest, Mgr Southwest,
+    Mgr Social, Mgr Content, Mgr PR, Mgr Design, Mgr Supply, Mgr Office). Nodes are
+    connected by gray semi-transparent edges showing parent-child relationships. The
+    title uses the correct format "network-hierarchical · altair · pyplots.ai" with
+    a subtitle. A legend on the right shows level-to-role mapping (Executive, VP,
+    Director, Manager).
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 35
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 9
         max: 10
         passed: true
-        comment: Most text readable, but bottom-level labels are slightly crowded
-          and some adjacent labels nearly touch
+        comment: Title 28pt readable, labels 16pt readable but some bottom labels
+          slightly crowded
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 8
         passed: true
-        comment: Minor crowding at bottom level where some labels are very close together
+        comment: Minor overlap between some adjacent labels at bottom level
       - id: VQ-03
         name: Element Visibility
         score: 8
         max: 8
         passed: true
-        comment: Node circles are well-sized (size=1200) with good stroke width
+        comment: Node size 1200 with white stroke is excellent for 30 nodes
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Blue-yellow-gray palette is colorblind-safe
+        comment: Blue/yellow/gray scheme is colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Good use of canvas but bottom level slightly compressed
+        comment: Good use of canvas, tree centered, legend well-positioned
       - id: VQ-06
         name: Axis Labels
+        score: 0
+        max: 2
+        passed: true
+        comment: N/A for network graphs (axes hidden appropriately)
+      - id: VQ-07
+        name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: N/A for network graph, no axis needed
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
-        passed: false
-        comment: Legend is well placed but view has no stroke (strokeWidth=0 is intentional
-          for network plots)
+        comment: Legend clear with semantic labels, no grid needed
     spec_compliance:
       score: 25
       max: 25
@@ -97,32 +103,32 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Parent-child relationships correctly mapped with edges
+        comment: Nodes positioned by level (y) and subtree width (x)
       - id: SC-03
         name: Required Features
         score: 5
         max: 5
         passed: true
-        comment: 'All spec features present: levels, labels, tree structure, proper
-          spacing'
+        comment: Tree layout, parent-child edges, level-based positioning, root at
+          top
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All 30 nodes and 29 edges visible
+        comment: All 30 nodes visible across 4 levels
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly maps levels to semantic labels
+        comment: Legend correctly maps levels to role names
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Uses correct format network-hierarchical · altair · pyplots.ai
+        comment: Uses network-hierarchical · altair · pyplots.ai
     data_quality:
       score: 18
       max: 20
@@ -132,23 +138,22 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows 4 levels with varying branch widths, demonstrates hierarchical
-          structure well
+        comment: Shows hierarchy depth, branching patterns, but all branch widths
+          are uniform
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Real organizational chart scenario with plausible roles
+        comment: Organizational chart is a realistic scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: 30 employees across 4 levels is reasonable, though bottom level is
-          dense
+        comment: 30 employees across 4 levels is reasonable; spec suggested 10-50
     code_quality:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: CQ-01
@@ -156,50 +161,48 @@ review:
         score: 2
         max: 3
         passed: true
-        comment: Mostly linear but uses some iteration for layout calculation (acceptable
-          for network graphs)
+        comment: Manual tree layout algorithm adds complexity, but needed for Altair
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports (altair, numpy, pandas)
+        comment: All imports used
       - id: CQ-04
         name: No Deprecated API
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Using mark_rule with x/y/x2/y2 encoding which works but not idiomatic
+        passed: true
+        comment: Current Altair 6.0 API
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
-        passed: false
-        comment: Saves as both plot.png and plot.html
+        passed: true
+        comment: Saves as plot.png correctly
     library_features:
-      score: 3
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Uses layer composition, mark_rule for edges, mark_circle and mark_text
-          for nodes/labels, custom legend with labelExpr, tooltips
-  verdict: REJECTED
+        comment: Layer composition with mark_line detail encoding, mark_circle, mark_text;
+          declarative approach; proper use of scale/legend configuration
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
   - hover-tooltips
-  - html-export
   - custom-legend
   patterns:
   - data-generation

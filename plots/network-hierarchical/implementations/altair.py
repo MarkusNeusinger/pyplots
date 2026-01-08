@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 network-hierarchical: Hierarchical Network Graph with Tree Layout
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 85/100 | Created: 2026-01-08
+Quality: 91/100 | Created: 2026-01-08
 """
 
 import altair as alt

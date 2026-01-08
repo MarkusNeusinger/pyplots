@@ -1,0 +1,27 @@
+# Specification-level metadata for heatmap-interactive
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: heatmap-interactive
+title: Interactive Heatmap with Hover and Zoom
+
+# Specification tracking
+created: 2026-01-08T15:44:17Z
+updated: null
+issue: 3289
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - heatmap
+  data_type:
+    - numeric
+    - matrix
+  domain:
+    - general
+    - statistics
+    - science
+  features:
+    - interactive
+    - color-mapped

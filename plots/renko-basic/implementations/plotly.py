@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 renko-basic: Basic Renko Chart
-Library: plotly | Python 3.13
-Quality: pending | Created: 2026-01-08
+Library: plotly 6.5.1 | Python 3.13.11
+Quality: 92/100 | Created: 2026-01-08
 """
 
 import numpy as np

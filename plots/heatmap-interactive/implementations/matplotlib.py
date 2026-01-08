@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-interactive: Interactive Heatmap with Hover and Zoom
 Library: matplotlib 3.10.8 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-08
@@ -66,14 +66,8 @@ ax.set_xlabel("Time of Day", fontsize=20)
 ax.set_ylabel("Server", fontsize=20)
 ax.set_title("heatmap-interactive · matplotlib · pyplots.ai", fontsize=24, pad=15)
 
-# Add subtle cell borders using very thin lines
-for i in range(len(rows) + 1):
-    ax.axhline(y=i - 0.5, color="white", linewidth=0.5, alpha=0.3)
-for j in range(len(cols) + 1):
-    ax.axvline(x=j - 0.5, color="white", linewidth=0.5, alpha=0.3)
-
-# Disable the minor tick grid system
-ax.tick_params(which="minor", bottom=False, left=False)
+# Remove grid entirely for cleaner appearance - cell colors provide enough visual separation
+ax.tick_params(which="both", bottom=False, left=False)
 
 # Add instruction text for interactivity context
 fig.text(

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 kagi-basic: Basic Kagi Chart
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-08
@@ -6,6 +6,7 @@ Quality: 85/100 | Created: 2026-01-08
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 
 
@@ -76,32 +77,52 @@ for price in prices[1:]:
             if price > last_high:
                 last_high = price
 
-# Create figure with seaborn styling
+# Build DataFrame for seaborn lineplot - create line data for each segment
+line_data = []
+line_id = 0
+
+for i, seg in enumerate(segments):
+    segment_type = "Yang (Bullish)" if seg["yang"] else "Yin (Bearish)"
+
+    # Vertical line segment
+    line_data.append({"x": i, "y": seg["start"], "segment": line_id, "type": segment_type})
+    line_data.append({"x": i, "y": seg["end"], "segment": line_id, "type": segment_type})
+    line_id += 1
+
+    # Horizontal connector to next segment
+    if i < len(segments) - 1:
+        line_data.append({"x": i, "y": seg["end"], "segment": line_id, "type": segment_type})
+        line_data.append({"x": i + 1, "y": seg["end"], "segment": line_id, "type": segment_type})
+        line_id += 1
+
+df = pd.DataFrame(line_data)
+
+# Create figure
 fig, ax = plt.subplots(figsize=(16, 9))
 
 # Colors per specification: green for yang (bullish), red for yin (bearish)
-yang_color = "#2E8B57"  # Sea green for bullish
-yin_color = "#DC143C"  # Crimson for bearish
+palette = {"Yang (Bullish)": "#2E8B57", "Yin (Bearish)": "#DC143C"}
+size_map = {"Yang (Bullish)": 5, "Yin (Bearish)": 2}
 
-# Plot Kagi chart segments
-x_pos = 0
-for i, seg in enumerate(segments):
-    # Determine line properties based on yang/yin
-    color = yang_color if seg["yang"] else yin_color
-    linewidth = 5 if seg["yang"] else 2  # Thick for yang, thin for yin
+# Use seaborn lineplot for each segment type separately to control line width
+for segment_type in ["Yang (Bullish)", "Yin (Bearish)"]:
+    type_df = df[df["type"] == segment_type]
+    for seg_id in type_df["segment"].unique():
+        seg_df = type_df[type_df["segment"] == seg_id]
+        sns.lineplot(
+            data=seg_df,
+            x="x",
+            y="y",
+            color=palette[segment_type],
+            linewidth=size_map[segment_type],
+            ax=ax,
+            legend=False,
+            solid_capstyle="butt",
+        )
 
-    # Draw vertical line for this segment
-    ax.plot([x_pos, x_pos], [seg["start"], seg["end"]], color=color, linewidth=linewidth, solid_capstyle="butt")
-
-    # Draw horizontal connector to next segment (shoulder/waist)
-    if i < len(segments) - 1:
-        ax.plot([x_pos, x_pos + 1], [seg["end"], seg["end"]], color=color, linewidth=linewidth, solid_capstyle="butt")
-
-    x_pos += 1
-
-# Add legend with seaborn-compatible styling
-yang_line = plt.Line2D([0], [0], color=yang_color, linewidth=5, label="Yang (Bullish)")
-yin_line = plt.Line2D([0], [0], color=yin_color, linewidth=2, label="Yin (Bearish)")
+# Create legend manually for clarity
+yang_line = plt.Line2D([0], [0], color="#2E8B57", linewidth=5, label="Yang (Bullish)")
+yin_line = plt.Line2D([0], [0], color="#DC143C", linewidth=2, label="Yin (Bearish)")
 ax.legend(handles=[yang_line, yin_line], loc="upper left", fontsize=16, framealpha=0.9)
 
 # Labels and styling
@@ -110,8 +131,8 @@ ax.set_ylabel("Price ($)", fontsize=20)
 ax.set_title("kagi-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold")
 ax.tick_params(axis="both", labelsize=16)
 
-# Subtle grid (seaborn whitegrid already provides this)
-ax.grid(True, alpha=0.3, linestyle="--")
+# Subtle solid grid (not dashed - cleaner appearance)
+ax.grid(True, alpha=0.3, linestyle="-")
 ax.set_axisbelow(True)
 
 # Set axis limits with padding

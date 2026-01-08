@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 network-hierarchical: Hierarchical Network Graph with Tree Layout
 Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 82/100 | Created: 2026-01-08
+Quality: 91/100 | Created: 2026-01-08
 """
 
 import pandas as pd

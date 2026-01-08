@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 linked-views-selection: Multiple Linked Views with Selection Sync
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 75/100 | Created: 2026-01-08

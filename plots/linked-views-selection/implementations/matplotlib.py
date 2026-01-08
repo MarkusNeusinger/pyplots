@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 linked-views-selection: Multiple Linked Views with Selection Sync
-Library: matplotlib | Python 3.13
-Quality: pending | Created: 2025-01-08
+Library: matplotlib 3.10.8 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-08
 """
 
 import matplotlib.pyplot as plt

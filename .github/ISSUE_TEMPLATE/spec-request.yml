@@ -1,14 +1,14 @@
 name: Request Specification
-description: Propose a new plot type for pyplots
+description: Propose a new visualization type for pyplots
 labels: ["spec-request"]
 body:
   - type: markdown
     attributes:
       value: |
-        ## New Plot Proposal
+        ## New Specification Request
 
-        Describe the plot you'd like to see. Our AI will:
-        1. Check for similar existing plots
+        Describe the visualization you'd like to see. Our AI will:
+        1. Check for similar existing specifications
         2. Assign a spec ID (e.g., `scatter-regression-linear`)
         3. Create the specification for review
 
@@ -18,7 +18,7 @@ body:
     id: description
     attributes:
       label: Description
-      description: What does this plot visualize? When should you use it? (2-4 sentences)
+      description: What does this visualization show? When should you use it? (2-4 sentences)
       placeholder: "A scatter plot with a linear regression line that shows the correlation between two variables. Useful for identifying trends and making predictions based on the relationship between variables."
     validations:
       required: true
@@ -27,7 +27,7 @@ body:
     id: applications
     attributes:
       label: Applications
-      description: Realistic scenarios where this plot would be used (with domain context)
+      description: Realistic scenarios where this visualization would be used (with domain context)
       placeholder: |
         - Analyzing relationship between marketing spend and sales revenue
         - Visualizing correlation in scientific experiments
@@ -39,7 +39,7 @@ body:
     id: data
     attributes:
       label: Data
-      description: What data does this plot need? (columns, types, size)
+      description: What data does this visualization need? (columns, types, size)
       placeholder: |
         - `x` (numeric) - independent variable
         - `y` (numeric) - dependent variable

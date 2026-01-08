@@ -830,6 +830,9 @@ Printable templates and playful visualizations.
 ### chess-board 📋
 **Description:** Klassisches 8x8 Schachbrett mit abwechselnd hellen und dunklen Feldern. Beschriftet mit a-h und 1-8.
 
+### chess-board-pieces 📋
+**Description:** Chess board with pieces for position diagrams. Pieces defined via dictionary mapping squares to pieces, allowing visualization of game positions, puzzles, or notable games.
+
 ### crossword-basic 📋
 **Description:** Kreuzworträtsel-Gitter mit weißen Eingabe- und schwarzen Blockfeldern. Nummerierte Startfelder für Wörter.
 
@@ -851,9 +854,9 @@ Printable templates and playful visualizations.
 
 ## Statistics
 
-- **Total Plot Types:** 239
+- **Total Plot Types:** 240
 - **Implemented:** 186 ✅
-- **Planned:** 53 📋
+- **Planned:** 54 📋
 - **Categories:** 30
 
 ---

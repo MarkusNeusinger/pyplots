@@ -182,16 +182,13 @@ export function SpecPage() {
 
   // Build report issue URL
   const buildReportUrl = useCallback(() => {
-    const params = new URLSearchParams({
-      template: 'report-issue.yml',
-      spec_id: specId || '',
-    });
+    const params = new URLSearchParams({ spec_id: specId || '' });
 
     if (selectedLibrary) {
-      params.set('target', 'Implementation (specific library)');
+      params.set('template', 'report-impl-issue.yml');
       params.set('library', selectedLibrary);
     } else {
-      params.set('target', 'Specification (affects all libraries)');
+      params.set('template', 'report-spec-issue.yml');
     }
 
     return `${GITHUB_URL}/issues/new?${params.toString()}`;

@@ -1,5 +1,5 @@
 name: Report Specification Issue
-description: Report a problem with a plot specification (affects all libraries)
+description: Report a problem with a specification (affects all libraries)
 labels: ["report-pending"]
 body:
   - type: markdown
@@ -26,6 +26,7 @@ body:
       label: Category
       description: What type of issue is this?
       options:
+        - Please select...
         - Visual (design, clarity, hard to read)
         - Data (unrealistic values, inappropriate context)
         - Functional (doesn't work as expected)
@@ -43,6 +44,6 @@ body:
         The specification describes X but should describe Y...
 
         Expected behavior:
-        The plot should...
+        The visualization should...
     validations:
       required: true

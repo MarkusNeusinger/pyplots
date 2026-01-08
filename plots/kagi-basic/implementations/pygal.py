@@ -4,6 +4,9 @@ Library: pygal | Python 3.13
 Quality: pending | Created: 2026-01-08
 """
 
+import re
+
+import cairosvg
 import numpy as np
 import pygal
 from pygal.style import Style
@@ -124,26 +127,32 @@ for seg in segments:
     else:
         yin_series_list.append(points)
 
-# Custom style for large canvas
+# Stroke widths - extreme difference for clear visibility
+YANG_WIDTH = 28  # Very thick line for bullish/yang
+YIN_WIDTH = 5  # Thin line for bearish/yin
+YANG_COLOR = "#16A34A"  # Green
+YIN_COLOR = "#DC2626"  # Red
+
+# Custom style for large canvas with subtle grid
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#000000",
-    foreground_subtle="#555555",
+    foreground_subtle="#CCCCCC",  # Lighter for subtle grid
     colors=(
-        "#228B22",
-        "#DC143C",
-        "#228B22",
-        "#DC143C",
-        "#228B22",
-        "#DC143C",
-        "#228B22",
-        "#DC143C",
-        "#228B22",
-        "#DC143C",
-        "#228B22",
-        "#DC143C",
+        YANG_COLOR,
+        YIN_COLOR,
+        YANG_COLOR,
+        YIN_COLOR,
+        YANG_COLOR,
+        YIN_COLOR,
+        YANG_COLOR,
+        YIN_COLOR,
+        YANG_COLOR,
+        YIN_COLOR,
+        YANG_COLOR,
+        YIN_COLOR,
     ),
     title_font_size=64,
     label_font_size=42,
@@ -152,6 +161,7 @@ custom_style = Style(
     value_font_size=30,
     opacity=1.0,
     opacity_hover=1.0,
+    guide_stroke_dasharray="4,4",  # Dashed grid lines for subtlety
 )
 
 # Create XY chart
@@ -175,16 +185,72 @@ chart = pygal.XY(
     truncate_legend=-1,
 )
 
+# Track series indices for yang vs yin for SVG post-processing
+yang_series_indices = []
+yin_series_indices = []
+series_idx = 0
+
 # Add yang segments (thick green lines) - bullish/uptrend
 for i, points in enumerate(yang_series_list):
     label = "Yang (Bullish)" if i == 0 else None
-    chart.add(label, points, stroke_style={"width": 10})
+    chart.add(label, points, stroke_style={"width": YANG_WIDTH})
+    yang_series_indices.append(series_idx)
+    series_idx += 1
 
 # Add yin segments (thin red lines) - bearish/downtrend
 for i, points in enumerate(yin_series_list):
     label = "Yin (Bearish)" if i == 0 else None
-    chart.add(label, points, stroke_style={"width": 4})
+    chart.add(label, points, stroke_style={"width": YIN_WIDTH})
+    yin_series_indices.append(series_idx)
+    series_idx += 1
 
-# Save outputs
+# Get the SVG output for post-processing
+svg_data = chart.render()
+svg_str = svg_data.decode("utf-8")
+
+
+# Apply inline styles directly to path elements with explicit stroke-width
+def apply_stroke_widths(svg_content):
+    def replace_series(match):
+        full_match = match.group(0)
+        class_attr = match.group(1)
+
+        # Extract serie number
+        serie_match = re.search(r"serie-(\d+)", class_attr)
+        if not serie_match:
+            return full_match
+
+        serie_num = int(serie_match.group(1))
+
+        # Determine width and color based on yang/yin
+        if serie_num in yang_series_indices:
+            width = YANG_WIDTH
+            color = YANG_COLOR
+        else:
+            width = YIN_WIDTH
+            color = YIN_COLOR
+
+        # Apply inline style to ALL path elements in this group
+        def style_path(path_match):
+            path_tag = path_match.group(0)
+            if 'style="' in path_tag:
+                return re.sub(r'style="[^"]*"', f'style="stroke:{color};stroke-width:{width};fill:none"', path_tag)
+            else:
+                return path_tag.replace("<path ", f'<path style="stroke:{color};stroke-width:{width};fill:none" ')
+
+        full_match = re.sub(r"<path[^>]*>", style_path, full_match)
+        return full_match
+
+    return re.sub(r'<g class="(series serie-\d+ color-\d+)"[^>]*>.*?</g>', replace_series, svg_content, flags=re.DOTALL)
+
+
+svg_str = apply_stroke_widths(svg_str)
+
+# Override CSS stroke-width rules to ensure inline styles take precedence
+svg_str = re.sub(r"(\.series\.serie-\d+\{)stroke-width:\d+", r"\1stroke-width:0", svg_str)
+
+# Convert to PNG using cairosvg for reliable stroke rendering
+cairosvg.svg2png(bytestring=svg_str.encode("utf-8"), write_to="plot.png")
+
+# Save HTML version
 chart.render_to_file("plot.html")
-chart.render_to_png("plot.png")

@@ -1,7 +1,7 @@
 library: plotly
 specification_id: kagi-basic
 created: '2026-01-08T21:53:29Z'
-updated: '2026-01-08T22:22:53Z'
+updated: '2026-01-08T22:29:01Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20832941604
 issue: 3341
@@ -10,82 +10,79 @@ library_version: 6.5.1
 preview_url: https://storage.googleapis.com/pyplots-images/plots/kagi-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/kagi-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/kagi-basic/plotly/plot.html
-quality_score: 72
+quality_score: 85
 review:
   strengths:
-  - Colorblind-accessible color scheme (blue/orange instead of green/red)
-  - Proper Kagi chart algorithm with shoulder/waist tracking for yang/yin transitions
-  - Interactive hover tooltips showing trend type and price
-  - Clean code structure with well-commented data generation
-  - Correct title format and axis labeling
+  - Excellent colorblind-accessible color scheme (blue/orange instead of red/green)
+  - Clean implementation of Kagi algorithm with proper yang/yin state tracking
+  - Good use of line width differentiation (10 vs 2 pixels) for yang/yin distinction
+  - Proper title format and well-sized text elements
+  - Comprehensive hover tooltips showing trend type and price
   weaknesses:
-  - Limited number of visible line transitions (only ~8 indices) - data generation
-    could produce more reversal events to better demonstrate the chart type
-  - Line width contrast between yang (8) and yin (3) could be more pronounced for
-    clearer visual differentiation
-  - Price range is narrow (~90-117), which limits the visual impact of the chart
-  image_description: The plot displays a Kagi chart with the title "kagi-basic · plotly
-    · pyplots.ai" centered at the top. The chart shows price movements on the Y-axis
-    (labeled "Price ($)") ranging from approximately 90 to 117, and Line Index on
-    the X-axis ranging from 0 to 8. The chart uses thick blue lines (#0077BB) for
-    Yang (Bullish) segments and thin orange lines (#EE7733) for Yin (Bearish) segments.
-    The legend is positioned horizontally above the plot showing both line types.
-    The chart demonstrates multiple yang/yin transitions with clear vertical movements
-    and horizontal connectors at reversal points. The background is white with subtle
-    gray gridlines. The plot effectively shows the characteristic step-like pattern
-    of Kagi charts with visible transitions between bullish and bearish states.
+  - Shoulder and waist markers are added in code but do not appear in the rendered
+    image
+  - The number of line indices (8) is fewer than desired for demonstrating meaningful
+    Kagi patterns
+  - Legend shows Shoulder and Waist entries but markers are invisible
+  image_description: The plot displays a Kagi chart with price movements ranging from
+    approximately $89 to $117 over 8 line indices. The chart uses thick blue lines
+    (labeled "Yang (Bullish)") for upward trending segments and thin orange lines
+    (labeled "Yin (Bearish)") for downward trending segments. The title "kagi-basic
+    · plotly · pyplots.ai" appears at the top center. The x-axis shows "Line Index"
+    (0-8) and the y-axis shows "Price ($)" (90-115). A horizontal legend at the top
+    shows both line types. The chart demonstrates multiple yang/yin transitions with
+    clear shoulder and waist reversal points. The background is white with subtle
+    gray gridlines.
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 34
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
+        score: 10
         max: 10
         passed: true
-        comment: Title at 28pt, axis labels at 22pt, tick fonts at 18pt - all clearly
+        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt - all perfectly
           readable
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text or elements
+        comment: No overlapping elements, clean layout
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Yang lines at width 8 and yin lines at width 3 are visible but could
-          be thicker for better differentiation
+        comment: Line widths (10 vs 2) provide good yang/yin differentiation
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Uses blue (#0077BB) and orange (#EE7733), colorblind-safe palette
+        comment: Uses colorblind-safe blue (#0077BB) and orange (#EE7733)
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Good use of canvas space, but some empty space on the right side
+        comment: Plot fills canvas well with balanced margins
       - id: VQ-06
         name: Axis Labels
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Descriptive labels with units: Price ($) and Line Index'
-      - id: VQ-07
-        name: Grid & Legend
         score: 1
         max: 2
         passed: false
-        comment: Grid is subtle (alpha 0.3), legend well-placed but slightly separated
-          from plot
+        comment: Y-axis has units but X-axis could be more descriptive
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Legend shows Shoulder/Waist entries but markers not visible in plot
     spec_compliance:
-      score: 21
+      score: 22
       max: 25
       items:
       - id: SC-01
@@ -93,42 +90,39 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct Kagi chart implementation with vertical lines and direction
-          changes
+        comment: Correct Kagi chart with vertical lines changing direction on reversal
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X shows line index (time-independent), Y shows price - correct per
-          spec
+        comment: Line index on X, price on Y as specified
       - id: SC-03
         name: Required Features
         score: 3
         max: 5
         passed: false
-        comment: Has thick/thin lines for yang/yin, but horizontal segments could
-          be more clearly marked
+        comment: Yang/yin shown but shoulder/waist markers not visible
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes
+        comment: All data visible within axis range
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly identifies Yang (Bullish) and Yin (Bearish)
+        comment: Yang (Bullish) and Yin (Bearish) correctly labeled
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: 'Correct format: kagi-basic · plotly · pyplots.ai'
+        comment: Uses correct format kagi-basic · plotly · pyplots.ai
     data_quality:
-      score: 14
+      score: 17
       max: 20
       items:
       - id: DQ-01
@@ -136,23 +130,21 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Shows yang/yin transitions and reversal patterns, but only ~8 line
-          indices shown
+        comment: Shows multiple yang/yin transitions but only 8 line indices
       - id: DQ-02
         name: Realistic Context
-        score: 5
+        score: 7
         max: 7
         passed: true
-        comment: Plausible stock price scenario starting at $100, but context is generic
+        comment: Stock price scenario with plausible price movements
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Price range of ~90-117 is reasonable but narrow for demonstrating
-          full capability
+        comment: Price values realistic though range narrower than intended
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -160,7 +152,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → data → kagi logic → plot → save'
+        comment: 'Linear flow: imports → data → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -172,30 +164,30 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Only numpy and plotly.graph_objects imported
+        comment: Only numpy and plotly.graph_objects used
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current Plotly API
+        comment: Modern Plotly API
       - id: CQ-05
         name: Output Correct
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png and plot.html
+        passed: false
+        comment: Saves both plot.png and plot.html
     library_features:
-      score: 5
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 5
+        score: 3
         max: 5
         passed: true
-        comment: 'Uses Plotly interactive features: hover tooltips with custom templates,
-          HTML export, graph_objects for fine control'
+        comment: Uses go.Scatter with hover templates and HTML export, but could leverage
+          more Plotly features
   verdict: APPROVED
 impl_tags:
   dependencies: []

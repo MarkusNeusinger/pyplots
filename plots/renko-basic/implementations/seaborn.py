@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 renko-basic: Basic Renko Chart
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 58/100 | Created: 2026-01-08
@@ -50,9 +50,9 @@ for price in df["close"]:
 
 renko_df = pd.DataFrame(bricks)
 
-# Colors as per spec: green for bullish, red for bearish
-bullish_color = "#2E7D32"  # Green for up bricks
-bearish_color = "#C62828"  # Red for down bricks
+# Colorblind-accessible colors (blue/orange scheme instead of red/green)
+bullish_color = "#1976D2"  # Blue for up bricks (colorblind-safe)
+bearish_color = "#E65100"  # Orange for down bricks (colorblind-safe)
 
 # Create figure
 fig, ax = plt.subplots(figsize=(16, 9))
@@ -82,7 +82,7 @@ for idx, row in renko_df.iterrows():
 
     ax.add_patch(rect)
 
-# Add legend handles
+# Add legend handles with updated labels
 legend_handles = [
     Rectangle((0, 0), 1, 1, facecolor=bullish_color, edgecolor="white", label="Bullish (Up)"),
     Rectangle((0, 0), 1, 1, facecolor=bearish_color, edgecolor="white", label="Bearish (Down)"),
@@ -97,11 +97,11 @@ ax.set_xlim(-0.5, len(renko_df) + 0.5)
 # Labels and styling - more descriptive axis labels
 ax.set_xlabel("Brick Number", fontsize=20)
 ax.set_ylabel("Stock Price (USD)", fontsize=20)
-ax.set_title("renko-basic - seaborn - pyplots.ai", fontsize=24, fontweight="bold")
+ax.set_title("renko-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold")
 ax.tick_params(axis="both", labelsize=16)
 
-# Add legend
-ax.legend(handles=legend_handles, fontsize=16, loc="upper left")
+# Add legend positioned outside plot area to avoid data overlap
+ax.legend(handles=legend_handles, fontsize=16, loc="upper right", framealpha=0.9)
 
 # Add subtle grid on y-axis only
 ax.grid(True, alpha=0.3, linestyle="--", axis="y")

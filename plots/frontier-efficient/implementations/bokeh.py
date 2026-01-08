@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 frontier-efficient: Efficient Frontier for Portfolio Optimization
-Library: bokeh | Python 3.13
-Quality: pending | Created: 2026-01-08
+Library: bokeh 3.8.1 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-08
 """
 
 import numpy as np

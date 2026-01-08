@@ -637,6 +637,7 @@ spec-create.yml
     ├── Creates branch: specification/{specification-id}
     ├── Creates: plots/{specification-id}/specification.md
     ├── Creates: plots/{specification-id}/specification.yaml
+    ├── Validates: checks for duplicates (closes issue if duplicate detected)
     ├── Creates PR: specification/{specification-id} → main
     └── Posts: spec analysis comment (waits for approval)
     │
@@ -658,6 +659,7 @@ impl-generate.yml
     ├── Creates branch: implementation/{specification-id}/{library}
     ├── Generates implementation code
     ├── Tests with MPLBACKEND=Agg
+    ├── Commits implementation + metadata atomically (prevents partial PRs)
     ├── Uploads preview to GCS staging
     ├── Creates PR: implementation/{specification-id}/{library} → main
     └── Triggers impl-review.yml
@@ -669,6 +671,7 @@ impl-review.yml
     ├── Adds labels: quality:XX, ai-approved OR ai-rejected
     │
     ├── If APPROVED → triggers impl-merge.yml
+    │       ├── Validates PR completeness (blocks merge if implementation file missing)
     │       ├── Squash-merges PR to main
     │       ├── Creates metadata/{library}.yaml
     │       ├── Promotes GCS: staging → production
@@ -711,6 +714,7 @@ Issue ready for maintainer review
 | **ci-lint.yml** | Ruff linting on PR |
 | **ci-unittest.yml** | Unit tests on PR |
 | **sync-postgres.yml** | Syncs plots/ to database on push to main |
+| **sync-labels.yml** | Auto-syncs labels after manual PR merges (spec-ready, impl:*:done) |
 
 ### Decoupled Architecture
 
@@ -723,6 +727,7 @@ The new architecture separates specification and implementation processes:
 - **No merge conflicts** - Per-library metadata files
 - **Flexible triggers** - Labels for single, dispatch for bulk
 - **PostgreSQL synced on every merge to main**
+- **Labels auto-synced** - Manual PR merges automatically update issue labels
 
 **Branch naming:**
 - `specification/{specification-id}` - New specification PRs
@@ -731,6 +736,7 @@ The new architecture separates specification and implementation processes:
 **Concurrency:**
 - Global limit: max 3 implementation workflows simultaneously
 - `bulk-generate.yml` uses `max-parallel: 3` in matrix strategy
+- Spec merge operations are serialized (one at a time) to prevent race conditions
 
 ## GitHub Issue Labels
 

@@ -47,8 +47,6 @@ body:
         - Data (unrealistic values, inappropriate context)
         - Functional (doesn't work as expected)
         - Other
-    validations:
-      required: true
 
   - type: textarea
     id: description

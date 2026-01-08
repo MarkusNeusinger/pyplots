@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 kagi-basic: Basic Kagi Chart
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2026-01-08
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 85/100 | Created: 2026-01-08
 """
 
 import matplotlib.pyplot as plt

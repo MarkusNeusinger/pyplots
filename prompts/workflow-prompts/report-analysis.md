@@ -84,11 +84,12 @@ After posting the comment, update labels:
 3. **Add target label:**
    - For spec issues: `report:spec`
    - For impl issues: `report:impl` AND `report:impl:{library}`
-4. **Add category label:**
+4. **Add category label** (if category was selected):
    - Visual → `category:visual`
    - Data → `category:data`
    - Functional → `category:functional`
    - Other → `category:other`
+   - If no category selected → skip category label
 
 ## Title Update
 

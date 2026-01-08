@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 renko-basic: Basic Renko Chart
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 62/100 | Created: 2026-01-08
+Quality: 58/100 | Created: 2026-01-08
 """
 
 import matplotlib.pyplot as plt

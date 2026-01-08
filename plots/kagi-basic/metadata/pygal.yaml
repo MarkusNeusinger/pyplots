@@ -1,7 +1,7 @@
 library: pygal
 specification_id: kagi-basic
 created: '2026-01-08T22:59:40Z'
-updated: '2026-01-08T23:02:14Z'
+updated: '2026-01-08T23:05:12Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20834546928
 issue: 3341
@@ -13,32 +13,32 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/kagi-basic/pyg
 quality_score: 72
 review:
   strengths:
-  - Correct implementation of Kagi chart algorithm with proper reversal logic
-  - Good use of pygal XY chart and custom styling capabilities
-  - Clean KISS code structure with proper seed for reproducibility
-  - Proper title format and axis labels with units
-  - Legend correctly identifies Yang (Bullish) and Yin (Bearish) segments
+  - Correct title format following spec-id · library · pyplots.ai convention
+  - Clean, well-structured code with proper seed for reproducibility
+  - Appropriate axis labels with units
+  - Good use of canvas space at 4800x2700
+  - Realistic stock price data generation with cumulative product approach
+  - Proper Kagi algorithm logic for calculating turning points and yang/yin states
   weaknesses:
-  - Yin color is pink/magenta instead of red as specified (spec says green for yang
-    and red for yin)
-  - Line thickness difference between yang (10px) and yin (4px) is not visually prominent
-    enough
-  - Legend color indicators are very small and hard to distinguish
-  image_description: 'The plot displays a Kagi chart showing price movements over
-    approximately 20 Kagi line indices. The chart uses green lines for Yang (Bullish)
-    segments and pink/magenta lines for Yin (Bearish) segments. The price range spans
-    from approximately $82 to $113. The chart shows characteristic Kagi features:
-    vertical lines of varying thickness connected by horizontal segments at reversal
-    points. Yang segments appear as thicker green lines while Yin segments appear
-    as thinner pink lines. The title "kagi-basic · pygal · pyplots.ai" is displayed
-    at the top. The Y-axis is labeled "Price ($)" and the X-axis is labeled "Kagi
-    Line Index". A legend at the bottom shows "Yang (Bullish)" and "Yin (Bearish)"
-    labels. The chart demonstrates clear trend reversals with the price starting around
-    $109, dropping to $82, recovering to $100, experiencing volatility, then rising
-    to a peak around $113 before declining again.'
+  - Segments render as disconnected rectangular boxes rather than continuous thick/thin
+    lines
+  - Yang (thick) vs Yin (thin) line thickness distinction is not visually clear due
+    to box rendering
+  - Legend entries do not properly connect to the chart series
+  - Pink/magenta color for bearish segments is quite light and could be stronger red
+  image_description: The plot displays a Kagi-style chart with the title "kagi-basic
+    · pygal · pyplots.ai" at the top. The Y-axis is labeled "Price ($)" ranging from
+    approximately 82 to 112, and the X-axis shows "Kagi Line Index" from 0 to 20.
+    The chart uses green color for yang (bullish) segments and pink/magenta for yin
+    (bearish) segments. A legend at the bottom identifies "Yang (Bullish)" and "Yin
+    (Bearish)". Horizontal grid lines are visible. However, the segments appear as
+    disconnected rectangular boxes rather than a continuous Kagi line with varying
+    thickness - each segment is rendered as a separate closed path forming a rectangle,
+    which does not accurately represent the traditional Kagi chart structure of thick
+    and thin connected vertical lines with horizontal shoulders/waists.
   criteria_checklist:
     visual_quality:
-      score: 30
+      score: 28
       max: 40
       items:
       - id: VQ-01
@@ -46,7 +46,7 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Title and axis labels are readable but tick labels are somewhat small
+        comment: Title and axis labels are readable, font sizes are adequate
       - id: VQ-02
         name: No Overlap
         score: 8
@@ -58,17 +58,17 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Lines visible but thickness difference between yang and yin not pronounced
-          enough
+        comment: Segments visible but rectangular box rendering is not ideal for Kagi
+          chart
       - id: VQ-04
         name: Color Accessibility
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Yin is pink/magenta instead of red as specified
+        passed: true
+        comment: Green and pink/magenta provide decent contrast but pink is light
       - id: VQ-05
         name: Layout Balance
-        score: 5
+        score: 3
         max: 5
         passed: true
         comment: Good use of canvas space, balanced margins
@@ -77,23 +77,24 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Y-axis has Price ($) with units, X-axis has Kagi Line Index
+        comment: 'Descriptive labels with units: Price ($) and Kagi Line Index'
       - id: VQ-07
         name: Grid & Legend
-        score: 1
+        score: 0
         max: 2
         passed: false
-        comment: Grid is subtle but legend color indicators are very small
+        comment: Legend entries do not connect to actual series rendering
     spec_compliance:
-      score: 21
+      score: 18
       max: 25
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
+        score: 5
         max: 8
-        passed: true
-        comment: Correct Kagi chart type with vertical lines and reversals
+        passed: false
+        comment: Attempts Kagi chart but renders as disconnected rectangles rather
+          than continuous thick/thin lines
       - id: SC-02
         name: Data Mapping
         score: 5
@@ -105,7 +106,8 @@ review:
         score: 3
         max: 5
         passed: false
-        comment: Has yang/yin distinction but thickness difference is subtle
+        comment: Has yang/yin coloring but line thickness difference not visually
+          apparent
       - id: SC-04
         name: Data Range
         score: 3
@@ -117,13 +119,13 @@ review:
         score: 0
         max: 2
         passed: false
-        comment: Legend colors show tiny dots; yin appears pink not red
+        comment: Legend entries appear but do not connect to actual series rendering
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Uses correct format kagi-basic · pygal · pyplots.ai
+        comment: Correctly uses kagi-basic · pygal · pyplots.ai format
     data_quality:
       score: 16
       max: 20
@@ -133,19 +135,19 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Shows bullish and bearish trends with multiple reversals
+        comment: Shows both uptrends and downtrends with multiple reversals
       - id: DQ-02
         name: Realistic Context
-        score: 7
+        score: 5
         max: 7
         passed: true
-        comment: Stock price scenario is realistic and neutral
+        comment: Stock price simulation is plausible but generic
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Price values $82-$113 are reasonable
+        comment: Price values around $82-112 are realistic for a stock
     code_quality:
       score: 10
       max: 10
@@ -155,7 +157,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, calculation, plot, save'
+        comment: 'Simple linear structure: imports, data, plot, save'
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -167,13 +169,13 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Only numpy, pygal, and Style imported
+        comment: Only necessary imports used
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Modern pygal API used
+        comment: Uses current pygal API
       - id: CQ-05
         name: Output Correct
         score: 1
@@ -181,25 +183,23 @@ review:
         passed: true
         comment: Saves as plot.png and plot.html
     library_features:
-      score: 5
+      score: 0
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 5
+        score: 0
         max: 5
-        passed: true
-        comment: Uses pygal XY chart, custom Style, stroke_style for line widths,
-          SVG export
-  verdict: REJECTED
+        passed: false
+        comment: XY chart with stroke_style creates boxes instead of proper lines;
+          pygal limitations for Kagi charts
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - html-export
-  - custom-legend
   patterns:
   - data-generation
   - iteration-over-groups
   dataprep: []
-  styling:
-  - grid-styling
+  styling: []

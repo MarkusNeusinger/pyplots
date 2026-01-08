@@ -236,7 +236,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### heatmap-calendar ✅
 **Description:** A calendar heatmap visualizes time-series data on a calendar grid, where each day is represented as a cell and color intensity indicates the value magnitude.
 
-### heatmap-interactive 📋
+### heatmap-interactive ✅
 **Description:** Heatmap with hover values and zoom.
 
 ---
@@ -334,9 +334,6 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### facet-grid ✅
 **Description:** Grid of plots split by categorical variables.
 
-### pair-plot 📋
-**Description:** All pairwise relationships in dataset.
-
 ### subplot-grid ✅
 **Description:** Custom grid of different plot types.
 
@@ -362,8 +359,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### candlestick-basic ✅
 **Description:** A candlestick chart displays open, high, low, and close (OHLC) price data for financial instruments over time.
 
-### timeseries-ohlc 📋
-**Description:** Open-high-low-close bar chart.
+### ohlc-bar ✅
+**Description:** OHLC bar chart using vertical bars with horizontal ticks to show opening and closing prices.
 
 ### timeseries-forecast-uncertainty ✅
 **Description:** Time series plot with forecast line and uncertainty/confidence band.
@@ -438,7 +435,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### network-directed ✅
 **Description:** Directed graph with arrows.
 
-### network-weighted 📋
+### network-weighted ✅
 **Description:** Graph with edge thickness by weight.
 
 ### network-hierarchical 📋
@@ -510,8 +507,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### slider-control-basic ✅
 **Description:** An interactive plot with slider controls allowing users to dynamically adjust parameters and see the visualization update in real-time.
 
-### brush-zoom 📋
-**Description:** Plot with brush selection and zoom.
+### scatter-brush-zoom ✅
+**Description:** Interactive scatter plot with brush selection and zoom capability.
 
 ### linked-views 📋
 **Description:** Multiple plots with linked selection.
@@ -556,9 +553,6 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ### wordcloud-basic ✅
 **Description:** A word cloud displays text data where word size represents frequency or importance.
-
-### annotated-line 📋
-**Description:** Line plot with annotations at key points.
 
 ---
 
@@ -625,7 +619,7 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### efficient-frontier 📋
 **Description:** Portfolio risk-return optimization curve.
 
-### renko-basic 📋
+### renko-basic ✅
 **Description:** A Renko chart plots "bricks" of fixed size only when price moves by a defined amount, filtering market noise and focusing on price action.
 
 ### kagi-basic 📋
@@ -758,9 +752,6 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### contour-decision-boundary ✅
 **Description:** Decision boundary classifier visualization using contour plot to show classification regions.
 
-### loss-curve 📋
-**Description:** Training and validation loss curves over epochs for neural network training monitoring.
-
 ---
 
 ## 29. Scientific & Domain-Specific
@@ -860,9 +851,9 @@ Printable templates and playful visualizations.
 
 ## Statistics
 
-- **Total Plot Types:** 242
-- **Implemented:** 181 ✅
-- **Planned:** 61 📋
+- **Total Plot Types:** 239
+- **Implemented:** 186 ✅
+- **Planned:** 53 📋
 - **Categories:** 30
 
 ---

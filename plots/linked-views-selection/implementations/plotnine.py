@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 linked-views-selection: Multiple Linked Views with Selection Sync
 Library: plotnine | Python 3.13
 Quality: pending | Created: 2026-01-08
@@ -108,7 +108,7 @@ p1 = (
     + geom_vline(xintercept=selection_threshold, linetype="dashed", color=color_threshold, size=2)
     + scale_color_manual(values=colors)
     + scale_alpha_identity()
-    + labs(title="Scatter Plot (X vs Y)", x="X Value", y="Y Value")
+    + labs(title="Scatter Plot (X vs Y)", x="X Value (units)", y="Y Value (units)")
     + base_theme
 )
 
@@ -117,7 +117,7 @@ p2 = (
     ggplot(df, aes("value", fill="Selection"))
     + geom_histogram(bins=15, position="identity", color="white", size=0.4, alpha=0.75)
     + scale_fill_manual(values=colors)
-    + labs(title="Value Distribution", x="Value", y="Count")
+    + labs(title="Value Distribution", x="Value (units)", y="Count")
     + base_theme
 )
 

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 kagi-basic: Basic Kagi Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-08
@@ -128,10 +128,10 @@ for seg in segments:
         yin_series_list.append(points)
 
 # Stroke widths - extreme difference for clear visibility
-YANG_WIDTH = 28  # Very thick line for bullish/yang
-YIN_WIDTH = 5  # Thin line for bearish/yin
-YANG_COLOR = "#16A34A"  # Green
-YIN_COLOR = "#DC2626"  # Red
+YANG_WIDTH = 36  # Very thick line for bullish/yang (4x difference from yin)
+YIN_WIDTH = 9  # Thin line for bearish/yin
+YANG_COLOR = "#16A34A"  # Green - spec requires green for yang/bullish
+YIN_COLOR = "#DC2626"  # Red - spec requires red for yin/bearish
 
 # Custom style for large canvas with subtle grid
 custom_style = Style(
@@ -248,6 +248,49 @@ svg_str = apply_stroke_widths(svg_str)
 
 # Override CSS stroke-width rules to ensure inline styles take precedence
 svg_str = re.sub(r"(\.series\.serie-\d+\{)stroke-width:\d+", r"\1stroke-width:0", svg_str)
+
+
+# Fix legend markers to be larger and correctly colored
+def fix_legend_markers(svg_content):
+    """Make legend markers larger and ensure correct colors."""
+
+    # Find legend groups and enlarge circles/markers
+    # Yang (series 0) should be green, Yin (first series after yang) should be red
+    def enlarge_legend_marker(match):
+        circle_tag = match.group(0)
+        # Enlarge the circle radius from default ~6 to 16
+        circle_tag = re.sub(r'r="(\d+(?:\.\d+)?)"', 'r="16"', circle_tag)
+        return circle_tag
+
+    # Enlarge legend circles
+    svg_content = re.sub(r'<circle[^>]*class="[^"]*legend[^"]*"[^>]*>', enlarge_legend_marker, svg_content)
+
+    # Also fix rect markers if used (pygal sometimes uses rects)
+    def enlarge_legend_rect(match):
+        rect_tag = match.group(0)
+        rect_tag = re.sub(r'width="(\d+(?:\.\d+)?)"', 'width="32"', rect_tag)
+        rect_tag = re.sub(r'height="(\d+(?:\.\d+)?)"', 'height="32"', rect_tag)
+        return rect_tag
+
+    svg_content = re.sub(r'<rect[^>]*class="[^"]*legend[^"]*"[^>]*>', enlarge_legend_rect, svg_content)
+
+    # Ensure yang legend entry has green fill and yin has red fill
+    # Pattern: Look for legend entries and fix their colors
+    def fix_legend_color(match):
+        entry = match.group(0)
+        if "Yang" in entry:
+            entry = re.sub(r'fill="[^"]*"', f'fill="{YANG_COLOR}"', entry, count=1)
+        elif "Yin" in entry:
+            entry = re.sub(r'fill="[^"]*"', f'fill="{YIN_COLOR}"', entry, count=1)
+        return entry
+
+    # Fix colors in legend circles/rects
+    svg_content = re.sub(r'(<g class="legend[^"]*"[^>]*>.*?</g>)', fix_legend_color, svg_content, flags=re.DOTALL)
+
+    return svg_content
+
+
+svg_str = fix_legend_markers(svg_str)
 
 # Convert to PNG using cairosvg for reliable stroke rendering
 cairosvg.svg2png(bytestring=svg_str.encode("utf-8"), write_to="plot.png")

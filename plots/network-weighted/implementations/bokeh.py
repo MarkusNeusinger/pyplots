@@ -1,12 +1,12 @@
-""" pyplots.ai
+"""pyplots.ai
 network-weighted: Weighted Network Graph with Edge Thickness
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-08
 """
 
 import numpy as np
-from bokeh.io import export_png
-from bokeh.models import ColumnDataSource, LabelSet, Range1d
+from bokeh.io import export_png, save
+from bokeh.models import ColumnDataSource, HoverTool, LabelSet, Range1d
 from bokeh.plotting import figure
 
 
@@ -178,11 +178,19 @@ for i in range(len(edge_x0)):
         line_cap="round",
     )
 
-# Create node source
-node_source = ColumnDataSource(data={"x": node_x, "y": node_y, "size": node_sizes, "labels": node_labels})
+# Create node source with weighted degree for hover
+node_source = ColumnDataSource(
+    data={
+        "x": node_x,
+        "y": node_y,
+        "size": node_sizes,
+        "labels": node_labels,
+        "weighted_degree": [f"{int(wd):,}" for wd in weighted_degree],
+    }
+)
 
 # Draw nodes
-p.scatter(
+nodes_renderer = p.scatter(
     x="x",
     y="y",
     source=node_source,
@@ -192,6 +200,12 @@ p.scatter(
     line_width=3,
     fill_alpha=0.9,
 )
+
+# Add hover tool for interactivity
+hover = HoverTool(
+    renderers=[nodes_renderer], tooltips=[("Country", "@labels"), ("Total Trade (B USD)", "@weighted_degree")]
+)
+p.add_tools(hover)
 
 # Add node labels
 labels = LabelSet(
@@ -208,39 +222,47 @@ labels = LabelSet(
 p.add_layout(labels)
 
 # Add legend annotation for edge thickness
-# Create a simple manual legend in the corner
-legend_x = node_x.min() - padding + 0.05
-legend_y = node_y.max() + padding - 0.05
+# Create a prominent manual legend in the corner
+legend_x = node_x.min() - padding + 0.03
+legend_y = node_y.max() + padding - 0.02
 
 # Legend title
 p.text(
     x=[legend_x],
     y=[legend_y],
     text=["Trade Volume (B USD)"],
-    text_font_size="18pt",
+    text_font_size="22pt",
     text_font_style="bold",
-    text_color="#333333",
+    text_color="#1a1a1a",
 )
 
-# Legend lines showing weight scale
+# Legend lines showing weight scale - made more prominent
 legend_weights = [min_weight, (min_weight + max_weight) / 2, max_weight]
-legend_labels = [f"{int(w)}" for w in legend_weights]
-legend_widths = [2, 11, 20]
+legend_labels = [f"{int(w)} B" for w in legend_weights]
+legend_widths = [4, 14, 26]  # Increased widths for visibility
 
 for i, (lw, label) in enumerate(zip(legend_widths, legend_labels, strict=True)):
-    y_pos = legend_y - 0.05 - i * 0.04
+    y_pos = legend_y - 0.055 - i * 0.05
+    # Longer legend lines for better visibility
     p.segment(
         x0=[legend_x],
         y0=[y_pos],
-        x1=[legend_x + 0.08],
+        x1=[legend_x + 0.12],
         y1=[y_pos],
         line_width=lw,
         line_color="#306998",
-        line_alpha=0.5 + i * 0.2,
+        line_alpha=0.6 + i * 0.15,
+        line_cap="round",
     )
     p.text(
-        x=[legend_x + 0.1], y=[y_pos], text=[label], text_font_size="14pt", text_baseline="middle", text_color="#333333"
+        x=[legend_x + 0.14],
+        y=[y_pos],
+        text=[label],
+        text_font_size="18pt",
+        text_baseline="middle",
+        text_color="#1a1a1a",
     )
 
-# Export to PNG
+# Export to PNG and HTML (for interactivity)
 export_png(p, filename="plot.png")
+save(p, filename="plot.html", title="network-weighted · bokeh · pyplots.ai")

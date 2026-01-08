@@ -4,7 +4,7 @@ Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-08
 """
 
-import os
+import re
 
 import cairosvg
 import numpy as np
@@ -74,81 +74,60 @@ for price in prices[1:]:
 
 columns.append(current_col)
 
-# Group consecutive columns by type into segments
-segments = []
-current_segment = {"type": columns[0]["type"], "columns": [columns[0]]}
+# Build individual line segments for proper Kagi rendering
+# Each segment is a separate 2-point series to avoid polygon connections
+yang_segments = []  # List of [(x1,y1), (x2,y2)] for yang
+yin_segments = []  # List of [(x1,y1), (x2,y2)] for yin
 
-for col in columns[1:]:
-    if col["type"] == current_segment["type"]:
-        current_segment["columns"].append(col)
+prev_x = None
+prev_y = None
+
+for col in columns:
+    x = col["x"]
+    y_start = col["start"]
+    y_end = col["end"]
+    seg_type = col["type"]
+
+    # Horizontal connector (shoulder/waist) from previous column
+    if prev_x is not None and prev_x != x:
+        h_segment = [(prev_x, prev_y), (x, prev_y)]
+        if seg_type == "yang":
+            yang_segments.append(h_segment)
+        else:
+            yin_segments.append(h_segment)
+
+    # Vertical line segment
+    v_segment = [(x, y_start), (x, y_end)]
+    if seg_type == "yang":
+        yang_segments.append(v_segment)
     else:
-        segments.append(current_segment)
-        current_segment = {"type": col["type"], "columns": [col]}
-segments.append(current_segment)
+        yin_segments.append(v_segment)
 
-# Build XY points for each segment with connection points for continuity
-yang_series_list = []
-yin_series_list = []
-prev_end_point = None
+    prev_x = x
+    prev_y = y_end
 
-for seg in segments:
-    points = []
-    cols = seg["columns"]
+# Colors and stroke widths - large difference for visibility
+YANG_COLOR = "#16A34A"  # Green for bullish
+YIN_COLOR = "#DC2626"  # Red for bearish
+YANG_WIDTH = 16  # Thick for yang (5x thicker for clear distinction)
+YIN_WIDTH = 3  # Thin for yin
 
-    # Start from the connection point (previous segment's end)
-    if prev_end_point is not None:
-        first_col = cols[0]
-        points.append((prev_end_point[0], prev_end_point[1]))
-        points.append((first_col["x"], prev_end_point[1]))
-
-    for i, col in enumerate(cols):
-        x = col["x"]
-        y_start = col["start"]
-        y_end = col["end"]
-
-        # Vertical line
-        points.append((x, y_start))
-        points.append((x, y_end))
-
-        # Horizontal connector to next column (within same segment)
-        if i < len(cols) - 1:
-            next_x = cols[i + 1]["x"]
-            points.append((next_x, y_end))
-
-    # Track last point for next segment connection
-    last_col = cols[-1]
-    prev_end_point = (last_col["x"], last_col["end"])
-
-    if seg["type"] == "yang":
-        yang_series_list.append(points)
-    else:
-        yin_series_list.append(points)
-
-# Colors - vibrant green for yang, strong red for yin
-YANG_COLOR = "#16A34A"  # Green - bullish/uptrend
-YIN_COLOR = "#DC2626"  # Red - bearish/downtrend
-
-# Stroke widths - extreme difference for visibility
-YANG_WIDTH = 12  # Thick line for bullish yang
-YIN_WIDTH = 3  # Thin line for bearish yin
-
-# Custom style for large canvas
+# Custom style
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#000000",
-    foreground_subtle="#CCCCCC",
-    colors=(YANG_COLOR, YIN_COLOR),
+    foreground_subtle="#999999",
+    colors=tuple([YANG_COLOR] * len(yang_segments) + [YIN_COLOR] * len(yin_segments)),
     title_font_size=64,
     label_font_size=42,
     major_label_font_size=38,
-    legend_font_size=42,
+    legend_font_size=38,
     value_font_size=30,
+    guide_stroke_dasharray="4,4",
     opacity=1.0,
     opacity_hover=1.0,
-    guide_stroke_dasharray="4,4",
-    stroke_width=YANG_WIDTH,  # Default to yang width
 )
 
 # Create XY chart
@@ -167,63 +146,117 @@ chart = pygal.XY(
     stroke=True,
     fill=False,
     margin=100,
-    show_x_labels=True,
-    show_y_labels=True,
     truncate_legend=-1,
-    legend_box_size=30,
 )
 
-# Combine all yang points into one series
-yang_all_points = []
-for points in yang_series_list:
-    if yang_all_points:
-        yang_all_points.append((None, None))  # Break between segments
-    yang_all_points.extend(points)
+# Add each segment as a separate series
+# First yang segment gets label, rest are unlabeled
+for i, seg in enumerate(yang_segments):
+    label = "Yang (Bullish)" if i == 0 else None
+    chart.add(label, seg, stroke_style={"width": YANG_WIDTH, "linecap": "round", "linejoin": "round"})
 
-# Combine all yin points into one series
-yin_all_points = []
-for points in yin_series_list:
-    if yin_all_points:
-        yin_all_points.append((None, None))  # Break between segments
-    yin_all_points.extend(points)
+# First yin segment gets label, rest are unlabeled
+for i, seg in enumerate(yin_segments):
+    label = "Yin (Bearish)" if i == 0 else None
+    chart.add(label, seg, stroke_style={"width": YIN_WIDTH, "linecap": "round", "linejoin": "round"})
 
-# Add series - yang with thick stroke, yin with thin stroke
-chart.add("Yang (Bullish) ━━━", yang_all_points, stroke_style={"width": YANG_WIDTH})
-chart.add("Yin (Bearish) ─", yin_all_points, stroke_style={"width": YIN_WIDTH})
+# Render to SVG
+svg_data = chart.render()
+svg_str = svg_data.decode("utf-8")
 
-# Render SVG and manually fix stroke widths since pygal ignores stroke_style
-svg_content = chart.render().decode("utf-8")
+# Track which series indices are yang vs yin
+num_yang = len(yang_segments)
+num_yin = len(yin_segments)
 
-# Fix yang series stroke width (serie-0) - thick green line
-svg_content = svg_content.replace(".serie-0 {", f".serie-0 {{stroke-width: {YANG_WIDTH}; stroke: {YANG_COLOR}; ")
 
-# Fix yin series stroke width (serie-1) - thin red line
-svg_content = svg_content.replace(".serie-1 {", f".serie-1 {{stroke-width: {YIN_WIDTH}; stroke: {YIN_COLOR}; ")
+# Post-process SVG to enforce stroke widths using CSS override
+def fix_stroke_styles(svg_content):
+    """Add CSS rules to enforce correct stroke widths."""
 
-# Also ensure path elements get the right stroke width with !important
-svg_content = svg_content.replace("stroke-width: 12", f"stroke-width: {YANG_WIDTH}")
+    # Build CSS rules for yang series
+    yang_css = ""
+    for i in range(num_yang):
+        yang_css += f".serie-{i} path {{ stroke: {YANG_COLOR} !important; stroke-width: {YANG_WIDTH} !important; fill: none !important; stroke-linecap: round; }}\n"
 
-# Add CSS overrides to ensure stroke widths are applied correctly
-css_override = f"""
-<style type="text/css">
-  .serie-0 path {{ stroke-width: {YANG_WIDTH} !important; stroke: {YANG_COLOR} !important; }}
-  .serie-1 path {{ stroke-width: {YIN_WIDTH} !important; stroke: {YIN_COLOR} !important; }}
-  .legends .legend text {{ font-size: 42px !important; }}
-</style>
-"""
+    # Build CSS rules for yin series
+    yin_css = ""
+    for i in range(num_yin):
+        serie_idx = num_yang + i
+        yin_css += f".serie-{serie_idx} path {{ stroke: {YIN_COLOR} !important; stroke-width: {YIN_WIDTH} !important; fill: none !important; stroke-linecap: round; }}\n"
 
-# Insert CSS override after opening svg tag
-svg_content = svg_content.replace("<defs>", css_override + "<defs>")
+    # Insert CSS after opening style tag
+    style_css = yang_css + yin_css
+    svg_content = re.sub(r"(<style[^>]*>)", rf"\1\n{style_css}", svg_content, count=1)
 
-# Save modified SVG and convert to PNG
-with open("plot_temp.svg", "w", encoding="utf-8") as f:
-    f.write(svg_content)
+    return svg_content
 
-# Convert to PNG using cairosvg
-cairosvg.svg2png(url="plot_temp.svg", write_to="plot.png")
 
-# Clean up temp file
-os.remove("plot_temp.svg")
+svg_str = fix_stroke_styles(svg_str)
 
-# Save HTML version (original chart without modifications)
+
+# Fix legend markers to show line segments with correct thickness
+def fix_legend_markers(svg_content):
+    """Replace legend dots with line segments showing thickness difference."""
+
+    # Find the legends container
+    legends_match = re.search(r'(<g class="legends"[^>]*>)(.*?)(</g>\s*</g>)', svg_content, re.DOTALL)
+    if not legends_match:
+        return svg_content
+
+    legends_content = legends_match.group(2)
+
+    # Find Yang legend (serie-0) and Yin legend (serie-{num_yang})
+    # Replace circles with thick/thin lines
+
+    def replace_legend_circle(match):
+        full_match = match.group(0)
+        serie_num_match = re.search(r"activate-serie-(\d+)", full_match)
+        if not serie_num_match:
+            return full_match
+
+        serie_num = int(serie_num_match.group(1))
+
+        # Only modify the labeled series (serie-0 for Yang, serie-{num_yang} for Yin)
+        if serie_num != 0 and serie_num != num_yang:
+            return full_match
+
+        # Find circle and replace with line
+        circle_match = re.search(r'<circle[^>]*cx="([^"]+)"[^>]*cy="([^"]+)"[^>]*/>', full_match)
+        if not circle_match:
+            return full_match
+
+        cx = float(circle_match.group(1))
+        cy = float(circle_match.group(2))
+
+        if serie_num == 0:  # Yang - thick green
+            new_marker = (
+                f'<line x1="{cx - 40}" y1="{cy}" x2="{cx + 40}" y2="{cy}" '
+                f'stroke="{YANG_COLOR}" stroke-width="{YANG_WIDTH}" stroke-linecap="round"/>'
+            )
+        else:  # Yin - thin red
+            new_marker = (
+                f'<line x1="{cx - 40}" y1="{cy}" x2="{cx + 40}" y2="{cy}" '
+                f'stroke="{YIN_COLOR}" stroke-width="{YIN_WIDTH}" stroke-linecap="round"/>'
+            )
+
+        return re.sub(r"<circle[^>]*/>", new_marker, full_match, count=1)
+
+    # Process legend groups
+    new_legends = re.sub(
+        r'<g class="legend[^"]*activate-serie-\d+"[^>]*>.*?</g>',
+        replace_legend_circle,
+        legends_content,
+        flags=re.DOTALL,
+    )
+
+    svg_content = svg_content.replace(legends_content, new_legends)
+    return svg_content
+
+
+svg_str = fix_legend_markers(svg_str)
+
+# Convert to PNG
+cairosvg.svg2png(bytestring=svg_str.encode("utf-8"), write_to="plot.png")
+
+# Save HTML version
 chart.render_to_file("plot.html")

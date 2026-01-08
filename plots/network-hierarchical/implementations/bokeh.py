@@ -1,12 +1,12 @@
-""" pyplots.ai
+"""pyplots.ai
 network-hierarchical: Hierarchical Network Graph with Tree Layout
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-08
 """
 
 import numpy as np
-from bokeh.io import export_png, output_file, save
-from bokeh.models import ColumnDataSource, LabelSet
+from bokeh.io import export_png
+from bokeh.models import ColumnDataSource, HoverTool, LabelSet
 from bokeh.plotting import figure
 
 
@@ -108,7 +108,7 @@ level_colors = ["#306998", "#FFD43B", "#4B8BBE", "#8BC34A"]
 node_colors = [level_colors[lvl] for lvl in node_levels]
 
 # Node sizes based on level (higher in hierarchy = larger)
-size_map = {0: 60, 1: 50, 2: 42, 3: 34}
+size_map = {0: 70, 1: 58, 2: 50, 3: 45}
 node_sizes = [size_map[lvl] for lvl in node_levels]
 
 # Prepare edge data
@@ -140,7 +140,14 @@ p.segment(x0="x0", y0="y0", x1="x1", y1="y1", source=edge_source, line_width=3, 
 
 # Draw nodes
 node_source = ColumnDataSource(
-    data={"x": node_x, "y": node_y, "labels": node_labels, "colors": node_colors, "sizes": node_sizes}
+    data={
+        "x": node_x,
+        "y": node_y,
+        "labels": node_labels,
+        "colors": node_colors,
+        "sizes": node_sizes,
+        "levels": node_levels,
+    }
 )
 p.scatter(
     x="x", y="y", source=node_source, size="sizes", fill_color="colors", line_color="#333333", line_width=2, alpha=0.9
@@ -152,22 +159,26 @@ labels = LabelSet(
     y="y",
     text="labels",
     source=node_source,
-    text_font_size="16pt",
+    text_font_size="24pt",
     text_color="#222222",
     text_align="center",
-    y_offset=35,
+    y_offset=45,
 )
 p.add_layout(labels)
+
+# Add hover tool for interactivity
+hover = HoverTool(tooltips=[("Role", "@labels"), ("Level", "@levels")], mode="mouse")
+p.add_tools(hover)
 
 # Style title
 p.title.text_font_size = "32pt"
 p.title.align = "center"
 
-# Add level annotations on the side
+# Add level annotations on the side as legend
 level_labels = ["Level 0: CEO", "Level 1: VPs", "Level 2: Directors", "Level 3: Team"]
 level_y_positions = [0, -1.5, -3.0, -4.5]
 for i, (label, y_pos) in enumerate(zip(level_labels, level_y_positions, strict=True)):
-    p.text(x=[-10], y=[y_pos], text=[label], text_font_size="20pt", text_color=level_colors[i], text_align="left")
+    p.text(x=[-10], y=[y_pos], text=[label], text_font_size="28pt", text_color=level_colors[i], text_align="left")
 
 # Set plot range to include all elements with padding
 p.x_range.start = -11
@@ -177,7 +188,3 @@ p.y_range.end = 1.0
 
 # Save as PNG
 export_png(p, filename="plot.png")
-
-# Also save as HTML for interactive viewing
-output_file("plot.html")
-save(p)

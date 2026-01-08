@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 renko-basic: Basic Renko Chart
-Library: altair | Python 3.13
-Quality: pending | Created: 2026-01-08
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 94/100 | Created: 2026-01-08
 """
 
 import altair as alt

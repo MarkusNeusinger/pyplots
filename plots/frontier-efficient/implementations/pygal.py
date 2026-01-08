@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 frontier-efficient: Efficient Frontier for Portfolio Optimization
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-08
@@ -93,25 +93,35 @@ max_sharpe_idx = np.argmax(all_sharpes)
 max_sharpe_risk = all_risks[max_sharpe_idx]
 max_sharpe_return = all_returns[max_sharpe_idx]
 
-# Custom style for pyplots
+# Custom style for pyplots - increased font sizes for better readability
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998", "#FFD43B", "#2ECC71", "#E74C3C", "#9B59B6"),
-    title_font_size=48,
-    label_font_size=32,
-    major_label_font_size=28,
-    legend_font_size=28,
-    value_font_size=20,
-    value_label_font_size=20,
-    tooltip_font_size=20,
+    colors=("#306998", "#FFD43B", "#2ECC71", "#1A1A1A", "#9B59B6", "#E74C3C"),
+    title_font_size=56,
+    label_font_size=40,
+    major_label_font_size=32,
+    legend_font_size=32,
+    value_font_size=24,
+    value_label_font_size=24,
+    tooltip_font_size=24,
     stroke_width=4,
     opacity=0.6,
     opacity_hover=0.9,
 )
+
+# Calculate appropriate axis ranges based on actual data
+data_max_risk = max(max(portfolio_risks), max(frontier_risks), max_sharpe_risk, min_var_risk)
+data_min_risk = min(min(portfolio_risks), min(frontier_risks), max_sharpe_risk, min_var_risk)
+data_max_return = max(max(portfolio_returns), max(frontier_returns), max_sharpe_return, min_var_return)
+data_min_return = min(min(portfolio_returns), min(frontier_returns), max_sharpe_return, min_var_return)
+
+# Add small padding for better visualization
+x_padding = (data_max_risk - data_min_risk) * 0.1
+y_padding = (data_max_return - data_min_return) * 0.1
 
 # Create XY chart (scatter plot capability)
 chart = pygal.XY(
@@ -130,8 +140,8 @@ chart = pygal.XY(
     truncate_legend=-1,
     x_value_formatter=lambda x: f"{x:.1%}",
     y_value_formatter=lambda y: f"{y:.1%}",
-    range=(0, 0.25),
-    xrange=(0.05, 0.30),
+    range=(max(0, data_min_return - y_padding), data_max_return + y_padding),
+    xrange=(max(0, data_min_risk - x_padding), data_max_risk + x_padding),
 )
 
 # Add random portfolios grouped by Sharpe ratio
@@ -155,16 +165,15 @@ chart.add(f"Low Sharpe (<{sharpe_33:.2f})", low_sharpe, dots_size=8)
 chart.add(f"Mid Sharpe ({sharpe_33:.2f}-{sharpe_66:.2f})", mid_sharpe, dots_size=8)
 chart.add(f"High Sharpe (≥{sharpe_66:.2f})", high_sharpe, dots_size=8)
 
-# Add efficient frontier as connected line
+# Add efficient frontier as connected line - using dark color to stand out
 frontier_points = list(zip(frontier_risks, frontier_returns, strict=False))
-chart.add("Efficient Frontier", frontier_points, stroke=True, dots_size=0, stroke_style={"width": 6})
+chart.add("Efficient Frontier", frontier_points, stroke=True, dots_size=0, stroke_style={"width": 8})
 
-# Add special marker points
-chart.add("Min Variance", [(min_var_risk, min_var_return)], dots_size=18)
-chart.add("Max Sharpe", [(max_sharpe_risk, max_sharpe_return)], dots_size=18)
+# Add special marker points with larger sizes for visibility
+chart.add("Min Variance", [(min_var_risk, min_var_return)], dots_size=25)
+chart.add("Max Sharpe", [(max_sharpe_risk, max_sharpe_return)], dots_size=25)
 
 # Save outputs
-chart.render_to_file("plot.svg")
 chart.render_to_png("plot.png")
 
 # Save HTML for interactive version

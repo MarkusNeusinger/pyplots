@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 kagi-basic: Basic Kagi Chart
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-08
@@ -6,7 +6,8 @@ Quality: 78/100 | Created: 2026-01-08
 
 import numpy as np
 from bokeh.io import export_png
-from bokeh.plotting import figure, output_file, save
+from bokeh.models import Legend, LegendItem
+from bokeh.plotting import figure
 
 
 # Generate sample stock price data
@@ -112,21 +113,40 @@ p = figure(
     toolbar_location=None,
 )
 
-# Plot yang (bullish) segments - thick green
-for xs, ys in zip(yang_xs, yang_ys, strict=True):
-    p.line(xs, ys, line_width=8, line_color="#2ca02c", line_cap="round")
+# Colorblind-safe colors: blue for yang (bullish), orange for yin (bearish)
+YANG_COLOR = "#1f77b4"  # Blue
+YIN_COLOR = "#ff7f0e"  # Orange
 
-# Plot yin (bearish) segments - thin red
+# Plot yang (bullish) segments - thick blue
+yang_renderers = []
+for xs, ys in zip(yang_xs, yang_ys, strict=True):
+    r = p.line(xs, ys, line_width=12, line_color=YANG_COLOR, line_cap="round")
+    yang_renderers.append(r)
+
+# Plot yin (bearish) segments - thin orange
+yin_renderers = []
 for xs, ys in zip(yin_xs, yin_ys, strict=True):
-    p.line(xs, ys, line_width=3, line_color="#d62728", line_cap="round")
+    r = p.line(xs, ys, line_width=4, line_color=YIN_COLOR, line_cap="round")
+    yin_renderers.append(r)
+
+# Add legend
+legend = Legend(
+    items=[
+        LegendItem(label="Yang (Bullish)", renderers=[yang_renderers[0]] if yang_renderers else []),
+        LegendItem(label="Yin (Bearish)", renderers=[yin_renderers[0]] if yin_renderers else []),
+    ],
+    location="top_left",
+    label_text_font_size="20pt",
+)
+p.add_layout(legend, "right")
 
 # Style configuration
-p.title.text_font_size = "28pt"
+p.title.text_font_size = "32pt"
 p.title.align = "center"
-p.xaxis.axis_label_text_font_size = "22pt"
-p.yaxis.axis_label_text_font_size = "22pt"
-p.xaxis.major_label_text_font_size = "18pt"
-p.yaxis.major_label_text_font_size = "18pt"
+p.xaxis.axis_label_text_font_size = "24pt"
+p.yaxis.axis_label_text_font_size = "24pt"
+p.xaxis.major_label_text_font_size = "20pt"
+p.yaxis.major_label_text_font_size = "20pt"
 
 # Grid styling
 p.grid.grid_line_alpha = 0.3
@@ -135,7 +155,5 @@ p.grid.grid_line_dash = "dashed"
 # Background
 p.background_fill_color = "#fafafa"
 
-# Save PNG and HTML
+# Save PNG
 export_png(p, filename="plot.png")
-output_file("plot.html")
-save(p)

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 frontier-efficient: Efficient Frontier for Portfolio Optimization
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 85/100 | Created: 2026-01-08
+Quality: 90/100 | Created: 2026-01-08
 """
 
 import numpy as np

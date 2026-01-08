@@ -1,0 +1,28 @@
+# Specification-level metadata for renko-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: renko-basic
+title: Basic Renko Chart
+
+# Specification tracking
+created: 2026-01-08T15:54:31Z
+updated: null
+issue: 3294
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - renko
+    - candlestick
+  data_type:
+    - timeseries
+    - numeric
+  domain:
+    - finance
+    - trading
+  features:
+    - basic
+    - price-action
+    - noise-filtering

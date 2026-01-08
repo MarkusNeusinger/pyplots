@@ -63,9 +63,10 @@ chart.options.chart = {
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "marginBottom": 220,
-    "marginLeft": 220,
-    "marginTop": 180,
+    "marginBottom": 280,
+    "marginLeft": 250,
+    "marginTop": 200,
+    "marginRight": 100,
 }
 
 # Title
@@ -99,13 +100,22 @@ chart.options.y_axis = {
     "gridLineColor": "rgba(0, 0, 0, 0.15)",
 }
 
-# Legend
+# Legend - positioned at top right for visibility
 chart.options.legend = {
     "enabled": True,
+    "align": "right",
+    "verticalAlign": "top",
+    "layout": "vertical",
+    "x": -50,
+    "y": 150,
     "itemStyle": {"fontSize": "32px"},
-    "symbolHeight": 20,
-    "symbolWidth": 40,
-    "itemMarginBottom": 10,
+    "symbolHeight": 24,
+    "symbolWidth": 50,
+    "itemMarginBottom": 15,
+    "backgroundColor": "rgba(255, 255, 255, 0.9)",
+    "borderWidth": 1,
+    "borderColor": "#cccccc",
+    "padding": 15,
 }
 
 # Plot options for column range

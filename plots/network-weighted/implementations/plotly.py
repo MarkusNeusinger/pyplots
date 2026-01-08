@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-weighted: Weighted Network Graph with Edge Thickness
 Library: plotly 6.5.1 | Python 3.13.11
 Quality: 81/100 | Created: 2026-01-08
@@ -95,8 +95,11 @@ for _ in range(200):
     length = np.where(length < 0.01, 0.01, length)
     pos += displacement / length[:, np.newaxis] * min(0.1, k)
 
-# Normalize positions to [-1, 1]
-pos = (pos - pos.min(axis=0)) / (pos.max(axis=0) - pos.min(axis=0)) * 2 - 1
+# Normalize positions to [-0.85, 0.85] for better centering with margin for labels
+pos = (pos - pos.min(axis=0)) / (pos.max(axis=0) - pos.min(axis=0))
+pos = pos * 1.7 - 0.85  # Scale to [-0.85, 0.85] leaving margin for labels
+# Center the layout
+pos = pos - pos.mean(axis=0)
 node_positions = {countries[i]: pos[i] for i in range(n_nodes)}
 
 # Calculate weighted degree for node sizing
@@ -136,13 +139,47 @@ for source, target, weight in edges:
 node_x = [node_positions[node][0] for node in countries]
 node_y = [node_positions[node][1] for node in countries]
 
+# Calculate smart label positions to avoid overlap
+label_positions = []
+for i, node in enumerate(countries):
+    x, y = node_positions[node]
+    # Find nearby nodes and adjust position
+    nearby_above = 0
+    nearby_below = 0
+    nearby_left = 0
+    nearby_right = 0
+    for j, other in enumerate(countries):
+        if i != j:
+            ox, oy = node_positions[other]
+            dx, dy = x - ox, y - oy
+            dist = np.sqrt(dx**2 + dy**2)
+            if dist < 0.35:  # Close nodes
+                if dy > 0:
+                    nearby_below += 1
+                else:
+                    nearby_above += 1
+                if dx > 0:
+                    nearby_left += 1
+                else:
+                    nearby_right += 1
+    # Choose best position based on neighbors
+    if nearby_above > nearby_below:
+        pos_choice = "bottom center"
+    elif nearby_left > nearby_right:
+        pos_choice = "middle right"
+    elif nearby_right > nearby_left:
+        pos_choice = "middle left"
+    else:
+        pos_choice = "top center"
+    label_positions.append(pos_choice)
+
 node_trace = go.Scatter(
     x=node_x,
     y=node_y,
     mode="markers+text",
     marker=dict(size=node_sizes, color="#FFD43B", line=dict(width=2, color="#306998")),
     text=countries,
-    textposition="top center",
+    textposition=label_positions,
     textfont=dict(size=16, color="#333333"),
     hoverinfo="text",
     hovertext=[f"{c}<br>Trade Volume: ${weighted_degree[c]}B" for c in countries],
@@ -159,10 +196,10 @@ for trace in edge_traces:
 # Add nodes
 fig.add_trace(node_trace)
 
-# Add weight scale annotation
+# Add weight scale annotation (positioned with margin to avoid cutoff)
 fig.add_annotation(
-    x=1.0,
-    y=0.0,
+    x=0.98,
+    y=0.02,
     xref="paper",
     yref="paper",
     text="Edge thickness = Trade volume (USD billions)<br>Thin: $35B → Thick: $620B",
@@ -171,8 +208,10 @@ fig.add_annotation(
     align="right",
     xanchor="right",
     yanchor="bottom",
-    bgcolor="rgba(255,255,255,0.8)",
-    borderpad=8,
+    bgcolor="rgba(255,255,255,0.9)",
+    bordercolor="#cccccc",
+    borderwidth=1,
+    borderpad=10,
 )
 
 # Update layout
@@ -184,7 +223,7 @@ fig.update_layout(
     yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, title=""),
     template="plotly_white",
     showlegend=False,
-    margin=dict(l=60, r=60, t=100, b=80),
+    margin=dict(l=80, r=100, t=100, b=100),
     plot_bgcolor="white",
 )
 

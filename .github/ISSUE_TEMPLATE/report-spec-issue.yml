@@ -1,0 +1,48 @@
+name: Report Specification Issue
+description: Report a problem with a plot specification (affects all libraries)
+labels: ["report-pending"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Report Specification Issue
+
+        Use this form to report problems with a **specification** that affects all library implementations.
+
+        For issues with a specific library implementation, use [Report Implementation Issue](https://github.com/MarkusNeusinger/pyplots/issues/new?template=report-impl-issue.yml) instead.
+
+  - type: input
+    id: spec_id
+    attributes:
+      label: Specification ID
+      description: The spec ID from the URL (e.g., scatter-basic)
+      placeholder: scatter-basic
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What type of issue is this?
+      options:
+        - Visual (design, clarity, hard to read)
+        - Data (unrealistic values, inappropriate context)
+        - Functional (doesn't work as expected)
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Issue Description
+      description: Describe the problem. Include screenshots if helpful.
+      placeholder: |
+        What's wrong:
+        The specification describes X but should describe Y...
+
+        Expected behavior:
+        The plot should...
+    validations:
+      required: true

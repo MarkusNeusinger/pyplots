@@ -1,0 +1,213 @@
+library: matplotlib
+specification_id: heatmap-interactive
+created: '2026-01-08T15:57:54Z'
+updated: '2026-01-08T16:30:22Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20822846025
+issue: 3289
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-interactive/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-interactive/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 90
+review:
+  strengths:
+  - Excellent visual clarity with perfectly readable cell annotations using adaptive
+    text colors
+  - Viridis colormap provides excellent colorblind accessibility
+  - Realistic server monitoring scenario with appropriate hourly patterns
+  - Clean KISS code structure with proper reproducibility seed
+  - Helpful note directing users to truly interactive alternatives (Plotly/Bokeh)
+  - Professional formatting with rotated x-labels and well-sized colorbar
+  weaknesses:
+  - Grid intentionally removed but the criteria expects grid styling consideration
+  - True hover/zoom interactivity not possible in matplotlib - the annotation approach
+    is a reasonable workaround
+  image_description: The plot displays a 12×16 heatmap matrix representing server
+    CPU load percentages across 12 servers (Server 01-12 on the y-axis) over a 16-hour
+    time period (06:00-21:00 on the x-axis). The viridis colormap ranges from dark
+    purple (low load ~0%) through teal/green (medium ~40-60%) to bright yellow (high
+    load ~100%). Each cell contains its numerical value with appropriate text contrast
+    - white text on dark cells (values <50) and black text on bright cells (values
+    ≥50). The title "heatmap-interactive · matplotlib · pyplots.ai" appears at the
+    top in the correct format. A vertical colorbar on the right displays the "CPU
+    Load (%)" scale from 0-100. The x-axis label reads "Time of Day" and y-axis label
+    reads "Server". An italic gray note at the bottom states "Cell values shown |
+    For interactive hover/zoom, see Plotly or Bokeh implementations" - appropriately
+    acknowledging matplotlib's static nature while providing the best approximation
+    of interactivity through visible cell values.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt, cell annotations
+          at 14pt bold - all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text, x-axis labels rotated 45° for clarity
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Cell sizes optimal for data density, annotations clearly visible
+          with good contrast
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Viridis colormap is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, tight_layout applied, slight deduction for bottom
+          text area
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels with units: Time of Day, Server, CPU Load (%)'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: No grid (intentionally removed for cleaner appearance), colorbar
+          well placed
+    spec_compliance:
+      score: 22
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct heatmap visualization using imshow
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=time columns, Y=server rows, color=CPU load values
+      - id: SC-03
+        name: Required Features
+        score: 3
+        max: 5
+        passed: false
+        comment: Cell annotations simulate hover tooltips, but interactive zoom/pan
+          not possible in static matplotlib
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Values 0-100% properly displayed with matching colorbar scale
+      - id: SC-05
+        name: Legend Accuracy
+        score: 1
+        max: 2
+        passed: true
+        comment: Colorbar present and accurate, no other legend needed
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: heatmap-interactive · matplotlib · pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variation across servers and time, demonstrates hourly patterns
+          with peak around midday
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Server performance metrics is a neutral, appropriate scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: CPU load 0-100% is realistic range
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple script: imports → data → plot → save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set at start
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only matplotlib.pyplot and numpy imported
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Modern matplotlib API used throughout
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses imshow with viridis cmap, colorbar, and text annotations. Good
+          matplotlib usage but no advanced features like mplcursors
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - annotations
+  - manual-ticks
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - custom-colormap

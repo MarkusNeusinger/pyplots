@@ -1,0 +1,28 @@
+# Specification-level metadata for network-hierarchical
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: network-hierarchical
+title: Hierarchical Network Graph with Tree Layout
+
+# Specification tracking
+created: 2026-01-08T21:42:01Z
+updated: null
+issue: 3343
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - network
+    - tree
+  data_type:
+    - hierarchical
+    - relational
+  domain:
+    - general
+    - business
+    - technology
+  features:
+    - basic
+    - hierarchical

@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 kagi-basic: Basic Kagi Chart
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-08

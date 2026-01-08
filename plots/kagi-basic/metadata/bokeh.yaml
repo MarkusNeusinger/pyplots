@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: kagi-basic
 created: '2026-01-08T21:54:18Z'
-updated: '2026-01-08T22:03:16Z'
+updated: '2026-01-08T22:15:13Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20832944885
 issue: 3341
@@ -13,33 +13,32 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/kagi-basic/bok
 quality_score: 78
 review:
   strengths:
-  - Correct Kagi chart algorithm implementation with proper yang/yin transitions
-  - Clean separation of yang and yin segments with appropriate thickness differentiation
-  - Good use of horizontal connectors at reversal points
-  - Proper title format following pyplots.ai convention
-  - Reproducible with fixed random seed
+  - Well-implemented Kagi chart algorithm with proper reversal threshold logic
+  - Good line thickness differentiation (12 vs 4 line_width) clearly distinguishes
+    yang from yin
+  - Correct title format and axis labeling with units
+  - Clean, readable code structure following KISS principles
+  - Proper use of Bokeh-specific features (Legend, LegendItem, export_png)
   weaknesses:
-  - Red-green color scheme is not colorblind accessible; consider using blue/orange
-    or other colorblind-safe alternatives
-  - No legend explaining what thick green (yang/bullish) and thin red (yin/bearish)
-    lines represent
-  - Text sizes could be larger for the 4800x2700 canvas (title at 28pt is acceptable
-    but tick labels at 18pt appear small)
-  - Could use ColumnDataSource or multi_line for more idiomatic Bokeh code
+  - Legend is not visible in the rendered output - placing legend with add_layout(legend,
+    right) puts it outside the figure bounds; use location property within figure
+    or place legend inside plot area
+  - Red-green color scheme in rendered output is not colorblind-safe - use blue/orange
+    as originally intended in code comments
   image_description: The plot displays a Kagi chart showing price movements over approximately
     21 Kagi line indices. The chart uses green thick lines for yang (bullish) segments
-    and red thin lines for yin (bearish) segments. The price range spans from approximately
-    $78 to $113. The title "kagi-basic · bokeh · pyplots.ai" appears at the top center.
-    The x-axis is labeled "Kagi Line Index" and the y-axis is labeled "Price ($)".
-    The background is a light gray (#fafafa) with subtle dashed grid lines. Horizontal
-    connectors link vertical segments at reversal points, creating the characteristic
-    stair-step pattern of Kagi charts. The chart shows clear trend reversals with
-    transitions between thick green (yang) and thin red (yin) lines, demonstrating
-    the filtering of market noise that Kagi charts are known for. The plot fills most
-    of the canvas with balanced margins on all sides.
+    and red/salmon thin lines for yin (bearish) segments. The price range spans from
+    approximately $78 to $113. Vertical lines show price movements within a trend,
+    while horizontal lines connect reversals at trend change points. The title "kagi-basic
+    · bokeh · pyplots.ai" appears at the top center in black text. The x-axis is labeled
+    "Kagi Line Index" ranging from 0 to 20, and the y-axis is labeled "Price ($)"
+    ranging from approximately 80 to 110. The background is light gray (#fafafa) with
+    subtle dashed grid lines at alpha 0.3. The legend is NOT visible in the rendered
+    image despite being added in the code - it appears to be placed outside the visible
+    canvas area when using add_layout with "right" position.
   criteria_checklist:
     visual_quality:
-      score: 30
+      score: 32
       max: 40
       items:
       - id: VQ-01
@@ -47,8 +46,7 @@ review:
         score: 7
         max: 10
         passed: true
-        comment: Title and axis labels readable but appear small relative to large
-          canvas; tick labels quite small at 18pt
+        comment: Text readable but could be larger for 4800x2700 canvas
       - id: VQ-02
         name: No Overlap
         score: 8
@@ -57,38 +55,36 @@ review:
         comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Line segments visible but yang (width 8) vs yin (width 3) distinction
-          could be stronger at this canvas size
+        comment: Line segments visible with good thickness differentiation
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 2
         max: 5
         passed: false
-        comment: Red-green color scheme problematic for colorblind users
+        comment: Red-green color scheme is problematic for colorblind users
       - id: VQ-05
         name: Layout Balance
         score: 4
         max: 5
         passed: true
-        comment: Good canvas utilization with balanced margins
+        comment: Good canvas use but legend cut off on right side
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Y-axis has Price ($) with units, X-axis has descriptive Kagi Line
-          Index
+        comment: Descriptive labels with units
       - id: VQ-07
         name: Grid & Legend
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Grid styling good but no legend explaining yang/yin colors
+        passed: true
+        comment: Grid subtle with alpha=0.3 and dashed style
     spec_compliance:
-      score: 22
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -96,63 +92,61 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct Kagi chart with vertical lines and horizontal connectors
+        comment: Correct Kagi chart implementation
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X shows Kagi line index, Y shows price correctly
+        comment: X shows line index, Y shows price
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Has thick/thin yang/yin lines, green/red colors, horizontal connectors;
-          missing legend
+        comment: Has thick/thin lines, reversals; legend not visible
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes
+        comment: All data visible
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 1
         max: 2
         passed: false
-        comment: No legend present to explain yang vs yin
+        comment: Legend defined but not visible in output
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Correctly uses kagi-basic · bokeh · pyplots.ai format
+        comment: Correct format kagi-basic · bokeh · pyplots.ai
     data_quality:
-      score: 16
+      score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Shows uptrends, downtrends, and yang/yin transitions; could show
-          more dramatic reversals
+        comment: Shows yang and yin segments, multiple reversals
       - id: DQ-02
         name: Realistic Context
-        score: 5
+        score: 7
         max: 7
         passed: true
-        comment: Simulated stock price data is plausible but generic
+        comment: Realistic stock price simulation
       - id: DQ-03
         name: Appropriate Scale
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Price range ~$78-113 realistic for stock starting at $100
+        comment: Price range realistic for stock data
     code_quality:
-      score: 7
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -160,7 +154,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear structure: imports, data, Kagi algorithm, plot, save'
+        comment: Linear flow without functions/classes
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -169,38 +163,38 @@ review:
         comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Imports output_file and save for HTML but primary output is PNG
+        passed: true
+        comment: All imports used
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current Bokeh API
+        comment: Modern Bokeh API
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Saves both plot.png and plot.html; dual output could be cleaner
+        passed: true
+        comment: Saves as plot.png
     library_features:
-      score: 3
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Uses Bokeh figure with line glyphs and custom styling; could use
-          ColumnDataSource or multi_line for more idiomatic code
+        comment: Uses Bokeh Legend, LegendItem, line_cap, export_png
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
-  - html-export
+  - custom-legend
+  - iteration-over-groups
   patterns:
   - data-generation
   - iteration-over-groups

@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: network-weighted
 created: '2026-01-08T16:03:42Z'
-updated: '2026-01-08T16:10:58Z'
+updated: '2026-01-08T16:22:21Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20822859689
 issue: 3290
@@ -10,36 +10,36 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/network-weighted/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-weighted/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/network-weighted/highcharts/plot.html
-quality_score: 82
+quality_score: 90
 review:
   strengths:
-  - Excellent colorblind-safe palette with 12 distinct node colors
-  - Node sizing by weighted degree effectively shows collaboration hubs
-  - Good use of Highcharts networkgraph module with force-directed layout
-  - Clean subtitle explains the weight encoding
-  - Proper white text outlines ensure label legibility
+  - Excellent implementation of weighted network graph using Highcharts networkgraph
+    module
+  - Node sizing by weighted degree adds meaningful visual information
+  - Custom legend clearly explains the edge weight scale
+  - Force-directed layout with verlet integration provides good node positioning
+  - Colorblind-safe palette with distinct colors for each department
+  - Clean data structure with realistic university collaboration scenario
   weaknesses:
-  - No legend explaining the edge weight scale (spec recommends a legend or annotation
-    explaining the weight scale)
-  - Network graph is offset to the right with ~60% empty whitespace on the left side
-    of canvas
-  - Uses raw JavaScript/HTML generation instead of highcharts-core Python API
-  image_description: The plot displays a weighted network graph representing university
-    department collaborations. There are 12 circular nodes of varying sizes (CS, MATH,
-    PHYS, STAT, EE, ME, BIO, CHEM, ECON, PSYCH, MED, ENV) connected by edges of varying
-    thickness. Node sizes reflect weighted degree (total collaboration strength),
-    with CS and BIO being among the largest. Edge colors are a consistent dark blue
-    (#306998), with thickness clearly varying to show collaboration intensity (thickest
-    edges include BIO-MED and CS-EE). Each node has a distinct color from a colorblind-safe
-    palette (blue, yellow, purple, cyan, brown, pink, gray, olive, orange, green,
-    red). Labels appear both inside larger nodes and outside smaller ones with white
-    text outlines for legibility. The title "network-weighted · highcharts · pyplots.ai"
-    appears at the top with a descriptive subtitle explaining that edge thickness
-    represents joint publications. The network is positioned center-right on the canvas
-    with notable whitespace on the left side.
+  - Legend positioned in bottom-left is far from the main visualization
+  - Network could utilize more of the canvas space for better visibility
+  - Post-render timeout approach for link widths is a workaround rather than native
+    solution
+  image_description: 'The plot displays a weighted network graph showing university
+    department collaboration patterns. There are 12 department nodes rendered as colored
+    circles: CS (blue), MATH (blue), PHYS (purple), STAT (cyan), EE (brown), ME (pink),
+    BIO (gray), CHEM (olive-yellow), ECON (blue), PSYCH (orange), MED (green), and
+    ENV (red). Node sizes vary based on weighted degree - BIO and CS appear as the
+    largest nodes indicating highest collaboration activity. Edges connect departments
+    with varying thickness representing the number of joint publications (ranging
+    from 15 to 55). The thickest edges connect BIO-MED (55 publications) and CS-EE
+    (52 publications). A legend in the bottom-left corner explains the edge weight
+    scale with three line thickness examples. The title ''network-weighted · highcharts
+    · pyplots.ai'' appears at the top with a subtitle ''University Department Collaboration
+    Network''. The network uses a force-directed layout centered in the canvas.'
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 36
       max: 40
       items:
       - id: VQ-01
@@ -47,48 +47,46 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Title and labels readable, but some node labels placed outside nodes
-          are smaller relative to canvas size
+        comment: Labels readable but could be larger for 4800x2700 canvas
       - id: VQ-02
         name: No Overlap
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Minor label positioning issues but generally readable
+        comment: No overlapping text or elements
       - id: VQ-03
         name: Element Visibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Nodes well-sized, edge thickness differentiation visible but could
-          be more pronounced
+        comment: Nodes well-sized, edges clearly distinguishable by thickness
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Excellent colorblind-safe palette with 12 distinct colors
+        comment: Colorblind-safe palette with good variety
       - id: VQ-05
         name: Layout Balance
         score: 3
         max: 5
-        passed: false
-        comment: Network occupies ~35% of canvas, offset to right with empty space
-          on left
+        passed: true
+        comment: Network centered but could use more canvas space; legend far from
+          main visualization
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: N/A for network graph - subtitle explains edge meaning appropriately
+        comment: N/A for network graphs, subtitle provides context
       - id: VQ-07
         name: Grid & Legend
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: No legend for edge weight scale as recommended by spec
+        passed: true
+        comment: Legend well-designed with clear thickness examples
     spec_compliance:
-      score: 22
+      score: 25
       max: 25
       items:
       - id: SC-01
@@ -102,15 +100,13 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Nodes represent departments, edges represent collaborations with
-          weight
+        comment: Edge thickness correctly maps to weights
       - id: SC-03
         name: Required Features
-        score: 4
+        score: 5
         max: 5
-        passed: false
-        comment: Missing legend/annotation explaining weight scale as suggested in
-          spec notes
+        passed: true
+        comment: Weighted edges, node sizing by degree, legend present
       - id: SC-04
         name: Data Range
         score: 3
@@ -119,10 +115,10 @@ review:
         comment: All nodes and edges visible
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: No legend present for weight interpretation
+        passed: true
+        comment: Edge weight legend accurate with min/mid/max values
       - id: SC-06
         name: Title Format
         score: 2
@@ -130,7 +126,7 @@ review:
         passed: true
         comment: 'Correct format: network-weighted · highcharts · pyplots.ai'
     data_quality:
-      score: 18
+      score: 17
       max: 20
       items:
       - id: DQ-01
@@ -138,21 +134,22 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows varying edge weights and node sizing by degree
+        comment: Shows varied edge weights and node degrees; could show more weight
+          variation
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: University department collaboration is a realistic, neutral scenario
+        comment: University collaboration is neutral and realistic
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Publication counts (15-55) are reasonable for academic collaboration
+        comment: Publication counts realistic but some weights very similar
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -160,13 +157,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → data → processing → HTML → screenshot'
+        comment: 'Linear structure: imports → data → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) set
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -175,33 +172,33 @@ review:
         comment: All imports used
       - id: CQ-04
         name: No Deprecated API
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Uses inline JavaScript manipulation rather than highcharts-core Python
-          API
+        passed: true
+        comment: Current Highcharts API
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png correctly
+        passed: false
+        comment: Saves as plot.png but also plot.html (minor)
     library_features:
-      score: 2
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Uses networkgraph module but bypasses highcharts-core Python API
-          in favor of raw JavaScript
-  verdict: REJECTED
+        passed: true
+        comment: Uses networkgraph module, force-directed layout, custom link widths
+          via post-render update
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium
   techniques:
+  - custom-legend
   - html-export
   - hover-tooltips
   patterns:
@@ -210,4 +207,4 @@ impl_tags:
   dataprep:
   - normalization
   styling:
-  - alpha-blending
+  - edge-highlighting

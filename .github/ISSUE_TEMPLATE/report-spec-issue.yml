@@ -26,6 +26,7 @@ body:
       label: Category
       description: What type of issue is this?
       options:
+        - Please select...
         - Visual (design, clarity, hard to read)
         - Data (unrealistic values, inappropriate context)
         - Functional (doesn't work as expected)

@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: heatmap-interactive
 created: '2026-01-08T15:57:54Z'
-updated: '2026-01-08T16:00:55Z'
+updated: '2026-01-08T16:13:41Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20822846025
 issue: 3289
@@ -10,84 +10,91 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-interactive/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-interactive/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: 72
+quality_score: 85
 review:
   strengths:
-  - Excellent visual quality with adaptive text colors for annotations
-  - Clean, professional appearance with viridis colormap
-  - Realistic server performance monitoring scenario
-  - Good code structure following KISS principles
-  - Proper font sizing for 4800×2700 output
+  - Clear cell annotations displaying exact CPU load values - fulfills the 'tooltip
+    display' requirement in spirit
+  - Viridis colormap provides excellent colorblind accessibility
+  - Realistic server performance monitoring scenario with plausible time-based load
+    patterns
+  - Clean KISS code structure with proper reproducibility (seed=42)
+  - Appropriate text contrast - white text on dark cells, black on bright cells
   weaknesses:
-  - 'Missing core interactivity: The spec explicitly requires hover tooltips showing
-    row/column/value, zoom/pan capabilities, and a reset button. The implementation
-    is entirely static with no interactive features.'
-  - 'No matplotlib event handling: Could have used mpl_connect for hover events, widgets
-    for zoom controls, or saved as HTML with mpld3 for browser interactivity'
-  - 'Grid lines are slightly distracting: White grid with alpha=0.4 is too prominent
-    for a heatmap'
-  image_description: The plot displays a 12×12 heatmap showing server CPU load percentages
-    across 12 servers (Server 01-12 on Y-axis) and 12 time periods (06:00-17:00 on
-    X-axis). The colormap uses viridis (dark purple for low values ~0%, transitioning
-    through blue/teal/green to bright yellow for high values ~100%). Each cell contains
-    a bold numeric annotation showing the exact CPU load percentage (0-100 range).
-    Text color is adaptive - white on dark cells (low values) and black on bright
-    cells (high values). The title "heatmap-interactive · matplotlib · pyplots.ai"
-    is clearly displayed at the top. A vertical colorbar on the right shows "CPU Load
-    (%)" with scale from 0 to 100. X-axis labels are rotated 45° for readability.
-    Subtle white grid lines separate cells. The data shows a realistic pattern with
-    higher loads during mid-day business hours (10:00-12:00) and lower loads in early
-    morning and late afternoon.
+  - Image appears cropped - only shows 12 of 15 servers (rows) and 12 of 20 time columns
+    defined in the code; either the figsize or the data dimensions need adjustment
+  - Spec requires 10-100 rows/columns but implementation uses 15x20 which is appropriate,
+    however the visual output is incomplete
+  - The instruction text at bottom is not visible in the output image due to cropping/layout
+    issues
+  image_description: 'The plot displays a heatmap showing server CPU load data with
+    a 12x12 visible grid (though code defines 15x20). The Y-axis shows "Server" with
+    labels Server 01 through Server 12. The X-axis shows "Time of Day" with hourly
+    intervals from 06:00 to 17:00. Each cell contains a bold numeric annotation showing
+    the exact CPU load percentage (0-100). The viridis colormap is used: dark purple/blue
+    for low values (0-30%), teal/green for medium values (30-60%), and yellow for
+    high values (80-100%). A vertical colorbar on the right side is labeled "CPU Load
+    (%)" with a scale from 0-100. The title "heatmap-interactive · matplotlib · pyplots.ai"
+    appears at the top. The data shows a realistic pattern where load tends to be
+    higher during midday hours (10:00-13:00) and lower in early morning/late afternoon.
+    Text annotations use appropriate contrast (white on dark cells, black on light
+    cells) for readability. However, the image appears to be missing 3 rows (Server
+    13-15) and 8 columns (04:00-05:00 and 18:00-23:00) that should exist based on
+    the code, suggesting a layout or cropping issue.'
   criteria_checklist:
     visual_quality:
-      score: 35
+      score: 32
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
+        score: 8
         max: 10
         passed: true
-        comment: Title 24pt, labels 20pt, ticks 16pt, annotations 14pt - all clearly
-          readable
+        comment: Cell annotations and labels are readable, but title at 22pt is slightly
+          below recommended 24pt for 4800x2700
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text, rotated x-labels prevent collision
+        comment: No overlapping text elements, rotated x-labels prevent collision
       - id: VQ-03
         name: Element Visibility
-        score: 8
+        score: 6
         max: 8
         passed: true
-        comment: Cell annotations visible, appropriate sizing for 12x12 matrix
+        comment: Cells are visible but image shows only partial data (12x12 instead
+          of 15x20)
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Viridis colormap is colorblind-safe
+        comment: Viridis colormap is colorblind-safe with good contrast
       - id: VQ-05
         name: Layout Balance
-        score: 2
+        score: 3
         max: 5
         passed: false
-        comment: Good layout but some wasted space on sides
+        comment: Data appears cropped - not all rows/columns visible, instruction
+          text cut off
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Time of Day and Server with CPU Load (%) on colorbar
+        comment: 'Descriptive labels: Time of Day and Server with CPU Load (%) on
+          colorbar'
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: White grid with alpha=0.4 is too prominent/distracting for a heatmap
+        comment: Subtle white grid lines with 0.5 width and 0.2 alpha are good, but
+          colorbar is partially functional - some row labels not visible
     spec_compliance:
-      score: 15
+      score: 18
       max: 25
       items:
       - id: SC-01
@@ -95,32 +102,34 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct heatmap visualization
+        comment: Correct heatmap visualization using imshow
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X/Y correctly assigned (time vs server)
+        comment: X=time, Y=servers, color=CPU load correctly mapped
       - id: SC-03
         name: Required Features
-        score: 0
+        score: 2
         max: 5
         passed: false
-        comment: 'CRITICAL: Missing interactivity - Spec requires hover tooltips,
-          zoom/pan, and reset button. This is a STATIC image.'
+        comment: Annotations simulate hover tooltips showing values, but true interactivity
+          (zoom/pan) not possible with static matplotlib. Annotation acknowledges
+          this limitation.
       - id: SC-04
         name: Data Range
-        score: 2
+        score: 1
         max: 3
-        passed: true
-        comment: Shows 0-100 range, data up to 87% which is appropriate
+        passed: false
+        comment: Not all data visible in output - only 12 of 15 rows and 12 of 20
+          columns shown
       - id: SC-05
         name: Legend Accuracy
         score: 0
         max: 2
         passed: false
-        comment: No legend per se (colorbar present but not a legend)
+        comment: Colorbar present but missing servers not represented in visible area
       - id: SC-06
         name: Title Format
         score: 2
@@ -128,28 +137,30 @@ review:
         passed: true
         comment: 'Correct format: heatmap-interactive · matplotlib · pyplots.ai'
     data_quality:
-      score: 17
+      score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Shows variation across servers and time, peak patterns visible
+        comment: Shows variation across time and servers, realistic load patterns
+          with midday peaks, but truncated display limits feature visibility
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Server performance monitoring is a real, neutral, relevant scenario
+        comment: Server CPU monitoring is an excellent real-world application, neutral
+          business context
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: 0-100% is perfect for CPU load, but 12x12 is small for interactive
-          exploration per spec
+        comment: CPU load 0-100% is realistic, values show plausible server behavior
+          patterns
     code_quality:
       score: 10
       max: 10
@@ -159,42 +170,42 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports -> data -> plot -> save'
+        comment: 'Simple linear structure: imports → data → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) is set
+        comment: np.random.seed(42) ensures reproducible data generation
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib and numpy imported
+        comment: Only matplotlib.pyplot and numpy imported, both used
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: No deprecated functions used
+        comment: Uses current matplotlib API
       - id: CQ-05
         name: Output Correct
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png with dpi=300
+        comment: Saves to plot.png with proper dpi and bbox_inches
     library_features:
-      score: 0
+      score: 7
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 5
         max: 5
-        passed: false
-        comment: No interactive features implemented. Could have used mpl_connect
-          for hover events, widgets for zoom/pan, or mpld3 for HTML export.
+        passed: true
+        comment: Good use of imshow, colorbar, text annotations with conditional coloring,
+          axhline/axvline for grid - demonstrates matplotlib's flexibility for heatmaps
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -210,4 +221,3 @@ impl_tags:
   styling:
   - custom-colormap
   - grid-styling
-  - alpha-blending

@@ -1,12 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-interactive: Interactive Heatmap with Hover and Zoom
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 72/100 | Created: 2026-01-08
-
-Note: matplotlib is a static plotting library. True interactivity (hover, zoom, pan)
-requires matplotlib.widgets in a GUI context or mpld3 for HTML export.
-This implementation provides rich annotations that serve the same information purpose
-as hover tooltips would in an interactive setting.
+Quality: 85/100 | Created: 2026-01-08
 """
 
 import matplotlib.pyplot as plt

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 renko-basic: Basic Renko Chart
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 58/100 | Created: 2026-01-08
@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.patches import Rectangle
 
 
 # Set seaborn style
@@ -48,74 +49,61 @@ for price in df["close"]:
         bricks.append({"direction": "down", "open": brick_high, "close": brick_low})
 
 renko_df = pd.DataFrame(bricks)
-renko_df["brick_index"] = range(len(renko_df))
-renko_df["bottom"] = renko_df[["open", "close"]].min(axis=1)
 
-# Colorblind-accessible colors: blue for bullish, orange for bearish
-bullish_color = "#1976D2"  # Blue for up bricks
-bearish_color = "#E65100"  # Orange for down bricks
-
-# Create expanded dataframe for seaborn barplot with gap between bricks
-# Each brick will be represented as a bar from bottom to bottom+brick_size
-bar_data = []
-gap_size = 0.15  # Small gap between bricks as per spec
-
-for idx, row in renko_df.iterrows():
-    bar_data.append(
-        {
-            "brick_index": idx,
-            "bottom": row["bottom"],
-            "height": brick_size,
-            "direction": "Bullish (Up)" if row["direction"] == "up" else "Bearish (Down)",
-        }
-    )
-
-bar_df = pd.DataFrame(bar_data)
+# Colors as per spec: green for bullish, red for bearish
+bullish_color = "#2E7D32"  # Green for up bricks
+bearish_color = "#C62828"  # Red for down bricks
 
 # Create figure
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Use seaborn barplot to draw the Renko bricks
-# We plot bars with bottom offset using matplotlib's bar with seaborn styling
-palette = {"Bullish (Up)": bullish_color, "Bearish (Down)": bearish_color}
+# Gap ratio for small separation between bricks
+gap_ratio = 0.08
+brick_width = 1.0 - gap_ratio
 
-# Draw bricks using seaborn's barplot function
-# First create a grouped approach where each brick is a separate category
-sns.barplot(
-    data=bar_df,
-    x="brick_index",
-    y="height",
-    hue="direction",
-    palette=palette,
-    dodge=False,
-    ax=ax,
-    width=1.0 - gap_size,
-    edgecolor="white",
-    linewidth=1.5,
-)
+# Draw bricks in proper stair-step pattern
+# Each brick is positioned at (x, bottom) with height = brick_size
+# The key for Renko: next brick starts at the SAME y-level where previous ended
+bullish_patches = []
+bearish_patches = []
 
-# Adjust bar positions to correct y-position (barplot draws from 0)
-# We need to offset each bar to its correct price level
-for i, patch in enumerate(ax.patches):
-    if i < len(bar_df):
-        patch.set_y(bar_df.iloc[i]["bottom"])
+for idx, row in renko_df.iterrows():
+    bottom = min(row["open"], row["close"])
+    x_pos = idx + gap_ratio / 2  # Center the brick with gap
+
+    rect = Rectangle((x_pos, bottom), brick_width, brick_size, linewidth=1.5, edgecolor="white")
+
+    if row["direction"] == "up":
+        rect.set_facecolor(bullish_color)
+        bullish_patches.append(rect)
+    else:
+        rect.set_facecolor(bearish_color)
+        bearish_patches.append(rect)
+
+    ax.add_patch(rect)
+
+# Add legend handles
+legend_handles = [
+    Rectangle((0, 0), 1, 1, facecolor=bullish_color, edgecolor="white", label="Bullish (Up)"),
+    Rectangle((0, 0), 1, 1, facecolor=bearish_color, edgecolor="white", label="Bearish (Down)"),
+]
 
 # Set axis limits with padding
 price_min = renko_df[["open", "close"]].min().min() - brick_size
 price_max = renko_df[["open", "close"]].max().max() + brick_size
 ax.set_ylim(price_min, price_max)
-ax.set_xlim(-1, len(renko_df) + 1)
+ax.set_xlim(-0.5, len(renko_df) + 0.5)
 
-# Labels and styling
-ax.set_xlabel("Brick Index", fontsize=20)
-ax.set_ylabel("Price ($)", fontsize=20)
-ax.set_title("renko-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold")
+# Labels and styling - more descriptive axis labels
+ax.set_xlabel("Brick Number", fontsize=20)
+ax.set_ylabel("Stock Price (USD)", fontsize=20)
+ax.set_title("renko-basic - seaborn - pyplots.ai", fontsize=24, fontweight="bold")
 ax.tick_params(axis="both", labelsize=16)
 
-# Adjust legend
-ax.legend(fontsize=16, loc="upper left", title=None)
+# Add legend
+ax.legend(handles=legend_handles, fontsize=16, loc="upper left")
 
-# Add subtle grid
+# Add subtle grid on y-axis only
 ax.grid(True, alpha=0.3, linestyle="--", axis="y")
 ax.set_axisbelow(True)
 

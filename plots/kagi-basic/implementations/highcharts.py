@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 kagi-basic: Basic Kagi Chart
 Library: highcharts unknown | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-08
@@ -187,14 +187,14 @@ Highcharts.chart('container', {{
     series: [{{
         name: 'Yang (Bullish)',
         data: {yang_data_str},
-        color: '#306998',
+        color: '#228B22',
         lineWidth: 8,
         zIndex: 2
     }}, {{
         name: 'Yin (Bearish)',
         data: {yin_data_str},
         color: '#DC143C',
-        lineWidth: 3,
+        lineWidth: 4,
         zIndex: 1
     }}],
     credits: {{
@@ -236,9 +236,7 @@ driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
 time.sleep(5)  # Wait for chart to render
 
-# Get the container element and screenshot it directly
-container = driver.find_element("id", "container")
-container.screenshot("plot.png")
+driver.save_screenshot("plot.png")
 driver.quit()
 
 Path(temp_path).unlink()  # Clean up temp file

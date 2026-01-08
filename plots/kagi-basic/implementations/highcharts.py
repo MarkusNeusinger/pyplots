@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 kagi-basic: Basic Kagi Chart
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2025-01-08
+Library: highcharts unknown | Python 3.13.11
+Quality: 85/100 | Created: 2026-01-08
 """
 
 import tempfile

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-interactive: Interactive Heatmap with Hover and Zoom
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 88/100 | Created: 2026-01-08
+Quality: 90/100 | Created: 2026-01-08
 """
 
 import matplotlib.pyplot as plt

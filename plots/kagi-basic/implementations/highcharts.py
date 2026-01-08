@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 kagi-basic: Basic Kagi Chart
 Library: highcharts unknown | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-08

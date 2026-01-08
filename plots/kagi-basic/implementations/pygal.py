@@ -1,10 +1,8 @@
-""" pyplots.ai
+"""pyplots.ai
 kagi-basic: Basic Kagi Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-08
 """
-
-import re
 
 import cairosvg
 import numpy as np
@@ -14,8 +12,8 @@ from pygal.style import Style
 
 # Data - Generate synthetic stock price data
 np.random.seed(42)
-n_days = 250
-returns = np.random.normal(0.0005, 0.018, n_days)
+n_days = 300  # More days for richer Kagi pattern
+returns = np.random.normal(0.0006, 0.02, n_days)
 prices = 100 * np.cumprod(1 + returns)
 
 # Kagi chart calculation with 4% reversal threshold
@@ -109,17 +107,17 @@ for col in columns:
 # Colors and stroke widths - large difference for visibility
 YANG_COLOR = "#16A34A"  # Green for bullish
 YIN_COLOR = "#DC2626"  # Red for bearish
-YANG_WIDTH = 16  # Thick for yang (5x thicker for clear distinction)
-YIN_WIDTH = 3  # Thin for yin
+YANG_WIDTH = 18  # Thick for yang
+YIN_WIDTH = 4  # Thin for yin
 
-# Custom style
+# Custom style - create colors list with yang color first, yin color second
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#000000",
     foreground_subtle="#999999",
-    colors=tuple([YANG_COLOR] * len(yang_segments) + [YIN_COLOR] * len(yin_segments)),
+    colors=(YANG_COLOR, YIN_COLOR),
     title_font_size=64,
     label_font_size=42,
     major_label_font_size=38,
@@ -130,7 +128,7 @@ custom_style = Style(
     opacity_hover=1.0,
 )
 
-# Create XY chart
+# Create XY chart - disable legend (we'll add manual legend annotation)
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -141,122 +139,56 @@ chart = pygal.XY(
     show_dots=False,
     show_x_guides=False,
     show_y_guides=True,
-    legend_at_bottom=True,
-    legend_at_bottom_columns=2,
+    show_legend=False,  # Disable native legend - we'll add custom one
     stroke=True,
     fill=False,
     margin=100,
-    truncate_legend=-1,
 )
 
-# Add each segment as a separate series
-# First yang segment gets label, rest are unlabeled
-for i, seg in enumerate(yang_segments):
-    label = "Yang (Bullish)" if i == 0 else None
-    chart.add(label, seg, stroke_style={"width": YANG_WIDTH, "linecap": "round", "linejoin": "round"})
+# Combine all yang segments into one series (for consistent color)
+yang_points = []
+for seg in yang_segments:
+    yang_points.extend(seg)
+    yang_points.append((None, None))  # Break between segments
 
-# First yin segment gets label, rest are unlabeled
-for i, seg in enumerate(yin_segments):
-    label = "Yin (Bearish)" if i == 0 else None
-    chart.add(label, seg, stroke_style={"width": YIN_WIDTH, "linecap": "round", "linejoin": "round"})
+# Combine all yin segments into one series
+yin_points = []
+for seg in yin_segments:
+    yin_points.extend(seg)
+    yin_points.append((None, None))  # Break between segments
 
-# Render to SVG
+# Add as two series
+chart.add("Yang (Bullish)", yang_points, stroke_style={"width": YANG_WIDTH, "linecap": "round"})
+chart.add("Yin (Bearish)", yin_points, stroke_style={"width": YIN_WIDTH, "linecap": "round"})
+
+# Render to SVG and add custom legend with proper line styles
 svg_data = chart.render()
 svg_str = svg_data.decode("utf-8")
 
-# Track which series indices are yang vs yin
-num_yang = len(yang_segments)
-num_yin = len(yin_segments)
+# Add CSS to enforce stroke widths (pygal's stroke_style may not apply correctly)
+css_override = f"""
+.serie-0 .line {{ stroke-width: {YANG_WIDTH}px !important; stroke: {YANG_COLOR} !important; }}
+.serie-1 .line {{ stroke-width: {YIN_WIDTH}px !important; stroke: {YIN_COLOR} !important; }}
+"""
+svg_str = svg_str.replace("</style>", css_override + "</style>")
 
+# Build manual legend that accurately shows thick vs thin lines
+# Position legend in upper right area to avoid axis labels
+legend_svg = f"""
+<g class="manual-legend" transform="translate(3200, 180)">
+  <rect x="-20" y="-30" width="1450" height="80" fill="white" fill-opacity="0.9" rx="8"/>
+  <line x1="0" y1="0" x2="80" y2="0" stroke="{YANG_COLOR}" stroke-width="{YANG_WIDTH}" stroke-linecap="round"/>
+  <text x="100" y="10" font-size="36" fill="#333333" font-family="Verdana, sans-serif">Yang (Bullish) — Thick</text>
+  <line x1="700" y1="0" x2="780" y2="0" stroke="{YIN_COLOR}" stroke-width="{YIN_WIDTH}" stroke-linecap="round"/>
+  <text x="800" y="10" font-size="36" fill="#333333" font-family="Verdana, sans-serif">Yin (Bearish) — Thin</text>
+</g>
+"""
 
-# Post-process SVG to enforce stroke widths using CSS override
-def fix_stroke_styles(svg_content):
-    """Add CSS rules to enforce correct stroke widths."""
-
-    # Build CSS rules for yang series
-    yang_css = ""
-    for i in range(num_yang):
-        yang_css += f".serie-{i} path {{ stroke: {YANG_COLOR} !important; stroke-width: {YANG_WIDTH} !important; fill: none !important; stroke-linecap: round; }}\n"
-
-    # Build CSS rules for yin series
-    yin_css = ""
-    for i in range(num_yin):
-        serie_idx = num_yang + i
-        yin_css += f".serie-{serie_idx} path {{ stroke: {YIN_COLOR} !important; stroke-width: {YIN_WIDTH} !important; fill: none !important; stroke-linecap: round; }}\n"
-
-    # Insert CSS after opening style tag
-    style_css = yang_css + yin_css
-    svg_content = re.sub(r"(<style[^>]*>)", rf"\1\n{style_css}", svg_content, count=1)
-
-    return svg_content
-
-
-svg_str = fix_stroke_styles(svg_str)
-
-
-# Fix legend markers to show line segments with correct thickness
-def fix_legend_markers(svg_content):
-    """Replace legend dots with line segments showing thickness difference."""
-
-    # Find the legends container
-    legends_match = re.search(r'(<g class="legends"[^>]*>)(.*?)(</g>\s*</g>)', svg_content, re.DOTALL)
-    if not legends_match:
-        return svg_content
-
-    legends_content = legends_match.group(2)
-
-    # Find Yang legend (serie-0) and Yin legend (serie-{num_yang})
-    # Replace circles with thick/thin lines
-
-    def replace_legend_circle(match):
-        full_match = match.group(0)
-        serie_num_match = re.search(r"activate-serie-(\d+)", full_match)
-        if not serie_num_match:
-            return full_match
-
-        serie_num = int(serie_num_match.group(1))
-
-        # Only modify the labeled series (serie-0 for Yang, serie-{num_yang} for Yin)
-        if serie_num != 0 and serie_num != num_yang:
-            return full_match
-
-        # Find circle and replace with line
-        circle_match = re.search(r'<circle[^>]*cx="([^"]+)"[^>]*cy="([^"]+)"[^>]*/>', full_match)
-        if not circle_match:
-            return full_match
-
-        cx = float(circle_match.group(1))
-        cy = float(circle_match.group(2))
-
-        if serie_num == 0:  # Yang - thick green
-            new_marker = (
-                f'<line x1="{cx - 40}" y1="{cy}" x2="{cx + 40}" y2="{cy}" '
-                f'stroke="{YANG_COLOR}" stroke-width="{YANG_WIDTH}" stroke-linecap="round"/>'
-            )
-        else:  # Yin - thin red
-            new_marker = (
-                f'<line x1="{cx - 40}" y1="{cy}" x2="{cx + 40}" y2="{cy}" '
-                f'stroke="{YIN_COLOR}" stroke-width="{YIN_WIDTH}" stroke-linecap="round"/>'
-            )
-
-        return re.sub(r"<circle[^>]*/>", new_marker, full_match, count=1)
-
-    # Process legend groups
-    new_legends = re.sub(
-        r'<g class="legend[^"]*activate-serie-\d+"[^>]*>.*?</g>',
-        replace_legend_circle,
-        legends_content,
-        flags=re.DOTALL,
-    )
-
-    svg_content = svg_content.replace(legends_content, new_legends)
-    return svg_content
-
-
-svg_str = fix_legend_markers(svg_str)
+# Insert legend before closing svg tag
+svg_str = svg_str.replace("</svg>", legend_svg + "</svg>")
 
 # Convert to PNG
 cairosvg.svg2png(bytestring=svg_str.encode("utf-8"), write_to="plot.png")
 
-# Save HTML version
+# Save HTML version for interactive view
 chart.render_to_file("plot.html")

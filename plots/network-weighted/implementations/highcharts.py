@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-weighted: Weighted Network Graph with Edge Thickness
 Library: highcharts unknown | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-08
@@ -118,7 +118,7 @@ with urllib.request.urlopen(highcharts_url, timeout=30) as response:
 with urllib.request.urlopen(networkgraph_url, timeout=30) as response:
     networkgraph_js = response.read().decode("utf-8")
 
-# Generate HTML with inline scripts and custom link width rendering
+# Generate HTML with inline scripts, weight legend, and custom link width rendering
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -128,10 +128,58 @@ html_content = f"""<!DOCTYPE html>
     <style>
         body {{ margin: 0; padding: 0; }}
         #container {{ width: 4800px; height: 2700px; }}
+        #legend {{
+            position: absolute;
+            bottom: 120px;
+            left: 150px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 3px solid #306998;
+            border-radius: 12px;
+            padding: 30px 40px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }}
+        #legend h3 {{
+            margin: 0 0 20px 0;
+            font-size: 36px;
+            color: #333;
+            font-weight: bold;
+        }}
+        .legend-item {{
+            display: flex;
+            align-items: center;
+            margin: 16px 0;
+            font-size: 28px;
+            color: #444;
+        }}
+        .legend-line {{
+            height: 0;
+            margin-right: 20px;
+            border-top-style: solid;
+            border-top-color: #306998;
+        }}
+        .legend-line.thin {{ width: 80px; border-top-width: 4px; }}
+        .legend-line.medium {{ width: 80px; border-top-width: 14px; }}
+        .legend-line.thick {{ width: 80px; border-top-width: 24px; }}
     </style>
 </head>
 <body>
     <div id="container"></div>
+    <div id="legend">
+        <h3>Edge Weight (Publications)</h3>
+        <div class="legend-item">
+            <div class="legend-line thin"></div>
+            <span>{min_weight} publications</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-line medium"></div>
+            <span>~{(min_weight + max_weight) // 2} publications</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-line thick"></div>
+            <span>{max_weight} publications</span>
+        </div>
+    </div>
     <script>
         var linksData = {links_json};
         var nodesData = {nodes_json};
@@ -143,30 +191,39 @@ html_content = f"""<!DOCTYPE html>
                 height: 2700,
                 backgroundColor: '#ffffff',
                 marginTop: 180,
-                marginBottom: 100,
-                marginLeft: 100,
-                marginRight: 100
+                marginBottom: 200,
+                marginLeft: 400,
+                marginRight: 400,
+                events: {{
+                    load: function() {{
+                        // Center the network by adjusting plot area
+                        var chart = this;
+                        chart.plotBackground.attr({{
+                            fill: 'none'
+                        }});
+                    }}
+                }}
             }},
             title: {{
                 text: 'network-weighted · highcharts · pyplots.ai',
                 style: {{ fontSize: '56px', fontWeight: 'bold' }}
             }},
             subtitle: {{
-                text: 'University Department Collaboration Network (edge thickness = joint publications)',
+                text: 'University Department Collaboration Network',
                 style: {{ fontSize: '36px', color: '#666666' }}
             }},
             plotOptions: {{
                 networkgraph: {{
                     layoutAlgorithm: {{
                         enableSimulation: true,
-                        friction: -0.95,
-                        linkLength: 280,
-                        gravitationalConstant: 0.04,
+                        friction: -0.92,
+                        linkLength: 320,
+                        gravitationalConstant: 0.08,
                         integration: 'verlet',
                         approximation: 'none',
                         initialPositions: 'circle',
-                        maxIterations: 2000,
-                        initialPositionRadius: 600
+                        maxIterations: 3000,
+                        initialPositionRadius: 800
                     }},
                     link: {{
                         color: '#306998'

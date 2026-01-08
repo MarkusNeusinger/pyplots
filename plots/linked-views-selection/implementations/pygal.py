@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 linked-views-selection: Multiple Linked Views with Selection Sync
-Library: pygal | Python 3.13
-Quality: pending | Created: 2026-01-08
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 52/100 | Created: 2026-01-08
 """
 
 import numpy as np

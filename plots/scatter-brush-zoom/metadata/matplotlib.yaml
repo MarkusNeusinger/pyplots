@@ -1,0 +1,218 @@
+library: matplotlib
+specification_id: scatter-brush-zoom
+created: '2026-01-08T16:03:35Z'
+updated: '2026-01-08T16:11:16Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20823045259
+issue: 3295
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-brush-zoom/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-brush-zoom/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of brush selection using matplotlib RectangleSelector
+    widget with proper interactive=True mode
+  - Well-designed visual feedback system with selected points highlighted in red and
+    count displayed in status box
+  - Good colorblind-safe color palette with clear cluster distinction
+  - Proper instruction text guiding users on interaction capabilities
+  - Clean integration of zoom/pan via native matplotlib toolbar
+  weaknesses:
+  - Code includes function definition (on_select callback) which technically violates
+    KISS structure, though necessary for interactivity
+  - Axis labels lack units (X Value, Y Value could be more descriptive)
+  image_description: 'The plot displays an interactive scatter plot with three distinct
+    clusters of data points on a 16:9 canvas. Cluster A (blue/navy, #306998) is positioned
+    in the lower-left quadrant around x=2-4 and y=1.5-5. Cluster B (yellow/gold, #FFD43B)
+    is spread across the right side around x=6-10 and y=4-9. Cluster C (green, #4CAF50)
+    occupies the upper-middle region around x=4.5-7 and y=7-9.5. The title "scatter-brush-zoom
+    · matplotlib · pyplots.ai" is prominently displayed at the top in large font.
+    A status box in the upper-left shows "Selected: 0 points" with a rounded white
+    background. Instruction text in italic gray at the upper-right reads "Drag to
+    select • Scroll to zoom • Pan with toolbar". The legend is positioned in the lower-right
+    corner showing all three cluster categories. Markers have white edge borders with
+    ~70% opacity. A subtle dashed grid (alpha ~0.3) is visible. Axes are labeled "X
+    Value" and "Y Value".'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt, legend at
+          16pt - all perfectly readable at full resolution
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, status box and instruction text are
+          well separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers at s=150 with alpha=0.7 work well for 200 points, though
+          slightly large causing some visual cluster overlap
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue, yellow, and green palette is colorblind-safe (avoids red-green
+          confusion)
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of canvas space, plot fills ~60% of area with balanced
+          margins
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: false
+        comment: Labels are descriptive (X Value, Y Value) but lack units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: false
+        comment: Grid is subtle at alpha=0.3 with dashed style; legend well-placed
+          but could be slightly more integrated
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct scatter plot type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X and Y correctly assigned to axes
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Implements brush selection via RectangleSelector, zoom via scroll
+          wheel, status area showing selected count; reset/clear selection relies
+          on toolbar
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data points visible within axes range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies all three clusters
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: scatter-brush-zoom · matplotlib · pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows multiple clusters with different spreads and positions, good
+          for demonstrating brush selection; could include some outliers
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Generic cluster data is plausible for exploratory analysis, though
+          lacks specific domain context
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values are sensible numeric ranges
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 1
+        max: 3
+        passed: false
+        comment: Code includes function definition (on_select callback) which deviates
+          from KISS principle, though necessary for interactivity
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports (matplotlib.pyplot, numpy, RectangleSelector)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current matplotlib API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of matplotlib's RectangleSelector widget, demonstrating
+          matplotlib's interactive capabilities with proper callback handling and
+          visual feedback
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - custom-legend
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending
+  - edge-highlighting
+  - grid-styling

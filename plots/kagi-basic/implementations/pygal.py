@@ -1,10 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 kagi-basic: Basic Kagi Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-08
 """
 
-import re
+import os
 
 import cairosvg
 import numpy as np
@@ -86,11 +86,9 @@ for col in columns[1:]:
         current_segment = {"type": col["type"], "columns": [col]}
 segments.append(current_segment)
 
-# Build XY points for each segment
-# Include connection point from previous segment to ensure continuity
+# Build XY points for each segment with connection points for continuity
 yang_series_list = []
 yin_series_list = []
-
 prev_end_point = None
 
 for seg in segments:
@@ -99,7 +97,6 @@ for seg in segments:
 
     # Start from the connection point (previous segment's end)
     if prev_end_point is not None:
-        # Add horizontal line from previous end to current start x
         first_col = cols[0]
         points.append((prev_end_point[0], prev_end_point[1]))
         points.append((first_col["x"], prev_end_point[1]))
@@ -127,41 +124,31 @@ for seg in segments:
     else:
         yin_series_list.append(points)
 
-# Stroke widths - extreme difference for clear visibility
-YANG_WIDTH = 36  # Very thick line for bullish/yang (4x difference from yin)
-YIN_WIDTH = 9  # Thin line for bearish/yin
-YANG_COLOR = "#16A34A"  # Green - spec requires green for yang/bullish
-YIN_COLOR = "#DC2626"  # Red - spec requires red for yin/bearish
+# Colors - vibrant green for yang, strong red for yin
+YANG_COLOR = "#16A34A"  # Green - bullish/uptrend
+YIN_COLOR = "#DC2626"  # Red - bearish/downtrend
 
-# Custom style for large canvas with subtle grid
+# Stroke widths - extreme difference for visibility
+YANG_WIDTH = 12  # Thick line for bullish yang
+YIN_WIDTH = 3  # Thin line for bearish yin
+
+# Custom style for large canvas
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#000000",
-    foreground_subtle="#CCCCCC",  # Lighter for subtle grid
-    colors=(
-        YANG_COLOR,
-        YIN_COLOR,
-        YANG_COLOR,
-        YIN_COLOR,
-        YANG_COLOR,
-        YIN_COLOR,
-        YANG_COLOR,
-        YIN_COLOR,
-        YANG_COLOR,
-        YIN_COLOR,
-        YANG_COLOR,
-        YIN_COLOR,
-    ),
+    foreground_subtle="#CCCCCC",
+    colors=(YANG_COLOR, YIN_COLOR),
     title_font_size=64,
     label_font_size=42,
     major_label_font_size=38,
-    legend_font_size=38,
+    legend_font_size=42,
     value_font_size=30,
     opacity=1.0,
     opacity_hover=1.0,
-    guide_stroke_dasharray="4,4",  # Dashed grid lines for subtlety
+    guide_stroke_dasharray="4,4",
+    stroke_width=YANG_WIDTH,  # Default to yang width
 )
 
 # Create XY chart
@@ -183,117 +170,60 @@ chart = pygal.XY(
     show_x_labels=True,
     show_y_labels=True,
     truncate_legend=-1,
+    legend_box_size=30,
 )
 
-# Track series indices for yang vs yin for SVG post-processing
-yang_series_indices = []
-yin_series_indices = []
-series_idx = 0
+# Combine all yang points into one series
+yang_all_points = []
+for points in yang_series_list:
+    if yang_all_points:
+        yang_all_points.append((None, None))  # Break between segments
+    yang_all_points.extend(points)
 
-# Add yang segments (thick green lines) - bullish/uptrend
-for i, points in enumerate(yang_series_list):
-    label = "Yang (Bullish)" if i == 0 else None
-    chart.add(label, points, stroke_style={"width": YANG_WIDTH})
-    yang_series_indices.append(series_idx)
-    series_idx += 1
+# Combine all yin points into one series
+yin_all_points = []
+for points in yin_series_list:
+    if yin_all_points:
+        yin_all_points.append((None, None))  # Break between segments
+    yin_all_points.extend(points)
 
-# Add yin segments (thin red lines) - bearish/downtrend
-for i, points in enumerate(yin_series_list):
-    label = "Yin (Bearish)" if i == 0 else None
-    chart.add(label, points, stroke_style={"width": YIN_WIDTH})
-    yin_series_indices.append(series_idx)
-    series_idx += 1
+# Add series - yang with thick stroke, yin with thin stroke
+chart.add("Yang (Bullish) ━━━", yang_all_points, stroke_style={"width": YANG_WIDTH})
+chart.add("Yin (Bearish) ─", yin_all_points, stroke_style={"width": YIN_WIDTH})
 
-# Get the SVG output for post-processing
-svg_data = chart.render()
-svg_str = svg_data.decode("utf-8")
+# Render SVG and manually fix stroke widths since pygal ignores stroke_style
+svg_content = chart.render().decode("utf-8")
 
+# Fix yang series stroke width (serie-0) - thick green line
+svg_content = svg_content.replace(".serie-0 {", f".serie-0 {{stroke-width: {YANG_WIDTH}; stroke: {YANG_COLOR}; ")
 
-# Apply inline styles directly to path elements with explicit stroke-width
-def apply_stroke_widths(svg_content):
-    def replace_series(match):
-        full_match = match.group(0)
-        class_attr = match.group(1)
+# Fix yin series stroke width (serie-1) - thin red line
+svg_content = svg_content.replace(".serie-1 {", f".serie-1 {{stroke-width: {YIN_WIDTH}; stroke: {YIN_COLOR}; ")
 
-        # Extract serie number
-        serie_match = re.search(r"serie-(\d+)", class_attr)
-        if not serie_match:
-            return full_match
+# Also ensure path elements get the right stroke width with !important
+svg_content = svg_content.replace("stroke-width: 12", f"stroke-width: {YANG_WIDTH}")
 
-        serie_num = int(serie_match.group(1))
+# Add CSS overrides to ensure stroke widths are applied correctly
+css_override = f"""
+<style type="text/css">
+  .serie-0 path {{ stroke-width: {YANG_WIDTH} !important; stroke: {YANG_COLOR} !important; }}
+  .serie-1 path {{ stroke-width: {YIN_WIDTH} !important; stroke: {YIN_COLOR} !important; }}
+  .legends .legend text {{ font-size: 42px !important; }}
+</style>
+"""
 
-        # Determine width and color based on yang/yin
-        if serie_num in yang_series_indices:
-            width = YANG_WIDTH
-            color = YANG_COLOR
-        else:
-            width = YIN_WIDTH
-            color = YIN_COLOR
+# Insert CSS override after opening svg tag
+svg_content = svg_content.replace("<defs>", css_override + "<defs>")
 
-        # Apply inline style to ALL path elements in this group
-        def style_path(path_match):
-            path_tag = path_match.group(0)
-            if 'style="' in path_tag:
-                return re.sub(r'style="[^"]*"', f'style="stroke:{color};stroke-width:{width};fill:none"', path_tag)
-            else:
-                return path_tag.replace("<path ", f'<path style="stroke:{color};stroke-width:{width};fill:none" ')
+# Save modified SVG and convert to PNG
+with open("plot_temp.svg", "w", encoding="utf-8") as f:
+    f.write(svg_content)
 
-        full_match = re.sub(r"<path[^>]*>", style_path, full_match)
-        return full_match
+# Convert to PNG using cairosvg
+cairosvg.svg2png(url="plot_temp.svg", write_to="plot.png")
 
-    return re.sub(r'<g class="(series serie-\d+ color-\d+)"[^>]*>.*?</g>', replace_series, svg_content, flags=re.DOTALL)
+# Clean up temp file
+os.remove("plot_temp.svg")
 
-
-svg_str = apply_stroke_widths(svg_str)
-
-# Override CSS stroke-width rules to ensure inline styles take precedence
-svg_str = re.sub(r"(\.series\.serie-\d+\{)stroke-width:\d+", r"\1stroke-width:0", svg_str)
-
-
-# Fix legend markers to be larger and correctly colored
-def fix_legend_markers(svg_content):
-    """Make legend markers larger and ensure correct colors."""
-
-    # Find legend groups and enlarge circles/markers
-    # Yang (series 0) should be green, Yin (first series after yang) should be red
-    def enlarge_legend_marker(match):
-        circle_tag = match.group(0)
-        # Enlarge the circle radius from default ~6 to 16
-        circle_tag = re.sub(r'r="(\d+(?:\.\d+)?)"', 'r="16"', circle_tag)
-        return circle_tag
-
-    # Enlarge legend circles
-    svg_content = re.sub(r'<circle[^>]*class="[^"]*legend[^"]*"[^>]*>', enlarge_legend_marker, svg_content)
-
-    # Also fix rect markers if used (pygal sometimes uses rects)
-    def enlarge_legend_rect(match):
-        rect_tag = match.group(0)
-        rect_tag = re.sub(r'width="(\d+(?:\.\d+)?)"', 'width="32"', rect_tag)
-        rect_tag = re.sub(r'height="(\d+(?:\.\d+)?)"', 'height="32"', rect_tag)
-        return rect_tag
-
-    svg_content = re.sub(r'<rect[^>]*class="[^"]*legend[^"]*"[^>]*>', enlarge_legend_rect, svg_content)
-
-    # Ensure yang legend entry has green fill and yin has red fill
-    # Pattern: Look for legend entries and fix their colors
-    def fix_legend_color(match):
-        entry = match.group(0)
-        if "Yang" in entry:
-            entry = re.sub(r'fill="[^"]*"', f'fill="{YANG_COLOR}"', entry, count=1)
-        elif "Yin" in entry:
-            entry = re.sub(r'fill="[^"]*"', f'fill="{YIN_COLOR}"', entry, count=1)
-        return entry
-
-    # Fix colors in legend circles/rects
-    svg_content = re.sub(r'(<g class="legend[^"]*"[^>]*>.*?</g>)', fix_legend_color, svg_content, flags=re.DOTALL)
-
-    return svg_content
-
-
-svg_str = fix_legend_markers(svg_str)
-
-# Convert to PNG using cairosvg for reliable stroke rendering
-cairosvg.svg2png(bytestring=svg_str.encode("utf-8"), write_to="plot.png")
-
-# Save HTML version
+# Save HTML version (original chart without modifications)
 chart.render_to_file("plot.html")

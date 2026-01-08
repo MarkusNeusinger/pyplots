@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 network-weighted: Weighted Network Graph with Edge Thickness
 Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 85/100 | Created: 2026-01-08
+Quality: 91/100 | Created: 2026-01-08
 """
 
 import numpy as np

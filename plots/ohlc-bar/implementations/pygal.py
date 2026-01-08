@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 ohlc-bar: OHLC Bar Chart
-Library: pygal | Python 3.13
-Quality: pending | Created: 2026-01-08
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 82/100 | Created: 2026-01-08
 """
 
 import numpy as np

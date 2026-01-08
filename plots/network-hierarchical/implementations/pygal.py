@@ -1,7 +1,7 @@
 """ pyplots.ai
 network-hierarchical: Hierarchical Network Graph with Tree Layout
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 85/100 | Created: 2026-01-08
+Quality: 90/100 | Created: 2026-01-08
 """
 
 import pygal
@@ -45,8 +45,8 @@ for node_id, (_label, level, _parent) in hierarchy.items():
 # Calculate node positions using tree layout - maximize vertical space usage
 node_positions = {}
 max_level = max(levels.keys())
-# Use full vertical range from 10 to 95 for better canvas utilization
-y_min, y_max = 10, 95
+# Use full vertical range from 10 to 90 for better canvas utilization
+y_min, y_max = 10, 90
 y_spacing = (y_max - y_min) / max_level
 
 for level, nodes in levels.items():
@@ -59,26 +59,25 @@ for level, nodes in levels.items():
 
 # Level colors: Blue (CEO), Yellow (VPs), Teal (Directors), Coral (Managers)
 level_colors = ["#306998", "#FFD43B", "#4ECDC4", "#FF6B6B"]
-level_names = ["Level 0: CEO", "Level 1: VPs", "Level 2: Directors", "Level 3: Managers"]
+level_names = ["Level 0: Executive", "Level 1: VPs", "Level 2: Directors", "Level 3: Managers"]
 
-# Create custom style - darker edges, level colors for nodes
-# Order: edge color first, then 4 level colors
-style_colors = ["#333333"] + level_colors
-
+# Create custom style with larger fonts and subtle grid
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
-    colors=tuple(style_colors),
+    foreground_subtle="#999999",
+    guide_stroke_color="#e0e0e0",  # Subtle light gray grid lines
+    guide_stroke_dasharray="4,4",  # Dashed grid for subtlety
+    colors=("#888888", "#306998", "#FFD43B", "#4ECDC4", "#FF6B6B"),  # Gray for edges
     title_font_size=72,
-    label_font_size=36,
-    major_label_font_size=32,
-    legend_font_size=36,
-    value_font_size=28,
-    tooltip_font_size=28,
-    stroke_width=10,  # Thicker edges for better visibility
+    label_font_size=40,
+    major_label_font_size=36,
+    legend_font_size=40,
+    value_font_size=32,
+    tooltip_font_size=32,
+    stroke_width=8,
     opacity=0.95,
     opacity_hover=1.0,
 )
@@ -89,21 +88,24 @@ chart = pygal.XY(
     height=2700,
     style=custom_style,
     title="network-hierarchical · pygal · pyplots.ai",
-    x_title="Organization Width",
-    y_title="Hierarchy Level (Top to Bottom)",
+    x_title="Horizontal Position (Peer Distribution)",
+    y_title="Management Level (0=Top, 3=Bottom)",
     show_legend=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=5,
-    show_x_guides=False,
-    show_y_guides=False,
+    show_x_guides=True,
+    show_y_guides=True,
     stroke=True,
-    dots_size=40,  # Larger nodes for better visibility
+    dots_size=35,
     show_dots=True,
-    range=(0, 100),  # Full range to utilize canvas better
+    range=(0, 100),
     xrange=(0, 100),
     explicit_size=True,
     truncate_legend=-1,
-    margin_bottom=120,
+    margin_bottom=140,
+    margin_top=100,
+    x_labels=[str(i) for i in range(0, 101, 20)],
+    y_labels=[str(i) for i in range(0, 101, 20)],
 )
 
 # Collect all edges
@@ -122,9 +124,11 @@ for start, end in all_edges:
     edge_data.append(start)
     edge_data.append(end)
 
-chart.add("Connections", edge_data, show_dots=False, stroke=True)
+# Add edges with explicit stroke style for visible legend indicator
+chart.add("Reporting Lines", edge_data, show_dots=False, stroke=True, stroke_style={"width": 6, "dasharray": "none"})
 
 # Group nodes by level and add as separate series for proper legend
+# Include node labels in the data for visibility via tooltips
 for level_idx in range(max_level + 1):
     level_nodes = levels[level_idx]
     level_data = []

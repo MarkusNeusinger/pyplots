@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 chessboard-basic: Chess Board Grid Visualization
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2025-01-08
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 93/100 | Created: 2026-01-08
 """
 
 import matplotlib.pyplot as plt

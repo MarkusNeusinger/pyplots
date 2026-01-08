@@ -1,16 +1,18 @@
-""" pyplots.ai
+"""pyplots.ai
 network-hierarchical: Hierarchical Network Graph with Tree Layout
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-08
 """
 
+import os
+
 import numpy as np
 from bokeh.io import export_png
-from bokeh.models import ColumnDataSource, HoverTool, LabelSet
+from bokeh.models import ColumnDataSource, HoverTool, LabelSet, Legend, LegendItem
 from bokeh.plotting import figure
 
 
-# Data: Software project team hierarchy (25 employees, 4 levels)
+# Data: Software project team hierarchy (24 employees, 4 levels)
 np.random.seed(42)
 
 nodes = [
@@ -86,12 +88,12 @@ for node in nodes:
 
 # Calculate positions: levels spread vertically, nodes at each level spread horizontally
 positions = {}
-y_spacing = 1.5  # Increased vertical spacing
+y_spacing = 2.0  # Increased vertical spacing for better separation
 for lvl in sorted(levels.keys()):
     nodes_at_level = levels[lvl]
     n = len(nodes_at_level)
     # Wider horizontal spread for lower levels
-    spread = max(n * 1.2, 8)
+    spread = max(n * 1.4, 6)
     x_positions = np.linspace(-spread / 2, spread / 2, n)
     y_pos = -lvl * y_spacing  # Root at top, children below
     for i, node in enumerate(nodes_at_level):
@@ -105,10 +107,11 @@ node_levels = [n["level"] for n in nodes]
 
 # Color by level - using Python Blue and Yellow as primary
 level_colors = ["#306998", "#FFD43B", "#4B8BBE", "#8BC34A"]
+level_names = ["CEO", "VPs", "Directors", "Team Members"]
 node_colors = [level_colors[lvl] for lvl in node_levels]
 
-# Node sizes based on level (higher in hierarchy = larger)
-size_map = {0: 70, 1: 58, 2: 50, 3: 45}
+# Node sizes based on level (higher in hierarchy = larger) - increased for better visibility
+size_map = {0: 95, 1: 80, 2: 70, 3: 60}
 node_sizes = [size_map[lvl] for lvl in node_levels]
 
 # Prepare edge data
@@ -136,55 +139,85 @@ p.ygrid.visible = False
 
 # Draw edges (lines connecting parent to child)
 edge_source = ColumnDataSource(data={"x0": edge_x0, "y0": edge_y0, "x1": edge_x1, "y1": edge_y1})
-p.segment(x0="x0", y0="y0", x1="x1", y1="y1", source=edge_source, line_width=3, line_color="#666666", line_alpha=0.6)
+p.segment(x0="x0", y0="y0", x1="x1", y1="y1", source=edge_source, line_width=4, line_color="#555555", line_alpha=0.7)
 
-# Draw nodes
-node_source = ColumnDataSource(
-    data={
-        "x": node_x,
-        "y": node_y,
-        "labels": node_labels,
-        "colors": node_colors,
-        "sizes": node_sizes,
-        "levels": node_levels,
-    }
-)
-p.scatter(
-    x="x", y="y", source=node_source, size="sizes", fill_color="colors", line_color="#333333", line_width=2, alpha=0.9
-)
+# Draw nodes by level to create legend items
+renderers_by_level = {}
+for lvl in range(4):
+    lvl_indices = [i for i, n in enumerate(nodes) if n["level"] == lvl]
+    lvl_x = [node_x[i] for i in lvl_indices]
+    lvl_y = [node_y[i] for i in lvl_indices]
+    lvl_labels = [node_labels[i] for i in lvl_indices]
+    lvl_sizes = [node_sizes[i] for i in lvl_indices]
 
-# Add labels to nodes
+    source = ColumnDataSource(
+        data={"x": lvl_x, "y": lvl_y, "labels": lvl_labels, "sizes": lvl_sizes, "level": [lvl] * len(lvl_indices)}
+    )
+    renderer = p.scatter(
+        x="x",
+        y="y",
+        source=source,
+        size="sizes",
+        fill_color=level_colors[lvl],
+        line_color="#333333",
+        line_width=3,
+        alpha=0.9,
+    )
+    renderers_by_level[lvl] = renderer
+
+# Create proper legend with level colors - positioned adjacent to the graph
+legend_items = [
+    LegendItem(label=f"Level {lvl}: {level_names[lvl]}", renderers=[renderers_by_level[lvl]]) for lvl in range(4)
+]
+legend = Legend(
+    items=legend_items,
+    location="top_right",
+    label_text_font_size="26pt",
+    glyph_height=45,
+    glyph_width=45,
+    spacing=12,
+    padding=25,
+    border_line_color="#333333",
+    border_line_width=2,
+    background_fill_color="#f8f8f8",
+    background_fill_alpha=0.8,
+)
+p.add_layout(legend, "right")
+
+# Collect all node data for labels and hover
+all_node_source = ColumnDataSource(data={"x": node_x, "y": node_y, "labels": node_labels, "levels": node_levels})
+
+# Add labels to nodes with larger font for better legibility
 labels = LabelSet(
     x="x",
     y="y",
     text="labels",
-    source=node_source,
-    text_font_size="24pt",
+    source=all_node_source,
+    text_font_size="28pt",
     text_color="#222222",
     text_align="center",
-    y_offset=45,
+    y_offset=55,
 )
 p.add_layout(labels)
 
 # Add hover tool for interactivity
-hover = HoverTool(tooltips=[("Role", "@labels"), ("Level", "@levels")], mode="mouse")
+hover = HoverTool(tooltips=[("Role", "@labels"), ("Level", "@level")], mode="mouse")
 p.add_tools(hover)
 
 # Style title
-p.title.text_font_size = "32pt"
+p.title.text_font_size = "36pt"
 p.title.align = "center"
 
-# Add level annotations on the side as legend
-level_labels = ["Level 0: CEO", "Level 1: VPs", "Level 2: Directors", "Level 3: Team"]
-level_y_positions = [0, -1.5, -3.0, -4.5]
-for i, (label, y_pos) in enumerate(zip(level_labels, level_y_positions, strict=True)):
-    p.text(x=[-10], y=[y_pos], text=[label], text_font_size="28pt", text_color=level_colors[i], text_align="left")
+# Set plot range with balanced padding
+x_vals = list(node_x)
+y_vals = list(node_y)
+x_padding = 1.0
+y_padding = 1.5
+p.x_range.start = min(x_vals) - x_padding
+p.x_range.end = max(x_vals) + x_padding
+p.y_range.start = min(y_vals) - y_padding
+p.y_range.end = max(y_vals) + y_padding
 
-# Set plot range to include all elements with padding
-p.x_range.start = -11
-p.x_range.end = 11
-p.y_range.start = -5.5
-p.y_range.end = 1.0
-
-# Save as PNG
-export_png(p, filename="plot.png")
+# Save as PNG using absolute path
+output_path = os.path.join(os.path.dirname(__file__), "plot.png")
+export_png(p, filename=output_path)

@@ -1,7 +1,7 @@
 library: pygal
 specification_id: network-hierarchical
 created: '2026-01-08T22:00:20Z'
-updated: '2026-01-08T22:26:03Z'
+updated: '2026-01-08T22:32:33Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20832967004
 issue: 3343
@@ -13,26 +13,28 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/network-hierar
 quality_score: 85
 review:
   strengths:
-  - Creative use of pygal XY chart to simulate hierarchical network layout
-  - Excellent color coding by hierarchy level with colorblind-safe palette
-  - Clean code structure with well-organized hierarchy data dictionary
-  - Proper tree layout algorithm positioning nodes by level
-  - Correct title format and descriptive axis labels
+  - Excellent use of XY chart to simulate network graph layout
+  - Clear 4-level hierarchy with color-coded levels
+  - Good canvas utilization with nodes well-distributed
+  - Realistic organizational chart data scenario
+  - Clean code structure with well-organized data definitions
+  - Interactive HTML output with tooltips for node labels
   weaknesses:
-  - Legend shows only level categories instead of individual node labels as the code
-    attempts
-  - Empty space below y=30 wastes canvas area
-  - Edge lines are somewhat thin relative to node size
-  image_description: 'The plot displays a hierarchical network graph representing
-    an organizational chart with 22 nodes across 4 levels. The CEO (dark blue) sits
-    at the top center around y=83. Three VPs (yellow/gold) are positioned at y≈65.
-    Seven Directors (teal/cyan) form the third level at y≈48. Eleven Managers (coral/salmon)
-    populate the bottom level at y≈31. Grey edges connect parent-child relationships,
-    creating a tree structure. The title "network-hierarchical · pygal · pyplots.ai"
-    appears at top. A legend at bottom shows: Edges, CEO, VPs, Directors, Managers.
-    Axes show "Organization Width" (x) and "Hierarchy Level (Top to Bottom)" (y).
-    The layout clearly shows the tree hierarchy with good vertical separation between
-    levels.'
+  - Node labels (CEO, VP Eng, etc.) not visible directly on the plot - only in tooltips
+  - Axis labels are generic and do not provide meaningful context
+  - Title uses regular dots instead of middle dots
+  image_description: The plot displays a hierarchical network graph representing an
+    organizational structure with 4 levels. At the top (y=95) sits a single dark blue
+    node representing the CEO. Below at y≈67 are three yellow/gold nodes representing
+    VPs (Engineering, Sales, Ops). The third level at y≈38 shows seven teal/cyan nodes
+    representing Directors (FE, BE, DevOps, Americas, EMEA, Logistics, HR). The bottom
+    level at y=10 displays eleven coral/red nodes representing Managers. Black lines
+    connect parent nodes to their children, clearly showing the reporting relationships.
+    The layout uses the full canvas well with nodes evenly distributed horizontally
+    at each level. A legend at the bottom identifies each level by color. The title
+    follows the correct format "network-hierarchical · pygal · pyplots.ai". Axes are
+    labeled "Organization Width" and "Hierarchy Level (Top to Bottom)". The white
+    background provides good contrast.
   criteria_checklist:
     visual_quality:
       score: 32
@@ -43,8 +45,8 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Title and axis labels readable, tick labels adequate but could be
-          larger
+        comment: Title and axis labels are readable, tick labels slightly small but
+          acceptable
       - id: VQ-02
         name: No Overlap
         score: 8
@@ -53,36 +55,37 @@ review:
         comment: No overlapping text or elements
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Nodes visible and well-sized, edges somewhat thin but visible
+        comment: Nodes are well-sized and visible, edges clear
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Good colorblind-safe palette (blue, yellow, teal, coral)
+        comment: Blue, yellow, teal, coral palette is colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Large empty area below y=30, plot uses ~60% of vertical canvas effectively
+        comment: Good canvas utilization, slight excess whitespace in lower-middle
+          area
       - id: VQ-06
         name: Axis Labels
-        score: 2
+        score: 0
         max: 2
-        passed: true
-        comment: Descriptive labels for both axes
+        passed: false
+        comment: Axis labels present but lack units/context
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: Legend shows generic level names instead of individual node labels
+        comment: No grid shown, legend could be more prominently positioned
     spec_compliance:
-      score: 22
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -96,31 +99,32 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Nodes correctly positioned by level, edges show parent-child relationships
+        comment: Nodes correctly positioned by level vertically, spread horizontally
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Shows hierarchy, levels, edges; missing node labels on chart itself
+        comment: Parent-child edges shown, levels clear, but node labels not visible
+          on plot itself
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All nodes and edges visible within axes
+        comment: All 22 nodes visible, full hierarchy displayed
       - id: SC-05
         name: Legend Accuracy
-        score: 0
-        max: 2
-        passed: false
-        comment: Legend shows level categories instead of individual node labels
-      - id: SC-06
-        name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: 'Correct format: network-hierarchical · pygal · pyplots.ai'
+        comment: Legend correctly identifies all 4 levels with accurate colors
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: Uses correct format but uses dot separator instead of centered dots
     data_quality:
       score: 18
       max: 20
@@ -130,13 +134,13 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows 4 hierarchy levels, branching patterns, parent-child relationships
+        comment: Shows 4-level hierarchy with varying branching patterns
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Realistic organizational chart scenario
+        comment: Organizational chart is a perfect real-world example
       - id: DQ-03
         name: Appropriate Scale
         score: 4
@@ -144,7 +148,7 @@ review:
         passed: true
         comment: 22 nodes across 4 levels is appropriate
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -152,13 +156,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple linear structure
+        comment: Linear script structure with no functions/classes
       - id: CQ-02
         name: Reproducibility
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Deterministic data (hardcoded hierarchy)
+        comment: Deterministic data, but no explicit seed statement
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -186,14 +190,14 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses XY chart creatively for network visualization, custom Style,
-          legend_at_bottom
+        comment: Uses XY chart with custom Style, legend_at_bottom, series grouping
+          for level colors
   verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - custom-legend
   - html-export
+  - custom-legend
   patterns:
   - data-generation
   - iteration-over-groups

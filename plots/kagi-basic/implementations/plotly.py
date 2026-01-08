@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 kagi-basic: Basic Kagi Chart
 Library: plotly 6.5.1 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-08
@@ -8,11 +8,22 @@ import numpy as np
 import plotly.graph_objects as go
 
 
-# Generate sample price data (simulated stock prices over 200 days)
+# Generate sample price data with clear trending periods (bullish and bearish)
 np.random.seed(42)
-n_days = 200
-returns = np.random.normal(0.001, 0.02, n_days)
-prices = 100 * np.cumprod(1 + returns)
+
+# Create price series with distinct trending phases to show both yang and yin
+# Phase 1: Uptrend (days 0-50)
+phase1 = 100 + np.cumsum(np.random.normal(0.3, 0.8, 50))
+# Phase 2: Downtrend (days 50-100)
+phase2 = phase1[-1] + np.cumsum(np.random.normal(-0.4, 0.7, 50))
+# Phase 3: Strong uptrend (days 100-160)
+phase3 = phase2[-1] + np.cumsum(np.random.normal(0.5, 0.9, 60))
+# Phase 4: Consolidation with slight downtrend (days 160-220)
+phase4 = phase3[-1] + np.cumsum(np.random.normal(-0.2, 0.6, 60))
+# Phase 5: Recovery uptrend (days 220-280)
+phase5 = phase4[-1] + np.cumsum(np.random.normal(0.35, 0.75, 60))
+
+prices = np.concatenate([phase1, phase2, phase3, phase4, phase5])
 
 # Kagi chart parameters
 reversal_pct = 0.04  # 4% reversal threshold
@@ -81,27 +92,33 @@ while i < len(kagi_x) - 1:
     # Determine if this segment is yang or yin
     is_yang_seg = yang_yin[i]
 
-    # Color and width based on yang/yin
+    # Color and width based on yang/yin (colorblind-accessible colors)
     if is_yang_seg:
-        color = "#2E8B57"  # Sea green for yang (bullish)
-        width = 6
+        color = "#0077BB"  # Blue for yang (bullish) - colorblind safe
+        width = 8
     else:
-        color = "#DC3545"  # Red for yin (bearish)
-        width = 2
+        color = "#EE7733"  # Orange for yin (bearish) - colorblind safe
+        width = 3
 
-    # Add line segment (vertical or horizontal)
+    # Add line segment with hover information
+    trend_type = "Yang (Bullish)" if is_yang_seg else "Yin (Bearish)"
     fig.add_trace(
         go.Scatter(
-            x=x_seg, y=y_seg, mode="lines", line={"color": color, "width": width}, showlegend=False, hoverinfo="skip"
+            x=x_seg,
+            y=y_seg,
+            mode="lines",
+            line={"color": color, "width": width},
+            showlegend=False,
+            hovertemplate=f"<b>{trend_type}</b><br>Price: $%{{y:.2f}}<extra></extra>",
         )
     )
     i += 1
 
-# Add legend entries
+# Add legend entries with colorblind-accessible colors
 fig.add_trace(
-    go.Scatter(x=[None], y=[None], mode="lines", line={"color": "#2E8B57", "width": 6}, name="Yang (Bullish)")
+    go.Scatter(x=[None], y=[None], mode="lines", line={"color": "#0077BB", "width": 8}, name="Yang (Bullish)")
 )
-fig.add_trace(go.Scatter(x=[None], y=[None], mode="lines", line={"color": "#DC3545", "width": 2}, name="Yin (Bearish)"))
+fig.add_trace(go.Scatter(x=[None], y=[None], mode="lines", line={"color": "#EE7733", "width": 3}, name="Yin (Bearish)"))
 
 # Layout
 fig.update_layout(
@@ -128,14 +145,18 @@ fig.update_layout(
     template="plotly_white",
     legend={
         "font": {"size": 18},
-        "x": 0.02,
-        "y": 0.98,
-        "bgcolor": "rgba(255, 255, 255, 0.8)",
-        "bordercolor": "rgba(0, 0, 0, 0.3)",
+        "orientation": "h",
+        "yanchor": "bottom",
+        "y": 1.02,
+        "xanchor": "center",
+        "x": 0.5,
+        "bgcolor": "rgba(255, 255, 255, 0.9)",
+        "bordercolor": "rgba(0, 0, 0, 0.2)",
         "borderwidth": 1,
     },
-    margin={"l": 80, "r": 40, "t": 100, "b": 80},
+    margin={"l": 80, "r": 40, "t": 120, "b": 80},
     plot_bgcolor="white",
+    hovermode="x unified",
 )
 
 # Save as PNG (4800x2700 px)

@@ -1,7 +1,7 @@
 library: pygal
 specification_id: linked-views-selection
 created: '2026-01-08T22:39:56Z'
-updated: '2026-01-08T22:42:43Z'
+updated: '2026-01-08T22:49:08Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20834099044
 issue: 3344
@@ -10,38 +10,28 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/linked-views-selection/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/linked-views-selection/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/linked-views-selection/pygal/plot.html
-quality_score: 52
+quality_score: 45
 review:
   strengths:
-  - Clean code structure following KISS principles with proper seed for reproducibility
-  - Good visual differentiation between selected (blue) and unselected (gray) points
-  - Appropriate use of pygal custom Style for sizing and colors
-  - Generates both PNG and HTML output for interactivity
-  - Clear legend explaining selection state with point counts
+  - Clear selection highlighting with consistent blue/gray color scheme
+  - Good use of pygal multiple chart types (XY, Histogram, Bar, Pie)
+  - Creates both PNG and HTML output for interactivity
+  - Includes selection count and summary statistics
+  - Code structure is well-organized with custom styles
   weaknesses:
-  - Only implements ONE view instead of the required 2-3 coordinated views (scatter
-    + histogram + bar chart)
-  - No actual linked selection mechanism - just a static representation of pre-selected
-    data
-  - Missing interactive selection features (brush, click, lasso) and reset button
-  - Does not demonstrate the core linked views concept where selecting in one view
-    highlights in others
-  - Pygal has limited native support for linked views but could show multiple charts
-    side-by-side with consistent selection highlighting
-  image_description: 'The plot displays a single XY scatter chart on a white background
-    with 150 data points total. The title reads "linked-views-selection · pygal ·
-    pyplots.ai" followed by "Scatter Plot with Selection: 50 of 150 points (Cluster
-    B highlighted)". The X-axis is labeled "X Coordinate" (range ~0.5-7.5) and Y-axis
-    is labeled "Y Coordinate" (range ~0.5-8.5). There are 50 blue (#306998) points
-    clustered in the upper-right area (Cluster B - selected), and 100 gray (#CCCCCC)
-    points distributed across two other clusters in the lower-left and middle areas
-    (unselected). A legend at the bottom shows "Unselected (100 pts)" in gray and
-    "Selected: Cluster B (50 pts)" in blue. Subtle gray grid lines are visible. The
-    plot uses good contrast between selected and unselected states but only shows
-    a single view instead of the required multiple coordinated views.'
+  - 'CRITICAL: PNG output only shows 1 of 4 views - the PIL image composition failed
+    to produce the multi-view dashboard'
+  - The combined image approach using PIL is fragile and produced incorrect output
+  - Individual chart dimensions (2400x1350) do not properly scale into the 4800x2700
+    combined image
+  - Font loading with try/except may cause inconsistent rendering across environments
+  image_description: |-
+    The plot shows a single scatter plot titled "linked-views-selection · pygal · pyplots.ai" with subtitle "Scatter Plot with Selection: 50 of 150 points (Cluster B highlighted)". The plot displays X Coordinate (1-7) on the horizontal axis and Y Coordinate (1-8) on the vertical axis. Gray dots represent unselected points (100 pts) clustered in the lower-left region (around x=1-4, y=1-4), while blue dots represent selected Cluster B points (50 pts) clustered in the upper-right region (around x=5-7, y=5-8). A subtle dotted grid is visible. The legend at the bottom shows "Unselected (100 pts)" in gray and "Selected: Cluster B (50 pts)" in blue.
+
+    CRITICAL ISSUE: The image only shows ONE view (scatter plot), but the code creates a 2x2 grid with 4 views. The combined image composition using PIL appears to have failed - only the scatter plot is visible instead of the full multi-view dashboard with scatter, histogram, bar chart, and pie chart summary.
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 25
       max: 40
       items:
       - id: VQ-01
@@ -49,8 +39,7 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Title, axis labels, and legend are readable but title font could
-          be slightly larger for 4800px width
+        comment: Title and axis labels are readable, though subtitle is slightly small
       - id: VQ-02
         name: No Overlap
         score: 8
@@ -62,74 +51,72 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Markers visible but some density in Cluster B makes individual points
-          hard to distinguish
+        comment: Markers are visible but could be slightly larger
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Blue/gray contrast is colorblind-safe
+        comment: Blue vs gray provides good contrast, colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 0
         max: 5
-        passed: true
-        comment: Good use of canvas but could be better centered
+        passed: false
+        comment: 'CRITICAL: Only 1 of 4 views visible in final PNG output'
       - id: VQ-06
         name: Axis Labels
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Labels present but no units (generic coordinates)
+        comment: Descriptive labels X Coordinate, Y Coordinate
       - id: VQ-07
         name: Grid & Legend
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Grid is subtle, legend placement at bottom is acceptable
+        comment: Subtle dotted grid, legend well-placed at bottom
     spec_compliance:
       score: 10
       max: 25
       items:
       - id: SC-01
         name: Plot Type
-        score: 3
+        score: 2
         max: 8
         passed: false
-        comment: Shows scatter plot but spec requires 2-3 coordinated views (scatter
-          + histogram + bar)
+        comment: Shows scatter plot but MISSING 3 other required views (histogram,
+          bar chart, summary)
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X/Y correctly assigned to clusters
+        comment: X/Y correctly mapped for visible scatter
       - id: SC-03
         name: Required Features
         score: 0
         max: 5
         passed: false
-        comment: 'Missing: multiple linked views, interactive selection mechanism,
-          reset button, selection sync across views'
+        comment: Spec requires at least 2-3 coordinated views - only 1 view visible
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Axes show all data properly
+        comment: All data points visible within axes
       - id: SC-05
         name: Legend Accuracy
-        score: 1
+        score: 0
         max: 2
         passed: false
-        comment: Legend is accurate but does not describe the linking concept
+        comment: Legend only shows scatter series, not all views
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: 'Correct format: {spec-id} · {library} · pyplots.ai'
+        comment: 'Correct format: spec-id · library · pyplots.ai'
     data_quality:
       score: 15
       max: 20
@@ -139,54 +126,55 @@ review:
         score: 5
         max: 8
         passed: false
-        comment: Shows selection highlighting but only in one view, missing the multi-view
-          aspect
+        comment: Shows selection highlighting clearly, but missing histogram/bar/pie
+          views
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 7
         passed: true
-        comment: Plausible clustered data scenario but generic
+        comment: Cluster analysis scenario is plausible
       - id: DQ-03
         name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Sensible coordinate values
+        comment: Values are sensible for coordinate data
     code_quality:
-      score: 10
+      score: 7
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 1
         max: 3
-        passed: true
-        comment: Clean imports → data → plot → save structure
+        passed: false
+        comment: Uses PIL for image composition which adds complexity; code is longer
+          than typical
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) present
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports
+        comment: All imports are used
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Current pygal API
+        comment: Modern API usage
       - id: CQ-05
         name: Output Correct
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png and plot.html
+        passed: false
+        comment: Saves plot.png but content is incomplete (only 1 view)
     library_features:
       score: 3
       max: 5
@@ -196,16 +184,19 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses pygal XY chart with custom Style, hover interactivity via HTML
-          export, but does not leverage pygal potential for multiple charts
+        comment: Uses pygal.XY, pygal.Histogram, pygal.Bar, pygal.Pie, custom Style,
+          render_to_png - good library usage in code, but final output is broken
   verdict: REJECTED
 impl_tags:
-  dependencies: []
+  dependencies:
+  - pillow
   techniques:
+  - subplots
   - html-export
   patterns:
   - data-generation
   - iteration-over-groups
-  dataprep: []
+  dataprep:
+  - binning
   styling:
   - alpha-blending

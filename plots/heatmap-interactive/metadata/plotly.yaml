@@ -1,0 +1,213 @@
+library: plotly
+specification_id: heatmap-interactive
+created: '2026-01-08T15:56:32Z'
+updated: '2026-01-08T15:59:15Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20822845348
+issue: 3289
+python_version: 3.13.11
+library_version: 6.5.1
+preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-interactive/plotly/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-interactive/plotly/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-interactive/plotly/plot.html
+quality_score: 92
+review:
+  strengths:
+  - Excellent use of RdBu_r diverging colormap centered at zero for correlation visualization
+  - Spike lines (crosshairs) implemented for hover navigation on large matrix
+  - Clear title following spec-id format with proper spacing
+  - Good matrix size (25x30) demonstrating interactive exploration value
+  - HTML export included for full interactivity
+  weaknesses:
+  - X-axis tick labels are slightly crowded at 45-degree angle for 30 features
+  image_description: The plot displays a 25x30 interactive heatmap with a diverging
+    red-blue (RdBu_r) colorscale centered at zero. The title "heatmap-interactive
+    · plotly · pyplots.ai" is prominently displayed at the top center in large font.
+    The Y-axis shows "Variables" (Variable 1 through Variable 25) with clear, readable
+    labels. The X-axis shows "Features" (Feature 1 through Feature 30) with labels
+    rotated at -45 degrees. A colorbar on the right indicates "Correlation" values
+    ranging from -1 (dark blue) to 1 (dark red), with 0 represented as white/neutral.
+    The matrix shows structured correlation patterns with visible block structures,
+    demonstrating both positive (red) and negative (blue) correlations across the
+    data. Individual cells are clearly distinguishable with good color contrast. The
+    layout uses a white background (plotly_white template) with balanced margins around
+    the heatmap.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at size 32, axis labels at size 24, tick fonts at size 14-16
+          - all clearly readable at full resolution
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 8
+        passed: true
+        comment: X-axis labels at -45 degrees show slight crowding but remain readable;
+          no critical overlap
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Heatmap cells clearly visible with good contrast between adjacent
+          values
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: RdBu_r diverging colormap is colorblind-friendly with luminance variation
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Plot fills canvas well with appropriate margins for labels and colorbar
+      - id: VQ-06
+        name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Descriptive labels (Features, Variables) but no units needed for
+          correlation context
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid disabled appropriately for heatmap; colorbar well-placed and
+          sized
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct heatmap visualization type
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=columns (Features), Y=rows (Variables), color=values correctly
+          mapped
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Hover tooltips with row/col/value, zoom/pan enabled, spike lines
+          for crosshair effect, HTML export for interactivity
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full -1 to 1 range visible in colorbar and data
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar labeled as Correlation with accurate scale
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Follows exact format: heatmap-interactive · plotly · pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows both positive and negative correlations with block structure
+          patterns; good variation across matrix
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Correlation matrix context is plausible for scientific/research data
+          exploration
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Values normalized to [-1, 1] range appropriate for correlation data
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear structure: imports → data → plot → save, no functions or
+          classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) ensures reproducibility
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only numpy and plotly.graph_objects imported, both used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Plotly API with graph_objects
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Excellent use of Plotly features: hovertemplate, spike lines, modebar
+          customization, dragmode, HTML export'
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - colorbar
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep:
+  - normalization
+  styling:
+  - custom-colormap
+  - grid-styling

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 kagi-basic: Basic Kagi Chart
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-08
@@ -6,7 +6,7 @@ Quality: 85/100 | Created: 2026-01-08
 
 import numpy as np
 from bokeh.io import export_png
-from bokeh.models import Legend, LegendItem
+from bokeh.models import ColumnDataSource, HoverTool, Legend, LegendItem
 from bokeh.plotting import figure
 
 
@@ -21,7 +21,7 @@ price = 100 * np.cumprod(1 + returns)
 # Build Kagi chart data
 reversal_pct = 0.04  # 4% reversal threshold
 
-kagi_segments = []  # List of (x1, y1, x2, y2, is_yang, thickness)
+kagi_segments = []  # List of (x1, y1, x2, y2, is_yang)
 direction = None  # 'up' or 'down'
 last_price = price[0]
 high = price[0]
@@ -89,24 +89,49 @@ for i in range(1, len(price)):
             high = p
             last_price = p
 
-# Separate segments by type
-yang_xs, yang_ys = [], []
-yin_xs, yin_ys = [], []
+# Prepare data for ColumnDataSource
+yang_xs, yang_ys, yang_start, yang_end = [], [], [], []
+yin_xs, yin_ys, yin_start, yin_end = [], [], [], []
 
 for seg in kagi_segments:
     x1, y1, x2, y2, is_yang = seg
     if is_yang:
         yang_xs.append([x1, x2])
         yang_ys.append([y1, y2])
+        yang_start.append(y1)
+        yang_end.append(y2)
     else:
         yin_xs.append([x1, x2])
         yin_ys.append([y1, y2])
+        yin_start.append(y1)
+        yin_end.append(y2)
+
+# Create ColumnDataSources for idiomatic Bokeh
+yang_source = ColumnDataSource(
+    data={
+        "xs": yang_xs,
+        "ys": yang_ys,
+        "start_price": yang_start,
+        "end_price": yang_end,
+        "trend": ["Yang (Bullish)"] * len(yang_xs),
+    }
+)
+
+yin_source = ColumnDataSource(
+    data={
+        "xs": yin_xs,
+        "ys": yin_ys,
+        "start_price": yin_start,
+        "end_price": yin_end,
+        "trend": ["Yin (Bearish)"] * len(yin_xs),
+    }
+)
 
 # Create figure
-p = figure(
+fig = figure(
     width=4800,
     height=2700,
-    title="kagi-basic · bokeh · pyplots.ai",
+    title="kagi-basic \u00b7 bokeh \u00b7 pyplots.ai",
     x_axis_label="Kagi Line Index",
     y_axis_label="Price ($)",
     tools="",
@@ -117,47 +142,54 @@ p = figure(
 YANG_COLOR = "#1f77b4"  # Blue
 YIN_COLOR = "#ff7f0e"  # Orange
 
-# Plot yang (bullish) segments - thick blue
-yang_renderers = []
-for xs, ys in zip(yang_xs, yang_ys, strict=True):
-    r = p.line(xs, ys, line_width=12, line_color=YANG_COLOR, line_cap="round")
-    yang_renderers.append(r)
+# Plot yang (bullish) segments - thick blue using multi_line with ColumnDataSource
+yang_renderer = fig.multi_line(
+    xs="xs", ys="ys", source=yang_source, line_width=14, line_color=YANG_COLOR, line_cap="round"
+)
 
-# Plot yin (bearish) segments - thin orange
-yin_renderers = []
-for xs, ys in zip(yin_xs, yin_ys, strict=True):
-    r = p.line(xs, ys, line_width=4, line_color=YIN_COLOR, line_cap="round")
-    yin_renderers.append(r)
+# Plot yin (bearish) segments - thin orange using multi_line with ColumnDataSource
+yin_renderer = fig.multi_line(xs="xs", ys="ys", source=yin_source, line_width=6, line_color=YIN_COLOR, line_cap="round")
 
-# Add legend inside the plot area
+# Add HoverTool for interactivity
+hover = HoverTool(
+    tooltips=[("Trend", "@trend"), ("Start Price", "$@start_price{0.00}"), ("End Price", "$@end_price{0.00}")],
+    renderers=[yang_renderer, yin_renderer],
+)
+fig.add_tools(hover)
+
+# Add legend with larger text inside the plot area (top right, closer to data)
 legend = Legend(
     items=[
-        LegendItem(label="Yang (Bullish)", renderers=[yang_renderers[0]] if yang_renderers else []),
-        LegendItem(label="Yin (Bearish)", renderers=[yin_renderers[0]] if yin_renderers else []),
+        LegendItem(label="Yang (Bullish)", renderers=[yang_renderer]),
+        LegendItem(label="Yin (Bearish)", renderers=[yin_renderer]),
     ],
-    location="top_left",
-    label_text_font_size="20pt",
-    background_fill_alpha=0.8,
+    location="top_right",
+    label_text_font_size="28pt",
+    glyph_height=30,
+    glyph_width=60,
+    background_fill_alpha=0.9,
     background_fill_color="white",
     border_line_color="gray",
-    border_line_width=1,
+    border_line_width=2,
+    padding=15,
+    margin=20,
 )
-p.add_layout(legend)
+fig.add_layout(legend)
 
 # Style configuration
-p.title.text_font_size = "32pt"
-p.title.align = "center"
-p.xaxis.axis_label_text_font_size = "24pt"
-p.yaxis.axis_label_text_font_size = "24pt"
-p.xaxis.major_label_text_font_size = "20pt"
-p.yaxis.major_label_text_font_size = "20pt"
+fig.title.text_font_size = "32pt"
+fig.title.align = "center"
+fig.xaxis.axis_label_text_font_size = "24pt"
+fig.yaxis.axis_label_text_font_size = "24pt"
+fig.xaxis.major_label_text_font_size = "20pt"
+fig.yaxis.major_label_text_font_size = "20pt"
 
 # Grid styling
-p.grid.grid_line_alpha = 0.3
-p.grid.grid_line_dash = "dashed"
+fig.grid.grid_line_alpha = 0.3
+fig.grid.grid_line_dash = "dashed"
 
 # Background
-p.background_fill_color = "#fafafa"
+fig.background_fill_color = "#fafafa"
 
 # Save PNG
-export_png(p, filename="plot.png")
+export_png(fig, filename="plot.png")

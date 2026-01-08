@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-hierarchical: Hierarchical Network Graph with Tree Layout
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-08
@@ -9,45 +9,41 @@ import numpy as np
 import pandas as pd
 
 
-# Data - Organizational chart with 30 employees across 4 levels
+# Data - Organizational chart with 25 employees across 4 levels
 np.random.seed(42)
 
 # Define hierarchical structure: CEO -> VPs -> Directors -> Managers
+# Reduced to 25 nodes for better label spacing at bottom level
 nodes = [
     # Level 0 - CEO
     {"id": 0, "label": "CEO", "level": 0, "parent": None},
-    # Level 1 - VPs
-    {"id": 1, "label": "VP Engineering", "level": 1, "parent": 0},
+    # Level 1 - VPs (4 reports)
+    {"id": 1, "label": "VP Eng", "level": 1, "parent": 0},
     {"id": 2, "label": "VP Sales", "level": 1, "parent": 0},
-    {"id": 3, "label": "VP Marketing", "level": 1, "parent": 0},
-    {"id": 4, "label": "VP Operations", "level": 1, "parent": 0},
-    # Level 2 - Directors
-    {"id": 5, "label": "Dir Frontend", "level": 2, "parent": 1},
-    {"id": 6, "label": "Dir Backend", "level": 2, "parent": 1},
-    {"id": 7, "label": "Dir DevOps", "level": 2, "parent": 1},
-    {"id": 8, "label": "Dir East", "level": 2, "parent": 2},
-    {"id": 9, "label": "Dir West", "level": 2, "parent": 2},
-    {"id": 10, "label": "Dir Digital", "level": 2, "parent": 3},
-    {"id": 11, "label": "Dir Brand", "level": 2, "parent": 3},
-    {"id": 12, "label": "Dir Logistics", "level": 2, "parent": 4},
-    {"id": 13, "label": "Dir Facilities", "level": 2, "parent": 4},
-    # Level 3 - Managers/Team Leads
-    {"id": 14, "label": "Lead UI", "level": 3, "parent": 5},
-    {"id": 15, "label": "Lead UX", "level": 3, "parent": 5},
-    {"id": 16, "label": "Lead API", "level": 3, "parent": 6},
-    {"id": 17, "label": "Lead Data", "level": 3, "parent": 6},
-    {"id": 18, "label": "Lead Cloud", "level": 3, "parent": 7},
-    {"id": 19, "label": "Lead Security", "level": 3, "parent": 7},
-    {"id": 20, "label": "Mgr Northeast", "level": 3, "parent": 8},
-    {"id": 21, "label": "Mgr Southeast", "level": 3, "parent": 8},
-    {"id": 22, "label": "Mgr Northwest", "level": 3, "parent": 9},
-    {"id": 23, "label": "Mgr Southwest", "level": 3, "parent": 9},
-    {"id": 24, "label": "Mgr Social", "level": 3, "parent": 10},
-    {"id": 25, "label": "Mgr Content", "level": 3, "parent": 10},
-    {"id": 26, "label": "Mgr PR", "level": 3, "parent": 11},
-    {"id": 27, "label": "Mgr Design", "level": 3, "parent": 11},
-    {"id": 28, "label": "Mgr Supply", "level": 3, "parent": 12},
-    {"id": 29, "label": "Mgr Office", "level": 3, "parent": 13},
+    {"id": 3, "label": "VP Mkt", "level": 1, "parent": 0},
+    {"id": 4, "label": "VP Ops", "level": 1, "parent": 0},
+    # Level 2 - Directors (8 total, 2 per VP)
+    {"id": 5, "label": "Frontend", "level": 2, "parent": 1},
+    {"id": 6, "label": "Backend", "level": 2, "parent": 1},
+    {"id": 7, "label": "East", "level": 2, "parent": 2},
+    {"id": 8, "label": "West", "level": 2, "parent": 2},
+    {"id": 9, "label": "Digital", "level": 2, "parent": 3},
+    {"id": 10, "label": "Brand", "level": 2, "parent": 3},
+    {"id": 11, "label": "Logistics", "level": 2, "parent": 4},
+    {"id": 12, "label": "Facilities", "level": 2, "parent": 4},
+    # Level 3 - Managers/Team Leads (12 total)
+    {"id": 13, "label": "UI", "level": 3, "parent": 5},
+    {"id": 14, "label": "UX", "level": 3, "parent": 5},
+    {"id": 15, "label": "API", "level": 3, "parent": 6},
+    {"id": 16, "label": "NE", "level": 3, "parent": 7},
+    {"id": 17, "label": "SE", "level": 3, "parent": 7},
+    {"id": 18, "label": "NW", "level": 3, "parent": 8},
+    {"id": 19, "label": "Social", "level": 3, "parent": 9},
+    {"id": 20, "label": "Content", "level": 3, "parent": 9},
+    {"id": 21, "label": "PR", "level": 3, "parent": 10},
+    {"id": 22, "label": "Design", "level": 3, "parent": 10},
+    {"id": 23, "label": "Supply", "level": 3, "parent": 11},
+    {"id": 24, "label": "Office", "level": 3, "parent": 12},
 ]
 
 # Build children map
@@ -98,30 +94,27 @@ nodes_df = pd.DataFrame(nodes)
 nodes_df["x"] = nodes_df["id"].map(lambda i: node_positions[i][0])
 nodes_df["y"] = nodes_df["id"].map(lambda i: node_positions[i][1])
 
-# Create edges DataFrame with source and target positions
+# Create edges DataFrame with line segments (two points per edge for mark_line)
 edges_data = []
+edge_id = 0
 for n in nodes:
     if n["parent"] is not None:
         parent_id = n["parent"]
         child_id = n["id"]
-        edges_data.append(
-            {
-                "x": node_positions[parent_id][0],
-                "y": node_positions[parent_id][1],
-                "x2": node_positions[child_id][0],
-                "y2": node_positions[child_id][1],
-            }
-        )
+        # Each edge has two points: parent and child
+        edges_data.append({"edge_id": edge_id, "x": node_positions[parent_id][0], "y": node_positions[parent_id][1]})
+        edges_data.append({"edge_id": edge_id, "x": node_positions[child_id][0], "y": node_positions[child_id][1]})
+        edge_id += 1
 edges_df = pd.DataFrame(edges_data)
 
 # Color scheme based on level (Python Blue primary, Yellow accent)
 level_colors = ["#306998", "#4B8BBE", "#FFD43B", "#646464"]
 
-# Create edge layer - lines connecting nodes
+# Create edge layer - lines connecting nodes using mark_line with detail encoding
 edge_layer = (
     alt.Chart(edges_df)
-    .mark_rule(strokeWidth=3, opacity=0.4)
-    .encode(x=alt.X("x:Q", axis=None), y=alt.Y("y:Q", axis=None), x2="x2:Q", y2="y2:Q", color=alt.value("#888888"))
+    .mark_line(strokeWidth=3, opacity=0.4, color="#888888")
+    .encode(x=alt.X("x:Q", axis=None), y=alt.Y("y:Q", axis=None), detail="edge_id:N")
 )
 
 # Create node layer - circles for each employee
@@ -163,7 +156,7 @@ chart = (
             "network-hierarchical · altair · pyplots.ai",
             fontSize=28,
             anchor="middle",
-            subtitle="Organizational Chart: 30 employees across 4 management levels",
+            subtitle="Organizational Chart: 25 employees across 4 management levels",
             subtitleFontSize=18,
             subtitleColor="#666666",
         ),
@@ -172,6 +165,5 @@ chart = (
     .configure_legend(orient="right", padding=20)
 )
 
-# Save as PNG and HTML
+# Save as PNG
 chart.save("plot.png", scale_factor=3.0)
-chart.save("plot.html")

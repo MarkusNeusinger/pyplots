@@ -1,0 +1,27 @@
+# Specification-level metadata for network-weighted
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: network-weighted
+title: Weighted Network Graph with Edge Thickness
+
+# Specification tracking
+created: 2026-01-08T15:44:42Z
+updated: null
+issue: 3290
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - network
+  data_type:
+    - network
+    - relational
+    - numeric
+  domain:
+    - general
+    - business
+  features:
+    - weighted
+    - proportional

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 kagi-basic: Basic Kagi Chart
 Library: plotly 6.5.1 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-08
@@ -12,30 +12,39 @@ import plotly.graph_objects as go
 np.random.seed(42)
 
 # Create price series with clear swings that will break through shoulders and waists
-# Each phase is designed to create reversal points and yang/yin transitions
+# Using larger price moves (wider range ~70-150) and more segments for ~15+ line indices
 prices_list = [100.0]
 
 # Generate data with deliberate swings to create yang/yin transitions
 # Key: Price must break above previous shoulder for yang, below previous waist for yin
+# Using larger moves and more segments to create ~15-20 line indices
 segments = [
     # (target_price, volatility, n_steps) - target relative to previous end
-    (8, 0.5, 20),  # Up to ~108
-    (-12, 0.6, 25),  # Down to ~96 (below 100 waist -> YIN)
-    (6, 0.5, 20),  # Up to ~102 (not above 108 shoulder yet)
-    (-8, 0.5, 18),  # Down to ~94 (below 96 waist -> still YIN)
-    (18, 0.6, 30),  # Up to ~112 (above 108 shoulder -> YANG!)
-    (-10, 0.5, 22),  # Down to ~102 (above 94 waist -> still YANG)
-    (-12, 0.5, 25),  # Down to ~90 (below 94 waist -> YIN!)
-    (15, 0.5, 28),  # Up to ~105 (not above 112 shoulder yet)
-    (12, 0.6, 25),  # Up to ~117 (above 112 shoulder -> YANG!)
-    (-8, 0.5, 20),  # Down to ~109 (above 90 waist -> still YANG)
-    (-14, 0.5, 22),  # Down to ~95 (below ~102 waist)
-    (20, 0.6, 30),  # Up to ~115 (recovery)
+    (15, 0.4, 15),  # Up to ~115
+    (-20, 0.5, 18),  # Down to ~95 (below 100 waist -> YIN)
+    (10, 0.4, 12),  # Up to ~105
+    (-18, 0.5, 15),  # Down to ~87 (below 95 waist -> still YIN)
+    (35, 0.5, 20),  # Up to ~122 (above 115 shoulder -> YANG!)
+    (-15, 0.4, 12),  # Down to ~107
+    (-22, 0.5, 18),  # Down to ~85 (below 87 waist -> YIN!)
+    (25, 0.4, 15),  # Up to ~110
+    (20, 0.5, 15),  # Up to ~130 (above 122 shoulder -> YANG!)
+    (-18, 0.4, 12),  # Down to ~112
+    (-30, 0.5, 20),  # Down to ~82 (below 85 waist -> YIN!)
+    (35, 0.5, 18),  # Up to ~117
+    (25, 0.5, 15),  # Up to ~142 (above 130 shoulder -> YANG!)
+    (-20, 0.4, 12),  # Down to ~122
+    (-35, 0.5, 20),  # Down to ~87 (below 82 waist -> YIN!)
+    (40, 0.5, 18),  # Up to ~127
+    (25, 0.5, 15),  # Up to ~152 (above 142 shoulder -> YANG!)
+    (-22, 0.4, 15),  # Down to ~130
+    (-45, 0.5, 22),  # Down to ~85 (below 87 waist -> YIN!)
+    (30, 0.5, 15),  # Up to ~115
+    (20, 0.5, 12),  # Up to ~135
 ]
 
 for target_move, vol, n_steps in segments:
     start = prices_list[-1]
-    end = start + target_move
     # Generate smooth movement with noise
     base_trend = np.linspace(0, target_move, n_steps)
     noise = np.cumsum(np.random.normal(0, vol, n_steps))
@@ -122,12 +131,13 @@ while i < len(kagi_x) - 1:
     is_yang_seg = yang_yin[i]
 
     # Color and width based on yang/yin (colorblind-accessible colors)
+    # Using 10/2 width ratio for stronger visual differentiation
     if is_yang_seg:
         color = "#0077BB"  # Blue for yang (bullish) - colorblind safe
-        width = 8
+        width = 10
     else:
         color = "#EE7733"  # Orange for yin (bearish) - colorblind safe
-        width = 3
+        width = 2
 
     # Add line segment with hover information
     trend_type = "Yang (Bullish)" if is_yang_seg else "Yin (Bearish)"
@@ -143,13 +153,57 @@ while i < len(kagi_x) - 1:
     )
     i += 1
 
-# Add legend entries with colorblind-accessible colors
-fig.add_trace(
-    go.Scatter(x=[None], y=[None], mode="lines", line={"color": "#0077BB", "width": 8}, name="Yang (Bullish)")
-)
-fig.add_trace(go.Scatter(x=[None], y=[None], mode="lines", line={"color": "#EE7733", "width": 3}, name="Yin (Bearish)"))
+# Mark reversal points (shoulders and waists) with small markers for clarity
+# Find horizontal segments (where x changes but y stays same)
+shoulder_x, shoulder_y = [], []
+waist_x, waist_y = [], []
 
-# Layout
+for i in range(len(kagi_x) - 2):
+    # Horizontal segment: x changes, y stays same
+    if kagi_x[i] != kagi_x[i + 1] and abs(kagi_y[i] - kagi_y[i + 1]) < 0.01:
+        # Look at next segment to determine if shoulder or waist
+        if i + 2 < len(kagi_y) and kagi_y[i + 2] < kagi_y[i + 1]:
+            # Price going down = shoulder (local high)
+            shoulder_x.append(kagi_x[i + 1])
+            shoulder_y.append(kagi_y[i + 1])
+        elif i + 2 < len(kagi_y) and kagi_y[i + 2] > kagi_y[i + 1]:
+            # Price going up = waist (local low)
+            waist_x.append(kagi_x[i + 1])
+            waist_y.append(kagi_y[i + 1])
+
+# Add shoulder markers (local highs where trend reverses down)
+if shoulder_x:
+    fig.add_trace(
+        go.Scatter(
+            x=shoulder_x,
+            y=shoulder_y,
+            mode="markers",
+            marker={"symbol": "triangle-down", "size": 12, "color": "#0077BB", "line": {"width": 1, "color": "white"}},
+            name="Shoulder",
+            hovertemplate="<b>Shoulder</b><br>Price: $%{y:.2f}<extra></extra>",
+        )
+    )
+
+# Add waist markers (local lows where trend reverses up)
+if waist_x:
+    fig.add_trace(
+        go.Scatter(
+            x=waist_x,
+            y=waist_y,
+            mode="markers",
+            marker={"symbol": "triangle-up", "size": 12, "color": "#EE7733", "line": {"width": 1, "color": "white"}},
+            name="Waist",
+            hovertemplate="<b>Waist</b><br>Price: $%{y:.2f}<extra></extra>",
+        )
+    )
+
+# Add legend entries with colorblind-accessible colors (matching widths)
+fig.add_trace(
+    go.Scatter(x=[None], y=[None], mode="lines", line={"color": "#0077BB", "width": 10}, name="Yang (Bullish)")
+)
+fig.add_trace(go.Scatter(x=[None], y=[None], mode="lines", line={"color": "#EE7733", "width": 2}, name="Yin (Bearish)"))
+
+# Layout with improved legend placement closer to plot
 fig.update_layout(
     title={
         "text": "kagi-basic · plotly · pyplots.ai",
@@ -162,28 +216,28 @@ fig.update_layout(
         "tickfont": {"size": 18},
         "showgrid": True,
         "gridwidth": 1,
-        "gridcolor": "rgba(128, 128, 128, 0.3)",
+        "gridcolor": "rgba(128, 128, 128, 0.25)",
     },
     yaxis={
         "title": {"text": "Price ($)", "font": {"size": 22}},
         "tickfont": {"size": 18},
         "showgrid": True,
         "gridwidth": 1,
-        "gridcolor": "rgba(128, 128, 128, 0.3)",
+        "gridcolor": "rgba(128, 128, 128, 0.25)",
     },
     template="plotly_white",
     legend={
-        "font": {"size": 18},
+        "font": {"size": 16},
         "orientation": "h",
         "yanchor": "bottom",
-        "y": 1.02,
+        "y": 1.01,
         "xanchor": "center",
         "x": 0.5,
-        "bgcolor": "rgba(255, 255, 255, 0.9)",
-        "bordercolor": "rgba(0, 0, 0, 0.2)",
+        "bgcolor": "rgba(255, 255, 255, 0.95)",
+        "bordercolor": "rgba(0, 0, 0, 0.15)",
         "borderwidth": 1,
     },
-    margin={"l": 80, "r": 40, "t": 120, "b": 80},
+    margin={"l": 80, "r": 40, "t": 100, "b": 80},
     plot_bgcolor="white",
     hovermode="x unified",
 )

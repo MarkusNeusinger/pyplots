@@ -294,6 +294,44 @@ jobs:
           gh label create "$LABEL" --color "0e8a16" --description "Quality score ${SCORE}/100" 2>/dev/null || true
           gh pr edit "$PR_NUM" --add-label "$LABEL"
 
+      - name: Add preliminary verdict label (early)
+        if: steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUM: ${{ steps.pr.outputs.pr_number }}
+          SCORE: ${{ steps.score.outputs.score }}
+          ATTEMPT_COUNT: ${{ steps.attempts.outputs.count }}
+        run: |
+          # Add verdict label early to ensure it's set even if later steps fail
+          # This is idempotent - re-running won't cause issues
+
+          if [ "$SCORE" -ge 90 ]; then
+            echo "::notice::Adding ai-approved label (score >= 90)"
+            gh pr edit "$PR_NUM" --add-label "ai-approved" 2>/dev/null || {
+              echo "::warning::Failed to add ai-approved label, retrying..."
+              sleep 2
+              gh pr edit "$PR_NUM" --add-label "ai-approved"
+            }
+          elif [ "$ATTEMPT_COUNT" -eq 3 ] && [ "$SCORE" -ge 50 ]; then
+            echo "::notice::Adding ai-approved label (attempt 4, score >= 50)"
+            gh pr edit "$PR_NUM" --add-label "ai-approved" 2>/dev/null || {
+              echo "::warning::Failed to add ai-approved label, retrying..."
+              sleep 2
+              gh pr edit "$PR_NUM" --add-label "ai-approved"
+            }
+          else
+            echo "::notice::Adding ai-rejected label (score < 90)"
+            gh pr edit "$PR_NUM" --add-label "ai-rejected" 2>/dev/null || {
+              echo "::warning::Failed to add ai-rejected label, retrying..."
+              sleep 2
+              gh pr edit "$PR_NUM" --add-label "ai-rejected"
+            }
+
+            if [ "$SCORE" -lt 50 ]; then
+              gh pr edit "$PR_NUM" --add-label "quality-poor" 2>/dev/null || true
+            fi
+          fi
+
       - name: Install Python dependencies for metadata update
         if: steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
         run: pip install pyyaml
@@ -512,9 +550,30 @@ jobs:
           # < 90: Rejected (repair loop, up to 3 attempts)
           # After 3 attempts: >= 50 = merge, < 50 = close PR
 
+          # Check if verdict label was already added by earlier step
+          CURRENT_LABELS=$(gh pr view "$PR_NUM" --json labels -q '.labels[].name' 2>/dev/null || echo "")
+
+          if echo "$CURRENT_LABELS" | grep -q "ai-approved"; then
+            echo "::notice::ai-approved label already set, triggering merge"
+            gh workflow run impl-merge.yml -f pr_number="$PR_NUM"
+            exit 0
+          fi
+
+          if echo "$CURRENT_LABELS" | grep -q "ai-rejected"; then
+            echo "::notice::ai-rejected label already set, triggering repair"
+            gh pr edit "$PR_NUM" --add-label "ai-attempt-${ATTEMPT}" 2>/dev/null || true
+            gh workflow run impl-repair.yml \
+              -f pr_number="$PR_NUM" \
+              -f specification_id="$SPEC_ID" \
+              -f library="$LIBRARY" \
+              -f attempt="$ATTEMPT"
+            exit 0
+          fi
+
+          # Fallback: Add verdict labels if not already set (shouldn't happen but ensures robustness)
           if [ "$SCORE" -ge 90 ]; then
             # Approved - merge immediately
-            gh pr edit "$PR_NUM" --add-label "ai-approved"
+            gh pr edit "$PR_NUM" --add-label "ai-approved" 2>/dev/null || true
             echo "::notice::Added ai-approved label (score $SCORE >= 90)"
             echo "Triggering impl-merge.yml for approved PR"
             gh workflow run impl-merge.yml -f pr_number="$PR_NUM"
@@ -523,7 +582,7 @@ jobs:
             # This is the 4th review (after 3 repair attempts)
             if [ "$SCORE" -ge 50 ]; then
               # Score 50-89 after 3 attempts: acceptable, merge to repo
-              gh pr edit "$PR_NUM" --add-label "ai-approved"
+              gh pr edit "$PR_NUM" --add-label "ai-approved" 2>/dev/null || true
 
               gh pr comment "$PR_NUM" --body "## AI Review - Final Status
 

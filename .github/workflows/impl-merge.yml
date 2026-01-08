@@ -82,6 +82,40 @@ jobs:
           echo "specification_id=$SPEC_ID" >> $GITHUB_OUTPUT
           echo "library=$LIBRARY" >> $GITHUB_OUTPUT
 
+      - name: Validate PR completeness before merge
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPEC_ID: ${{ steps.extract.outputs.specification_id }}
+          LIBRARY: ${{ steps.extract.outputs.library }}
+          BRANCH: ${{ steps.check.outputs.branch }}
+          PR_NUM: ${{ steps.check.outputs.pr_number }}
+        run: |
+          # Fetch the PR branch to check its contents
+          git fetch origin "$BRANCH"
+
+          IMPL_FILE="plots/${SPEC_ID}/implementations/${LIBRARY}.py"
+          META_FILE="plots/${SPEC_ID}/metadata/${LIBRARY}.yaml"
+
+          # Check if implementation file exists on the PR branch
+          if ! git show "origin/${BRANCH}:${IMPL_FILE}" &>/dev/null; then
+            echo "::error::Implementation file missing on branch: ${IMPL_FILE}"
+            echo "::error::This indicates an incomplete generation - metadata exists but implementation is missing"
+            echo "::error::Closing PR to prevent partial merge"
+
+            gh pr close "$PR_NUM" --comment "**Merge blocked:** Implementation file \`${IMPL_FILE}\` is missing from this PR branch. Only metadata was found. This indicates an incomplete code generation. Please regenerate using \`generate:${LIBRARY}\` label."
+
+            exit 1
+          fi
+
+          # Check if metadata file exists
+          if ! git show "origin/${BRANCH}:${META_FILE}" &>/dev/null; then
+            echo "::warning::Metadata file missing on branch: ${META_FILE}"
+            echo "::warning::This is unusual but not blocking - metadata will be created on next review"
+          fi
+
+          echo "::notice::PR completeness validated: both implementation and metadata present"
+
       - name: Get parent issue from PR body
         if: steps.check.outputs.should_run == 'true'
         id: issue

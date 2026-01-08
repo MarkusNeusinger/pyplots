@@ -275,6 +275,41 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Validate specification was created (not duplicate)
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPEC_ID: ${{ steps.extract.outputs.specification_id }}
+          ISSUE_NUM: ${{ github.event.issue.number }}
+        run: |
+          # Check if specification directory was actually created
+          if [ ! -d "plots/${SPEC_ID}" ]; then
+            echo "::warning::Specification directory not created - likely a duplicate"
+
+            # Get Claude's comment to find duplicate info
+            COMMENT=$(gh issue view "$ISSUE_NUM" --json comments -q '.comments[-1].body' 2>/dev/null || echo "")
+
+            if echo "$COMMENT" | grep -qi "duplicate\|exists\|already"; then
+              echo "::notice::Claude detected duplicate - closing issue"
+
+              gh label create "duplicate" --color "cfd3d7" \
+                --description "Duplicate specification" 2>/dev/null || true
+
+              gh issue edit "$ISSUE_NUM" --remove-label "spec-request" 2>/dev/null || true
+              gh issue edit "$ISSUE_NUM" --add-label "duplicate" 2>/dev/null || true
+              gh issue close "$ISSUE_NUM" --comment "**Duplicate detected:** Claude's analysis indicates this specification already exists. See previous comment for details."
+
+              exit 0  # Not an error, just a duplicate
+            fi
+
+            # If not a duplicate, something else failed
+            echo "::error::Specification creation failed for unknown reason"
+            gh issue comment "$ISSUE_NUM" --body "**Error:** Specification creation failed. Please check the [workflow logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details."
+            exit 1
+          fi
+
+          echo "::notice::Specification directory created successfully"
+
       - name: Create Pull Request
         if: steps.check.outputs.should_run == 'true'
         id: pr
@@ -362,6 +397,11 @@ jobs:
       contents: write
       pull-requests: write
       issues: write
+
+    # Prevent race conditions when multiple specs are approved simultaneously
+    concurrency:
+      group: spec-merge-main
+      cancel-in-progress: false  # Queue merges instead of canceling
 
     steps:
       - name: Checkout repository

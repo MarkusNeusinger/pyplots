@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 kagi-basic: Basic Kagi Chart
 Library: plotly 6.5.1 | Python 3.13.11
-Quality: 58/100 | Created: 2026-01-08
+Quality: 72/100 | Created: 2026-01-08
 """
 
 import numpy as np

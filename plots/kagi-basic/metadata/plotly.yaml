@@ -1,7 +1,7 @@
 library: plotly
 specification_id: kagi-basic
 created: '2026-01-08T21:53:29Z'
-updated: '2026-01-08T22:12:07Z'
+updated: '2026-01-08T22:22:53Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20832941604
 issue: 3341
@@ -10,28 +10,30 @@ library_version: 6.5.1
 preview_url: https://storage.googleapis.com/pyplots-images/plots/kagi-basic/plotly/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/kagi-basic/plotly/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/kagi-basic/plotly/plot.html
-quality_score: 58
+quality_score: 72
 review:
   strengths:
-  - Clean code structure following KISS principles with proper seed for reproducibility
-  - 'Good use of Plotly features: hover templates showing trend type and price, interactive
-    legend, HTML export'
-  - Colorblind-accessible color palette (blue/orange instead of red/green)
-  - Proper title format and axis labeling with units
-  - Correct Kagi chart construction logic for building step patterns
+  - Colorblind-accessible color scheme (blue/orange instead of green/red)
+  - Proper Kagi chart algorithm with shoulder/waist tracking for yang/yin transitions
+  - Interactive hover tooltips showing trend type and price
+  - Clean code structure with well-commented data generation
+  - Correct title format and axis labeling
   weaknesses:
-  - 'Yang/yin logic flaw: The chart shows only ONE yang segment at the start, then
-    ALL subsequent segments are yin. The yang_yin determination logic needs revision
-    - it should show multiple yang segments when price breaks above previous highs
-    during recovery phases'
-  - The 5 distinct trending phases in the data (uptrend, downtrend, strong uptrend,
-    consolidation, recovery) should produce visible yang/yin transitions, but only
-    the initial drop triggers a yin state that never recovers to yang
-  - Legend colors appear inconsistent with actual line colors in the rendered image
-  image_description: |-
-    The plot displays a Kagi chart with the title "kagi-basic · plotly · pyplots.ai" centered at the top. The chart has a white background with subtle gray gridlines. The Y-axis shows "Price ($)" ranging from approximately 82 to 110, and the X-axis shows "Line Index" from 0 to about 12. A legend appears in the upper left showing "Yang (Bullish)" as a thick green line and "Yin (Bearish)" as a thin red/coral line.
-
-    Critical observation: The chart shows only ONE thick green (yang/bullish) vertical line segment at line index 0-1, dropping from ~110 to ~82. ALL subsequent line segments (indices 1-12) are thin red/coral (yin/bearish) lines forming a step pattern oscillating between ~82 and ~108. This does NOT correctly demonstrate the yang/yin transitions that define Kagi charts - there should be multiple transitions between thick and thin lines as price breaks above previous highs or below previous lows.
+  - Limited number of visible line transitions (only ~8 indices) - data generation
+    could produce more reversal events to better demonstrate the chart type
+  - Line width contrast between yang (8) and yin (3) could be more pronounced for
+    clearer visual differentiation
+  - Price range is narrow (~90-117), which limits the visual impact of the chart
+  image_description: The plot displays a Kagi chart with the title "kagi-basic · plotly
+    · pyplots.ai" centered at the top. The chart shows price movements on the Y-axis
+    (labeled "Price ($)") ranging from approximately 90 to 117, and Line Index on
+    the X-axis ranging from 0 to 8. The chart uses thick blue lines (#0077BB) for
+    Yang (Bullish) segments and thin orange lines (#EE7733) for Yin (Bearish) segments.
+    The legend is positioned horizontally above the plot showing both line types.
+    The chart demonstrates multiple yang/yin transitions with clear vertical movements
+    and horizontal connectors at reversal points. The background is white with subtle
+    gray gridlines. The plot effectively shows the characteristic step-like pattern
+    of Kagi charts with visible transitions between bullish and bearish states.
   criteria_checklist:
     visual_quality:
       score: 32
@@ -39,74 +41,74 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
+        score: 9
         max: 10
         passed: true
-        comment: Title, axis labels, and tick marks are all clearly readable with
-          appropriate font sizes
+        comment: Title at 28pt, axis labels at 22pt, tick fonts at 18pt - all clearly
+          readable
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text or elements
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: Line segments are visible, but the thickness contrast between yang
-          (8px) and yin (3px) could be more pronounced
+        comment: Yang lines at width 8 and yin lines at width 3 are visible but could
+          be thicker for better differentiation
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Uses blue (#0077BB) and orange (#EE7733) which are colorblind-safe
+        comment: Uses blue (#0077BB) and orange (#EE7733), colorblind-safe palette
       - id: VQ-05
         name: Layout Balance
-        score: 1
+        score: 3
         max: 5
-        passed: false
-        comment: Chart uses good space but the single yang line makes the visual appear
-          unbalanced/incomplete
+        passed: true
+        comment: Good use of canvas space, but some empty space on the right side
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Price ($) and Line Index are descriptive with units
+        comment: 'Descriptive labels with units: Price ($) and Line Index'
       - id: VQ-07
         name: Grid & Legend
-        score: 0
+        score: 1
         max: 2
         passed: false
-        comment: Legend placement is good, but legend colors appear inconsistent with
-          actual line colors in the rendered image
+        comment: Grid is subtle (alpha 0.3), legend well-placed but slightly separated
+          from plot
     spec_compliance:
-      score: 13
+      score: 21
       max: 25
       items:
       - id: SC-01
         name: Plot Type
-        score: 4
+        score: 8
         max: 8
-        passed: false
-        comment: It is a Kagi chart structure, but fails to properly show yang/yin
-          transitions
+        passed: true
+        comment: Correct Kagi chart implementation with vertical lines and direction
+          changes
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X shows line index, Y shows price as specified
+        comment: X shows line index (time-independent), Y shows price - correct per
+          spec
       - id: SC-03
         name: Required Features
-        score: 1
+        score: 3
         max: 5
         passed: false
-        comment: Missing proper yang/yin transitions; spec requires thick lines for
-          uptrends when price exceeds previous highs but only one yang segment appears
+        comment: Has thick/thin lines for yang/yin, but horizontal segments could
+          be more clearly marked
       - id: SC-04
         name: Data Range
         score: 3
@@ -115,41 +117,40 @@ review:
         comment: All data visible within axes
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Legend shows yang/yin but the chart barely demonstrates yang
+        passed: true
+        comment: Legend correctly identifies Yang (Bullish) and Yin (Bearish)
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Correctly uses kagi-basic · plotly · pyplots.ai
+        comment: 'Correct format: kagi-basic · plotly · pyplots.ai'
     data_quality:
-      score: 8
+      score: 14
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 2
+        score: 6
         max: 8
-        passed: false
-        comment: 'CRITICAL: Only shows 1 yang segment and many yin segments. A Kagi
-          chart should demonstrate multiple transitions between yang and yin as price
-          breaks highs/lows'
+        passed: true
+        comment: Shows yang/yin transitions and reversal patterns, but only ~8 line
+          indices shown
       - id: DQ-02
         name: Realistic Context
-        score: 4
+        score: 5
         max: 7
-        passed: false
-        comment: Stock price scenario is plausible but the lack of yang transitions
-          makes it unrealistic
+        passed: true
+        comment: Plausible stock price scenario starting at $100, but context is generic
       - id: DQ-03
         name: Appropriate Scale
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Price range ~82-110 is reasonable for a stock
+        passed: true
+        comment: Price range of ~90-117 is reasonable but narrow for demonstrating
+          full capability
     code_quality:
       score: 10
       max: 10
@@ -159,7 +160,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear script with imports → data → plot → save
+        comment: 'Linear flow: imports → data → kagi logic → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -193,19 +194,18 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Uses Plotly's hover templates showing trend type and price, interactive
-          legend, and HTML export
-  verdict: REJECTED
+        comment: 'Uses Plotly interactive features: hover tooltips with custom templates,
+          HTML export, graph_objects for fine control'
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - hover-tooltips
-  - custom-legend
   - html-export
+  - custom-legend
   patterns:
   - data-generation
   - iteration-over-groups
-  dataprep:
-  - cumulative-sum
+  dataprep: []
   styling:
   - grid-styling

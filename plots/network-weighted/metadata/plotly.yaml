@@ -1,7 +1,7 @@
 library: plotly
 specification_id: network-weighted
 created: '2026-01-08T15:58:57Z'
-updated: '2026-01-08T16:01:55Z'
+updated: '2026-01-08T16:13:49Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20822849491
 issue: 3290
@@ -13,76 +13,81 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/network-weight
 quality_score: 81
 review:
   strengths:
-  - Excellent implementation of force-directed layout algorithm from scratch
-  - Good visual encoding with edge thickness proportional to trade weight
-  - Node sizing by weighted degree adds additional information layer
-  - Hover tooltips provide interactive detail on trade volumes
-  - Clean, professional color scheme (Python-branded yellow/blue)
-  - Realistic trade data scenario with plausible values
+  - Excellent implementation of force-directed layout algorithm with weight-influenced
+    attraction
+  - Smart label positioning algorithm to minimize overlaps
+  - Good use of alpha blending for edges to show overlap
+  - Hover tooltips provide detailed trade information
+  - Node sizing by weighted degree adds information density
+  - Clean, professional color scheme (yellow/blue Python colors)
+  - Both PNG and HTML outputs generated
   weaknesses:
-  - Weight scale annotation in bottom-right is cut off, making it unreadable
-  - Some node label overlap (Japan/S. Korea region)
-  - Network positioned asymmetrically with large empty space in lower-left quadrant
-  - Could center the network better within the canvas
-  image_description: The plot displays a weighted network graph showing international
-    trade relationships between 15 countries. Nodes are rendered as yellow circles
-    with blue borders, sized proportionally to their weighted degree (total trade
-    volume). The USA and China nodes are the largest, indicating their central roles
-    in global trade. Edges vary in thickness based on trade volume in billions USD
-    - the thickest connections are USA-Canada (~$620B), USA-Mexico (~$550B), and USA-China
-    (~$580B). The layout uses a force-directed algorithm that positions strongly connected
-    nodes closer together. Labels appear above each node in gray text. The title 'network-weighted
-    · plotly · pyplots.ai' is centered at the top. An annotation explaining the edge
-    thickness scale appears in the bottom-right corner but is partially cut off.
+  - Annotation box is cut off on the right edge - the legend explaining edge thickness
+    scale is truncated, showing only partial text instead of the full explanation
+  - Minor label overlaps between Japan/S. Korea and Italy/France areas
+  - Network layout is asymmetric with most nodes clustered on the right side
+  image_description: The plot displays a weighted network graph representing international
+    trade flows between 15 countries. Nodes are rendered as yellow circles with blue
+    (#306998) outlines, sized proportionally to their weighted degree (total trade
+    volume). USA and China appear as the largest nodes, correctly reflecting their
+    status as major trade hubs. Edges connecting countries vary in thickness and opacity
+    based on trade volume in billions USD - the thickest, darkest edges connect USA-Canada,
+    USA-Mexico, and USA-China, representing the highest trade volumes. The layout
+    uses a force-directed algorithm positioning countries with strong trade links
+    closer together. Labels are placed around nodes using smart positioning logic.
+    The title "network-weighted · plotly · pyplots.ai" is centered at the top. An
+    annotation box in the bottom-right corner attempts to explain the edge thickness
+    scale but is partially cut off, showing only "35B → Thick:" instead of the full
+    legend text.
   criteria_checklist:
     visual_quality:
-      score: 31
+      score: 32
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 10
         passed: true
-        comment: Title and most labels readable, but some labels are small relative
-          to canvas size
+        comment: Most text readable, some labels could be larger for optimal viewing
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 8
         passed: false
-        comment: Japan and S. Korea labels overlap; Italy/France labels very close
+        comment: Minor overlap between Japan/S. Korea labels; Italy/France labels
+          very close
       - id: VQ-03
         name: Element Visibility
         score: 8
         max: 8
         passed: true
-        comment: Nodes and edges well-sized for data density, clear visual hierarchy
+        comment: Node sizes and edge thicknesses well differentiated, alpha blending
+          helps
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Blue edges with yellow nodes provide good contrast; colorblind-safe
+        comment: Yellow nodes with blue edges are colorblind-safe
       - id: VQ-05
         name: Layout Balance
         score: 3
         max: 5
         passed: false
-        comment: Network positioned in upper-right quadrant leaving large empty space
-          in lower-left; annotation cut off
+        comment: Network is right-heavy, annotation box is cut off on right edge
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: N/A for network graphs, axes correctly hidden
+        comment: N/A for network graphs, annotation provides context
       - id: VQ-07
         name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: No grid (appropriate), annotation explains weight scale
+        comment: Clean white background, no distracting grid
     spec_compliance:
       score: 23
       max: 25
@@ -92,61 +97,59 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct weighted network graph with edge thickness encoding
+        comment: Correct weighted network graph with edge thickness
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Edges correctly map weight to thickness, nodes sized by weighted
-          degree
+        comment: Countries as nodes, trade as edges, volume as weight
       - id: SC-03
         name: Required Features
-        score: 5
+        score: 4
         max: 5
-        passed: true
-        comment: 'All spec features present: weighted edges, node sizing, force-directed
-          layout, weight annotation'
+        passed: false
+        comment: Has weighted edges, node sizing. Legend annotation is cut off
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All nodes and edges visible within canvas
+        comment: All 15 countries and 29 edges visible
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Weight scale annotation is partially cut off
+        passed: true
+        comment: Annotation attempts to explain the scale
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Uses correct format 'network-weighted · plotly · pyplots.ai'
+        comment: Correctly uses spec-id · library · pyplots.ai format
     data_quality:
       score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Shows strong vs weak connections, hub nodes, geographic clustering
+        comment: Shows major hubs, varying weights, different densities
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Trade network with real country names and plausible trade volumes
+        comment: International trade with plausible volumes in billions USD
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Trade values are realistic (35B-620B USD range)
+        comment: Trade values $35B-$620B are realistic
     code_quality:
       score: 10
       max: 10
@@ -156,25 +159,25 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Follows imports → data → plot → save structure, no functions/classes
+        comment: Clean linear structure
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set at beginning
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy and plotly imported
+        comment: Only numpy and plotly.graph_objects imported
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current Plotly API
+        comment: Uses current plotly API
       - id: CQ-05
         name: Output Correct
         score: 1
@@ -190,9 +193,8 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Good use of Plotly hover tooltips, trace-based rendering, and HTML
-          export
-  verdict: REJECTED
+        comment: Uses interactive hover tooltips, HTML export
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
@@ -202,8 +204,6 @@ impl_tags:
   patterns:
   - data-generation
   - iteration-over-groups
-  dataprep:
-  - normalization
+  dataprep: []
   styling:
   - alpha-blending
-  - edge-highlighting

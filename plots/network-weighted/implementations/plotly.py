@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 network-weighted: Weighted Network Graph with Edge Thickness
 Library: plotly 6.5.1 | Python 3.13.11
 Quality: 81/100 | Created: 2026-01-08

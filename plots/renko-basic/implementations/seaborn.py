@@ -1,10 +1,9 @@
-""" pyplots.ai
+"""pyplots.ai
 renko-basic: Basic Renko Chart
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 62/100 | Created: 2026-01-08
 """
 
-import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -49,43 +48,63 @@ for price in df["close"]:
         bricks.append({"direction": "down", "open": brick_high, "close": brick_low})
 
 renko_df = pd.DataFrame(bricks)
+renko_df["brick_index"] = range(len(renko_df))
+renko_df["bottom"] = renko_df[["open", "close"]].min(axis=1)
+
+# Colorblind-accessible colors: blue for bullish, orange for bearish
+bullish_color = "#1976D2"  # Blue for up bricks
+bearish_color = "#E65100"  # Orange for down bricks
+
+# Create expanded dataframe for seaborn barplot with gap between bricks
+# Each brick will be represented as a bar from bottom to bottom+brick_size
+bar_data = []
+gap_size = 0.15  # Small gap between bricks as per spec
+
+for idx, row in renko_df.iterrows():
+    bar_data.append(
+        {
+            "brick_index": idx,
+            "bottom": row["bottom"],
+            "height": brick_size,
+            "direction": "Bullish (Up)" if row["direction"] == "up" else "Bearish (Down)",
+        }
+    )
+
+bar_df = pd.DataFrame(bar_data)
 
 # Create figure
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Define colors
-bullish_color = "#2E7D32"  # Green for up bricks
-bearish_color = "#C62828"  # Red for down bricks
+# Use seaborn barplot to draw the Renko bricks
+# We plot bars with bottom offset using matplotlib's bar with seaborn styling
+palette = {"Bullish (Up)": bullish_color, "Bearish (Down)": bearish_color}
 
-# Draw Renko bricks using matplotlib patches (seaborn doesn't have native Renko)
-brick_width = 0.8
-gap = 0.1
+# Draw bricks using seaborn's barplot function
+# First create a grouped approach where each brick is a separate category
+sns.barplot(
+    data=bar_df,
+    x="brick_index",
+    y="height",
+    hue="direction",
+    palette=palette,
+    dodge=False,
+    ax=ax,
+    width=1.0 - gap_size,
+    edgecolor="white",
+    linewidth=1.5,
+)
 
-for i, row in renko_df.iterrows():
-    x = i
-    bottom = min(row["open"], row["close"])
-    height = brick_size
-    color = bullish_color if row["direction"] == "up" else bearish_color
+# Adjust bar positions to correct y-position (barplot draws from 0)
+# We need to offset each bar to its correct price level
+for i, patch in enumerate(ax.patches):
+    if i < len(bar_df):
+        patch.set_y(bar_df.iloc[i]["bottom"])
 
-    # Draw brick as rectangle
-    rect = mpatches.Rectangle(
-        (x + gap / 2, bottom), brick_width, height, linewidth=1.5, edgecolor="white", facecolor=color, alpha=0.9
-    )
-    ax.add_patch(rect)
-
-# Set axis limits
-ax.set_xlim(-1, len(renko_df) + 1)
+# Set axis limits with padding
 price_min = renko_df[["open", "close"]].min().min() - brick_size
 price_max = renko_df[["open", "close"]].max().max() + brick_size
 ax.set_ylim(price_min, price_max)
-
-# Add visual reference using seaborn - horizontal lines at key price levels
-price_levels = np.arange(
-    np.floor(price_min / (brick_size * 2)) * brick_size * 2, price_max + brick_size * 2, brick_size * 2
-)
-
-for level in price_levels:
-    ax.axhline(y=level, color="#306998", alpha=0.2, linestyle="--", linewidth=1)
+ax.set_xlim(-1, len(renko_df) + 1)
 
 # Labels and styling
 ax.set_xlabel("Brick Index", fontsize=20)
@@ -93,14 +112,16 @@ ax.set_ylabel("Price ($)", fontsize=20)
 ax.set_title("renko-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold")
 ax.tick_params(axis="both", labelsize=16)
 
-# Add legend
-up_patch = mpatches.Patch(color=bullish_color, label="Bullish (Up)")
-down_patch = mpatches.Patch(color=bearish_color, label="Bearish (Down)")
-ax.legend(handles=[up_patch, down_patch], fontsize=16, loc="upper left")
+# Adjust legend
+ax.legend(fontsize=16, loc="upper left", title=None)
 
-# Add grid
-ax.grid(True, alpha=0.3, linestyle="--")
+# Add subtle grid
+ax.grid(True, alpha=0.3, linestyle="--", axis="y")
 ax.set_axisbelow(True)
+
+# Simplify x-axis ticks for cleaner look
+tick_step = max(1, len(renko_df) // 10)
+ax.set_xticks(range(0, len(renko_df), tick_step))
 
 # Add annotation about brick size
 ax.annotate(

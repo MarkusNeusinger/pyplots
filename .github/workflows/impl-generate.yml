@@ -526,14 +526,27 @@ jobs:
               yaml.dump(data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
           "
 
-          # Commit and push
+          # Commit and push (ATOMIC: both implementation AND metadata together)
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add "$METADATA_FILE"
-          git commit -m "chore(${LIBRARY}): add metadata for ${SPEC_ID}"
+
+          IMPL_FILE="plots/${SPEC_ID}/implementations/${LIBRARY}.py"
+
+          # Add both files in a single commit to prevent partial merges
+          git add "$METADATA_FILE" "$IMPL_FILE"
+
+          # Verify both files are staged
+          if ! git diff --cached --name-only | grep -q "${LIBRARY}.py"; then
+            echo "::error::Implementation file not staged - cannot commit"
+            echo "::error::This indicates the implementation file is missing or not modified"
+            exit 1
+          fi
+
+          git commit -m "feat(${LIBRARY}): implement ${SPEC_ID} with metadata"
           git push origin "$BRANCH"
 
           echo "::notice::Created metadata file: $METADATA_FILE (py${PYTHON_VERSION}, ${LIBRARY}==${LIBRARY_VERSION})"
+          echo "::notice::Committed implementation and metadata atomically"
 
       # ========================================================================
       # Process images: optimize + thumbnail

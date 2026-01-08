@@ -363,6 +363,11 @@ jobs:
       pull-requests: write
       issues: write
 
+    # Prevent race conditions when multiple specs are approved simultaneously
+    concurrency:
+      group: spec-merge-main
+      cancel-in-progress: false  # Queue merges instead of canceling
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6

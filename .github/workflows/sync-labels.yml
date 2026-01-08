@@ -1,0 +1,153 @@
+name: "Sync: Labels"
+run-name: "Sync labels after push to main"
+
+# Runs after any push to main to ensure labels match repository state
+# This fixes label propagation issues when PRs are merged manually
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  sync-spec-labels:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 2  # Need to see what changed
+
+      - name: Install yq for YAML parsing
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Detect new specifications merged to main
+        id: detect
+        run: |
+          # Get list of specifications added/modified in this push
+          CHANGED_SPECS=$(git diff --name-only HEAD~1 HEAD | \
+            grep -oP 'plots/\K[^/]+(?=/specification\.(md|yaml))' | \
+            sort -u)
+
+          if [ -z "$CHANGED_SPECS" ]; then
+            echo "::notice::No specification changes detected"
+            echo "specs=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "specs<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_SPECS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Sync labels for merged specifications
+        if: steps.detect.outputs.specs != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "${{ steps.detect.outputs.specs }}" | while read SPEC_ID; do
+            [ -z "$SPEC_ID" ] && continue
+
+            # Extract issue number from specification.yaml
+            SPEC_YAML="plots/${SPEC_ID}/specification.yaml"
+            if [ ! -f "$SPEC_YAML" ]; then
+              echo "::warning::No specification.yaml for ${SPEC_ID}"
+              continue
+            fi
+
+            ISSUE=$(yq '.issue' "$SPEC_YAML" 2>/dev/null || echo "")
+            if [ -z "$ISSUE" ] || [ "$ISSUE" == "null" ]; then
+              echo "::warning::No issue number in ${SPEC_YAML}"
+              continue
+            fi
+
+            echo "::notice::Syncing labels for spec ${SPEC_ID} (issue #${ISSUE})"
+
+            # Get current labels
+            CURRENT_LABELS=$(gh issue view "$ISSUE" --json labels -q '.labels[].name' 2>/dev/null || echo "")
+
+            # If specification is in main, ensure correct labels
+            if echo "$CURRENT_LABELS" | grep -q "spec-request"; then
+              echo "::notice::Removing spec-request label from #${ISSUE}"
+              gh issue edit "$ISSUE" --remove-label "spec-request" 2>/dev/null || true
+            fi
+
+            if ! echo "$CURRENT_LABELS" | grep -q "spec-ready"; then
+              echo "::notice::Adding spec-ready label to #${ISSUE}"
+              gh issue edit "$ISSUE" --add-label "spec-ready" 2>/dev/null || true
+            fi
+          done
+
+  sync-impl-labels:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+
+      - name: Install yq for YAML parsing
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Detect new implementations merged to main
+        id: detect
+        run: |
+          # Get list of implementations added/modified in this push
+          CHANGED_IMPLS=$(git diff --name-only HEAD~1 HEAD | \
+            grep -P 'plots/[^/]+/implementations/[^/]+\.py$')
+
+          if [ -z "$CHANGED_IMPLS" ]; then
+            echo "::notice::No implementation changes detected"
+            echo "impls=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "impls<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_IMPLS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Sync labels for merged implementations
+        if: steps.detect.outputs.impls != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "${{ steps.detect.outputs.impls }}" | while read IMPL_PATH; do
+            [ -z "$IMPL_PATH" ] && continue
+
+            # Extract spec-id and library from path: plots/{spec-id}/implementations/{library}.py
+            SPEC_ID=$(echo "$IMPL_PATH" | cut -d'/' -f2)
+            LIBRARY=$(echo "$IMPL_PATH" | cut -d'/' -f4 | sed 's/\.py$//')
+
+            # Get issue number
+            SPEC_YAML="plots/${SPEC_ID}/specification.yaml"
+            ISSUE=$(yq '.issue' "$SPEC_YAML" 2>/dev/null || echo "")
+
+            if [ -z "$ISSUE" ] || [ "$ISSUE" == "null" ]; then
+              echo "::warning::No issue for ${SPEC_ID}/${LIBRARY}"
+              continue
+            fi
+
+            echo "::notice::Syncing labels for ${SPEC_ID}/${LIBRARY} (issue #${ISSUE})"
+
+            # Remove trigger and pending labels
+            gh issue edit "$ISSUE" --remove-label "generate:${LIBRARY}" 2>/dev/null || true
+            gh issue edit "$ISSUE" --remove-label "impl:${LIBRARY}:pending" 2>/dev/null || true
+
+            # Create and add done label
+            gh label create "impl:${LIBRARY}:done" --color "0e8a16" \
+              --description "${LIBRARY} implementation merged" 2>/dev/null || true
+            gh issue edit "$ISSUE" --add-label "impl:${LIBRARY}:done" 2>/dev/null || true
+
+            echo "::notice::✓ Labels synced for ${SPEC_ID}/${LIBRARY}"
+          done

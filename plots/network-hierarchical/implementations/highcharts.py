@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 network-hierarchical: Hierarchical Network Graph with Tree Layout
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2026-01-08
+Library: highcharts unknown | Python 3.13.11
+Quality: 92/100 | Created: 2026-01-08
 """
 
 import tempfile

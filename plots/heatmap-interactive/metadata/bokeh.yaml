@@ -1,0 +1,211 @@
+library: bokeh
+specification_id: heatmap-interactive
+created: '2026-01-08T15:57:10Z'
+updated: '2026-01-08T16:00:07Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20822851384
+issue: 3289
+python_version: 3.13.11
+library_version: 3.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-interactive/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-interactive/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-interactive/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent use of Bokeh interactive features (HoverTool, WheelZoomTool, pan, box_zoom,
+    reset)
+  - Colorblind-safe Viridis palette with proper LinearColorMapper
+  - ColumnDataSource pattern correctly implemented for interactivity
+  - Dual output (PNG + HTML) maximizes utility for both static and interactive use
+  - Thoughtful data generation with visible patterns (high-performing regions and
+    products)
+  - Appropriate font scaling for 4800×2700 canvas
+  weaknesses:
+  - Missing crosshair or highlight effect on hover as suggested in spec notes
+  - Colorbar title font could be slightly larger relative to other text elements
+  image_description: The plot displays a 20×15 interactive heatmap showing "Product
+    Performance by Region" data. The visualization uses the Viridis colormap (colorblind-safe),
+    ranging from dark purple/blue (low values ~20) to bright yellow (high values ~100).
+    The title correctly reads "heatmap-interactive · bokeh · pyplots.ai" at the top.
+    The x-axis displays 15 products (Product A through Product O) with labels angled
+    at approximately 40° for readability. The y-axis shows 20 regions (Region 1 through
+    Region 20) from top to bottom. A vertical colorbar on the right indicates "Performance
+    Score" from 0-100. The first 5 regions (top rows) show noticeably higher values
+    (more yellow/green cells), and certain products (C, F, K) display higher performance
+    across all regions, demonstrating intentional data patterns. Grid lines are removed
+    for clean visualization, and cells have subtle spacing between them.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 48pt, axis labels at 36pt, tick labels at 24pt - all clearly
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: X-axis labels angled to prevent overlap, no overlapping elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 8
+        max: 8
+        passed: true
+        comment: Cells are well-sized with 0.95 width/height, clear visibility
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Viridis256 is colorblind-safe
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good proportions, slight imbalance with colorbar width
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Descriptive labels Product and Region
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: No grid (appropriate for heatmap), but colorbar title text is small
+          relative to other text
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct heatmap implementation with rectangular cells
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X=products (columns), Y=regions (rows), value=color correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has hover tooltips, zoom/pan tools, reset button. Missing crosshair
+          effect on hover
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, 0-100 scale appropriate
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Colorbar correctly labeled Performance Score
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: Correct format with middle dot separator
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variation across regions and products with visible patterns
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Product performance by region is a plausible business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 0-100 performance score scale is realistic
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear flow: imports, data, plot, save - no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used (numpy, bokeh components)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: ColumnDataSource, HoverTool with tooltips, WheelZoomTool, LinearColorMapper,
+          ColorBar, HTML export
+  verdict: APPROVED
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - colorbar
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - columndatasource
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - custom-colormap
+  - grid-styling

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-interactive: Interactive Heatmap with Hover and Zoom
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 45/100 | Created: 2026-01-08
+Quality: 72/100 | Created: 2026-01-08
 """
 
 import numpy as np

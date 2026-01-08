@@ -1,7 +1,7 @@
 library: pygal
 specification_id: heatmap-interactive
 created: '2026-01-08T16:06:43Z'
-updated: '2026-01-08T16:22:45Z'
+updated: '2026-01-08T16:30:52Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20822856761
 issue: 3289
@@ -10,44 +10,45 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-interactive/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-interactive/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-interactive/pygal/plot.html
-quality_score: 45
+quality_score: 72
 review:
   strengths:
-  - Good visual design with clear color gradient and cell borders
-  - Realistic website engagement scenario with meaningful data patterns
-  - Interactive HTML version includes hover tooltips, zoom, pan, and reset functionality
-  - Colorbar with descriptive title Engagement Score
+  - Creative approach using HorizontalStackedBar to simulate heatmap cells with individual
+    coloring
+  - Colorblind-friendly blue-to-orange color scheme with 10 discrete levels
+  - Comprehensive interactive HTML version with zoom, pan, and reset controls
+  - Realistic website engagement data scenario with visible patterns (clusters, hot/cold
+    spots)
+  - Clean, well-structured code following KISS principles
   weaknesses:
-  - 'CRITICAL: Implementation does NOT use pygal library - constructs raw SVG manually
-    instead of using pygal chart classes'
-  - Contains a helper function interpolate_color() which violates KISS principle (no
-    functions/classes rule)
-  - Does not import pygal despite being a pygal implementation
-  - Interactivity features (spec requirements) only exist in HTML output, not demonstrable
-    in static PNG
-  - Pygal has no native heatmap chart type - may need to consider if this is feasible
-    with pygal
-  image_description: 'The plot displays a 20×20 interactive heatmap representing website
-    page engagement scores across user segments. The visualization uses a blue-to-orange
-    colormap with light blue for low values (around 2) and bright orange for high
-    values (up to 98). Row labels (Page 1-20) appear on the left Y-axis, and column
-    labels (Segment 1-20) are rotated 45 degrees on the X-axis. A vertical colorbar
-    on the right shows "Engagement Score" with values 2, 50, and 98 marked. The heatmap
-    shows distinct high-engagement clusters (orange/yellow regions) in rows 3-6/columns
-    4-8, rows 11-14/columns 13-17, and rows 16-18/columns 2-5. Hot spots appear at
-    corners and scattered positions. Cell borders are white, providing clear separation.
-    The title follows the correct format: "heatmap-interactive · pygal · pyplots.ai".'
+  - Static PNG output lacks colorbar legend - users cannot interpret color-to-value
+    mapping without the HTML version
+  - Y-axis labels use dashed leader lines which reduce visual clarity at this resolution
+  - The stacked bar approach creates thin gaps between cells, reducing the cohesive
+    grid appearance of a traditional heatmap
+  image_description: 'The plot displays a 20x20 heatmap representing website page
+    engagement by user segment. The visualization uses a horizontal stacked bar approach
+    to simulate a heatmap, with rows labeled "Page 1" through "Page 20" on the Y-axis
+    and "User Segment" numbers (0-20) on the X-axis. Colors range from dark blue (low
+    engagement, ~2-10) through lighter blues, then pale blue/white transition, to
+    yellow and orange (high engagement, ~90-98). The title "heatmap-interactive ·
+    pygal · pyplots.ai" appears at the top. Clear clustering patterns are visible:
+    high-engagement orange/yellow clusters around Pages 11-14 with Segments 12-17,
+    Pages 3-5 with Segments 4-7, and Pages 16-18 with Segments 1-4. Hot spots (dark
+    orange) appear at corners and specific cells. The colorbar is NOT visible in the
+    static PNG - it only appears in the HTML version.'
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 30
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 10
         passed: true
-        comment: Title and axis labels readable, tick labels slightly small
+        comment: Title and axis labels readable, but Y-axis labels use dashed leader
+          lines that reduce clarity
       - id: VQ-02
         name: No Overlap
         score: 8
@@ -56,76 +57,77 @@ review:
         comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Cells well-sized, colors distinguishable
+        comment: Cells visible but thin gaps between stacked segments reduce visual
+          cohesion
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Blue-orange is colorblind-friendly but transition through similar
-          blues can be hard to distinguish
+        comment: Blue-to-orange colormap is colorblind-friendly
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 2
         max: 5
-        passed: true
-        comment: Good use of canvas, slight margin imbalance
+        passed: false
+        comment: Plot fills canvas well but no colorbar visible in static PNG output
       - id: VQ-06
         name: Axis Labels
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: Descriptive labels Page and User Segment
+        comment: Labels present (Page, User Segment) but no units
       - id: VQ-07
         name: Grid & Legend
-        score: 0
+        score: 1
         max: 2
-        passed: false
-        comment: No grid lines, colorbar placement acceptable
+        passed: true
+        comment: Grid guides present but legend hidden; no colorbar in static output
     spec_compliance:
       score: 17
       max: 25
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
+        score: 6
         max: 8
         passed: true
-        comment: Correct heatmap visualization
+        comment: Simulates heatmap using stacked bars - creative workaround but not
+          a true heatmap
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X/Y correctly mapped to segments/pages
+        comment: X/Y correctly assigned (pages vs segments)
       - id: SC-03
         name: Required Features
-        score: 0
+        score: 2
         max: 5
         passed: false
-        comment: 'CRITICAL: Interactivity (hover tooltips, zoom/pan) only works in
-          HTML, not demonstrated in PNG'
+        comment: Hover tooltips and zoom/pan only work in HTML; static PNG lacks colorbar
+          legend
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible, range 2-98 shown
+        comment: All data visible within range
       - id: SC-05
         name: Legend Accuracy
-        score: 1
+        score: 0
         max: 2
         passed: false
-        comment: Colorbar present but lacks intermediate ticks
+        comment: No colorbar/legend in static output to indicate value mapping
       - id: SC-06
         name: Title Format
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: Correct format used
+        comment: Correct format but could be more prominent
     data_quality:
       score: 18
       max: 20
@@ -135,29 +137,29 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows clusters, hot spots, cold spots, and variation
+        comment: Shows clusters, hot spots, cold spots, and gradations well
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Website page engagement is a plausible business scenario
+        comment: Website page engagement by user segment is a realistic scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Values 0-100 appropriate for percentage/score metrics
+        comment: Engagement scores 0-100 are appropriate
     code_quality:
-      score: 5
+      score: 10
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 0
+        score: 3
         max: 3
-        passed: false
-        comment: Contains helper function interpolate_color() - violates KISS principle
+        passed: true
+        comment: 'Clean linear flow: imports → data → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -166,16 +168,16 @@ review:
         comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: import pygal is NOT in the code, but library rules require it
+        passed: true
+        comment: Only necessary imports
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: No deprecated functions
+        comment: Current pygal API
       - id: CQ-05
         name: Output Correct
         score: 1
@@ -183,24 +185,23 @@ review:
         passed: true
         comment: Saves as plot.png
     library_features:
-      score: 0
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 5
         max: 5
-        passed: false
-        comment: 'CRITICAL: Does NOT use pygal at all. The entire heatmap is built
-          with raw SVG strings. No pygal chart classes are instantiated.'
-  verdict: REJECTED
+        passed: true
+        comment: Creative use of HorizontalStackedBar with per-cell coloring, custom
+          Style, and generates interactive HTML with zoom/pan
+  verdict: APPROVED
 impl_tags:
-  dependencies:
-  - cairosvg
+  dependencies: []
   techniques:
-  - colorbar
   - hover-tooltips
   - html-export
+  - custom-legend
   patterns:
   - data-generation
   - matrix-construction
@@ -208,4 +209,4 @@ impl_tags:
   dataprep: []
   styling:
   - custom-colormap
-  - edge-highlighting
+  - alpha-blending

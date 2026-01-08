@@ -29,11 +29,23 @@ jobs:
 
       - name: Detect new specifications merged to main
         id: detect
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.event.after }}
         run: |
           # Get list of specifications added/modified in this push
-          CHANGED_SPECS=$(git diff --name-only HEAD~1 HEAD | \
-            grep -oP 'plots/\K[^/]+(?=/specification\.(md|yaml))' | \
-            sort -u)
+          # Use GitHub event context for reliability (handles first push, force push, etc.)
+          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            # First push or new branch: diff-tree on the after commit only
+            CHANGED_SPECS=$(git diff-tree --no-commit-id --name-only -r "$AFTER" | \
+              grep -oP 'plots/\K[^/]+(?=/specification\.(md|yaml))' | \
+              sort -u || true)
+          else
+            # Normal push: diff between before and after SHAs
+            CHANGED_SPECS=$(git diff --name-only "$BEFORE" "$AFTER" | \
+              grep -oP 'plots/\K[^/]+(?=/specification\.(md|yaml))' | \
+              sort -u || true)
+          fi
 
           if [ -z "$CHANGED_SPECS" ]; then
             echo "::notice::No specification changes detected"
@@ -102,10 +114,21 @@ jobs:
 
       - name: Detect new implementations merged to main
         id: detect
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.event.after }}
         run: |
           # Get list of implementations added/modified in this push
-          CHANGED_IMPLS=$(git diff --name-only HEAD~1 HEAD | \
-            grep -P 'plots/[^/]+/implementations/[^/]+\.py$')
+          # Use GitHub event context for reliability (handles first push, force push, etc.)
+          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            # First push or new branch: diff-tree on the after commit only
+            CHANGED_IMPLS=$(git diff-tree --no-commit-id --name-only -r "$AFTER" | \
+              grep -P 'plots/[^/]+/implementations/[^/]+\.py$' || true)
+          else
+            # Normal push: diff between before and after SHAs
+            CHANGED_IMPLS=$(git diff --name-only "$BEFORE" "$AFTER" | \
+              grep -P 'plots/[^/]+/implementations/[^/]+\.py$' || true)
+          fi
 
           if [ -z "$CHANGED_IMPLS" ]; then
             echo "::notice::No implementation changes detected"

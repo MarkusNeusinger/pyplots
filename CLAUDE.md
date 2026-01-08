@@ -659,7 +659,7 @@ impl-generate.yml
     ├── Creates branch: implementation/{specification-id}/{library}
     ├── Generates implementation code
     ├── Tests with MPLBACKEND=Agg
-    ├── Commits implementation + metadata atomically (prevents partial PRs)
+    ├── Verifies implementation exists before committing metadata
     ├── Uploads preview to GCS staging
     ├── Creates PR: implementation/{specification-id}/{library} → main
     └── Triggers impl-review.yml

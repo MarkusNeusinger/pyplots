@@ -526,27 +526,35 @@ jobs:
               yaml.dump(data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
           "
 
-          # Commit and push (ATOMIC: both implementation AND metadata together)
+          # Commit and push metadata (implementation already committed by Claude)
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           IMPL_FILE="plots/${SPEC_ID}/implementations/${LIBRARY}.py"
 
-          # Add both files in a single commit to prevent partial merges
-          git add "$METADATA_FILE" "$IMPL_FILE"
-
-          # Verify both files are staged
-          if ! git diff --cached --name-only | grep -q "${LIBRARY}.py"; then
-            echo "::error::Implementation file not staged - cannot commit"
-            echo "::error::This indicates the implementation file is missing or not modified"
+          # Verify implementation file exists in the repository (Claude should have committed it)
+          if ! git ls-files --error-unmatch "$IMPL_FILE" >/dev/null 2>&1; then
+            echo "::error::Implementation file not found in repository - cannot commit"
+            echo "::error::Expected implementation at: $IMPL_FILE"
+            echo "::error::This indicates Claude failed to create the implementation file"
             exit 1
           fi
 
-          git commit -m "feat(${LIBRARY}): implement ${SPEC_ID} with metadata"
+          # Add metadata file
+          git add "$METADATA_FILE"
+
+          # Verify metadata file is staged
+          if ! git diff --cached --name-only | grep -q "$(basename "$METADATA_FILE")"; then
+            echo "::error::Metadata file not staged - cannot commit"
+            echo "::error::This indicates the metadata file was not added correctly"
+            exit 1
+          fi
+
+          git commit -m "chore(${LIBRARY}): add metadata for ${SPEC_ID}"
           git push origin "$BRANCH"
 
           echo "::notice::Created metadata file: $METADATA_FILE (py${PYTHON_VERSION}, ${LIBRARY}==${LIBRARY_VERSION})"
-          echo "::notice::Committed implementation and metadata atomically"
+          echo "::notice::Implementation verified present, metadata committed"
 
       # ========================================================================
       # Process images: optimize + thumbnail

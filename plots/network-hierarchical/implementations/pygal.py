@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 network-hierarchical: Hierarchical Network Graph with Tree Layout
-Library: pygal | Python 3.13
-Quality: pending | Created: 2026-01-08
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 85/100 | Created: 2026-01-08
 """
 
 import pygal

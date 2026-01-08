@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 kagi-basic: Basic Kagi Chart
 Library: highcharts unknown | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-08
@@ -10,6 +10,9 @@ import urllib.request
 from pathlib import Path
 
 import numpy as np
+from highcharts_core.chart import Chart
+from highcharts_core.options import HighchartsOptions
+from highcharts_core.options.series.area import LineSeries
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -71,8 +74,8 @@ for price in prices[1:]:
 
 # Create line segments with proper yang/yin coloring
 # Build series data for Highcharts with segment colors
-yang_segments = []  # Thick green lines (bullish)
-yin_segments = []  # Thin red lines (bearish)
+yang_segments = []  # Thick blue lines (bullish) - colorblind-safe
+yin_segments = []  # Thin orange lines (bearish) - colorblind-safe
 
 for i in range(len(kagi_data) - 1):
     p1 = kagi_data[i]
@@ -80,130 +83,102 @@ for i in range(len(kagi_data) - 1):
 
     # Vertical segment
     if p2["direction"] == 1:  # Yang (up)
-        yang_segments.extend(
-            [{"x": p1["x"], "y": p1["y"]}, {"x": p1["x"], "y": p2["y"]}, None]  # Horizontal  # Vertical  # Break
-        )
+        yang_segments.extend([[p1["x"], p1["y"]], [p1["x"], p2["y"]], None])
     else:  # Yin (down)
-        yin_segments.extend([{"x": p1["x"], "y": p1["y"]}, {"x": p1["x"], "y": p2["y"]}, None])
+        yin_segments.extend([[p1["x"], p1["y"]], [p1["x"], p2["y"]], None])
 
     # Horizontal segment (shoulder or waist)
     if i < len(kagi_data) - 2:
         if p2["direction"] == 1:
-            yang_segments.extend([{"x": p1["x"], "y": p2["y"]}, {"x": p2["x"], "y": p2["y"]}, None])
+            yang_segments.extend([[p1["x"], p2["y"]], [p2["x"], p2["y"]], None])
         else:
-            yin_segments.extend([{"x": p1["x"], "y": p2["y"]}, {"x": p2["x"], "y": p2["y"]}, None])
+            yin_segments.extend([[p1["x"], p2["y"]], [p2["x"], p2["y"]], None])
 
-# Format data for JavaScript
-yang_js = [f"[{p['x']}, {p['y']}]" if p else "null" for p in yang_segments]
-yin_js = [f"[{p['x']}, {p['y']}]" if p else "null" for p in yin_segments]
+# Create chart using highcharts-core Python library
+chart = Chart(container="container")
+chart.options = HighchartsOptions()
 
-yang_data_str = "[" + ", ".join(yang_js) + "]"
-yin_data_str = "[" + ", ".join(yin_js) + "]"
+# Chart configuration
+chart.options.chart = {
+    "type": "line",
+    "width": 4800,
+    "height": 2700,
+    "backgroundColor": "#ffffff",
+    "spacingBottom": 100,
+    "spacingTop": 80,
+}
 
-# Download Highcharts JS
+# Title
+chart.options.title = {
+    "text": "kagi-basic · highcharts · pyplots.ai",
+    "style": {"fontSize": "48px", "fontWeight": "bold"},
+    "margin": 40,
+}
+
+chart.options.subtitle = {"text": "Stock Price Analysis with 4% Reversal Threshold", "style": {"fontSize": "28px"}}
+
+# X-axis
+chart.options.x_axis = {
+    "title": {"text": "Kagi Line Index", "style": {"fontSize": "32px"}, "margin": 20},
+    "labels": {"style": {"fontSize": "24px"}},
+    "gridLineWidth": 1,
+    "gridLineColor": "rgba(0, 0, 0, 0.1)",
+}
+
+# Y-axis
+chart.options.y_axis = {
+    "title": {"text": "Price ($)", "style": {"fontSize": "32px"}, "margin": 20},
+    "labels": {"style": {"fontSize": "24px"}, "format": "${value}"},
+    "gridLineWidth": 1,
+    "gridLineColor": "rgba(0, 0, 0, 0.1)",
+}
+
+# Legend
+chart.options.legend = {
+    "enabled": True,
+    "align": "center",
+    "verticalAlign": "bottom",
+    "layout": "horizontal",
+    "itemStyle": {"fontSize": "28px"},
+    "symbolWidth": 50,
+    "itemDistance": 60,
+    "margin": 30,
+}
+
+# Plot options
+chart.options.plot_options = {"line": {"marker": {"enabled": False}, "connectNulls": False}}
+
+# Credits
+chart.options.credits = {"enabled": False}
+
+# Create Yang (Bullish) series - colorblind-safe blue
+yang_series = LineSeries()
+yang_series.name = "Yang (Bullish)"
+yang_series.data = yang_segments
+yang_series.color = "#306998"  # Colorblind-safe blue
+yang_series.line_width = 8
+yang_series.z_index = 2
+
+# Create Yin (Bearish) series - colorblind-safe orange
+yin_series = LineSeries()
+yin_series.name = "Yin (Bearish)"
+yin_series.data = yin_segments
+yin_series.color = "#E69F00"  # Colorblind-safe orange
+yin_series.line_width = 4
+yin_series.z_index = 1
+
+# Add series to chart
+chart.add_series(yang_series)
+chart.add_series(yin_series)
+
+# Download Highcharts JS for rendering
 highcharts_url = "https://code.highcharts.com/highcharts.js"
 with urllib.request.urlopen(highcharts_url, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
 
-# Create the chart configuration in pure JavaScript
-# Using line series with different lineWidths to simulate yang/yin
-chart_js = f"""
-Highcharts.chart('container', {{
-    chart: {{
-        type: 'line',
-        width: 4800,
-        height: 2700,
-        backgroundColor: '#ffffff',
-        spacingBottom: 100,
-        spacingTop: 80
-    }},
-    title: {{
-        text: 'kagi-basic · highcharts · pyplots.ai',
-        style: {{
-            fontSize: '48px',
-            fontWeight: 'bold'
-        }},
-        margin: 40
-    }},
-    subtitle: {{
-        text: 'Stock Price Analysis with 4% Reversal Threshold',
-        style: {{
-            fontSize: '28px'
-        }}
-    }},
-    xAxis: {{
-        title: {{
-            text: 'Kagi Line Index',
-            style: {{
-                fontSize: '32px'
-            }},
-            margin: 20
-        }},
-        labels: {{
-            style: {{
-                fontSize: '24px'
-            }}
-        }},
-        gridLineWidth: 1,
-        gridLineColor: 'rgba(0, 0, 0, 0.1)'
-    }},
-    yAxis: {{
-        title: {{
-            text: 'Price ($)',
-            style: {{
-                fontSize: '32px'
-            }},
-            margin: 20
-        }},
-        labels: {{
-            style: {{
-                fontSize: '24px'
-            }},
-            format: '${{value}}'
-        }},
-        gridLineWidth: 1,
-        gridLineColor: 'rgba(0, 0, 0, 0.1)'
-    }},
-    legend: {{
-        enabled: true,
-        align: 'center',
-        verticalAlign: 'bottom',
-        layout: 'horizontal',
-        itemStyle: {{
-            fontSize: '28px'
-        }},
-        symbolWidth: 50,
-        itemDistance: 60,
-        margin: 30
-    }},
-    plotOptions: {{
-        line: {{
-            marker: {{
-                enabled: false
-            }},
-            connectNulls: false
-        }}
-    }},
-    series: [{{
-        name: 'Yang (Bullish)',
-        data: {yang_data_str},
-        color: '#228B22',
-        lineWidth: 8,
-        zIndex: 2
-    }}, {{
-        name: 'Yin (Bearish)',
-        data: {yin_data_str},
-        color: '#DC143C',
-        lineWidth: 4,
-        zIndex: 1
-    }}],
-    credits: {{
-        enabled: false
-    }}
-}});
-"""
+# Generate HTML with chart using highcharts-core
+chart_js = chart.to_js_literal()
 
-# Generate HTML with inline script
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>

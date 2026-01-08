@@ -38,10 +38,9 @@ All contributions go through GitHub Issues with AI-powered validation and proces
 Found a problem with a specification (affects all libraries)?
 
 1. **From pyplots.ai**: Navigate to the spec page (e.g., `/scatter-basic`) and click "report issue"
-2. **From GitHub**: Create issue using the [Report Issue](https://github.com/MarkusNeusinger/pyplots/issues/new?template=report-issue.yml) template
-3. **Select "Specification"** as the target
-4. **Choose a category**: Visual, Data, Functional, or Other
-5. **Describe the issue**
+2. **From GitHub**: Create issue using the [Report Specification Issue](https://github.com/MarkusNeusinger/pyplots/issues/new?template=report-spec-issue.yml) template
+3. **Choose a category**: Visual, Data, Functional, or Other (optional)
+4. **Describe the issue**
 
 AI validates your report and adds structured analysis. Maintainers review and approve fixes.
 
@@ -52,22 +51,12 @@ AI validates your report and adds structured analysis. Maintainers review and ap
 Found a problem with a specific library implementation?
 
 1. **From pyplots.ai**: Navigate to the impl page (e.g., `/scatter-basic/matplotlib`) and click "report issue"
-2. **From GitHub**: Create issue using the [Report Issue](https://github.com/MarkusNeusinger/pyplots/issues/new?template=report-issue.yml) template
-3. **Select "Implementation"** as the target
-4. **Select the library** (matplotlib, seaborn, etc.)
-5. **Choose a category**: Visual, Data, Functional, or Other
-6. **Describe the issue**
+2. **From GitHub**: Create issue using the [Report Implementation Issue](https://github.com/MarkusNeusinger/pyplots/issues/new?template=report-impl-issue.yml) template
+3. **Enter the library name** (matplotlib, seaborn, etc.)
+4. **Choose a category**: Visual, Data, Functional, or Other (optional)
+5. **Describe the issue**
 
 AI validates your report and adds structured analysis. Maintainers review and approve fixes.
-
----
-
-## Update an Existing Spec
-
-1. **Create a GitHub Issue** referencing the spec to update
-2. **Add the `spec-update` label**
-3. **Wait for `spec-update.yml`** to create a PR with changes
-4. **Maintainer reviews and adds `approved` label**
 
 ---
 

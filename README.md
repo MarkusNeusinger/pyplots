@@ -166,6 +166,6 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 **Built by [Markus Neusinger](https://linkedin.com/in/markus-neusinger/)**
 
-[⭐ Star us on GitHub](https://github.com/MarkusNeusinger/pyplots) • [💡 Suggest Spec](https://github.com/MarkusNeusinger/pyplots/issues/new?template=spec-request.yml) • [🐛 Report Issue](https://github.com/MarkusNeusinger/pyplots/issues/new?template=report-issue.yml)
+[⭐ Star us on GitHub](https://github.com/MarkusNeusinger/pyplots) • [💡 Suggest Spec](https://github.com/MarkusNeusinger/pyplots/issues/new?template=spec-request.yml)
 
 </div>

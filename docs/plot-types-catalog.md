@@ -438,8 +438,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### network-weighted ✅
 **Description:** Graph with edge thickness by weight.
 
-### network-hierarchical 📋
-**Description:** Tree or hierarchy layout.
+### network-hierarchical ✅
+**Description:** Hierarchical network graph with tree layout showing parent-child relationships organized in levels from root to leaves.
 
 ### network-force-directed ✅
 **Description:** A force-directed graph uses physics simulation to position nodes, where connected nodes attract each other and all nodes repel.
@@ -510,8 +510,8 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### scatter-brush-zoom ✅
 **Description:** Interactive scatter plot with brush selection and zoom capability.
 
-### linked-views 📋
-**Description:** Multiple plots with linked selection.
+### linked-views-selection ✅
+**Description:** Multiple coordinated plots where selecting data in one view highlights corresponding data in all other views for exploratory data analysis.
 
 ---
 
@@ -616,13 +616,13 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### portfolio-allocation 📋
 **Description:** Interactive portfolio weight visualization.
 
-### efficient-frontier 📋
-**Description:** Portfolio risk-return optimization curve.
+### frontier-efficient ✅
+**Description:** Efficient frontier visualization showing optimal portfolios offering highest expected return for each risk level in Modern Portfolio Theory.
 
 ### renko-basic ✅
 **Description:** A Renko chart plots "bricks" of fixed size only when price moves by a defined amount, filtering market noise and focusing on price action.
 
-### kagi-basic 📋
+### kagi-basic ✅
 **Description:** A Kagi chart uses varying line thickness to show trend reversals, changing direction only on significant price movements.
 
 ### pnf-basic 📋
@@ -827,10 +827,10 @@ Printable templates and playful visualizations.
 ### maze-circular 📋
 **Description:** Rundes Labyrinth aus konzentrischen Ringen. Eingang außen, Ziel im Zentrum.
 
-### chess-board 📋
+### chessboard-basic ✅
 **Description:** Klassisches 8x8 Schachbrett mit abwechselnd hellen und dunklen Feldern. Beschriftet mit a-h und 1-8.
 
-### chess-board-pieces 📋
+### chessboard-pieces ✅
 **Description:** Chess board with pieces for position diagrams. Pieces defined via dictionary mapping squares to pieces, allowing visualization of game positions, puzzles, or notable games.
 
 ### crossword-basic 📋

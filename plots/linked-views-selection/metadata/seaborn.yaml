@@ -1,0 +1,212 @@
+library: seaborn
+specification_id: linked-views-selection
+created: '2026-01-08T21:54:21Z'
+updated: '2026-01-08T22:03:12Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20832954914
+issue: 3344
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/linked-views-selection/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/linked-views-selection/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent visual clarity with consistent blue/gray selection encoding across all
+    four views
+  - Good use of seaborn kdeplot with fill for the density visualization
+  - Clear selection indicator with dashed yellow line and informative subtitle showing
+    selection count
+  - Well-organized 2x2 grid layout with appropriate spacing
+  weaknesses:
+  - Uses matplotlib ax.hist() and ax.bar() instead of seaborn sns.histplot() and sns.barplot()
+    for panels 2 and 3
+  image_description: 'The plot displays a 2x2 grid of coordinated views demonstrating
+    linked selection. The top-left panel shows a scatter plot with gray (unselected)
+    and Python blue (#306998) points, separated by a yellow dashed vertical line at
+    x=6.0 indicating the selection threshold. The top-right panel displays a histogram
+    of "Value" with overlaid unselected (gray) and selected (blue) bars. The bottom-left
+    panel shows a stacked bar chart breaking down each category (Group A, B, C) by
+    selection status. The bottom-right panel shows KDE density distributions of Y
+    values for selected and unselected points with filled areas. The main title "linked-views-selection
+    · seaborn · pyplots.ai" appears at top with a subtitle showing "Selection: 95/150
+    points where x > 6.0". All panels use consistent blue/gray color encoding.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: 'All text clearly readable: title at 26pt, axis labels at 18pt, tick
+          labels at 14pt'
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Markers well-sized (s=150), good alpha differentiation
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue vs gray is colorblind-safe, excellent contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good 2x2 grid layout, slight imbalance in bottom-left bar chart spacing
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Descriptive labels on all axes
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Legend placement inconsistent across panels
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Correct: multiple coordinated views (scatter, histogram, bar, KDE)'
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly mapped in scatter, value in histogram, category in
+          bar
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has 4 views with selection highlighting, no reset button (static
+          library)
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, axes appropriate
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legends correctly show Selected and Unselected
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: linked-views-selection · seaborn · pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: 'Shows all aspects: selection source, linked histograms, category
+          breakdown, KDE'
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Plausible multivariate dataset with categories, though generic Group
+          A/B/C
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Sensible values: x ~4-9, y ~2-4.5, 150 points'
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear script: imports → data → plot → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Modern seaborn API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses sns.scatterplot and sns.kdeplot well, but histogram and bar
+          chart use matplotlib directly
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - annotations
+  - custom-legend
+  patterns:
+  - data-generation
+  - groupby-aggregation
+  - iteration-over-groups
+  - explicit-figure
+  dataprep:
+  - kde
+  - binning
+  styling:
+  - alpha-blending
+  - edge-highlighting
+  - grid-styling

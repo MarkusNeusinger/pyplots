@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 linked-views-selection: Multiple Linked Views with Selection Sync
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-08
@@ -7,8 +7,8 @@ Quality: 88/100 | Created: 2026-01-08
 import numpy as np
 import pandas as pd
 from bokeh.io import export_png, save
-from bokeh.layouts import column, gridplot
-from bokeh.models import BoxSelectTool, ColumnDataSource, CustomJS, Div, LassoSelectTool, TapTool
+from bokeh.layouts import column, gridplot, row
+from bokeh.models import Button, ColumnDataSource, CustomJS, Div
 from bokeh.plotting import figure
 from bokeh.resources import CDN
 from bokeh.transform import factor_cmap
@@ -52,22 +52,28 @@ color_mapper = factor_cmap("category", palette=colors, factors=categories)
 
 # Create scatter plot (main selection view)
 scatter = figure(
-    width=2350,
-    height=1250,
+    width=2400,
+    height=1300,
     title="Scatter Plot - Use Box Select or Lasso to Select Points",
     x_axis_label="Sepal Length (cm)",
     y_axis_label="Sepal Width (cm)",
-    tools="pan,wheel_zoom,reset",
+    tools="pan,wheel_zoom,reset,box_select,lasso_select,tap",
 )
-scatter.add_tools(BoxSelectTool())
-scatter.add_tools(LassoSelectTool())
-scatter.add_tools(TapTool())
 
+# Create scatter glyphs per category for legend
+scatter_renderers = []
+for i, cat in enumerate(categories):
+    indices = [j for j, c in enumerate(df["category"]) if c == cat]
+    cat_source = ColumnDataSource(data={"x": df["x"].iloc[indices].values, "y": df["y"].iloc[indices].values})
+    r = scatter.scatter("x", "y", source=cat_source, size=25, color=colors[i], alpha=0.8, legend_label=cat)
+    scatter_renderers.append(r)
+
+# Main scatter renderer with shared source for linked selection
 scatter_renderer = scatter.scatter(
     "x",
     "y",
     source=source,
-    size=20,
+    size=25,
     color=color_mapper,
     alpha="alpha",
     selection_color="red",
@@ -75,14 +81,18 @@ scatter_renderer = scatter.scatter(
     nonselection_alpha=0.15,
     nonselection_color="gray",
 )
+scatter_renderer.visible = True
 
 # Style scatter plot
-scatter.title.text_font_size = "26pt"
-scatter.xaxis.axis_label_text_font_size = "22pt"
-scatter.yaxis.axis_label_text_font_size = "22pt"
-scatter.xaxis.major_label_text_font_size = "18pt"
-scatter.yaxis.major_label_text_font_size = "18pt"
+scatter.title.text_font_size = "28pt"
+scatter.xaxis.axis_label_text_font_size = "24pt"
+scatter.yaxis.axis_label_text_font_size = "24pt"
+scatter.xaxis.major_label_text_font_size = "20pt"
+scatter.yaxis.major_label_text_font_size = "20pt"
 scatter.grid.grid_line_alpha = 0.3
+scatter.legend.label_text_font_size = "18pt"
+scatter.legend.location = "top_left"
+scatter.legend.click_policy = "hide"
 
 # Create histogram of values
 hist_values, hist_edges = np.histogram(df["value"], bins=20)
@@ -92,8 +102,8 @@ hist_source = ColumnDataSource(
 )
 
 histogram = figure(
-    width=2350,
-    height=1250,
+    width=2400,
+    height=1300,
     title="Value Distribution - Updates with Selection",
     x_axis_label="Value (units)",
     y_axis_label="Count",
@@ -112,11 +122,11 @@ histogram.quad(
 )
 
 # Style histogram
-histogram.title.text_font_size = "26pt"
-histogram.xaxis.axis_label_text_font_size = "22pt"
-histogram.yaxis.axis_label_text_font_size = "22pt"
-histogram.xaxis.major_label_text_font_size = "18pt"
-histogram.yaxis.major_label_text_font_size = "18pt"
+histogram.title.text_font_size = "28pt"
+histogram.xaxis.axis_label_text_font_size = "24pt"
+histogram.yaxis.axis_label_text_font_size = "24pt"
+histogram.xaxis.major_label_text_font_size = "20pt"
+histogram.yaxis.major_label_text_font_size = "20pt"
 histogram.grid.grid_line_alpha = 0.3
 
 # Create bar chart by category
@@ -131,8 +141,8 @@ bar_source = ColumnDataSource(
 )
 
 bar_chart = figure(
-    width=2350,
-    height=1250,
+    width=2400,
+    height=1300,
     x_range=categories,
     title="Category Distribution - Updates with Selection",
     x_axis_label="Category",
@@ -152,33 +162,30 @@ bar_chart.vbar(
 )
 
 # Style bar chart
-bar_chart.title.text_font_size = "26pt"
-bar_chart.xaxis.axis_label_text_font_size = "22pt"
-bar_chart.yaxis.axis_label_text_font_size = "22pt"
-bar_chart.xaxis.major_label_text_font_size = "18pt"
-bar_chart.yaxis.major_label_text_font_size = "18pt"
+bar_chart.title.text_font_size = "28pt"
+bar_chart.xaxis.axis_label_text_font_size = "24pt"
+bar_chart.yaxis.axis_label_text_font_size = "24pt"
+bar_chart.xaxis.major_label_text_font_size = "20pt"
+bar_chart.yaxis.major_label_text_font_size = "20pt"
 bar_chart.xgrid.grid_line_color = None
 bar_chart.y_range.start = 0
 bar_chart.grid.grid_line_alpha = 0.3
 
 # Create a second scatter plot (value vs y) to show cross-view linking
 scatter2 = figure(
-    width=2350,
-    height=1250,
+    width=2400,
+    height=1300,
     title="Value vs Sepal Width - Linked Selection",
     x_axis_label="Value (units)",
     y_axis_label="Sepal Width (cm)",
-    tools="pan,wheel_zoom,reset",
+    tools="pan,wheel_zoom,reset,box_select,lasso_select,tap",
 )
-scatter2.add_tools(BoxSelectTool())
-scatter2.add_tools(LassoSelectTool())
-scatter2.add_tools(TapTool())
 
 scatter2.scatter(
     "value",
     "y",
     source=source,  # Same source = automatic linking!
-    size=20,
+    size=25,
     color=color_mapper,
     alpha="alpha",
     selection_color="red",
@@ -188,11 +195,11 @@ scatter2.scatter(
 )
 
 # Style second scatter
-scatter2.title.text_font_size = "26pt"
-scatter2.xaxis.axis_label_text_font_size = "22pt"
-scatter2.yaxis.axis_label_text_font_size = "22pt"
-scatter2.xaxis.major_label_text_font_size = "18pt"
-scatter2.yaxis.major_label_text_font_size = "18pt"
+scatter2.title.text_font_size = "28pt"
+scatter2.xaxis.axis_label_text_font_size = "24pt"
+scatter2.yaxis.axis_label_text_font_size = "24pt"
+scatter2.xaxis.major_label_text_font_size = "20pt"
+scatter2.yaxis.major_label_text_font_size = "20pt"
 scatter2.grid.grid_line_alpha = 0.3
 
 # JavaScript callback to update histogram and bar chart on selection
@@ -285,17 +292,69 @@ callback = CustomJS(
 
 source.selected.js_on_change("indices", callback)
 
+# Clear Selection button
+clear_button = Button(label="Clear Selection", button_type="warning", width=200, height=50)
+clear_callback = CustomJS(
+    args={
+        "source": source,
+        "hist_source": hist_source,
+        "bar_source": bar_source,
+        "df_value": df["value"].values.tolist(),
+    },
+    code="""
+    source.selected.indices = [];
+
+    // Reset histogram
+    const values = df_value;
+    const min_val = Math.min(...values);
+    const max_val = Math.max(...values);
+    const n_bins = 20;
+    const bin_width = (max_val - min_val) / n_bins;
+
+    const counts = new Array(n_bins).fill(0);
+    const left = [];
+    const right = [];
+
+    for (let i = 0; i < n_bins; i++) {
+        left.push(min_val + i * bin_width);
+        right.push(min_val + (i + 1) * bin_width);
+    }
+
+    for (let i = 0; i < values.length; i++) {
+        const bin_idx = Math.min(Math.floor((values[i] - min_val) / bin_width), n_bins - 1);
+        counts[bin_idx]++;
+    }
+
+    hist_source.data['top'] = counts;
+    hist_source.data['left'] = left;
+    hist_source.data['right'] = right;
+    hist_source.change.emit();
+
+    // Reset bar chart
+    const categories = ['Species A', 'Species B', 'Species C'];
+    bar_source.data['counts'] = [50, 50, 50];
+    bar_source.change.emit();
+
+    source.change.emit();
+""",
+)
+clear_button.js_on_click(clear_callback)
+
 # Title as Div element (avoids missing renderers warning)
 title_div = Div(
-    text="<h1 style='font-size: 36pt; text-align: center; margin: 20px 0; "
+    text="<h1 style='font-size: 40pt; text-align: center; margin: 20px 0; "
     "font-family: sans-serif;'>linked-views-selection · bokeh · pyplots.ai</h1>",
-    width=4700,
+    width=4800,
 )
+
+# Button container centered
+button_div = Div(text="", width=2200)
+button_row = row(button_div, clear_button, width=4800)
 
 # Create grid layout
 grid = gridplot([[scatter, scatter2], [histogram, bar_chart]], merge_tools=True)
 
-layout = column(title_div, grid)
+layout = column(title_div, button_row, grid)
 
 # Save as HTML for interactivity
 save(layout, filename="plot.html", title="Linked Views Selection", resources=CDN)

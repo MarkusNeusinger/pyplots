@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 ohlc-bar: OHLC Bar Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-08
@@ -39,39 +39,47 @@ custom_style = Style(
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
+    foreground_subtle="#999999",
+    guide_stroke_color="#CCCCCC",
     opacity=".95",
     opacity_hover=".85",
     colors=(up_color, down_color),
     title_font_size=60,
-    label_font_size=36,
-    major_label_font_size=32,
-    legend_font_size=36,
+    label_font_size=32,
+    major_label_font_size=28,
+    legend_font_size=32,
     value_font_size=28,
     tooltip_font_size=24,
     stroke_width=6,
 )
 
-# Create XY chart
+# Create date labels for x-axis (every 5th date for clarity)
+date_labels = {i: dates[i].strftime("%b %d") for i in range(0, n_days, 5)}
+
+# Create XY chart with legend near plot
 chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
     title="ohlc-bar · pygal · pyplots.ai",
-    x_title="Trading Day",
+    x_title="Date (Jun-Aug 2024)",
     y_title="Price ($)",
     show_legend=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=2,
-    show_x_guides=True,
+    legend_box_size=24,
+    show_x_guides=False,
     show_y_guides=True,
     truncate_label=-1,
+    truncate_legend=-1,
     stroke=True,
     show_dots=False,
+    x_labels=list(date_labels.values()),
+    x_labels_major_every=1,
 )
 
-# Tick width for open/close marks
-tick_width = 0.35
+# Tick width for open/close marks (slightly wider for visibility)
+tick_width = 0.4
 
 # Build OHLC bar segments - each bar needs:
 # 1. Vertical line from low to high
@@ -110,9 +118,9 @@ for i in range(n_days):
     else:  # Down bar (bearish)
         down_bars.extend(bar_points)
 
-# Add series
-chart.add("Up (Close ≥ Open)", up_bars)
-chart.add("Down (Close < Open)", down_bars)
+# Add series with descriptive legend labels
+chart.add("Bullish (Close ≥ Open)", up_bars)
+chart.add("Bearish (Close < Open)", down_bars)
 
 # Save outputs
 chart.render_to_png("plot.png")

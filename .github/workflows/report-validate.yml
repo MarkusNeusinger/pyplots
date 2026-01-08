@@ -81,10 +81,14 @@ jobs:
 
             2. **Parse the issue body** to extract:
                - spec_id (from "Specification ID" field)
-               - target (Specification or Implementation)
-               - library (if implementation)
+               - library (if present - only in impl issues)
+               - affects_others (check for `- [x] Also affects other libraries`)
                - category (Visual/Data/Functional/Other)
                - description
+
+               **Determine issue type:**
+               - If "Library" field exists → Implementation issue
+               - If no "Library" field → Specification issue
 
             3. **Validate the spec exists:**
                ```bash
@@ -122,15 +126,16 @@ jobs:
                # Remove pending, add validated
                gh issue edit ${{ github.event.issue.number }} --remove-label "report-pending" --add-label "report-validated"
 
-               # Add target label
+               # Add target label based on issue type
+               # For spec issues:
                gh issue edit ${{ github.event.issue.number }} --add-label "report:spec"
-               # OR for impl:
+               # For impl issues:
                gh issue edit ${{ github.event.issue.number }} --add-label "report:impl" --add-label "report:impl:{library}"
 
                # Add category label (map from dropdown value)
-               # Visual → category:visual
-               # Data → category:data
-               # Functional → category:functional
+               # Visual... → category:visual
+               # Data... → category:data
+               # Functional... → category:functional
                # Other → category:other
                gh issue edit ${{ github.event.issue.number }} --add-label "category:{category}"
                ```

@@ -1,7 +1,7 @@
 """ pyplots.ai
 kagi-basic: Basic Kagi Chart
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 85/100 | Created: 2026-01-08
+Quality: 78/100 | Created: 2026-01-08
 """
 
 import re

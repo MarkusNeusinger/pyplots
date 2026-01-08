@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 linked-views-selection: Multiple Linked Views with Selection Sync
-Library: altair | Python 3.13
-Quality: pending | Created: 2026-01-08
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-08
 """
 
 import altair as alt

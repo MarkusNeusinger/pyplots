@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-hierarchical: Hierarchical Network Graph with Tree Layout
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-08
@@ -42,25 +42,25 @@ for node_id, (_label, level, _parent) in hierarchy.items():
         levels[level] = []
     levels[level].append(node_id)
 
-# Calculate node positions using tree layout
+# Calculate node positions using tree layout - use more vertical space
 node_positions = {}
 max_level = max(levels.keys())
-y_spacing = 70 / (max_level + 1)
+y_spacing = 80 / (max_level + 1)  # Increased from 70 to 80 to use more canvas
 
 for level, nodes in levels.items():
     num_nodes = len(nodes)
     x_spacing = 85 / (num_nodes + 1)
     for i, node_id in enumerate(nodes):
         x = 7 + (i + 1) * x_spacing
-        y = 92 - (level * y_spacing + y_spacing / 2)
+        y = 95 - (level * y_spacing + y_spacing / 2)  # Increased from 92 to 95
         node_positions[node_id] = (x, y)
 
 # Level colors: Blue (CEO), Yellow (VPs), Teal (Directors), Coral (Managers)
 level_colors = ["#306998", "#FFD43B", "#4ECDC4", "#FF6B6B"]
 
-# Create custom style with grey for edges, then level colors for nodes
+# Create custom style with darker grey for more prominent edges
 # Order: edge color first, then 4 level colors
-style_colors = ["#AAAAAA"] + level_colors
+style_colors = ["#666666"] + level_colors  # Darker grey for edges
 
 custom_style = Style(
     background="white",
@@ -73,14 +73,14 @@ custom_style = Style(
     label_font_size=36,
     major_label_font_size=32,
     legend_font_size=40,
-    value_font_size=28,
+    value_font_size=32,  # Increased for labels
     tooltip_font_size=28,
-    stroke_width=4,
+    stroke_width=6,  # Increased from 4 to 6 for more prominent edges
     opacity=0.95,
     opacity_hover=1.0,
 )
 
-# Create XY chart
+# Create XY chart with print_values=True to show node labels
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -94,12 +94,13 @@ chart = pygal.XY(
     show_x_guides=False,
     show_y_guides=False,
     stroke=True,
-    dots_size=28,
+    dots_size=32,  # Increased from 28 to 32 for better visibility
     show_dots=True,
-    range=(0, 100),
+    range=(5, 100),  # Adjusted from (0, 100) to use more vertical space
     xrange=(0, 100),
     explicit_size=True,
-    print_values=False,
+    print_values=True,  # Enable value printing to show labels on static output
+    print_values_position="top",  # Position labels above nodes
     truncate_legend=-1,
     margin_bottom=120,
 )
@@ -120,9 +121,9 @@ for start, end in all_edges:
     edge_data.append(start)
     edge_data.append(end)
 
-chart.add("Edges", edge_data, show_dots=False, stroke=True)
+chart.add("Edges", edge_data, show_dots=False, stroke=True, print_values=False)
 
-# Add nodes grouped by level
+# Add nodes grouped by level with formatter to show labels
 level_names = {0: "CEO", 1: "VPs", 2: "Directors", 3: "Managers"}
 for level in sorted(levels.keys()):
     node_ids = levels[level]
@@ -130,7 +131,8 @@ for level in sorted(levels.keys()):
     for node_id in node_ids:
         pos = node_positions[node_id]
         label = hierarchy[node_id][0]
-        points.append({"value": pos, "label": label})
+        # Use label as the value to be printed
+        points.append({"value": pos, "label": label, "formatter": lambda x, lbl=label: lbl})
     chart.add(level_names.get(level, f"Level {level}"), points, stroke=False)
 
 # Render to PNG and HTML

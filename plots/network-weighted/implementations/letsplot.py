@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-weighted: Weighted Network Graph with Edge Thickness
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-08
@@ -109,8 +109,8 @@ for _ in range(100):
     # Center
     pos -= pos.mean(axis=0)
 
-# Scale positions
-pos = pos / np.abs(pos).max() * 4
+# Scale positions with margin for labels (reduce scale to leave space at boundaries)
+pos = pos / np.abs(pos).max() * 3.2
 
 # Calculate weighted degree for node sizing
 weighted_degree = np.zeros(n_nodes)
@@ -148,8 +148,8 @@ plot = (
     )
     # Scale for edge thickness
     + scale_size(range=[1, 10], name="Trade Volume\n(Billions USD)")
-    # Nodes as points with Python colors
-    + geom_point(aes(x="x", y="y"), data=nodes_df, size=10, color="#306998", alpha=0.95)
+    # Nodes as points sized by weighted degree (Python colors)
+    + geom_point(aes(x="x", y="y", size="node_size"), data=nodes_df, color="#306998", alpha=0.95, show_legend=False)
     # Node labels
     + geom_text(aes(x="x", y="y", label="label"), data=nodes_df, size=14, color="#1a1a1a", nudge_y=0.4, fontface="bold")
     # Styling
@@ -157,6 +157,9 @@ plot = (
         title="network-weighted · letsplot · pyplots.ai",
         subtitle="International Trade Network (Edge Thickness = Trade Volume)",
     )
+    # Explicit axis limits to prevent label clipping
+    + scale_x_continuous(limits=[-5, 5])
+    + scale_y_continuous(limits=[-5, 5])
     + theme_minimal()
     + theme(
         plot_title=element_text(size=28),

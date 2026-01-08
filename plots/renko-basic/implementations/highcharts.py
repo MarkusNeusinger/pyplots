@@ -1,6 +1,6 @@
-""" pyplots.ai
+"""pyplots.ai
 renko-basic: Basic Renko Chart
-Library: highcharts unknown | Python 3.13.11
+Library: highcharts 1.10.3 | Python 3.13.11
 Quality: 87/100 | Created: 2026-01-08
 """
 
@@ -123,25 +123,53 @@ chart.options.plot_options = {
     "columnrange": {"borderWidth": 2, "borderColor": "#333333", "pointPadding": 0.05, "groupPadding": 0}
 }
 
-# Series data
+# Series data - using colorblind-safe blue/orange palette
 chart.options.series = [
     {
         "type": "columnrange",
         "name": "Bullish (Up)",
         "data": bullish_series_data,
-        "color": "#22c55e",
-        "borderColor": "#166534",
+        "color": "#2563eb",  # Blue - colorblind safe
+        "borderColor": "#1e40af",
         "borderWidth": 2,
     },
     {
         "type": "columnrange",
         "name": "Bearish (Down)",
         "data": bearish_series_data,
-        "color": "#ef4444",
-        "borderColor": "#991b1b",
+        "color": "#ea580c",  # Orange - colorblind safe
+        "borderColor": "#c2410c",
         "borderWidth": 2,
     },
 ]
+
+# Tooltip configuration - Highcharts distinctive feature
+chart.options.tooltip = {
+    "enabled": True,
+    "headerFormat": '<span style="font-size: 28px">Brick {point.x}</span><br/>',
+    "pointFormat": '<span style="font-size: 24px; color:{point.color}">●</span> {series.name}: <b>${point.low:.2f} - ${point.high:.2f}</b><br/>',
+    "style": {"fontSize": "24px"},
+    "backgroundColor": "rgba(255, 255, 255, 0.95)",
+    "borderWidth": 2,
+}
+
+# Credits - Highcharts distinctive feature
+chart.options.credits = {"enabled": False}
+
+# Exporting options - Highcharts distinctive feature
+chart.options.exporting = {"enabled": False}
+
+# Note: Animation is enabled by default in Highcharts
+
+# Responsive rules - Highcharts distinctive feature
+chart.options.responsive = {
+    "rules": [
+        {
+            "condition": {"maxWidth": 2400},
+            "chartOptions": {"legend": {"itemStyle": {"fontSize": "18px"}}, "title": {"style": {"fontSize": "32px"}}},
+        }
+    ]
+}
 
 # Download Highcharts JS (required for headless Chrome)
 highcharts_url = "https://code.highcharts.com/highcharts.js"

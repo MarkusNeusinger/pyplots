@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: network-weighted
 created: '2026-01-08T15:57:06Z'
-updated: '2026-01-08T16:00:04Z'
+updated: '2026-01-08T16:13:42Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20822854400
 issue: 3290
@@ -10,87 +10,92 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/network-weighted/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-weighted/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/network-weighted/bokeh/plot.html
-quality_score: 88
+quality_score: 90
 review:
   strengths:
-  - Excellent implementation of force-directed layout algorithm from scratch
-  - Clear visual differentiation between strong and weak trade relationships through
-    edge thickness
-  - Node sizing by weighted degree adds information density
-  - Good color choices with high contrast (yellow nodes, blue edges)
-  - Legend explaining edge thickness scale
-  - Realistic, engaging trade network scenario
+  - 'Excellent use of Bokeh-specific features: HoverTool shows country and total trade
+    on hover, ColumnDataSource for efficient data handling'
+  - Force-directed layout implementation creates natural node positioning with regional
+    clustering
+  - Edge thickness clearly communicates weight differences (thin 2px for weak, thick
+    20px for strong connections)
+  - Professional legend explains the weight scale with three reference values
+  - Dual output (PNG + HTML) maximizes utility - static for docs, interactive for
+    web
+  - Node sizing by weighted degree immediately identifies major trade hubs (USA, China)
   weaknesses:
-  - Legend lines are too thin and hard to see - should be more prominent
-  - Could add HoverTool for interactive exploration of trade values
-  image_description: The plot displays a weighted network graph representing international
-    trade relationships between 15 countries. Nodes are rendered as yellow circles
-    with dark blue outlines, sized proportionally to their weighted degree (total
-    trade volume). The largest nodes are USA, China, Germany, and Mexico, reflecting
-    their high trade activity. Edges connect trading partners with varying thickness
-    corresponding to trade volume in billions USD - the thickest edges connect USA-Mexico,
-    USA-Canada, and USA-China, clearly showing NAFTA and US-China trade dominance.
-    Edge color uses a blue palette (#306998) with alpha transparency that increases
-    with weight. A legend in the top-left corner shows "Trade Volume (B USD)" with
-    three reference lines representing 40, 360, and 680 billion USD. The title "network-weighted
-    · bokeh · pyplots.ai" is centered at the top. The layout uses a force-directed
-    algorithm that reasonably separates nodes while keeping connected nodes closer
-    together. All country labels are displayed inside their respective nodes in bold
-    black text.
+  - Minor label-edge overlap in central dense area (around Japan label)
+  - Force-directed layout algorithm is custom and somewhat simplistic (100 iterations);
+    could use more iterations or better spring constants for optimal positioning
+  image_description: The plot displays a weighted network graph showing international
+    trade relationships between 15 countries. Yellow circular nodes with dark blue
+    outlines represent countries (USA, China, Germany, Japan, UK, France, Canada,
+    Mexico, Brazil, India, S. Korea, Australia, Singapore, Netherlands, Switzerland).
+    Edges are rendered in blue (#306998) with varying thickness proportional to trade
+    volume in billions USD - thicker lines indicate stronger trade relationships.
+    The USA-Mexico and USA-Canada edges are notably thick (representing ~620-680B
+    USD trade), while edges like Brazil-India are thin (~40B USD). Node sizes scale
+    with weighted degree, making USA and China the largest nodes as major trade hubs.
+    A legend in the top-left corner shows "Trade Volume (B USD)" with three reference
+    lines (40, 360, 680). The title "network-weighted · bokeh · pyplots.ai" appears
+    centered at the top. The force-directed layout positions nodes to minimize edge
+    crossings while showing regional clustering (European countries together, Asian
+    countries together).
   criteria_checklist:
     visual_quality:
-      score: 35
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 10
         max: 10
         passed: true
-        comment: Title and legend text readable. Node labels legible but some are
-          small relative to node size
+        comment: Title at 32pt, labels at 16pt, legend text at 18-22pt - all clearly
+          readable at full resolution
       - id: VQ-02
         name: No Overlap
         score: 7
         max: 8
         passed: true
-        comment: Minimal overlap; some edge crossings expected in network graphs.
-          Node labels contained within nodes
+        comment: Minor overlap where node labels intersect with edges in dense areas,
+          but text remains readable
       - id: VQ-03
         name: Element Visibility
         score: 8
         max: 8
         passed: true
-        comment: Nodes well-sized with clear size differentiation. Edge thickness
-          clearly distinguishes relationships
+        comment: Node sizes (30-80) and edge widths (2-20) are well-adapted to the
+          network density; alpha blending helps distinguish overlapping edges
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Blue edges and yellow nodes provide excellent contrast. No red-green
-          issues
+        comment: Blue (#306998) and yellow (#FFD43B) provide excellent contrast; single
+          color scheme with alpha variation is colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Network fills canvas appropriately, legend positioned in corner without
-          overlap
+        comment: Good canvas utilization with network centered; slight asymmetry with
+          more whitespace on left/bottom
       - id: VQ-06
         name: Axis Labels
+        score: 0
+        max: 2
+        passed: true
+        comment: N/A for network graphs (axes intentionally hidden)
+      - id: VQ-07
+        name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: N/A for network graphs - axes correctly hidden
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
-        passed: false
-        comment: Legend present but lines are too thin and hard to see at full scale
+        comment: Legend well-placed in corner, shows three weight levels; no distracting
+          grid
     spec_compliance:
-      score: 23
+      score: 25
       max: 25
       items:
       - id: SC-01
@@ -98,39 +103,39 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct weighted network graph with edge thickness encoding
+        comment: Correct weighted network graph with edge thickness encoding weight
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Nodes represent countries, edges represent trade relationships, thickness
-          = trade volume
+        comment: Nodes represent entities, edges represent relationships, thickness
+          encodes weight
       - id: SC-03
         name: Required Features
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Has weighted edges, node sizing by degree, legend, force-directed
-          layout. Legend could be more prominent
+        comment: 'All spec features present: weighted edges, node sizing by weighted
+          degree, force-directed layout, legend explaining weight scale'
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All nodes and edges visible within plot bounds
+        comment: All 15 nodes and 25 edges visible within canvas bounds
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly shows trade volume scale in B USD
+        comment: Legend correctly shows weight scale from 40 to 680 B USD
       - id: SC-06
         name: Title Format
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Correct format with middot separators
+        comment: Uses correct format network-weighted · bokeh · pyplots.ai
     data_quality:
       score: 18
       max: 20
@@ -140,71 +145,77 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows variation in edge weights and node sizes. Good range of connection
-          strengths
+        comment: Shows variety of edge weights (40-680), different node sizes, regional
+          clustering; could have more isolated/peripheral nodes for contrast
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Trade network between countries is an excellent, realistic scenario
+        comment: International trade network is realistic; country pairs and trade
+          volumes are plausible
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Trade volumes in billions USD are realistic and plausible
+        comment: Trade volumes in billions USD are appropriate; some values slightly
+          stylized but within realistic range
     code_quality:
       score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: 'Linear structure: imports → data → layout → plot → save'
+        comment: Code is mostly flat but has nested loops for force-directed layout;
+          acceptable for this complex visualization
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: Uses np.random.seed(42) for deterministic layout
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: 'All imports used: numpy, bokeh components'
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current Bokeh API
+        comment: Uses current Bokeh 3.x API
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Saves as plot.png correctly
+        passed: true
+        comment: Saves as plot.png and plot.html
     library_features:
-      score: 3
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Uses ColumnDataSource, LabelSet, Range1d, segment glyphs. Could leverage
-          HoverTool for interactivity
-  verdict: REJECTED
+        comment: 'Excellent use of Bokeh features: ColumnDataSource, HoverTool for
+          interactive tooltips, LabelSet for node labels, segment glyphs with round
+          caps, HTML export for interactivity'
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
+  - hover-tooltips
   - annotations
   - custom-legend
+  - html-export
   patterns:
   - data-generation
   - columndatasource
@@ -214,3 +225,4 @@ impl_tags:
   styling:
   - minimal-chrome
   - alpha-blending
+  - edge-highlighting

@@ -1,9 +1,12 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-interactive: Interactive Heatmap with Hover and Zoom
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-08
 """
 
+import xml.etree.ElementTree as ET
+
+import cairosvg
 import numpy as np
 import pygal
 from pygal.style import Style
@@ -61,7 +64,7 @@ colormap = [
     "#d94701",  # Dark orange (90-100%)
 ]
 
-# Custom style for pygal
+# Custom style for pygal with solid label lines
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -69,14 +72,15 @@ custom_style = Style(
     foreground_strong="#333333",
     foreground_subtle="#666666",
     title_font_size=48,
-    label_font_size=20,
-    major_label_font_size=18,
-    legend_font_size=16,
+    label_font_size=22,
+    major_label_font_size=20,
+    legend_font_size=18,
     value_font_size=14,
     tooltip_font_size=18,
     opacity=1.0,
     opacity_hover=0.9,
     transition="100ms ease-in",
+    guide_stroke_dasharray="",
 )
 
 # Use pygal HorizontalStackedBar to simulate heatmap
@@ -94,12 +98,12 @@ chart = pygal.HorizontalStackedBar(
     show_y_guides=True,
     x_labels_major_every=5,
     truncate_label=-1,
-    spacing=1,
+    spacing=0,
     margin=50,
-    margin_left=150,
-    margin_right=200,
-    margin_top=100,
-    margin_bottom=100,
+    margin_left=180,
+    margin_right=350,
+    margin_top=120,
+    margin_bottom=120,
     tooltip_border_radius=8,
 )
 
@@ -129,9 +133,118 @@ for j in range(n_cols):
 
     chart.add(segments[j], col_data)
 
-# Render to SVG and PNG
-chart.render_to_file("plot.svg")
-chart.render_to_png("plot.png")
+# Render chart to SVG string
+svg_string = chart.render().decode("utf-8")
+
+# Parse SVG and add colorbar legend
+ET.register_namespace("", "http://www.w3.org/2000/svg")
+ET.register_namespace("xlink", "http://www.w3.org/1999/xlink")
+root = ET.fromstring(svg_string)
+ns = {"svg": "http://www.w3.org/2000/svg"}
+
+# Create colorbar group
+colorbar_group = ET.SubElement(root, "g", {"id": "colorbar"})
+
+# Colorbar position and dimensions
+cb_x = 4500
+cb_y = 400
+cb_width = 50
+cb_height = 1800
+n_colors = len(colormap)
+segment_height = cb_height / n_colors
+
+# Add colorbar title
+title_elem = ET.SubElement(
+    colorbar_group,
+    "text",
+    {
+        "x": str(cb_x + cb_width // 2),
+        "y": str(cb_y - 60),
+        "text-anchor": "middle",
+        "font-size": "32",
+        "font-family": "sans-serif",
+        "font-weight": "bold",
+        "fill": "#333333",
+    },
+)
+title_elem.text = "Engagement"
+
+# Add subtitle
+subtitle_elem = ET.SubElement(
+    colorbar_group,
+    "text",
+    {
+        "x": str(cb_x + cb_width // 2),
+        "y": str(cb_y - 25),
+        "text-anchor": "middle",
+        "font-size": "24",
+        "font-family": "sans-serif",
+        "fill": "#666666",
+    },
+)
+subtitle_elem.text = "Score"
+
+# Draw color segments from bottom (low) to top (high)
+for i, color in enumerate(colormap):
+    y_pos = cb_y + cb_height - (i + 1) * segment_height
+    ET.SubElement(
+        colorbar_group,
+        "rect",
+        {"x": str(cb_x), "y": str(y_pos), "width": str(cb_width), "height": str(segment_height + 1), "fill": color},
+    )
+
+# Add border around colorbar
+ET.SubElement(
+    colorbar_group,
+    "rect",
+    {
+        "x": str(cb_x),
+        "y": str(cb_y),
+        "width": str(cb_width),
+        "height": str(cb_height),
+        "fill": "none",
+        "stroke": "#333333",
+        "stroke-width": "2",
+    },
+)
+
+# Add tick labels
+tick_values = [min_val, (min_val + max_val) / 2, max_val]
+tick_positions = [cb_y + cb_height, cb_y + cb_height / 2, cb_y]
+for val, y_pos in zip(tick_values, tick_positions, strict=True):
+    ET.SubElement(
+        colorbar_group,
+        "line",
+        {
+            "x1": str(cb_x + cb_width),
+            "y1": str(y_pos),
+            "x2": str(cb_x + cb_width + 10),
+            "y2": str(y_pos),
+            "stroke": "#333333",
+            "stroke-width": "2",
+        },
+    )
+    label_elem = ET.SubElement(
+        colorbar_group,
+        "text",
+        {
+            "x": str(cb_x + cb_width + 20),
+            "y": str(y_pos + 8),
+            "font-size": "24",
+            "font-family": "sans-serif",
+            "fill": "#333333",
+        },
+    )
+    label_elem.text = f"{val:.0f}"
+
+# Write modified SVG
+modified_svg = ET.tostring(root, encoding="unicode")
+with open("plot.svg", "w", encoding="utf-8") as f:
+    f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+    f.write(modified_svg)
+
+# Render PNG from modified SVG using cairosvg
+cairosvg.svg2png(bytestring=modified_svg.encode("utf-8"), write_to="plot.png")
 
 # Create interactive HTML version with enhanced zoom/pan
 svg_content = chart.render().decode("utf-8")

@@ -22,6 +22,7 @@ jobs:
     permissions:
       contents: read
       issues: write
+      id-token: write
 
     steps:
       - name: Check if already validated
@@ -58,7 +59,7 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: "--model sonnet"
+          claude_args: "--model opus"
           prompt: |
             ## Task: Validate Issue Report
 

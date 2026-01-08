@@ -1,0 +1,214 @@
+library: pygal
+specification_id: heatmap-interactive
+created: '2026-01-08T16:06:43Z'
+updated: '2026-01-08T16:38:11Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20822856761
+issue: 3289
+python_version: 3.13.11
+library_version: 3.1.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-interactive/pygal/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-interactive/pygal/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-interactive/pygal/plot.html
+quality_score: 72
+review:
+  strengths:
+  - Creative approach using HorizontalStackedBar to simulate heatmap grid
+  - Excellent colorblind-friendly blue-to-orange color scheme
+  - Good data scenario with realistic engagement score patterns
+  - Comprehensive HTML version with zoom/pan/hover functionality
+  - Proper XML namespace handling for SVG modification
+  weaknesses:
+  - Colorbar legend added via XML manipulation is NOT visible in the PNG output
+  - PNG static output loses all interactive features which are core spec requirements
+  - Using stacked bars to simulate heatmap creates visual gaps between cells
+  image_description: 'The plot displays a 20x20 heatmap grid showing website page
+    engagement by user segment. The visualization uses a blue-to-orange color scheme
+    where dark blue represents low engagement values (around 2-5) and dark orange
+    represents high engagement (90-100). The title "heatmap-interactive · pygal ·
+    pyplots.ai" appears at the top in gray text. The Y-axis is labeled "Page" with
+    entries from Page 1 to Page 20, and the X-axis is labeled "User Segment" with
+    numeric tick marks from 0 to 20. The heatmap shows clear engagement clusters -
+    notably around Pages 3-6 in segments 4-8 (orange cluster), Pages 11-14 in segments
+    12-17 (another orange cluster), and Pages 16-18 in segments 1-5 (lighter blue/yellow
+    cluster). Individual hot spots appear as bright orange cells (e.g., Page 1/Segment
+    1, Page 19/Segment 19). Critical issue: The colorbar legend that was programmatically
+    added via XML manipulation is NOT visible in the PNG output - it appears to be
+    outside the visible canvas or not properly rendered by cairosvg.'
+  criteria_checklist:
+    visual_quality:
+      score: 28
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 7
+        max: 10
+        passed: true
+        comment: Title and axis labels readable but Y-axis page labels are quite small
+          and use dashed styling that reduces clarity
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 8
+        passed: true
+        comment: Cells are visible but the heatmap approach using stacked bars creates
+          visible spacing/gaps between cells
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue-to-orange colormap is colorblind-friendly
+      - id: VQ-05
+        name: Layout Balance
+        score: 0
+        max: 5
+        passed: false
+        comment: Colorbar legend is NOT visible in PNG output - added via XML but
+          not properly rendered
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Descriptive labels Page and User Segment
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Colorbar missing from visible output
+    spec_compliance:
+      score: 18
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 6
+        max: 8
+        passed: true
+        comment: Simulates heatmap using stacked bars; functional but not a true heatmap
+          representation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: X/Y correctly assigned to rows and columns
+      - id: SC-03
+        name: Required Features
+        score: 2
+        max: 5
+        passed: false
+        comment: Hover tooltips only work in HTML version; colorbar not visible in
+          PNG; zoom/pan HTML-only
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible in range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 0
+        max: 2
+        passed: false
+        comment: Colorbar not visible in PNG output
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: heatmap-interactive · pygal · pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows variation with clusters, hot spots, and cold spots demonstrating
+          range of values
+      - id: DQ-02
+        name: Realistic Context
+        score: 6
+        max: 7
+        passed: true
+        comment: Website page engagement by user segment is plausible business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Engagement scores 0-100 are sensible
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 2
+        max: 3
+        passed: true
+        comment: Mostly linear but includes XML manipulation and HTML generation which
+          adds complexity
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current APIs used
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Outputs plot.png but colorbar not visible
+    library_features:
+      score: 0
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 0
+        max: 5
+        passed: false
+        comment: Uses HorizontalStackedBar to simulate heatmap which is a workaround;
+          pygal lacks native heatmap support
+  verdict: APPROVED
+impl_tags:
+  dependencies:
+  - cairosvg
+  techniques:
+  - colorbar
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - matrix-construction
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - custom-colormap
+  - alpha-blending

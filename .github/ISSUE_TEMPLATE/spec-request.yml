@@ -1,4 +1,4 @@
-name: Plot Request
+name: Request Specification
 description: Propose a new plot type for pyplots
 labels: ["spec-request"]
 body:

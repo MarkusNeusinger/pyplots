@@ -32,6 +32,10 @@ spec-create.yml (merge job)
 
 See [Report Issues](report-issue.md) for details.
 
+Two templates available:
+- **report-spec-issue.yml** - Report specification problems (affects all libraries)
+- **report-impl-issue.yml** - Report implementation problems (specific library)
+
 ```
 User reports issue (from pyplots.ai or GitHub)
        |
@@ -44,7 +48,7 @@ report-validate.yml
   |-- Updates labels: report-validated + category:*
        |
        v
-Ready for maintainer review
+Ready for maintainer review (fix manually)
 ```
 
 ### 3. Implementation Pipeline
@@ -88,7 +92,6 @@ impl-review.yml
 | Label | Meaning | Set By |
 |-------|---------|--------|
 | `spec-request` | New specification request | User |
-| `spec-update` | Update existing specification | User |
 | `spec-ready` | Specification merged, ready for implementations | Workflow |
 
 ### Implementation Labels (on Issues)
@@ -160,7 +163,6 @@ Located in `.github/workflows/`:
 | Workflow | Purpose |
 |----------|---------|
 | `spec-create.yml` | Creates new specifications |
-| `spec-update.yml` | Updates existing specifications |
 | `impl-generate.yml` | Generates single implementation |
 | `impl-review.yml` | AI quality review |
 | `impl-repair.yml` | Fixes rejected implementations |

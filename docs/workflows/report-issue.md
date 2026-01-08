@@ -22,16 +22,16 @@ Reports are validated by AI and structured for efficient review.
 3. Complete the form on GitHub
 4. Wait for AI validation
 
-**Spec issues:** Report from the overview page (e.g., `/scatter-basic`)
-**Impl issues:** Report from the detail page (e.g., `/scatter-basic/matplotlib`)
-
-The form will be pre-filled with the spec ID and library based on your current page.
+**Spec issues:** Report from the overview page (e.g., `/scatter-basic`) → opens spec issue template
+**Impl issues:** Report from the library page (e.g., `/scatter-basic/matplotlib`) → opens impl issue template with library pre-filled
 
 ### From GitHub
 
 1. Go to [New Issue](https://github.com/MarkusNeusinger/pyplots/issues/new/choose)
-2. Select **"Report Issue"** template
-3. Fill in the spec ID, target, library, category, and description
+2. Select the appropriate template:
+   - **"Report Spec Issue"** - for specification problems (affects all libraries)
+   - **"Report Implementation Issue"** - for implementation problems (specific library)
+3. Fill in the required fields
 4. Submit
 
 ---
@@ -79,7 +79,7 @@ The form will be pre-filled with the spec ID and library based on your current p
 ## Workflow
 
 ```
-User submits report
+User submits report (spec or impl template)
         │
         ▼ (report-pending label auto-added)
         │
@@ -94,10 +94,9 @@ report-validate.yml runs:
 Issue ready for maintainer review
         │
         ▼
-Maintainer adds "approved" label
-        │
-        ▼
-(Fix workflow - future implementation)
+Maintainer fixes manually:
+  ├── Spec issues: Edit specification directly
+  └── Impl issues: Trigger impl-generate.yml to regenerate
 ```
 
 ---

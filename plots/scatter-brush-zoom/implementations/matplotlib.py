@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-brush-zoom: Interactive Scatter Plot with Brush Selection and Zoom
-Library: matplotlib | Python 3.13
-Quality: pending | Created: 2026-01-08
+Library: matplotlib 3.10.8 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-08
 """
 
 import matplotlib.pyplot as plt

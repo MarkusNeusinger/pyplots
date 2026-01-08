@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-brush-zoom: Interactive Scatter Plot with Brush Selection and Zoom
 Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 78/100 | Created: 2026-01-08
+Quality: 91/100 | Created: 2026-01-08
 """
 
 import numpy as np

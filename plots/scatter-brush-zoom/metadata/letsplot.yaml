@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: scatter-brush-zoom
 created: '2026-01-08T16:14:23Z'
-updated: '2026-01-08T16:30:38Z'
+updated: '2026-01-08T16:38:15Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20823308871
 issue: 3295
@@ -10,36 +10,36 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-brush-zoom/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-brush-zoom/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-brush-zoom/letsplot/plot.html
-quality_score: 78
+quality_score: 91
 review:
   strengths:
-  - Excellent tooltip configuration with layer_tooltips showing point details
-  - Clean code structure following KISS principle
-  - Good use of clustered data appropriate for brush selection scenarios
-  - HTML export enables interactive zoom and pan functionality
-  - Annotation helpfully explains interactive features in the static image
+  - Excellent visualization of brush selection with clear visual distinction between
+    selected and unselected points
+  - Proper use of lets-plot tooltip system for hover information
+  - Good clustering data that demonstrates utility of brush selection across multiple
+    groups
+  - Clean, well-structured code following KISS principles
+  - Both PNG and HTML exports provided, showcasing lets-plot dual-output capability
+  - Selection count annotation adds useful context
   weaknesses:
-  - The spec requires brush selection with visible rectangle and highlighted selected
-    points - lets-plot built-in toolbar provides box-zoom but not true brush selection
-    with point highlighting
-  - Grid completely removed makes it difficult to read precise coordinate values
-  - Title position slightly overlaps with y-axis maximum value (100)
-  - The implementation relies on HTML export for interactivity but the core spec features
-    (brush selection highlighting, selection count display) are not implemented
-  image_description: 'The plot displays a scatter plot with 400 data points distributed
-    across 4 distinct clusters. Blue points (Cluster A) are concentrated in the lower-left
-    quadrant around (20, 60). Yellow points (Cluster B) form the largest cluster centered
-    around (50, 30) in the lower-middle area. Red points (Cluster C) are positioned
-    in the upper-right quadrant around (70, 70). Green points (Cluster D) occupy the
-    upper-center area around (40, 80). The title "scatter-brush-zoom · letsplot ·
-    pyplots.ai" appears in the top-left. A helpful annotation in gray text near the
-    top indicates "Interactive HTML: Use toolbar for pan, zoom, box-select, and reset".
-    The legend on the right side clearly identifies all four clusters. Axes are labeled
-    "X Value (units)" and "Y Value (units)". The plot uses a clean white background
-    with no grid lines.'
+  - Legend appears slightly cut off on the right edge of the image
+  - The alpha=0.25 for unselected points may be too faint for some users to distinguish
+    clusters
+  - Static PNG cannot demonstrate actual brush/zoom interactivity (inherent limitation)
+  image_description: 'The plot displays an interactive scatter plot demonstrating
+    brush selection and zoom functionality. The canvas shows 400 data points distributed
+    across 4 distinct clusters (Cluster A in blue, Cluster B in yellow, Cluster C
+    in red, Cluster D in green). A prominent light blue rectangular brush selection
+    area is visible with a dashed blue border spanning approximately x=[25,55] and
+    y=[50,85]. Points within this selection region appear at full opacity while points
+    outside are dimmed (alpha ~0.25). A bold blue annotation at the top reads "Brush
+    Selection: 100 points selected". The axes are labeled "X Value (units)" and "Y
+    Value (units)" with clear tick marks. The title correctly follows the format "scatter-brush-zoom
+    · letsplot · pyplots.ai". A legend on the right identifies the four clusters.
+    The grid is subtle with light gray lines.'
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 36
       max: 40
       items:
       - id: VQ-01
@@ -47,50 +47,47 @@ review:
         score: 10
         max: 10
         passed: true
-        comment: Title, axis labels, tick marks, and legend all clearly readable at
-          appropriate font sizes
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 16pt, all perfectly
+          readable
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements; all labels and annotations are well-spaced
+        comment: No overlapping text elements, annotation placed in clear area
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: Markers sized appropriately (size=5) with alpha=0.7 for 400 points;
-          some overlap in dense cluster centers
+        comment: Points visible with good size, alpha differentiation works but dimmed
+          points quite faint
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Blue, yellow, red, green provide reasonable differentiation; yellow/green
-          may be challenging for some colorblind users
+        comment: Four distinct colors distinguishable with good contrast
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Plot fills canvas reasonably well, but annotation at top creates
-          some asymmetry
+        comment: Plot fills canvas appropriately, balanced margins
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: X Value (units), Y Value (units)'
+        comment: 'Descriptive with units: X Value (units), Y Value (units)'
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: Grid completely removed (element_blank), making it harder to read
-          precise values
+        comment: Legend appears cut off on right edge of image
     spec_compliance:
-      score: 19
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -98,20 +95,20 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct scatter plot type
+        comment: Correct scatter plot with brush selection visualization
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X/Y correctly mapped to numeric values, color to category
+        comment: X/Y correctly mapped to numeric axes
       - id: SC-03
         name: Required Features
-        score: 2
+        score: 4
         max: 5
-        passed: false
-        comment: Interactive features only in HTML; PNG shows static plot. Spec requires
-          visible brush rectangle and highlighted selected points
+        passed: true
+        comment: Brush rectangle, selected points highlighted, selection count shown;
+          static image cannot show interactivity
       - id: SC-04
         name: Data Range
         score: 3
@@ -123,39 +120,38 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly shows all 4 cluster categories
+        comment: Legend correctly identifies all four clusters
       - id: SC-06
         name: Title Format
-        score: 0
+        score: 1
         max: 2
-        passed: false
-        comment: Title overlaps with y-axis maximum value (100)
+        passed: true
+        comment: Correct format but uses middle dot separator
     data_quality:
-      score: 17
+      score: 19
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: Shows 4 distinct clusters for selection scenarios; no overlap between
-          clusters limits brush selection demo
+        comment: Shows 4 distinct clusters with varying sizes, demonstrates selection
+          across multiple clusters
       - id: DQ-02
         name: Realistic Context
-        score: 7
+        score: 6
         max: 7
         passed: true
-        comment: Generic clustered data appropriate for demonstrating brush selection;
-          neutral scientific context
+        comment: Generic clustered data scenario plausible for exploratory analysis
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Values in 0-100 range are sensible
+        comment: Values in reasonable numeric range (0-100)
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -163,13 +159,14 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear imports → data → plot → save structure; no functions/classes
+        comment: 'Clean script structure: imports, data generation, plot creation,
+          save'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42) for reproducible data generation
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -184,33 +181,33 @@ review:
         comment: Uses current lets_plot API
       - id: CQ-05
         name: Output Correct
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png and plot.html
+        passed: false
+        comment: Saves both plot.png and plot.html
     library_features:
-      score: 0
+      score: 4
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 4
         max: 5
-        passed: false
-        comment: While tooltips are well configured, the static PNG cannot demonstrate
-          brush selection which is the core spec requirement. Box-zoom in HTML toolbar
-          is not true brush selection.
-  verdict: REJECTED
+        passed: true
+        comment: Good use of layer_tooltips, geom_rect, scale_alpha_identity, HTML
+          export with zoom/pan toolbar
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - hover-tooltips
   - annotations
+  - hover-tooltips
   - html-export
+  - layer-composition
   patterns:
   - data-generation
   - iteration-over-groups
   dataprep: []
   styling:
   - alpha-blending
-  - minimal-chrome
+  - grid-styling

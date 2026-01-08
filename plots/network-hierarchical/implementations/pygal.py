@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-hierarchical: Hierarchical Network Graph with Tree Layout
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-08
@@ -61,14 +61,16 @@ for level, nodes in levels.items():
 level_colors = ["#306998", "#FFD43B", "#4ECDC4", "#FF6B6B"]
 level_names = ["Level 0: Executive", "Level 1: VPs", "Level 2: Directors", "Level 3: Managers"]
 
-# Create custom style with larger fonts for visibility
+# Create custom style with larger fonts and subtle grid
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
-    foreground_subtle="#666666",
-    colors=("#555555", "#306998", "#FFD43B", "#4ECDC4", "#FF6B6B"),
+    foreground_subtle="#999999",
+    guide_stroke_color="#e0e0e0",  # Subtle light gray grid lines
+    guide_stroke_dasharray="4,4",  # Dashed grid for subtlety
+    colors=("#888888", "#306998", "#FFD43B", "#4ECDC4", "#FF6B6B"),  # Gray for edges
     title_font_size=72,
     label_font_size=40,
     major_label_font_size=36,
@@ -122,7 +124,8 @@ for start, end in all_edges:
     edge_data.append(start)
     edge_data.append(end)
 
-chart.add("Reporting Lines", edge_data, show_dots=False, stroke=True)
+# Add edges with explicit stroke style for visible legend indicator
+chart.add("Reporting Lines", edge_data, show_dots=False, stroke=True, stroke_style={"width": 6, "dasharray": "none"})
 
 # Group nodes by level and add as separate series for proper legend
 # Include node labels in the data for visibility via tooltips

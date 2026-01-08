@@ -1,11 +1,12 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-interactive: Interactive Heatmap with Hover and Zoom
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 45/100 | Created: 2026-01-08
 """
 
-import cairosvg
 import numpy as np
+import pygal
+from pygal.style import Style
 
 
 # Generate data - Website page engagement by user segment
@@ -40,181 +41,101 @@ base_engagement[3, 19] = 5
 base_engagement[16, 10] = 3
 
 # Clip to valid range
-matrix_data = np.clip(base_engagement, 0, 100).tolist()
+matrix_data = np.clip(base_engagement, 0, 100)
 
 # Find value range
-min_val = min(v for row in matrix_data for v in row)
-max_val = max(v for row in matrix_data for v in row)
+min_val = float(matrix_data.min())
+max_val = float(matrix_data.max())
 
+# Blue-to-orange colormap (colorblind-friendly) - 10 discrete colors
+colormap = [
+    "#08306b",  # Dark blue (0-10%)
+    "#08519c",  # Blue (10-20%)
+    "#2171b5",  # Medium blue (20-30%)
+    "#4292c6",  # Light blue (30-40%)
+    "#6baed6",  # Lighter blue (40-50%)
+    "#9ecae1",  # Very light blue (50-60%)
+    "#c6dbef",  # Pale blue (60-70%)
+    "#fed976",  # Yellow (70-80%)
+    "#fd8d3c",  # Orange (80-90%)
+    "#d94701",  # Dark orange (90-100%)
+]
 
-def interpolate_color(value, vmin, vmax, colors):
-    """Interpolate color from a list of colors."""
-    if vmax == vmin:
-        return colors[-1]
-    normalized = (value - vmin) / (vmax - vmin)
-    normalized = max(0, min(1, normalized))
-    pos = normalized * (len(colors) - 1)
-    idx1 = int(pos)
-    idx2 = min(idx1 + 1, len(colors) - 1)
-    frac = pos - idx1
-    c1, c2 = colors[idx1], colors[idx2]
-    r1, g1, b1 = int(c1[1:3], 16), int(c1[3:5], 16), int(c1[5:7], 16)
-    r2, g2, b2 = int(c2[1:3], 16), int(c2[3:5], 16), int(c2[5:7], 16)
-    r = int(r1 + (r2 - r1) * frac)
-    g = int(g1 + (g2 - g1) * frac)
-    b = int(b1 + (b2 - b1) * frac)
-    return f"#{r:02x}{g:02x}{b:02x}"
+# Custom style for pygal
+custom_style = Style(
+    background="white",
+    plot_background="white",
+    foreground="#333333",
+    foreground_strong="#333333",
+    foreground_subtle="#666666",
+    title_font_size=48,
+    label_font_size=20,
+    major_label_font_size=18,
+    legend_font_size=16,
+    value_font_size=14,
+    tooltip_font_size=18,
+    opacity=1.0,
+    opacity_hover=0.9,
+    transition="100ms ease-in",
+)
 
+# Use pygal HorizontalStackedBar to simulate heatmap
+# Each row is a bar, each segment is a stacked portion
+chart = pygal.HorizontalStackedBar(
+    width=4800,
+    height=2700,
+    title="heatmap-interactive · pygal · pyplots.ai",
+    x_title="User Segment",
+    y_title="Page",
+    style=custom_style,
+    show_legend=False,
+    print_values=False,
+    show_x_guides=True,
+    show_y_guides=True,
+    x_labels_major_every=5,
+    truncate_label=-1,
+    spacing=1,
+    margin=50,
+    margin_left=150,
+    margin_right=200,
+    margin_top=100,
+    margin_bottom=100,
+    tooltip_border_radius=8,
+)
 
-# Blue-to-orange colormap (colorblind-friendly)
-colormap = ["#f7fbff", "#c6dbef", "#6baed6", "#2171b5", "#08519c", "#FFD43B", "#FF8C00"]
+# Set x-axis labels (row labels / pages)
+chart.x_labels = pages
 
-# Chart dimensions
-width = 4800
-height = 2700
-margin_left = 350
-margin_right = 250
-margin_top = 200
-margin_bottom = 250
+# Add each column as a series (segment)
+# Each value in the series corresponds to a row (page)
+for j in range(n_cols):
+    col_data = []
+    for i in range(n_rows):
+        value = float(matrix_data[i, j])
+        # Determine color based on value
+        normalized = (value - min_val) / (max_val - min_val) if max_val > min_val else 0
+        color_idx = min(int(normalized * 10), 9)
+        color = colormap[color_idx]
 
-# Calculate grid dimensions
-grid_width = width - margin_left - margin_right
-grid_height = height - margin_top - margin_bottom
-cell_width = grid_width / n_cols
-cell_height = grid_height / n_rows
-
-# Build SVG content manually for heatmap cells
-svg_cells = []
-for i in range(n_rows):
-    for j in range(n_cols):
-        value = matrix_data[i][j]
-        color = interpolate_color(value, min_val, max_val, colormap)
-        x = margin_left + j * cell_width
-        y = margin_top + i * cell_height
-        cell_id = f"cell-{i}-{j}"
-        svg_cells.append(
-            f'<rect id="{cell_id}" class="heatmap-cell" '
-            f'x="{x:.1f}" y="{y:.1f}" width="{cell_width:.1f}" height="{cell_height:.1f}" '
-            f'fill="{color}" stroke="#ffffff" stroke-width="1" rx="2" ry="2" '
-            f'data-row-label="{pages[i]}" data-col-label="{segments[j]}" data-value="{value:.1f}"/>'
+        # Create data point with value and custom styling
+        col_data.append(
+            {
+                "value": 1,  # Fixed width for each cell
+                "label": f"{pages[i]} × {segments[j]}: {value:.1f}",
+                "color": color,
+                "xlink": {"title": f"Engagement: {value:.1f}"},
+            }
         )
 
-# Row labels (Page)
-svg_row_labels = []
-for i, label in enumerate(pages):
-    y = margin_top + i * cell_height + cell_height / 2 + 10
-    svg_row_labels.append(
-        f'<text x="{margin_left - 15}" y="{y:.1f}" text-anchor="end" '
-        f'fill="#333333" style="font-size:28px;font-family:sans-serif">{label}</text>'
-    )
+    chart.add(segments[j], col_data)
 
-# Column labels (Segment) - rotated
-svg_col_labels = []
-for j, label in enumerate(segments):
-    x = margin_left + j * cell_width + cell_width / 2
-    y = margin_top + n_rows * cell_height + 25
-    svg_col_labels.append(
-        f'<text x="{x:.1f}" y="{y:.1f}" text-anchor="start" '
-        f'fill="#333333" style="font-size:24px;font-family:sans-serif" '
-        f'transform="rotate(45 {x:.1f} {y:.1f})">{label}</text>'
-    )
+# Render to SVG and PNG
+chart.render_to_file("plot.svg")
+chart.render_to_png("plot.png")
 
-# Axis titles
-x_axis_title_x = margin_left + grid_width / 2
-x_axis_title_y = height - 40
-y_axis_title_x = 50
-y_axis_title_y = margin_top + grid_height / 2
+# Create interactive HTML version with enhanced zoom/pan
+svg_content = chart.render().decode("utf-8")
 
-svg_axis_titles = f"""
-<text x="{x_axis_title_x}" y="{x_axis_title_y}" text-anchor="middle"
-      fill="#333333" style="font-size:36px;font-weight:bold;font-family:sans-serif">User Segment</text>
-<text x="{y_axis_title_x}" y="{y_axis_title_y}" text-anchor="middle"
-      fill="#333333" style="font-size:36px;font-weight:bold;font-family:sans-serif"
-      transform="rotate(-90 {y_axis_title_x} {y_axis_title_y})">Page</text>
-"""
-
-# Colorbar
-cb_x = width - margin_right + 60
-cb_y = margin_top + 50
-cb_width = 40
-cb_height = grid_height - 100
-n_segments = 50
-
-svg_colorbar = []
-for i in range(n_segments):
-    seg_value = min_val + (max_val - min_val) * (n_segments - 1 - i) / (n_segments - 1)
-    seg_color = interpolate_color(seg_value, min_val, max_val, colormap)
-    seg_y = cb_y + i * (cb_height / n_segments)
-    svg_colorbar.append(
-        f'<rect x="{cb_x}" y="{seg_y:.1f}" width="{cb_width}" height="{cb_height / n_segments + 1:.1f}" '
-        f'fill="{seg_color}"/>'
-    )
-
-# Colorbar border and labels
-svg_colorbar.append(
-    f'<rect x="{cb_x}" y="{cb_y}" width="{cb_width}" height="{cb_height}" '
-    f'fill="none" stroke="#333333" stroke-width="2"/>'
-)
-svg_colorbar.append(
-    f'<text x="{cb_x + cb_width + 15}" y="{cb_y + 10}" fill="#333333" '
-    f'style="font-size:28px;font-family:sans-serif">{max_val:.0f}</text>'
-)
-svg_colorbar.append(
-    f'<text x="{cb_x + cb_width + 15}" y="{cb_y + cb_height / 2 + 10}" fill="#333333" '
-    f'style="font-size:28px;font-family:sans-serif">{(min_val + max_val) / 2:.0f}</text>'
-)
-svg_colorbar.append(
-    f'<text x="{cb_x + cb_width + 15}" y="{cb_y + cb_height + 10}" fill="#333333" '
-    f'style="font-size:28px;font-family:sans-serif">{min_val:.0f}</text>'
-)
-# Colorbar title
-svg_colorbar.append(
-    f'<text x="{cb_x + cb_width / 2}" y="{cb_y - 20}" text-anchor="middle" fill="#333333" '
-    f'style="font-size:32px;font-weight:bold;font-family:sans-serif">Engagement Score</text>'
-)
-
-# Crosshair lines (hidden by default)
-svg_crosshair = f"""
-<g id="crosshair" style="opacity:0;pointer-events:none">
-    <line id="crosshair-h" x1="{margin_left}" y1="0" x2="{margin_left + grid_width}" y2="0"
-          stroke="#306998" stroke-width="3" stroke-dasharray="8,4"/>
-    <line id="crosshair-v" x1="0" y1="{margin_top}" x2="0" y2="{margin_top + grid_height}"
-          stroke="#306998" stroke-width="3" stroke-dasharray="8,4"/>
-</g>
-"""
-
-# Title
-title = "heatmap-interactive · pygal · pyplots.ai"
-svg_title = f"""
-<text x="{width / 2}" y="80" text-anchor="middle" fill="#333333"
-      style="font-size:64px;font-weight:bold;font-family:sans-serif">{title}</text>
-"""
-
-# Complete SVG
-svg_content = f"""<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-     viewBox="0 0 {width} {height}" width="{width}" height="{height}">
-  <rect width="100%" height="100%" fill="white"/>
-  {svg_title}
-  <g id="heatmap-grid">
-    {"".join(svg_cells)}
-  </g>
-  <g id="row-labels">{"".join(svg_row_labels)}</g>
-  <g id="col-labels">{"".join(svg_col_labels)}</g>
-  {svg_axis_titles}
-  <g id="colorbar">{"".join(svg_colorbar)}</g>
-  {svg_crosshair}
-</svg>
-"""
-
-# Save SVG
-with open("plot.svg", "w", encoding="utf-8") as f:
-    f.write(svg_content)
-
-# Convert SVG to PNG
-cairosvg.svg2png(bytestring=svg_content.encode("utf-8"), write_to="plot.png", scale=1)
-
-# Create interactive HTML with zoom, pan, and hover tooltips
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -294,44 +215,42 @@ html_content = f"""<!DOCTYPE html>
             transform-origin: 0 0;
             transition: transform 0.1s ease-out;
         }}
-        .tooltip {{
-            position: fixed;
-            background: rgba(48, 105, 152, 0.95);
-            color: white;
-            padding: 12px 16px;
+        .colorbar {{
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            padding: 15px 10px;
             border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }}
+        .colorbar-title {{
+            text-align: center;
+            font-weight: bold;
             font-size: 14px;
-            pointer-events: none;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            opacity: 0;
-            transition: opacity 0.15s;
-            max-width: 250px;
+            color: #333;
+            margin-bottom: 10px;
         }}
-        .tooltip.visible {{
-            opacity: 1;
+        .colorbar-gradient {{
+            width: 30px;
+            height: 200px;
+            background: linear-gradient(to top, #08306b, #08519c, #2171b5, #4292c6, #6baed6, #9ecae1, #c6dbef, #fed976, #fd8d3c, #d94701);
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin: 0 auto;
         }}
-        .tooltip-title {{
-            font-weight: bold;
-            margin-bottom: 6px;
-            font-size: 15px;
-        }}
-        .tooltip-value {{
-            font-size: 24px;
-            font-weight: bold;
-            color: #FFD43B;
-        }}
-        .tooltip-coords {{
-            color: rgba(255,255,255,0.8);
-            font-size: 13px;
-            margin-top: 4px;
-        }}
-        .heatmap-cell {{
-            transition: stroke-width 0.1s, stroke 0.1s;
-        }}
-        .heatmap-cell:hover {{
-            stroke: #306998 !important;
-            stroke-width: 4 !important;
+        .colorbar-labels {{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 200px;
+            font-size: 12px;
+            color: #666;
+            margin-left: 40px;
+            position: absolute;
+            top: 35px;
+            right: -5px;
         }}
         .instructions {{
             margin-top: 15px;
@@ -358,11 +277,15 @@ html_content = f"""<!DOCTYPE html>
             <div class="chart-container" id="chart-container">
                 {svg_content}
             </div>
-        </div>
-        <div class="tooltip" id="tooltip">
-            <div class="tooltip-title" id="tooltip-title"></div>
-            <div class="tooltip-value" id="tooltip-value"></div>
-            <div class="tooltip-coords" id="tooltip-coords"></div>
+            <div class="colorbar">
+                <div class="colorbar-title">Engagement<br>Score</div>
+                <div class="colorbar-gradient"></div>
+                <div class="colorbar-labels">
+                    <span>{max_val:.0f}</span>
+                    <span>{(max_val + min_val) / 2:.0f}</span>
+                    <span>{min_val:.0f}</span>
+                </div>
+            </div>
         </div>
         <div class="instructions">
             <strong>Interactive Controls:</strong> Hover over cells to see values |
@@ -380,7 +303,6 @@ html_content = f"""<!DOCTYPE html>
 
         const container = document.getElementById('chart-container');
         const svg = container.querySelector('svg');
-        const tooltip = document.getElementById('tooltip');
         const zoomLevelSpan = document.getElementById('zoom-level');
 
         function updateTransform() {{
@@ -433,48 +355,6 @@ html_content = f"""<!DOCTYPE html>
         }});
 
         container.addEventListener('dblclick', resetView);
-
-        const cells = document.querySelectorAll('.heatmap-cell');
-        const crosshair = document.getElementById('crosshair');
-
-        cells.forEach(cell => {{
-            cell.addEventListener('mouseenter', (e) => {{
-                const row = cell.getAttribute('data-row-label');
-                const col = cell.getAttribute('data-col-label');
-                const value = cell.getAttribute('data-value');
-
-                document.getElementById('tooltip-title').textContent = `${{row}} × ${{col}}`;
-                document.getElementById('tooltip-value').textContent = value;
-                document.getElementById('tooltip-coords').textContent = `Row: ${{row}} | Column: ${{col}}`;
-
-                tooltip.classList.add('visible');
-
-                if (crosshair) {{
-                    crosshair.style.opacity = '0.6';
-                    const rect = cell.getBBox();
-                    const hLine = document.getElementById('crosshair-h');
-                    const vLine = document.getElementById('crosshair-v');
-                    if (hLine && vLine) {{
-                        hLine.setAttribute('y1', rect.y + rect.height / 2);
-                        hLine.setAttribute('y2', rect.y + rect.height / 2);
-                        vLine.setAttribute('x1', rect.x + rect.width / 2);
-                        vLine.setAttribute('x2', rect.x + rect.width / 2);
-                    }}
-                }}
-            }});
-
-            cell.addEventListener('mousemove', (e) => {{
-                tooltip.style.left = (e.clientX + 15) + 'px';
-                tooltip.style.top = (e.clientY + 15) + 'px';
-            }});
-
-            cell.addEventListener('mouseleave', () => {{
-                tooltip.classList.remove('visible');
-                if (crosshair) {{
-                    crosshair.style.opacity = '0';
-                }}
-            }});
-        }});
 
         updateTransform();
     </script>

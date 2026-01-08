@@ -1,7 +1,7 @@
 library: pygal
 specification_id: network-hierarchical
 created: '2026-01-08T22:00:20Z'
-updated: '2026-01-08T22:19:16Z'
+updated: '2026-01-08T22:26:03Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20832967004
 issue: 3343
@@ -13,28 +13,26 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/network-hierar
 quality_score: 85
 review:
   strengths:
-  - Creative approach using pygal XY chart to simulate hierarchical network graph
-  - Clean color scheme with distinct colors for each hierarchy level (blue, yellow,
-    teal, coral)
-  - Well-structured code with clear data organization and layout calculations
-  - Proper use of discontinuous lines (None separators) for edge rendering
-  - Good legend placement and organization with 5 columns
+  - Creative use of pygal XY chart to simulate hierarchical network layout
+  - Excellent color coding by hierarchy level with colorblind-safe palette
+  - Clean code structure with well-organized hierarchy data dictionary
+  - Proper tree layout algorithm positioning nodes by level
+  - Correct title format and descriptive axis labels
   weaknesses:
-  - Node labels (CEO, VP Eng, etc.) are not visible in the static PNG output - the
-    print_values and formatter configuration does not render labels on the nodes
-  - Significant empty whitespace below the tree (y=0 to ~30) could be better utilized
-  - 'Edges are somewhat faint (grey #666666) and could be more prominent'
-  image_description: 'The plot displays a hierarchical organizational chart with 22
-    nodes arranged across 4 distinct levels. At the top (level ~83) is a single dark
-    blue node representing the CEO. Below (~65) are 3 yellow/gold nodes representing
-    VPs. The third level (~48) contains 7 teal/turquoise nodes for Directors. The
-    bottom level (~31) has 11 coral/salmon colored nodes for Managers. Grey lines
-    connect parent nodes to their children, clearly showing the tree structure. The
-    background is white with a clean layout. The title "network-hierarchical · pygal
-    · pyplots.ai" appears at the top. A legend at the bottom identifies: Edges, CEO,
-    VPs, Directors, Managers. Axis labels show "Organization Width" (x-axis) and "Hierarchy
-    Level (Top to Bottom)" (y-axis). Node labels (like "CEO", "VP Eng", etc.) are
-    NOT visible in the static PNG output despite being configured with print_values=True.'
+  - Legend shows only level categories instead of individual node labels as the code
+    attempts
+  - Empty space below y=30 wastes canvas area
+  - Edge lines are somewhat thin relative to node size
+  image_description: 'The plot displays a hierarchical network graph representing
+    an organizational chart with 22 nodes across 4 levels. The CEO (dark blue) sits
+    at the top center around y=83. Three VPs (yellow/gold) are positioned at y≈65.
+    Seven Directors (teal/cyan) form the third level at y≈48. Eleven Managers (coral/salmon)
+    populate the bottom level at y≈31. Grey edges connect parent-child relationships,
+    creating a tree structure. The title "network-hierarchical · pygal · pyplots.ai"
+    appears at top. A legend at bottom shows: Edges, CEO, VPs, Directors, Managers.
+    Axes show "Organization Width" (x) and "Hierarchy Level (Top to Bottom)" (y).
+    The layout clearly shows the tree hierarchy with good vertical separation between
+    levels.'
   criteria_checklist:
     visual_quality:
       score: 32
@@ -42,47 +40,47 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 10
         passed: true
-        comment: Title and axis labels readable, but node labels not visible in static
-          PNG
+        comment: Title and axis labels readable, tick labels adequate but could be
+          larger
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping elements, nodes well spaced
+        comment: No overlapping text or elements
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: Nodes visible with good sizing, could be larger for hierarchy emphasis
+        comment: Nodes visible and well-sized, edges somewhat thin but visible
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: 'Distinct colorblind-friendly hues: blue, yellow, teal, coral'
+        comment: Good colorblind-safe palette (blue, yellow, teal, coral)
       - id: VQ-05
         name: Layout Balance
         score: 3
         max: 5
         passed: true
-        comment: Tree occupies middle portion well but empty space below y=30
+        comment: Large empty area below y=30, plot uses ~60% of vertical canvas effectively
       - id: VQ-06
         name: Axis Labels
-        score: 1
-        max: 2
-        passed: true
-        comment: Descriptive labels but no units
-      - id: VQ-07
-        name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: No distracting grid, legend clear at bottom
+        comment: Descriptive labels for both axes
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Legend shows generic level names instead of individual node labels
     spec_compliance:
       score: 22
       max: 25
@@ -92,37 +90,37 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correctly implements hierarchical network using XY chart
+        comment: Correct hierarchical network graph with tree layout
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X=horizontal spread, Y=hierarchy level
+        comment: Nodes correctly positioned by level, edges show parent-child relationships
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Node labels not visible in static output
+        passed: true
+        comment: Shows hierarchy, levels, edges; missing node labels on chart itself
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All 22 nodes and edges displayed
+        comment: All nodes and edges visible within axes
       - id: SC-05
         name: Legend Accuracy
+        score: 0
+        max: 2
+        passed: false
+        comment: Legend shows level categories instead of individual node labels
+      - id: SC-06
+        name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Correctly identifies all hierarchy levels
-      - id: SC-06
-        name: Title Format
-        score: 1
-        max: 2
-        passed: true
-        comment: Uses correct format
+        comment: 'Correct format: network-hierarchical · pygal · pyplots.ai'
     data_quality:
       score: 18
       max: 20
@@ -132,19 +130,19 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows 4-level hierarchy with varying branching (1→3→7→11)
+        comment: Shows 4 hierarchy levels, branching patterns, parent-child relationships
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Organizational chart is realistic neutral business scenario
+        comment: Realistic organizational chart scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: 22 nodes appropriate for readable visualization
+        comment: 22 nodes across 4 levels is appropriate
     code_quality:
       score: 10
       max: 10
@@ -154,31 +152,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports→data→plot→save structure
+        comment: Simple linear structure
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Deterministic hardcoded hierarchy data
+        comment: Deterministic data (hardcoded hierarchy)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only pygal and pygal.style imported
+        comment: Only pygal and Style imported, both used
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Current pygal API used
+        comment: Uses current pygal API
       - id: CQ-05
         name: Output Correct
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html
+        comment: Saves as plot.png and plot.html
     library_features:
       score: 3
       max: 5
@@ -188,14 +186,13 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses XY chart, custom Style, legend_at_bottom, print_values (not
-          rendering)
-  verdict: REJECTED
+        comment: Uses XY chart creatively for network visualization, custom Style,
+          legend_at_bottom
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - custom-legend
-  - layer-composition
   - html-export
   patterns:
   - data-generation

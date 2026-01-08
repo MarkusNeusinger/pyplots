@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 kagi-basic: Basic Kagi Chart
-Library: altair | Python 3.13
-Quality: pending | Created: 2026-01-08
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-08
 """
 
 import altair as alt

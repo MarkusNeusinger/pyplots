@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: linked-views-selection
 created: '2026-01-08T21:54:54Z'
-updated: '2026-01-08T22:07:25Z'
+updated: '2026-01-08T22:17:45Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20832956812
 issue: 3344
@@ -10,39 +10,37 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/linked-views-selection/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/linked-views-selection/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/linked-views-selection/bokeh/plot.html
-quality_score: 88
+quality_score: 91
 review:
   strengths:
-  - Excellent use of Bokeh native linked selection through shared ColumnDataSource
-  - Well-implemented CustomJS callback for updating histogram and bar chart on selection
-  - Provides both HTML (interactive) and PNG (static) outputs
-  - Good use of selection/nonselection styling (red selection color, gray nonselection
-    with 0.15 alpha)
-  - Clean, accessible color palette (blue/yellow/green avoids red-green colorblind
-    issues)
-  - Proper tool configuration with BoxSelectTool, LassoSelectTool, and TapTool
+  - Excellent implementation of Bokeh native linked selection via shared ColumnDataSource
+  - Four coordinated views exceeding the spec requirement of 2-3 views
+  - Well-implemented CustomJS callbacks to update histogram and bar chart on selection
+  - Clear Selection button provides good UX for resetting views
+  - Proper use of selection_color, selection_alpha, and nonselection_alpha for visual
+    feedback
+  - Color-consistent encoding across all views
   weaknesses:
-  - Missing an explicit legend explaining the color-to-species mapping
-  - Subplot dimensions (2350x1250 each) result in total of ~4700x2500, slightly under
-    the 4800x2700 target
-  - Text sizes could be increased slightly for better readability at full resolution
-  - Missing a dedicated Clear Selection button (relies on toolbar reset which resets
-    zoom too)
+  - Text sizes could be slightly larger for the high-resolution canvas
+  - Histogram uses single color instead of showing category breakdown with colors
+  - Small Bokeh toolbar icons in top-right corner may be hard to see at full resolution
   image_description: 'The plot displays a 2x2 grid layout with four coordinated views.
-    Top-left: A scatter plot showing Sepal Length (cm) vs Sepal Width (cm) with 150
-    data points distributed across three clusters colored blue (Species A), yellow
-    (Species B), and green (Species C). Top-right: A linked scatter plot showing Value
-    (units) vs Sepal Width (cm) with the same color encoding. Bottom-left: A histogram
-    showing the Value Distribution with blue bars spanning approximately 5-25 units.
-    Bottom-right: A categorical bar chart showing Category Distribution with three
-    equal-height bars (50 each) for Species A (blue), B (yellow), and C (green). The
-    main title "linked-views-selection · bokeh · pyplots.ai" is positioned at the
-    top. Interactive tools (pan, wheel zoom, box select, lasso, tap) are visible in
-    the toolbar. The overall layout is well-organized with clear visual separation
-    between panels.'
+    Top-left: A scatter plot titled "Scatter Plot - Use Box Select or Lasso to Select
+    Points" showing Sepal Length (cm) on x-axis vs Sepal Width (cm) on y-axis with
+    150 data points in three distinct color-coded clusters (blue for Species A, yellow
+    for Species B, green for Species C). Top-right: A second scatter plot titled "Value
+    vs Sepal Width - Linked Selection" showing Value (units) on x-axis vs Sepal Width
+    (cm) on y-axis with the same color encoding, demonstrating cross-view linking.
+    Bottom-left: A histogram titled "Value Distribution - Updates with Selection"
+    showing the count distribution across Value (units) in blue bars. Bottom-right:
+    A bar chart titled "Category Distribution - Updates with Selection" showing three
+    equal-height bars (50 each) for Species A (blue), Species B (yellow), and Species
+    C (green). The main title "linked-views-selection · bokeh · pyplots.ai" appears
+    at the top left corner. All views share consistent color encoding for the three
+    species categories.'
   criteria_checklist:
     visual_quality:
-      score: 34
+      score: 35
       max: 40
       items:
       - id: VQ-01
@@ -50,20 +48,21 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Title and axis labels are readable but slightly smaller than optimal
-          for 4800x2700 target
+        comment: Text is readable but could be larger given canvas size; titles and
+          axis labels are visible
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements, all labels well-spaced
+        comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: Markers at size=20 visible but could be larger for canvas size
+        comment: Markers are visible but relatively small for the canvas size; alpha
+          blending works well
       - id: VQ-04
         name: Color Accessibility
         score: 5
@@ -72,26 +71,25 @@ review:
         comment: Blue/yellow/green palette is colorblind-friendly
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: 2x2 grid fills space well, slight top margin imbalance from title
-          div
+        comment: 2x2 grid fills canvas well, balanced proportions
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units
+        comment: All axes have descriptive labels with units (cm, units)
       - id: VQ-07
         name: Grid & Legend
         score: 1
         max: 2
-        passed: false
-        comment: Grid alpha=0.3 appropriate, but no legend explaining color-to-species
-          mapping
+        passed: true
+        comment: Grid is subtle (alpha 0.3), legend in scatter plot works, but histogram
+          lacks category legend
     spec_compliance:
-      score: 23
+      score: 25
       max: 25
       items:
       - id: SC-01
@@ -99,37 +97,39 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct implementation with 4 coordinated views
+        comment: Correct multi-view linked selection dashboard with scatter, histogram,
+          and bar chart
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X/Y correctly assigned for all views
+        comment: X/Y correctly assigned across all views
       - id: SC-03
         name: Required Features
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Linked selection implemented, missing explicit clear selection button
+        comment: Has 4 coordinated views (exceeds spec 2-3), selection sync, clear
+          selection button, consistent colors
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axis ranges
+        comment: All data visible in each view
       - id: SC-05
         name: Legend Accuracy
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Color encoding consistent but no legend explaining species colors
+        passed: true
+        comment: Legend labels match data categories
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: 'Uses correct format: linked-views-selection · bokeh · pyplots.ai'
+        comment: 'Title uses correct format: linked-views-selection · bokeh · pyplots.ai'
     data_quality:
       score: 18
       max: 20
@@ -139,30 +139,31 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows three distinct clusters, histogram, bar chart. Could show more
-          variation in cluster sizes.
+        comment: Shows three distinct clusters with good separation, demonstrating
+          linking across views
       - id: DQ-02
         name: Realistic Context
-        score: 7
+        score: 6
         max: 7
         passed: true
-        comment: Iris-like multivariate data is a classic neutral scientific dataset
+        comment: Iris-like species data is plausible scientific scenario
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Values reasonable but Value (units) is somewhat generic
+        comment: Values are realistic for botanical measurements
     code_quality:
-      score: 9
+      score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: 'Linear script structure: imports → data → plots → save'
+        comment: Script structure is linear but has some complexity with CustomJS
+          callbacks
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -180,32 +181,33 @@ review:
         score: 0
         max: 1
         passed: false
-        comment: Separate add_tools() calls is verbose but not deprecated
+        comment: Some redundant code with duplicate scatter renderers for legend
       - id: CQ-05
         name: Output Correct
         score: 1
         max: 1
         passed: true
-        comment: Saves both plot.html and plot.png
+        comment: Saves as plot.png and plot.html
     library_features:
-      score: 4
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Excellent use of ColumnDataSource, CustomJS, BoxSelectTool, LassoSelectTool,
-          TapTool. Could add legend_click_policy.
-  verdict: REJECTED
+        comment: Excellent use of Bokeh ColumnDataSource for linked selection, CustomJS
+          callbacks, selection_color/nonselection_alpha, interactive tools (box_select,
+          lasso_select, tap), Button widget
+  verdict: APPROVED
 impl_tags:
-  dependencies:
-  - selenium
+  dependencies: []
   techniques:
   - subplots
   - hover-tooltips
   - html-export
+  - custom-legend
   patterns:
   - data-generation
   - columndatasource

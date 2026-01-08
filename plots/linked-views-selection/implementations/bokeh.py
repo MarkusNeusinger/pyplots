@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 linked-views-selection: Multiple Linked Views with Selection Sync
 Library: bokeh 3.8.2 | Python 3.13.11
-Quality: 88/100 | Created: 2026-01-08
+Quality: 91/100 | Created: 2026-01-08
 """
 
 import numpy as np

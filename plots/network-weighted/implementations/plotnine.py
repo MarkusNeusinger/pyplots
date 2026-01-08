@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-weighted: Weighted Network Graph with Edge Thickness
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 83/100 | Created: 2026-01-08
@@ -118,10 +118,10 @@ edges["yend"] = edges["target"].map(lambda n: node_positions[n][1])
 weight_min, weight_max = edges["weight"].min(), edges["weight"].max()
 edges["thickness"] = 1.0 + (edges["weight"] - weight_min) / (weight_max - weight_min) * 5
 
-# Scale node size based on weighted degree (4-14 range)
+# Scale node size based on weighted degree (5-16 range for better visibility)
 degree_min = nodes["weighted_degree"].min()
 degree_max = nodes["weighted_degree"].max()
-nodes["node_size"] = 4 + (nodes["weighted_degree"] - degree_min) / (degree_max - degree_min) * 10
+nodes["node_size"] = 5 + (nodes["weighted_degree"] - degree_min) / (degree_max - degree_min) * 11
 
 # Create plot
 plot = (
@@ -130,34 +130,34 @@ plot = (
     + geom_segment(
         data=edges, mapping=aes(x="x", y="y", xend="xend", yend="yend", size="weight"), color="#306998", alpha=0.55
     )
-    # Draw nodes with size mapped to weighted degree
+    # Draw nodes with size mapped to weighted degree - larger for better visibility
     + geom_point(
         data=nodes,
         mapping=aes(x="x", y="y", size="weighted_degree"),
         color="#1a1a1a",
-        stroke=1.2,
+        stroke=1.5,
         fill="#FFD43B",
         show_legend=False,
     )
-    # Add node labels with offset
+    # Add node labels with offset - larger size for better legibility
     + geom_text(
-        data=nodes, mapping=aes(x="x", y="y", label="id"), size=11, color="#1a1a1a", fontweight="bold", nudge_y=0.55
+        data=nodes, mapping=aes(x="x", y="y", label="id"), size=14, color="#1a1a1a", fontweight="bold", nudge_y=0.65
     )
     # Scale edge thickness
     + scale_size_continuous(range=(0.8, 6), name="Trade Volume\n(Billions USD)", breaks=[100, 300, 500])
-    # Labels and title
+    # Labels and title - format: {spec-id} · {library} · pyplots.ai
     + labs(
-        title="International Trade Network · network-weighted · plotnine · pyplots.ai",
+        title="network-weighted · plotnine · pyplots.ai",
         subtitle="Edge thickness represents bilateral trade volume between countries",
     )
     # Clean theme with no axes
     + theme_void()
     + theme(
         figure_size=(16, 9),
-        plot_title=element_text(size=24, ha="center", weight="bold"),
-        plot_subtitle=element_text(size=16, ha="center", color="#555555"),
-        legend_title=element_text(size=14),
-        legend_text=element_text(size=12),
+        plot_title=element_text(size=26, ha="center", weight="bold"),
+        plot_subtitle=element_text(size=18, ha="center", color="#555555"),
+        legend_title=element_text(size=16),
+        legend_text=element_text(size=14),
         legend_position="right",
         plot_margin=0.05,
     )

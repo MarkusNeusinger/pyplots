@@ -1,0 +1,32 @@
+# Specification-level metadata for logistic-regression
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: logistic-regression
+title: Logistic Regression Curve Plot
+
+# Specification tracking
+created: 2026-01-09T21:45:54Z
+updated: null
+issue: 3550
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - scatter
+    - line
+    - regression
+  data_type:
+    - numeric
+    - categorical
+    - binary
+  domain:
+    - statistics
+    - machine-learning
+    - model-evaluation
+  features:
+    - regression
+    - probability
+    - confidence-interval
+    - threshold

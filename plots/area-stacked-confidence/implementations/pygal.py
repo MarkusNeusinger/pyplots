@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 area-stacked-confidence: Stacked Area Chart with Confidence Bands
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 62/100 | Created: 2026-01-09
@@ -29,7 +29,8 @@ uncertainty_c = np.random.uniform(12, 18, n_points)
 # Calculate cumulative bounds for y-axis range
 total_upper = product_a + product_b + product_c + uncertainty_a + uncertainty_b + uncertainty_c
 
-# Style with distinct colors: light bands and darker centers for each product
+# Style: Alternating lighter bands and darker central values
+# Order: A_lower, A_center, A_upper, B_lower, B_center, B_upper, C_lower, C_center, C_upper
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -38,23 +39,23 @@ custom_style = Style(
     foreground_subtle="#555555",
     guide_stroke_color="#dddddd",
     colors=(
-        "#ccdde8",  # A lower confidence band (very light blue)
-        "#306998",  # A central value (blue)
-        "#ccdde8",  # A upper confidence band (very light blue)
-        "#f0e5cc",  # B lower confidence band (very light gold)
-        "#c99000",  # B central value (gold)
-        "#f0e5cc",  # B upper confidence band (very light gold)
-        "#f0d0cc",  # C lower confidence band (very light red)
-        "#c0392b",  # C central value (red)
-        "#f0d0cc",  # C upper confidence band (very light red)
+        "#a8c4d9",  # Core lower band (lighter blue)
+        "#306998",  # Core central (blue)
+        "#a8c4d9",  # Core upper band (lighter blue)
+        "#e8d49c",  # Growth lower band (lighter gold)
+        "#c99000",  # Growth central (gold)
+        "#e8d49c",  # Growth upper band (lighter gold)
+        "#e8a8a3",  # New lower band (lighter red)
+        "#c0392b",  # New central (red)
+        "#e8a8a3",  # New upper band (lighter red)
     ),
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=44,
-    legend_font_size=36,
+    legend_font_size=44,
     value_font_size=32,
-    opacity="1",
-    opacity_hover="1",
+    opacity=".9",
+    opacity_hover=".95",
     font_family="sans-serif",
 )
 
@@ -71,30 +72,31 @@ chart = pygal.StackedLine(
     show_x_guides=False,
     show_y_guides=True,
     legend_at_bottom=True,
-    legend_box_size=28,
+    legend_box_size=36,
     truncate_legend=-1,
     margin=100,
     spacing=40,
-    range=(0, float(total_upper.max() + 20)),
-    stroke_style={"width": 0},
+    range=(0, float(total_upper.max() + 30)),
+    stroke_style={"width": 2, "dasharray": "0"},
 )
 
 chart.x_labels = quarters
 
 # Stack order: for each product, show lower_band, central_value, upper_band
 # This creates visible confidence bands around each stacked area
-# A: lower band height = uncertainty, central height = value - uncertainty, upper = uncertainty
-chart.add("Core -90%", uncertainty_a.tolist())
-chart.add("Core (A)", (product_a - uncertainty_a).tolist())
-chart.add("Core +90%", uncertainty_a.tolist())
+# Each band shows the uncertainty range, central shows the forecast
+# Legend shows only 3 entries (use None to hide CI bands from legend)
+chart.add(None, uncertainty_a.tolist())  # Core lower CI band
+chart.add("Core (with 90% CI)", (product_a - uncertainty_a).tolist())
+chart.add(None, uncertainty_a.tolist())  # Core upper CI band
 
-chart.add("Growth -90%", uncertainty_b.tolist())
-chart.add("Growth (B)", (product_b - uncertainty_b).tolist())
-chart.add("Growth +90%", uncertainty_b.tolist())
+chart.add(None, uncertainty_b.tolist())  # Growth lower CI band
+chart.add("Growth (with 90% CI)", (product_b - uncertainty_b).tolist())
+chart.add(None, uncertainty_b.tolist())  # Growth upper CI band
 
-chart.add("New -90%", uncertainty_c.tolist())
-chart.add("New (C)", (product_c - uncertainty_c).tolist())
-chart.add("New +90%", uncertainty_c.tolist())
+chart.add(None, uncertainty_c.tolist())  # New lower CI band
+chart.add("New (with 90% CI)", (product_c - uncertainty_c).tolist())
+chart.add(None, uncertainty_c.tolist())  # New upper CI band
 
 # Save outputs
 chart.render_to_png("plot.png")

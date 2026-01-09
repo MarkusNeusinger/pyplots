@@ -1,0 +1,223 @@
+library: highcharts
+specification_id: line-realtime
+created: '2026-01-09T08:20:06Z'
+updated: '2026-01-09T08:22:54Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20845565778
+issue: 3073
+python_version: 3.13.11
+library_version: unknown
+preview_url: https://storage.googleapis.com/pyplots-images/plots/line-realtime/highcharts/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/line-realtime/highcharts/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/line-realtime/highcharts/plot.html
+quality_score: 93
+review:
+  strengths:
+  - 'Excellent use of Highcharts-specific features: plot bands for threshold zones,
+    gradient area fill, and annotations with callout styling'
+  - Professional real-time monitoring appearance with current value display and directional
+    arrow indicator
+  - Well-designed color scheme with meaningful zone indicators (blue/yellow/red for
+    normal/warning/critical)
+  - Realistic CPU usage data with appropriate patterns (base load, oscillations, spikes)
+  - Proper subtitle showing current value enhances the real-time dashboard feel
+  weaknesses:
+  - X-axis title Time (sliding window) may be cut off in some renders
+  - No explicit fade effect on trailing edge as suggested in spec notes (though arrow
+    indicator partially addresses this)
+  image_description: 'The plot displays a real-time style area chart showing CPU usage
+    as a percentage over a ~12 second time window (14:30:00 to 14:30:12). The main
+    data line is rendered in blue (#306998) with a gradient fill that transitions
+    from semi-transparent blue at the top to nearly transparent at the bottom. The
+    y-axis ranges from 0% to 100% and is divided into three color-coded zones via
+    plot bands: light blue (0-50%, normal), light yellow (50-80%, warning), and light
+    pink (80-100%, critical). The title "line-realtime · highcharts · pyplots.ai"
+    is displayed prominently at the top, with a subtitle "CPU Usage Monitor — Current:
+    37.3% ▶" indicating the real-time nature. A "Latest: 37.3%" callout annotation
+    appears at the rightmost data point. The legend showing "CPU Usage" is positioned
+    in the upper right corner. The x-axis shows time labels in HH:MM:SS format, and
+    the y-axis is labeled "CPU Usage (%)". The data shows realistic CPU usage patterns
+    with oscillations and multiple spikes reaching up to ~80%.'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title (72px), axis labels (44px), and tick labels (36px) are all
+          clearly readable at full resolution
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; time labels are well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Line is clearly visible with good thickness (5px), though markers
+          are disabled; the area fill provides good visibility
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color scheme, colorblind-safe; plot bands use subtle
+          non-conflicting colors
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Chart fills the canvas well with appropriate margins; legend positioned
+          properly
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis labeled 'CPU Usage (%)' with units; X-axis labeled 'Time (sliding
+          window →)' with directional indicator
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: X-axis title 'Time (sliding window →)' appears to be cut off or not
+          visible in the final render
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct area chart type for real-time visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Timestamp on X, value on Y correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Sliding window concept conveyed via arrow indicator; latest value
+          annotation present; plot bands indicate zones; however no explicit visual
+          indication of scrolling direction fade effect on trailing edge
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Y-axis shows 0-100%, x-axis shows full time range
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly shows 'CPU Usage'
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct format: line-realtime · highcharts · pyplots.ai'
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows oscillation patterns, spikes (reaching ~80%), and normal baseline;
+          good variety but could show more extreme spikes to 90%+
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: CPU usage monitoring is a perfect real-world application; data patterns
+          are realistic with base load + periodic spikes
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: CPU percentages are realistic (ranging ~15-80%); time intervals of
+          100ms are appropriate for real-time monitoring
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data generation → chart config
+          → render → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) is set for reproducible results
+      - id: CQ-03
+        name: Clean Imports
+        score: 0
+        max: 2
+        passed: false
+        comment: json is imported but config is built as dict and converted; all imports
+          are used but selenium/urllib add external dependencies beyond minimal needs
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Highcharts and Selenium APIs
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Excellent use of Highcharts features: plot bands for zone coloring,
+          annotations with callouts, gradient fill, datetime axis with custom formatting,
+          area chart with fill gradient, and animation settings for real-time capability'
+  verdict: APPROVED
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - annotations
+  - html-export
+  - gradient-fill
+  patterns:
+  - data-generation
+  dataprep:
+  - time-series
+  styling:
+  - gradient-fill
+  - grid-styling

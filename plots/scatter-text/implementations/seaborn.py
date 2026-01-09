@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-text: Scatter Plot with Text Labels Instead of Points
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 83/100 | Created: 2026-01-09
@@ -6,11 +6,14 @@ Quality: 83/100 | Created: 2026-01-09
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
+from matplotlib.lines import Line2D
 
 
-# Set seaborn style for better aesthetics
+# Set seaborn context for better sizing at high resolution
 sns.set_theme(style="whitegrid")
+sns.set_context("talk", font_scale=1.3)
 
 # Data - Programming language names with 2D coordinates (simulating dimensionality reduction)
 np.random.seed(42)
@@ -42,73 +45,175 @@ languages = [
     "Bash",
 ]
 
-# Generate coordinates that show some clustering (like a t-SNE output)
-x = np.concatenate(
+# Generate base coordinates with well-separated clusters
+# Order: Python, JavaScript, Java, C++, Ruby, Go, Rust, Swift, Kotlin, TypeScript,
+#        PHP, Scala, R, Julia, Perl, Haskell, Elixir, Clojure, F#, Dart,
+#        Lua, MATLAB, SQL, Bash
+base_x = np.array(
     [
-        np.random.normal(-3, 1.2, 6),  # Systems languages cluster
-        np.random.normal(0, 1.0, 8),  # General-purpose cluster
-        np.random.normal(3, 1.0, 6),  # Scripting languages cluster
-        np.random.normal(1, 1.5, 4),  # Functional languages
+        -1.0,
+        0.8,
+        1.5,
+        0.5,
+        -3.8,
+        -2.2,
+        -3.0,
+        2.0,
+        2.5,
+        1.0,  # First 10
+        3.5,
+        2.8,
+        -0.5,
+        -2.0,
+        4.2,
+        4.5,
+        4.0,
+        3.5,
+        0.5,
+        3.0,  # Next 10
+        -1.5,
+        -2.5,
+        1.0,
+        3.5,  # Last 4: Lua, MATLAB, SQL, Bash
     ]
 )
-y = np.concatenate(
+base_y = np.array(
     [
-        np.random.normal(2, 1.0, 6),  # High performance
-        np.random.normal(0, 1.2, 8),  # Balanced
-        np.random.normal(-2, 1.0, 6),  # Easy to learn
-        np.random.normal(3, 0.8, 4),  # Academic/niche
+        -2.0,
+        2.0,
+        -0.5,
+        2.8,
+        -2.8,
+        0.5,
+        1.0,
+        3.5,
+        -1.5,
+        0.0,  # First 10
+        -1.5,
+        1.2,
+        -3.0,
+        2.0,
+        -0.5,
+        1.5,
+        -2.5,
+        0.0,
+        -1.8,
+        2.8,  # Next 10
+        0.5,
+        -0.8,
+        -3.5,
+        4.5,  # Last 4: Lua, MATLAB, SQL, Bash
     ]
 )
 
-# Create figure
-fig, ax = plt.subplots(figsize=(16, 9))
+# Add small jitter to prevent exact overlaps
+x = base_x + np.random.uniform(-0.1, 0.1, len(base_x))
+y = base_y + np.random.uniform(-0.1, 0.1, len(base_y))
 
-# Create a scatter plot for the underlying structure (invisible points)
-# This allows seaborn to set up axes properly
-sns.scatterplot(x=x, y=y, ax=ax, alpha=0, legend=False)
-
-# Add text labels at each coordinate position
-colors = [
-    "#306998",
-    "#FFD43B",
-    "#3C873A",
-    "#00599C",
-    "#CC342D",
-    "#00ADD8",
-    "#DEA584",
-    "#FA7343",
-    "#B125EA",
-    "#3178C6",
-    "#777BB4",
-    "#DC322F",
-    "#276DC3",
-    "#9558B2",
-    "#39457E",
-    "#5D4F85",
-    "#6E4A7E",
-    "#63B132",
-    "#378BBA",
-    "#00B4AB",
-    "#000080",
-    "#FF6F00",
-    "#336791",
-    "#4EAA25",
+# Define language categories for coloring
+categories = [
+    "General Purpose",
+    "Web",
+    "Enterprise",
+    "Systems",
+    "Scripting",
+    "Systems",
+    "Systems",
+    "Mobile",
+    "Mobile",
+    "Web",
+    "Web",
+    "JVM",
+    "Data Science",
+    "Data Science",
+    "Scripting",
+    "Functional",
+    "Functional",
+    "Functional",
+    "Functional",
+    "Mobile",
+    "Scripting",
+    "Data Science",
+    "Data",
+    "Scripting",
 ]
 
-for i, (xi, yi, label) in enumerate(zip(x, y, languages, strict=True)):
-    color = colors[i % len(colors)]
-    ax.text(xi, yi, label, fontsize=16, fontweight="bold", ha="center", va="center", color=color, alpha=0.85)
+# Create DataFrame for seaborn
+df = pd.DataFrame({"x": x, "y": y, "language": languages, "category": categories})
 
-# Styling
-ax.set_xlabel("Dimension 1 (t-SNE)", fontsize=20)
-ax.set_ylabel("Dimension 2 (t-SNE)", fontsize=20)
-ax.set_title("scatter-text · seaborn · pyplots.ai", fontsize=24)
-ax.tick_params(axis="both", labelsize=16)
+# Define colorblind-safe palette for categories
+category_colors = {
+    "General Purpose": "#4477AA",
+    "Web": "#EE6677",
+    "Enterprise": "#228833",
+    "Systems": "#CCBB44",
+    "Scripting": "#66CCEE",
+    "Mobile": "#AA3377",
+    "JVM": "#BBBBBB",
+    "Data Science": "#44AA99",
+    "Functional": "#882255",
+    "Data": "#999933",
+}
+
+# Create figure using seaborn's FacetGrid for better integration
+g = sns.FacetGrid(df, height=9, aspect=16 / 9)
+
+# Use seaborn's scatterplot to create the base structure with category colors
+g.map_dataframe(
+    sns.scatterplot,
+    x="x",
+    y="y",
+    hue="category",
+    palette=category_colors,
+    s=0,  # Invisible markers (text labels replace them)
+    legend=False,
+)
+
+ax = g.ax
+
+# Add text labels at each coordinate position with larger font
+for _, row in df.iterrows():
+    color = category_colors[row["category"]]
+    ax.text(
+        row["x"],
+        row["y"],
+        row["language"],
+        fontsize=20,
+        fontweight="bold",
+        ha="center",
+        va="center",
+        color=color,
+        alpha=0.9,
+    )
+
+# Create custom legend for categories
+legend_elements = [
+    Line2D([0], [0], marker="o", color="w", markerfacecolor=color, markersize=12, label=cat)
+    for cat, color in category_colors.items()
+]
+ax.legend(
+    handles=legend_elements,
+    title="Category",
+    loc="upper left",
+    bbox_to_anchor=(0.0, 0.98),
+    framealpha=0.95,
+    fontsize=12,
+    title_fontsize=14,
+    ncol=2,
+)
+
+# Styling with seaborn's despine
+sns.despine(ax=ax, left=False, bottom=False)
+
+ax.set_xlabel("Dimension 1 (t-SNE)", fontsize=22)
+ax.set_ylabel("Dimension 2 (t-SNE)", fontsize=22)
+ax.set_title("scatter-text · seaborn · pyplots.ai", fontsize=26)
+ax.tick_params(axis="both", labelsize=18)
 ax.grid(True, alpha=0.3, linestyle="--")
 
-# Adjust axis limits to give text some padding
-x_margin = (x.max() - x.min()) * 0.15
-y_margin = (y.max() - y.min()) * 0.15
+# Set axis limits with padding for text labels
+x_margin = 1.2
+y_margin = 1.0
 ax.set_xlim(x.min() - x_margin, x.max() + x_margin)
 ax.set_ylim(y.min() - y_margin, y.max() + y_margin)
 

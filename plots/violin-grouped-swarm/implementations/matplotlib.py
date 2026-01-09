@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 violin-grouped-swarm: Grouped Violin Plot with Swarm Overlay
-Library: matplotlib | Python 3.13
-Quality: pending | Created: 2025-01-09
+Library: matplotlib 3.10.8 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-09
 """
 
 import matplotlib.pyplot as plt

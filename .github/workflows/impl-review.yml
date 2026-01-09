@@ -283,6 +283,40 @@ jobs:
 
           echo "score=$SCORE" >> $GITHUB_OUTPUT
 
+      - name: Validate review output
+        if: steps.review.conclusion == 'success' && steps.score.outputs.score == '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUM: ${{ steps.pr.outputs.pr_number }}
+        run: |
+          echo "::error::AI Review did not produce valid output files"
+          echo "::error::Expected quality_score.txt but got score=0"
+          echo "::error::This indicates Claude Code Action ran but didn't complete the review task"
+
+          # Add ai-review-failed label so it's visible
+          gh pr edit "$PR_NUM" --add-label "ai-review-failed" 2>/dev/null || true
+
+          # Post error comment on PR
+          gh pr comment "$PR_NUM" --body "## :x: AI Review Failed
+
+          The AI review action completed but did not produce valid output files.
+
+          **What happened:**
+          - The Claude Code Action ran
+          - No \`quality_score.txt\` file was created
+          - No review data was extracted
+
+          **Action required:**
+          Re-run the impl-review workflow manually:
+          \`\`\`
+          gh workflow run impl-review.yml -f pr_number=$PR_NUM
+          \`\`\`
+
+          ---
+          :robot: *[impl-review](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+          exit 1
+
       - name: Add quality score label
         if: steps.review.conclusion == 'success' && steps.score.outputs.score != '0'
         env:

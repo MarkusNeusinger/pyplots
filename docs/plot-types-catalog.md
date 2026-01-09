@@ -38,6 +38,12 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### scatter-regression-polynomial ✅
 **Description:** Scatter plot with polynomial regression curve fit to the data.
 
+### scatter-text-labels 📋
+**Description:** Scatter plot where text labels replace or accompany data points, useful for displaying categorical identity with positioning.
+
+### joint-scatter-marginal 📋
+**Description:** Joint plot combining a central scatter plot with marginal distributions (histograms or KDE) on both axes.
+
 ---
 
 ## 2. Line Plots
@@ -124,6 +130,12 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### bar-feature-importance ✅
 **Description:** Feature importance bar chart showing the relative importance of features in a machine learning model.
 
+### lollipop-grouped 📋
+**Description:** Grouped lollipop chart comparing multiple values per category with stems and circular markers.
+
+### bar-labeled-totals 📋
+**Description:** Stacked or grouped bar chart with total value labels displayed on top of each bar.
+
 ---
 
 ## 4. Histograms
@@ -154,6 +166,12 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ### histogram-density ✅
 **Description:** Density histogram showing probability density instead of raw counts, with area under curve summing to 1.
+
+### frequency-polygon 📋
+**Description:** Line plot connecting histogram bar midpoints, an alternative to overlapping histograms for comparing multiple distributions.
+
+### density-rug 📋
+**Description:** Density plot with rug marks showing individual data points along the axis.
 
 ---
 
@@ -217,6 +235,18 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### raincloud-basic ✅
 **Description:** A raincloud plot combining half-violin/KDE ("cloud"), jittered strip plot ("rain"), and box plot to show distribution shape alongside raw data points.
 
+### boxen-basic 📋
+**Description:** A boxen plot (letter-value plot) showing more quantile detail than traditional box plots, ideal for large sample sizes with 1000+ observations.
+
+### violin-swarm 📋
+**Description:** Violin plot with individual data points overlaid as a swarm plot, combining distribution shape with raw data visibility.
+
+### box-points-jitter 📋
+**Description:** Box plot with jittered individual points overlaid, especially useful for small sample sizes.
+
+### violin-grouped-swarm 📋
+**Description:** Multiple grouped violin plots with swarm overlay and optional faceting.
+
 ---
 
 ## 7. Heatmaps
@@ -258,6 +288,9 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### band-basic ✅
 **Description:** A band plot displays a filled region between two boundary lines, commonly used to show confidence intervals or prediction intervals.
 
+### area-stacked-confidence 📋
+**Description:** Stacked area chart with confidence or uncertainty bands around each stacked layer.
+
 ---
 
 ## 9. Polar & Radar Charts
@@ -290,12 +323,6 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ## 10. Statistical Plots
 
-### regression-linear 📋
-**Description:** Scatter with linear regression fit and confidence band.
-
-### regression-lowess 📋
-**Description:** Locally weighted regression smoothing.
-
 ### residual-basic ✅
 **Description:** Residual plot for regression diagnostics.
 
@@ -310,6 +337,18 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ### errorbar-asymmetric ✅
 **Description:** Asymmetric error bars plot with different upper and lower error values for each data point.
+
+### mosaic-categorical 📋
+**Description:** Mosaic plot showing relationships between categorical variables with rectangle areas proportional to frequencies in contingency tables.
+
+### regression-logistic 📋
+**Description:** Logistic regression curve visualization showing probability/odds transformation for binary classification.
+
+### coef-plot 📋
+**Description:** Coefficient plot displaying model coefficients with confidence intervals, commonly used in regression and meta-analysis.
+
+### range-interval 📋
+**Description:** Range plot showing min-max or confidence intervals as bars or areas for each category.
 
 ---
 
@@ -343,15 +382,12 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### subplot-mosaic ✅
 **Description:** A mosaic subplot layout allowing complex arrangements of axes with varying sizes using string-based or nested list specifications.
 
+### splom-interactive 📋
+**Description:** Interactive scatter plot matrix (SPLOM) with linked brushing, selection, and coordinated highlighting across all pairwise views.
+
 ---
 
 ## 13. Time Series Plots
-
-### timeseries-single 📋
-**Description:** Single time series with proper date axis.
-
-### timeseries-multi 📋
-**Description:** Multiple time series for comparison.
 
 ### timeseries-decomposition ✅
 **Description:** A time series decomposition plot showing the original series broken down into trend, seasonal, and residual components.
@@ -474,6 +510,9 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ### circlepacking-basic ✅
 **Description:** Circle packing chart displaying hierarchical data as nested circles.
+
+### treemap-sunburst-toggle 📋
+**Description:** Interactive treemap with toggle to switch to sunburst view, enabling flexible hierarchical data navigation.
 
 ---
 
@@ -752,6 +791,9 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### contour-decision-boundary ✅
 **Description:** Decision boundary classifier visualization using contour plot to show classification regions.
 
+### pca-biplot 📋
+**Description:** PCA biplot showing both observation scores as points and variable loadings as arrows for interpreting principal component analysis.
+
 ---
 
 ## 29. Scientific & Domain-Specific
@@ -807,6 +849,18 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### bubble-packed ✅
 **Description:** A packed bubble chart displays data as circles where size represents value, packed together without overlap using physics simulation.
 
+### voronoi-basic 📋
+**Description:** Voronoi diagram partitioning space into regions based on proximity to data points, used in spatial analysis and computational geometry.
+
+### windbarb-basic 📋
+**Description:** Wind barb plot showing meteorological wind direction and speed using standard barb notation.
+
+### streamplot-flow 📋
+**Description:** Streamplot visualization of vector fields showing continuous flow patterns with varying density and color.
+
+### ternary-density 📋
+**Description:** Ternary plot with density heatmap overlay for visualizing compositional data distributions.
+
 ---
 
 ## 30. Printable & Fun
@@ -854,9 +908,9 @@ Printable templates and playful visualizations.
 
 ## Statistics
 
-- **Total Plot Types:** 240
+- **Total Plot Types:** 258
 - **Implemented:** 186 ✅
-- **Planned:** 54 📋
+- **Planned:** 72 📋
 - **Categories:** 30
 
 ---
@@ -865,10 +919,10 @@ Printable templates and playful visualizations.
 
 Each plot type in this catalog can become a spec file. Priority order suggestion:
 
-1. **Essential basics** - Complete the basic variants (bar-horizontal, bar-stacked, histogram-normalized)
-2. **Statistical** - heatmap-correlation, violin-split, regression-linear
-3. **Interactive** - scatter-3d, map-choropleth, drilldown-pie
-4. **Financial** - stock-candlestick, indicator-macd, efficient-frontier
-5. **Fun** - maze-basic, qr-code, crossword-basic
+1. **Distribution** - boxen-basic, frequency-polygon, violin-swarm
+2. **Statistical** - mosaic-categorical, regression-logistic, coef-plot, pca-biplot
+3. **Scientific** - voronoi-basic, ternary-density, windbarb-basic
+4. **Interactive** - splom-interactive, treemap-sunburst-toggle
+5. **Financial** - animation-bar (bar chart race), stock-area, pnf-basic
 
-To create a spec, use the format: `plots/{spec-id}/specification.md`
+To create a spec, create a GitHub Issue with `spec-request` label.

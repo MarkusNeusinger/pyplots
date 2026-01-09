@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 density-rug: Density Plot with Rug Marks
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 82/100 | Created: 2026-01-09
+Quality: 90/100 | Created: 2026-01-09
 """
 
 import numpy as np

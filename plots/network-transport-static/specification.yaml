@@ -1,0 +1,30 @@
+# Specification-level metadata for network-transport-static
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: network-transport-static
+title: Static Transport Network Diagram
+
+# Specification tracking
+created: 2026-01-10T00:00:00Z
+updated: 2026-01-10T00:00:00Z
+issue: 3463
+suggested: camold
+
+# Classification tags (applies to all library implementations)
+tags:
+  plot_type:
+    - network
+    - graph
+    - directed
+  data_type:
+    - network
+    - relational
+    - temporal
+  domain:
+    - transportation
+    - logistics
+    - infrastructure
+  features:
+    - labels
+    - directed-edges
+    - multi-edge

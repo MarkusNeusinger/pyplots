@@ -1,0 +1,29 @@
+# Specification-level metadata for voronoi-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: voronoi-basic
+title: Voronoi Diagram for Spatial Partitioning
+
+# Specification tracking
+created: 2026-01-09T07:51:19Z
+updated: null
+issue: 3415
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - voronoi
+    - tessellation
+  data_type:
+    - numeric
+    - spatial
+  domain:
+    - general
+    - science
+    - machine-learning
+  features:
+    - basic
+    - 2d
+    - partitioning

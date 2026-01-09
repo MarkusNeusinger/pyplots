@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 voronoi-basic: Voronoi Diagram for Spatial Partitioning
-Library: bokeh | Python 3.13
-Quality: pending | Created: 2026-01-09
+Library: bokeh 3.8.1 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-09
 """
 
 import numpy as np

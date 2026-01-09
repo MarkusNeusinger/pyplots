@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-weighted: Weighted Network Graph with Edge Thickness
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-09
@@ -169,10 +169,10 @@ custom_style = Style(
     foreground_subtle="#666666",
     colors=(group_colors["Americas"], group_colors["Europe"], group_colors["Asia"], group_colors["Oceania"]),
     title_font_size=72,
-    label_font_size=40,
-    major_label_font_size=36,
-    legend_font_size=32,
-    value_font_size=28,
+    label_font_size=44,
+    major_label_font_size=40,
+    legend_font_size=40,
+    value_font_size=32,
     stroke_width=3,
     opacity=0.9,
     opacity_hover=1.0,
@@ -194,7 +194,7 @@ chart = pygal.XY(
     stroke=False,
     legend_at_bottom=True,
     legend_at_bottom_columns=4,
-    legend_box_size=24,
+    legend_box_size=36,
     range=(0, 12),
     xrange=(0, 12),
     print_labels=True,
@@ -271,16 +271,22 @@ edge_svg = "\n".join(edge_svg_parts)
 # Insert edges into SVG
 svg_content = svg_content[:insert_pos] + edge_svg + "\n" + svg_content[insert_pos:]
 
-# Add node labels (country codes) on top of nodes
-# Find all circle elements and add text labels after them
+# Add node labels (country codes) on top of nodes with shadow for readability
 label_svg_parts = ['<g class="node-labels">']
 for name in nodes.keys():
     x_data, y_data = positions[name]
     x = svg_margin["left"] + (x_data / 12) * plot_width
     y = svg_margin["top"] + (1 - y_data / 12) * plot_height
+    # Add black outline/shadow for better visibility over edges
     label_svg_parts.append(
-        f'<text x="{x:.1f}" y="{y + 10:.1f}" text-anchor="middle" '
-        f'font-family="sans-serif" font-size="28" font-weight="bold" fill="white">{name}</text>'
+        f'<text x="{x:.1f}" y="{y + 12:.1f}" text-anchor="middle" '
+        f'font-family="sans-serif" font-size="38" font-weight="bold" fill="#333333" '
+        f'stroke="#333333" stroke-width="4">{name}</text>'
+    )
+    # Main white text on top
+    label_svg_parts.append(
+        f'<text x="{x:.1f}" y="{y + 12:.1f}" text-anchor="middle" '
+        f'font-family="sans-serif" font-size="38" font-weight="bold" fill="white">{name}</text>'
     )
 label_svg_parts.append("</g>")
 label_svg = "\n".join(label_svg_parts)
@@ -300,20 +306,20 @@ legend_items = [
 
 edge_legend_parts = ['<g class="edge-legend">']
 edge_legend_parts.append(
-    f'<text x="{legend_x_start - 100}" y="{legend_y + 8}" '
-    f'font-family="sans-serif" font-size="28" fill="#666666">Edge weights:</text>'
+    f'<text x="{legend_x_start - 150}" y="{legend_y + 12}" '
+    f'font-family="sans-serif" font-size="36" font-weight="bold" fill="#333333">Edge weights:</text>'
 )
 legend_x = legend_x_start
 for label, style in legend_items:
     edge_legend_parts.append(
-        f'<line x1="{legend_x}" y1="{legend_y}" x2="{legend_x + 50}" y2="{legend_y}" '
+        f'<line x1="{legend_x}" y1="{legend_y}" x2="{legend_x + 60}" y2="{legend_y}" '
         f'stroke="{style["stroke"]}" stroke-width="{style["stroke_width"]}" stroke-linecap="round"/>'
     )
     edge_legend_parts.append(
-        f'<text x="{legend_x + 65}" y="{legend_y + 10}" '
-        f'font-family="sans-serif" font-size="28" fill="#333333">{label}</text>'
+        f'<text x="{legend_x + 80}" y="{legend_y + 12}" '
+        f'font-family="sans-serif" font-size="32" fill="#333333">{label}</text>'
     )
-    legend_x += 280
+    legend_x += 320
 edge_legend_parts.append("</g>")
 edge_legend_svg = "\n".join(edge_legend_parts)
 

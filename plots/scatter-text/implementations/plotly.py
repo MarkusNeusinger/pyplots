@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-text: Scatter Plot with Text Labels Instead of Points
 Library: plotly 6.5.1 | Python 3.13.11
-Quality: 85/100 | Created: 2026-01-09
+Quality: 91/100 | Created: 2026-01-09
 """
 
 import numpy as np

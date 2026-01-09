@@ -1,0 +1,27 @@
+# Specification-level metadata for scatter-text
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: scatter-text
+title: Scatter Plot with Text Labels Instead of Points
+
+# Specification tracking
+created: 2026-01-09T14:09:51Z
+updated: null
+issue: 3482
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - scatter
+    - text
+  data_type:
+    - numeric
+    - text
+  domain:
+    - general
+    - machine-learning
+  features:
+    - annotated
+    - 2d

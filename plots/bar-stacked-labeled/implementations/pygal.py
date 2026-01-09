@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-stacked-labeled: Stacked Bar Chart with Total Labels
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-09
@@ -56,7 +56,7 @@ chart = pygal.StackedBar(
     print_values_position="top",
     value_formatter=lambda x: "",  # Hide default values, use per-series formatter
     margin=80,  # Increased margin for legend space
-    margin_bottom=150,  # Extra bottom margin for legend
+    margin_bottom=300,  # Significantly increased for full legend visibility
     spacing=80,
     truncate_legend=-1,
     x_label_rotation=0,

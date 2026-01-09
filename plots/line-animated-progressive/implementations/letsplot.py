@@ -1,7 +1,7 @@
 """pyplots.ai
 line-animated-progressive: Animated Line Plot Over Time
 Library: lets-plot | Python 3.13
-Quality: pending | Created: 2025-01-07
+Quality: pending | Created: 2025-01-09
 """
 
 import numpy as np
@@ -18,8 +18,8 @@ from lets_plot import (
     ggplot,
     ggsize,
     labs,
-    scale_color_manual,
     scale_x_continuous,
+    scale_y_continuous,
     theme,
     theme_minimal,
 )
@@ -28,59 +28,60 @@ from lets_plot.export import ggsave
 
 LetsPlot.setup_html()
 
-# Data - Monthly website traffic over 2 years
+# Data - Monthly website traffic over 2 years showing growth with seasonality
 np.random.seed(42)
 n_points = 24
 months = np.arange(1, n_points + 1)
 
 # Traffic with seasonal pattern and growth trend
 base_traffic = 50000
-trend = np.linspace(0, 30000, n_points)
-seasonal = 8000 * np.sin(2 * np.pi * months / 12)
-noise = np.random.normal(0, 3000, n_points)
+trend = np.linspace(0, 35000, n_points)
+seasonal = 10000 * np.sin(2 * np.pi * months / 12)
+noise = np.random.normal(0, 2500, n_points)
 traffic = base_traffic + trend + seasonal + noise
 
-# Create small multiples showing progressive stages
+# Create small multiples showing progressive reveal stages
 stages = [6, 12, 18, 24]
-stage_labels = ["1. Q2 2023", "2. Q4 2023", "3. Q2 2024", "4. Complete"]
+stage_labels = ["1. Q2 2023", "2. Q4 2023", "3. Q2 2024", "4. Q4 2024"]
 
 dfs = []
 for stage, label in zip(stages, stage_labels, strict=True):
-    stage_df = pd.DataFrame(
-        {
-            "month": months[:stage],
-            "traffic": traffic[:stage],
-            "stage": label,
-            "is_latest": [False] * (stage - 1) + [True],
-        }
-    )
+    stage_df = pd.DataFrame({"month": months[:stage], "traffic": traffic[:stage], "stage": label})
     dfs.append(stage_df)
 
 df = pd.concat(dfs, ignore_index=True)
 
-# Create plot with small multiples
+# Create separate dataframe for highlighting latest points
+latest_points = []
+for stage, label in zip(stages, stage_labels, strict=True):
+    latest_points.append({"month": months[stage - 1], "traffic": traffic[stage - 1], "stage": label})
+df_latest = pd.DataFrame(latest_points)
+
+# Create plot with small multiples to show progression
 plot = (
     ggplot(df, aes(x="month", y="traffic"))
-    + geom_line(color="#306998", size=2, alpha=0.9)
-    + geom_point(aes(color="is_latest"), size=4, alpha=0.8)
-    + scale_color_manual(values={"True": "#FFD43B", "False": "#306998"}, guide="none")
+    + geom_line(color="#306998", size=2.5, alpha=0.9)
+    + geom_point(color="#306998", size=4, alpha=0.8)
+    + geom_point(data=df_latest, mapping=aes(x="month", y="traffic"), color="#FFD43B", size=8, alpha=1.0)
     + facet_wrap("stage", ncol=2)
-    + scale_x_continuous(breaks=[6, 12, 18, 24], labels=["Jun '23", "Dec '23", "Jun '24", "Dec '24"])
-    + labs(title="line-animated-progressive \u00b7 letsplot \u00b7 pyplots.ai", x="Time Period", y="Monthly Visitors")
+    + scale_x_continuous(breaks=[6, 12, 18, 24], labels=["Jun '23", "Dec '23", "Jun '24", "Dec '24"], limits=[0, 25])
+    + scale_y_continuous(limits=[30000, 100000])
+    + labs(title="line-animated-progressive · letsplot · pyplots.ai", x="Time Period", y="Monthly Visitors")
     + theme_minimal()
     + theme(
-        plot_title=element_text(size=26),
-        axis_title=element_text(size=20),
-        axis_text=element_text(size=16),
-        strip_text=element_text(size=18),
-        legend_text=element_text(size=16),
-        panel_grid=element_line(color="#CCCCCC", size=0.4, linetype="dashed"),
+        plot_title=element_text(size=28, face="bold"),
+        axis_title=element_text(size=22),
+        axis_text=element_text(size=18),
+        strip_text=element_text(size=20, face="bold"),
+        panel_grid_major=element_line(color="#DDDDDD", size=0.5),
+        panel_grid_minor=element_line(color="#EEEEEE", size=0.3),
         panel_background=element_rect(fill="#FAFAFA"),
+        plot_background=element_rect(fill="white"),
     )
     + ggsize(1600, 900)
 )
 
-# Save PNG (scale=3 gives 4800x2700)
+# Save PNG (scale=3 gives 4800x2700 px)
 ggsave(plot, "plot.png", path=".", scale=3)
 
 # Save HTML for interactivity

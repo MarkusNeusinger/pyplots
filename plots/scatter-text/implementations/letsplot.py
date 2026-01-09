@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-text: Scatter Plot with Text Labels Instead of Points
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 84/100 | Created: 2026-01-09
@@ -10,11 +10,13 @@ from lets_plot import (
     LetsPlot,
     aes,
     element_text,
+    geom_point,
     geom_text,
     ggplot,
     ggsave,
     ggsize,
     labs,
+    layer_tooltips,
     scale_color_manual,
     theme,
     theme_minimal,
@@ -60,46 +62,43 @@ languages = [
     "Lisp",
 ]
 
-# Position languages based on paradigm characteristics with some jitter
+# Position languages with better spacing to reduce overlap
+# Adjusted coordinates for dense regions
 paradigm_scores = {
-    "Python": (0.6, 0.8),
-    "JavaScript": (0.5, 0.75),
-    "Java": (0.3, 0.7),
-    "C++": (0.2, 0.4),
-    "Ruby": (0.7, 0.85),
-    "Go": (0.25, 0.6),
-    "Rust": (0.15, 0.5),
-    "Swift": (0.4, 0.75),
-    "Kotlin": (0.45, 0.78),
-    "TypeScript": (0.5, 0.77),
-    "Scala": (0.7, 0.72),
-    "Haskell": (0.95, 0.85),
-    "Clojure": (0.9, 0.8),
-    "Elixir": (0.85, 0.82),
-    "F#": (0.8, 0.75),
-    "C#": (0.35, 0.72),
-    "PHP": (0.4, 0.65),
-    "Perl": (0.5, 0.6),
-    "R": (0.65, 0.78),
-    "Julia": (0.6, 0.7),
-    "MATLAB": (0.55, 0.65),
-    "Lua": (0.5, 0.55),
-    "Dart": (0.4, 0.7),
-    "Groovy": (0.5, 0.68),
-    "OCaml": (0.88, 0.7),
-    "Erlang": (0.82, 0.65),
-    "Fortran": (0.1, 0.35),
-    "COBOL": (0.05, 0.3),
-    "Assembly": (0.0, 0.1),
-    "Lisp": (0.92, 0.6),
+    "Python": (0.58, 0.88),
+    "JavaScript": (0.42, 0.72),
+    "Java": (0.28, 0.68),
+    "C++": (0.18, 0.38),
+    "Ruby": (0.72, 0.92),
+    "Go": (0.22, 0.58),
+    "Rust": (0.12, 0.48),
+    "Swift": (0.38, 0.80),
+    "Kotlin": (0.48, 0.85),
+    "TypeScript": (0.55, 0.68),
+    "Scala": (0.72, 0.62),
+    "Haskell": (0.95, 0.90),
+    "Clojure": (0.88, 0.82),
+    "Elixir": (0.82, 0.88),
+    "F#": (0.78, 0.72),
+    "C#": (0.32, 0.78),
+    "PHP": (0.35, 0.60),
+    "Perl": (0.48, 0.52),
+    "R": (0.68, 0.78),
+    "Julia": (0.62, 0.58),
+    "MATLAB": (0.52, 0.48),
+    "Lua": (0.42, 0.45),
+    "Dart": (0.32, 0.52),
+    "Groovy": (0.45, 0.62),
+    "OCaml": (0.90, 0.68),
+    "Erlang": (0.85, 0.58),
+    "Fortran": (0.08, 0.32),
+    "COBOL": (0.05, 0.22),
+    "Assembly": (0.02, 0.12),
+    "Lisp": (0.92, 0.52),
 }
 
-# Add jitter for visual interest
-jitter_x = np.random.normal(0, 0.02, len(languages))
-jitter_y = np.random.normal(0, 0.02, len(languages))
-
-x_coords = [paradigm_scores[lang][0] + jitter_x[i] for i, lang in enumerate(languages)]
-y_coords = [paradigm_scores[lang][1] + jitter_y[i] for i, lang in enumerate(languages)]
+x_coords = [paradigm_scores[lang][0] for lang in languages]
+y_coords = [paradigm_scores[lang][1] for lang in languages]
 
 # Categorize by primary use
 categories = [
@@ -138,17 +137,17 @@ categories = [
 df = pd.DataFrame({"x": x_coords, "y": y_coords, "label": languages, "category": categories})
 
 # Define colors for categories
-color_palette = [
-    "#306998",  # Python Blue - General
-    "#FFD43B",  # Python Yellow - Web
-    "#2E86AB",  # Systems
-    "#A23B72",  # Mobile
-    "#F18F01",  # Functional
-    "#C73E1D",  # Scripting
-    "#3A86A9",  # Data Science
-    "#6B8E23",  # Scientific
-    "#708090",  # Legacy
-]
+color_palette = {
+    "General": "#306998",
+    "Web": "#E6A700",
+    "Systems": "#2E86AB",
+    "Mobile": "#A23B72",
+    "Functional": "#F18F01",
+    "Scripting": "#C73E1D",
+    "Data Science": "#3A86A9",
+    "Scientific": "#6B8E23",
+    "Legacy": "#708090",
+}
 
 category_order = [
     "General",
@@ -162,16 +161,30 @@ category_order = [
     "Legacy",
 ]
 
-# Create plot
+# Create plot with interactive tooltips (lets-plot distinctive feature)
 plot = (
-    ggplot(df, aes(x="x", y="y", label="label", color="category"))
-    + geom_text(size=12, alpha=0.85, fontface="bold")
-    + scale_color_manual(values=color_palette, limits=category_order)
+    ggplot(df, aes(x="x", y="y", color="category"))
+    # Invisible points for legend (show colored squares instead of 'a')
+    + geom_point(aes(size="category"), alpha=0, show_legend=True)
+    # Text labels with interactive tooltips
+    + geom_text(
+        aes(label="label"),
+        size=11,
+        alpha=0.9,
+        fontface="bold",
+        tooltips=layer_tooltips()
+        .title("@label")
+        .line("Category|@category")
+        .line("Paradigm|@x")
+        .line("Abstraction|@y")
+        .format("x", ".2f")
+        .format("y", ".2f"),
+    )
+    + scale_color_manual(values=color_palette, limits=category_order, name="Primary Use")
     + labs(
         x="Object-Oriented ← Paradigm → Functional",
         y="Abstraction Level (Low → High)",
         title="scatter-text · letsplot · pyplots.ai",
-        color="Primary Use",
     )
     + theme_minimal()
     + theme(
@@ -187,5 +200,5 @@ plot = (
 # Save as PNG (scale 3x for 4800 × 2700 px)
 ggsave(plot, "plot.png", path=".", scale=3)
 
-# Save interactive HTML version
+# Save interactive HTML version with tooltips
 ggsave(plot, "plot.html", path=".")

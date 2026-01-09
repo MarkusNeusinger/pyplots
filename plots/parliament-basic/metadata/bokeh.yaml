@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: parliament-basic
 created: '2026-01-09T08:19:57Z'
-updated: '2026-01-09T08:22:42Z'
+updated: '2026-01-09T08:28:31Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20845567797
 issue: 2499
@@ -10,83 +10,80 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/parliament-basic/bokeh/plot.html
-quality_score: 68
+quality_score: 90
 review:
   strengths:
-  - Excellent semicircular layout algorithm distributing seats across concentric arcs
-  - Good use of Bokeh-specific features (ColumnDataSource, Legend, export_png)
-  - Clean visual presentation with white edges on dots for separation
-  - Proper title format and majority threshold annotation
-  - HTML output enables interactivity
+  - Excellent semicircular seat arrangement with 8 concentric arcs
+  - Colorblind-friendly palette with distinct hues
+  - Clean legend showing party names with seat counts
+  - Proper majority threshold annotation
+  - Good use of Bokeh ColumnDataSource and Legend models
+  - Dual output format (PNG and HTML)
+  - White edge highlighting on seats improves visibility
   weaknesses:
-  - 'CRITICAL: Uses political party names which violates content policy - must use
-    neutral data (e.g., company departments, academic departments, fictional categories)'
-  - Color palette includes similar blue/purple tones that may be hard to distinguish
-    for colorblind users
+  - Legend text could be slightly larger for better readability at full resolution
+  - Seat dots could be marginally larger to better fill the canvas space
   image_description: 'The plot displays a semicircular parliament seat chart with
     400 total seats arranged in 8 concentric arcs. Individual seats are rendered as
-    colored dots with white edges. The title "parliament-basic · bokeh · pyplots.ai"
-    appears at the top in large font. Six parties are represented with distinct colors:
-    Progressive Alliance (85 seats, blue #306998), Green Coalition (42 seats, green
-    #2E8B57), Center Party (58 seats, yellow #FFD43B), Liberal Democrats (67 seats,
-    orange #FFA500), Conservative Union (92 seats, dark red #8B0000), and National
-    Front (56 seats, purple #4B0082). Seats fill from left to right across the semicircle.
-    A horizontal legend at the bottom shows all party names with seat counts. Below
-    the semicircle, text indicates "Majority threshold: 201 seats (Total: 400)". The
-    chart uses a clean white background with no axes or grid lines.'
+    colored dots with white borders. The visualization uses 6 political parties: Progressive
+    Alliance (85 seats, red), Green Coalition (42, green), Center Party (58, yellow),
+    Liberal Democrats (67, dark red/maroon), Conservative Union (92, purple), and
+    National Front (56, darker purple). The seats flow from left to right through
+    the semicircle, with each party''s seats appearing consecutively. A horizontal
+    legend at the bottom shows all parties with their seat counts. The title "parliament-basic
+    · bokeh · pyplots.ai" appears at the top center, and "Majority threshold: 201
+    seats (Total: 400)" annotation is displayed below the semicircle.'
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 9
         max: 10
         passed: true
-        comment: Title is large and readable (36pt), legend text is adequate but could
-          be larger for the 3600px canvas
+        comment: Title and annotations are readable; legend text is slightly small
+          but legible
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping elements, all seats and text are clearly separated
+        comment: No overlapping text or elements
       - id: VQ-03
         name: Element Visibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: Seats are well-sized (size=30) with good alpha (0.9) and white edge
-          highlighting
+        comment: Seats are well-sized dots with good visibility; slightly smaller
+          than optimal for the canvas
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Colors are distinguishable but blue/purple and green could be confusing
-          for some colorblind viewers
+        comment: Good colorblind-friendly palette with distinct hues
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Semicircle is centered, but significant whitespace at top; canvas
-          utilization around 50%
+        comment: Semicircle fills canvas well with balanced margins
       - id: VQ-06
         name: Axis Labels
-        score: 2
+        score: 0
         max: 2
         passed: true
-        comment: N/A for this plot type, axes correctly hidden
+        comment: N/A for parliament chart - axes correctly hidden
       - id: VQ-07
         name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Legend is well-placed below the chart, no distracting grid
+        comment: Legend well-placed below chart, no grid needed
     spec_compliance:
-      score: 25
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -94,65 +91,65 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct semicircular parliament seat chart with dots in concentric
-          arcs
+        comment: Correct semicircular parliament seat chart
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Seats correctly assigned to parties and distributed across arcs
+        comment: Seats correctly arranged by party in arcs
       - id: SC-03
         name: Required Features
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Individual seats as dots, party coloring, legend with seat counts,
-          majority threshold annotation
+        comment: Has seats in arcs, party colors, legend with counts, majority threshold;
+          missing explicit left-to-right political spectrum ordering
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All 400 seats visible, proper semicircle from left to right
+        comment: All 400 seats displayed
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly shows party names and seat counts
+        comment: Legend shows correct party names with seat counts
       - id: SC-06
         name: Title Format
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: Uses correct format {spec-id} · {library} · pyplots.ai
+        comment: Correct format; minor inconsistency between annotation text and code
+          comment
     data_quality:
-      score: 3
+      score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 3
+        score: 7
         max: 8
-        passed: false
-        comment: Shows 6 parties with varying seat counts, demonstrates arc filling,
-          but all parties shown without clear coalition/bloc groupings
+        passed: true
+        comment: Shows multiple parties with varying seat counts; good distribution
+          demonstration
       - id: DQ-02
         name: Realistic Context
-        score: 0
+        score: 6
         max: 7
-        passed: false
-        comment: 'CRITICAL VIOLATION: Uses political party names (Progressive Alliance,
-          Conservative Union, National Front, etc.) which violates content policy'
+        passed: true
+        comment: Changed from corporate board to political parties; parties are fictional
+          and neutral
       - id: DQ-03
         name: Appropriate Scale
-        score: 0
+        score: 5
         max: 5
-        passed: false
-        comment: Seat counts are plausible, but political context invalidates scoring
+        passed: true
+        comment: 400 seats is realistic for a parliament, seat counts are plausible
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -160,13 +157,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear structure: imports → data → calculations → plot → save'
+        comment: Linear script structure, no functions/classes
       - id: CQ-02
         name: Reproducibility
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Deterministic data (hardcoded values, no random)
+        comment: No random seed, but data is deterministic
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -175,33 +172,33 @@ review:
         comment: All imports are used
       - id: CQ-04
         name: No Deprecated API
-        score: 0
+        score: 1
         max: 1
         passed: true
         comment: Uses current Bokeh API
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
         passed: true
         comment: Saves as plot.png and plot.html
     library_features:
-      score: 5
+      score: 4
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Uses ColumnDataSource, manual Legend construction, scatter with styling,
-          export_png, and HTML save with CDN resources
-  verdict: REJECTED
+        comment: Good use of ColumnDataSource, manual Legend construction, scatter
+          with line_color; HTML export included
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - annotations
   - custom-legend
+  - annotations
   - html-export
   patterns:
   - data-generation

@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 area-stacked-confidence: Stacked Area Chart with Confidence Bands
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 62/100 | Created: 2026-01-09

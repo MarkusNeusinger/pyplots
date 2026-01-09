@@ -5,6 +5,7 @@ import { HomePage } from './pages/HomePage';
 import { SpecPage } from './pages/SpecPage';
 import { CatalogPage } from './pages/CatalogPage';
 import { InteractivePage } from './pages/InteractivePage';
+import { DebugPage } from './pages/DebugPage';
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,8 @@ const router = createBrowserRouter([
   },
   // Fullscreen interactive view (outside Layout but inside AppDataProvider)
   { path: 'interactive/:specId/:library', element: <InteractivePage /> },
+  // Hidden debug dashboard (outside Layout - no header/footer)
+  { path: 'debug', element: <DebugPage /> },
 ]);
 
 export function AppRouter() {

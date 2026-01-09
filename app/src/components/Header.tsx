@@ -1,7 +1,7 @@
-import { memo, useState, useEffect } from 'react';
+import { memo, useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
 import Tooltip from '@mui/material/Tooltip';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -15,10 +15,50 @@ interface HeaderProps {
 
 export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
   const theme = useTheme();
+  const navigate = useNavigate();
   const isXs = useMediaQuery(theme.breakpoints.down('sm'));
   const isSm = useMediaQuery(theme.breakpoints.between('sm', 'md'));
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [pinned, setPinned] = useState(false);  // true = opened via click, stays open
+  const clickCountRef = useRef(0);
+  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+    };
+  }, []);
+
+  const handleLogoClick = useCallback(
+    (e: React.MouseEvent | React.KeyboardEvent) => {
+      e.preventDefault();
+      clickCountRef.current += 1;
+      if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+      clickTimerRef.current = setTimeout(() => {
+        if (clickCountRef.current < 3) {
+          navigate('/');
+        }
+        clickCountRef.current = 0;
+      }, 400);
+      if (clickCountRef.current >= 3) {
+        clickCountRef.current = 0;
+        if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+        navigate('/debug');
+      }
+    },
+    [navigate]
+  );
+
+  const handleLogoKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        handleLogoClick(e);
+      }
+    },
+    [handleLogoClick]
+  );
+
   const tooltipText = stats
     ? `${stats.plots} plots across ${stats.libraries} libraries`
     : '';
@@ -56,16 +96,18 @@ export const Header = memo(function Header({ stats, onRandom }: HeaderProps) {
           fontSize: { xs: '2rem', sm: '2.75rem', md: '3.75rem' },
         }}
       >
-        <Link
-          href="https://pyplots.ai"
-          target="_blank"
-          rel="noopener noreferrer"
-          underline="none"
+        <Box
+          component="span"
+          role="link"
+          tabIndex={0}
+          onClick={handleLogoClick}
+          onKeyDown={handleLogoKeyDown}
+          sx={{ cursor: 'pointer', userSelect: 'none', '&:focus': { outline: 'none' } }}
         >
           <Box component="span" sx={{ color: '#3776AB' }}>py</Box>
           <Box component="span" sx={{ color: '#FFD43B' }}>plots</Box>
           <Box component="span" sx={{ color: '#1f2937' }}>.ai</Box>
-        </Link>
+        </Box>
         {onRandom && (
           <ShuffleIcon
             tabIndex={0}

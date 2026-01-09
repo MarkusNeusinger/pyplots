@@ -23,6 +23,7 @@ from api.exceptions import (  # noqa: E402
     pyplots_exception_handler,
 )
 from api.routers import (  # noqa: E402
+    debug_router,
     download_router,
     health_router,
     libraries_router,
@@ -132,6 +133,7 @@ app.include_router(download_router)
 app.include_router(seo_router)
 app.include_router(og_images_router)
 app.include_router(proxy_router)
+app.include_router(debug_router)
 
 
 if __name__ == "__main__":

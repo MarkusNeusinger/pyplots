@@ -28,7 +28,6 @@ EXPECTED_WORKFLOWS = [
     "ci-tests.yml",
     # Specification workflows
     "spec-create.yml",
-    "spec-update.yml",
     # Implementation workflows
     "impl-generate.yml",
     "impl-review.yml",

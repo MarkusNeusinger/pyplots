@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 voronoi-basic: Voronoi Diagram for Spatial Partitioning
-Library: altair | Python 3.13
-Quality: pending | Created: 2026-01-09
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 87/100 | Created: 2026-01-09
 """
 
 import altair as alt

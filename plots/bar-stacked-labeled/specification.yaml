@@ -1,0 +1,28 @@
+# Specification-level metadata for bar-stacked-labeled
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: bar-stacked-labeled
+title: Stacked Bar Chart with Total Labels
+
+# Specification tracking
+created: 2026-01-09T15:23:21Z
+updated: null
+issue: 3504
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - bar
+    - stacked
+  data_type:
+    - categorical
+    - numeric
+  domain:
+    - general
+    - business
+  features:
+    - stacked
+    - annotated
+    - comparison

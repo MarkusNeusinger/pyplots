@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-weighted: Weighted Network Graph with Edge Thickness
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-09
@@ -277,16 +277,16 @@ for name in nodes.keys():
     x_data, y_data = positions[name]
     x = svg_margin["left"] + (x_data / 12) * plot_width
     y = svg_margin["top"] + (1 - y_data / 12) * plot_height
-    # Add black outline/shadow for better visibility over edges
+    # Add white background for better visibility over edges
     label_svg_parts.append(
-        f'<text x="{x:.1f}" y="{y + 12:.1f}" text-anchor="middle" '
-        f'font-family="sans-serif" font-size="38" font-weight="bold" fill="#333333" '
-        f'stroke="#333333" stroke-width="4">{name}</text>'
+        f'<text x="{x:.1f}" y="{y + 14:.1f}" text-anchor="middle" '
+        f'font-family="sans-serif" font-size="46" font-weight="bold" fill="white" '
+        f'stroke="white" stroke-width="8">{name}</text>'
     )
-    # Main white text on top
+    # Main dark text on top
     label_svg_parts.append(
-        f'<text x="{x:.1f}" y="{y + 12:.1f}" text-anchor="middle" '
-        f'font-family="sans-serif" font-size="38" font-weight="bold" fill="white">{name}</text>'
+        f'<text x="{x:.1f}" y="{y + 14:.1f}" text-anchor="middle" '
+        f'font-family="sans-serif" font-size="46" font-weight="bold" fill="#1A1A1A">{name}</text>'
     )
 label_svg_parts.append("</g>")
 label_svg = "\n".join(label_svg_parts)
@@ -294,9 +294,9 @@ label_svg = "\n".join(label_svg_parts)
 # Insert labels before closing </svg>
 svg_content = svg_content.replace("</svg>", label_svg + "\n</svg>")
 
-# Add edge thickness legend
-legend_y = 2700 - 120
-legend_x_start = 2200
+# Add edge thickness legend with proper spacing to avoid truncation
+legend_y = 2700 - 100
+legend_x_start = 1800
 legend_items = [
     ("$20-178B", edge_styles["low"]),
     ("$178-335B", edge_styles["medium"]),
@@ -306,10 +306,10 @@ legend_items = [
 
 edge_legend_parts = ['<g class="edge-legend">']
 edge_legend_parts.append(
-    f'<text x="{legend_x_start - 150}" y="{legend_y + 12}" '
+    f'<text x="{legend_x_start}" y="{legend_y + 12}" '
     f'font-family="sans-serif" font-size="36" font-weight="bold" fill="#333333">Edge weights:</text>'
 )
-legend_x = legend_x_start
+legend_x = legend_x_start + 280
 for label, style in legend_items:
     edge_legend_parts.append(
         f'<line x1="{legend_x}" y1="{legend_y}" x2="{legend_x + 60}" y2="{legend_y}" '
@@ -319,16 +319,12 @@ for label, style in legend_items:
         f'<text x="{legend_x + 80}" y="{legend_y + 12}" '
         f'font-family="sans-serif" font-size="32" fill="#333333">{label}</text>'
     )
-    legend_x += 320
+    legend_x += 360
 edge_legend_parts.append("</g>")
 edge_legend_svg = "\n".join(edge_legend_parts)
 
 # Insert edge legend before closing </svg>
 svg_content = svg_content.replace("</svg>", edge_legend_svg + "\n</svg>")
-
-# Save final SVG
-with open("plot.svg", "w") as f:
-    f.write(svg_content)
 
 # Convert modified SVG to PNG using cairosvg
 cairosvg.svg2png(bytestring=svg_content.encode("utf-8"), write_to="plot.png")

@@ -1,7 +1,7 @@
 library: altair
 specification_id: voronoi-basic
 created: '2026-01-09T08:25:21Z'
-updated: '2026-01-09T08:28:31Z'
+updated: '2026-01-09T08:36:28Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20845622547
 issue: 3415
@@ -10,72 +10,72 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/voronoi-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/voronoi-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/voronoi-basic/altair/plot.html
-quality_score: 87
+quality_score: 90
 review:
   strengths:
-  - Excellent use of colorblind-safe blue/yellow palette
-  - Weather station scenario is perfect, realistic context for Voronoi visualization
-  - Good implementation of boundary clipping using mirror points technique
-  - Clean layer composition with edges, points, and labels
-  - Proper vertex sorting for polygon ordering
-  - Tooltips add interactivity showing station name and coordinates
-  - Large, visible seed points with white stroke for emphasis
+  - Excellent implementation of filled Voronoi polygons using mark_line(filled=True)
+    pattern
+  - Good use of boundary point mirroring technique to handle infinite regions
+  - Proper polygon vertex sorting by angle for correct rendering
+  - Interactive tooltips provide useful station information
+  - Color palette provides good visual distinction between cells
+  - Clean layer composition with cells, points, and labels
   weaknesses:
-  - Some station labels overlap (Station 10/Station 3 area is crowded)
-  - Voronoi cells shown only as edges, not filled polygons (spec mentions visually
-    distinguishable through colors - filled regions would be clearer)
-  - No legend explaining what the visualization represents
-  - Generic coordinate units without real-world context (e.g., km, miles)
-  image_description: 'The plot displays a Voronoi diagram for spatial partitioning
-    with 15 seed points representing weather stations ("Station 1" through "Station
-    15"). Each Voronoi cell is delineated by colored edge lines in a palette of blues
-    (#306998, #4B8BBE, #3776AB, etc.) and yellows/golds (#FFD43B, #FFE873, #FFC61E,
-    etc.). The seed points are shown as large filled circles with white borders, positioned
-    within their respective cells. Each station is labeled with bold text placed above
-    the point. The diagram is bounded to a 0-100 coordinate space on both axes, with
-    cells properly clipped at the boundaries. The title "voronoi-basic · altair ·
-    pyplots.ai" appears at the top center. Axes are labeled "X Coordinate" and "Y
-    Coordinate" with a subtle gray grid (0.25 opacity) in the background. The layout
-    uses the full 16:9 canvas effectively.'
+  - Minor label overlap between Station 6 and Station 14 (close proximity in data)
+  - Some adjacent cells have similar color shades making boundaries less distinct
+  - Voronoi computation relies entirely on scipy rather than demonstrating more Altair-native
+    features
+  image_description: 'The plot displays a Voronoi diagram representing spatial partitioning
+    of weather stations. There are 15 seed points labeled "Station 1" through "Station
+    15" distributed across a 100x100 coordinate space. Each Voronoi cell is rendered
+    as a filled polygon with semi-transparent coloring (opacity ~0.55) and dark gray
+    (#333333) borders. The color palette uses a mix of blues (#306998, #4B8BBE, #6A9BC3),
+    yellows (#FFD43B, #FFE873, #FFC61E), and other variations. Seed points are displayed
+    as dark gray circles with white borders. Station labels appear in bold black text
+    positioned above each point. The legend on the right side shows all 15 stations
+    in a 2-column layout with square symbols. Axes are labeled "X Coordinate" and
+    "Y Coordinate" with subtle grid lines (opacity 0.25). Title follows the correct
+    format: "voronoi-basic · altair · pyplots.ai".'
   criteria_checklist:
     visual_quality:
-      score: 35
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
+        score: 10
         max: 10
         passed: true
-        comment: Title at 28pt is clear, axis labels at 22pt are readable, station
-          labels at 16pt bold are legible but some are slightly close to edges
+        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt, station
+          labels at 14pt bold - all clearly readable
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 8
         passed: true
-        comment: Most labels are clear, but Station 10 overlaps with Station 3 and
-          Station 4 labels are close to each other
+        comment: Minor label overlap between Station 6 and Station 14 in center-left
+          area
       - id: VQ-03
         name: Element Visibility
         score: 8
         max: 8
         passed: true
-        comment: Seed points are large (size=500) with white stroke making them highly
-          visible; edge lines are thick (strokeWidth=4)
+        comment: Voronoi cells well-sized with good fill opacity (0.55) and visible
+          borders (2.5px), seed points at size 400 are clearly visible
       - id: VQ-04
         name: Color Accessibility
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Uses blue/yellow palette which is colorblind-safe (distinguishable
-          by luminance)
+        comment: Blues and yellows are colorblind-safe, but some adjacent cells have
+          similar shades
       - id: VQ-05
         name: Layout Balance
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Plot fills canvas well with balanced margins
+        comment: Good canvas utilization with plot filling majority of space, legend
+          positioned well on right
       - id: VQ-06
         name: Axis Labels
         score: 2
@@ -84,13 +84,12 @@ review:
         comment: Descriptive labels X Coordinate and Y Coordinate
       - id: VQ-07
         name: Grid & Legend
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Grid is subtle (0.25 opacity) which is good, but no legend explaining
-          the color scheme
+        passed: true
+        comment: Grid is subtle at alpha 0.25, legend is well-organized with 2 columns
     spec_compliance:
-      score: 23
+      score: 25
       max: 25
       items:
       - id: SC-01
@@ -98,32 +97,32 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct Voronoi diagram implementation
+        comment: Correct Voronoi diagram with spatial partitioning
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X/Y coordinates correctly mapped to seed points
+        comment: X/Y coordinates correctly mapped to seed point locations
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 5
         max: 5
-        passed: false
-        comment: Cells clipped to bounding box, seed points marked, color differentiation
-          present, but edges shown instead of filled regions
+        passed: true
+        comment: 'All spec features present: clipped cells, distinguishable colors,
+          visible seed points, labels'
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within 0-100 range
+        comment: Axes show full 0-100 range plus small margin
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Labels on points serve as identification
+        comment: Legend correctly identifies all 15 stations
       - id: SC-06
         name: Title Format
         score: 2
@@ -139,21 +138,22 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Shows spatial partitioning well, but could show more varied distribution
-          patterns
+        comment: Shows variety in cell shapes and sizes; some cells clipped at boundaries
+          demonstrating edge handling
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Weather stations is a perfect, neutral, realistic scenario for Voronoi
-          diagrams
+        comment: Weather stations scenario is plausible and neutral, appropriate for
+          Voronoi visualization
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: 0-100 coordinate space is reasonable but units are generic
+        comment: 15 points in 100x100 space is reasonable; coordinates within 5-95
+          range as intended
     code_quality:
       score: 9
       max: 10
@@ -163,8 +163,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, Voronoi computation, visualization,
-          save'
+        comment: 'Linear flow: imports, data, computation, plot, save'
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -176,19 +175,19 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports used (altair, numpy, pandas, scipy.spatial.Voronoi)
+        comment: All imports are used (altair, numpy, pandas, scipy.spatial.Voronoi)
       - id: CQ-04
         name: No Deprecated API
-        score: 1
-        max: 1
-        passed: true
-        comment: Uses current Altair API
-      - id: CQ-05
-        name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves both plot.png and plot.html
+        comment: Uses strict=True in zip which is Python 3.10+ only
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with scale_factor=3.0
     library_features:
       score: 3
       max: 5
@@ -198,16 +197,16 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses Altair layering, mark_rule, mark_circle, mark_text, tooltips.
-          Does not use advanced features like selections.
-  verdict: REJECTED
+        comment: Uses Altair layered chart composition, declarative encoding, and
+          tooltips, but Voronoi computation requires scipy rather than native Altair
+          features
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - scipy
   techniques:
   - layer-composition
   - hover-tooltips
-  - html-export
   patterns:
   - data-generation
   - iteration-over-groups

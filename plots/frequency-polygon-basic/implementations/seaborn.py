@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 frequency-polygon-basic: Frequency Polygon for Distribution Comparison
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2025-01-09
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 92/100 | Created: 2026-01-09
 """
 
 import matplotlib.pyplot as plt

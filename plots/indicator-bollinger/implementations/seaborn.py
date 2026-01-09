@@ -1,7 +1,7 @@
 """pyplots.ai
 indicator-bollinger: Bollinger Bands Indicator Chart
 Library: seaborn | Python 3.13
-Quality: pending | Created: 2026-01-07
+Quality: pending | Created: 2026-01-09
 """
 
 import matplotlib.pyplot as plt
@@ -32,17 +32,24 @@ df["lower_band"] = df["sma"] - 2 * df["std"]
 df = df.dropna().reset_index(drop=True)
 
 # Plot
+sns.set_context("talk", font_scale=1.1)
 fig, ax = plt.subplots(figsize=(16, 9))
 
-# Fill between upper and lower bands
+# Fill between upper and lower bands (volatility envelope)
 ax.fill_between(
-    df["date"], df["lower_band"], df["upper_band"], alpha=0.25, color="#306998", label="Bollinger Bands (±2σ)"
+    df["date"], df["lower_band"], df["upper_band"], alpha=0.2, color="#306998", label="Bollinger Bands (±2σ)"
 )
 
-# Plot the bands and price using seaborn
-sns.lineplot(data=df, x="date", y="upper_band", ax=ax, color="#306998", linewidth=2, linestyle="-", label="Upper Band")
-sns.lineplot(data=df, x="date", y="lower_band", ax=ax, color="#306998", linewidth=2, linestyle="-", label="Lower Band")
-sns.lineplot(data=df, x="date", y="sma", ax=ax, color="#FFD43B", linewidth=2.5, linestyle="--", label="20-day SMA")
+# Plot upper and lower band lines
+sns.lineplot(data=df, x="date", y="upper_band", ax=ax, color="#306998", linewidth=2, linestyle="-", alpha=0.8)
+sns.lineplot(data=df, x="date", y="lower_band", ax=ax, color="#306998", linewidth=2, linestyle="-", alpha=0.8)
+
+# Plot the SMA (middle band) as a dashed line
+sns.lineplot(
+    data=df, x="date", y="sma", ax=ax, color="#FFD43B", linewidth=2.5, linestyle="--", label="20-day SMA (Middle Band)"
+)
+
+# Plot the close price prominently
 sns.lineplot(data=df, x="date", y="close", ax=ax, color="#1a1a2e", linewidth=3, label="Close Price")
 
 # Styling
@@ -52,10 +59,10 @@ ax.set_title("indicator-bollinger · seaborn · pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
 ax.grid(True, alpha=0.3, linestyle="--")
 
-# Legend
+# Legend - position in upper left where it won't overlap data
 ax.legend(loc="upper left", fontsize=14, framealpha=0.9)
 
-# Format x-axis dates
+# Format x-axis dates for better readability
 fig.autofmt_xdate(rotation=30)
 
 plt.tight_layout()

@@ -1,5 +1,6 @@
 """API routers."""
 
+from api.routers.debug import router as debug_router
 from api.routers.download import router as download_router
 from api.routers.health import router as health_router
 from api.routers.libraries import router as libraries_router
@@ -12,6 +13,7 @@ from api.routers.stats import router as stats_router
 
 
 __all__ = [
+    "debug_router",
     "download_router",
     "health_router",
     "libraries_router",

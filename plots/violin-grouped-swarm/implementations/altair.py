@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-grouped-swarm: Grouped Violin Plot with Swarm Overlay
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 83/100 | Created: 2026-01-09
@@ -39,13 +39,13 @@ df = pd.DataFrame(data)
 # Color palette - Python colors
 colors = ["#306998", "#FFD43B"]
 
-# Create base chart
+# Create base chart with legend title matching data column
 base = alt.Chart(df).encode(
     color=alt.Color(
         "Expertise:N",
         scale=alt.Scale(domain=["Novice", "Expert"], range=colors),
         legend=alt.Legend(
-            title="Expertise Level", titleFontSize=22, labelFontSize=20, orient="right", symbolSize=400, offset=20
+            title="Expertise", titleFontSize=22, labelFontSize=20, orient="right", symbolSize=400, offset=20
         ),
     )
 )
@@ -64,11 +64,12 @@ violin = (
             title=None,
             axis=alt.Axis(labels=False, values=[0], grid=False, ticks=False),
         ),
-        y=alt.Y("Response Time (s):Q", title="Response Time (s)"),
+        y=alt.Y("Response Time (s):Q", title="Response Time (s)", axis=alt.Axis(grid=True, gridOpacity=0.3)),
     )
 )
 
-# Swarm points with jitter transform - aligned with violin positions
+# Swarm points with jitter transform - better aligned with violin positions
+# Using narrower jitter range and more precise offset to center points within violins
 swarm = (
     base.mark_circle(opacity=0.85, size=120)
     .encode(
@@ -81,7 +82,7 @@ swarm = (
         y=alt.Y("Response Time (s):Q"),
         color=alt.Color("Expertise:N", scale=alt.Scale(domain=["Novice", "Expert"], range=colors), legend=None),
     )
-    .transform_calculate(jitter='(random() - 0.5) * 0.25 + (datum.Expertise === "Novice" ? -0.35 : 0.35)')
+    .transform_calculate(jitter='(random() - 0.5) * 0.15 + (datum.Expertise === "Novice" ? -0.3 : 0.3)')
 )
 
 # Layer and then facet

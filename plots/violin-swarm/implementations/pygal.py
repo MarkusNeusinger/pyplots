@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 violin-swarm: Violin Plot with Overlaid Swarm Points
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 75/100 | Created: 2026-01-09
@@ -18,14 +18,18 @@ data = {
     "High Dose": np.random.gamma(6, 40, 50) + 120,
 }
 
-# Custom style for 4800x2700 px canvas with semi-transparent violin fill
+# Violin fill colors (semi-transparent) and contrasting swarm point colors
+violin_colors = ["#306998", "#4CAF50", "#FF9800", "#9C27B0"]
+swarm_colors = ["#FFD43B", "#E91E63", "#00BCD4", "#FF5722"]
+
+# Custom style for 4800x2700 px canvas
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998", "#4CAF50", "#FF9800", "#9C27B0", "#FFD43B", "#E91E63", "#00BCD4", "#795548"),
+    colors=tuple(violin_colors + swarm_colors),
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
@@ -33,6 +37,7 @@ custom_style = Style(
     value_font_size=36,
     opacity=0.35,
     opacity_hover=0.5,
+    tooltip_font_size=32,
 )
 
 # Create XY chart for violin plot with swarm overlay
@@ -43,15 +48,13 @@ chart = pygal.XY(
     title="violin-swarm · pygal · pyplots.ai",
     x_title="Experimental Condition",
     y_title="Reaction Time (ms)",
-    show_legend=True,
-    legend_at_bottom=True,
-    legend_at_bottom_columns=4,
+    show_legend=False,
     stroke=True,
     fill=True,
     dots_size=0,
     show_x_guides=False,
     show_y_guides=True,
-    range=(50, 600),
+    range=(50, 650),
     xrange=(0, 5),
     margin=50,
 )
@@ -59,25 +62,6 @@ chart = pygal.XY(
 # Parameters for violin and swarm
 violin_width = 0.35
 n_points = 100
-
-
-# Function to compute swarm positions (beeswarm-like jitter within violin bounds)
-def compute_swarm_positions(values, center_x, density_func, max_density):
-    """Compute x positions for swarm points, staying within violin bounds."""
-    n = len(values)
-    sorted_indices = np.argsort(values)
-    x_positions = np.zeros(n)
-
-    # For each point, compute its allowed width based on density at that y-value
-    for idx in sorted_indices:
-        y_val = values[idx]
-        # Get the density at this y-value to determine max width
-        local_density = density_func(y_val) / max_density * violin_width * 0.85
-        # Spread points within this width using a simple dodge algorithm
-        x_positions[idx] = center_x + np.random.uniform(-local_density, local_density)
-
-    return x_positions
-
 
 # Add violins and swarm points for each category
 for i, (category, values) in enumerate(data.items()):
@@ -108,29 +92,31 @@ for i, (category, values) in enumerate(data.items()):
     right_points = [(center_x + d, y) for y, d in zip(y_range[::-1], density_norm[::-1], strict=True)]
     violin_points = left_points + right_points + [left_points[0]]
 
-    # Add violin shape
-    chart.add(category, violin_points)
+    # Add violin shape with tooltip showing category info
+    chart.add(
+        None, [{"value": pt, "label": f"{category}: n={n}, mean={np.mean(values):.1f}ms"} for pt in violin_points]
+    )
 
-    # Create interpolation function for density lookup
-    def make_density_func(y_r, dens):
-        def func(y_val):
-            return np.interp(y_val, y_r, dens)
+    # Compute swarm x-positions staying within violin bounds
+    sorted_indices = np.argsort(values)
+    x_swarm = np.zeros(n)
+    for idx in sorted_indices:
+        y_val = values[idx]
+        local_density = np.interp(y_val, y_range, density) / max_density * violin_width * 0.85
+        x_swarm[idx] = center_x + np.random.uniform(-local_density, local_density)
 
-        return func
-
-    density_func = make_density_func(y_range, density)
-
-    # Compute swarm x-positions for each data point
-    x_swarm = compute_swarm_positions(values, center_x, density_func, max_density)
-
-    # Add swarm points as individual markers (using a darker shade)
-    swarm_points = [(float(x), float(y)) for x, y in zip(x_swarm, values, strict=True)]
-    chart.add(None, swarm_points, stroke=False, fill=False, dots_size=8, stroke_style={"width": 1})
+    # Add swarm points with contrasting color and interactive tooltips
+    swarm_points = [
+        {"value": (float(x), float(y)), "label": f"{category}: {y:.1f}ms"} for x, y in zip(x_swarm, values, strict=True)
+    ]
+    chart.add(
+        None, swarm_points, stroke=False, fill=False, dots_size=10, stroke_style={"width": 2, "color": swarm_colors[i]}
+    )
 
 # X-axis labels at violin positions
 chart.x_labels = ["", "Control", "Low Dose", "Medium Dose", "High Dose", ""]
 chart.x_labels_major_count = 4
 
-# Save outputs
-chart.render_to_file("plot.html")
+# Save outputs (PNG first as primary output)
 chart.render_to_png("plot.png")
+chart.render_to_file("plot.html")

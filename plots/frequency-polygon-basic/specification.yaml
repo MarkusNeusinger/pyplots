@@ -1,0 +1,28 @@
+# Specification-level metadata for frequency-polygon-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: frequency-polygon-basic
+title: Frequency Polygon for Distribution Comparison
+
+# Specification tracking
+created: 2026-01-09T07:51:35Z
+updated: null
+issue: 3418
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - line
+    - histogram
+  data_type:
+    - numeric
+    - continuous
+  domain:
+    - statistics
+    - general
+  features:
+    - basic
+    - distribution
+    - comparison

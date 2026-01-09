@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 density-rug: Density Plot with Rug Marks
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2026-01-09
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 93/100 | Created: 2026-01-09
 """
 
 import numpy as np

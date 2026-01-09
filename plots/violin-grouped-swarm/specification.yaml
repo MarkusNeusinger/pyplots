@@ -1,0 +1,29 @@
+# Specification-level metadata for violin-grouped-swarm
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: violin-grouped-swarm
+title: Grouped Violin Plot with Swarm Overlay
+
+# Specification tracking
+created: 2026-01-09T16:38:22Z
+updated: null
+issue: 3529
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - violin
+    - swarm
+  data_type:
+    - numeric
+    - categorical
+  domain:
+    - statistics
+    - research
+    - general
+  features:
+    - grouped
+    - distribution
+    - comparison

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-text: Scatter Plot with Text Labels Instead of Points
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 83/100 | Created: 2026-01-09
+Quality: 90/100 | Created: 2026-01-09
 """
 
 import matplotlib.pyplot as plt

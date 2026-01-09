@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-stacked-labeled: Stacked Bar Chart with Total Labels
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2025-01-09
+Library: highcharts unknown | Python 3.13.11
+Quality: 92/100 | Created: 2026-01-09
 """
 
 import tempfile

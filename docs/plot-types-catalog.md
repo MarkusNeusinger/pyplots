@@ -41,9 +41,6 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### scatter-text-labels 📋
 **Description:** Scatter plot where text labels replace or accompany data points, useful for displaying categorical identity with positioning.
 
-### joint-scatter-marginal 📋
-**Description:** Joint plot combining a central scatter plot with marginal distributions (histograms or KDE) on both axes.
-
 ---
 
 ## 2. Line Plots
@@ -240,9 +237,6 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ### violin-swarm 📋
 **Description:** Violin plot with individual data points overlaid as a swarm plot, combining distribution shape with raw data visibility.
-
-### box-points-jitter 📋
-**Description:** Box plot with jittered individual points overlaid, especially useful for small sample sizes.
 
 ### violin-grouped-swarm 📋
 **Description:** Multiple grouped violin plots with swarm overlay and optional faceting.
@@ -492,6 +486,9 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 
 ### hive-basic ✅
 **Description:** A hive plot arranges network nodes on radial axes based on node properties, enabling reproducible and directly comparable network visualizations.
+
+### network-transport-static 📋
+**Description:** A directed network visualization for transportation systems where stations are displayed as labeled nodes and train/bus routes as directed edges with departure times, arrival times, and route identifiers.
 
 ---
 

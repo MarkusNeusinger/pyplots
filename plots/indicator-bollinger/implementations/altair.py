@@ -32,33 +32,48 @@ df["lower_band"] = df["sma"] - 2 * df["std"]
 # Drop NaN values from rolling calculation
 df = df.dropna().reset_index(drop=True)
 
-# Create base chart
-base = alt.Chart(df).encode(x=alt.X("date:T", title="Date", axis=alt.Axis(format="%b %Y", labelAngle=-45)))
+# Create base encoding for x-axis
+x_encoding = alt.X("date:T", title="Date", axis=alt.Axis(format="%b %Y", labelAngle=-45, labelFontSize=18))
 
-# Upper band line
-upper_line = base.mark_line(strokeWidth=2, color="#306998", opacity=0.7).encode(
-    y=alt.Y("upper_band:Q", title="Price ($)", scale=alt.Scale(zero=False))
-)
-
-# Lower band line
-lower_line = base.mark_line(strokeWidth=2, color="#306998", opacity=0.7).encode(
-    y=alt.Y("lower_band:Q", scale=alt.Scale(zero=False))
-)
+# Calculate scale domain for y-axis
+y_min = df["lower_band"].min() * 0.98
+y_max = df["upper_band"].max() * 1.02
+y_scale = alt.Scale(domain=[y_min, y_max], zero=False)
 
 # Band fill area (between upper and lower bands)
 band_area = (
     alt.Chart(df)
-    .mark_area(opacity=0.15, color="#306998")
-    .encode(x=alt.X("date:T"), y=alt.Y("upper_band:Q", scale=alt.Scale(zero=False)), y2="lower_band:Q")
+    .mark_area(opacity=0.2, color="#306998")
+    .encode(x=alt.X("date:T"), y=alt.Y("upper_band:Q", scale=y_scale), y2="lower_band:Q")
+)
+
+# Upper band line
+upper_line = (
+    alt.Chart(df)
+    .mark_line(strokeWidth=2.5, color="#306998", opacity=0.7)
+    .encode(x=x_encoding, y=alt.Y("upper_band:Q", scale=y_scale))
+)
+
+# Lower band line
+lower_line = (
+    alt.Chart(df)
+    .mark_line(strokeWidth=2.5, color="#306998", opacity=0.7)
+    .encode(x=x_encoding, y=alt.Y("lower_band:Q", scale=y_scale))
 )
 
 # Middle band (SMA) - dashed line
-sma_line = base.mark_line(strokeWidth=2.5, strokeDash=[8, 4], color="#306998", opacity=0.9).encode(
-    y=alt.Y("sma:Q", scale=alt.Scale(zero=False))
+sma_line = (
+    alt.Chart(df)
+    .mark_line(strokeWidth=3, strokeDash=[10, 5], color="#306998", opacity=0.9)
+    .encode(x=x_encoding, y=alt.Y("sma:Q", scale=y_scale))
 )
 
 # Close price line - prominent
-price_line = base.mark_line(strokeWidth=3, color="#FFD43B").encode(y=alt.Y("close:Q", scale=alt.Scale(zero=False)))
+price_line = (
+    alt.Chart(df)
+    .mark_line(strokeWidth=4, color="#FFD43B")
+    .encode(x=x_encoding, y=alt.Y("close:Q", title="Price ($)", scale=y_scale))
+)
 
 # Combine all layers
 chart = (
@@ -66,11 +81,16 @@ chart = (
     .properties(
         width=1600,
         height=900,
-        title=alt.Title(text="indicator-bollinger · altair · pyplots.ai", fontSize=28, anchor="middle"),
+        title=alt.Title(
+            text="indicator-bollinger · altair · pyplots.ai",
+            subtitle="20-period SMA with 2 standard deviation bands",
+            fontSize=28,
+            subtitleFontSize=20,
+            anchor="middle",
+        ),
     )
     .configure_axis(labelFontSize=18, titleFontSize=22, gridOpacity=0.3)
     .configure_view(strokeWidth=0)
-    .configure_legend(titleFontSize=18, labelFontSize=16)
 )
 
 # Save as PNG and HTML

@@ -1,7 +1,7 @@
 """pyplots.ai
 heatmap-interactive: Interactive Heatmap with Hover and Zoom
 Library: highcharts | Python 3.13
-Quality: pending | Created: 2026-01-08
+Quality: pending | Created: 2026-01-09
 """
 
 import json
@@ -11,7 +11,6 @@ import urllib.request
 from pathlib import Path
 
 import numpy as np
-from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -23,7 +22,7 @@ categories = [
     "Homepage",
     "Products",
     "Services",
-    "About",
+    "About Us",
     "Contact",
     "Blog",
     "FAQ",
@@ -33,7 +32,7 @@ categories = [
     "News",
     "Events",
     "Resources",
-    "Documentation",
+    "Docs",
     "Tutorials",
     "API",
     "Downloads",
@@ -55,11 +54,9 @@ for y_idx in range(len(categories)):
     for x_idx in range(len(months)):
         heatmap_data.append([x_idx, y_idx, int(values[y_idx, x_idx])])
 
-# Render at 2400x1350 and scale up to 4800x2700 for better Chrome compatibility
-RENDER_WIDTH = 2400
-RENDER_HEIGHT = 1350
-OUTPUT_WIDTH = 4800
-OUTPUT_HEIGHT = 2700
+# Canvas dimensions
+WIDTH = 4800
+HEIGHT = 2700
 
 # Download Highcharts JS and heatmap module
 highcharts_url = "https://code.highcharts.com/highcharts.js"
@@ -78,46 +75,58 @@ html_content = f"""<!DOCTYPE html>
     <script>{highcharts_js}</script>
     <script>{heatmap_js}</script>
 </head>
-<body style="margin:0;">
-    <div id="container" style="width: {RENDER_WIDTH}px; height: {RENDER_HEIGHT}px;"></div>
+<body style="margin:0; padding:0; background:#ffffff;">
+    <div id="container" style="width: {WIDTH}px; height: {HEIGHT}px;"></div>
     <script>
     document.addEventListener('DOMContentLoaded', function() {{
         Highcharts.chart('container', {{
             chart: {{
                 type: 'heatmap',
-                width: {RENDER_WIDTH},
-                height: {RENDER_HEIGHT},
+                width: {WIDTH},
+                height: {HEIGHT},
                 backgroundColor: '#ffffff',
-                marginBottom: 90,
-                marginRight: 100,
-                marginLeft: 140,
+                marginTop: 120,
+                marginBottom: 180,
+                marginRight: 200,
+                marginLeft: 280,
                 zoomType: 'xy',
                 panning: {{ enabled: true, type: 'xy' }},
                 panKey: 'shift',
                 resetZoomButton: {{
-                    position: {{ align: 'right', verticalAlign: 'top', x: -10, y: 10 }},
-                    theme: {{ style: {{ fontSize: '14px' }} }}
+                    position: {{ align: 'right', verticalAlign: 'top', x: -30, y: 20 }},
+                    theme: {{
+                        style: {{ fontSize: '24px' }},
+                        padding: 12,
+                        r: 6
+                    }}
                 }}
             }},
             title: {{
                 text: 'heatmap-interactive · highcharts · pyplots.ai',
-                style: {{ fontSize: '24px', fontWeight: 'bold' }}
+                style: {{ fontSize: '48px', fontWeight: 'bold', color: '#333333' }}
             }},
             subtitle: {{
-                text: 'Website Page Views by Category and Month (thousands) - Click and drag to zoom, Shift+drag to pan',
-                style: {{ fontSize: '14px', color: '#666666' }}
+                text: 'Website Page Views by Category and Month (thousands) — Click and drag to zoom, Shift+drag to pan',
+                style: {{ fontSize: '28px', color: '#666666' }}
             }},
             xAxis: {{
                 categories: {json.dumps(months)},
-                title: {{ text: 'Month', style: {{ fontSize: '16px' }} }},
-                labels: {{ style: {{ fontSize: '12px' }} }},
+                title: {{
+                    text: 'Month',
+                    style: {{ fontSize: '36px', fontWeight: 'bold', color: '#333333' }}
+                }},
+                labels: {{ style: {{ fontSize: '28px', color: '#333333' }} }},
                 gridLineWidth: 1,
-                gridLineColor: '#e0e0e0'
+                gridLineColor: '#e0e0e0',
+                tickLength: 0
             }},
             yAxis: {{
                 categories: {json.dumps(categories)},
-                title: {{ text: 'Page Category', style: {{ fontSize: '16px' }} }},
-                labels: {{ style: {{ fontSize: '11px' }} }},
+                title: {{
+                    text: 'Page Category',
+                    style: {{ fontSize: '36px', fontWeight: 'bold', color: '#333333' }}
+                }},
+                labels: {{ style: {{ fontSize: '26px', color: '#333333' }} }},
                 reversed: true,
                 gridLineWidth: 1,
                 gridLineColor: '#e0e0e0'
@@ -126,52 +135,51 @@ html_content = f"""<!DOCTYPE html>
                 min: 5,
                 max: 150,
                 stops: [
-                    [0, '#ffffff'],
-                    [0.25, '#FFD43B'],
-                    [0.5, '#FFA500'],
+                    [0, '#f7fbff'],
+                    [0.2, '#FFD43B'],
+                    [0.5, '#fd8d3c'],
                     [0.75, '#306998'],
                     [1, '#1a3a5c']
                 ],
-                labels: {{ style: {{ fontSize: '11px' }} }}
+                labels: {{ style: {{ fontSize: '24px', color: '#333333' }} }}
             }},
             legend: {{
                 align: 'right',
                 layout: 'vertical',
                 verticalAlign: 'middle',
-                symbolHeight: 250,
-                symbolWidth: 20,
-                itemStyle: {{ fontSize: '11px' }},
+                symbolHeight: 500,
+                symbolWidth: 40,
+                itemStyle: {{ fontSize: '24px', color: '#333333' }},
                 title: {{
-                    text: 'Page Views (K)',
-                    style: {{ fontSize: '12px', fontWeight: 'bold' }}
+                    text: 'Views (K)',
+                    style: {{ fontSize: '28px', fontWeight: 'bold', color: '#333333' }}
                 }}
             }},
             tooltip: {{
                 enabled: true,
                 useHTML: true,
                 formatter: function() {{
-                    return '<div style="font-size: 14px; padding: 8px;">' +
-                        '<b>Category:</b> ' + this.series.yAxis.categories[this.point.y] + '<br/>' +
-                        '<b>Month:</b> ' + this.series.xAxis.categories[this.point.x] + '<br/>' +
-                        '<b>Views:</b> ' + this.point.value + 'K</div>';
-                }},
-                style: {{ fontSize: '12px' }}
+                    return '<div style="font-size: 28px; padding: 16px; line-height: 1.6;">' +
+                        '<b style="color: #306998;">Category:</b> ' + this.series.yAxis.categories[this.point.y] + '<br/>' +
+                        '<b style="color: #306998;">Month:</b> ' + this.series.xAxis.categories[this.point.x] + '<br/>' +
+                        '<b style="color: #306998;">Views:</b> ' + this.point.value + 'K</div>';
+                }}
             }},
             plotOptions: {{
                 heatmap: {{
-                    borderWidth: 2,
+                    borderWidth: 3,
                     borderColor: '#ffffff',
                     dataLabels: {{ enabled: false }},
                     states: {{
                         hover: {{
-                            brightness: 0.1,
-                            borderWidth: 4,
+                            brightness: 0.15,
+                            borderWidth: 6,
                             borderColor: '#000000'
                         }}
                     }}
                 }},
                 series: {{
-                    cursor: 'pointer',
+                    cursor: 'crosshair',
                     stickyTracking: true
                 }}
             }},
@@ -179,10 +187,11 @@ html_content = f"""<!DOCTYPE html>
                 type: 'heatmap',
                 name: 'Page Views',
                 data: {json.dumps(heatmap_data)},
-                borderWidth: 2,
+                borderWidth: 3,
                 borderColor: '#ffffff',
                 nullColor: '#e0e0e0'
-            }}]
+            }}],
+            credits: {{ enabled: false }}
         }});
     }});
     </script>
@@ -203,30 +212,19 @@ chrome_options.add_argument("--headless=new")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument(f"--window-size={RENDER_WIDTH + 100},{RENDER_HEIGHT + 100}")
+chrome_options.add_argument(f"--window-size={WIDTH},{HEIGHT + 200}")
 chrome_options.add_argument("--force-device-scale-factor=1")
+chrome_options.add_argument("--hide-scrollbars")
 
 driver = webdriver.Chrome(options=chrome_options)
-driver.set_window_size(RENDER_WIDTH + 100, RENDER_HEIGHT + 100)
+driver.set_window_size(WIDTH, HEIGHT + 200)
 driver.get(f"file://{temp_path}")
 time.sleep(5)
 
-# Take screenshot at render size
-driver.save_screenshot("plot_temp.png")
+# Find the container element and take a screenshot of just that element
+container = driver.find_element("id", "container")
+container.screenshot("plot.png")
 driver.quit()
 
-# Resize to output dimensions using high-quality resampling
-img = Image.open("plot_temp.png")
-# Crop to exact chart dimensions, leaving out any browser chrome
-crop_height = min(RENDER_HEIGHT, img.height)
-img = img.crop((0, 0, RENDER_WIDTH, crop_height))
-# Create white canvas at target size and paste the cropped image
-canvas = Image.new("RGB", (RENDER_WIDTH, RENDER_HEIGHT), (255, 255, 255))
-canvas.paste(img, (0, 0))
-# Resize to output size with high-quality resampling
-img_resized = canvas.resize((OUTPUT_WIDTH, OUTPUT_HEIGHT), Image.Resampling.LANCZOS)
-img_resized.save("plot.png", "PNG")
-
-# Clean up temp files
-Path("plot_temp.png").unlink()
+# Clean up temp file
 Path(temp_path).unlink()

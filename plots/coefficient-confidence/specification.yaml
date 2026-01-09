@@ -1,0 +1,28 @@
+# Specification-level metadata for coefficient-confidence
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: coefficient-confidence
+title: Coefficient Plot with Confidence Intervals
+
+# Specification tracking
+created: 2026-01-09T23:39:47Z
+updated: null
+issue: 3576
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - point
+    - errorbar
+  data_type:
+    - numeric
+    - categorical
+  domain:
+    - statistics
+    - research
+  features:
+    - basic
+    - comparison
+    - horizontal

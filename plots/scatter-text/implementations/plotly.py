@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-text: Scatter Plot with Text Labels Instead of Points
 Library: plotly 6.5.1 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-09
@@ -46,80 +46,76 @@ labels = [
 ]
 
 # Position based on: x = Level of abstraction, y = Type safety
-# Coordinates adjusted to avoid text overlaps
+# Coordinates carefully placed to avoid all text overlaps
 x = np.array(
     [
         8.5,  # Python
-        6.5,  # JavaScript - shifted left (was 7.0, avoid Perl overlap)
+        5.5,  # JavaScript - shifted further left
         6.0,  # Java
         3.0,  # C++
         8.0,  # Ruby
         5.5,  # Go
         4.0,  # Rust
-        5.8,  # Kotlin - shifted left (was 6.5, avoid Dart overlap)
+        5.0,  # Kotlin - shifted significantly left
         7.0,  # Swift
         7.5,  # TypeScript
-        7.0,  # Scala
+        6.5,  # Scala - shifted left
         9.0,  # Haskell
         8.5,  # Elixir
-        9.5,  # Clojure - shifted right (was 9.0, avoid Prolog overlap)
+        9.8,  # Clojure - shifted to far right edge
         8.0,  # F#
-        8.0,  # R
+        9.5,  # R - shifted right
         7.5,  # Julia
-        7.0,  # MATLAB
-        7.8,  # Perl - shifted right (was 7.0, avoid JavaScript overlap)
-        7.5,  # PHP
+        6.5,  # MATLAB - shifted left
+        8.5,  # Perl - shifted significantly right
+        7.0,  # PHP
         6.0,  # C#
-        7.5,  # Dart - shifted right (was 7.0, avoid Kotlin overlap)
-        6.5,  # Lua
-        8.0,  # Erlang
+        8.0,  # Dart - shifted right, away from Kotlin
+        6.0,  # Lua - shifted left
+        9.2,  # Erlang - shifted right
         8.5,  # OCaml
-        3.0,  # Fortran - shifted left (was 3.5, avoid COBOL overlap)
-        4.5,  # COBOL - shifted right (was 4.0, avoid Fortran overlap)
+        2.0,  # Fortran - shifted further left
+        5.0,  # COBOL - shifted significantly right
         1.0,  # Assembly
-        9.0,  # Lisp
-        8.5,  # Prolog - shifted left (was 9.0, avoid Clojure overlap)
+        9.5,  # Lisp - shifted right
+        7.5,  # Prolog - shifted significantly left
     ]
 )
 
 y = np.array(
     [
         3.0,  # Python
-        2.0,  # JavaScript - shifted down (was 2.5, avoid Perl overlap)
+        1.5,  # JavaScript - shifted down
         8.0,  # Java
         6.0,  # C++
-        2.0,  # Ruby
+        1.5,  # Ruby - shifted down
         7.0,  # Go
         9.0,  # Rust
-        8.0,  # Kotlin - shifted up (was 7.5, avoid Dart overlap)
-        8.5,  # Swift - shifted up (was 8.0, avoid TypeScript overlap)
-        7.5,  # TypeScript - shifted down (was 8.0)
-        8.5,  # Scala - shifted up (was 8.0, avoid TypeScript overlap)
+        8.5,  # Kotlin - shifted up
+        9.0,  # Swift - shifted up
+        7.0,  # TypeScript - shifted down
+        9.0,  # Scala - shifted up
         9.5,  # Haskell
-        6.0,  # Elixir
-        5.8,  # Clojure - shifted down (was 6.5, avoid Prolog overlap)
+        5.5,  # Elixir - shifted down
+        4.5,  # Clojure - shifted down significantly
         8.5,  # F#
-        2.5,  # R
-        4.0,  # Julia
-        3.5,  # MATLAB
-        2.8,  # Perl - shifted up (was 2.0, avoid JavaScript overlap)
-        2.0,  # PHP - shifted down (was 2.5, avoid R overlap)
-        8.0,  # C#
-        6.5,  # Dart - shifted down (was 7.0, avoid Kotlin overlap)
-        3.0,  # Lua
-        6.0,  # Erlang
-        9.0,  # OCaml
-        4.5,  # Fortran - shifted down (was 5.0, avoid COBOL overlap)
-        6.0,  # COBOL - shifted up (was 5.5, avoid Fortran overlap)
-        3.0,  # Assembly
-        4.0,  # Lisp
-        7.5,  # Prolog - shifted up (was 7.0, avoid Clojure overlap)
+        3.0,  # R
+        4.5,  # Julia
+        3.0,  # MATLAB
+        2.5,  # Perl
+        1.5,  # PHP - shifted down
+        8.5,  # C# - shifted up
+        6.0,  # Dart - shifted down, away from Kotlin
+        4.0,  # Lua - shifted up
+        6.5,  # Erlang
+        9.5,  # OCaml - shifted up
+        3.5,  # Fortran - shifted down
+        6.5,  # COBOL - shifted up, away from Fortran
+        2.5,  # Assembly - shifted down
+        5.0,  # Lisp - shifted up
+        8.0,  # Prolog - shifted up significantly
     ]
 )
-
-# Add small noise for visual interest (reduced to avoid creating new overlaps)
-x = x + np.random.uniform(-0.15, 0.15, len(x))
-y = y + np.random.uniform(-0.15, 0.15, len(y))
 
 # Color by category (functional, OOP, multi-paradigm, systems)
 categories = [
@@ -192,7 +188,7 @@ for category in color_map:
                 y=y_cat,
                 mode="text",
                 text=labels_cat,
-                textfont=dict(size=16, color=color_map[category]),
+                textfont=dict(size=18, color=color_map[category], family="Arial Black"),
                 textposition="middle center",
                 name=category,
                 showlegend=True,
@@ -205,14 +201,14 @@ for category in color_map:
 fig.update_layout(
     title=dict(text="scatter-text · plotly · pyplots.ai", font=dict(size=32), x=0.5, xanchor="center"),
     xaxis=dict(
-        title=dict(text="Level of Abstraction", font=dict(size=24)),
+        title=dict(text="Level of Abstraction (0-10 scale)", font=dict(size=24)),
         tickfont=dict(size=18),
         range=[0, 10.5],
         gridcolor="rgba(0,0,0,0.1)",
         gridwidth=1,
     ),
     yaxis=dict(
-        title=dict(text="Type Safety", font=dict(size=24)),
+        title=dict(text="Type Safety (0-10 scale)", font=dict(size=24)),
         tickfont=dict(size=18),
         range=[0, 10.5],
         gridcolor="rgba(0,0,0,0.1)",
@@ -226,6 +222,7 @@ fig.update_layout(
         y=0.98,
         xanchor="left",
         yanchor="top",
+        itemsizing="constant",
     ),
     margin=dict(l=80, r=180, t=100, b=80),
 )

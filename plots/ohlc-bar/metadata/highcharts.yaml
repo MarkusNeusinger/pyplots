@@ -3,10 +3,10 @@
 
 library: highcharts
 specification_id: ohlc-bar
-created: '2026-01-08T16:13:44Z'
-updated: '2026-01-08T16:13:44Z'
+created: '2026-01-09T08:06:08Z'
+updated: '2026-01-09T08:06:08Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20823200816
+workflow_run: 20845305252
 issue: 3293
 python_version: 3.13.11
 library_version: unknown

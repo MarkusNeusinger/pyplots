@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 biplot-pca: PCA Biplot with Scores and Loading Vectors
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-09
@@ -36,7 +36,7 @@ unit_circle_radius = loading_scale
 
 # Custom style for 4800x2700 px canvas
 species_colors = ["#306998", "#FFD43B", "#2ECC71"]  # Blue, Yellow, Green for species
-unit_circle_color = "#999999"  # Gray for unit circle reference
+unit_circle_color = "#AAAAAA"  # Gray for unit circle reference
 # Distinct colors for each loading vector (colorblind-friendly)
 loading_colors = ["#E41A1C", "#984EA3", "#FF7F00", "#377EB8"]  # Red, Purple, Orange, Blue
 
@@ -50,7 +50,7 @@ custom_style = Style(
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
-    legend_font_size=38,
+    legend_font_size=42,
     tooltip_font_size=36,
     stroke_width=4,
     opacity=0.85,
@@ -67,12 +67,12 @@ chart = pygal.XY(
     y_title=f"PC2 ({variance_explained[1]:.1f}%)",
     show_legend=True,
     legend_at_bottom=True,
-    legend_box_size=32,
-    dots_size=12,
+    legend_box_size=36,
+    dots_size=14,
     stroke=False,
     show_x_guides=True,
     show_y_guides=True,
-    truncate_legend=-1,
+    truncate_legend=50,
     explicit_size=True,
 )
 
@@ -80,46 +80,46 @@ chart = pygal.XY(
 for i, name in enumerate(target_names):
     mask = y == i
     points = [(float(scores[j, 0]), float(scores[j, 1])) for j in range(len(y)) if mask[j]]
-    chart.add(name.capitalize(), points, stroke=False, dots_size=12)
+    chart.add(name.capitalize(), points, stroke=False, dots_size=14)
 
-# Create unit circle for loading magnitude reference (subtle, no legend text)
+# Create unit circle for loading magnitude reference
 circle_points = []
 for angle in range(0, 361, 3):
     rad = math.radians(angle)
     circle_points.append((unit_circle_radius * math.cos(rad), unit_circle_radius * math.sin(rad)))
-chart.add("Reference", circle_points, stroke=True, show_dots=False, stroke_style={"width": 2, "dasharray": "8,6"})
+chart.add("Unit Circle", circle_points, stroke=True, show_dots=False, stroke_style={"width": 3, "dasharray": "10,8"})
 
-# Shorten feature names for legend and labels
-short_names = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width"]
+# Full feature names for legend clarity
+full_names = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width"]
 
-# Add each loading vector as separate series (name in legend acts as label)
-for i, short_name in enumerate(short_names):
+# Add each loading vector as line arrow with arrowhead
+for i, full_name in enumerate(full_names):
     tip_x = float(loadings[i, 0] * loading_scale)
     tip_y = float(loadings[i, 1] * loading_scale)
 
-    # Calculate arrow geometry inline (no helper function)
+    # Calculate arrow geometry for line-style arrow
     dx, dy = tip_x, tip_y
     length = math.sqrt(dx * dx + dy * dy)
     ux = dx / length if length > 0 else 0
     uy = dy / length if length > 0 else 0
     px, py = -uy, ux  # Perpendicular vector
 
-    head_len = 0.12 * loading_scale
-    head_wid = 0.07 * loading_scale
+    # Smaller arrowhead for cleaner line appearance
+    head_len = 0.08 * loading_scale
+    head_wid = 0.04 * loading_scale
     hb_x = tip_x - ux * head_len
     hb_y = tip_y - uy * head_len
 
-    # Arrow path: origin -> shaft -> arrowhead wings -> tip -> back
-    arrow = [
+    # Line arrow: origin to tip with small arrowhead triangle
+    arrow_line = [
         (0.0, 0.0),
-        (hb_x, hb_y),
+        (tip_x, tip_y),
         (hb_x + px * head_wid, hb_y + py * head_wid),
         (tip_x, tip_y),
         (hb_x - px * head_wid, hb_y - py * head_wid),
-        (hb_x, hb_y),
+        (tip_x, tip_y),
     ]
-    chart.add(short_name, arrow, stroke=True, show_dots=False, fill=True, stroke_style={"width": 4})
+    chart.add(full_name, arrow_line, stroke=True, show_dots=False, fill=False, stroke_style={"width": 5})
 
-# Save outputs
+# Save PNG output only
 chart.render_to_png("plot.png")
-chart.render_to_file("plot.html")

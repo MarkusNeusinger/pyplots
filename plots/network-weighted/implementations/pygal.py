@@ -1,9 +1,12 @@
-""" pyplots.ai
+"""pyplots.ai
 network-weighted: Weighted Network Graph with Edge Thickness
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-09
 """
 
+import re
+
+import cairosvg
 import numpy as np
 import pygal
 from pygal.style import Style
@@ -101,7 +104,7 @@ for _ in range(300):
 
     t *= 0.97
 
-# Normalize positions to [1, 11] for pygal
+# Normalize positions to [2, 10] for pygal
 pos_min = pos.min(axis=0)
 pos_max = pos.max(axis=0)
 pos = (pos - pos_min) / (pos_max - pos_min + 1e-6) * 8 + 2
@@ -113,12 +116,15 @@ for src, tgt, weight in edges:
     weighted_degree[src] += weight
     weighted_degree[tgt] += weight
 
+max_degree = max(weighted_degree.values())
+min_degree = min(weighted_degree.values())
+
 # Color mapping by region
 group_colors = {
     "Americas": "#306998",  # Python Blue
-    "Europe": "#FFD43B",  # Python Yellow
-    "Asia": "#E74C3C",  # Red
-    "Oceania": "#2ECC71",  # Green
+    "Europe": "#1A1A1A",  # Near black (high contrast)
+    "Asia": "#FFD43B",  # Python Yellow
+    "Oceania": "#E74C3C",  # Red
 }
 
 # Bin edges by weight for visual thickness representation
@@ -128,12 +134,11 @@ max_weight = max(edge_weights)
 weight_range = max_weight - min_weight
 
 # Create 4 weight bins for edge thickness visualization
-# Pygal doesn't support per-line stroke width, so we group by weight category
 edge_bins = {
-    "low": [],  # 0-25% percentile
-    "medium": [],  # 25-50%
-    "high": [],  # 50-75%
-    "very_high": [],  # 75-100%
+    "low": [],  # 0-25% percentile: $20-178B
+    "medium": [],  # 25-50%: $178-335B
+    "high": [],  # 50-75%: $335-493B
+    "very_high": [],  # 75-100%: $493-650B
 }
 
 for src, tgt, weight in edges:
@@ -147,23 +152,22 @@ for src, tgt, weight in edges:
     else:
         edge_bins["very_high"].append((src, tgt, weight))
 
-# Custom style for the chart
+# Edge thickness settings (stroke-width in pixels) - dramatically different for visibility
+edge_styles = {
+    "low": {"stroke": "#CCCCCC", "stroke_width": 3},
+    "medium": {"stroke": "#999999", "stroke_width": 10},
+    "high": {"stroke": "#666666", "stroke_width": 20},
+    "very_high": {"stroke": "#222222", "stroke_width": 32},
+}
+
+# Custom style for pygal chart
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=(
-        "#DDDDDD",  # Low weight edges
-        "#AAAAAA",  # Medium weight edges
-        "#777777",  # High weight edges
-        "#333333",  # Very high weight edges
-        "#306998",  # Americas
-        "#FFD43B",  # Europe
-        "#E74C3C",  # Asia
-        "#2ECC71",  # Oceania
-    ),
+    colors=(group_colors["Americas"], group_colors["Europe"], group_colors["Asia"], group_colors["Oceania"]),
     title_font_size=72,
     label_font_size=40,
     major_label_font_size=36,
@@ -174,7 +178,7 @@ custom_style = Style(
     opacity_hover=1.0,
 )
 
-# Create XY chart
+# Create pygal XY chart for nodes (to use pygal's features)
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -187,90 +191,138 @@ chart = pygal.XY(
     show_y_guides=False,
     show_x_labels=False,
     show_y_labels=False,
-    stroke=True,
-    dots_size=0,
+    stroke=False,
     legend_at_bottom=True,
-    legend_at_bottom_columns=8,
+    legend_at_bottom_columns=4,
     legend_box_size=24,
     range=(0, 12),
     xrange=(0, 12),
-    print_labels=False,
+    print_labels=True,
     print_values=False,
-    margin_bottom=120,
+    margin_bottom=200,
+    margin_top=120,
 )
 
-# Add edges by weight category (thinner to thicker visually in legend order)
-weight_labels = {
-    "low": "$20-175B (light)",
-    "medium": "$175-335B",
-    "high": "$335-495B",
-    "very_high": "$495-650B (heavy)",
-}
-
-for weight_cat in ["low", "medium", "high", "very_high"]:
-    edge_points = []
-    for src, tgt, _weight in edge_bins[weight_cat]:
-        x1, y1 = positions[src]
-        x2, y2 = positions[tgt]
-        edge_points.append((x1, y1))
-        edge_points.append((x2, y2))
-        edge_points.append(None)  # Break line for next edge
-
-    if edge_points:
-        chart.add(weight_labels[weight_cat], edge_points, stroke=True, show_dots=False, fill=False)
-
-# Group nodes by region
+# Group nodes by region and add to chart with varying dot sizes based on weighted degree
 regions = {"Americas": [], "Europe": [], "Asia": [], "Oceania": []}
 for name, data in nodes.items():
     regions[data["group"]].append(name)
 
-# Add nodes by region with larger dots
-max_degree = max(weighted_degree.values())
 for region, region_nodes in regions.items():
     node_points = []
     for name in region_nodes:
         x, y = positions[name]
-        w_deg = weighted_degree[name]
-        # Scale tooltip to show weighted degree
-        label = f"{name}: ${w_deg}B total trade"
-        node_points.append({"value": (x, y), "label": label})
-    chart.add(region, node_points, stroke=False, dots_size=45)
+        # Calculate dot size based on weighted degree (25-65 px)
+        degree_norm = (
+            (weighted_degree[name] - min_degree) / (max_degree - min_degree) if max_degree > min_degree else 0.5
+        )
+        dot_size = 25 + degree_norm * 40
+        label = name  # Show country code as label
+        node_points.append({"value": (x, y), "label": label, "node": {"r": dot_size}})
+    chart.add(region, node_points, dots_size=40)
 
-# Save outputs
-chart.render_to_file("plot.svg")
-chart.render_to_png("plot.png")
+# Render chart to get SVG string
+svg_content = chart.render().decode("utf-8")
 
-# Save HTML for interactive version
-with open("plot.html", "w") as f:
-    f.write(
-        """<!DOCTYPE html>
-<html>
-<head>
-    <title>network-weighted · pygal · pyplots.ai</title>
-    <style>
-        body { margin: 0; padding: 20px; background: #f5f5f5; font-family: sans-serif; }
-        .container { max-width: 100%; margin: 0 auto; }
-        object { width: 100%; height: auto; }
-        .legend-note {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-size: 14px;
-            color: #666;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <object type="image/svg+xml" data="plot.svg">
-            Weighted network graph not supported
-        </object>
-        <div class="legend-note">
-            Edge thickness represents trade volume between countries (billions USD).
-            Node colors indicate geographic regions. Hover over nodes and edges for details.
-        </div>
-    </div>
-</body>
-</html>"""
+# Post-process SVG to add edges with varying thickness before nodes
+# Find the position to insert edges (after background, before data)
+
+# Find the first <g class="series" position to insert edges before it
+series_match = re.search(r'(<g class="series)', svg_content)
+if series_match:
+    insert_pos = series_match.start()
+else:
+    # Fallback: insert before </svg>
+    insert_pos = svg_content.rfind("</svg>")
+
+# Calculate SVG coordinate transformation (pygal uses viewBox)
+# We need to map our data coords to pygal's SVG coords
+# Pygal typically maps xrange/range to the plot area
+svg_margin = {"top": 120, "right": 100, "bottom": 200, "left": 100}
+svg_width = 4800
+svg_height = 2700
+plot_width = svg_width - svg_margin["left"] - svg_margin["right"]
+plot_height = svg_height - svg_margin["top"] - svg_margin["bottom"]
+
+# Build edge SVG elements
+edge_svg_parts = ['<g class="edges">']
+
+for weight_cat in ["low", "medium", "high", "very_high"]:
+    style = edge_styles[weight_cat]
+    for src, tgt, _weight in edge_bins[weight_cat]:
+        # Convert data coordinates to SVG coordinates
+        x1_data, y1_data = positions[src]
+        x2_data, y2_data = positions[tgt]
+
+        x1 = svg_margin["left"] + (x1_data / 12) * plot_width
+        y1 = svg_margin["top"] + (1 - y1_data / 12) * plot_height
+        x2 = svg_margin["left"] + (x2_data / 12) * plot_width
+        y2 = svg_margin["top"] + (1 - y2_data / 12) * plot_height
+
+        edge_svg_parts.append(
+            f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
+            f'stroke="{style["stroke"]}" stroke-width="{style["stroke_width"]}" '
+            f'stroke-linecap="round" opacity="0.7"/>'
+        )
+
+edge_svg_parts.append("</g>")
+edge_svg = "\n".join(edge_svg_parts)
+
+# Insert edges into SVG
+svg_content = svg_content[:insert_pos] + edge_svg + "\n" + svg_content[insert_pos:]
+
+# Add node labels (country codes) on top of nodes
+# Find all circle elements and add text labels after them
+label_svg_parts = ['<g class="node-labels">']
+for name in nodes.keys():
+    x_data, y_data = positions[name]
+    x = svg_margin["left"] + (x_data / 12) * plot_width
+    y = svg_margin["top"] + (1 - y_data / 12) * plot_height
+    label_svg_parts.append(
+        f'<text x="{x:.1f}" y="{y + 10:.1f}" text-anchor="middle" '
+        f'font-family="sans-serif" font-size="28" font-weight="bold" fill="white">{name}</text>'
     )
+label_svg_parts.append("</g>")
+label_svg = "\n".join(label_svg_parts)
+
+# Insert labels before closing </svg>
+svg_content = svg_content.replace("</svg>", label_svg + "\n</svg>")
+
+# Add edge thickness legend
+legend_y = 2700 - 120
+legend_x_start = 2200
+legend_items = [
+    ("$20-178B", edge_styles["low"]),
+    ("$178-335B", edge_styles["medium"]),
+    ("$335-493B", edge_styles["high"]),
+    ("$493-650B", edge_styles["very_high"]),
+]
+
+edge_legend_parts = ['<g class="edge-legend">']
+edge_legend_parts.append(
+    f'<text x="{legend_x_start - 100}" y="{legend_y + 8}" '
+    f'font-family="sans-serif" font-size="28" fill="#666666">Edge weights:</text>'
+)
+legend_x = legend_x_start
+for label, style in legend_items:
+    edge_legend_parts.append(
+        f'<line x1="{legend_x}" y1="{legend_y}" x2="{legend_x + 50}" y2="{legend_y}" '
+        f'stroke="{style["stroke"]}" stroke-width="{style["stroke_width"]}" stroke-linecap="round"/>'
+    )
+    edge_legend_parts.append(
+        f'<text x="{legend_x + 65}" y="{legend_y + 10}" '
+        f'font-family="sans-serif" font-size="28" fill="#333333">{label}</text>'
+    )
+    legend_x += 280
+edge_legend_parts.append("</g>")
+edge_legend_svg = "\n".join(edge_legend_parts)
+
+# Insert edge legend before closing </svg>
+svg_content = svg_content.replace("</svg>", edge_legend_svg + "\n</svg>")
+
+# Save final SVG
+with open("plot.svg", "w") as f:
+    f.write(svg_content)
+
+# Convert modified SVG to PNG using cairosvg
+cairosvg.svg2png(bytestring=svg_content.encode("utf-8"), write_to="plot.png")

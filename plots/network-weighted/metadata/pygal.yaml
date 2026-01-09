@@ -3,10 +3,10 @@
 
 library: pygal
 specification_id: network-weighted
-created: '2026-01-08T15:59:28Z'
-updated: '2026-01-08T15:59:28Z'
+created: '2026-01-09T08:07:31Z'
+updated: '2026-01-09T08:07:31Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20822859811
+workflow_run: 20845304762
 issue: 3290
 python_version: 3.13.11
 library_version: 3.1.0

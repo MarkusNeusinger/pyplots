@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: scatter-text
 created: '2026-01-09T14:24:52Z'
-updated: '2026-01-09T14:28:08Z'
+updated: '2026-01-09T14:34:46Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20854875289
 issue: 3482
@@ -10,86 +10,83 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/scatter-text/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/scatter-text/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: 82
+quality_score: 90
 review:
   strengths:
-  - 'Excellent concept: programming languages as named entities in embedding space
-    is creative and immediately understandable'
-  - Clean color scheme with four distinct, colorblind-friendly colors
-  - Legend correctly explains categories with appropriate patch styling
-  - Proper axis labels and title format following spec requirements
-  - Good code structure following KISS principles with seed for reproducibility
+  - Excellent real-world scenario using programming languages positioned by paradigm
+    similarity
+  - Color encoding by category (Dynamic, Functional, Systems, JVM) adds meaningful
+    information
+  - Clean, well-structured code following KISS principles
+  - Title format is correct and professional
+  - Legend clearly identifies all four categories
+  - Good use of alpha transparency (0.9) and bold font weight for visibility
   weaknesses:
-  - Text overlap in dense regions (around x=2-3, y=5-5.5) makes some labels hard to
-    read
-  - Yellow text (#FFD43B) has reduced contrast against white background
-  - Font size of 14 could be increased to 16-18 for better legibility at 4800x2700
-    resolution
-  image_description: 'The plot displays a scatter plot where programming language
-    names serve as data points instead of traditional markers, positioned on a 2D
-    embedding space. The title "scatter-text · matplotlib · pyplots.ai" appears at
-    the top in appropriate font size. X-axis labeled "Embedding Dimension 1" (range
-    0-8) and Y-axis labeled "Embedding Dimension 2" (range 0-7.5). Languages are color-coded
-    by category: blue (#306998) for Dynamic/Scripting (Python, JavaScript, Ruby, etc.),
-    yellow (#FFD43B) for Functional (Haskell, Clojure, Elixir, etc.), teal (#4ECDC4)
-    for Systems (C++, Go, Rust, Zig, etc.), and coral (#FF6B6B) for JVM-based (Java,
-    Kotlin, Scala, Groovy). A legend in the upper right clearly explains the color
-    mapping. Grid lines are subtle (dashed, alpha). Languages cluster logically: functional
-    languages cluster top-left, systems languages spread along the right side. Some
-    text overlap is visible in the dense center region (around coordinates 2-3, 5)
-    where "Python", "F#", "Crystal", "Julia" overlap.'
+  - Minor text overlap in center-left region where Python, F#, Crystal, and Julia
+    cluster
+  - Could benefit from slightly more spread in coordinates to reduce label proximity
+  - Legend uses Patch rectangles rather than showing sample text in each color
+  image_description: 'The plot displays 30 programming language names positioned in
+    a 2D embedding space, simulating dimensionality reduction output. Each language
+    name serves as a text label (no markers/points), colored by category: Dynamic/Scripting
+    languages (blue, e.g., Python, JavaScript, Ruby), Functional languages (golden
+    yellow, e.g., Haskell, Clojure, OCaml), Systems languages (teal, e.g., Go, Rust,
+    C++), and JVM-based languages (coral, e.g., Java, Kotlin, Scala). The title "scatter-text
+    · matplotlib · pyplots.ai" appears at the top. Axes are labeled "Embedding Dimension
+    1" (x) and "Embedding Dimension 2" (y) with tick marks from 0-8 and 0-7 respectively.
+    A legend with colored patches is positioned in the upper right. A subtle dashed
+    grid is visible. Some text overlap occurs in the center-left region where Python,
+    F#, Crystal, and Julia cluster together.'
   criteria_checklist:
     visual_quality:
-      score: 31
+      score: 35
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 9
         max: 10
         passed: true
-        comment: Text is readable at full size, font size 14 is adequate but slightly
-          smaller than optimal for this canvas size
+        comment: Text is bold and readable at fontsize=16, though slightly smaller
+          than ideal for some labels
       - id: VQ-02
         name: No Overlap
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Some text overlap in dense center region (Python/F#, Crystal/Julia
-          areas)
+        passed: true
+        comment: Minor overlap in center-left cluster (Python/F#/Crystal/Julia area)
       - id: VQ-03
         name: Element Visibility
         score: 8
         max: 8
         passed: true
-        comment: Text labels are clearly visible with appropriate alpha (0.85) and
-          bold weight
+        comment: Text labels are well-sized with alpha=0.9 for good visibility
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Colors are distinguishable; yellow on white background is slightly
-          lower contrast
+        comment: Four distinct colors with good contrast, colorblind-friendly palette
       - id: VQ-05
         name: Layout Balance
         score: 5
         max: 5
         passed: true
-        comment: Plot fills canvas well, balanced margins, legend positioned nicely
+        comment: Plot fills canvas well, good margins, legend positioned appropriately
       - id: VQ-06
         name: Axis Labels
         score: 1
         max: 2
         passed: true
-        comment: Descriptive labels but no units (dimensionless embedding values,
-          acceptable)
+        comment: Descriptive but no units (dimensionless is acceptable for embedding
+          space)
       - id: VQ-07
         name: Grid & Legend
         score: 1
         max: 2
         passed: true
-        comment: Grid is subtle (alpha=0.3, dashed), legend well placed
+        comment: Grid is subtle (alpha=0.3), legend uses Patch which is less ideal
+          than text samples
     spec_compliance:
       score: 25
       max: 25
@@ -99,40 +96,40 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct scatter plot with text labels instead of points
+        comment: Correctly uses text labels instead of points as specified
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X/Y coordinates correctly assigned to embedding dimensions
+        comment: X/Y coordinates correctly position each text label
       - id: SC-03
         name: Required Features
         score: 5
         max: 5
         passed: true
-        comment: Text labels at coordinates, color encoding for categories, alpha
-          for overlaps
+        comment: Text labels, alpha transparency, color encoding for categories all
+          present
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axis limits
+        comment: All 30 labels visible within axis limits
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly identifies all four language categories
+        comment: Legend correctly identifies all four categories
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: 'Uses exact format: scatter-text · matplotlib · pyplots.ai'
+        comment: Uses correct format {spec-id} · {library} · pyplots.ai
     data_quality:
-      score: 17
+      score: 18
       max: 20
       items:
       - id: DQ-01
@@ -140,24 +137,24 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows clustering, multiple categories, varying density; could show
-          more extreme separation
+        comment: Shows clustering, color encoding, varied positions, but some labels
+          too close
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Programming language embedding space is an excellent, realistic,
-          neutral scenario
+        comment: Programming languages positioned by paradigm similarity is excellent,
+          neutral, real-world scenario
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Embedding values are plausible but somewhat arbitrary; not tied to
-          real dimensionality reduction
+        comment: Embedding dimensions 0-8 are plausible, though could use more spread
+          to reduce overlap
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -165,19 +162,19 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure, no functions/classes
+        comment: 'Linear flow: imports → data → plot → save, no functions/classes'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) present
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports used (matplotlib.pyplot, numpy, Patch)
+        comment: All imports used (matplotlib.pyplot, numpy, Patch)
       - id: CQ-04
         name: No Deprecated API
         score: 1
@@ -186,22 +183,22 @@ review:
         comment: Uses current matplotlib API
       - id: CQ-05
         name: Output Correct
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png with proper settings
+        passed: false
+        comment: Saves as plot.png correctly
     library_features:
-      score: 4
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Good use of ax.text() for text placement, Patch for custom legend;
-          could use adjustText for overlap prevention
-  verdict: REJECTED
+        comment: Uses ax.text() appropriately, custom legend with Patch, but could
+          leverage more matplotlib features like text rotation or bbox
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:

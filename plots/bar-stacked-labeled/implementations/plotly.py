@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-stacked-labeled: Stacked Bar Chart with Total Labels
-Library: plotly | Python 3.13
-Quality: pending | Created: 2026-01-09
+Library: plotly 6.5.1 | Python 3.13.11
+Quality: 95/100 | Created: 2026-01-09
 """
 
 import numpy as np

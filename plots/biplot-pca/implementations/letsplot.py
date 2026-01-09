@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 biplot-pca: PCA Biplot with Scores and Loading Vectors
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-09
@@ -53,12 +53,27 @@ loadings_df = pd.DataFrame(
     }
 )
 
-# Label positions (offset from arrow ends)
-loadings_df["label_x"] = loadings_df["x_end"] * 1.1
-loadings_df["label_y"] = loadings_df["y_end"] * 1.1
+# Label positions with smart offset to avoid overlap
+# Petal Length and Petal Width have similar directions, so we offset them differently
+label_offsets = []
+for i, name in enumerate(clean_names):
+    x_end = loadings_df["x_end"].iloc[i]
+    y_end = loadings_df["y_end"].iloc[i]
+    if name == "Petal Width":
+        # Offset Petal Width label upward to avoid overlap with Petal Length
+        label_offsets.append((x_end * 1.15, y_end * 1.15 + 0.4))
+    elif name == "Petal Length":
+        # Offset Petal Length label downward
+        label_offsets.append((x_end * 1.15, y_end * 1.15 - 0.3))
+    else:
+        # Default offset for other labels
+        label_offsets.append((x_end * 1.15, y_end * 1.15))
 
-# Python colors
-colors = ["#306998", "#FFD43B", "#DC2626"]
+loadings_df["label_x"] = [offset[0] for offset in label_offsets]
+loadings_df["label_y"] = [offset[1] for offset in label_offsets]
+
+# Colorblind-safe palette (blue, orange, purple - distinguishable for all color vision types)
+colors = ["#0077BB", "#EE7733", "#AA3377"]
 
 # Build the plot
 plot = (
@@ -73,8 +88,8 @@ plot = (
         data=loadings_df,
         mapping=aes(x="x_start", y="y_start", xend="x_end", yend="y_end"),  # noqa: F405
         color="#333333",
-        size=1.2,
-        arrow=arrow(length=12, type="open"),  # noqa: F405
+        size=1.8,
+        arrow=arrow(length=15, type="open"),  # noqa: F405
     )
     + geom_text(  # noqa: F405
         data=loadings_df,

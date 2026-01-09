@@ -1,0 +1,28 @@
+# Specification-level metadata for range-interval
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: range-interval
+title: Range Interval Chart
+
+# Specification tracking
+created: 2026-01-09T23:40:20Z
+updated: 2026-01-09T23:40:20Z
+issue: 3577
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - bar
+    - range
+  data_type:
+    - numeric
+    - categorical
+  domain:
+    - general
+    - statistics
+  features:
+    - basic
+    - comparison
+    - interval

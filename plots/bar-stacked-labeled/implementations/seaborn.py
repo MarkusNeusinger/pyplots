@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-stacked-labeled: Stacked Bar Chart with Total Labels
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2025-01-09
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-09
 """
 
 import matplotlib.pyplot as plt

@@ -1,7 +1,7 @@
 """pyplots.ai
 network-weighted: Weighted Network Graph with Edge Thickness
 Library: pygal | Python 3.13
-Quality: pending | Created: 2026-01-08
+Quality: pending | Created: 2026-01-09
 """
 
 import numpy as np
@@ -12,59 +12,53 @@ from pygal.style import Style
 # Set seed for reproducibility
 np.random.seed(42)
 
-# Data: Trade network between 15 countries (billions USD annual trade)
+# Data: Research collaboration network (co-authored papers)
 nodes = [
-    {"id": 0, "label": "USA", "group": 0},
-    {"id": 1, "label": "China", "group": 1},
-    {"id": 2, "label": "Germany", "group": 2},
-    {"id": 3, "label": "Japan", "group": 1},
-    {"id": 4, "label": "UK", "group": 2},
-    {"id": 5, "label": "France", "group": 2},
-    {"id": 6, "label": "India", "group": 1},
-    {"id": 7, "label": "Italy", "group": 2},
-    {"id": 8, "label": "Brazil", "group": 0},
-    {"id": 9, "label": "Canada", "group": 0},
-    {"id": 10, "label": "S. Korea", "group": 1},
-    {"id": 11, "label": "Mexico", "group": 0},
-    {"id": 12, "label": "Spain", "group": 2},
-    {"id": 13, "label": "Australia", "group": 1},
-    {"id": 14, "label": "Netherlands", "group": 2},
+    {"id": 0, "label": "MIT", "group": 0},
+    {"id": 1, "label": "Stanford", "group": 0},
+    {"id": 2, "label": "Berkeley", "group": 0},
+    {"id": 3, "label": "Harvard", "group": 0},
+    {"id": 4, "label": "Caltech", "group": 0},
+    {"id": 5, "label": "Oxford", "group": 1},
+    {"id": 6, "label": "Cambridge", "group": 1},
+    {"id": 7, "label": "ETH Zurich", "group": 1},
+    {"id": 8, "label": "Imperial", "group": 1},
+    {"id": 9, "label": "Tokyo", "group": 2},
+    {"id": 10, "label": "Tsinghua", "group": 2},
+    {"id": 11, "label": "NUS", "group": 2},
+    {"id": 12, "label": "Seoul Nat'l", "group": 2},
 ]
 
-# Edges with weights (source, target, weight in billions USD)
+# Edges with weights (source, target, co-authored papers count)
 edges = [
-    # Major trade partnerships (high volume)
-    (0, 1, 650),  # USA-China
-    (0, 9, 580),  # USA-Canada
-    (0, 11, 520),  # USA-Mexico
-    (0, 3, 280),  # USA-Japan
-    (0, 2, 250),  # USA-Germany
-    (1, 3, 340),  # China-Japan
-    (1, 10, 300),  # China-S.Korea
-    (1, 2, 220),  # China-Germany
-    (1, 6, 180),  # China-India
-    # European connections
-    (2, 5, 190),  # Germany-France
-    (2, 4, 170),  # Germany-UK
-    (2, 14, 200),  # Germany-Netherlands
-    (2, 7, 130),  # Germany-Italy
-    (5, 4, 100),  # France-UK
-    (5, 12, 80),  # France-Spain
-    (7, 12, 60),  # Italy-Spain
-    (4, 14, 90),  # UK-Netherlands
-    # Pacific connections
-    (3, 10, 110),  # Japan-S.Korea
-    (3, 13, 70),  # Japan-Australia
-    (10, 13, 50),  # S.Korea-Australia
-    (6, 13, 40),  # India-Australia
-    # Americas
-    (0, 8, 100),  # USA-Brazil
-    (9, 11, 50),  # Canada-Mexico
-    (8, 11, 30),  # Brazil-Mexico
+    # Strong US collaborations
+    (0, 1, 85),  # MIT-Stanford
+    (0, 3, 78),  # MIT-Harvard
+    (1, 2, 72),  # Stanford-Berkeley
+    (1, 4, 45),  # Stanford-Caltech
+    (2, 4, 38),  # Berkeley-Caltech
+    (0, 2, 55),  # MIT-Berkeley
+    (3, 4, 32),  # Harvard-Caltech
+    # Strong UK collaborations
+    (5, 6, 92),  # Oxford-Cambridge
+    (5, 8, 48),  # Oxford-Imperial
+    (6, 8, 42),  # Cambridge-Imperial
+    (7, 5, 35),  # ETH-Oxford
+    (7, 6, 40),  # ETH-Cambridge
+    # Asia collaborations
+    (9, 10, 55),  # Tokyo-Tsinghua
+    (10, 11, 38),  # Tsinghua-NUS
+    (10, 12, 42),  # Tsinghua-Seoul
+    (11, 12, 28),  # NUS-Seoul
+    (9, 12, 35),  # Tokyo-Seoul
     # Cross-regional bridges
-    (4, 6, 60),  # UK-India
-    (0, 4, 130),  # USA-UK
-    (1, 13, 180),  # China-Australia
+    (0, 5, 65),  # MIT-Oxford
+    (1, 6, 58),  # Stanford-Cambridge
+    (0, 9, 42),  # MIT-Tokyo
+    (1, 10, 38),  # Stanford-Tsinghua
+    (6, 9, 30),  # Cambridge-Tokyo
+    (5, 10, 28),  # Oxford-Tsinghua
+    (7, 9, 25),  # ETH-Tokyo
 ]
 
 # Calculate weighted degree for node sizing
@@ -73,22 +67,20 @@ for src, tgt, weight in edges:
     weighted_degrees[src] += weight
     weighted_degrees[tgt] += weight
 
-# Force-directed layout with weight-influenced attraction
+# Force-directed layout
 n = len(nodes)
-
-# Initialize positions by region (Americas=0, Asia=1, Europe=2)
-group_centers = {0: (-0.7, 0.0), 1: (0.7, 0.0), 2: (0.0, -0.6)}
+group_centers = {0: (-0.6, 0.3), 1: (0.0, -0.5), 2: (0.6, 0.3)}
 positions = np.zeros((n, 2))
 for i, node in enumerate(nodes):
     cx, cy = group_centers[node["group"]]
-    positions[i] = [cx + np.random.rand() * 0.5 - 0.25, cy + np.random.rand() * 0.5 - 0.25]
+    positions[i] = [cx + np.random.rand() * 0.4 - 0.2, cy + np.random.rand() * 0.4 - 0.2]
 
-k = 0.5  # Optimal distance parameter (larger = more spread out)
+k = 0.4
 
-for iteration in range(300):
+for iteration in range(250):
     displacement = np.zeros((n, 2))
 
-    # Repulsive forces between all node pairs
+    # Repulsive forces
     for i in range(n):
         for j in range(i + 1, n):
             diff = positions[i] - positions[j]
@@ -97,130 +89,121 @@ for iteration in range(300):
             displacement[i] += force
             displacement[j] -= force
 
-    # Attractive forces for edges (weighted - stronger pull for higher weights)
+    # Attractive forces (weighted)
     max_weight = max(w for _, _, w in edges)
     for src, tgt, weight in edges:
         diff = positions[src] - positions[tgt]
         dist = max(np.linalg.norm(diff), 0.01)
-        # Scale attraction by weight (normalized)
         weight_factor = 0.5 + 0.5 * (weight / max_weight)
         force = (dist * dist / k) * (diff / dist) * weight_factor
         displacement[src] -= force
         displacement[tgt] += force
 
-    # Apply displacement with cooling
-    cooling = 1 - iteration / 300
+    cooling = 1 - iteration / 250
     for i in range(n):
         disp_norm = np.linalg.norm(displacement[i])
         if disp_norm > 0:
-            positions[i] += (displacement[i] / disp_norm) * min(disp_norm, 0.1 * cooling)
+            positions[i] += (displacement[i] / disp_norm) * min(disp_norm, 0.08 * cooling)
 
-# Normalize positions to centered range for pygal
+# Normalize positions
 pos_min = positions.min(axis=0)
 pos_max = positions.max(axis=0)
 positions = (positions - pos_min) / (pos_max - pos_min + 1e-6)
-positions[:, 0] = positions[:, 0] * 8 + 2  # X: [2, 10]
-positions[:, 1] = positions[:, 1] * 6 + 3  # Y: [3, 9]
+positions[:, 0] = positions[:, 0] * 7 + 2.5  # X: [2.5, 9.5]
+positions[:, 1] = positions[:, 1] * 5 + 2.5  # Y: [2.5, 7.5]
 pos = {node["id"]: positions[i] for i, node in enumerate(nodes)}
 
-# Region colors
-region_colors = ["#306998", "#FFD43B", "#4CAF50"]  # Americas, Asia, Europe
-region_names = ["Americas", "Asia", "Europe"]
+# Region colors and names
+region_names = ["US Universities", "European Universities", "Asian Universities"]
 
-# Categorize edges by weight for different visual thickness
-# Pygal doesn't support per-edge styling, so we create separate series
-# Using more parallel lines for thicker visual representation
-weight_categories = [
-    ("Light (< 100B)", 0, 100, "#BBBBBB", 1),
-    ("Medium (100-300B)", 100, 300, "#777777", 3),
-    ("Heavy (> 300B)", 300, float("inf"), "#333333", 6),
-]
+# Edge weight categories with visual styling
+# num_lines creates parallel lines to simulate edge thickness
+weight_categories = [("Light (< 35)", 0, 35, 1), ("Medium (35-60)", 35, 60, 2), ("Strong (> 60)", 60, float("inf"), 4)]
 
-# Custom style
+# Custom style for large canvas
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
-    foreground_strong="#333333",
-    foreground_subtle="#666666",
-    colors=("#BBBBBB", "#777777", "#333333", "#306998", "#FFD43B", "#4CAF50"),
-    title_font_size=72,
-    label_font_size=40,
-    major_label_font_size=36,
-    legend_font_size=36,
-    value_font_size=28,
-    stroke_width=2,
+    foreground_strong="#222222",
+    foreground_subtle="#555555",
+    colors=("#AAAAAA", "#666666", "#222222", "#306998", "#4CAF50", "#FFD43B"),
+    title_font_size=64,
+    label_font_size=36,
+    major_label_font_size=32,
+    legend_font_size=32,
+    value_font_size=24,
+    stroke_width=3,
     opacity=0.9,
     opacity_hover=1.0,
 )
 
-# Create XY chart
+# Create XY chart for network
 chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
-    title="Trade Network (Billions USD) · network-weighted · pygal · pyplots.ai",
+    title="Research Collaborations · network-weighted · pygal · pyplots.ai",
     show_legend=True,
-    x_title="",
-    y_title="",
     show_x_guides=False,
     show_y_guides=False,
     show_x_labels=False,
     show_y_labels=False,
+    x_title="",
+    y_title="",
     stroke=True,
-    dots_size=35,
-    stroke_style={"width": 2, "linecap": "round"},
+    dots_size=40,
     legend_at_bottom=True,
     legend_at_bottom_columns=6,
-    range=(0, 12),
-    xrange=(0, 12),
+    range=(1, 9),
+    xrange=(1, 11),
     print_labels=False,
     print_values=False,
+    explicit_size=True,
 )
 
-# Add edges by weight category (creates visual thickness variation)
-for cat_name, min_w, max_w, _color, thickness in weight_categories:
+# Draw edges grouped by weight category with parallel lines for thickness
+for cat_name, min_w, max_w, num_lines in weight_categories:
     edge_points = []
     for src, tgt, weight in edges:
         if min_w <= weight < max_w:
             x1, y1 = pos[src]
             x2, y2 = pos[tgt]
-            # For thicker lines, add multiple parallel traces
-            if thickness > 1:
-                # Create slightly offset parallel lines to simulate thickness
-                dx, dy = x2 - x1, y2 - y1
-                length = np.sqrt(dx * dx + dy * dy) + 1e-6
-                # Perpendicular offset
-                offset_x = -dy / length * 0.03 * thickness
-                offset_y = dx / length * 0.03 * thickness
-                for i in range(thickness):
-                    off = (i - thickness / 2) * 0.5
-                    edge_points.append((x1 + offset_x * off, y1 + offset_y * off))
-                    edge_points.append((x2 + offset_x * off, y2 + offset_y * off))
-                    edge_points.append(None)
-            else:
+            if num_lines == 1:
                 edge_points.append((x1, y1))
                 edge_points.append((x2, y2))
                 edge_points.append(None)
+            else:
+                # Create parallel lines for thickness effect
+                dx, dy = x2 - x1, y2 - y1
+                length = np.sqrt(dx * dx + dy * dy) + 1e-6
+                perp_x, perp_y = -dy / length, dx / length
+                spacing = 0.06
+                for i in range(num_lines):
+                    offset = (i - (num_lines - 1) / 2) * spacing
+                    ox, oy = perp_x * offset, perp_y * offset
+                    edge_points.append((x1 + ox, y1 + oy))
+                    edge_points.append((x2 + ox, y2 + oy))
+                    edge_points.append(None)
     if edge_points:
         chart.add(cat_name, edge_points, stroke=True, show_dots=False, fill=False)
 
-# Add nodes grouped by region
+# Add nodes by region
 for region_idx, region_name in enumerate(region_names):
     region_nodes = [node for node in nodes if node["group"] == region_idx]
-    node_points = []
+    node_data = []
     for node in region_nodes:
         x, y = pos[node["id"]]
         wd = weighted_degrees[node["id"]]
-        label = f"{node['label']}: ${wd}B total trade"
-        node_points.append({"value": (x, y), "label": label})
-    chart.add(region_name, node_points, stroke=False)
+        tooltip = f"{node['label']}: {wd} collaborations"
+        node_data.append({"value": (x, y), "label": tooltip})
+    chart.add(region_name, node_data, stroke=False, dots_size=50)
 
 # Save outputs
 chart.render_to_file("plot.svg")
 chart.render_to_png("plot.png")
 
-# Save HTML for interactive version
+# Save interactive HTML
 with open("plot.html", "w") as f:
     f.write(
         """<!DOCTYPE html>
@@ -228,15 +211,17 @@ with open("plot.html", "w") as f:
 <head>
     <title>network-weighted · pygal · pyplots.ai</title>
     <style>
-        body { margin: 0; padding: 20px; background: #f5f5f5; }
+        body { margin: 0; padding: 20px; background: #f5f5f5; font-family: sans-serif; }
         .container { max-width: 100%; margin: 0 auto; }
         object { width: 100%; height: auto; }
+        h1 { text-align: center; color: #333; font-size: 1.5em; margin-bottom: 20px; }
     </style>
 </head>
 <body>
     <div class="container">
+        <h1>Research Collaboration Network (Weighted by Co-authored Papers)</h1>
         <object type="image/svg+xml" data="plot.svg">
-            Weighted network graph not supported
+            Weighted network graph visualization
         </object>
     </div>
 </body>

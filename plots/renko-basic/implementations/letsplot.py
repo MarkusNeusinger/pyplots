@@ -1,22 +1,21 @@
 """pyplots.ai
 renko-basic: Basic Renko Chart
 Library: lets-plot | Python 3.13
-Quality: pending | Created: 2026-01-08
+Quality: pending | Created: 2026-01-09
 """
 
 import numpy as np
 import pandas as pd
 from lets_plot import *
 
-
 LetsPlot.setup_html()
 
 # Generate sample price data (simulating stock prices)
 np.random.seed(42)
-n_days = 200
+n_days = 250
 dates = pd.date_range("2024-01-01", periods=n_days, freq="D")
 # Simulate price with random walk
-returns = np.random.normal(0.001, 0.02, n_days)
+returns = np.random.normal(0.0015, 0.018, n_days)
 prices = 100 * np.cumprod(1 + returns)
 
 # Renko chart parameters
@@ -73,25 +72,34 @@ for price in prices:
 brick_df = pd.DataFrame(bricks)
 brick_df["x"] = range(len(brick_df))
 brick_df["color"] = brick_df["direction"].map({1: "Bullish", -1: "Bearish"})
-# Add small gap between bricks
-gap = 0.1
-brick_df["xmin"] = brick_df["x"] - 0.4 + gap / 2
-brick_df["xmax"] = brick_df["x"] + 0.4 - gap / 2
+# Add small gap between bricks for visual clarity
+gap = 0.08
+brick_df["xmin"] = brick_df["x"] - 0.42 + gap / 2
+brick_df["xmax"] = brick_df["x"] + 0.42 - gap / 2
 
 # Create the plot
 plot = (
     ggplot(brick_df)
-    + geom_rect(aes(xmin="xmin", xmax="xmax", ymin="bottom", ymax="top", fill="color"), color="white", size=0.5)
+    + geom_rect(
+        aes(xmin="xmin", xmax="xmax", ymin="bottom", ymax="top", fill="color"),
+        color="#333333",
+        size=0.3,
+    )
     + scale_fill_manual(values={"Bullish": "#22C55E", "Bearish": "#EF4444"})
-    + labs(title="renko-basic · letsplot · pyplots.ai", x="Brick Index", y="Price ($)", fill="Direction")
+    + labs(
+        title="renko-basic · letsplot · pyplots.ai",
+        x="Brick Index",
+        y="Price ($)",
+        fill="Direction",
+    )
     + theme_minimal()
     + theme(
-        plot_title=element_text(size=24),
+        plot_title=element_text(size=26, face="bold"),
         axis_title=element_text(size=20),
         axis_text=element_text(size=16),
         legend_text=element_text(size=16),
         legend_title=element_text(size=18),
-        panel_grid_major=element_line(color="#E5E5E5", size=0.5),
+        panel_grid_major=element_line(color="#DDDDDD", size=0.4),
         panel_grid_minor=element_blank(),
     )
     + ggsize(1600, 900)

@@ -1,7 +1,7 @@
 """pyplots.ai
 ohlc-bar: OHLC Bar Chart
 Library: highcharts | Python 3.13
-Quality: pending | Created: 2026-01-08
+Quality: pending | Created: 2026-01-09
 """
 
 import json
@@ -19,11 +19,10 @@ from selenium.webdriver.chrome.options import Options
 # Data - 45 trading days of simulated stock prices
 np.random.seed(42)
 
-# Start price and generate OHLC data
 start_price = 125.0
 n_days = 45
 
-# Generate realistic stock movements
+# Generate realistic stock movements with OHLC data
 opens = [start_price]
 highs = []
 lows = []
@@ -85,12 +84,7 @@ chart_options = {
     "xAxis": {
         "type": "datetime",
         "title": {"text": "Date", "style": {"fontSize": "52px", "color": "#333333"}, "margin": 30},
-        "labels": {
-            "style": {"fontSize": "36px", "color": "#333333"},
-            "format": "{value:%b %d}",
-            "y": 45,
-            "step": 3,  # Show every 3rd label to prevent overlap with more data points
-        },
+        "labels": {"style": {"fontSize": "36px", "color": "#333333"}, "format": "{value:%b %d}", "y": 45, "step": 3},
         "gridLineWidth": 1,
         "gridLineColor": "rgba(0, 0, 0, 0.15)",
         "gridLineDashStyle": "Dash",
@@ -108,8 +102,8 @@ chart_options = {
         "gridLineDashStyle": "Dash",
         "lineWidth": 3,
         "lineColor": "#333333",
-        "opposite": False,  # Keep Y-axis on left side only
-        "tickInterval": 2,  # Show labels at $2 intervals to avoid duplicates
+        "opposite": False,
+        "tickInterval": 2,
     },
     "legend": {"enabled": False},
     "tooltip": {
@@ -123,10 +117,9 @@ chart_options = {
     },
     "plotOptions": {
         "ohlc": {
-            # Colorblind-safe: Python Blue for bullish, warm amber for bearish
             "color": "#E67E22",  # Warm amber for bearish (close < open)
             "upColor": "#306998",  # Python Blue for bullish (close > open)
-            "lineWidth": 5,  # Bar line width - visible at large size
+            "lineWidth": 5,
         }
     },
     "rangeSelector": {"enabled": False},
@@ -166,7 +159,7 @@ with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encodin
     f.write(html_content)
     temp_path = f.name
 
-# Also save the HTML for interactive viewing
+# Save the HTML for interactive viewing
 with open("plot.html", "w", encoding="utf-8") as f:
     f.write(html_content)
 

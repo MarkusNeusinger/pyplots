@@ -338,8 +338,6 @@ A comprehensive catalog of plot types for the pyplots platform. Each plot is imp
 ### errorbar-asymmetric ✅
 **Description:** Asymmetric error bars plot with different upper and lower error values for each data point.
 
-### mosaic-categorical 📋
-**Description:** Mosaic plot showing relationships between categorical variables with rectangle areas proportional to frequencies in contingency tables.
 
 ### regression-logistic 📋
 **Description:** Logistic regression curve visualization showing probability/odds transformation for binary classification.
@@ -908,9 +906,9 @@ Printable templates and playful visualizations.
 
 ## Statistics
 
-- **Total Plot Types:** 258
+- **Total Plot Types:** 257
 - **Implemented:** 186 ✅
-- **Planned:** 72 📋
+- **Planned:** 71 📋
 - **Categories:** 30
 
 ---

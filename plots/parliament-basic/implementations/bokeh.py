@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 parliament-basic: Parliament Seat Chart
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 68/100 | Created: 2026-01-09
@@ -11,17 +11,12 @@ from bokeh.plotting import figure
 from bokeh.resources import CDN
 
 
-# Data - Fictional parliament composition
-parties = [
-    "Progressive Alliance",
-    "Green Coalition",
-    "Center Party",
-    "Liberal Democrats",
-    "Conservative Union",
-    "National Front",
-]
-seats = [85, 42, 58, 67, 92, 56]
-colors = ["#306998", "#2E8B57", "#FFD43B", "#FFA500", "#8B0000", "#4B0082"]
+# Data - Corporate board seat distribution by department
+# Demonstrates semicircular layout for organizational representation
+departments = ["Engineering", "Sales & Marketing", "Finance", "Operations", "Research & Development", "Human Resources"]
+seats = [95, 72, 48, 65, 82, 38]
+# Colorblind-friendly palette (distinct hues)
+colors = ["#0077BB", "#33BBEE", "#009988", "#EE7733", "#CC3311", "#EE3377"]
 total_seats = sum(seats)
 
 # Calculate seat positions in semicircular arcs
@@ -48,16 +43,16 @@ for i in range(abs(diff)):
     idx = (rows - 1 - i) % rows if diff > 0 else i % rows
     seats_per_row[idx] += 1 if diff > 0 else -1
 
-# Build party assignment - each seat gets a party in order
-party_assignments = []
-for i, (party, seat_count) in enumerate(zip(parties, seats, strict=True)):
-    party_assignments.extend([(party, colors[i])] * seat_count)
+# Build department assignment - each seat gets a department in order
+dept_assignments = []
+for i, (dept, seat_count) in enumerate(zip(departments, seats, strict=True)):
+    dept_assignments.extend([(dept, colors[i])] * seat_count)
 
 # Generate seat positions - fill row by row
 x_positions = []
 y_positions = []
 seat_colors = []
-seat_parties = []
+seat_depts = []
 
 seat_idx = 0
 for row in range(rows):
@@ -76,13 +71,13 @@ for row in range(rows):
         y = radius * np.sin(angle)
         x_positions.append(x)
         y_positions.append(y)
-        party, color = party_assignments[seat_idx]
+        dept, color = dept_assignments[seat_idx]
         seat_colors.append(color)
-        seat_parties.append(party)
+        seat_depts.append(dept)
         seat_idx += 1
 
 # Create data source
-source = ColumnDataSource(data={"x": x_positions, "y": y_positions, "color": seat_colors, "party": seat_parties})
+source = ColumnDataSource(data={"x": x_positions, "y": y_positions, "color": seat_colors, "dept": seat_depts})
 
 # Create figure - square format for semicircle
 p = figure(
@@ -100,10 +95,10 @@ p.scatter(x="x", y="y", source=source, color="color", size=30, alpha=0.9, line_c
 
 # Create legend items manually
 legend_items = []
-for party, seat_count, color in zip(parties, seats, colors, strict=True):
+for dept, seat_count, color in zip(departments, seats, colors, strict=True):
     dummy_source = ColumnDataSource(data={"x": [-10], "y": [-10]})
     dummy_scatter = p.scatter(x="x", y="y", source=dummy_source, color=color, size=22, alpha=1)
-    legend_items.append(LegendItem(label=f"{party} ({seat_count})", renderers=[dummy_scatter]))
+    legend_items.append(LegendItem(label=f"{dept} ({seat_count})", renderers=[dummy_scatter]))
 
 legend = Legend(items=legend_items, location="bottom_center", orientation="horizontal")
 legend.label_text_font_size = "22pt"
@@ -113,12 +108,12 @@ legend.glyph_height = 28
 legend.glyph_width = 28
 p.add_layout(legend, "below")
 
-# Add majority threshold annotation
-majority = total_seats // 2 + 1
+# Add quorum threshold annotation
+quorum = total_seats // 2 + 1
 p.text(
     x=[0],
     y=[-0.18],
-    text=[f"Majority threshold: {majority} seats (Total: {total_seats})"],
+    text=[f"Quorum threshold: {quorum} seats (Total: {total_seats})"],
     text_align="center",
     text_font_size="24pt",
     text_color="#444444",

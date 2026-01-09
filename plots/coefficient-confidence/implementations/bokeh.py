@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 coefficient-confidence: Coefficient Plot with Confidence Intervals
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-09
@@ -6,7 +6,7 @@ Quality: 85/100 | Created: 2026-01-09
 
 import numpy as np
 from bokeh.io import export_png, output_file, save
-from bokeh.models import ColumnDataSource, Span
+from bokeh.models import ColumnDataSource, HoverTool, Legend, LegendItem, Span
 from bokeh.plotting import figure
 
 
@@ -45,10 +45,12 @@ ci_lower = ci_lower[sort_idx]
 ci_upper = ci_upper[sort_idx]
 significant = significant[sort_idx]
 
-# Create color mapping based on significance
-colors = ["#306998" if sig else "#999999" for sig in significant]
+# Create color and label mapping based on significance
+# Using stronger color contrast for better distinction
+colors = ["#1f77b4" if sig else "#bcbcbc" for sig in significant]
+significance_label = ["Significant (p < 0.05)" if sig else "Not Significant" for sig in significant]
 
-# Create data source
+# Create data source with additional fields for hover
 source = ColumnDataSource(
     data={
         "variables": variables,
@@ -56,6 +58,10 @@ source = ColumnDataSource(
         "ci_lower": ci_lower,
         "ci_upper": ci_upper,
         "colors": colors,
+        "significance": significance_label,
+        "ci_lower_fmt": [f"{x:.3f}" for x in ci_lower],
+        "ci_upper_fmt": [f"{x:.3f}" for x in ci_upper],
+        "coef_fmt": [f"{x:.3f}" for x in coefficients],
     }
 )
 
@@ -75,15 +81,87 @@ p.add_layout(zero_line)
 
 # Draw confidence interval segments (error bars)
 for i, var in enumerate(variables):
-    p.line(x=[ci_lower[i], ci_upper[i]], y=[var, var], line_width=4, line_color=colors[i], line_alpha=0.7)
+    p.line(x=[ci_lower[i], ci_upper[i]], y=[var, var], line_width=4, line_color=colors[i], line_alpha=0.8)
     # Add caps to error bars
     p.line(x=[ci_lower[i], ci_lower[i]], y=[var, var], line_width=4, line_color=colors[i])
     p.line(x=[ci_upper[i], ci_upper[i]], y=[var, var], line_width=4, line_color=colors[i])
 
-# Plot coefficient points
-p.scatter(
-    x="coefficients", y="variables", source=source, size=20, color="colors", line_color="white", line_width=2, alpha=0.9
+# Plot coefficient points - separate renderers for legend
+sig_indices = [i for i, s in enumerate(significant) if s]
+nonsig_indices = [i for i, s in enumerate(significant) if not s]
+
+# Create separate data sources for legend
+sig_source = ColumnDataSource(
+    data={
+        "variables": [variables[i] for i in sig_indices],
+        "coefficients": [coefficients[i] for i in sig_indices],
+        "ci_lower_fmt": [f"{ci_lower[i]:.3f}" for i in sig_indices],
+        "ci_upper_fmt": [f"{ci_upper[i]:.3f}" for i in sig_indices],
+        "coef_fmt": [f"{coefficients[i]:.3f}" for i in sig_indices],
+        "significance": ["Significant (p < 0.05)"] * len(sig_indices),
+    }
 )
+
+nonsig_source = ColumnDataSource(
+    data={
+        "variables": [variables[i] for i in nonsig_indices],
+        "coefficients": [coefficients[i] for i in nonsig_indices],
+        "ci_lower_fmt": [f"{ci_lower[i]:.3f}" for i in nonsig_indices],
+        "ci_upper_fmt": [f"{ci_upper[i]:.3f}" for i in nonsig_indices],
+        "coef_fmt": [f"{coefficients[i]:.3f}" for i in nonsig_indices],
+        "significance": ["Not Significant"] * len(nonsig_indices),
+    }
+)
+
+# Render significant points
+sig_renderer = p.scatter(
+    x="coefficients",
+    y="variables",
+    source=sig_source,
+    size=22,
+    color="#1f77b4",
+    line_color="white",
+    line_width=2,
+    alpha=0.95,
+)
+
+# Render non-significant points
+nonsig_renderer = p.scatter(
+    x="coefficients",
+    y="variables",
+    source=nonsig_source,
+    size=22,
+    color="#bcbcbc",
+    line_color="white",
+    line_width=2,
+    alpha=0.95,
+)
+
+# Add HoverTool for interactive tooltips (Bokeh distinctive feature)
+hover = HoverTool(
+    tooltips=[
+        ("Variable", "@variables"),
+        ("Coefficient", "@coef_fmt"),
+        ("95% CI", "[@ci_lower_fmt, @ci_upper_fmt]"),
+        ("Status", "@significance"),
+    ],
+    renderers=[sig_renderer, nonsig_renderer],
+)
+p.add_tools(hover)
+
+# Create legend manually with LegendItem
+legend = Legend(
+    items=[
+        LegendItem(label="Significant (p < 0.05)", renderers=[sig_renderer]),
+        LegendItem(label="Not Significant", renderers=[nonsig_renderer]),
+    ],
+    location="top_right",
+    label_text_font_size="18pt",
+    border_line_color="#cccccc",
+    background_fill_color="white",
+    background_fill_alpha=0.9,
+)
+p.add_layout(legend, "right")
 
 # Style text sizes for large canvas
 p.title.text_font_size = "28pt"

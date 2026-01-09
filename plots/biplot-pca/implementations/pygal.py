@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 biplot-pca: PCA Biplot with Scores and Loading Vectors
-Library: pygal | Python 3.13
-Quality: pending | Created: 2026-01-09
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 85/100 | Created: 2026-01-09
 """
 
 import pygal

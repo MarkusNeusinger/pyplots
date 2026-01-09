@@ -3,10 +3,10 @@
 
 library: letsplot
 specification_id: renko-basic
-created: '2026-01-08T16:12:05Z'
-updated: '2026-01-08T16:12:05Z'
+created: '2026-01-09T08:06:46Z'
+updated: '2026-01-09T08:06:46Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20823195596
+workflow_run: 20845306375
 issue: 3294
 python_version: 3.13.11
 library_version: 4.8.2

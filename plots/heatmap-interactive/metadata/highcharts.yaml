@@ -3,10 +3,10 @@
 
 library: highcharts
 specification_id: heatmap-interactive
-created: '2026-01-08T16:06:01Z'
-updated: '2026-01-08T16:06:01Z'
+created: '2026-01-09T08:06:33Z'
+updated: '2026-01-09T08:06:33Z'
 generated_by: claude-opus-4-5-20251101
-workflow_run: 20822856784
+workflow_run: 20845301322
 issue: 3289
 python_version: 3.13.11
 library_version: unknown

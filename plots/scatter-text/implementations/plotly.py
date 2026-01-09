@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-text: Scatter Plot with Text Labels Instead of Points
 Library: plotly 6.5.1 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-09
@@ -46,79 +46,80 @@ labels = [
 ]
 
 # Position based on: x = Level of abstraction, y = Type safety
+# Coordinates adjusted to avoid text overlaps
 x = np.array(
     [
-        8.5,
-        7.0,
-        6.0,
-        3.0,
-        8.0,
-        5.5,
-        4.0,
-        6.5,
-        7.0,
-        7.5,
-        7.0,
-        9.0,
-        8.5,
-        9.0,
-        8.0,
-        8.0,
-        7.5,
-        7.0,
-        7.0,
-        7.5,
-        6.0,
-        7.0,
-        6.5,
-        8.0,
-        8.5,
-        3.5,
-        4.0,
-        1.0,
-        9.0,
-        9.0,
+        8.5,  # Python
+        6.5,  # JavaScript - shifted left (was 7.0, avoid Perl overlap)
+        6.0,  # Java
+        3.0,  # C++
+        8.0,  # Ruby
+        5.5,  # Go
+        4.0,  # Rust
+        5.8,  # Kotlin - shifted left (was 6.5, avoid Dart overlap)
+        7.0,  # Swift
+        7.5,  # TypeScript
+        7.0,  # Scala
+        9.0,  # Haskell
+        8.5,  # Elixir
+        9.5,  # Clojure - shifted right (was 9.0, avoid Prolog overlap)
+        8.0,  # F#
+        8.0,  # R
+        7.5,  # Julia
+        7.0,  # MATLAB
+        7.8,  # Perl - shifted right (was 7.0, avoid JavaScript overlap)
+        7.5,  # PHP
+        6.0,  # C#
+        7.5,  # Dart - shifted right (was 7.0, avoid Kotlin overlap)
+        6.5,  # Lua
+        8.0,  # Erlang
+        8.5,  # OCaml
+        3.0,  # Fortran - shifted left (was 3.5, avoid COBOL overlap)
+        4.5,  # COBOL - shifted right (was 4.0, avoid Fortran overlap)
+        1.0,  # Assembly
+        9.0,  # Lisp
+        8.5,  # Prolog - shifted left (was 9.0, avoid Clojure overlap)
     ]
 )
 
 y = np.array(
     [
-        3.0,
-        2.5,
-        8.0,
-        6.0,
-        2.0,
-        7.0,
-        9.0,
-        7.5,
-        8.0,
-        8.0,
-        8.0,
-        9.5,
-        6.0,
-        6.5,
-        8.5,
-        2.5,
-        4.0,
-        3.5,
-        2.0,
-        2.5,
-        8.0,
-        7.0,
-        3.0,
-        6.0,
-        9.0,
-        5.0,
-        5.5,
-        3.0,
-        4.0,
-        7.0,
+        3.0,  # Python
+        2.0,  # JavaScript - shifted down (was 2.5, avoid Perl overlap)
+        8.0,  # Java
+        6.0,  # C++
+        2.0,  # Ruby
+        7.0,  # Go
+        9.0,  # Rust
+        8.0,  # Kotlin - shifted up (was 7.5, avoid Dart overlap)
+        8.5,  # Swift - shifted up (was 8.0, avoid TypeScript overlap)
+        7.5,  # TypeScript - shifted down (was 8.0)
+        8.5,  # Scala - shifted up (was 8.0, avoid TypeScript overlap)
+        9.5,  # Haskell
+        6.0,  # Elixir
+        5.8,  # Clojure - shifted down (was 6.5, avoid Prolog overlap)
+        8.5,  # F#
+        2.5,  # R
+        4.0,  # Julia
+        3.5,  # MATLAB
+        2.8,  # Perl - shifted up (was 2.0, avoid JavaScript overlap)
+        2.0,  # PHP - shifted down (was 2.5, avoid R overlap)
+        8.0,  # C#
+        6.5,  # Dart - shifted down (was 7.0, avoid Kotlin overlap)
+        3.0,  # Lua
+        6.0,  # Erlang
+        9.0,  # OCaml
+        4.5,  # Fortran - shifted down (was 5.0, avoid COBOL overlap)
+        6.0,  # COBOL - shifted up (was 5.5, avoid Fortran overlap)
+        3.0,  # Assembly
+        4.0,  # Lisp
+        7.5,  # Prolog - shifted up (was 7.0, avoid Clojure overlap)
     ]
 )
 
-# Add small noise for visual interest
-x = x + np.random.uniform(-0.3, 0.3, len(x))
-y = y + np.random.uniform(-0.3, 0.3, len(y))
+# Add small noise for visual interest (reduced to avoid creating new overlaps)
+x = x + np.random.uniform(-0.15, 0.15, len(x))
+y = y + np.random.uniform(-0.15, 0.15, len(y))
 
 # Color by category (functional, OOP, multi-paradigm, systems)
 categories = [
@@ -154,16 +155,16 @@ categories = [
     "Functional",
 ]
 
-# Color mapping
+# Color mapping (improved distinction between categories)
 color_map = {
-    "Multi-paradigm": "#306998",  # Python Blue
-    "OOP": "#FFD43B",  # Python Yellow
-    "Systems": "#E74C3C",  # Red
-    "Functional": "#2ECC71",  # Green
-    "Statistical": "#9B59B6",  # Purple
-    "Scientific": "#3498DB",  # Light Blue
-    "Scripting": "#F39C12",  # Orange
-    "Legacy": "#95A5A6",  # Gray
+    "Multi-paradigm": "#1E88E5",  # Bright Blue
+    "OOP": "#FFC107",  # Amber Yellow
+    "Systems": "#D32F2F",  # Red
+    "Functional": "#43A047",  # Green
+    "Statistical": "#8E24AA",  # Deep Purple (more distinct from blue)
+    "Scientific": "#00ACC1",  # Cyan (more distinct from blue)
+    "Scripting": "#FB8C00",  # Orange
+    "Legacy": "#757575",  # Gray
 }
 
 colors = [color_map[cat] for cat in categories]
@@ -178,6 +179,12 @@ for category in color_map:
         x_cat = [x[i] for i in range(len(x)) if mask[i]]
         y_cat = [y[i] for i in range(len(y)) if mask[i]]
         labels_cat = [labels[i] for i in range(len(labels)) if mask[i]]
+        # Create hover text with detailed information
+        hover_cat = [
+            f"<b>{labels[i]}</b><br>Paradigm: {category}<br>Abstraction: {x[i]:.1f}<br>Type Safety: {y[i]:.1f}"
+            for i in range(len(labels))
+            if mask[i]
+        ]
 
         fig.add_trace(
             go.Scatter(
@@ -189,6 +196,8 @@ for category in color_map:
                 textposition="middle center",
                 name=category,
                 showlegend=True,
+                hovertext=hover_cat,
+                hoverinfo="text",
             )
         )
 

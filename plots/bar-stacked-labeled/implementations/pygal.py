@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-stacked-labeled: Stacked Bar Chart with Total Labels
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-09
@@ -9,12 +9,13 @@ from pygal.style import Style
 
 
 # Data - Quarterly revenue by product category (in thousands)
+# Shows diverse proportions across quarters to demonstrate stacking
 categories = ["Q1", "Q2", "Q3", "Q4"]
 products = {
-    "Electronics": [120, 145, 132, 168],
-    "Furniture": [85, 92, 78, 105],
-    "Clothing": [65, 72, 88, 95],
-    "Accessories": [42, 55, 48, 62],
+    "Electronics": [180, 95, 140, 220],  # Variable - strong in Q4
+    "Furniture": [45, 130, 85, 75],  # Peak in Q2
+    "Clothing": [55, 60, 145, 90],  # Strong in Q3 (seasonal)
+    "Accessories": [32, 45, 38, 115],  # Growth trend, peak in Q4
 }
 
 # Calculate totals for labels
@@ -49,11 +50,13 @@ chart = pygal.StackedBar(
     show_y_guides=True,
     show_x_guides=False,
     legend_at_bottom=True,
-    legend_box_size=24,
+    legend_at_bottom_columns=4,  # Display legend in a single row to prevent truncation
+    legend_box_size=28,
     print_values=True,
     print_values_position="top",
     value_formatter=lambda x: "",  # Hide default values, use per-series formatter
-    margin=50,
+    margin=80,  # Increased margin for legend space
+    margin_bottom=150,  # Extra bottom margin for legend
     spacing=80,
     truncate_legend=-1,
     x_label_rotation=0,

@@ -114,7 +114,15 @@ jobs:
                - Does it already exist? (check `ls plots/`)
                - Any concerns?
 
-            6. **Create specification files:**
+            6. **Analyze reference materials (if present in issue):**
+               - If the issue contains **images**: Analyze them to understand the desired visualization style, layout, and features. Incorporate visual requirements into the spec.
+               - If the issue contains **external links** (GitHub repos, documentation, examples):
+                 - Use WebFetch to read the linked page
+                 - Understand what the referenced tool/library does
+                 - Extract relevant features and patterns for the specification
+               - Document insights from images/links in the spec's Description or Notes section
+
+            7. **Create specification files:**
                - Read template: `prompts/templates/specification.md`
                - Read metadata template: `prompts/templates/specification.yaml`
                - Read tagging guide: `prompts/spec-tags-generator.md`
@@ -130,7 +138,7 @@ jobs:
                - Create empty folder: `plots/{specification-id}/implementations/`
                - Create empty folder: `plots/{specification-id}/metadata/`
 
-            7. **Commit and push:**
+            8. **Commit and push:**
                ```bash
                git config user.name "github-actions[bot]"
                git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -141,12 +149,12 @@ jobs:
                git push -u origin "specification/{specification-id}"
                ```
 
-            8. **Update issue title:**
+            9. **Update issue title:**
                ```bash
                gh issue edit ${{ github.event.issue.number }} --title "[{specification-id}] {original title}"
                ```
 
-            9. **Output for workflow:**
+            10. **Output for workflow:**
                After completing, print these lines exactly:
                ```
                SPECIFICATION_ID={specification-id}
@@ -210,7 +218,15 @@ jobs:
                - Does it already exist? (check `ls plots/`)
                - Any concerns?
 
-            6. **Create specification files:**
+            6. **Analyze reference materials (if present in issue):**
+               - If the issue contains **images**: Analyze them to understand the desired visualization style, layout, and features. Incorporate visual requirements into the spec.
+               - If the issue contains **external links** (GitHub repos, documentation, examples):
+                 - Use WebFetch to read the linked page
+                 - Understand what the referenced tool/library does
+                 - Extract relevant features and patterns for the specification
+               - Document insights from images/links in the spec's Description or Notes section
+
+            7. **Create specification files:**
                - Read template: `prompts/templates/specification.md`
                - Read metadata template: `prompts/templates/specification.yaml`
                - Read tagging guide: `prompts/spec-tags-generator.md`
@@ -226,7 +242,7 @@ jobs:
                - Create empty folder: `plots/{specification-id}/implementations/`
                - Create empty folder: `plots/{specification-id}/metadata/`
 
-            7. **Commit and push:**
+            8. **Commit and push:**
                ```bash
                git config user.name "github-actions[bot]"
                git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -237,12 +253,12 @@ jobs:
                git push -u origin "specification/{specification-id}"
                ```
 
-            8. **Update issue title:**
+            9. **Update issue title:**
                ```bash
                gh issue edit ${{ github.event.issue.number }} --title "[{specification-id}] {original title}"
                ```
 
-            9. **Output for workflow:**
+            10. **Output for workflow:**
                After completing, print these lines exactly:
                ```
                SPECIFICATION_ID={specification-id}

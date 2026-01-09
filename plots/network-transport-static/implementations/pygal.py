@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 network-transport-static: Static Transport Network Diagram
-Library: pygal | Python 3.13
-Quality: pending | Created: 2025-01-09
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-09
 """
 
 # Remove current directory from sys.path to avoid circular import with pygal.py filename

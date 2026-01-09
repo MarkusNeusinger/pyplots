@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 violin-grouped-swarm: Grouped Violin Plot with Swarm Overlay
-Library: altair | Python 3.13
-Quality: pending | Created: 2026-01-09
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 83/100 | Created: 2026-01-09
 """
 
 import altair as alt

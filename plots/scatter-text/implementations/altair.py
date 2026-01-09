@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-text: Scatter Plot with Text Labels Instead of Points
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 86/100 | Created: 2026-01-09
+Quality: 91/100 | Created: 2026-01-09
 """
 
 import altair as alt

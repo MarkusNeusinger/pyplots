@@ -1,7 +1,7 @@
 library: pygal
 specification_id: violin-swarm
 created: '2026-01-09T16:46:37Z'
-updated: '2026-01-09T16:49:23Z'
+updated: '2026-01-09T16:56:11Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20858846335
 issue: 3526
@@ -10,84 +10,85 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/violin-swarm/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/violin-swarm/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/violin-swarm/pygal/plot.html
-quality_score: 75
+quality_score: 82
 review:
   strengths:
-  - Successfully implements violin-swarm hybrid visualization using pygal XY chart
-  - Manual KDE calculation is mathematically correct using Silverman rule
-  - Swarm positioning algorithm respects violin boundaries
-  - Clean visual separation between the four experimental conditions
-  - Appropriate use of transparency (opacity 0.35) for violin fills
+  - Creative implementation using XY chart to construct violin shapes manually
+  - Good KDE implementation using Silverman's rule for bandwidth selection
+  - Excellent color contrast between violin fills and swarm points
+  - Proper title format and axis labeling with units
+  - Realistic experimental scenario with appropriate data ranges
   weaknesses:
-  - Swarm point colors do not contrast with violin fills as recommended in spec
-  - Legend is redundant and confusing - duplicates x-axis labels
-  - Contains helper functions violating KISS principle
-  - Font sizes could be larger for better readability at 4800x2700 canvas
-  - Does not leverage pygal distinctive features (interactivity, tooltips)
-  image_description: 'The plot displays four violin-swarm combinations representing
-    reaction times across four experimental conditions (Control, Low Dose, Medium
-    Dose, High Dose). Each violin has a semi-transparent fill showing the distribution
-    density - Control is light blue, Low Dose is orange, Medium Dose is yellow, and
-    High Dose is cyan. Individual data points are overlaid as colored dots: green
-    for Control, purple for Low Dose, pink for Medium Dose, and brown for High Dose.
-    The violins are mirrored showing kernel density estimation with varying widths.
-    The title "violin-swarm · pygal · pyplots.ai" appears at the top. The Y-axis shows
-    "Reaction Time (ms)" ranging from ~100 to 600, and the X-axis shows "Experimental
-    Condition" with the four category labels. A legend appears at the bottom showing
-    all four condition names.'
+  - Legend appears despite show_legend=False, causing redundancy with x-axis labels
+  - Swarm point colors in the rendered image don't match the intended stroke_style
+    colors
+  - Some swarm points overlap rather than spreading horizontally to avoid overlap
+    as specified
+  image_description: 'The plot displays a violin plot with overlaid swarm points showing
+    reaction times (ms) across 4 experimental conditions (Control, Low Dose, Medium
+    Dose, High Dose). Each violin is rendered with a semi-transparent fill in distinct
+    colors: light blue for Control, light orange for Low Dose, light yellow for Medium
+    Dose, and light cyan for High Dose. Swarm points are overlaid in contrasting colors
+    (green, purple, pink, and brown/dark red respectively). The title "violin-swarm
+    · pygal · pyplots.ai" appears at the top. The Y-axis shows "Reaction Time (ms)"
+    ranging from ~50 to ~650, and the X-axis shows "Experimental Condition" with category
+    labels. The violins show different distribution shapes with varying central tendencies.
+    A legend appears at the bottom showing the four conditions. The plot uses horizontal
+    grid lines for reference.'
   criteria_checklist:
     visual_quality:
-      score: 30
+      score: 32
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 10
         passed: true
-        comment: Title and axis labels are readable, but tick labels and legend text
-          are somewhat small for canvas size
+        comment: Title, axis labels, and tick marks are readable, though tick labels
+          could be slightly larger
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements; all labels clearly separated
+        comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: Violins and swarm points visible, but some swarm points are quite
-          small
+        comment: Violins are visible with good transparency; swarm points are visible
+          but some overlap occurs within dense regions
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Colors distinguishable, though green/cyan could be challenging for
-          some colorblind users
+        comment: Colors are distinguishable and colorblind-friendly; good contrast
+          between violins and swarm points
       - id: VQ-05
         name: Layout Balance
         score: 3
         max: 5
         passed: true
-        comment: Plot centered but has significant whitespace at bottom; legend is
-          isolated
+        comment: Plot is well-centered but there's significant empty space below 200ms
+          with few data points
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Y-axis has units 'Reaction Time (ms)', X-axis has descriptive label
+        comment: Both axes have descriptive labels with units
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: Legend at bottom is redundant with x-axis labels and adds clutter
+        comment: Legend at bottom is redundant (duplicates x-axis labels) and uses
+          category names inconsistently
     spec_compliance:
-      score: 21
+      score: 22
       max: 25
       items:
       - id: SC-01
@@ -95,72 +96,73 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correctly shows violin plots with overlaid swarm points
+        comment: Correctly implements violin plot with swarm overlay
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Categories on X-axis, continuous values on Y-axis
+        comment: Categories on X-axis, values on Y-axis as specified
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Has violin and swarm but points do not use contrasting colors as
-          spec suggests
+        passed: true
+        comment: Violin shapes show KDE distribution, swarm points are overlaid; however
+          points don't optimally spread horizontally
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Y-axis range appropriately shows all data from ~100-600ms
+        comment: Y-axis range adequately shows all data
       - id: SC-05
         name: Legend Accuracy
         score: 0
         max: 2
         passed: false
-        comment: Legend is redundant with x-axis labels and confusing
+        comment: Legend is redundant and unnecessary given x-axis labels
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Correct format 'violin-swarm · pygal · pyplots.ai'
+        comment: Uses correct format violin-swarm · pygal · pyplots.ai
     data_quality:
-      score: 17
+      score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Shows distributions with different shapes/spreads, but all look fairly
-          similar
+        comment: Shows 4 groups with different distributions, demonstrates variation
+          in spread and central tendency
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Reaction times across experimental conditions is a plausible scientific
-          scenario
+        comment: Reaction times in experimental conditions is a realistic and neutral
+          scientific scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Reaction times in 100-600ms range are reasonable
+        comment: Values are reasonable for reaction times (120-600ms), though some
+          values extend below typical ranges
     code_quality:
       score: 7
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: Contains helper functions which violates KISS principle
+        passed: true
+        comment: Linear script structure without functions/classes
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -169,37 +171,39 @@ review:
         comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
-        score: 2
+        score: 0
         max: 2
-        passed: true
-        comment: Only necessary imports used
+        passed: false
+        comment: Code sets show_legend=False but legend still appears; stroke_style
+          doesn't effectively color swarm points
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Modern API usage
+        comment: Uses current pygal API
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves to html first which is non-standard order
+        comment: Saves as plot.png but also generates plot.html
     library_features:
-      score: 0
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 3
         max: 5
-        passed: false
-        comment: Pygal XY chart used as polygon drawer; no distinctive pygal features
-          leveraged
+        passed: true
+        comment: Creatively uses XY chart to manually construct violin shapes with
+          KDE, but doesn't leverage interactive tooltips effectively
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
+  - hover-tooltips
   - html-export
   patterns:
   - data-generation

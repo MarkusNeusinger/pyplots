@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 voronoi-basic: Voronoi Diagram for Spatial Partitioning
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 87/100 | Created: 2026-01-09
@@ -55,8 +55,8 @@ color_palette = [
     "#FFB800",
 ]
 
-# Create edge data for Voronoi cell borders (color-coded by cell)
-edge_data = []
+# Create filled polygon data for Voronoi cells using line marks with path
+polygon_data = []
 for point_idx in range(n_points):
     region_idx = vor.point_region[point_idx]
     region = vor.regions[region_idx]
@@ -78,21 +78,24 @@ for point_idx in range(n_points):
     sorted_y = clipped_y[sorted_indices]
 
     color = color_palette[point_idx % len(color_palette)]
-    for i in range(len(sorted_x)):
-        next_i = (i + 1) % len(sorted_x)
-        edge_data.append(
-            {
-                "x1": sorted_x[i],
-                "y1": sorted_y[i],
-                "x2": sorted_x[next_i],
-                "y2": sorted_y[next_i],
-                "cell_id": point_idx,
-                "color": color,
-                "label": labels[point_idx],
-            }
-        )
+    station = labels[point_idx]
 
-df_edges = pd.DataFrame(edge_data)
+    # Add vertices for filled polygon with order index, close the polygon
+    for i, (vx, vy) in enumerate(zip(sorted_x, sorted_y, strict=True)):
+        polygon_data.append({"x": vx, "y": vy, "order": i, "cell_id": point_idx, "station": station, "color": color})
+    # Close polygon by repeating first vertex
+    polygon_data.append(
+        {
+            "x": sorted_x[0],
+            "y": sorted_y[0],
+            "order": len(sorted_x),
+            "cell_id": point_idx,
+            "station": station,
+            "color": color,
+        }
+    )
+
+df_polygons = pd.DataFrame(polygon_data)
 
 # Create DataFrame for seed points
 df_points = pd.DataFrame(
@@ -100,52 +103,67 @@ df_points = pd.DataFrame(
         "x": x_points,
         "y": y_points,
         "label": labels,
+        "station": labels,
         "color": [color_palette[i % len(color_palette)] for i in range(n_points)],
     }
 )
 
-# Create Voronoi edge borders layer with colored edges
-voronoi_edges = (
-    alt.Chart(df_edges)
-    .mark_rule(strokeWidth=4, opacity=0.9)
+# Create filled Voronoi regions using mark_line with filled attribute
+voronoi_cells = (
+    alt.Chart(df_polygons)
+    .mark_line(filled=True, opacity=0.55, strokeWidth=2.5, stroke="#333333")
     .encode(
-        x=alt.X("x1:Q", scale=alt.Scale(domain=[x_min - 2, x_max + 2])),
-        y=alt.Y("y1:Q", scale=alt.Scale(domain=[y_min - 2, y_max + 2])),
-        x2="x2:Q",
-        y2="y2:Q",
-        color=alt.Color("color:N", scale=None, legend=None),
+        x=alt.X("x:Q", scale=alt.Scale(domain=[x_min - 2, x_max + 2]), title="X Coordinate"),
+        y=alt.Y("y:Q", scale=alt.Scale(domain=[y_min - 2, y_max + 2]), title="Y Coordinate"),
+        color=alt.Color(
+            "station:N",
+            scale=alt.Scale(domain=labels, range=color_palette[:n_points]),
+            legend=alt.Legend(
+                title="Weather Stations",
+                titleFontSize=16,
+                labelFontSize=12,
+                columns=2,
+                orient="right",
+                symbolType="square",
+                symbolSize=150,
+            ),
+        ),
+        order="order:O",
+        detail="cell_id:N",
     )
 )
 
 # Create seed points layer
 points_layer = (
     alt.Chart(df_points)
-    .mark_circle(size=500, stroke="#FFFFFF", strokeWidth=3)
+    .mark_circle(size=400, stroke="#FFFFFF", strokeWidth=3, color="#1a1a1a")
     .encode(
-        x=alt.X("x:Q", title="X Coordinate"),
-        y=alt.Y("y:Q", title="Y Coordinate"),
-        color=alt.Color("color:N", scale=None, legend=None),
-        tooltip=["label:N", alt.Tooltip("x:Q", format=".1f"), alt.Tooltip("y:Q", format=".1f")],
+        x="x:Q",
+        y="y:Q",
+        tooltip=[
+            alt.Tooltip("label:N", title="Station"),
+            alt.Tooltip("x:Q", format=".1f", title="X"),
+            alt.Tooltip("y:Q", format=".1f", title="Y"),
+        ],
     )
 )
 
 # Add station labels
 labels_layer = (
     alt.Chart(df_points)
-    .mark_text(dy=-24, fontSize=16, fontWeight="bold", color="#1a1a1a")
+    .mark_text(dy=-22, fontSize=14, fontWeight="bold", color="#1a1a1a")
     .encode(x="x:Q", y="y:Q", text="label:N")
 )
 
 # Combine layers
 chart = (
-    (voronoi_edges + points_layer + labels_layer)
+    (voronoi_cells + points_layer + labels_layer)
     .properties(
-        width=1600, height=900, title=alt.Title("voronoi-basic · altair · pyplots.ai", fontSize=28, anchor="middle")
+        width=1400, height=900, title=alt.Title("voronoi-basic · altair · pyplots.ai", fontSize=28, anchor="middle")
     )
     .configure_axis(labelFontSize=18, titleFontSize=22, grid=True, gridOpacity=0.25, gridColor="#AAAAAA")
     .configure_view(strokeWidth=0)
 )
 
-# Save outputs
+# Save output
 chart.save("plot.png", scale_factor=3.0)
-chart.save("plot.html")

@@ -1,0 +1,11 @@
+spec_id: network-transport-static
+title: Static Transport Network Diagram
+created: 2026-01-10T00:00:00Z
+updated: 2026-01-10T00:00:00Z
+issue: 3463
+suggested: null
+tags:
+  plot_type: [network, graph, directed]
+  domain: [transportation, logistics, infrastructure]
+  features: [labels, directed-edges, multi-edge]
+  data_type: [categorical, temporal]

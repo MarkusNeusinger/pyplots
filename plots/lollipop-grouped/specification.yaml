@@ -1,0 +1,28 @@
+# Specification-level metadata for lollipop-grouped
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: lollipop-grouped
+title: Grouped Lollipop Chart
+
+# Specification tracking
+created: 2026-01-09T14:16:33Z
+updated: null
+issue: 3485
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - lollipop
+    - point
+  data_type:
+    - categorical
+    - numeric
+  domain:
+    - general
+    - business
+  features:
+    - grouped
+    - comparison
+    - multi

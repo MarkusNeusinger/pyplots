@@ -1,7 +1,9 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-geographic: Geographic Heatmap for Spatial Density
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 86/100 | Created: 2026-01-10
+
+Note: sys.path manipulation required since filename 'pygal.py' shadows the pygal package.
 """
 
 import sys
@@ -9,8 +11,8 @@ import sys
 import numpy as np
 
 
-# Temporarily remove current directory from path to avoid name collision
-_cwd = sys.path[0] if sys.path[0] else "."
+# Remove current directory from path to avoid shadowing the pygal package
+_cwd = sys.path[0] if sys.path and sys.path[0] else "."
 if _cwd in sys.path:
     sys.path.remove(_cwd)
 
@@ -18,7 +20,6 @@ from pygal.graph.graph import Graph  # noqa: E402
 from pygal.style import Style  # noqa: E402
 
 
-# Restore path
 sys.path.insert(0, _cwd)
 
 
@@ -166,17 +167,17 @@ class GeoHeatmap(Graph):
             polyline.set("stroke-width", "3")
             polyline.set("stroke-opacity", "0.7")
 
-        # Draw scatter points with improved visibility
+        # Draw scatter points with improved visibility (larger radius for better visibility)
         if self.point_data is not None:
             for lon, lat in self.point_data:
                 cx = lon_to_x(lon)
                 cy = lat_to_y(lat)
-                circle = self.svg.node(heatmap_group, "circle", cx=cx, cy=cy, r=8)
+                circle = self.svg.node(heatmap_group, "circle", cx=cx, cy=cy, r=12)
                 circle.set("fill", "#306998")
-                circle.set("fill-opacity", "0.6")
+                circle.set("fill-opacity", "0.7")
                 circle.set("stroke", "#1a3a5c")
-                circle.set("stroke-width", "1")
-                circle.set("stroke-opacity", "0.8")
+                circle.set("stroke-width", "1.5")
+                circle.set("stroke-opacity", "0.9")
 
         # Draw axis labels
         axis_font_size = 48
@@ -285,9 +286,9 @@ class GeoHeatmap(Graph):
         legend_x = colorbar_x
 
         # Legend marker (circle matching scatter points)
-        legend_circle = self.svg.node(heatmap_group, "circle", cx=legend_x + 12, cy=legend_y, r=10)
+        legend_circle = self.svg.node(heatmap_group, "circle", cx=legend_x + 12, cy=legend_y, r=12)
         legend_circle.set("fill", "#306998")
-        legend_circle.set("fill-opacity", "0.6")
+        legend_circle.set("fill-opacity", "0.7")
         legend_circle.set("stroke", "#1a3a5c")
         legend_circle.set("stroke-width", "1.5")
 

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bubble-map-geographic: Bubble Map with Sized Geographic Markers
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-10
@@ -119,6 +119,8 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#111111",
     foreground_subtle="#666666",
+    guide_stroke_color="#88888866",  # Semi-transparent gray grid lines
+    guide_stroke_dasharray="5,5",  # Dashed grid lines for visibility
     colors=(
         # Gray for all coastlines (9 series)
         "#999999",
@@ -151,7 +153,7 @@ chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
-    title="World City Populations · bubble-map-geographic · pygal · pyplots.ai",
+    title="bubble-map-geographic · pygal · pyplots.ai",
     x_title="Longitude (°)",
     y_title="Latitude (°)",
     show_legend=True,
@@ -172,12 +174,12 @@ chart = pygal.XY(
 for coords in coastlines:
     chart.add(None, coords, stroke=True, dots_size=0, show_dots=False, fill=False)
 
-# Add city bubbles by population category
-chart.add("Pop < 12M", small_cities, stroke=False, dots_size=18)
-chart.add("Pop 12-20M", medium_cities, stroke=False, dots_size=32)
-chart.add("Pop 20-30M", large_cities, stroke=False, dots_size=48)
-chart.add("Pop > 30M", mega_cities, stroke=False, dots_size=68)
+# Add city bubbles by population category (increased sizes for visibility)
+chart.add("Pop < 12M", small_cities, stroke=False, dots_size=28)
+chart.add("Pop 12-20M", medium_cities, stroke=False, dots_size=42)
+chart.add("Pop 20-30M", large_cities, stroke=False, dots_size=58)
+chart.add("Pop > 30M", mega_cities, stroke=False, dots_size=78)
 
-# Save outputs
-chart.render_to_file("plot.html")
+# Save outputs (PNG first as primary, then HTML for interactivity)
 chart.render_to_png("plot.png")
+chart.render_to_file("plot.html")

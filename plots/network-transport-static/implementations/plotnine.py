@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-transport-static: Static Transport Network Diagram
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-10
@@ -93,9 +93,9 @@ routes["yend"] = routes["target"].map(station_coords["y"])
 # Route type for coloring
 routes["route_type"] = routes["route_id"].str.extract(r"([A-Z]+)")[0]
 
-# Offset overlapping routes
+# Offset overlapping routes - larger offset to separate labels
 route_pairs = routes.groupby(["source", "target"]).cumcount()
-offset_amount = 0.015
+offset_amount = 0.025
 
 # Calculate perpendicular offset for multiple routes
 dx = routes["xend"] - routes["x"]
@@ -119,9 +119,11 @@ routes["y"] = routes["y"] + dy / length * shorten
 routes["xend"] = routes["xend"] - dx / length * shorten
 routes["yend"] = routes["yend"] - dy / length * shorten
 
-# Calculate edge label positions (midpoint)
-routes["label_x"] = (routes["x"] + routes["xend"]) / 2
-routes["label_y"] = (routes["y"] + routes["yend"]) / 2
+# Calculate edge label positions - stagger along edge to reduce overlaps
+# Use 40%-60% position alternating based on index to spread labels
+label_offset = np.where(routes.index % 2 == 0, 0.4, 0.6)
+routes["label_x"] = routes["x"] + (routes["xend"] - routes["x"]) * label_offset
+routes["label_y"] = routes["y"] + (routes["yend"] - routes["y"]) * label_offset
 routes["edge_label"] = routes["route_id"] + " | " + routes["dep"] + "→" + routes["arr"]
 
 # Color palette for route types
@@ -153,19 +155,20 @@ plot = (
         color="#333333",
         nudge_y=0.06,
     )
-    # Edge labels (route and times) - show all routes as per spec
+    # Edge labels (route and times) - larger size and better positioning
     + geom_text(
         data=routes,
         mapping=aes(x="label_x", y="label_y", label="edge_label", color="route_type"),
-        size=9,
-        nudge_y=0.025,
+        size=8,
+        nudge_y=0.04,
+        fontweight="bold",
         show_legend=False,
     )
-    # Color scale with semantic ordering (Express first as most prominent)
+    # Color scale using raw route codes as per spec for legend accuracy
     + scale_color_manual(
         values=route_colors,
         name="Route Type",
-        labels={"RE": "Express", "RB": "Regional", "AE": "Airport", "S": "Local"},
+        labels={"RE": "RE (Express)", "RB": "RB (Regional)", "AE": "AE (Airport)", "S": "S (Local)"},
         limits=["RE", "RB", "AE", "S"],
     )
     # Labels and theme

@@ -1,73 +1,98 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-matrix-interactive: Interactive Scatter Plot Matrix (SPLOM)
 Library: plotly 6.5.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-10
 """
 
-import numpy as np
-import plotly.express as px
+import plotly.graph_objects as go
 import seaborn as sns
+from plotly.subplots import make_subplots
 
 
 # Data - Using Iris dataset for multivariate exploration
-np.random.seed(42)
 iris = sns.load_dataset("iris")
-iris = iris.rename(
-    columns={
-        "sepal_length": "Sepal Length (cm)",
-        "sepal_width": "Sepal Width (cm)",
-        "petal_length": "Petal Length (cm)",
-        "petal_width": "Petal Width (cm)",
-        "species": "Species",
-    }
-)
+
+# Column names for cleaner code
+cols = ["sepal_length", "sepal_width", "petal_length", "petal_width"]
+labels = ["Sepal Length (cm)", "Sepal Width (cm)", "Petal Length (cm)", "Petal Width (cm)"]
 
 # Capitalize species names for display
-iris["Species"] = iris["Species"].str.capitalize()
+iris["species"] = iris["species"].str.capitalize()
 
 # Color mapping for species (Python branding colors + complementary)
-color_discrete_map = {
-    "Setosa": "#306998",  # Python Blue
-    "Versicolor": "#FFD43B",  # Python Yellow
-    "Virginica": "#4ECDC4",  # Teal for third category
-}
+color_map = {"Setosa": "#306998", "Versicolor": "#FFD43B", "Virginica": "#4ECDC4"}
+species_list = ["Setosa", "Versicolor", "Virginica"]
 
-# Create scatter matrix (SPLOM) with linked brushing using plotly express
-fig = px.scatter_matrix(
-    iris,
-    dimensions=["Sepal Length (cm)", "Sepal Width (cm)", "Petal Length (cm)", "Petal Width (cm)"],
-    color="Species",
-    color_discrete_map=color_discrete_map,
-    title="Iris Dataset · scatter-matrix-interactive · plotly · pyplots.ai",
-    opacity=0.7,
+# Create 4x4 subplot grid - not sharing axes to allow histograms to have different y scale
+n = len(cols)
+fig = make_subplots(
+    rows=n,
+    cols=n,
+    shared_xaxes="columns",  # Share x-axes within columns
+    shared_yaxes=False,  # Don't share y-axes (histograms have different scale)
+    horizontal_spacing=0.02,
+    vertical_spacing=0.02,
 )
 
-# Update marker styling for better visibility
-fig.update_traces(
-    marker=dict(size=8, line=dict(width=0.5, color="white")),
-    diagonal_visible=True,
-    showupperhalf=True,
-    # Enable linked selection across all subplots
-    selected=dict(marker=dict(opacity=1.0, size=10)),
-    unselected=dict(marker=dict(opacity=0.15, size=6)),
-)
+# Add scatter plots for off-diagonal and histograms for diagonal
+for i in range(n):
+    for j in range(n):
+        row, col = i + 1, j + 1
+
+        if i == j:
+            # Diagonal: histograms for each species (stacked)
+            for species in species_list:
+                subset = iris[iris["species"] == species]
+                fig.add_trace(
+                    go.Histogram(
+                        x=subset[cols[i]],
+                        name=species,
+                        marker_color=color_map[species],
+                        opacity=0.7,
+                        showlegend=(i == 0),  # Only show legend for first diagonal
+                        legendgroup=species,
+                    ),
+                    row=row,
+                    col=col,
+                )
+            fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor="rgba(0,0,0,0.1)", row=row, col=col)
+            fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor="rgba(0,0,0,0.1)", row=row, col=col)
+        else:
+            # Off-diagonal: scatter plots
+            for species in species_list:
+                subset = iris[iris["species"] == species]
+                fig.add_trace(
+                    go.Scatter(
+                        x=subset[cols[j]],
+                        y=subset[cols[i]],
+                        mode="markers",
+                        name=species,
+                        marker=dict(color=color_map[species], size=8, opacity=0.7, line=dict(width=0.5, color="white")),
+                        showlegend=False,
+                        legendgroup=species,
+                        selected=dict(marker=dict(opacity=1.0, size=10)),
+                        unselected=dict(marker=dict(opacity=0.15, size=6)),
+                    ),
+                    row=row,
+                    col=col,
+                )
+            fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor="rgba(0,0,0,0.1)", row=row, col=col)
+            fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor="rgba(0,0,0,0.1)", row=row, col=col)
+
+# Update axis labels - only on edges
+for i in range(n):
+    fig.update_yaxes(title_text=labels[i], row=i + 1, col=1)
+    fig.update_xaxes(title_text=labels[i], row=n, col=i + 1)
 
 # Layout for large canvas with interactivity
 fig.update_layout(
-    title=dict(
-        text="Iris Dataset · scatter-matrix-interactive · plotly · pyplots.ai",
-        font=dict(size=28),
-        x=0.5,
-        xanchor="center",
-    ),
-    font=dict(size=16),
-    # Enable dragmode for box selection
+    title=dict(text="scatter-matrix-interactive · plotly · pyplots.ai", font=dict(size=28), x=0.5, xanchor="center"),
+    font=dict(size=14),
     dragmode="select",
-    # Subplot configuration
     width=1600,
     height=1500,
     template="plotly_white",
-    # Legend configuration
+    barmode="overlay",  # Overlay histograms
     legend=dict(
         title=dict(text="Species", font=dict(size=18)),
         font=dict(size=16),
@@ -79,8 +104,7 @@ fig.update_layout(
         bordercolor="#CCCCCC",
         borderwidth=1,
     ),
-    # Margins for labels and legend
-    margin=dict(l=80, r=150, t=100, b=80),
+    margin=dict(l=100, r=150, t=100, b=100),
 )
 
 # Save as PNG (3600x3600 for square format)

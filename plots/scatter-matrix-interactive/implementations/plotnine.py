@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-matrix-interactive: Interactive Scatter Plot Matrix (SPLOM)
 Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 72/100 | Created: 2026-01-10
+Quality: 68/100 | Created: 2026-01-10
 """
 
 import warnings

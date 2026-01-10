@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 network-transport-static: Static Transport Network Diagram
 Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 82/100 | Created: 2026-01-10
+Quality: 85/100 | Created: 2026-01-10
 """
 
 import numpy as np

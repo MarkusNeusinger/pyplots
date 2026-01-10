@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-geographic: Geographic Heatmap for Spatial Density
-Library: bokeh | Python 3.13
-Quality: pending | Created: 2026-01-10
+Library: bokeh 3.8.2 | Python 3.13.11
+Quality: 82/100 | Created: 2026-01-10
 """
 
 import numpy as np

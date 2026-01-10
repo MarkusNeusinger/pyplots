@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-transport-static: Static Transport Network Diagram
 Library: highcharts unknown | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-10
@@ -148,11 +148,6 @@ route_colors = {
 }
 
 
-def get_route_color(route_id):
-    prefix = route_id.split()[0]
-    return route_colors.get(prefix, "#17BECF")
-
-
 # Build series data for routes
 route_series_list = []
 route_pair_offset = {}
@@ -182,7 +177,8 @@ for route in routes:
     tx = target["x"] + perp_x
     ty = target["y"] + perp_y
 
-    color = get_route_color(route["route_id"])
+    route_prefix = route["route_id"].split()[0]
+    color = route_colors.get(route_prefix, "#17BECF")
     label_text = f"{route['route_id']} | {route['departure_time']} → {route['arrival_time']}"
 
     route_series_list.append(
@@ -251,19 +247,21 @@ for route in routes:
     mid_x = (sx + tx) / 2
     mid_y = (sy + ty) / 2
 
-    color = get_route_color(route["route_id"])
+    route_prefix = route["route_id"].split()[0]
+    color = route_colors.get(route_prefix, "#17BECF")
     text_color = "#ffffff" if color != "#FFD43B" else "#000000"
+    label_text = f"{route['route_id']} | {route['departure_time']} \u2192 {route['arrival_time']}"
 
     annotations_list.append(
         {
             "labels": [
                 {
                     "point": {"x": mid_x, "y": mid_y, "xAxis": 0, "yAxis": 0},
-                    "text": route["route_id"],
+                    "text": label_text,
                     "backgroundColor": color,
                     "borderColor": color,
-                    "style": {"color": text_color, "fontSize": "18px", "fontWeight": "bold"},
-                    "padding": 6,
+                    "style": {"color": text_color, "fontSize": "16px", "fontWeight": "bold"},
+                    "padding": 5,
                     "borderRadius": 4,
                 }
             ],
@@ -271,29 +269,30 @@ for route in routes:
         }
     )
 
-    # Arrow at 75%
+    # Arrow at 75% - use HTML triangle symbols for reliable rendering
     arrow_x = sx + (tx - sx) * 0.75
     arrow_y = sy + (ty - sy) * 0.75
     angle = math.degrees(math.atan2(ty - sy, tx - sx))
 
     if -45 <= angle < 45:
-        arrow_char = "→"
+        arrow_html = "\u25b6"  # Right-pointing triangle
     elif 45 <= angle < 135:
-        arrow_char = "↓"
+        arrow_html = "\u25bc"  # Down-pointing triangle
     elif -135 <= angle < -45:
-        arrow_char = "↑"
+        arrow_html = "\u25b2"  # Up-pointing triangle
     else:
-        arrow_char = "←"
+        arrow_html = "\u25c0"  # Left-pointing triangle
 
     annotations_list.append(
         {
             "labels": [
                 {
                     "point": {"x": arrow_x, "y": arrow_y, "xAxis": 0, "yAxis": 0},
-                    "text": arrow_char,
+                    "text": arrow_html,
+                    "useHTML": True,
                     "backgroundColor": "transparent",
                     "borderWidth": 0,
-                    "style": {"color": color, "fontSize": "28px", "fontWeight": "bold"},
+                    "style": {"color": color, "fontSize": "32px", "fontWeight": "bold"},
                     "padding": 0,
                 }
             ],

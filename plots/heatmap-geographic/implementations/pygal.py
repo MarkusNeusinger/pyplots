@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-geographic: Geographic Heatmap for Spatial Density
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-10
@@ -144,7 +144,8 @@ class GeoHeatmap(Graph):
                     continue
 
                 color = self._interpolate_color(value, min_val, max_val)
-                opacity = 0.75
+                # Variable opacity based on value intensity for basemap visibility
+                opacity = 0.4 + 0.45 * (value - min_val) / (max_val - min_val) if max_val > min_val else 0.65
 
                 x = x_offset + j * cell_width
                 y = y_offset + (n_rows - 1 - i) * cell_height
@@ -278,6 +279,23 @@ class GeoHeatmap(Graph):
         text_node.set("fill", "#333333")
         text_node.set("style", f"font-size:{cb_title_size}px;font-weight:bold;font-family:sans-serif")
         text_node.text = "Density"
+
+        # Legend for scatter points (below colorbar)
+        legend_y = colorbar_y + colorbar_height + 60
+        legend_x = colorbar_x
+
+        # Legend marker (circle matching scatter points)
+        legend_circle = self.svg.node(heatmap_group, "circle", cx=legend_x + 12, cy=legend_y, r=10)
+        legend_circle.set("fill", "#306998")
+        legend_circle.set("fill-opacity", "0.6")
+        legend_circle.set("stroke", "#1a3a5c")
+        legend_circle.set("stroke-width", "1.5")
+
+        # Legend text
+        legend_text = self.svg.node(heatmap_group, "text", x=legend_x + 35, y=legend_y + 10)
+        legend_text.set("fill", "#333333")
+        legend_text.set("style", f"font-size:{cb_label_size}px;font-family:sans-serif")
+        legend_text.text = "Station"
 
     def _compute(self):
         """Compute the box for rendering."""

@@ -1,12 +1,13 @@
-""" pyplots.ai
+"""pyplots.ai
 network-transport-static: Static Transport Network Diagram
-Library: letsplot 4.8.2 | Python 3.13.11
+Library: lets-plot 4.8.2 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-09
 """
+# ruff: noqa: F405
 
 import numpy as np
 import pandas as pd
-from lets_plot import *
+from lets_plot import *  # noqa: F403, F405
 
 
 LetsPlot.setup_html()
@@ -15,21 +16,21 @@ LetsPlot.setup_html()
 np.random.seed(42)
 
 # Station data with x, y coordinates (positioned like a simplified rail map)
-# Adjusted to give more margin on edges for labels
 stations = [
     {"id": "A", "label": "Central", "x": 0.5, "y": 0.5},
-    {"id": "B", "label": "North", "x": 0.5, "y": 0.85},
-    {"id": "C", "label": "East", "x": 0.78, "y": 0.5},
-    {"id": "D", "label": "South", "x": 0.5, "y": 0.15},
-    {"id": "E", "label": "West", "x": 0.22, "y": 0.5},
-    {"id": "F", "label": "Airport", "x": 0.78, "y": 0.78},
-    {"id": "G", "label": "University", "x": 0.22, "y": 0.78},
-    {"id": "H", "label": "Harbor", "x": 0.78, "y": 0.22},
-    {"id": "I", "label": "Tech Park", "x": 0.22, "y": 0.22},
-    {"id": "J", "label": "Stadium", "x": 0.64, "y": 0.36},
+    {"id": "B", "label": "North", "x": 0.5, "y": 0.88},
+    {"id": "C", "label": "East", "x": 0.82, "y": 0.5},
+    {"id": "D", "label": "South", "x": 0.5, "y": 0.12},
+    {"id": "E", "label": "West", "x": 0.18, "y": 0.5},
+    {"id": "F", "label": "Airport", "x": 0.82, "y": 0.82},
+    {"id": "G", "label": "University", "x": 0.18, "y": 0.82},
+    {"id": "H", "label": "Harbor", "x": 0.82, "y": 0.18},
+    {"id": "I", "label": "Tech Park", "x": 0.18, "y": 0.18},
+    {"id": "J", "label": "Stadium", "x": 0.66, "y": 0.32},
 ]
 
 # Route data: train connections with times
+# Includes multiple routes between same stations to demonstrate curved edges
 routes = [
     # Express routes (RE) - Central hub connections
     {"source": "A", "target": "B", "route_id": "RE1", "depart": "06:15", "arrive": "06:35", "type": "Express"},
@@ -45,75 +46,124 @@ routes = [
     {"source": "D", "target": "I", "route_id": "RB6", "depart": "09:00", "arrive": "09:30", "type": "Regional"},
     {"source": "E", "target": "G", "route_id": "RB7", "depart": "09:15", "arrive": "09:40", "type": "Regional"},
     {"source": "E", "target": "I", "route_id": "RB8", "depart": "09:30", "arrive": "09:55", "type": "Regional"},
-    # Local routes (S) - Short connections
+    # Local routes (S) - Short connections, including multiple routes to same destination
     {"source": "C", "target": "J", "route_id": "S1", "depart": "10:00", "arrive": "10:12", "type": "Local"},
     {"source": "J", "target": "H", "route_id": "S2", "depart": "10:15", "arrive": "10:30", "type": "Local"},
     {"source": "A", "target": "J", "route_id": "S3", "depart": "10:30", "arrive": "10:50", "type": "Local"},
+    # Second Express route A→C to demonstrate offset edges
+    {"source": "A", "target": "C", "route_id": "RE5", "depart": "12:30", "arrive": "12:55", "type": "Express"},
 ]
 
 # Create DataFrames
 stations_df = pd.DataFrame(stations)
 
-# Build edge DataFrame with source/target coordinates
+# Track route counts between station pairs for offset calculation
+route_counts = {}
+for r in routes:
+    key = (r["source"], r["target"])
+    route_counts[key] = route_counts.get(key, 0) + 1
+
+route_index = {}
+
+# Build edge DataFrame with source/target coordinates and curve offsets
 station_coords = {s["id"]: (s["x"], s["y"]) for s in stations}
 edges_data = []
 for r in routes:
     src_x, src_y = station_coords[r["source"]]
     tgt_x, tgt_y = station_coords[r["target"]]
+
+    # Track index for this station pair
+    key = (r["source"], r["target"])
+    idx = route_index.get(key, 0)
+    route_index[key] = idx + 1
+    total = route_counts[key]
+
     # Shorten edges slightly so arrows don't overlap nodes
     dx, dy = tgt_x - src_x, tgt_y - src_y
     length = np.sqrt(dx**2 + dy**2)
-    offset = 0.04 / length if length > 0 else 0
+    offset = 0.045 / length if length > 0 else 0
 
-    # Calculate perpendicular offset for label positioning
+    # Calculate perpendicular offset for curved/offset edges
     perp_x = -dy / length if length > 0 else 0
     perp_y = dx / length if length > 0 else 0
 
-    # Offset labels perpendicular to edge direction
-    label_offset = 0.025
+    # Apply perpendicular offset for multiple routes between same stations
+    if total > 1:
+        curve_offset = 0.03 * (idx - (total - 1) / 2)
+    else:
+        curve_offset = 0
+
+    # Offset labels perpendicular to edge direction (increased for clarity)
+    label_offset = 0.04
 
     edges_data.append(
         {
-            "x": src_x + dx * offset,
-            "y": src_y + dy * offset,
-            "xend": tgt_x - dx * offset,
-            "yend": tgt_y - dy * offset,
+            "x": src_x + dx * offset + perp_x * curve_offset,
+            "y": src_y + dy * offset + perp_y * curve_offset,
+            "xend": tgt_x - dx * offset + perp_x * curve_offset,
+            "yend": tgt_y - dy * offset + perp_y * curve_offset,
             "route_id": r["route_id"],
-            "label": f"{r['route_id']} | {r['depart']} \u2192 {r['arrive']}",
+            "depart": r["depart"],
+            "arrive": r["arrive"],
+            "label": f"{r['route_id']} | {r['depart']} → {r['arrive']}",
             "type": r["type"],
-            "mid_x": (src_x + tgt_x) / 2 + perp_x * label_offset,
-            "mid_y": (src_y + tgt_y) / 2 + perp_y * label_offset,
+            "mid_x": (src_x + tgt_x) / 2 + perp_x * (label_offset + curve_offset),
+            "mid_y": (src_y + tgt_y) / 2 + perp_y * (label_offset + curve_offset),
+            "source_station": next(s["label"] for s in stations if s["id"] == r["source"]),
+            "target_station": next(s["label"] for s in stations if s["id"] == r["target"]),
         }
     )
 
 edges_df = pd.DataFrame(edges_data)
 
-# Color palette for route types (darker yellow for better label visibility)
+# Color palette for route types
 route_colors = {"Express": "#306998", "Regional": "#B8860B", "Local": "#2E8B57"}
 
-# Create the plot
+# Create tooltip specs for interactive hover
+edge_tooltips = (
+    layer_tooltips()
+    .title("@route_id")
+    .line("@source_station → @target_station")
+    .line("Departs: @depart")
+    .line("Arrives: @arrive")
+    .line("Type: @type")
+)
+
+station_tooltips = layer_tooltips().title("@label").line("Station ID: @id")
+
+# Create the plot with interactive tooltips
 plot = (
     ggplot()
-    # Draw edges as segments with arrows
+    # Draw edges as segments with arrows and tooltips
     + geom_segment(
         aes(x="x", y="y", xend="xend", yend="yend", color="type"),
         data=edges_df,
         size=1.8,
         alpha=0.85,
         arrow=arrow(angle=25, length=12, type="closed"),
+        tooltips=edge_tooltips,
     )
-    # Draw edge labels (route and times)
-    + geom_text(aes(x="mid_x", y="mid_y", label="label", color="type"), data=edges_df, size=5.5)
-    # Draw station nodes
-    + geom_point(aes(x="x", y="y"), data=stations_df, size=12, color="white", shape=21, fill="#303030", stroke=2.5)
-    # Draw station labels
+    # Draw edge labels (route and times) - slightly smaller to reduce overlap
+    + geom_text(aes(x="mid_x", y="mid_y", label="label", color="type"), data=edges_df, size=4.5)
+    # Draw station nodes with tooltips
+    + geom_point(
+        aes(x="x", y="y"),
+        data=stations_df,
+        size=12,
+        color="white",
+        shape=21,
+        fill="#303030",
+        stroke=2.5,
+        tooltips=station_tooltips,
+    )
+    # Draw station labels (adjusted position to avoid edge label overlap)
     + geom_text(
-        aes(x="x", y="y", label="label"), data=stations_df, size=10, color="#202020", fontface="bold", nudge_y=-0.05
+        aes(x="x", y="y", label="label"), data=stations_df, size=9, color="#202020", fontface="bold", nudge_y=-0.055
     )
     # Color scale for route types
     + scale_color_manual(values=route_colors, name="Route Type")
-    # Styling
-    + labs(title="network-transport-static \u00b7 letsplot \u00b7 pyplots.ai", x="", y="")
+    # Styling with corrected library name
+    + labs(title="network-transport-static · lets-plot · pyplots.ai", x="", y="")
     + theme_void()
     + theme(
         plot_title=element_text(size=24, face="bold", hjust=0.5),
@@ -130,5 +180,5 @@ plot = (
 # Save as PNG (scale 3x for 4800x2700)
 ggsave(plot, "plot.png", scale=3, path=".")
 
-# Save as HTML for interactivity
+# Save as HTML for interactivity (tooltips work in HTML)
 ggsave(plot, "plot.html", path=".")

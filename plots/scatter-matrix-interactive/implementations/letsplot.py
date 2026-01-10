@@ -1,11 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-matrix-interactive: Interactive Scatter Plot Matrix (SPLOM)
 Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 72/100 | Created: 2026-01-10
-
-Note: lets-plot does not support linked brushing/selection across subplots.
-This implementation provides hover tooltips for interactivity. For full linked
-brushing, consider using Plotly, Bokeh, or Altair.
+Quality: 75/100 | Created: 2026-01-10
 """
 
 import numpy as np

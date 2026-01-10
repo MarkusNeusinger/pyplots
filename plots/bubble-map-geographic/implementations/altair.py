@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bubble-map-geographic: Bubble Map with Sized Geographic Markers
-Library: altair | Python 3.13
-Quality: pending | Created: 2026-01-10
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 93/100 | Created: 2026-01-10
 """
 
 import altair as alt

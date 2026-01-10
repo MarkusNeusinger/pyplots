@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: coefficient-confidence
 created: '2026-01-09T23:48:14Z'
-updated: '2026-01-09T23:51:23Z'
+updated: '2026-01-10T00:01:23Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20868891789
 issue: 3576
@@ -10,86 +10,84 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/coefficient-confidence/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/coefficient-confidence/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/coefficient-confidence/bokeh/plot.html
-quality_score: 85
+quality_score: 78
 review:
   strengths:
-  - Excellent data context with realistic housing regression scenario
-  - Clean code structure following KISS principles
-  - Proper use of ColumnDataSource pattern
-  - Good text sizing for 4800x2700 canvas
-  - Correct horizontal layout for readability with long variable names
-  - Variables properly sorted by coefficient magnitude
+  - Correct horizontal layout with variables on Y-axis for readability
+  - Clean data generation with realistic housing price regression context
+  - Proper zero reference line implementation
+  - Variables sorted by coefficient magnitude as spec recommends
+  - Good use of ColumnDataSource pattern
   weaknesses:
-  - Missing legend to explain significance color coding (blue vs gray)
-  - No HoverTool to display coefficient values and CI bounds on hover (missed Bokeh
-    feature opportunity)
-  - Color distinction between significant/non-significant could be stronger (consider
-    different marker shapes or bolder colors)
-  image_description: The plot displays a horizontal coefficient plot for a housing
-    price regression model with 10 predictor variables on the y-axis and standardized
-    coefficient estimates on the x-axis. Variables are ordered by absolute coefficient
-    magnitude from bottom (Property Tax Rate, smallest) to top (Square Footage, largest).
-    Each variable shows a point estimate with horizontal confidence interval bars.
-    A vertical dashed gray line marks zero (null hypothesis threshold). The title
-    reads "coefficient-confidence · bokeh · pyplots.ai". X-axis is labeled "Coefficient
-    Estimate (Standardized)" and y-axis is labeled "Predictor Variable". The background
-    is light gray (#fafafa) with subtle dashed grid lines. All points appear to be
-    rendered in the same blue color (#306998) - the color differentiation between
-    significant and non-significant coefficients is not visually apparent in the rendered
-    image.
+  - Significant vs non-significant coefficients are NOT visually distinguished in
+    the rendered output (all appear as same blue color) - this is a key spec requirement
+  - Legend is not visible in the PNG output (appears cut off on the right side)
+  - Text sizes could be larger for the 4800x2700 canvas
+  - HoverTool feature is not useful in static PNG export
+  image_description: The plot displays a coefficient plot with confidence intervals
+    for 10 housing price predictor variables. Variables are arranged vertically on
+    the y-axis (sorted by coefficient magnitude from Property Tax Rate at bottom to
+    Square Footage at top). Each coefficient is shown as a blue point with horizontal
+    lines extending to show 95% confidence intervals. A vertical dashed reference
+    line at zero clearly indicates the null hypothesis threshold. The x-axis shows
+    "Coefficient Estimate (Standardized)" ranging from approximately -0.4 to 0.6.
+    All coefficients and their error bars are rendered in the same blue color (#1f77b4)
+    - there is NO visual distinction between significant and non-significant coefficients
+    despite the code creating separate renderers for this purpose. The title "coefficient-confidence
+    · bokeh · pyplots.ai" appears at top left. The plot has a light gray background
+    (#fafafa) with subtle dashed grid lines. The legend is NOT visible in the rendered
+    PNG image - it appears to be cut off or not rendering properly.
   criteria_checklist:
     visual_quality:
-      score: 34
+      score: 30
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
+        score: 7
         max: 10
         passed: true
-        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt - all clearly
-          readable
+        comment: Title and axis labels readable but smaller than optimal for 4800x2700
+          canvas
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements, variable names have adequate spacing
+        comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
-        score: 8
+        score: 6
         max: 8
         passed: true
-        comment: Points sized at 20, line width 4 - appropriate for the data density
+        comment: Points and error bars visible but could be larger
       - id: VQ-04
         name: Color Accessibility
-        score: 3
+        score: 2
         max: 5
-        passed: true
-        comment: Blue/gray scheme is colorblind-safe, but visual distinction between
-          significant/non-significant is weak
+        passed: false
+        comment: All coefficients appear same blue color; significant/non-significant
+          distinction not rendered
       - id: VQ-05
         name: Layout Balance
         score: 3
         max: 5
-        passed: true
-        comment: Good canvas utilization, but large right margin with Bokeh toolbar
-          taking space
+        passed: false
+        comment: Plot area reasonable but legend is cut off/missing from right side
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with context: Coefficient Estimate (Standardized),
-          Predictor Variable'
+        comment: Descriptive labels with units
       - id: VQ-07
         name: Grid & Legend
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: No legend explaining significance colors (blue=significant, gray=non-significant)
+        passed: true
+        comment: Grid subtle with alpha 0.3 and dashed style
     spec_compliance:
-      score: 22
+      score: 20
       max: 25
       items:
       - id: SC-01
@@ -97,33 +95,31 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct coefficient plot with horizontal error bars
+        comment: Correct coefficient plot with confidence intervals
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Coefficients on x-axis, variables on y-axis (horizontal layout as
-          preferred)
+        comment: Variables on Y-axis, coefficients on X-axis (horizontal layout)
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 2
         max: 5
-        passed: true
-        comment: Has zero line, ordering by magnitude, confidence intervals, but missing
-          clear visual distinction for significance
+        passed: false
+        comment: Missing visual distinction between significant/non-significant coefficients
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible, axis range appropriate
+        comment: All data visible, zero line clearly shown
       - id: SC-05
         name: Legend Accuracy
-        score: 1
+        score: 0
         max: 2
         passed: false
-        comment: No legend present to explain color coding
+        comment: Legend not visible in output image
       - id: SC-06
         name: Title Format
         score: 2
@@ -131,7 +127,7 @@ review:
         passed: true
         comment: 'Correct format: coefficient-confidence · bokeh · pyplots.ai'
     data_quality:
-      score: 19
+      score: 18
       max: 20
       items:
       - id: DQ-01
@@ -139,21 +135,20 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows both positive and negative coefficients, significant and non-significant,
-          varying CI widths
+        comment: Shows positive/negative coefficients, varying CI widths, some crossing
+          zero
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Housing price regression is a plausible, neutral scenario with sensible
-          predictors
+        comment: Housing price regression is realistic, neutral scenario
       - id: DQ-03
         name: Appropriate Scale
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Standardized coefficients in -0.5 to 0.5 range, realistic for regression
+        comment: Standardized coefficients in plausible range
     code_quality:
       score: 10
       max: 10
@@ -163,7 +158,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear script: imports, data, plot, save'
+        comment: 'Linear flow: imports → data → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -175,19 +170,19 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports used (numpy, bokeh.io, bokeh.models, bokeh.plotting)
+        comment: All imports used
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current Bokeh API
+        comment: Current Bokeh API
       - id: CQ-05
         name: Output Correct
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
+        comment: Saves as plot.png
     library_features:
       score: 0
       max: 5
@@ -197,12 +192,14 @@ review:
         score: 0
         max: 5
         passed: false
-        comment: Does not use Bokeh-specific features like HoverTool for tooltips,
-          which would be ideal for showing exact values on hover
+        comment: HoverTool not functional in PNG; legend cut off; color distinction
+          not rendering
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
+  - hover-tooltips
+  - custom-legend
   - html-export
   patterns:
   - data-generation
@@ -211,5 +208,5 @@ impl_tags:
   dataprep: []
   styling:
   - alpha-blending
-  - grid-styling
   - edge-highlighting
+  - grid-styling

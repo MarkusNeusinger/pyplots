@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: network-transport-static
 created: '2026-01-09T23:51:50Z'
-updated: '2026-01-09T23:56:45Z'
+updated: '2026-01-10T00:05:00Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20868910557
 issue: 3463
@@ -10,85 +10,85 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/network-transport-static/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/network-transport-static/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/network-transport-static/letsplot/plot.html
-quality_score: 82
+quality_score: 85
 review:
   strengths:
-  - Clean network layout with Central station as a well-defined hub
-  - Good color palette distinguishing Express (blue), Regional (gold), and Local (green)
-    routes
-  - Edge labels include all required information (route ID, departure → arrival times)
-  - Proper use of arrows to show direction
-  - Station nodes are visually distinct with dark fill and white border
-  - KISS code structure with clear data preparation
+  - Excellent realistic transit network data with meaningful station names and plausible
+    schedules
+  - Good use of lets-plot layer_tooltips for interactive hover information
+  - Clear color-coding scheme distinguishing Express, Regional, and Local routes
+  - Proper implementation of directed edges with arrows showing travel direction
+  - Clean visual design with theme_void() appropriate for network diagrams
+  - Offset edges for duplicate routes (A→C) showing RE2 and RE5
   weaknesses:
-  - Edge labels overlap with station labels in several places (e.g., Stadium area)
-  - Title format uses "letsplot" instead of "lets-plot"
-  - No curved/offset edges for multiple routes between same stations (spec mentions
-    this)
-  - Does not utilize lets-plot interactive features like hover tooltips (spec mentions
-    this where supported)
-  - Edge label font size is small relative to station labels
+  - Edge labels are relatively small and some overlap near Central station where routes
+    converge
+  - The offset for duplicate routes (A→C) could be more pronounced to better distinguish
+    parallel edges
+  - Title uses lets-plot with hyphen instead of letsplot (minor consistency issue)
+  - Some edge label text could be larger for better readability at full resolution
   image_description: 'The plot displays a static transport network diagram with 10
-    stations (Central, North, East, South, West, Airport, University, Harbor, Tech
-    Park, Stadium) arranged in a grid-like layout on a white background. Station nodes
-    are rendered as dark gray filled circles with white borders. Directed edges connect
-    stations with arrows indicating travel direction. Three route types are color-coded:
-    Express routes (blue), Regional routes (dark yellow/gold), and Local routes (green).
-    Each edge displays a label with route ID and departure/arrival times (e.g., "RE1
-    | 06:15 → 06:35"). The title "network-transport-static · letsplot · pyplots.ai"
-    appears at the top in bold. A legend on the right shows the three route types.
-    The layout shows Central as the hub with Express routes radiating outward, Regional
-    routes connecting outer stations, and Local routes serving the Stadium area.'
+    stations (nodes) arranged in a grid-like pattern: Central in the middle, North/South/East/West
+    at cardinal positions, and University, Airport, Tech Park, Harbor, and Stadium
+    as outer stations. Station nodes are rendered as dark gray filled circles with
+    white borders, with station names displayed below each node in bold black text.
+    Directed edges (arrows) connect stations showing train routes, color-coded by
+    route type: blue for Express routes, gold/ochre for Regional routes, and green
+    for Local routes. Each edge is labeled with route ID and departure/arrival times
+    (e.g., "RE1 | 06:15 → 06:35"). The title "network-transport-static · lets-plot
+    · pyplots.ai" appears at the top in bold. A legend on the right side shows the
+    three route types. The plot uses theme_void() for a clean white background with
+    no axes or grid.'
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 33
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 10
         passed: true
-        comment: Title and station labels readable, but edge labels are small and
-          some overlap with nodes/edges
+        comment: Title is clear at 24pt, station names are readable, but edge labels
+          are small (4.5pt scaled) and some are slightly hard to read at full resolution
       - id: VQ-02
         name: No Overlap
         score: 5
         max: 8
         passed: true
-        comment: Some edge labels overlap with nearby elements (e.g., S3 label overlaps
-          with Stadium)
+        comment: Some edge labels overlap or are very close to each other, especially
+          around Central station where multiple routes converge
       - id: VQ-03
         name: Element Visibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Nodes and arrows are well-sized and visible, edges appropriately
-          styled
+        comment: Nodes are well-sized, arrows are visible with clear direction indicators
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Blue, gold, and green are colorblind-friendly and distinct
+        comment: Blue, gold, and green color scheme is colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Network is well-centered but some whitespace on edges
+        comment: Good use of canvas space, network is centered and fills appropriate
+          area
       - id: VQ-06
         name: Axis Labels
-        score: 2
+        score: 0
         max: 2
         passed: true
-        comment: N/A for network diagram, uses theme_void() appropriately
+        comment: N/A for network diagrams using theme_void() - no axes expected
       - id: VQ-07
         name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Legend well-placed on right, no grid (appropriate for network diagram)
+        comment: Legend is well-placed on the right, no grid needed for this type
     spec_compliance:
       score: 23
       max: 25
@@ -104,84 +104,86 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Stations correctly mapped to nodes, routes to directed edges
+        comment: Stations as nodes with labels, routes as directed edges with times
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Arrows present, labels show route/times, color-coding by type; no
-          curved/offset edges for multiple routes
+        comment: Has direction arrows, route IDs, times, color-coding by type; offset
+          edges for duplicate routes implemented but could be more visible
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All nodes and edges visible within plot bounds
+        comment: All stations and routes visible within bounds
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Route types correctly labeled in legend
+        comment: Route type legend correctly shows Express/Regional/Local
       - id: SC-06
         name: Title Format
         score: 1
         max: 2
-        passed: false
-        comment: Uses lowercase 'letsplot' instead of 'lets-plot'
+        passed: true
+        comment: Uses correct format but shows lets-plot instead of letsplot
     data_quality:
-      score: 17
+      score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Shows Express, Regional, Local routes with different times; lacks
-          example of multiple routes between same station pair
+        comment: Shows 10 stations, 16 routes, multiple route types, and duplicate
+          routes between same stations
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Regional rail network is a realistic, neutral scenario with plausible
-          station names
+        comment: Excellent realistic transit network scenario with plausible station
+          names and timetable data
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: 10 stations, 15 routes is within recommended range; times are realistic
+        comment: Times are realistic (20-30 min journeys), coordinates work well for
+          layout
     code_quality:
-      score: 10
+      score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure without functions/classes
+        comment: Generally follows imports→data→plot→save but has some complexity
+          in edge calculations
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) set
+        comment: Uses np.random.seed(42) even though data is deterministic
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports (numpy, pandas, lets_plot)
+        comment: Appropriate imports (numpy, pandas, lets_plot)
       - id: CQ-04
         name: No Deprecated API
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Uses current lets-plot API
+        passed: false
+        comment: Uses ruff noqa comment to suppress warnings
       - id: CQ-05
         name: Output Correct
         score: 1
@@ -189,23 +191,24 @@ review:
         passed: true
         comment: Saves as plot.png and plot.html
     library_features:
-      score: 0
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 3
         max: 5
-        passed: false
-        comment: Uses basic geom_segment and geom_point; does not leverage lets-plot
-          interactive features like hover tooltips
-  verdict: REJECTED
+        passed: true
+        comment: Uses layer_tooltips for interactive hover info, geom_segment with
+          arrow(), scale_color_manual, theme_void
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - layer-composition
+  - hover-tooltips
   - html-export
+  - layer-composition
   patterns:
   - data-generation
   - iteration-over-groups

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 network-transport-static: Static Transport Network Diagram
-Library: lets-plot 4.8.2 | Python 3.13.11
-Quality: 82/100 | Created: 2026-01-09
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 85/100 | Created: 2026-01-09
 """
 # ruff: noqa: F405
 

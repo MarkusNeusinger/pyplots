@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-geographic: Geographic Heatmap for Spatial Density
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 85/100 | Created: 2026-01-10
+Quality: 86/100 | Created: 2026-01-10
 """
 
 import sys

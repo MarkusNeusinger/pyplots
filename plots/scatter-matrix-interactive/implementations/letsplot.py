@@ -1,7 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-matrix-interactive: Interactive Scatter Plot Matrix (SPLOM)
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 75/100 | Created: 2026-01-10
+
+Note: lets-plot does not support linked brushing/selection across subplots.
+This implementation provides hover tooltips as the primary interactivity.
 """
 
 import numpy as np
@@ -18,6 +21,7 @@ from lets_plot import (
     ggsave,
     ggsize,
     ggtitle,
+    labs,
     layer_tooltips,
     scale_color_manual,
     scale_fill_manual,
@@ -71,8 +75,9 @@ species_c = pd.DataFrame(
 
 df = pd.concat([species_a, species_b, species_c], ignore_index=True)
 
-# Variables for the scatter matrix
+# Variables for the scatter matrix (use shorter labels for axis to prevent truncation)
 variables = ["Sepal Length (cm)", "Sepal Width (cm)", "Petal Length (cm)", "Petal Width (cm)"]
+short_labels = ["Sepal Len.", "Sepal Wid.", "Petal Len.", "Petal Wid."]
 n = len(variables)
 
 # Color palette - accessible colors with good contrast on white background
@@ -85,8 +90,10 @@ for i, var_y in enumerate(variables):
         # Only show axis labels on edges (bottom row for x, left column for y)
         show_x_label = i == n - 1
         show_y_label = j == 0
-        # Show legend on bottom-left scatter plot (row=3, col=0 -> Petal Width vs Sepal Length)
-        show_legend = i == n - 1 and j == 0
+
+        # Get short labels for axes
+        x_label = short_labels[j]
+        y_label = short_labels[i]
 
         if i == j:
             # Diagonal: histogram showing distribution
@@ -94,22 +101,22 @@ for i, var_y in enumerate(variables):
                 ggplot(df, aes(x=var_x, fill="Species"))
                 + geom_histogram(alpha=0.7, bins=15, position="identity")
                 + scale_fill_manual(values=colors)
+                + labs(x=x_label if show_x_label else "", y="")
                 + theme_minimal()
                 + theme(
-                    axis_title_x=element_text(size=14) if show_x_label else element_blank(),
+                    axis_title_x=element_text(size=16) if show_x_label else element_blank(),
                     axis_title_y=element_blank(),
-                    axis_text=element_text(size=11),
+                    axis_text=element_text(size=13),
                     legend_position="none",
                     plot_margin=[5, 5, 5, 5],
                 )
             )
         else:
             # Off-diagonal: scatter plot with tooltips for interactivity
-            legend_pos = "bottom" if show_legend else "none"
             p = (
                 ggplot(df, aes(x=var_x, y=var_y, color="Species", fill="Species"))
                 + geom_point(
-                    size=3.5,
+                    size=4,
                     alpha=0.7,
                     shape=21,
                     tooltips=layer_tooltips()
@@ -119,35 +126,34 @@ for i, var_y in enumerate(variables):
                 )
                 + scale_color_manual(values=colors)
                 + scale_fill_manual(values=colors)
+                + labs(x=x_label if show_x_label else "", y=y_label if show_y_label else "")
                 + theme_minimal()
                 + theme(
-                    axis_title_x=element_text(size=14) if show_x_label else element_blank(),
-                    axis_title_y=element_text(size=14) if show_y_label else element_blank(),
-                    axis_text=element_text(size=11),
-                    legend_position=legend_pos,
-                    legend_direction="horizontal" if show_legend else None,
-                    legend_title=element_text(size=14) if show_legend else None,
-                    legend_text=element_text(size=12) if show_legend else None,
+                    axis_title_x=element_text(size=16) if show_x_label else element_blank(),
+                    axis_title_y=element_text(size=16) if show_y_label else element_blank(),
+                    axis_text=element_text(size=13),
+                    legend_position="none",
                     plot_margin=[5, 5, 5, 5],
                 )
             )
         plots.append(p)
 
 # Calculate regions for ggbunch (4x4 grid)
-# Leave space for title at top
-title_height = 0.07
-grid_height = 1.0 - title_height
+# Leave space for title at top and legend at bottom
+title_height = 0.06
+legend_height = 0.06
+grid_height = 1.0 - title_height - legend_height
 cell_size = grid_height / n
 
-# Title plot - needs a geom layer for lets-plot
+# Title plot - needs a geom layer for lets-plot (use middle dot character)
 title_df = pd.DataFrame({"x": [0], "y": [0]})
 title_plot = (
     ggplot(title_df, aes(x="x", y="y"))
     + geom_point(alpha=0)  # Invisible point to satisfy lets-plot layer requirement
-    + ggtitle("scatter-matrix-interactive · letsplot · pyplots.ai")
+    + ggtitle("scatter-matrix-interactive \u00b7 letsplot \u00b7 pyplots.ai")
     + theme_minimal()
     + theme(
-        plot_title=element_text(size=28, hjust=0.5),
+        plot_title=element_text(size=32, hjust=0.5),
         axis_line=element_blank(),
         axis_text=element_blank(),
         axis_ticks=element_blank(),
@@ -156,9 +162,31 @@ title_plot = (
     )
 )
 
-# Build final layout: title + matrix (legend embedded in bottom-left cell)
+# Legend plot - separate plot for better control over legend text
+legend_df = pd.DataFrame({"x": [1, 2, 3], "y": [0, 0, 0], "Species": ["Setosa", "Versicolor", "Virginica"]})
+legend_plot = (
+    ggplot(legend_df, aes(x="x", y="y", color="Species", fill="Species"))
+    + geom_point(size=6, shape=21, alpha=0.8)
+    + scale_color_manual(values=colors)
+    + scale_fill_manual(values=colors)
+    + theme_minimal()
+    + theme(
+        legend_position="bottom",
+        legend_direction="horizontal",
+        legend_title=element_text(size=18),
+        legend_text=element_text(size=16),
+        axis_line=element_blank(),
+        axis_text=element_blank(),
+        axis_ticks=element_blank(),
+        axis_title=element_blank(),
+        panel_grid=element_blank(),
+    )
+)
+
+# Build final layout: title + matrix + legend
 final_plots = [title_plot]
 final_plots.extend(plots)
+final_plots.append(legend_plot)
 
 # Define regions for ggbunch
 final_regions = []
@@ -174,9 +202,11 @@ for idx in range(n * n):
     y = title_height + row * cell_size
     final_regions.append((x, y, cell_size, cell_size, 0, 0))
 
+# Legend region (bottom center)
+final_regions.append((0.25, 1.0 - legend_height, 0.5, legend_height, 0, 0))
+
 # Combine all plots using ggbunch with square aspect ratio
 final_plot = ggbunch(final_plots, final_regions) + ggsize(1200, 1200)
 
-# Save outputs to current directory
+# Save output to current directory (PNG only)
 ggsave(final_plot, "plot.png", path=".", scale=3)
-ggsave(final_plot, "plot.html", path=".")

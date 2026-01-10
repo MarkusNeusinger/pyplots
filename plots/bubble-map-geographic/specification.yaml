@@ -1,0 +1,28 @@
+# Specification-level metadata for bubble-map-geographic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: bubble-map-geographic
+title: Bubble Map with Sized Geographic Markers
+
+# Specification tracking
+created: 2026-01-10T06:00:09Z
+updated: null
+issue: 3625
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - bubble
+    - map
+  data_type:
+    - numeric
+    - geospatial
+  domain:
+    - general
+    - business
+  features:
+    - proportional
+    - geographic
+    - color-mapped

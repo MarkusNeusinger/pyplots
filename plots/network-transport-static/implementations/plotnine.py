@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 network-transport-static: Static Transport Network Diagram
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-10
@@ -153,19 +153,20 @@ plot = (
         color="#333333",
         nudge_y=0.06,
     )
-    # Edge labels (route and times) - show Express routes only for clarity
+    # Edge labels (route and times) - show all routes as per spec
     + geom_text(
-        data=routes[routes["route_type"] == "RE"],
-        mapping=aes(x="label_x", y="label_y", label="edge_label"),
-        size=7,
-        color="#306998",
+        data=routes,
+        mapping=aes(x="label_x", y="label_y", label="edge_label", color="route_type"),
+        size=9,
         nudge_y=0.025,
+        show_legend=False,
     )
-    # Color scale
+    # Color scale with semantic ordering (Express first as most prominent)
     + scale_color_manual(
         values=route_colors,
         name="Route Type",
         labels={"RE": "Express", "RB": "Regional", "AE": "Airport", "S": "Local"},
+        limits=["RE", "RB", "AE", "S"],
     )
     # Labels and theme
     + labs(title="network-transport-static · plotnine · pyplots.ai")

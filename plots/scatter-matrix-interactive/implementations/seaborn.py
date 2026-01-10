@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-matrix-interactive: Interactive Scatter Plot Matrix (SPLOM)
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 88/100 | Created: 2026-01-10
+Quality: 91/100 | Created: 2026-01-10
 """
 
 import matplotlib.pyplot as plt

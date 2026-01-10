@@ -1,6 +1,7 @@
 import { Component, ReactNode } from 'react';
 import { Box, Alert, Button, Typography } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import ReplayIcon from '@mui/icons-material/Replay';
 import HomeIcon from '@mui/icons-material/Home';
 
 interface Props {
@@ -95,9 +96,17 @@ export class ErrorBoundary extends Component<Props, State> {
             )}
           </Alert>
 
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
             <Button
               variant="contained"
+              startIcon={<ReplayIcon />}
+              onClick={this.handleRetry}
+              sx={{ textTransform: 'none' }}
+            >
+              Try Again
+            </Button>
+            <Button
+              variant="outlined"
               startIcon={<RefreshIcon />}
               onClick={this.handleReload}
               sx={{ textTransform: 'none' }}

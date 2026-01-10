@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 heatmap-geographic: Geographic Heatmap for Spatial Density
-Library: lets-plot | Python 3.13
-Quality: pending | Created: 2026-01-10
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-10
 """
 
 import numpy as np

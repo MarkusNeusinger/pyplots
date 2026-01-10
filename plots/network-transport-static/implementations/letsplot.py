@@ -1,13 +1,31 @@
-""" pyplots.ai
+"""pyplots.ai
 network-transport-static: Static Transport Network Diagram
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-09
 """
-# ruff: noqa: F405
 
 import numpy as np
 import pandas as pd
-from lets_plot import *  # noqa: F403, F405
+from lets_plot import (
+    LetsPlot,
+    aes,
+    arrow,
+    coord_fixed,
+    element_text,
+    geom_point,
+    geom_segment,
+    geom_text,
+    ggplot,
+    ggsave,
+    ggsize,
+    labs,
+    layer_tooltips,
+    scale_color_manual,
+    scale_x_continuous,
+    scale_y_continuous,
+    theme,
+    theme_void,
+)
 
 
 LetsPlot.setup_html()
@@ -87,14 +105,14 @@ for r in routes:
     perp_x = -dy / length if length > 0 else 0
     perp_y = dx / length if length > 0 else 0
 
-    # Apply perpendicular offset for multiple routes between same stations
+    # Apply perpendicular offset for multiple routes between same stations (increased for visibility)
     if total > 1:
-        curve_offset = 0.03 * (idx - (total - 1) / 2)
+        curve_offset = 0.05 * (idx - (total - 1) / 2)
     else:
         curve_offset = 0
 
     # Offset labels perpendicular to edge direction (increased for clarity)
-    label_offset = 0.04
+    label_offset = 0.055
 
     edges_data.append(
         {
@@ -143,8 +161,8 @@ plot = (
         arrow=arrow(angle=25, length=12, type="closed"),
         tooltips=edge_tooltips,
     )
-    # Draw edge labels (route and times) - slightly smaller to reduce overlap
-    + geom_text(aes(x="mid_x", y="mid_y", label="label", color="type"), data=edges_df, size=4.5)
+    # Draw edge labels (route and times) - larger for readability
+    + geom_text(aes(x="mid_x", y="mid_y", label="label", color="type"), data=edges_df, size=6)
     # Draw station nodes with tooltips
     + geom_point(
         aes(x="x", y="y"),
@@ -162,8 +180,8 @@ plot = (
     )
     # Color scale for route types
     + scale_color_manual(values=route_colors, name="Route Type")
-    # Styling with corrected library name
-    + labs(title="network-transport-static · lets-plot · pyplots.ai", x="", y="")
+    # Styling
+    + labs(title="network-transport-static · letsplot · pyplots.ai", x="", y="")
     + theme_void()
     + theme(
         plot_title=element_text(size=24, face="bold", hjust=0.5),

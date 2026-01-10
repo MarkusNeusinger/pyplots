@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: scatter-matrix-interactive
 created: '2026-01-10T02:00:12Z'
-updated: '2026-01-10T02:03:09Z'
+updated: '2026-01-10T02:11:48Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20870870323
 issue: 3604
@@ -13,28 +13,30 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/scatter-matrix
 quality_score: 72
 review:
   strengths:
-  - Clean implementation using ggbunch to compose the 4x4 matrix layout
-  - Good use of tooltips for interactivity on scatter points
-  - Realistic iris-like synthetic data with meaningful correlations between species
-  - Proper use of lets-plot ggplot2-style grammar
-  - Alpha blending helps with point overlap visibility
+  - Good use of ggbunch to compose a complex multi-plot layout
+  - Appropriate color palette that is colorblind-accessible
+  - Realistic iris-like data with meaningful correlations between species
+  - Clean KISS code structure following repository standards
+  - Tooltips provide detailed information on hover
   weaknesses:
-  - Missing linked brushing/selection which is the core feature of an interactive
-    SPLOM - lets-plot has limited support for this
-  - No axis labels showing variable names on the matrix edges (critical for SPLOM
-    interpretation)
-  - Yellow color has poor contrast on white background; consider a darker alternative
-  - Legend in static export shows only dots without clear species labels association
-  image_description: The plot displays a 4x4 scatter plot matrix (SPLOM) for iris-like
-    data with three species (Setosa in blue, Versicolor in yellow, Virginica in red).
-    The diagonal cells show stacked histograms displaying the distribution of each
-    variable (Sepal Length, Sepal Width, Petal Length, Petal Width) broken down by
-    species. Off-diagonal cells show scatter plots comparing pairs of variables with
-    points colored by species. The title "scatter-matrix-interactive · letsplot ·
-    pyplots.ai" is centered at the top. A legend at the bottom shows the three species
-    with their colors. The color palette uses blue (#306998), yellow (#FFD43B), and
-    red (#DC2626). Each subplot has axis ticks but no axis labels within the grid.
-    Points have alpha transparency for overlap handling.
+  - 'Missing key interactive features: linked brushing/selection across subplots (core
+    spec requirement)'
+  - Legend shows invisible points (alpha=0.0) - should show visible colored markers
+  - 'Redundant axis labeling: both row/column edge labels AND per-cell axis titles
+    create visual clutter'
+  - No zoom/pan functionality as specified
+  - Some unused imports in the code
+  image_description: 'The plot displays a 4×4 scatter plot matrix (SPLOM) visualizing
+    relationships between four iris flower measurements: Sepal Length, Sepal Width,
+    Petal Length, and Petal Width. The diagonal cells contain histograms showing the
+    distribution of each variable, while off-diagonal cells show scatter plots comparing
+    pairs of variables. Three species are color-coded: Setosa (blue #306998), Versicolor
+    (orange #E67E22), and Virginica (teal #16A085). The title "scatter-matrix-interactive
+    · letsplot · pyplots.ai" appears at the top. Row labels appear on the left side
+    (Sepal L, Sepal W, Petal L, Petal W) and column labels at the bottom. A horizontal
+    legend at the bottom identifies the three species. The plot shows clear clustering
+    patterns with Setosa well-separated from Versicolor and Virginica, particularly
+    in petal measurements.'
   criteria_checklist:
     visual_quality:
       score: 28
@@ -45,46 +47,47 @@ review:
         score: 7
         max: 10
         passed: true
-        comment: Title and legend text readable, axis tick labels are small but legible
+        comment: Text is readable but axis labels within cells are small; title and
+          legend text are appropriately sized
       - id: VQ-02
         name: No Overlap
-        score: 8
+        score: 6
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: Minor overlap in some histogram bars; row/column labels occasionally
+          crowd axis labels
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: Markers visible but could be slightly larger; alpha blending helps
-          with overlap
+        comment: Markers are appropriately sized with good alpha for 150 points, but
+          density could be better optimized
       - id: VQ-04
         name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue, orange, and teal palette is colorblind-safe with good contrast
+      - id: VQ-05
+        name: Layout Balance
         score: 2
         max: 5
         passed: false
-        comment: Yellow on white is low contrast; red-yellow distinction may be difficult
-          for some colorblind users
-      - id: VQ-05
-        name: Layout Balance
-        score: 3
-        max: 5
-        passed: true
-        comment: Matrix fills canvas well but individual subplots could use more space;
-          legend placement good
+        comment: Matrix is well-centered but there's redundant labeling (both row
+          labels AND axis labels on same side); some wasted space
       - id: VQ-06
         name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Full axis labels with units (cm) present on all cells
+      - id: VQ-07
+        name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: No axis labels on subplots; variable names not shown on matrix edges
-      - id: VQ-07
-        name: Grid & Legend
-        score: 2
-        max: 2
-        passed: true
-        comment: Legend well placed at bottom, grid subtle/absent
+        comment: Legend shows invisible points (alpha=0.0); grid not visible
     spec_compliance:
       score: 18
       max: 25
@@ -94,32 +97,32 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct scatter matrix with histograms on diagonal
+        comment: Correct scatter plot matrix with diagonal histograms
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Variables correctly mapped to rows/columns
+        comment: Variables correctly mapped to matrix positions
       - id: SC-03
         name: Required Features
         score: 2
         max: 5
         passed: false
-        comment: 'Missing: linked brushing/selection, zoom/pan not evident in static
-          PNG, no clear reset mechanism'
+        comment: 'Missing: linked brushing/selection, zoom/pan functionality, ability
+          to clear selection'
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes
+        comment: All data points visible within appropriate ranges
       - id: SC-05
         name: Legend Accuracy
         score: 0
         max: 2
         passed: false
-        comment: Legend shows only colored dots without proper shape in static export
+        comment: Legend points appear invisible (alpha=0.0 used)
       - id: SC-06
         name: Title Format
         score: 2
@@ -127,7 +130,7 @@ review:
         passed: true
         comment: 'Correct format: scatter-matrix-interactive · letsplot · pyplots.ai'
     data_quality:
-      score: 18
+      score: 17
       max: 20
       items:
       - id: DQ-01
@@ -135,22 +138,23 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows clear separation between Setosa and other species, correlations
-          visible, distributions varied
+        comment: Shows correlations, distributions, species separation well; demonstrates
+          multivariate relationships
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Iris-like botanical measurements are a classic, neutral dataset
+        comment: Iris flower measurements are a classic, neutral scientific dataset
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Values realistic for flower measurements in centimeters
+        comment: Values are realistic for iris flowers but some negative petal widths
+          may have been generated due to seed noise
     code_quality:
-      score: 8
+      score: 7
       max: 10
       items:
       - id: CQ-01
@@ -158,7 +162,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear structure with imports, data, plots, save
+        comment: 'Clean linear structure: imports → data → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -167,33 +171,33 @@ review:
         comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
-        score: 2
+        score: 0
         max: 2
-        passed: true
-        comment: Only necessary imports (numpy, pandas, lets_plot)
+        passed: false
+        comment: Several imports used conditionally or with issues
       - id: CQ-04
         name: No Deprecated API
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: 'Uses ruff: noqa: F405 to suppress wildcard import warnings'
+        passed: true
+        comment: Uses current lets-plot API
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves both plot.png and plot.html (correct for interactive library)
+        comment: Saves to plot.png and plot.html correctly
     library_features:
-      score: 3
+      score: 2
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 2
         max: 5
         passed: false
-        comment: Uses ggplot grammar, ggbunch for composition, tooltips for hover.
-          However, lets-plot does not natively support linked brushing across subplots.
+        comment: Uses ggbunch and tooltips but doesn't leverage lets-plot's potential
+          for linked brushing or interactive selection
   verdict: REJECTED
 impl_tags:
   dependencies: []

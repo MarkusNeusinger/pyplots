@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-matrix-interactive: Interactive Scatter Plot Matrix (SPLOM)
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-10
@@ -42,7 +42,8 @@ g = sns.PairGrid(
 )
 
 # Off-diagonal: scatter plots with sized markers and transparency
-g.map_offdiag(sns.scatterplot, s=150, alpha=0.7, edgecolor="white", linewidth=0.5)
+# 150 data points → use s=80 per quality guidelines (100-300 points → s=50-100)
+g.map_offdiag(sns.scatterplot, s=80, alpha=0.7, edgecolor="white", linewidth=0.5)
 
 # Diagonal: KDE plots for univariate distributions
 g.map_diag(sns.kdeplot, fill=True, alpha=0.5, linewidth=2.5)
@@ -53,7 +54,7 @@ for ax in g.axes.flatten():
         ax.tick_params(axis="both", labelsize=14)
         ax.xaxis.label.set_size(16)
         ax.yaxis.label.set_size(16)
-        ax.grid(True, alpha=0.3, linestyle="--")
+        ax.grid(True, alpha=0.2, linestyle="--")
 
 # Add legend with larger fonts
 g.add_legend(
@@ -64,21 +65,21 @@ g.add_legend(
     loc="center left",
     frameon=True,
     fancybox=True,
-    markerscale=1.5,
+    markerscale=2.0,
 )
 
-# Add title to the figure
-g.figure.suptitle("scatter-matrix-interactive · seaborn · pyplots.ai", fontsize=26, fontweight="bold", y=1.03)
+# Add title to the figure with more space for subtitle
+g.figure.suptitle("scatter-matrix-interactive · seaborn · pyplots.ai", fontsize=26, fontweight="bold", y=1.05)
 
-# Subtitle noting static nature
+# Subtitle noting static nature - larger font and better spacing from title
 g.figure.text(
     0.5,
-    1.0,
+    1.01,
     "Static visualization (interactive brushing/selection requires Plotly, Bokeh, or Altair)",
     ha="center",
-    fontsize=13,
+    fontsize=15,
     style="italic",
-    color="#666666",
+    color="#555555",
 )
 
 # Adjust layout and save at 3600x3600 (square format for symmetric grid)

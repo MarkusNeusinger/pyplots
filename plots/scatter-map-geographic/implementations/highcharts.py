@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 scatter-map-geographic: Scatter Map with Geographic Points
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2026-01-10
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-10
 """
 
 import json

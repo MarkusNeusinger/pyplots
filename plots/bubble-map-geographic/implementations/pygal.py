@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bubble-map-geographic: Bubble Map with Sized Geographic Markers
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 85/100 | Created: 2026-01-10
+Quality: 90/100 | Created: 2026-01-10
 """
 
 # Fix module name conflict (this file is named pygal.py)

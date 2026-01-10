@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: heatmap-geographic
 created: '2026-01-10T22:40:26Z'
-updated: '2026-01-10T22:43:21Z'
+updated: '2026-01-10T22:49:38Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20885435547
 issue: 3638
@@ -10,89 +10,82 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/heatmap-geographic/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/heatmap-geographic/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/heatmap-geographic/bokeh/plot.html
-quality_score: 82
+quality_score: 91
 review:
   strengths:
-  - Excellent implementation of manual Gaussian smoothing for density estimation without
-    external dependencies
-  - Proper Web Mercator coordinate transformation for tile compatibility
-  - Good use of transparency (alpha=0.65) to allow basemap to show through
-  - Clean KISS code structure with clear comments
-  - Both PNG and HTML outputs provided for static and interactive use
+  - Excellent implementation of geographic heatmap with proper Web Mercator projection
+  - Clean Gaussian smoothing for continuous density appearance
+  - Appropriate use of WMTSTileSource for CartoDB basemap integration
+  - Both PNG and interactive HTML outputs generated
+  - Good colormap choice (YlOrRd) with transparency for basemap visibility
+  - Well-structured synthetic data with realistic California monitoring station clusters
   weaknesses:
-  - Large gray area on left side where basemap tiles don't cover the ocean creates
-    visual imbalance
-  - Scatter points are too small and transparent (size=8, alpha=0.35) to be clearly
-    visible
-  - Does not use ColumnDataSource pattern as recommended in Bokeh library guidelines
-  - Colorbar title is rotated and harder to read
-  - The purple/magenta background color at low density values is visually unusual
-  image_description: 'The plot displays a geographic heatmap of California showing
-    air quality monitoring station density. Three distinct density clusters are visible:
-    Northern California (around Sacramento/Bay Area), Central California coast (Monterey
-    region), and Southern California (Los Angeles area). The heatmap uses a YlOrRd
-    (Yellow-Orange-Red) sequential colormap, with bright yellow/white cores indicating
-    high-density areas fading to orange and red at the periphery. A CartoDB Positron
-    basemap is partially visible on the right side showing state boundaries and city
-    labels. The left side shows a gray area over the Pacific Ocean where no tile data
-    exists. Blue scatter points (size=8, alpha=0.35) mark individual sensor locations
-    within the heatmap regions. The title "heatmap-geographic · bokeh · pyplots.ai"
-    appears at top left. A legend for "Sensor Locations" is positioned in the top
-    right corner. A vertical colorbar labeled "Air Quality Index (weighted density)"
-    appears on the right edge with scale from 0 to ~35. Axis labels show "Longitude"
-    (x-axis) and "Latitude" (y-axis) with Mercator projection tick values.'
+  - Missing HoverTool for interactive hover information on monitoring stations
+  - Axis labels lack degree symbols or units
+  - Colorbar title font size could be larger for better visibility
+  image_description: 'The plot displays a geographic heatmap of California and surrounding
+    western US states rendered on a CartoDB Positron basemap. Three distinct density
+    clusters are visible: (1) Northern California around Sacramento/SF Bay Area at
+    ~38.5°N latitude, (2) Central California coast around Monterey at ~36.5°N latitude,
+    and (3) Southern California around Los Angeles at ~34°N latitude. Blue scatter
+    points (500 total) represent individual environmental monitoring stations. The
+    heatmap uses a YlOrRd colormap with yellow/white indicating high AQI density values
+    and red/dark red indicating lower density areas. A vertical colorbar on the right
+    displays "AQI Density" ranging from 0 to ~30. The title "heatmap-geographic ·
+    bokeh · pyplots.ai" appears in the top-left. Axis labels show "Longitude" (-125
+    to -110) and "Latitude" (32 to 42) in Web Mercator projection.'
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 9
         max: 10
         passed: true
-        comment: Title and axis labels readable but colorbar title is rotated 90°
-          and harder to read
+        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt are all readable;
+          colorbar title slightly small relative to overall canvas
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text elements; all labels clearly separated
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Heatmap clusters visible but scatter points too small and low alpha
+        comment: Heatmap density well-represented; scatter points visible but slightly
+          small for 500 points
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: YlOrRd colormap is good but purple/magenta background at low values
-          is unusual
+        comment: YlOrRd colormap is colorblind-safe sequential palette
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 5
         max: 5
-        passed: false
-        comment: Large gray area on left where basemap tiles don't cover ocean creates
-          imbalance
+        passed: true
+        comment: Good canvas utilization; map centered with balanced margins
       - id: VQ-06
         name: Axis Labels
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: Descriptive labels Longitude and Latitude
+        comment: Descriptive labels but no units (degrees)
       - id: VQ-07
         name: Grid & Legend
         score: 1
         max: 2
-        passed: false
-        comment: Grid is subtle but legend background could be more opaque
+        passed: true
+        comment: Grid has alpha=0.3 dashed lines; legend readable but positioned far
+          from data
     spec_compliance:
-      score: 23
+      score: 25
       max: 25
       items:
       - id: SC-01
@@ -100,31 +93,32 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct geographic heatmap with density visualization
+        comment: Correct geographic heatmap with continuous density visualization
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Latitude/longitude correctly mapped with value weighting
+        comment: Lat/lon correctly mapped to Web Mercator coordinates
       - id: SC-03
         name: Required Features
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Has basemap, colorbar, KDE-like smoothing; HTML version has zoom
+        comment: Has KDE-like smoothing, sequential colormap with transparency, colorbar,
+          basemap context, zoom capability via HTML export
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Axes show full California extent with all data visible
+        comment: All data points and density areas visible within California bounds
       - id: SC-05
         name: Legend Accuracy
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Legend shows scatter points but doesn't explain heatmap colors inline
+        passed: true
+        comment: Legend correctly labels Monitoring Stations
       - id: SC-06
         name: Title Format
         score: 2
@@ -132,30 +126,32 @@ review:
         passed: true
         comment: Uses correct format heatmap-geographic · bokeh · pyplots.ai
     data_quality:
-      score: 17
+      score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Shows multiple clusters with varying intensities; demonstrates hotspot
-          detection
+        comment: Shows density hotspots and clusters; could show more variation in
+          values across regions
       - id: DQ-02
         name: Realistic Context
-        score: 6
+        score: 7
         max: 7
         passed: true
-        comment: Air quality monitoring is realistic; California location appropriate
+        comment: Environmental monitoring stations measuring AQI across California
+          is a realistic, neutral scenario
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Coordinates realistic for California; AQI values plausible
+        comment: 500 monitoring stations with AQI values 20-200+ is realistic for
+          California
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -163,7 +159,8 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear structure with imports, data, plot, save
+        comment: 'Linear script: imports → data → projection → histogram → smoothing
+          → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -175,31 +172,31 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used; no unnecessary imports
       - id: CQ-04
         name: No Deprecated API
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Uses current Bokeh API
+        passed: false
+        comment: Uses BasicTicker which is functional but simpler tickers available
       - id: CQ-05
         name: Output Correct
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
+        comment: Saves both plot.png and plot.html
     library_features:
-      score: 0
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 3
         max: 5
-        passed: false
-        comment: Does not use ColumnDataSource pattern as recommended; no Bokeh callbacks
-          or interactive widgets
-  verdict: REJECTED
+        passed: true
+        comment: Uses ColumnDataSource, WMTSTileSource for basemap, export_png, and
+          interactive HTML export; could leverage HoverTool for interactivity
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
@@ -207,6 +204,7 @@ impl_tags:
   - html-export
   patterns:
   - data-generation
+  - columndatasource
   - matrix-construction
   dataprep:
   - binning

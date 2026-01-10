@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 heatmap-geographic: Geographic Heatmap for Spatial Density
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-10
@@ -90,6 +90,44 @@ class GeoHeatmap(Graph):
         plot_node = self.nodes["plot"]
         heatmap_group = self.svg.node(plot_node, class_="geo-heatmap")
 
+        # Draw background rectangle for plot area
+        bg_rect = self.svg.node(
+            heatmap_group, "rect", x=x_offset, y=y_offset, width=available_width, height=available_height
+        )
+        bg_rect.set("fill", "#e8f4f8")
+        bg_rect.set("stroke", "#333333")
+        bg_rect.set("stroke-width", "2")
+
+        # Draw grid lines
+        lat_min, lat_max = self.lat_range
+        lon_min, lon_max = self.lon_range
+
+        def lon_to_x(lon):
+            return x_offset + (lon - lon_min) / (lon_max - lon_min) * available_width
+
+        def lat_to_y(lat):
+            return y_offset + (1 - (lat - lat_min) / (lat_max - lat_min)) * available_height
+
+        # Vertical grid lines (longitude)
+        n_lon_lines = 7
+        for i in range(n_lon_lines):
+            lon = lon_min + (lon_max - lon_min) * i / (n_lon_lines - 1)
+            x = lon_to_x(lon)
+            line = self.svg.node(heatmap_group, "line", x1=x, y1=y_offset, x2=x, y2=y_offset + available_height)
+            line.set("stroke", "#cccccc")
+            line.set("stroke-width", "1")
+            line.set("stroke-opacity", "0.5")
+
+        # Horizontal grid lines (latitude)
+        n_lat_lines = 7
+        for i in range(n_lat_lines):
+            lat = lat_min + (lat_max - lat_min) * i / (n_lat_lines - 1)
+            y = lat_to_y(lat)
+            line = self.svg.node(heatmap_group, "line", x1=x_offset, y1=y, x2=x_offset + available_width, y2=y)
+            line.set("stroke", "#cccccc")
+            line.set("stroke-width", "1")
+            line.set("stroke-opacity", "0.5")
+
         # Draw heatmap cells
         all_values = heatmap.flatten()
         positive_values = all_values[all_values > 0]
@@ -117,15 +155,6 @@ class GeoHeatmap(Graph):
                 rect.set("stroke", "none")
 
         # Draw coastlines
-        lat_min, lat_max = self.lat_range
-        lon_min, lon_max = self.lon_range
-
-        def lon_to_x(lon):
-            return x_offset + (lon - lon_min) / (lon_max - lon_min) * available_width
-
-        def lat_to_y(lat):
-            return y_offset + (1 - (lat - lat_min) / (lat_max - lat_min)) * available_height
-
         for coastline in self.coastlines:
             if len(coastline) < 2:
                 continue
@@ -136,14 +165,17 @@ class GeoHeatmap(Graph):
             polyline.set("stroke-width", "3")
             polyline.set("stroke-opacity", "0.7")
 
-        # Draw scatter points if provided
+        # Draw scatter points with improved visibility
         if self.point_data is not None:
             for lon, lat in self.point_data:
                 cx = lon_to_x(lon)
                 cy = lat_to_y(lat)
-                circle = self.svg.node(heatmap_group, "circle", cx=cx, cy=cy, r=4)
+                circle = self.svg.node(heatmap_group, "circle", cx=cx, cy=cy, r=8)
                 circle.set("fill", "#306998")
-                circle.set("fill-opacity", "0.3")
+                circle.set("fill-opacity", "0.6")
+                circle.set("stroke", "#1a3a5c")
+                circle.set("stroke-width", "1")
+                circle.set("stroke-opacity", "0.8")
 
         # Draw axis labels
         axis_font_size = 48
@@ -224,35 +256,18 @@ class GeoHeatmap(Graph):
             stroke="#333333",
         )
 
-        # Colorbar labels
+        # Colorbar labels with 5 tick values
         cb_label_size = 36
-        # Max value
-        text_node = self.svg.node(
-            heatmap_group, "text", x=colorbar_x + colorbar_width + 15, y=colorbar_y + cb_label_size * 0.35
-        )
-        text_node.set("fill", "#333333")
-        text_node.set("style", f"font-size:{cb_label_size}px;font-family:sans-serif")
-        text_node.text = f"{max_val:.1f}"
-
-        # Mid value
-        mid_y = colorbar_y + colorbar_height / 2
-        text_node = self.svg.node(
-            heatmap_group, "text", x=colorbar_x + colorbar_width + 15, y=mid_y + cb_label_size * 0.35
-        )
-        text_node.set("fill", "#333333")
-        text_node.set("style", f"font-size:{cb_label_size}px;font-family:sans-serif")
-        text_node.text = f"{(min_val + max_val) / 2:.1f}"
-
-        # Min value
-        text_node = self.svg.node(
-            heatmap_group,
-            "text",
-            x=colorbar_x + colorbar_width + 15,
-            y=colorbar_y + colorbar_height + cb_label_size * 0.35,
-        )
-        text_node.set("fill", "#333333")
-        text_node.set("style", f"font-size:{cb_label_size}px;font-family:sans-serif")
-        text_node.text = f"{min_val:.1f}"
+        n_cb_ticks = 5
+        for i in range(n_cb_ticks):
+            tick_value = max_val - (max_val - min_val) * i / (n_cb_ticks - 1)
+            tick_y = colorbar_y + colorbar_height * i / (n_cb_ticks - 1)
+            text_node = self.svg.node(
+                heatmap_group, "text", x=colorbar_x + colorbar_width + 15, y=tick_y + cb_label_size * 0.35
+            )
+            text_node.set("fill", "#333333")
+            text_node.set("style", f"font-size:{cb_label_size}px;font-family:sans-serif")
+            text_node.text = f"{tick_value:.1f}"
 
         # Colorbar title
         cb_title_size = 38
@@ -417,27 +432,5 @@ chart = GeoHeatmap(
 # Add a dummy series to trigger _plot
 chart.add("", [0])
 
-# Save outputs
+# Save PNG output only
 chart.render_to_png("plot.png")
-
-# Save HTML for interactivity
-html_content = f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>heatmap-geographic - pygal</title>
-    <style>
-        body {{ margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f5f5; }}
-        .chart {{ max-width: 100%; height: auto; }}
-    </style>
-</head>
-<body>
-    <figure class="chart">
-        {chart.render(is_unicode=True)}
-    </figure>
-</body>
-</html>
-"""
-
-with open("plot.html", "w", encoding="utf-8") as f:
-    f.write(html_content)

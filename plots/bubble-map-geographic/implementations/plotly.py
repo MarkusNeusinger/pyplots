@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bubble-map-geographic: Bubble Map with Sized Geographic Markers
-Library: plotly | Python 3.13
-Quality: pending | Created: 2025-01-10
+Library: plotly 6.5.1 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-10
 """
 
 import numpy as np

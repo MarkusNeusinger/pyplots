@@ -1,20 +1,18 @@
-""" pyplots.ai
+"""pyplots.ai
 scatter-matrix-interactive: Interactive Scatter Plot Matrix (SPLOM)
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 68/100 | Created: 2026-01-10
 """
 
-import warnings
-
 import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
-    element_blank,
+    element_line,
     element_rect,
     element_text,
     facet_grid,
-    geom_histogram,
+    geom_bar,
     geom_point,
     ggplot,
     labs,
@@ -26,65 +24,93 @@ from plotnine import (
 from sklearn.datasets import load_iris
 
 
-warnings.filterwarnings("ignore")
-
 # Data: Iris dataset for multivariate analysis
 np.random.seed(42)
 iris = load_iris()
 df = pd.DataFrame(iris.data, columns=["Sepal Length", "Sepal Width", "Petal Length", "Petal Width"])
 df["Species"] = pd.Categorical([iris.target_names[i] for i in iris.target])
 
-# Select 4 variables for the matrix
+# Variables for the matrix (with units in labels)
 variables = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width"]
-# Units for each variable
-units = {"Sepal Length": "cm", "Sepal Width": "cm", "Petal Length": "cm", "Petal Width": "cm"}
+var_labels = [f"{v} (cm)" for v in variables]
 
 # Colorblind-safe palette (Dark2 inspired - teal, orange, purple)
 colors = ["#1B9E77", "#D95F02", "#7570B3"]
 
-# Create long-form data for scatter plots (off-diagonal only)
-scatter_data = []
-for var_y in variables:
-    for var_x in variables:
-        if var_x != var_y:  # Only off-diagonal
-            temp_df = df[[var_x, var_y, "Species"]].copy()
-            temp_df.columns = ["x", "y", "Species"]
-            temp_df["var_x"] = f"{var_x} ({units[var_x]})"
-            temp_df["var_y"] = f"{var_y} ({units[var_y]})"
-            scatter_data.append(temp_df)
+# Create long-form data for all cells
+# For off-diagonal: scatter points with x and y
+# For diagonal: histogram bars computed as binned counts
+all_data = []
 
-scatter_df = pd.concat(scatter_data, ignore_index=True)
+for i, var_y in enumerate(variables):
+    for j, var_x in enumerate(variables):
+        var_x_label = var_labels[j]
+        var_y_label = var_labels[i]
 
-# Create long-form data for histograms (diagonal only)
-hist_data = []
-for var in variables:
-    temp_df = df[[var, "Species"]].copy()
-    temp_df.columns = ["x", "Species"]
-    temp_df["var_x"] = f"{var} ({units[var]})"
-    temp_df["var_y"] = f"{var} ({units[var]})"
-    hist_data.append(temp_df)
+        if i == j:
+            # Diagonal: Create histogram data as bar chart data
+            # Bin the data and create counts per species
+            values = df[var_x]
+            bins = np.linspace(values.min(), values.max(), 13)
+            bin_centers = (bins[:-1] + bins[1:]) / 2
+            bin_width = bins[1] - bins[0]
 
-hist_df = pd.concat(hist_data, ignore_index=True)
+            for species in df["Species"].unique():
+                species_vals = df[df["Species"] == species][var_x]
+                counts, _ = np.histogram(species_vals, bins=bins)
+                for k, count in enumerate(counts):
+                    if count > 0:
+                        all_data.append(
+                            {
+                                "x": bin_centers[k],
+                                "y": count,
+                                "Species": species,
+                                "var_x": var_x_label,
+                                "var_y": var_y_label,
+                                "cell_type": "histogram",
+                            }
+                        )
+        else:
+            # Off-diagonal: scatter data
+            for _, row in df.iterrows():
+                all_data.append(
+                    {
+                        "x": row[var_x],
+                        "y": row[var_y],
+                        "Species": row["Species"],
+                        "var_x": var_x_label,
+                        "var_y": var_y_label,
+                        "cell_type": "scatter",
+                    }
+                )
 
-# Set factor levels for proper ordering with units
-var_labels = [f"{v} ({units[v]})" for v in variables]
-scatter_df["var_x"] = pd.Categorical(scatter_df["var_x"], categories=var_labels)
-scatter_df["var_y"] = pd.Categorical(scatter_df["var_y"], categories=var_labels[::-1])
-hist_df["var_x"] = pd.Categorical(hist_df["var_x"], categories=var_labels)
-hist_df["var_y"] = pd.Categorical(hist_df["var_y"], categories=var_labels[::-1])
+plot_df = pd.DataFrame(all_data)
 
-# Create scatter plot matrix with diagonal histograms using layer composition
-# The key is that geom_histogram has its own aes() that doesn't include y
+# Set factor levels for proper ordering
+plot_df["var_x"] = pd.Categorical(plot_df["var_x"], categories=var_labels, ordered=True)
+plot_df["var_y"] = pd.Categorical(plot_df["var_y"], categories=var_labels[::-1], ordered=True)
+
+# Split data for different geoms
+scatter_df = plot_df[plot_df["cell_type"] == "scatter"].copy()
+hist_df = plot_df[plot_df["cell_type"] == "histogram"].copy()
+
+# Compute bin width for histogram bars
+bin_width = (df[variables[0]].max() - df[variables[0]].min()) / 12 * 0.9
+
+# Create scatter plot matrix with histograms on diagonal
+# Use geom_bar with stat="identity" for pre-computed histogram data
 plot = (
-    ggplot(mapping=aes(x="x"))
-    + geom_point(data=scatter_df, mapping=aes(y="y", color="Species"), size=4, alpha=0.7)
-    + geom_histogram(data=hist_df, mapping=aes(fill="Species"), bins=12, alpha=0.7, position="identity")
+    ggplot(mapping=aes(x="x", y="y"))
+    + geom_point(data=scatter_df, mapping=aes(color="Species"), size=3.5, alpha=0.7)
+    + geom_bar(
+        data=hist_df, mapping=aes(fill="Species"), stat="identity", width=bin_width, alpha=0.7, position="identity"
+    )
     + facet_grid("var_y ~ var_x", scales="free")
     + scale_color_manual(values=colors)
     + scale_fill_manual(values=colors)
     + labs(
         title="scatter-matrix-interactive · plotnine · pyplots.ai",
-        subtitle="Iris Dataset: Pairwise Scatter Plots with Univariate Distributions (Static)",
+        subtitle="Iris Dataset: Pairwise Scatter Plots with Univariate Distributions\n(Note: Interactive brushing requires Plotly/Bokeh/Altair)",
         x="",
         y="",
     )
@@ -93,17 +119,17 @@ plot = (
         figure_size=(16, 16),
         plot_title=element_text(size=24, weight="bold", ha="left"),
         plot_subtitle=element_text(size=14, color="#666666"),
-        strip_text_x=element_text(size=13),
-        strip_text_y=element_text(size=13, angle=0),
+        strip_text_x=element_text(size=14),
+        strip_text_y=element_text(size=14, angle=0),
         axis_text=element_text(size=11),
         legend_title=element_text(size=16),
         legend_text=element_text(size=14),
         legend_position="bottom",
         legend_background=element_rect(fill="white", alpha=0.9),
         panel_spacing=0.03,
-        panel_grid_major=element_blank(),
-        panel_grid_minor=element_blank(),
-        panel_background=element_rect(fill="#f8f8f8"),
+        panel_grid_major=element_line(color="#cccccc", alpha=0.3),
+        panel_grid_minor=element_line(color="#eeeeee", alpha=0.2),
+        panel_background=element_rect(fill="white"),
     )
 )
 

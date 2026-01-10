@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 coefficient-confidence: Coefficient Plot with Confidence Intervals
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-09
@@ -45,25 +45,12 @@ ci_lower = ci_lower[sort_idx]
 ci_upper = ci_upper[sort_idx]
 significant = significant[sort_idx]
 
-# Create color and label mapping based on significance
-# Using stronger color contrast for better distinction
-colors = ["#1f77b4" if sig else "#bcbcbc" for sig in significant]
-significance_label = ["Significant (p < 0.05)" if sig else "Not Significant" for sig in significant]
+# Strong color contrast for significant vs non-significant distinction
+# Using vivid blue (#2171b5) for significant vs muted gray (#969696) for non-significant
+SIG_COLOR = "#2171b5"
+NONSIG_COLOR = "#969696"
 
-# Create data source with additional fields for hover
-source = ColumnDataSource(
-    data={
-        "variables": variables,
-        "coefficients": coefficients,
-        "ci_lower": ci_lower,
-        "ci_upper": ci_upper,
-        "colors": colors,
-        "significance": significance_label,
-        "ci_lower_fmt": [f"{x:.3f}" for x in ci_lower],
-        "ci_upper_fmt": [f"{x:.3f}" for x in ci_upper],
-        "coef_fmt": [f"{x:.3f}" for x in coefficients],
-    }
-)
+colors = [SIG_COLOR if sig else NONSIG_COLOR for sig in significant]
 
 # Create figure with categorical y-axis
 p = figure(
@@ -76,17 +63,16 @@ p = figure(
 )
 
 # Add vertical reference line at zero
-zero_line = Span(location=0, dimension="height", line_color="#333333", line_width=2, line_dash="dashed")
+zero_line = Span(location=0, dimension="height", line_color="#333333", line_width=3, line_dash="dashed")
 p.add_layout(zero_line)
 
-# Draw confidence interval segments (error bars)
+# Draw confidence interval segments (error bars) with distinct colors
 for i, var in enumerate(variables):
-    p.line(x=[ci_lower[i], ci_upper[i]], y=[var, var], line_width=4, line_color=colors[i], line_alpha=0.8)
-    # Add caps to error bars
-    p.line(x=[ci_lower[i], ci_lower[i]], y=[var, var], line_width=4, line_color=colors[i])
-    p.line(x=[ci_upper[i], ci_upper[i]], y=[var, var], line_width=4, line_color=colors[i])
+    color = colors[i]
+    # Main confidence interval line
+    p.line(x=[ci_lower[i], ci_upper[i]], y=[var, var], line_width=6, line_color=color, line_alpha=0.85)
 
-# Plot coefficient points - separate renderers for legend
+# Plot coefficient points - separate renderers for legend with distinct colors
 sig_indices = [i for i, s in enumerate(significant) if s]
 nonsig_indices = [i for i, s in enumerate(significant) if not s]
 
@@ -113,28 +99,14 @@ nonsig_source = ColumnDataSource(
     }
 )
 
-# Render significant points
+# Render significant points with vivid blue
 sig_renderer = p.scatter(
-    x="coefficients",
-    y="variables",
-    source=sig_source,
-    size=22,
-    color="#1f77b4",
-    line_color="white",
-    line_width=2,
-    alpha=0.95,
+    x="coefficients", y="variables", source=sig_source, size=30, color=SIG_COLOR, line_color="white", line_width=3
 )
 
-# Render non-significant points
+# Render non-significant points with muted gray
 nonsig_renderer = p.scatter(
-    x="coefficients",
-    y="variables",
-    source=nonsig_source,
-    size=22,
-    color="#bcbcbc",
-    line_color="white",
-    line_width=2,
-    alpha=0.95,
+    x="coefficients", y="variables", source=nonsig_source, size=30, color=NONSIG_COLOR, line_color="white", line_width=3
 )
 
 # Add HoverTool for interactive tooltips (Bokeh distinctive feature)
@@ -149,26 +121,31 @@ hover = HoverTool(
 )
 p.add_tools(hover)
 
-# Create legend manually with LegendItem
+# Create legend inside the plot area (top right corner within plot bounds)
 legend = Legend(
     items=[
         LegendItem(label="Significant (p < 0.05)", renderers=[sig_renderer]),
         LegendItem(label="Not Significant", renderers=[nonsig_renderer]),
     ],
     location="top_right",
-    label_text_font_size="18pt",
-    border_line_color="#cccccc",
+    label_text_font_size="24pt",
+    glyph_width=40,
+    glyph_height=40,
+    border_line_color="#666666",
+    border_line_width=2,
     background_fill_color="white",
-    background_fill_alpha=0.9,
+    background_fill_alpha=0.95,
+    padding=20,
+    margin=30,
 )
-p.add_layout(legend, "right")
+p.add_layout(legend)
 
-# Style text sizes for large canvas
-p.title.text_font_size = "28pt"
-p.xaxis.axis_label_text_font_size = "22pt"
-p.yaxis.axis_label_text_font_size = "22pt"
-p.xaxis.major_label_text_font_size = "18pt"
-p.yaxis.major_label_text_font_size = "18pt"
+# Style text sizes for large canvas (increased for better readability)
+p.title.text_font_size = "36pt"
+p.xaxis.axis_label_text_font_size = "28pt"
+p.yaxis.axis_label_text_font_size = "28pt"
+p.xaxis.major_label_text_font_size = "22pt"
+p.yaxis.major_label_text_font_size = "22pt"
 
 # Grid styling
 p.xgrid.grid_line_alpha = 0.3
@@ -179,6 +156,12 @@ p.ygrid.grid_line_dash = "dashed"
 # Background styling
 p.background_fill_color = "#fafafa"
 p.border_fill_color = "white"
+
+# Increase axis line width for visibility
+p.xaxis.axis_line_width = 2
+p.yaxis.axis_line_width = 2
+p.xaxis.major_tick_line_width = 2
+p.yaxis.major_tick_line_width = 2
 
 # Save plot (PNG and HTML for interactive)
 export_png(p, filename="plot.png")

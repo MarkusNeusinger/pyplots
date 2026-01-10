@@ -1,0 +1,31 @@
+# Specification-level metadata for heatmap-geographic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: heatmap-geographic
+title: Geographic Heatmap for Spatial Density
+
+# Specification tracking
+created: 2026-01-10T08:06:44Z
+updated: null
+issue: 3638
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - heatmap
+    - map
+  data_type:
+    - geospatial
+    - numeric
+    - continuous
+  domain:
+    - general
+    - business
+    - science
+  features:
+    - basic
+    - density
+    - color-mapped
+    - spatial

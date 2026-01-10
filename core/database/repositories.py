@@ -144,7 +144,7 @@ class SpecRepository:
         if not spec:
             return False
 
-        self.session.delete(spec)
+        await self.session.delete(spec)
         await self.session.commit()
         return True
 
@@ -259,7 +259,7 @@ class LibraryRepository:
         if not library:
             return False
 
-        self.session.delete(library)
+        await self.session.delete(library)
         await self.session.commit()
         return True
 
@@ -398,7 +398,7 @@ class ImplRepository:
         if not impl:
             return False
 
-        self.session.delete(impl)
+        await self.session.delete(impl)
         await self.session.commit()
         return True
 

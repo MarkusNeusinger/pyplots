@@ -1,7 +1,7 @@
 library: matplotlib
 specification_id: hierarchy-toggle-view
 created: '2026-01-11T09:31:15Z'
-updated: '2026-01-11T09:46:44Z'
+updated: '2026-01-11T09:55:23Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20892891338
 issue: 3697
@@ -10,40 +10,39 @@ library_version: 3.10.8
 preview_url: https://storage.googleapis.com/pyplots-images/plots/hierarchy-toggle-view/matplotlib/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hierarchy-toggle-view/matplotlib/plot_thumb.png
 preview_html: null
-quality_score: 88
+quality_score: 91
 review:
   strengths:
-  - Excellent side-by-side visualization showing both treemap and sunburst representations
-    simultaneously
-  - Toggle UI control is visually appealing and clearly indicates the concept of view
-    switching
-  - Consistent colorblind-safe color scheme across both views makes node identification
-    easy
-  - Well-structured data hierarchy with meaningful company department context
-  - Clean code organization with clear separation between toggle, treemap, and sunburst
-    sections
-  - Good use of matplotlib patches for custom shapes
+  - Creative dual-view solution showing both treemap and sunburst representations
+    side by side
+  - Excellent use of matplotlib FancyBboxPatch and path_effects for professional toggle
+    UI
+  - Consistent color scheme across both views enabling easy cross-reference
+  - Smart label truncation prevents text overflow in constrained spaces
+  - Good canvas utilization with both charts filling their allocated spaces well
+  - Clean hierarchical data structure that is easy to understand
   weaknesses:
-  - Minor label overlap in sunburst outer ring where Benefits and Training labels
-    are very close together
-  - Sunburst view has more whitespace compared to the treemap view creating slight
-    visual imbalance
-  image_description: 'The plot displays a dual-view hierarchical visualization showing
-    both Treemap and Sunburst views side-by-side. At the top is a toggle control labeled
-    "Toggle View:" with two buttons - "Treemap" (highlighted in blue indicating selection)
-    and "Sunburst" (gray/unselected). The Treemap View (left) shows nested rectangles
-    representing company departments: Engineering (blue) with Frontend(45), Backend(55),
-    DevOps(30), QA(25); Sales (yellow) with Domestic(40), Intl(50), Partners(25);
-    Operations (green) with Logist.(35), Facil.(20), IT(25); and HR (orange) with
-    Recruiting(30), Training(20), Benefits(15). The Sunburst View (right) shows the
-    same hierarchy as concentric rings - inner ring displays main departments (Eng,
-    Sales, Ops, HR), outer ring shows sub-departments. Colors are consistent between
-    both views. A legend at the bottom shows: Engineering (blue), Sales (yellow),
-    Operations (green), HR (orange). The main title "hierarchy-toggle-view · matplotlib
-    · pyplots.ai" appears at the top.'
+  - Toggle control is purely visual/decorative since matplotlib does not support true
+    interactivity (acceptable limitation)
+  - Outer ring sunburst labels could benefit from slightly larger font for smallest
+    segments
+  image_description: The plot displays a dual-view hierarchical visualization of a
+    company organizational structure with four main departments (Engineering, Sales,
+    Operations, HR) and their sub-units. The left side shows a Treemap View with nested
+    rectangles where area is proportional to values - Engineering (blue) subdivisions
+    (Frontend 45, Backend 55, DevOps 30, QA 25), Sales (yellow) subdivisions (Domestic
+    40, Intl 50, Partners 25), Operations (green) subdivisions (Logist. 35, Facil.
+    20, IT 25), and HR (orange) subdivisions (Recruiting 30, Training 20, Benefits
+    15). The right side shows a Sunburst View with the same data as concentric rings
+    - inner ring shows main departments with large readable labels, outer ring shows
+    sub-departments. A toggle control UI at the top displays "Toggle View:" with Treemap
+    button highlighted (blue) and Sunburst button grayed out. The main title "hierarchy-toggle-view
+    · matplotlib · pyplots.ai" appears at the top. A four-color legend at the bottom
+    identifies Engineering (blue), Sales (yellow), Operations (green), and HR (orange).
+    Colors are consistent across both views enabling easy cross-reference.
   criteria_checklist:
     visual_quality:
-      score: 35
+      score: 36
       max: 40
       items:
       - id: VQ-01
@@ -51,49 +50,51 @@ review:
         score: 9
         max: 10
         passed: true
-        comment: All text readable; title 26pt, subplot titles 22pt, toggle labels
-          14-16pt, treemap labels 14pt. Some outer ring sunburst labels slightly smaller
-          but legible.
+        comment: Title large and readable, view subtitles clear, toggle labels readable,
+          all treemap and sunburst labels legible with path effects. Some outer ring
+          labels slightly small.
       - id: VQ-02
         name: No Overlap
-        score: 7
-        max: 8
-        passed: true
-        comment: Minor overlap in sunburst outer ring where Benefits and Training
-          labels are very close together, but still readable.
-      - id: VQ-03
-        name: Element Visibility
         score: 8
         max: 8
         passed: true
-        comment: Rectangle and wedge sizes well-proportioned for data density, both
-          views fill allocated space well.
+        comment: No overlapping text elements, labels well-positioned within their
+          segments
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Treemap rectangles and sunburst wedges appropriately sized, good
+          canvas utilization on both views
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: 'Colorblind-safe palette: Python Blue, Yellow, Sea Green, Burnt Orange
-          with good contrast.'
+        comment: 'Colorblind-safe palette: Python Blue, yellow, sea green, burnt orange
+          - all distinguishable'
       - id: VQ-05
         name: Layout Balance
         score: 4
         max: 5
         passed: true
-        comment: Good proportions with both views well-sized. Slight asymmetry as
-          sunburst has more whitespace than treemap.
+        comment: Good side-by-side layout with toggle control, legend at bottom. Toggle
+          area could be tighter.
       - id: VQ-06
         name: Axis Labels
-        score: 0
-        max: 2
-        passed: false
-        comment: N/A for treemap/sunburst visualizations - no traditional axes.
-      - id: VQ-07
-        name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Legend well placed at bottom center, clear and unobtrusive.
+        comment: N/A for treemap/sunburst, but labels are descriptive with values
+          shown
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Legend clear and well-positioned, no grid needed. Legend font could
+          be slightly larger.
     spec_compliance:
       score: 23
       max: 25
@@ -103,40 +104,39 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'Correct: treemap with nested rectangles and sunburst with concentric
-          radial segments.'
+        comment: Correctly implements both treemap and sunburst views as specified
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Values correctly determine rectangle area (treemap) and arc angle
-          (sunburst).
+        comment: Area proportional to values (treemap), angle proportional to values
+          (sunburst)
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Has toggle button UI, consistent colors, both views fit container.
-          Static image cannot show actual toggle interactivity.
+        comment: Toggle control present, consistent colors, both views in same container.
+          True interactivity not possible in static matplotlib.
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All nodes visible, hierarchy properly represented.
+        comment: All 17 nodes visible and labeled appropriately
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly shows all four departments with accurate colors.
+        comment: Legend correctly identifies four departments with accurate colors
       - id: SC-06
         name: Title Format
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: 'Correct format: hierarchy-toggle-view · matplotlib · pyplots.ai'
+        comment: Uses correct format hierarchy-toggle-view · matplotlib · pyplots.ai
     data_quality:
       score: 18
       max: 20
@@ -146,21 +146,20 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows 2 hierarchy levels with varying sizes. Could benefit from 3+
-          levels for fuller demonstration.
+        comment: Shows hierarchical structure well with parent-child relationships,
+          varying sizes. Good range of values (15-55).
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Company organizational structure is perfect, realistic, neutral scenario.
+        comment: Company departments and sub-units is a real, neutral business scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Values are reasonable (15-55 range for team sizes). Root node value
-          0 computed as sum of children.
+        comment: Values plausible for organizational sizing metrics
     code_quality:
       score: 9
       max: 10
@@ -170,44 +169,43 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports, data, hierarchy, figure, toggle, treemap,
-          sunburst, save.'
+        comment: 'Simple script structure: imports, data, build hierarchy, plot, save'
       - id: CQ-02
         name: Reproducibility
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: Deterministic hardcoded data, no random operations requiring seed.
+        comment: Uses deterministic data (no random generation)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib.pyplot, matplotlib.patches, numpy - all used.
+        comment: All imports used (matplotlib.pyplot, patches, path_effects, numpy)
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current matplotlib API.
+        comment: No deprecated functions
       - id: CQ-05
         name: Output Correct
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png.
+        passed: false
+        comment: Saves as plot.png (correct filename)
     library_features:
-      score: 3
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Uses FancyBboxPatch for toggle and treemap, pie with wedgeprops for
-          sunburst, gridspec for layout. Good but no advanced features.
-  verdict: REJECTED
+        comment: Excellent use of FancyBboxPatch, path_effects, gridspec, pie chart
+          with custom wedge properties
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:

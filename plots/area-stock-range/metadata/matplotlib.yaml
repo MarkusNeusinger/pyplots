@@ -1,0 +1,217 @@
+library: matplotlib
+specification_id: area-stock-range
+created: '2026-01-11T09:29:09Z'
+updated: '2026-01-11T09:31:55Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20892891928
+issue: 3701
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stock-range/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stock-range/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of the two-panel layout with GridSpec providing clear
+    visual hierarchy
+  - Semi-transparent fill (alpha=0.4) with solid line on top matches spec requirements
+    perfectly
+  - Range selector with highlighted selection region effectively demonstrates the
+    concept
+  - Preset range indicators (1M, 3M, 6M, 1Y, YTD, All) included as visual reference
+  - Clean, professional styling with removed top/right spines and subtle grid
+  - Realistic 3-year stock price data with appropriate volatility
+  weaknesses:
+  - Title includes extra Stock Price History prefix instead of just {spec-id} · {library}
+    · pyplots.ai format
+  - Range selector panel could be slightly taller to improve readability of the mini
+    chart
+  - 'Grid/legend criterion: the range selector labels could be more integrated rather
+    than floating text boxes'
+  image_description: |-
+    The plot displays a stock price history visualization with two panels. The main (upper) panel shows approximately 6 months of price data (May 2025 - Nov 2025) as a filled area chart with a blue color (#306998). The area is semi-transparent (alpha ~0.4) with a solid blue line on top marking the closing price. The y-axis shows "Price ($)" ranging from ~80 to ~140, and the x-axis shows monthly dates. A legend in the upper left indicates "Price Range" (filled area) and "Closing Price" (line).
+
+    The lower panel serves as a range selector showing the full 3-year history (Feb 2023 - Nov 2025). It displays the same data as a smaller area chart with a yellow highlighted region indicating the currently selected range (last ~6 months). Yellow vertical lines mark the selection boundaries. A "Range Selector" label appears in the upper left, and preset range options (1M, 3M, 6M, 1Y, YTD, All) are shown in the upper right as text.
+
+    The title reads "Stock Price History · area-stock-range · matplotlib · pyplots.ai" at the top. The spines on top and right are removed for a cleaner look. Grid lines are subtle with dashed style.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, labels at 20pt, ticks at 16pt, all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements anywhere
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Area fill and line clearly visible, line width appropriate (2.5),
+          though some dense areas in range selector could be slightly better differentiated
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Blue (#306998) and yellow (#FFD43B) are colorblind-safe and provide
+          good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of GridSpec with 4:1 ratio, but the range selector panel
+          could be slightly taller for better readability
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Price ($) includes units, Date is descriptive
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle (alpha 0.3), but legend only appears on main chart;
+          range selector panel could benefit from clearer labeling of the selection
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct filled area chart for stock price visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Date on x-axis, price on y-axis correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: 'Has range selector with mini chart, preset range indicators shown
+          as text, highlighted selection region. Missing: actual interactivity (understandable
+          for static matplotlib)'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible, axes properly scaled with padding
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend labels Price Range and Closing Price are accurate
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: false
+        comment: Format includes extra Stock Price History prefix instead of just
+          {spec-id} · {library} · pyplots.ai
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: Shows price fluctuations, uptrends and downtrends, volatility periods,
+          and long-term context via range selector
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Stock price starting at $100, daily returns with realistic volatility
+          (~1.5%), 3 years of business days - very plausible financial scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Price values ($80-$140 range) are realistic for a stock; could show
+          more dramatic movements to better demonstrate the range selector value
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear flow: imports, data, plot, save, no functions/classes'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) set for reproducible synthetic data
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used (matplotlib.dates, pyplot, numpy, pandas)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: No deprecated functions used
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Good use of GridSpec for layout, fill_between for area, axvspan/axvline
+          for selection highlighting, text annotations with bbox. Could use more matplotlib-specific
+          features like sharex between axes or custom tick formatting
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - annotations
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep:
+  - time-series
+  - cumulative-sum
+  styling:
+  - alpha-blending
+  - grid-styling

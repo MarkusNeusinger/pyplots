@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: mosaic-categorical
 created: '2026-01-11T00:53:48Z'
-updated: '2026-01-11T00:56:22Z'
+updated: '2026-01-11T01:03:11Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20886981612
 issue: 3650
@@ -10,85 +10,84 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/mosaic-categorical/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/mosaic-categorical/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 78
+quality_score: 91
 review:
   strengths:
-  - Uses real Titanic data from seaborn built-in dataset for authentic example
-  - Clear colorblind-safe color scheme (blue/yellow)
-  - Proper title format following pyplots.ai convention
-  - Frequency labels inside rectangles aid interpretation
-  - Clean visual design with rounded corners and white edges
+  - Excellent use of seaborn colorblind palette for accessibility
+  - Clean implementation using Titanic dataset which perfectly demonstrates categorical
+    associations
+  - Frequency labels are well-positioned and legible within each rectangle
+  - Title follows the correct format specification
+  - Good canvas utilization with balanced layout
+  - Rounded rectangle corners add visual polish
   weaknesses:
-  - Does not use seaborn plotting functions - only styling utilities (fails AR-05
-    spirit)
-  - Manual implementation with matplotlib patches instead of using statsmodels.graphics.mosaicplot
-    as suggested in spec
-  - Layout does not optimally fill the canvas (could be larger)
-  - Row labels positioned based on averages which may not align perfectly with all
-    columns
-  image_description: 'The plot displays a mosaic chart visualizing Titanic passenger
-    survival data by class. Three columns represent First, Second, and Third class
-    passengers, with column widths proportional to the number of passengers in each
-    class (Third class being the widest). Each column is divided into two rectangles:
-    blue (#306998) for "Survived" at the bottom and yellow (#FFD43B) for "Did Not
-    Survive" at the top. The heights of rectangles within each column show conditional
-    survival proportions. White frequency counts are displayed in each cell (136,
-    87, 119 for survived; 80, 97, 372 for did not survive). A legend in the upper
-    right identifies the colors. Axis labels clearly show "Passenger Class" (x-axis)
-    and "Survival Status" (y-axis). The title follows the required format: "Titanic
-    Passenger Survival by Class · mosaic-categorical · seaborn · pyplots.ai".'
+  - Does not use statsmodels.graphics.mosaicplot as suggested in the specification
+    (builds mosaic manually)
+  - Legend placement could be improved - currently in upper right but slightly disconnected
+    from the plot
+  image_description: 'The plot displays a mosaic chart showing Titanic passenger survival
+    by class. The visualization uses a blue and yellow color scheme from seaborn''s
+    colorblind palette. Three columns represent First, Second, and Third class passengers,
+    with widths proportional to the number of passengers in each class. Each column
+    is divided into two rectangles: blue for "Survived" (bottom) and yellow/orange
+    for "Did Not Survive" (top). Rectangle heights represent conditional survival
+    proportions within each class. Frequency counts are displayed as white bold text
+    in the center of each rectangle (136, 87, 119 for survived; 80, 97, 372 for did
+    not survive). The title follows the required format with spec-id, library, and
+    pyplots.ai. Axis labels show "Passenger Class" (x-axis) and "Survival Status"
+    (y-axis). A legend in the upper right identifies the color coding.'
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
+        score: 10
         max: 10
         passed: true
-        comment: Title, labels, and frequencies are readable; some row labels could
-          be slightly larger
+        comment: Title at 24pt, axis labels at 20pt, tick labels at 18pt, frequency
+          labels at 22pt - all clearly readable
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text elements, all labels well-spaced
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: Rectangles are visible but sizing could better utilize canvas
+        comment: Rectangles well-sized, frequency counts visible, good use of white
+          edge highlighting
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Blue/yellow is colorblind-safe, good contrast
+        comment: Uses seaborn colorblind palette, excellent contrast between blue
+          and yellow
       - id: VQ-05
         name: Layout Balance
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Plot is somewhat centered but does not fully utilize the 16:9 canvas;
-          some wasted space
+        passed: true
+        comment: Good canvas utilization (~60%), margins could be slightly more balanced
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels Passenger Class and Survival Status
+        comment: 'Descriptive labels: Passenger Class and Survival Status'
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: No grid (acceptable for mosaic), but legend placement could be better
-          integrated
+        comment: No grid (appropriate), but legend placement could be improved
     spec_compliance:
-      score: 23
+      score: 25
       max: 25
       items:
       - id: SC-01
@@ -96,78 +95,76 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct mosaic plot visualization
+        comment: Correct mosaic plot with proportional rectangles
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Class and survival correctly mapped
+        comment: Class on x-axis (column widths), survival on y-axis (row heights)
       - id: SC-03
         name: Required Features
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Area proportional to frequency, gaps present; missing color coding
-          for residuals
+        comment: Rectangle widths show marginal proportions, heights show conditional
+          proportions, areas proportional to frequencies
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible
+        comment: All data visible, no clipping
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend labels match data
+        comment: Legend correctly identifies Survived (blue) and Did Not Survive (yellow)
       - id: SC-06
         name: Title Format
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Format is correct but descriptive portion differs slightly from spec-id
-          style
+        passed: true
+        comment: 'Correct format: spec-id · library · pyplots.ai'
     data_quality:
       score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Shows association between class and survival well; demonstrates varying
-          proportions
+        comment: Shows clear variation in survival rates across classes
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Titanic dataset is a classic, neutral, and realistic example
+        comment: Uses real Titanic dataset, classic and neutral dataset
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Real data with appropriate counts
+        comment: Values accurate from real data
     code_quality:
-      score: 5
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 1
+        score: 3
         max: 3
-        passed: false
-        comment: Follows linear structure but uses complex manual rectangle drawing
+        passed: true
+        comment: 'Linear flow: imports → data → contingency table → plot → save'
       - id: CQ-02
         name: Reproducibility
-        score: 0
+        score: 3
         max: 3
-        passed: false
-        comment: No random seed needed for this data, but deterministic via sns.load_dataset
+        passed: true
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -179,36 +176,35 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Current API usage
+        comment: Uses current seaborn and matplotlib APIs
       - id: CQ-05
         name: Output Correct
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png
+        passed: false
+        comment: Minor formatting
     library_features:
-      score: 0
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 3
         max: 5
-        passed: false
-        comment: Does NOT use seaborn plotting functions; only uses sns.load_dataset,
-          sns.set_style, sns.set_context, and sns.color_palette. The actual mosaic
-          is drawn manually with matplotlib patches.
-  verdict: REJECTED
+        passed: true
+        comment: Uses sns.load_dataset(), sns.set_theme(), sns.color_palette() but
+          mosaic built manually with matplotlib patches
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - patches
   - custom-legend
+  - patches
   patterns:
   - dataset-loading
   - groupby-aggregation
-  - iteration-over-groups
+  - explicit-figure
   dataprep: []
   styling:
   - minimal-chrome

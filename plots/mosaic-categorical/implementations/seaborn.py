@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 mosaic-categorical: Mosaic Plot for Categorical Association Analysis
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 78/100 | Created: 2026-01-11
+Quality: 91/100 | Created: 2026-01-11
 """
 
 import matplotlib.patches as mpatches

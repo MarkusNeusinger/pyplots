@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hierarchy-toggle-view: Interactive Treemap-Sunburst Toggle View
 Library: matplotlib 3.10.8 | Python 3.13.11
 Quality: 83/100 | Created: 2026-01-11
@@ -13,9 +13,9 @@ import numpy as np
 # Format: (id, parent, label, value)
 hierarchy_data = [
     ("root", None, "Company", 0),
-    ("eng", "root", "Engineering", 0),
+    ("eng", "root", "Eng", 0),  # Shortened to fit inner ring
     ("sales", "root", "Sales", 0),
-    ("ops", "root", "Operations", 0),
+    ("ops", "root", "Ops", 0),  # Shortened to avoid truncation in sunburst
     ("hr", "root", "HR", 0),
     # Engineering sub-departments
     ("frontend", "eng", "Frontend", 45),
@@ -24,12 +24,12 @@ hierarchy_data = [
     ("qa", "eng", "QA", 25),
     # Sales sub-departments
     ("domestic", "sales", "Domestic", 40),
-    ("international", "sales", "International", 50),
-    ("partnerships", "sales", "Partnerships", 25),
+    ("international", "sales", "Intl", 50),  # Shortened for outer ring
+    ("partnerships", "sales", "Partners", 25),  # Shortened for outer ring
     # Operations sub-departments
-    ("logistics", "ops", "Logistics", 35),
-    ("facilities", "ops", "Facilities", 20),
-    ("it_support", "ops", "IT Support", 25),
+    ("logistics", "ops", "Logist.", 35),  # Shortened for outer ring
+    ("facilities", "ops", "Facil.", 20),  # Shortened for outer ring
+    ("it_support", "ops", "IT", 25),  # Shortened for outer ring
     # HR sub-departments
     ("recruiting", "hr", "Recruiting", 30),
     ("training", "hr", "Training", 20),
@@ -64,8 +64,41 @@ for nid in nodes:
         parent = nodes[nid]["parent"]
         node_colors[nid] = dept_colors.get(parent, "#CCCCCC")
 
-# Create figure with two subplots side by side
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 9))
+# Create figure with gridspec for toggle control area
+fig = plt.figure(figsize=(16, 9))
+
+# Create grid: toggle control on top, two views below
+gs = fig.add_gridspec(2, 2, height_ratios=[0.12, 0.88], hspace=0.1, wspace=0.1)
+ax_toggle = fig.add_subplot(gs[0, :])  # Toggle control spans both columns
+ax1 = fig.add_subplot(gs[1, 0])  # Treemap
+ax2 = fig.add_subplot(gs[1, 1])  # Sunburst
+
+# ============ TOGGLE CONTROL ============
+ax_toggle.set_xlim(0, 1)
+ax_toggle.set_ylim(0, 1)
+ax_toggle.axis("off")
+
+# Draw toggle switch background
+toggle_bg = mpatches.FancyBboxPatch(
+    (0.35, 0.25), 0.30, 0.5, boxstyle="round,pad=0.02", facecolor="#E8E8E8", edgecolor="#CCCCCC", linewidth=2
+)
+ax_toggle.add_patch(toggle_bg)
+
+# Draw toggle buttons (Treemap selected, Sunburst unselected - showing both views)
+btn_treemap = mpatches.FancyBboxPatch(
+    (0.36, 0.30), 0.13, 0.40, boxstyle="round,pad=0.01", facecolor="#306998", edgecolor="#306998", linewidth=2
+)
+ax_toggle.add_patch(btn_treemap)
+ax_toggle.text(0.425, 0.50, "Treemap", ha="center", va="center", fontsize=14, fontweight="bold", color="white")
+
+btn_sunburst = mpatches.FancyBboxPatch(
+    (0.51, 0.30), 0.13, 0.40, boxstyle="round,pad=0.01", facecolor="white", edgecolor="#CCCCCC", linewidth=2
+)
+ax_toggle.add_patch(btn_sunburst)
+ax_toggle.text(0.575, 0.50, "Sunburst", ha="center", va="center", fontsize=14, fontweight="bold", color="#666666")
+
+# Toggle label
+ax_toggle.text(0.5, 0.90, "Toggle View:", ha="center", va="center", fontsize=16, fontweight="bold", color="#333333")
 
 # ============ LEFT: TREEMAP ============
 # Get leaf nodes (sub-departments)
@@ -157,54 +190,55 @@ for dept_id in dept_order:
         outer_colors.append(node_colors[nid])
         outer_labels.append(n["label"])
 
-# Draw sunburst as concentric pie charts
+# Draw sunburst as concentric pie charts (reduced radius to avoid clipping)
 # Inner ring (departments)
 wedges1, _ = ax2.pie(
     inner_sizes,
-    radius=0.6,
+    radius=0.55,
     colors=inner_colors,
-    wedgeprops={"width": 0.3, "edgecolor": "white", "linewidth": 2},
+    wedgeprops={"width": 0.28, "edgecolor": "white", "linewidth": 2},
     startangle=90,
 )
 
 # Add department labels on inner ring
 for i, wedge in enumerate(wedges1):
     angle = (wedge.theta2 + wedge.theta1) / 2
-    x = 0.45 * np.cos(np.radians(angle))
-    y = 0.45 * np.sin(np.radians(angle))
+    x = 0.41 * np.cos(np.radians(angle))
+    y = 0.41 * np.sin(np.radians(angle))
     color = "white" if dept_order[i] in ["eng", "ops"] else "black"
-    ax2.text(x, y, dept_labels[i], ha="center", va="center", fontsize=13, fontweight="bold", color=color)
+    ax2.text(x, y, dept_labels[i], ha="center", va="center", fontsize=16, fontweight="bold", color=color)
 
 # Outer ring (sub-departments)
 wedges2, _ = ax2.pie(
     outer_sizes,
-    radius=0.95,
+    radius=0.88,
     colors=outer_colors,
-    wedgeprops={"width": 0.35, "edgecolor": "white", "linewidth": 1.5},
+    wedgeprops={"width": 0.33, "edgecolor": "white", "linewidth": 1.5},
     startangle=90,
 )
 
 # Add sub-department labels on outer ring (only for larger segments)
 for i, wedge in enumerate(wedges2):
     angle_span = wedge.theta2 - wedge.theta1
-    if angle_span > 15:  # Only label larger segments
+    if angle_span > 12:  # Label more segments with increased threshold
         angle = (wedge.theta2 + wedge.theta1) / 2
-        x = 0.77 * np.cos(np.radians(angle))
-        y = 0.77 * np.sin(np.radians(angle))
+        x = 0.72 * np.cos(np.radians(angle))
+        y = 0.72 * np.sin(np.radians(angle))
         # Determine text color based on background
         bg_color = outer_colors[i]
         text_color = "white" if bg_color in ["#306998", "#2E8B57"] else "black"
         # Horizontal labels (no rotation) for better readability
-        ax2.text(x, y, outer_labels[i], ha="center", va="center", fontsize=10, fontweight="bold", color=text_color)
+        ax2.text(x, y, outer_labels[i], ha="center", va="center", fontsize=11, fontweight="bold", color=text_color)
 
 ax2.set_title("Sunburst View", fontsize=22, fontweight="bold", pad=15)
 
-# Main title
-fig.suptitle("hierarchy-toggle-view · matplotlib · pyplots.ai", fontsize=26, fontweight="bold", y=0.98)
+# Main title at the very top
+fig.suptitle("hierarchy-toggle-view · matplotlib · pyplots.ai", fontsize=26, fontweight="bold", y=0.99)
 
-# Legend for departments
-legend_patches = [mpatches.Patch(color=dept_colors[d], label=nodes[d]["label"]) for d in dept_order]
-fig.legend(handles=legend_patches, loc="lower center", ncol=4, fontsize=14, frameon=True, bbox_to_anchor=(0.5, 0.02))
+# Legend for departments - use full names for legend
+legend_labels = {"eng": "Engineering", "sales": "Sales", "ops": "Operations", "hr": "HR"}
+legend_patches = [mpatches.Patch(color=dept_colors[d], label=legend_labels[d]) for d in dept_order]
+fig.legend(handles=legend_patches, loc="lower center", ncol=4, fontsize=14, frameon=True, bbox_to_anchor=(0.5, 0.01))
 
-plt.tight_layout(rect=[0, 0.08, 1, 0.95])
+plt.subplots_adjust(left=0.02, right=0.98, top=0.92, bottom=0.08)
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

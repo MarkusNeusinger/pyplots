@@ -1,0 +1,28 @@
+# Specification-level metadata for bar-realtime
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: bar-realtime
+title: Real-Time Updating Bar Chart
+
+# Specification tracking
+created: 2026-01-11T22:53:31Z
+updated: 2026-01-11T22:53:31Z
+issue: 3789
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - bar
+  data_type:
+    - categorical
+    - numeric
+  domain:
+    - general
+    - business
+  features:
+    - animated
+    - interactive
+    - comparison
+    - temporal

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-race-animated: Animated Bar Chart Race
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-11
@@ -47,16 +47,16 @@ data = {}
 for company in companies:
     data[company] = [int(base_values[company] * growth_rates[company][i]) for i in range(len(years))]
 
-# Colors for consistent entity tracking
+# Colors for consistent entity tracking - distinct hues to avoid confusion
 company_colors = {
     "Apple": "#306998",  # Python Blue (primary)
     "Microsoft": "#FFD43B",  # Python Yellow (primary)
-    "Alphabet": "#4285F4",  # Google Blue
+    "Alphabet": "#34A853",  # Google Green (distinct from blues)
     "Amazon": "#FF9900",  # Amazon Orange
-    "Meta": "#0866FF",  # Meta Blue
+    "Meta": "#E040FB",  # Purple (distinct from blue tones)
     "Tesla": "#CC0000",  # Tesla Red
     "NVIDIA": "#76B900",  # NVIDIA Green
-    "Samsung": "#1428A0",  # Samsung Blue
+    "Samsung": "#795548",  # Brown (distinct from all other colors)
 }
 
 # Custom style for pygal with larger fonts for readability
@@ -66,12 +66,12 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    title_font_size=48,
-    label_font_size=32,
-    major_label_font_size=28,
-    legend_font_size=28,
-    value_font_size=24,
-    tooltip_font_size=24,
+    title_font_size=52,
+    label_font_size=36,
+    major_label_font_size=32,
+    legend_font_size=32,
+    value_font_size=32,  # Larger value labels for better readability
+    tooltip_font_size=28,
 )
 
 # Create individual charts for each year
@@ -85,9 +85,7 @@ for year_idx, year in enumerate(years):
         width=1500,
         height=950,
         style=custom_style,
-        show_legend=True,
-        legend_at_bottom=True,
-        legend_at_bottom_columns=4,
+        show_legend=False,  # Disable legend on individual charts - use global legend only
         title=str(year),
         x_title="Market Cap ($B)",
         print_values=True,
@@ -158,18 +156,18 @@ for idx, (col, row) in enumerate(positions):
         y = title_height + row * cell_height
         combined.paste(img, (x, y))
 
-# Add legend at bottom
-legend_y = grid_height - legend_height + 30
-legend_x_start = 150
-box_size = 30
+# Add legend at bottom - larger boxes and centered layout
+legend_y = grid_height - legend_height + 20
+box_size = 40
 spacing_between = grid_width // len(companies)
+legend_x_start = spacing_between // 2 - 80  # Center the legend items
 
 for i, company in enumerate(companies):
     x_pos = legend_x_start + i * spacing_between
     # Draw color box
     draw.rectangle([x_pos, legend_y, x_pos + box_size, legend_y + box_size], fill=company_colors[company])
     # Draw company name
-    draw.text((x_pos + box_size + 10, legend_y - 5), company, fill="#333333", font=legend_font)
+    draw.text((x_pos + box_size + 12, legend_y - 2), company, fill="#333333", font=legend_font)
 
 # Save as PNG
 combined.save("plot.png", dpi=(300, 300))

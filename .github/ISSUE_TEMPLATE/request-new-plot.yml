@@ -1,13 +1,13 @@
-name: Request Specification
-description: Propose a new visualization type for pyplots
+name: Request New Plot
+description: Propose a new plot type for pyplots
 labels: ["spec-request"]
 body:
   - type: markdown
     attributes:
       value: |
-        ## New Specification Request
+        ## Request New Plot
 
-        Describe the visualization you'd like to see. Our AI will:
+        Describe the plot you'd like to see. Our AI will:
         1. Check for similar existing specifications
         2. Assign a spec ID (e.g., `scatter-regression-linear`)
         3. Create the specification for review

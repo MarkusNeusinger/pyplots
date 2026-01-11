@@ -1,0 +1,16 @@
+name: Auto-add issues to project board
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    if: contains(fromJSON('["report-pending", "spec-request"]'), github.event.label.name)
+    steps:
+      - name: Add to project
+        uses: actions/add-to-project@v1.0.2
+        with:
+          project-url: https://github.com/users/MarkusNeusinger/projects/8
+          github-token: ${{ secrets.PROJECT_TOKEN }}

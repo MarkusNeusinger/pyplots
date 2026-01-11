@@ -182,17 +182,13 @@ export function SpecPage() {
 
   // Build report issue URL
   const buildReportUrl = useCallback(() => {
-    const params = new URLSearchParams({ spec_id: specId || '' });
-
-    if (selectedLibrary) {
-      params.set('template', 'report-impl-issue.yml');
-      params.set('library', selectedLibrary);
-    } else {
-      params.set('template', 'report-spec-issue.yml');
-    }
+    const params = new URLSearchParams({
+      template: 'report-plot-issue.yml',
+      spec_id: specId || '',
+    });
 
     return `${GITHUB_URL}/issues/new?${params.toString()}`;
-  }, [specId, selectedLibrary]);
+  }, [specId]);
 
   // Track page view
   useEffect(() => {

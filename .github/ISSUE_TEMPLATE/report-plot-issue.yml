@@ -1,0 +1,62 @@
+name: Report Plot Issue
+description: Report a problem with an existing plot (specification or implementation)
+labels: ["report-pending"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Report Plot Issue
+
+        Found something wrong with a plot? Use this form to report it.
+
+  - type: input
+    id: spec_id
+    attributes:
+      label: Specification ID
+      description: The spec ID from the URL (e.g., scatter-basic, raincloud-basic)
+      placeholder: scatter-basic
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: library
+    attributes:
+      label: Affected Libraries
+      description: Select which libraries have this issue. Leave all unchecked if it affects all or you're unsure.
+      options:
+        - label: matplotlib
+        - label: seaborn
+        - label: plotly
+        - label: bokeh
+        - label: altair
+        - label: plotnine
+        - label: pygal
+        - label: highcharts
+        - label: letsplot
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What type of issue is this?
+      options:
+        - Visual (design, clarity, hard to read)
+        - Data (unrealistic values, inappropriate context)
+        - Functional (doesn't work as expected)
+        - Other / Not sure
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the problem. Include screenshots or links to preview images if helpful.
+      placeholder: |
+        What's wrong:
+        ...
+
+        Expected:
+        ...
+    validations:
+      required: true

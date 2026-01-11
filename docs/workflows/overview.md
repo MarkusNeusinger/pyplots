@@ -32,9 +32,7 @@ spec-create.yml (merge job)
 
 See [Report Issues](report-issue.md) for details.
 
-Two templates available:
-- **report-spec-issue.yml** - Report specification problems (affects all libraries)
-- **report-impl-issue.yml** - Report implementation problems (specific library)
+One unified template: **report-plot-issue.yml** - Report any plot problem (spec or implementation)
 
 ```
 User reports issue (from pyplots.ai or GitHub)

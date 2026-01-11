@@ -6,19 +6,18 @@ pyplots is a specification-driven platform where **AI generates all plot impleme
 
 ---
 
-## Three Ways to Contribute
+## Two Ways to Contribute
 
 | Action | When to Use | From pyplots.ai |
 |--------|-------------|-----------------|
-| **[Suggest Spec](#suggest-a-new-plot-type)** | Propose a new plot type | Click "suggest spec" in catalog |
-| **[Report Spec Issue](#report-a-spec-issue)** | Problem with a specification | Click "report issue" on spec page |
-| **[Report Impl Issue](#report-an-impl-issue)** | Problem with a library implementation | Click "report issue" on impl page |
+| **[Request New Plot](#request-a-new-plot)** | Propose a new plot type | Click "suggest spec" in catalog |
+| **[Report Plot Issue](#report-a-plot-issue)** | Problem with a spec or implementation | Click "report issue" on any page |
 
 All contributions go through GitHub Issues with AI-powered validation and processing.
 
 ---
 
-## Suggest a New Plot Type
+## Request a New Plot
 
 1. **Create a GitHub Issue** with a descriptive title (e.g., "Radar Chart with Multiple Series")
    - Do NOT include spec-id in the title
@@ -33,27 +32,14 @@ All contributions go through GitHub Issues with AI-powered validation and proces
 
 ---
 
-## Report a Spec Issue
+## Report a Plot Issue
 
-Found a problem with a specification (affects all libraries)?
+Found a problem with a plot (specification or implementation)?
 
-1. **From pyplots.ai**: Navigate to the spec page (e.g., `/scatter-basic`) and click "report issue"
-2. **From GitHub**: Create issue using the [Report Specification Issue](https://github.com/MarkusNeusinger/pyplots/issues/new?template=report-spec-issue.yml) template
-3. **Choose a category**: Visual, Data, Functional, or Other (optional)
-4. **Describe the issue**
-
-AI validates your report and adds structured analysis. Maintainers review and approve fixes.
-
----
-
-## Report an Impl Issue
-
-Found a problem with a specific library implementation?
-
-1. **From pyplots.ai**: Navigate to the impl page (e.g., `/scatter-basic/matplotlib`) and click "report issue"
-2. **From GitHub**: Create issue using the [Report Implementation Issue](https://github.com/MarkusNeusinger/pyplots/issues/new?template=report-impl-issue.yml) template
-3. **Enter the library name** (matplotlib, seaborn, etc.)
-4. **Choose a category**: Visual, Data, Functional, or Other (optional)
+1. **From pyplots.ai**: Click "report issue" on any spec or implementation page
+2. **From GitHub**: Use the [Report Plot Issue](https://github.com/MarkusNeusinger/pyplots/issues/new?template=report-plot-issue.yml) template
+3. **Select affected libraries** (or leave empty if all/unsure)
+4. **Choose a category** (optional): Visual, Data, Functional, or Other
 5. **Describe the issue**
 
 AI validates your report and adds structured analysis. Maintainers review and approve fixes.

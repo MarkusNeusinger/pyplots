@@ -194,7 +194,7 @@ export function CatalogPage() {
           {/* Suggest spec link */}
           <Box
             component="a"
-            href={`${GITHUB_URL}/issues/new?template=spec-request.yml`}
+            href={`${GITHUB_URL}/issues/new?template=request-new-plot.yml`}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => trackEvent('suggest_spec')}

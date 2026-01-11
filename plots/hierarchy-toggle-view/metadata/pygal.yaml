@@ -1,7 +1,7 @@
 library: pygal
 specification_id: hierarchy-toggle-view
 created: '2026-01-11T10:06:23Z'
-updated: '2026-01-11T10:09:09Z'
+updated: '2026-01-11T10:14:27Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20893330162
 issue: 3697
@@ -10,33 +10,33 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/hierarchy-toggle-view/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hierarchy-toggle-view/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hierarchy-toggle-view/pygal/plot.html
-quality_score: 72
+quality_score: 68
 review:
   strengths:
-  - Creative approach using HTML with JavaScript toggle to achieve the treemap/sunburst
-    switching
-  - Good color palette with clear contrast between departments
-  - Realistic business data scenario (company budget allocation)
-  - Clean code structure following KISS principles
-  - Both PNG and HTML outputs generated
+  - Good use of company budget allocation as realistic hierarchical data
+  - Treemap rectangles properly sized proportional to values
+  - Colorblind-safe blue/yellow color scheme
+  - HTML version includes working toggle between views
+  - Canvas utilization is good with treemap filling most of the space
   weaknesses:
-  - Treemap rectangles have no visible labels - cannot identify which sub-item is
-    which without hovering (only works in HTML)
-  - Static PNG only shows treemap view, not the sunburst toggle capability
-  - Legend text is very small relative to the large canvas size
-  - Title format should be {spec-id} · {library} · pyplots.ai not Company Budget Allocation
-    · hierarchy-toggle-view · pygal · pyplots.ai
-  - The pie chart is labeled Sunburst View but it is actually a donut/pie chart, not
-    a true sunburst (which shows hierarchical rings)
-  image_description: |-
-    The plot displays a treemap visualization of "Company Budget Allocation" with the title "Company Budget Allocation · hierarchy-toggle-view · pygal · pyplots.ai" at the top. The treemap shows 4 main departments represented by nested rectangles:
-
-    - Engineering (blue/steel blue): Two large rectangles on the left side, representing Frontend, Backend, DevOps, and QA subdivisions
-    - Marketing (golden yellow): Three rectangles in the upper-middle area showing Digital, Brand, and Events
-    - Operations (light blue): Four rectangles in the lower-right showing HR, Finance, Legal, and Facilities
-    - Product (pale yellow): Three rectangles showing Research, Design, and Analytics
-
-    The legend at the bottom shows four categories: Engineering, Marketing, Operations, and Product with their respective color swatches. The rectangles are sized proportionally to budget values. The colors provide good contrast between categories. However, there are NO labels visible on any of the rectangles themselves - only the legend identifies the departments.
+  - 'Title format incorrect: includes Company Budget Allocation prefix instead of
+    spec-required format'
+  - Treemap cell labels and values not rendering in PNG output despite print_labels=True
+    and print_values=True
+  - Legend text at bottom is extremely small and unreadable
+  - Static PNG cannot demonstrate toggle functionality - consider adding annotation
+    or side-by-side layout
+  - Uses Pie/Donut chart instead of true Sunburst (pygal lacks native sunburst support)
+  image_description: 'The plot shows a treemap visualization of company budget allocation
+    data with four main departments displayed as nested rectangles. Engineering and
+    Operations sections are rendered in shades of blue (#306998, #4B8BBE), while Marketing
+    and Product are in shades of yellow (#FFD43B, #FFE873). The title at the top reads
+    "Company Budget Allocation · hierarchy-toggle-view · pygal · pyplots.ai". A legend
+    at the bottom displays the four department names (Engineering, Marketing, Operations,
+    Product), but the legend text is extremely small and barely readable. The treemap
+    cells themselves show NO labels or values - they are just colored rectangles without
+    any text identifying the sub-categories or their budget amounts. The chart fills
+    the canvas well but lacks the critical data labels that would make it useful.'
   criteria_checklist:
     visual_quality:
       score: 28
@@ -44,72 +44,70 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 5
         max: 10
-        passed: true
-        comment: Title is readable but legend text is quite small relative to canvas
-          size
+        passed: false
+        comment: Title readable, but legend text is tiny and NO labels appear on treemap
+          cells despite print_labels=True
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping elements (because there are no labels to overlap)
       - id: VQ-03
         name: Element Visibility
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Rectangles visible but NO labels on individual treemap cells - cannot
-          identify sub-items
+        passed: true
+        comment: Treemap rectangles are well-sized and visible
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Good color contrast, blue/yellow palette is colorblind-friendly
+        comment: Blue/yellow palette is colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Treemap fills most of canvas but legend is tiny and isolated at bottom
+        comment: Good canvas utilization, treemap fills most of the space
       - id: VQ-06
         name: Axis Labels
         score: 0
         max: 2
         passed: false
-        comment: N/A for treemap, but sub-item labels are missing from the visualization
+        comment: N/A for treemap, but cell labels are missing
       - id: VQ-07
         name: Grid & Legend
-        score: 1
+        score: 0
         max: 2
-        passed: true
-        comment: Legend present but very small, no grid needed
+        passed: false
+        comment: Legend text is too small to read
     spec_compliance:
-      score: 18
+      score: 15
       max: 25
       items:
       - id: SC-01
         name: Plot Type
-        score: 6
+        score: 5
         max: 8
-        passed: true
-        comment: Treemap is correct for static PNG; spec requires toggle between treemap
-          AND sunburst - only treemap shown in PNG
+        passed: false
+        comment: Treemap is correct, but spec requires BOTH treemap AND sunburst toggle
+          - PNG only shows treemap
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Values correctly mapped to rectangle areas
+        comment: Hierarchical data correctly mapped to nested rectangles
       - id: SC-03
         name: Required Features
         score: 2
         max: 5
         passed: false
-        comment: 'Missing: toggle functionality not visible in static image, no node
-          labels visible, hierarchy depth not clearly shown'
+        comment: Missing toggle functionality in static view, missing sunburst representation
       - id: SC-04
         name: Data Range
         score: 3
@@ -118,17 +116,17 @@ review:
         comment: All data visible
       - id: SC-05
         name: Legend Accuracy
-        score: 2
+        score: 0
         max: 2
-        passed: true
-        comment: Legend correctly identifies departments
+        passed: false
+        comment: Legend text too small to verify
       - id: SC-06
         name: Title Format
         score: 0
         max: 2
         passed: false
-        comment: Title uses Company Budget Allocation as prefix instead of just spec-id
-          format
+        comment: Should be hierarchy-toggle-view · pygal · pyplots.ai but has extra
+          Company Budget Allocation prefix
     data_quality:
       score: 17
       max: 20
@@ -138,22 +136,21 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Shows 4 departments with sub-items, but hierarchy visualization is
-          limited (only 2 levels clearly visible)
+        comment: Shows 4 departments with sub-items, demonstrates hierarchy well
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Company budget allocation is a realistic, neutral business scenario
+        comment: Company budget allocation is excellent real-world scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Budget values are realistic (180K-520K range)
+        comment: Budget values are realistic (hundreds of thousands)
     code_quality:
-      score: 9
+      score: 8
       max: 10
       items:
       - id: CQ-01
@@ -161,31 +158,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure
+        comment: Linear structure, no functions/classes
       - id: CQ-02
         name: Reproducibility
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Data is hardcoded (deterministic), no random seed needed
+        comment: No random seed needed (deterministic data), but data is hardcoded
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only pygal and Style imported
+        comment: Only necessary imports
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current pygal API
+        comment: Current pygal API
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves both plot.png AND plot.html (good), but PNG lacks labels
+        comment: Saves plot.png but labels not rendering
     library_features:
       score: 0
       max: 5
@@ -195,8 +192,8 @@ review:
         score: 0
         max: 5
         passed: false
-        comment: pygal Treemap is used but does not show value labels on rectangles.
-          HTML toggle is custom JavaScript, not a pygal feature.
+        comment: Uses Treemap class but fails to leverage pygal SVG interactivity
+          in static output; pie chart used instead of true sunburst
   verdict: REJECTED
 impl_tags:
   dependencies: []
@@ -204,6 +201,7 @@ impl_tags:
   - html-export
   - hover-tooltips
   patterns:
+  - data-generation
   - iteration-over-groups
   dataprep: []
   styling: []

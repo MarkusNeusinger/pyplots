@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 indicator-sma: Simple Moving Average (SMA) Indicator Chart
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2026-01-11
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 93/100 | Created: 2026-01-11
 """
 
 import matplotlib.pyplot as plt

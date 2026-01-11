@@ -137,75 +137,91 @@ class TestTrackOgImage:
         request.client.host = "127.0.0.1"
         return request
 
-    def test_creates_async_task(self, mock_request: MagicMock) -> None:
+    @pytest.fixture
+    def mock_create_task(self) -> MagicMock:
+        """Create a mock for asyncio.create_task that properly closes coroutines.
+
+        When asyncio.create_task is mocked, the coroutine passed to it is never
+        executed. This causes 'coroutine was never awaited' warnings. This fixture
+        creates a mock that closes the coroutine to prevent the warning.
+        """
+
+        def close_coroutine(coro: object) -> MagicMock:
+            """Close the coroutine to prevent 'never awaited' warning."""
+            if hasattr(coro, "close"):
+                coro.close()
+            return MagicMock()
+
+        mock = MagicMock(side_effect=close_coroutine)
+        return mock
+
+    def test_creates_async_task(self, mock_request: MagicMock, mock_create_task: MagicMock) -> None:
         """Should create background task without blocking."""
-        with patch("api.analytics.asyncio.create_task") as mock_create_task:
+        with patch("api.analytics.asyncio.create_task", mock_create_task):
             track_og_image(mock_request, page="home")
             mock_create_task.assert_called_once()
 
-    def test_home_page_url(self, mock_request: MagicMock) -> None:
+    def test_home_page_url(self, mock_request: MagicMock, mock_create_task: MagicMock) -> None:
         """Should build correct URL for home page."""
-        with patch("api.analytics.asyncio.create_task") as mock_create_task:
+        with patch("api.analytics.asyncio.create_task", mock_create_task):
             track_og_image(mock_request, page="home")
-            call_args = mock_create_task.call_args[0][0]
-            # The coroutine should be called with home URL
-            assert call_args is not None
+            # Verify create_task was called with a coroutine
+            mock_create_task.assert_called_once()
 
-    def test_catalog_page_url(self, mock_request: MagicMock) -> None:
+    def test_catalog_page_url(self, mock_request: MagicMock, mock_create_task: MagicMock) -> None:
         """Should build correct URL for catalog page."""
-        with patch("api.analytics._send_plausible_event", new_callable=AsyncMock):
-            with patch("api.analytics.asyncio.create_task") as mock_create_task:
-                track_og_image(mock_request, page="catalog")
-                mock_create_task.assert_called_once()
+        with patch("api.analytics.asyncio.create_task", mock_create_task):
+            track_og_image(mock_request, page="catalog")
+            mock_create_task.assert_called_once()
 
-    def test_spec_overview_url(self, mock_request: MagicMock) -> None:
+    def test_spec_overview_url(self, mock_request: MagicMock, mock_create_task: MagicMock) -> None:
         """Should build correct URL for spec overview."""
-        with patch("api.analytics.asyncio.create_task"):
+        with patch("api.analytics.asyncio.create_task", mock_create_task):
             # Should not raise even with spec_overview page
             track_og_image(mock_request, page="spec_overview", spec="scatter-basic")
 
-    def test_spec_detail_url(self, mock_request: MagicMock) -> None:
+    def test_spec_detail_url(self, mock_request: MagicMock, mock_create_task: MagicMock) -> None:
         """Should build correct URL for spec detail."""
-        with patch("api.analytics.asyncio.create_task"):
+        with patch("api.analytics.asyncio.create_task", mock_create_task):
             track_og_image(mock_request, page="spec_detail", spec="scatter-basic", library="matplotlib")
 
-    def test_fallback_url_when_spec_none(self, mock_request: MagicMock) -> None:
+    def test_fallback_url_when_spec_none(self, mock_request: MagicMock, mock_create_task: MagicMock) -> None:
         """Should fallback to home URL when spec is None for spec-based page."""
-        with patch("api.analytics.asyncio.create_task"):
+        with patch("api.analytics.asyncio.create_task", mock_create_task):
             # Should not raise - falls back to home URL
             track_og_image(mock_request, page="spec_overview", spec=None)
 
-    def test_includes_filter_props(self, mock_request: MagicMock) -> None:
+    def test_includes_filter_props(self, mock_request: MagicMock, mock_create_task: MagicMock) -> None:
         """Should include filter parameters in props."""
-        with patch("api.analytics.asyncio.create_task"):
+        with patch("api.analytics.asyncio.create_task", mock_create_task):
             track_og_image(mock_request, page="home", filters={"lib": "plotly", "dom": "statistics"})
 
-    def test_uses_x_forwarded_for(self) -> None:
+    def test_uses_x_forwarded_for(self, mock_create_task: MagicMock) -> None:
         """Should use X-Forwarded-For header for client IP."""
         request = MagicMock()
         request.headers = {"user-agent": "Twitterbot/1.0", "x-forwarded-for": "5.6.7.8"}
         request.client = None
 
-        with patch("api.analytics.asyncio.create_task"):
+        with patch("api.analytics.asyncio.create_task", mock_create_task):
             track_og_image(request, page="home")
 
-    def test_fallback_to_client_host(self) -> None:
+    def test_fallback_to_client_host(self, mock_create_task: MagicMock) -> None:
         """Should fallback to client.host when X-Forwarded-For not present."""
         request = MagicMock()
         request.headers = {"user-agent": "Twitterbot/1.0"}
         request.client = MagicMock()
         request.client.host = "10.0.0.1"
 
-        with patch("api.analytics.asyncio.create_task"):
+        with patch("api.analytics.asyncio.create_task", mock_create_task):
             track_og_image(request, page="home")
 
-    def test_handles_missing_client(self) -> None:
+    def test_handles_missing_client(self, mock_create_task: MagicMock) -> None:
         """Should handle missing client gracefully."""
         request = MagicMock()
         request.headers = {"user-agent": "Twitterbot/1.0"}
         request.client = None
 
-        with patch("api.analytics.asyncio.create_task"):
+        with patch("api.analytics.asyncio.create_task", mock_create_task):
             track_og_image(request, page="home")
 
 

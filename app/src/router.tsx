@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Layout, AppDataProvider } from './components/Layout';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { HomePage } from './pages/HomePage';
 import { SpecPage } from './pages/SpecPage';
 import { CatalogPage } from './pages/CatalogPage';
@@ -27,9 +28,11 @@ const router = createBrowserRouter([
 export function AppRouter() {
   return (
     <HelmetProvider>
-      <AppDataProvider>
-        <RouterProvider router={router} />
-      </AppDataProvider>
+      <ErrorBoundary>
+        <AppDataProvider>
+          <RouterProvider router={router} />
+        </AppDataProvider>
+      </ErrorBoundary>
     </HelmetProvider>
   );
 }

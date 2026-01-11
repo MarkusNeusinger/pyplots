@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 ternary-density: Ternary Density Plot
-Library: pygal | Python 3.13
-Quality: pending | Created: 2026-01-11
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-11
 """
 
 import math

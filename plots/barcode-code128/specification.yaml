@@ -1,0 +1,27 @@
+# Specification-level metadata for barcode-code128
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: barcode-code128
+title: Code 128 Barcode
+
+# Specification tracking
+created: 2026-01-11T22:58:11Z
+updated: null
+issue: 3809
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - barcode
+  data_type:
+    - text
+    - categorical
+  domain:
+    - logistics
+    - business
+    - healthcare
+  features:
+    - basic
+    - encoded

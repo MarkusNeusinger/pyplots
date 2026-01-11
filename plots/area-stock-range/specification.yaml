@@ -1,0 +1,28 @@
+# Specification-level metadata for area-stock-range
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: area-stock-range
+title: Stock Area Chart with Range Selector
+
+# Specification tracking
+created: 2026-01-11T09:18:41Z
+updated: null
+issue: 3701
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - area
+    - line
+  data_type:
+    - timeseries
+    - numeric
+  domain:
+    - finance
+    - business
+  features:
+    - interactive
+    - temporal
+    - range-selector

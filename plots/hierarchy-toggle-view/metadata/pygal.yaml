@@ -1,7 +1,7 @@
 library: pygal
 specification_id: hierarchy-toggle-view
 created: '2026-01-11T21:21:03Z'
-updated: '2026-01-11T21:29:22Z'
+updated: '2026-01-11T21:38:31Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20901984138
 issue: 3697
@@ -13,57 +13,55 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/hierarchy-togg
 quality_score: 45
 review:
   strengths:
-  - Correct title format following pyplots.ai convention
-  - Good colorblind-safe color palette using Python blue/yellow and complementary
-    colors
-  - Creative approach to show toggle UI in static image
-  - HTML output includes actual interactive toggle functionality
-  - Well-structured hierarchical data with realistic company budget scenario
+  - Correct title format following spec-id · library · pyplots.ai convention
+  - Good colorblind-safe color palette (blue, yellow, green, orange) with consistent
+    colors across views
+  - Realistic company budget allocation data with appropriate hierarchical structure
+    (4 departments, 14 sub-departments)
+  - Interactive HTML version implements proper toggle functionality with JavaScript
+  - Sunburst/donut view correctly shows proportional department allocations
   weaknesses:
-  - 'CRITICAL: Treemap view is completely empty/blank - the pygal.Treemap render_to_png()
-    produces no visible content'
-  - Sunburst (donut) chart labels are too small and some get truncated at edges
-  - Left half of the image is wasted space due to missing treemap
-  - The donut chart only shows top-level departments, not the hierarchical sub-departments
-    that would make it a true sunburst
-  - Legends are isolated far from their respective charts
-  image_description: 'The image displays a side-by-side layout at 4800×2700 pixels
-    with a main title "hierarchy-toggle-view · pygal · pyplots.ai" in Python blue
-    (#306998) at the top, followed by a gray subtitle "Technology Company Budget Allocation".
-    Below is a toggle UI element with "Treemap" (selected/highlighted in blue) and
-    "Sunburst" buttons. The left side labeled "Treemap View" is completely empty/blank
-    - no treemap visualization is rendered. The right side shows a "Sunburst View"
-    which is actually a donut chart (pie with inner radius) displaying 4 segments:
-    Engineering (blue, ~155M), Sales (yellow, ~115M), Operations (green, ~80M), and
-    HR (orange, ~65M). Text labels appear inside/near the donut segments showing department
-    names and values but are quite small and some are truncated. Both legends at the
-    bottom show the 4 department categories with color squares.'
+  - 'CRITICAL: The treemap view (left side) is completely blank - the HorizontalBar
+    chart did not render to the PNG composite image'
+  - Only ~25% of the 4800x2700 canvas is utilized (sunburst only); massive empty white
+    space on left
+  - Labels on sunburst are cramped and partially cut off
+  - Code structure violates KISS principle with complex PIL composition and multiple
+    chart renders
+  - The spec requires toggling between treemap and sunburst, but PNG shows both simultaneously
+    (though only one renders)
+  image_description: |-
+    The image displays a side-by-side layout at 4800×2700 pixels. The main title "hierarchy-toggle-view · pygal · pyplots.ai" appears at the top in blue, with a subtitle "Technology Company Budget Allocation" below it. A toggle switch UI element shows "Treemap" and "Sunburst" buttons.
+
+    CRITICAL ISSUE: The left side labeled "Treemap View" is completely empty - there is no horizontal bar chart or any visualization rendered. Only the "Treemap View" title text is visible, with the entire chart area being blank white space.
+
+    The right side labeled "Sunburst View" shows a donut/pie chart with four colored segments representing departments: Engineering (blue, ~155M), Sales (yellow, ~115M), Operations (green, ~80M), and HR (orange, ~65M). Each segment has label text showing department name and sub-department breakdowns (e.g., "Engineering ($155M):Frontend: 45, Backend: 55..." etc.). The donut chart has an inner radius creating the ring shape.
+
+    At the bottom, a legend shows four department names with colored squares. The sunburst visualization correctly shows hierarchical data, but the treemap side being completely absent defeats the core purpose of this spec - allowing users to toggle between two views.
   criteria_checklist:
     visual_quality:
-      score: 18
+      score: 22
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 5
+        score: 7
         max: 10
-        passed: false
-        comment: Main title and toggle readable, but segment labels in donut are very
-          small and hard to read
+        passed: true
+        comment: Title and subtitle readable. Sunburst labels are small and cramped,
+          some text runs together
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 8
         passed: false
-        comment: Segment labels overlap or get cut off at edges; Engineering label
-          is truncated
+        comment: Sunburst labels overlap and are hard to read, text gets cut off
       - id: VQ-03
         name: Element Visibility
-        score: 2
+        score: 4
         max: 8
         passed: false
-        comment: 'CRITICAL: Treemap is completely invisible/missing; only donut chart
-          renders'
+        comment: Sunburst donut visible but treemap is COMPLETELY MISSING
       - id: VQ-04
         name: Color Accessibility
         score: 5
@@ -75,20 +73,19 @@ review:
         score: 0
         max: 5
         passed: false
-        comment: Left half of image is completely empty; massive wasted space due
-          to missing treemap
+        comment: 'SEVERE: Left half of canvas is empty, only ~25% of canvas utilized'
       - id: VQ-06
         name: Axis Labels
-        score: 2
-        max: 2
-        passed: true
-        comment: Toggle and chart titles present
-      - id: VQ-07
-        name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: Legends are far from charts, isolated at bottom
+        comment: N/A for pie chart, no labels on missing treemap side
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Bottom legend is clear and readable
     spec_compliance:
       score: 12
       max: 25
@@ -98,116 +95,116 @@ review:
         score: 3
         max: 8
         passed: false
-        comment: Only sunburst (donut) is shown; treemap completely missing from render
+        comment: Only sunburst implemented; treemap is missing entirely. Spec requires
+          BOTH views
       - id: SC-02
         name: Data Mapping
-        score: 3
+        score: 5
         max: 5
-        passed: false
-        comment: Donut shows department hierarchy but no sub-department breakdown
-          visible in visualization
+        passed: true
+        comment: Data correctly mapped for the sunburst that exists
       - id: SC-03
         name: Required Features
         score: 2
         max: 5
         passed: false
-        comment: Toggle UI present but only one view actually works; no toggle functionality
-          in static PNG
+        comment: Toggle UI present but only one view works
       - id: SC-04
         name: Data Range
-        score: 2
+        score: 0
         max: 3
-        passed: true
-        comment: Values displayed for departments
+        passed: false
+        comment: Cannot evaluate treemap; sunburst shows all data
       - id: SC-05
         name: Legend Accuracy
-        score: 1
+        score: 0
         max: 2
         passed: false
-        comment: Legends present but duplicated for both views
+        comment: Legend duplicated for both views but treemap missing
       - id: SC-06
         name: Title Format
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Title format correct but no spec-id in subtitle
+        passed: true
+        comment: 'Correct format: hierarchy-toggle-view · pygal · pyplots.ai'
     data_quality:
-      score: 12
+      score: 16
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Shows department-level hierarchy but sub-departments only in labels,
-          not visual structure
+        passed: true
+        comment: Shows hierarchy with 4 departments and 14 sub-departments across
+          2-3 levels
       - id: DQ-02
         name: Realistic Context
-        score: 5
+        score: 7
         max: 7
         passed: true
-        comment: Technology company budget is plausible and neutral scenario
+        comment: Technology company budget allocation is realistic and neutral
       - id: DQ-03
         name: Appropriate Scale
         score: 3
         max: 5
         passed: true
-        comment: Values in $M range are reasonable for company budget
+        comment: Values ($15M-$155M) are plausible for company budgets
     code_quality:
-      score: 8
+      score: 5
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
+        score: 0
         max: 3
         passed: false
-        comment: Uses PIL composition which adds complexity; slightly complex structure
+        comment: Uses functions via PIL ImageDraw, complex composition logic
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Deterministic data, no random seed needed
+        comment: Data is deterministic (no random seed needed)
       - id: CQ-03
         name: Clean Imports
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: All imports are used
+        passed: false
+        comment: Imports used but PIL adds complexity
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Current pygal API used
+        comment: Current APIs used
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves plot.png but treemap fails to render content
+        comment: Saves plot.png but treemap portion is empty
     library_features:
-      score: 3
+      score: 0
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 0
         max: 5
         passed: false
-        comment: Uses pygal Treemap and Pie with inner_radius for donut; HTML export
-          with interactivity, but treemap rendering fails
+        comment: pygal.HorizontalBar render_to_png() fails to produce output; only
+          PIL-composed version shows anything
   verdict: REJECTED
 impl_tags:
   dependencies:
   - pillow
   techniques:
   - html-export
-  - subplots
+  - annotations
   patterns:
   - data-generation
   - iteration-over-groups
   dataprep: []
-  styling: []
+  styling:
+  - edge-highlighting

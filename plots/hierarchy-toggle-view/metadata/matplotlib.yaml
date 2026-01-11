@@ -1,0 +1,221 @@
+library: matplotlib
+specification_id: hierarchy-toggle-view
+created: '2026-01-11T09:31:15Z'
+updated: '2026-01-11T09:55:23Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20892891338
+issue: 3697
+python_version: 3.13.11
+library_version: 3.10.8
+preview_url: https://storage.googleapis.com/pyplots-images/plots/hierarchy-toggle-view/matplotlib/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hierarchy-toggle-view/matplotlib/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Creative dual-view solution showing both treemap and sunburst representations
+    side by side
+  - Excellent use of matplotlib FancyBboxPatch and path_effects for professional toggle
+    UI
+  - Consistent color scheme across both views enabling easy cross-reference
+  - Smart label truncation prevents text overflow in constrained spaces
+  - Good canvas utilization with both charts filling their allocated spaces well
+  - Clean hierarchical data structure that is easy to understand
+  weaknesses:
+  - Toggle control is purely visual/decorative since matplotlib does not support true
+    interactivity (acceptable limitation)
+  - Outer ring sunburst labels could benefit from slightly larger font for smallest
+    segments
+  image_description: The plot displays a dual-view hierarchical visualization of a
+    company organizational structure with four main departments (Engineering, Sales,
+    Operations, HR) and their sub-units. The left side shows a Treemap View with nested
+    rectangles where area is proportional to values - Engineering (blue) subdivisions
+    (Frontend 45, Backend 55, DevOps 30, QA 25), Sales (yellow) subdivisions (Domestic
+    40, Intl 50, Partners 25), Operations (green) subdivisions (Logist. 35, Facil.
+    20, IT 25), and HR (orange) subdivisions (Recruiting 30, Training 20, Benefits
+    15). The right side shows a Sunburst View with the same data as concentric rings
+    - inner ring shows main departments with large readable labels, outer ring shows
+    sub-departments. A toggle control UI at the top displays "Toggle View:" with Treemap
+    button highlighted (blue) and Sunburst button grayed out. The main title "hierarchy-toggle-view
+    · matplotlib · pyplots.ai" appears at the top. A four-color legend at the bottom
+    identifies Engineering (blue), Sales (yellow), Operations (green), and HR (orange).
+    Colors are consistent across both views enabling easy cross-reference.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title large and readable, view subtitles clear, toggle labels readable,
+          all treemap and sunburst labels legible with path effects. Some outer ring
+          labels slightly small.
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, labels well-positioned within their
+          segments
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Treemap rectangles and sunburst wedges appropriately sized, good
+          canvas utilization on both views
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Colorblind-safe palette: Python Blue, yellow, sea green, burnt orange
+          - all distinguishable'
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good side-by-side layout with toggle control, legend at bottom. Toggle
+          area could be tighter.
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: N/A for treemap/sunburst, but labels are descriptive with values
+          shown
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Legend clear and well-positioned, no grid needed. Legend font could
+          be slightly larger.
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correctly implements both treemap and sunburst views as specified
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Area proportional to values (treemap), angle proportional to values
+          (sunburst)
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Toggle control present, consistent colors, both views in same container.
+          True interactivity not possible in static matplotlib.
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All 17 nodes visible and labeled appropriately
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies four departments with accurate colors
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: Uses correct format hierarchy-toggle-view · matplotlib · pyplots.ai
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows hierarchical structure well with parent-child relationships,
+          varying sizes. Good range of values (15-55).
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Company departments and sub-units is a real, neutral business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values plausible for organizational sizing metrics
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Simple script structure: imports, data, build hierarchy, plot, save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses deterministic data (no random generation)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports used (matplotlib.pyplot, patches, path_effects, numpy)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: No deprecated functions
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves as plot.png (correct filename)
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of FancyBboxPatch, path_effects, gridspec, pie chart
+          with custom wedge properties
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - patches
+  - annotations
+  - custom-legend
+  patterns:
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - minimal-chrome
+  - edge-highlighting

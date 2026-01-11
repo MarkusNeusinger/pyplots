@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 windbarb-basic: Wind Barb Plot for Meteorological Data
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-11

@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: windbarb-basic
 created: '2026-01-11T10:06:08Z'
-updated: '2026-01-11T10:08:39Z'
+updated: '2026-01-11T10:14:25Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20893327536
 issue: 3694
@@ -13,30 +13,36 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/windbarb-basic
 quality_score: 88
 review:
   strengths:
-  - Excellent manual implementation of wind barb notation with correct meteorological
-    convention (barbs point FROM wind direction)
-  - Clean grid layout with appropriate spacing prevents overlap
-  - Good use of Bokeh segment glyph for efficient rendering of all barb components
-  - Realistic weather pattern simulation with spatial variation
-  - Station markers provide clear reference points
+  - Excellent implementation of wind barb meteorological notation with proper staff,
+    half barbs, and full barbs
+  - 'Good use of Bokeh-specific features: ColumnDataSource, HoverTool, Label annotations'
+  - Clean, readable code following KISS principles with fixed random seed
+  - Proper handling of calm wind conditions with larger open circles
+  - Well-spaced grid prevents barb overlap
+  - Realistic meteorological data scenario with spatial wind variation
   weaknesses:
-  - Missing legend explaining wind barb notation (half=5kt, full=10kt, pennant=50kt)
-  - No demonstration of calm wind symbol (open circle without staff for < 2.5 knots)
-    mentioned in spec
-  - Could benefit from Bokeh interactive features like HoverTool showing wind speed/direction
-  image_description: The plot displays a 6x5 grid of wind barbs on a light gray background
-    (#f8f9fa). Each barb consists of a staff (line) pointing in the direction from
-    which the wind blows, with short and long barbs attached to indicate wind speed.
-    Station markers are shown as white circles with blue (#306998) outlines at each
-    observation point. The barbs vary in direction and the number of attached lines
-    based on the simulated wind data. The title "windbarb-basic · bokeh · pyplots.ai"
-    appears in the upper left. Axis labels read "X Position (grid units)" and "Y Position
-    (grid units)". The grid lines are subtle with dashed styling. Wind directions
-    vary across the domain showing a realistic weather pattern with stronger westerly
-    winds in the center and varying meridional components.
+  - Legend in upper right corner is positioned outside the visible plot area (x=11.0
+    when x_range ends at 12, but labels extend beyond)
+  - No wind speeds >=50 knots to demonstrate pennant (triangle) notation mentioned
+    in spec
+  - Hover tooltips only attach to station markers, not to the barb segments themselves
+  image_description: The plot displays a 6x5 grid (30 total positions) of wind barbs
+    on a light gray (#f8f9fa) background. Each wind barb consists of a blue (#306998)
+    staff pointing in the direction from which the wind blows, with short barbs (5
+    knots) and full barbs (10 knots) attached to indicate wind speed. Station markers
+    appear as white circles with blue outlines at each observation point. The wind
+    pattern shows variation across the domain - stronger winds with multiple barbs
+    in some areas, weaker winds with single barbs in others. The four corners show
+    calm wind conditions represented by larger open circles without staffs. The title
+    "windbarb-basic · bokeh · pyplots.ai" appears at the top left. Axes are labeled
+    "X Position (grid units)" and "Y Position (grid units)" with tick marks at 0,
+    2, 4, 6, 8, 10 on X and 0, 2, 4, 6, 8 on Y. A subtle dashed grid is visible with
+    alpha 0.3. A legend key labeled "Wind Barb Key" with items for calm, half barb,
+    full barb, and pennant appears in the upper right but extends beyond the visible
+    plot area.
   criteria_checklist:
     visual_quality:
-      score: 36
+      score: 35
       max: 40
       items:
       - id: VQ-01
@@ -44,48 +50,47 @@ review:
         score: 9
         max: 10
         passed: true
-        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt. All readable
-          but title could be slightly larger.
+        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt - all readable
+          but title could be slightly larger
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping elements. Barbs are well-spaced on the grid.
+        comment: No overlapping elements, barbs well-spaced on grid
       - id: VQ-03
         name: Element Visibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Barbs visible with line_width=3, but some half-barb-only stations
-          appear slightly thin.
+        comment: Barbs clearly visible with appropriate line width (3), station markers
+          sized well
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Single color scheme (#306998 blue) on light background provides excellent
-          contrast.
+        comment: Single blue color scheme, good contrast against light background
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 3
         max: 5
-        passed: true
-        comment: Good canvas utilization with appropriate margins.
+        passed: false
+        comment: Good canvas use but legend in upper right is cut off at edge of plot
+          area
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
         comment: 'Descriptive labels with units: X Position (grid units), Y Position
-          (grid units).'
+          (grid units)'
       - id: VQ-07
         name: Grid & Legend
-        score: 1
+        score: 0
         max: 2
         passed: false
-        comment: Grid has good alpha and dashed style, but no legend explaining barb
-          notation.
+        comment: Grid is subtle but legend is cut off at edge, not fully visible
     spec_compliance:
       score: 23
       max: 25
@@ -95,62 +100,62 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct wind barb plot with staff, half barbs, full barbs implementation.
+        comment: Correct wind barb implementation with staffs and barbs
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
         comment: X/Y positions correctly mapped, u/v components properly converted
-          to barbs.
+          to barbs
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
-        passed: true
-        comment: Has staff, half barbs, full barbs, pennants. Missing calm wind circles.
+        passed: false
+        comment: Has barbs for different speeds and calm symbols, but pennants (50
+          kt) not demonstrated
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axis ranges.
+        comment: All data visible within axis range
       - id: SC-05
         name: Legend Accuracy
         score: 1
         max: 2
         passed: false
-        comment: No legend present to explain barb notation.
+        comment: Legend content correct but not fully visible
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Correctly uses windbarb-basic · bokeh · pyplots.ai format.
+        comment: 'Correct format: windbarb-basic · bokeh · pyplots.ai'
     data_quality:
-      score: 17
+      score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
         score: 6
         max: 8
-        passed: true
-        comment: Shows varying wind speeds and directions. Has half barbs, full barbs,
-          pennant code. No calm winds demonstrated.
+        passed: false
+        comment: Shows half barbs, full barbs, calm winds, varying directions; missing
+          pennants (50 kt)
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Weather station grid with spatially varying winds is realistic for
-          synoptic observations.
+        comment: Realistic weather station grid scenario with plausible wind patterns
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Wind speeds in 10-30 knot range are realistic for surface winds.
+        comment: Wind speeds in realistic 0-30 knot range for surface observations
     code_quality:
       score: 9
       max: 10
@@ -160,32 +165,31 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Simple structure: imports, data, barb calculation, figure, plot,
-          save.'
+        comment: 'Linear flow: imports → data → plot → save, no functions/classes'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42) for reproducible results.
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used.
+        comment: All imports used
       - id: CQ-04
         name: No Deprecated API
-        score: 0
-        max: 1
-        passed: false
-        comment: Using from math import pi when numpy already provides np.pi.
-      - id: CQ-05
-        name: Output Correct
         score: 1
         max: 1
         passed: true
-        comment: Correctly exports to plot.png.
+        comment: Uses current Bokeh 3.x API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: true
+        comment: Saves as plot.png
     library_features:
       score: 3
       max: 5
@@ -194,14 +198,16 @@ review:
         name: Distinctive Features
         score: 3
         max: 5
-        passed: true
-        comment: Uses ColumnDataSource and segment renderer. Could add HoverTool for
-          interactivity.
+        passed: false
+        comment: Uses ColumnDataSource, HoverTool, Label annotations, segment glyph;
+          good but hover only on markers not barbs
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
+  - hover-tooltips
   - annotations
+  - manual-ticks
   patterns:
   - data-generation
   - columndatasource
@@ -209,3 +215,4 @@ impl_tags:
   dataprep: []
   styling:
   - grid-styling
+  - alpha-blending

@@ -1,0 +1,29 @@
+# Specification-level metadata for line-range-buttons
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: line-range-buttons
+title: Line Chart with Range Selector Buttons
+
+# Specification tracking
+created: 2026-01-11T22:53:07Z
+updated: null
+issue: 3786
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - line
+  data_type:
+    - timeseries
+    - datetime
+    - numeric
+  domain:
+    - finance
+    - business
+    - general
+  features:
+    - interactive
+    - temporal
+    - navigation

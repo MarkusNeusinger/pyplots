@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 area-stock-range: Stock Area Chart with Range Selector
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2026-01-11
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-11
 """
 
 import matplotlib.pyplot as plt

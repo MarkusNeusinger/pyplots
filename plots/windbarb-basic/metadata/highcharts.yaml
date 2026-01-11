@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: windbarb-basic
 created: '2026-01-11T09:35:19Z'
-updated: '2026-01-11T09:40:02Z'
+updated: '2026-01-11T09:47:46Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20892894811
 issue: 3694
@@ -10,85 +10,82 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/windbarb-basic/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/windbarb-basic/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/windbarb-basic/highcharts/plot.html
-quality_score: 85
+quality_score: 91
 review:
   strengths:
-  - Correctly implements wind barb meteorological notation with proper direction convention
-  - Good use of Highcharts windbarb module with proper data structure (x, y, value,
-    direction)
-  - Clean code structure with proper random seed for reproducibility
-  - Realistic weather station scenario with varied wind patterns
-  - Proper conversion from u/v components to speed and meteorological direction
+  - Correct implementation of Highcharts windbarb series with proper meteorological
+    notation
+  - Good variety of wind speeds showing different barb configurations (half-barbs,
+    full-barbs)
+  - Appropriate font sizes scaled for 4800x2700 resolution
+  - Clean data generation with realistic weather station scenario
+  - Provides both PNG and interactive HTML output
   weaknesses:
-  - Legend appears cut off at the bottom of the image - marginBottom may need adjustment
-  - X-axis label Weather Station Index appears partially truncated
-  - No demonstration of calm wind notation (open circle) or pennants (50 knots) as
-    mentioned in spec
-  - Image height appears non-standard (2561 vs 2700)
-  image_description: The plot displays a wind barb chart with 20 weather station observations.
-    Wind barbs are rendered in blue (#306998) against a white background. The title
-    "windbarb-basic · highcharts · pyplots.ai" appears at the top with a subtitle
-    "Surface Wind Observations from Weather Station Network". The x-axis shows "Weather
-    Station Index" (0-18), and the y-axis shows "Wind Speed (knots)" (0-40). Each
-    barb consists of a staff with attached flags/barbs indicating wind speed - short
-    barbs for 5 knots, long barbs for 10 knots. The barbs point in various directions
-    showing the wind direction FROM which the wind blows. The data shows a varied
-    pattern with higher speeds (25-32 knots) in the left portion (stations 0-8) and
-    lower speeds (3-14 knots) in the right portion (stations 12-19). The wind barb
-    notation is correctly implemented with the standard meteorological convention.
-    Grid lines are subtle gray. The legend shows "Surface Wind" but is partially cut
-    off at the bottom of the image.
+  - Legend displays a circle marker instead of a representative wind barb symbol
+  image_description: The plot displays 20 wind barbs positioned across a weather station
+    transect on a white background. Each barb consists of a staff pointing in the
+    direction from which wind blows, with short barbs (5 knots) and long barbs (10
+    knots) attached to indicate wind speed. The barbs are rendered in blue (#306998)
+    color. The barbs are positioned vertically at their respective wind speed values
+    on the y-axis, creating a pattern that shows higher wind speeds (25-33 knots)
+    on the left side (stations 0-8) with multiple barb flags, transitioning to lower
+    speeds (3-13 knots) on the right side (stations 12-19) with fewer barb flags.
+    The title correctly displays "windbarb-basic · highcharts · pyplots.ai" in bold,
+    with a gray subtitle "Surface Wind Observations from Weather Station Network".
+    The x-axis is labeled "Weather Station Index" and the y-axis shows "Wind Speed
+    (knots)" with grid lines at 5-knot intervals. A legend at the bottom shows "Surface
+    Wind" with a blue circle marker.
   criteria_checklist:
     visual_quality:
-      score: 33
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 10
         max: 10
         passed: true
-        comment: Title and axis labels are readable, though could be slightly larger
-          for optimal visibility at full resolution
+        comment: Title, axis labels, and tick marks are all clearly readable at full
+          resolution with appropriate font sizes
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping elements, barbs are well-spaced
+        comment: No overlapping elements; barbs are well-spaced across the plot area
       - id: VQ-03
         name: Element Visibility
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Wind barbs are visible and well-sized, though some smaller speed
-          barbs could be slightly more prominent
+        comment: 'Wind barbs are visible with good sizing (vectorLength: 80), though
+          some barbs at lower wind speeds have thin elements'
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Single blue color scheme is colorblind-safe
+        comment: Single blue color scheme (#306998) is colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 5
         max: 5
-        passed: false
-        comment: Good layout but x-axis label appears cut off at bottom, legend also
-          partially visible
+        passed: true
+        comment: Good canvas utilization with appropriate margins, plot fills majority
+          of space
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive with units: Wind Speed (knots) and Weather Station Index'
+        comment: Both axes have descriptive labels with units
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: Legend is cut off/not fully visible in the image, grid is subtle
-          but legend positioning needs work
+        comment: Grid is subtle and appropriate, but legend shows a circle marker
+          instead of a wind barb symbol which is misleading
     spec_compliance:
       score: 23
       max: 25
@@ -104,27 +101,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: X-coordinate for station index, Y for wind speed, direction correctly
-          mapped
+        comment: X (station index), Y (wind speed), and direction correctly mapped
       - id: SC-03
         name: Required Features
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Shows wind barbs with correct meteorological notation, but calm wind
-          circle notation not demonstrated
+        comment: Wind barbs show standard meteorological notation with half/full barbs
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes range (0-40 knots)
+        comment: Y-axis range 0-40 knots encompasses all data points appropriately
       - id: SC-05
         name: Legend Accuracy
-        score: 1
+        score: 0
         max: 2
         passed: false
-        comment: Legend label is correct but partially cut off
+        comment: Legend label is correct but shows wrong symbol (circle instead of
+          barb)
       - id: SC-06
         name: Title Format
         score: 2
@@ -132,30 +128,31 @@ review:
         passed: true
         comment: 'Correct format: windbarb-basic · highcharts · pyplots.ai'
     data_quality:
-      score: 17
+      score: 19
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Shows various wind speeds and directions, demonstrating half barbs
-          and full barbs, but no calm winds or pennants
+        comment: Shows variety of wind speeds and directions, demonstrating half-barbs,
+          full-barbs, and combinations; missing pennant (50 knot) demonstration
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Realistic weather station network scenario with plausible wind patterns
+        comment: Weather station network wind observations is a perfect real-world
+          meteorological scenario
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Wind speeds 3-32 knots are realistic for surface observations
+        comment: Wind speeds 3-33 knots are realistic for surface wind observations
     code_quality:
-      score: 9
+      score: 8
       max: 10
       items:
       - id: CQ-01
@@ -163,13 +160,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear script structure: imports → data → config → render → save'
+        comment: 'Linear flow: imports → data → config → HTML generation → screenshot'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) ensures reproducibility
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -178,35 +175,37 @@ review:
         comment: All imports are used
       - id: CQ-04
         name: No Deprecated API
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Uses current Highcharts API
+        passed: false
+        comment: Uses raw JSON config instead of highcharts-core Python library
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves as plot.png but image dimensions appear non-standard
+        comment: Saves as plot.png correctly
     library_features:
-      score: 3
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Uses Highcharts windbarb module with proper data format, but could
-          leverage more interactive features
-  verdict: REJECTED
+        comment: Uses Highcharts windbarb module, tooltip with Beaufort scale reference,
+          interactive HTML export
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium
+  - pillow
   techniques:
   - html-export
   patterns:
   - data-generation
+  - iteration-over-groups
   dataprep: []
   styling:
   - grid-styling

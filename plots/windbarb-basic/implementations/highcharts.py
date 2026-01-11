@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 windbarb-basic: Wind Barb Plot for Meteorological Data
 Library: highcharts unknown | Python 3.13.11
-Quality: 85/100 | Created: 2026-01-11
+Quality: 91/100 | Created: 2026-01-11
 """
 
 import json

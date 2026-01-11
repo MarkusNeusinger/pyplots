@@ -1,0 +1,213 @@
+library: letsplot
+specification_id: area-stock-range
+created: '2026-01-11T09:34:00Z'
+updated: '2026-01-11T09:56:09Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20892896043
+issue: 3701
+python_version: 3.13.11
+library_version: 4.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stock-range/letsplot/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stock-range/letsplot/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stock-range/letsplot/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent multi-panel composition using gggrid with proper height ratios
+  - Creative gradient fill effect using layered ribbons with increasing alpha values
+  - Interactive tooltips configured for HTML export
+  - Proper use of geometric Brownian motion for realistic stock price simulation
+  - Clean separation between main chart, navigator, and range selector panels
+  - Good visual hierarchy with the active 6M button highlighted
+  weaknesses:
+  - Grid lines slightly too prominent (alpha 0.4 vs recommended 0.2-0.3)
+  - Gradient bands create visible horizontal lines at band boundaries rather than
+    smooth transition
+  - No actual interactivity for range selection (static representation of what would
+    be interactive)
+  image_description: |-
+    The plot displays a stock area chart with range selector consisting of three vertically stacked panels:
+
+    1. Main chart (top): Shows 6 months of stock price data (Jul-Dec) with a gradient-filled area in blue (#306998). The gradient effect transitions from lighter at the bottom to darker near the price line. A solid blue line traces the price on top. Y-axis labeled "Price (USD)" ranges from ~180 to ~235. X-axis shows month labels (Jul, Aug, Sep, Oct, Nov, Dec).
+
+    2. Navigator chart (middle): A mini overview chart showing the full 2-year price history with a lighter blue filled area. A selection rectangle highlights the currently displayed 6-month range in the rightmost portion.
+
+    3. Range selector buttons (bottom): Six styled buttons labeled "1M", "3M", "6M", "1Y", "YTD", "All" with "6M" highlighted in blue as the active selection.
+
+    The title "area-stock-range · letsplot · pyplots.ai" appears at the top. The overall color scheme uses Python blue (#306998) consistently. Grid lines are subtle gray. The layout is well-proportioned with the main chart taking most vertical space.
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: 'All text clearly readable: title bold and prominent, axis labels
+          20pt, tick labels 16pt, button labels legible'
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements in any of the three panels
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Line and gradient bands visible; gradient effect emphasizes price
+          levels though bands create visible layering lines
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single-hue blue scheme is colorblind-safe with good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Three-panel layout well-proportioned with main chart dominant; buttons
+          panel slightly small
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Price (USD) includes units, Date is descriptive
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid slightly too prominent (alpha 0.4 vs recommended 0.2-0.3)
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct filled area chart for stock price visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Date on X-axis, price on Y-axis correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has preset range buttons, mini chart navigator, gradient fill; missing
+          custom date selection
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within appropriate axis limits with padding
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single series
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: Uses correct format but with unicode dot instead of middot character
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows price trends, uptrends/downtrends, volatility, realistic movements
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Stock price with geometric Brownian motion, appropriate for financial
+          dashboards
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Prices $150-230 realistic for stocks; 2 years trading days sensible
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 2
+        max: 3
+        passed: true
+        comment: Mostly flat structure but gradient bands add complexity; no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42) for reproducible generation
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: 'All imports used: numpy, pandas, lets_plot, ggsave'
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current lets-plot API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of gggrid, geom_ribbon, geom_rect, geom_tile, layer_tooltips,
+          scale_identity functions
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - hover-tooltips
+  - html-export
+  - subplots
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - time-series
+  styling:
+  - gradient-fill
+  - alpha-blending
+  - grid-styling

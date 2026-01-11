@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hierarchy-toggle-view: Interactive Treemap-Sunburst Toggle View
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-11
@@ -26,7 +26,6 @@ from lets_plot import (
     scale_x_continuous,
     scale_y_continuous,
     theme,
-    theme_void,
 )
 from lets_plot.export import ggsave
 
@@ -36,35 +35,26 @@ LetsPlot.setup_html()
 np.random.seed(42)
 
 # Hierarchical data - Company budget allocation
-# Structure follows spec: id, parent, label, value
 hierarchy_data = {
     "root": {"id": "root", "parent": None, "label": "Company", "value": 0},
-    # Level 1 - Departments
     "engineering": {"id": "engineering", "parent": "root", "label": "Engineering", "value": 450},
     "sales": {"id": "sales", "parent": "root", "label": "Sales", "value": 380},
     "marketing": {"id": "marketing", "parent": "root", "label": "Marketing", "value": 220},
     "operations": {"id": "operations", "parent": "root", "label": "Operations", "value": 150},
-    # Level 2 - Engineering teams
     "eng_backend": {"id": "eng_backend", "parent": "engineering", "label": "Backend", "value": 180},
     "eng_frontend": {"id": "eng_frontend", "parent": "engineering", "label": "Frontend", "value": 150},
     "eng_devops": {"id": "eng_devops", "parent": "engineering", "label": "DevOps", "value": 120},
-    # Level 2 - Sales teams
     "sales_north": {"id": "sales_north", "parent": "sales", "label": "North", "value": 160},
     "sales_south": {"id": "sales_south", "parent": "sales", "label": "South", "value": 120},
     "sales_east": {"id": "sales_east", "parent": "sales", "label": "East", "value": 100},
-    # Level 2 - Marketing teams
     "mkt_digital": {"id": "mkt_digital", "parent": "marketing", "label": "Digital", "value": 130},
     "mkt_brand": {"id": "mkt_brand", "parent": "marketing", "label": "Brand", "value": 90},
-    # Level 2 - Operations teams
     "ops_facilities": {"id": "ops_facilities", "parent": "operations", "label": "Facilities", "value": 85},
     "ops_logistics": {"id": "ops_logistics", "parent": "operations", "label": "Logistics", "value": 65},
-    # Level 3 - Engineering Backend projects
     "api_core": {"id": "api_core", "parent": "eng_backend", "label": "API Core", "value": 100},
     "api_analytics": {"id": "api_analytics", "parent": "eng_backend", "label": "Analytics", "value": 80},
-    # Level 3 - Engineering Frontend projects
     "webapp": {"id": "webapp", "parent": "eng_frontend", "label": "Web App", "value": 90},
     "mobile": {"id": "mobile", "parent": "eng_frontend", "label": "Mobile", "value": 60},
-    # Level 3 - Engineering DevOps projects
     "infra": {"id": "infra", "parent": "eng_devops", "label": "Infra", "value": 70},
     "monitoring": {"id": "monitoring", "parent": "eng_devops", "label": "Monitoring", "value": 50},
 }
@@ -75,7 +65,6 @@ colors = {
     "Sales": "#FFD43B",
     "Marketing": "#4CAF50",
     "Operations": "#E07A5F",
-    # Sub-colors for Engineering (blue shades)
     "Backend": "#4A8BBE",
     "Frontend": "#6BA3D6",
     "DevOps": "#8CBBEE",
@@ -85,48 +74,34 @@ colors = {
     "Mobile": "#A3CCF4",
     "Infra": "#A3CCF4",
     "Monitoring": "#B8D9F9",
-    # Sub-colors for Sales (yellow shades)
     "North": "#F5C800",
     "South": "#E6BE35",
     "East": "#D4A72C",
-    # Sub-colors for Marketing (green shades)
     "Digital": "#66BB6A",
     "Brand": "#81C784",
-    # Sub-colors for Operations (coral shades)
     "Facilities": "#EF9A9A",
     "Logistics": "#F48FB1",
 }
 
+# Get leaf nodes (nodes with no children) - inline
+all_ids = set(hierarchy_data.keys())
+parents = {d["parent"] for d in hierarchy_data.values() if d["parent"]}
+leaf_ids = all_ids - parents - {"root"}
+leaves = [hierarchy_data[leaf_id] for leaf_id in leaf_ids]
 
-# Get leaf nodes (nodes with no children)
-def get_leaves(data):
-    """Get all leaf nodes (nodes with no children)."""
-    all_ids = set(data.keys())
-    parents = {d["parent"] for d in data.values() if d["parent"]}
-    leaves = all_ids - parents - {"root"}
-    return [data[leaf_id] for leaf_id in leaves]
-
-
-leaves = get_leaves(hierarchy_data)
 leaves_df = pd.DataFrame(leaves)
 leaves_df = leaves_df.sort_values("value", ascending=False).reset_index(drop=True)
 total_value = leaves_df["value"].sum()
 
+# Squarify algorithm for treemap layout - inline
+values = leaves_df["value"].tolist()
+rects = []
+total = sum(values)
 
-# Squarify algorithm for treemap layout
-def squarify(values, x, y, width, height):
-    """Compute treemap rectangles using squarify algorithm."""
-    if len(values) == 0:
-        return []
-
-    total = sum(values)
-    if total == 0:
-        return []
-
-    rects = []
+if total > 0:
     remaining_values = list(values)
-    remaining_x, remaining_y = x, y
-    remaining_w, remaining_h = width, height
+    remaining_x, remaining_y = 0, 0
+    remaining_w, remaining_h = 100, 100
 
     while remaining_values:
         if remaining_w >= remaining_h:
@@ -137,7 +112,7 @@ def squarify(values, x, y, width, height):
             for v in remaining_values:
                 test_values = row_values + [v]
                 test_sum = row_sum + v
-                row_width = (test_sum / total) * width if total > 0 else 0
+                row_width = (test_sum / total) * 100 if total > 0 else 0
 
                 if row_width > 0:
                     worst_ratio = 0
@@ -158,7 +133,7 @@ def squarify(values, x, y, width, height):
                     row_values = test_values
                     row_sum = test_sum
 
-            row_width = (row_sum / total) * width if total > 0 else 0
+            row_width = (row_sum / total) * 100 if total > 0 else 0
             current_y = remaining_y
             for rv in row_values:
                 rect_height = (rv / row_sum) * remaining_h if row_sum > 0 else 0
@@ -176,7 +151,7 @@ def squarify(values, x, y, width, height):
             for v in remaining_values:
                 test_values = col_values + [v]
                 test_sum = col_sum + v
-                col_height = (test_sum / total) * height if total > 0 else 0
+                col_height = (test_sum / total) * 100 if total > 0 else 0
 
                 if col_height > 0:
                     worst_ratio = 0
@@ -197,7 +172,7 @@ def squarify(values, x, y, width, height):
                     col_values = test_values
                     col_sum = test_sum
 
-            col_height = (col_sum / total) * height if total > 0 else 0
+            col_height = (col_sum / total) * 100 if total > 0 else 0
             current_x = remaining_x
             for cv in col_values:
                 rect_width = (cv / col_sum) * remaining_w if col_sum > 0 else 0
@@ -208,11 +183,7 @@ def squarify(values, x, y, width, height):
             remaining_h -= col_height
             remaining_values = remaining_values[len(col_values) :]
 
-    return rects
-
-
-# Build treemap rectangles
-rects = squarify(leaves_df["value"].tolist(), 0, 0, 100, 100)
+# Build treemap dataframe
 treemap_df = pd.DataFrame(
     {
         "xmin": [r[0] for r in rects],
@@ -228,22 +199,20 @@ treemap_df["label_y"] = (treemap_df["ymin"] + treemap_df["ymax"]) / 2
 treemap_df["width"] = treemap_df["xmax"] - treemap_df["xmin"]
 treemap_df["height"] = treemap_df["ymax"] - treemap_df["ymin"]
 
-
-def make_label(row):
+# Create display labels - inline
+display_labels = []
+for _, row in treemap_df.iterrows():
     w, h = row["width"], row["height"]
     pct = row["value"] / total_value * 100
     if w > 15 and h > 12:
-        return f"{row['label']}\n{pct:.0f}%"
+        display_labels.append(f"{row['label']}\n{pct:.0f}%")
     elif w > 8 and h > 8:
-        return f"{pct:.0f}%"
-    return ""
+        display_labels.append(f"{pct:.0f}%")
+    else:
+        display_labels.append("")
+treemap_df["display_label"] = display_labels
 
-
-treemap_df["display_label"] = treemap_df.apply(make_label, axis=1)
-
-# Get colors for treemap
 treemap_colors = [colors.get(label, "#888888") for label in treemap_df["label"]]
-
 
 # Create treemap plot
 treemap_plot = (
@@ -254,46 +223,43 @@ treemap_plot = (
     + geom_text(aes(x="label_x", y="label_y", label="display_label"), size=14, color="white", fontface="bold")
     + scale_fill_manual(values=treemap_colors)
     + labs(title="Treemap View")
-    + theme_void()
     + theme(
         plot_title=element_text(size=22, hjust=0.5, face="bold"),
         legend_position="none",
         axis_title=element_blank(),
         axis_text=element_blank(),
+        axis_ticks=element_blank(),
+        axis_line=element_blank(),
+        panel_grid=element_blank(),
+        panel_background=element_blank(),
     )
     + ggsize(750, 750)
 )
 
-
-# Create sunburst plot
-def create_wedge(inner_r, outer_r, start_angle, end_angle, n_points=30):
-    """Create polygon points for a wedge (arc segment)."""
-    angles_outer = [start_angle + (end_angle - start_angle) * i / n_points for i in range(n_points + 1)]
-    angles_inner = angles_outer[::-1]
-
-    x_outer = [outer_r * math.cos(a) for a in angles_outer]
-    y_outer = [outer_r * math.sin(a) for a in angles_outer]
-    x_inner = [inner_r * math.cos(a) for a in angles_inner]
-    y_inner = [inner_r * math.sin(a) for a in angles_inner]
-
-    return x_outer + x_inner, y_outer + y_inner
-
-
-# Build sunburst from leaves
+# Build sunburst from leaves - inline
 sunburst_polygons = []
 sunburst_labels = []
 segment_id = 0
-
-# Ring radii for single-level sunburst of leaf nodes
 r_inner, r_outer = 20, 80
+n_points = 30
 
-# Calculate angles
-start_angle = math.pi / 2  # Start at top
+start_angle = math.pi / 2
 for _, row in leaves_df.iterrows():
     pct = row["value"] / total_value
     end_angle = start_angle - pct * 2 * math.pi
 
-    x_pts, y_pts = create_wedge(r_inner, r_outer, end_angle, start_angle)
+    # Create wedge polygon - inline
+    angles_outer = [end_angle + (start_angle - end_angle) * i / n_points for i in range(n_points + 1)]
+    angles_inner = angles_outer[::-1]
+
+    x_outer = [r_outer * math.cos(a) for a in angles_outer]
+    y_outer = [r_outer * math.sin(a) for a in angles_outer]
+    x_inner = [r_inner * math.cos(a) for a in angles_inner]
+    y_inner = [r_inner * math.sin(a) for a in angles_inner]
+
+    x_pts = x_outer + x_inner
+    y_pts = y_outer + y_inner
+
     for x, y in zip(x_pts, y_pts, strict=True):
         sunburst_polygons.append(
             {"x": x, "y": y, "segment_id": segment_id, "label": row["label"], "color": row["label"]}
@@ -301,7 +267,7 @@ for _, row in leaves_df.iterrows():
 
     mid_angle = (start_angle + end_angle) / 2
     label_r = (r_inner + r_outer) / 2
-    if pct > 0.03:  # Only label segments > 3%
+    if pct > 0.04:  # Only label segments > 4% to reduce overlap
         sunburst_labels.append(
             {"x": label_r * math.cos(mid_angle), "y": label_r * math.sin(mid_angle), "label": row["label"]}
         )
@@ -312,7 +278,6 @@ for _, row in leaves_df.iterrows():
 sunburst_df = pd.DataFrame(sunburst_polygons)
 label_df = pd.DataFrame(sunburst_labels)
 
-# Get colors for sunburst
 unique_labels = sunburst_df["label"].unique()
 sunburst_colors = [colors.get(lbl, "#888888") for lbl in unique_labels]
 
@@ -334,6 +299,7 @@ sunburst_plot = (
         axis_ticks=element_blank(),
         axis_line=element_blank(),
         panel_grid=element_blank(),
+        panel_background=element_blank(),
     )
 )
 
@@ -490,15 +456,11 @@ html_content = f"""<!DOCTYPE html>
         const hierarchyData = {json.dumps(dict(hierarchy_data.items()))};
         const colorMap = {json.dumps(colors)};
 
-        // Get leaf nodes
-        function getLeaves() {{
-            const allIds = new Set(Object.keys(hierarchyData));
-            const parents = new Set(Object.values(hierarchyData).map(d => d.parent).filter(p => p));
-            const leaves = [...allIds].filter(id => !parents.has(id) && id !== 'root');
-            return leaves.map(id => hierarchyData[id]).sort((a, b) => b.value - a.value);
-        }}
-
-        const leaves = getLeaves();
+        // Get leaf nodes inline
+        const allIds = new Set(Object.keys(hierarchyData));
+        const parentIds = new Set(Object.values(hierarchyData).map(d => d.parent).filter(p => p));
+        const leafIds = [...allIds].filter(id => !parentIds.has(id) && id !== 'root');
+        const leaves = leafIds.map(id => hierarchyData[id]).sort((a, b) => b.value - a.value);
         const totalValue = leaves.reduce((sum, d) => sum + d.value, 0);
 
         let currentView = 'treemap';
@@ -515,94 +477,6 @@ html_content = f"""<!DOCTYPE html>
             ctx.scale(dpr, dpr);
         }}
 
-        // Squarify algorithm
-        function squarify(values, x, y, width, height) {{
-            if (values.length === 0) return [];
-            const total = values.reduce((a, b) => a + b, 0);
-            if (total === 0) return [];
-
-            const rects = [];
-            let remaining = [...values];
-            let rx = x, ry = y, rw = width, rh = height;
-
-            while (remaining.length > 0) {{
-                if (rw >= rh) {{
-                    let row = [], rowSum = 0, bestRatio = Infinity;
-
-                    for (const v of remaining) {{
-                        const testRow = [...row, v];
-                        const testSum = rowSum + v;
-                        const rowWidth = (testSum / total) * width;
-
-                        if (rowWidth > 0) {{
-                            let worstRatio = 0;
-                            for (const rv of testRow) {{
-                                const rectHeight = (rv / testSum) * rh;
-                                const ratio = rectHeight > 0 ? Math.max(rowWidth / rectHeight, rectHeight / rowWidth) : Infinity;
-                                worstRatio = Math.max(worstRatio, ratio);
-                            }}
-                            if (worstRatio <= bestRatio) {{
-                                bestRatio = worstRatio;
-                                row = testRow;
-                                rowSum = testSum;
-                            }} else break;
-                        }} else {{
-                            row = testRow;
-                            rowSum = testSum;
-                        }}
-                    }}
-
-                    const rowWidth = (rowSum / total) * width;
-                    let cy = ry;
-                    for (const rv of row) {{
-                        const rectHeight = (rv / rowSum) * rh;
-                        rects.push({{x: rx, y: cy, w: rowWidth, h: rectHeight}});
-                        cy += rectHeight;
-                    }}
-                    rx += rowWidth;
-                    rw -= rowWidth;
-                    remaining = remaining.slice(row.length);
-                }} else {{
-                    let col = [], colSum = 0, bestRatio = Infinity;
-
-                    for (const v of remaining) {{
-                        const testCol = [...col, v];
-                        const testSum = colSum + v;
-                        const colHeight = (testSum / total) * height;
-
-                        if (colHeight > 0) {{
-                            let worstRatio = 0;
-                            for (const cv of testCol) {{
-                                const rectWidth = (cv / testSum) * rw;
-                                const ratio = rectWidth > 0 ? Math.max(colHeight / rectWidth, rectWidth / colHeight) : Infinity;
-                                worstRatio = Math.max(worstRatio, ratio);
-                            }}
-                            if (worstRatio <= bestRatio) {{
-                                bestRatio = worstRatio;
-                                col = testCol;
-                                colSum = testSum;
-                            }} else break;
-                        }} else {{
-                            col = testCol;
-                            colSum = testSum;
-                        }}
-                    }}
-
-                    const colHeight = (colSum / total) * height;
-                    let cx = rx;
-                    for (const cv of col) {{
-                        const rectWidth = (cv / colSum) * rw;
-                        rects.push({{x: cx, y: ry, w: rectWidth, h: colHeight}});
-                        cx += rectWidth;
-                    }}
-                    ry += colHeight;
-                    rh -= colHeight;
-                    remaining = remaining.slice(col.length);
-                }}
-            }}
-            return rects;
-        }}
-
         function drawTreemap() {{
             setupCanvas();
             const rect = canvas.parentElement.getBoundingClientRect();
@@ -612,8 +486,91 @@ html_content = f"""<!DOCTYPE html>
 
             ctx.clearRect(0, 0, rect.width, rect.height);
 
+            // Squarify algorithm inline
             const values = leaves.map(d => d.value);
-            const rects = squarify(values, padding, padding, width, height);
+            const total = values.reduce((a, b) => a + b, 0);
+            const rects = [];
+
+            if (total > 0) {{
+                let remaining = [...values];
+                let rx = padding, ry = padding, rw = width, rh = height;
+
+                while (remaining.length > 0) {{
+                    if (rw >= rh) {{
+                        let row = [], rowSum = 0, bestRatio = Infinity;
+
+                        for (const v of remaining) {{
+                            const testRow = [...row, v];
+                            const testSum = rowSum + v;
+                            const rowWidth = (testSum / total) * width;
+
+                            if (rowWidth > 0) {{
+                                let worstRatio = 0;
+                                for (const rv of testRow) {{
+                                    const rectHeight = (rv / testSum) * rh;
+                                    const ratio = rectHeight > 0 ? Math.max(rowWidth / rectHeight, rectHeight / rowWidth) : Infinity;
+                                    worstRatio = Math.max(worstRatio, ratio);
+                                }}
+                                if (worstRatio <= bestRatio) {{
+                                    bestRatio = worstRatio;
+                                    row = testRow;
+                                    rowSum = testSum;
+                                }} else break;
+                            }} else {{
+                                row = testRow;
+                                rowSum = testSum;
+                            }}
+                        }}
+
+                        const rowWidth = (rowSum / total) * width;
+                        let cy = ry;
+                        for (const rv of row) {{
+                            const rectHeight = (rv / rowSum) * rh;
+                            rects.push({{x: rx, y: cy, w: rowWidth, h: rectHeight}});
+                            cy += rectHeight;
+                        }}
+                        rx += rowWidth;
+                        rw -= rowWidth;
+                        remaining = remaining.slice(row.length);
+                    }} else {{
+                        let col = [], colSum = 0, bestRatio = Infinity;
+
+                        for (const v of remaining) {{
+                            const testCol = [...col, v];
+                            const testSum = colSum + v;
+                            const colHeight = (testSum / total) * height;
+
+                            if (colHeight > 0) {{
+                                let worstRatio = 0;
+                                for (const cv of testCol) {{
+                                    const rectWidth = (cv / testSum) * rw;
+                                    const ratio = rectWidth > 0 ? Math.max(colHeight / rectWidth, rectWidth / colHeight) : Infinity;
+                                    worstRatio = Math.max(worstRatio, ratio);
+                                }}
+                                if (worstRatio <= bestRatio) {{
+                                    bestRatio = worstRatio;
+                                    col = testCol;
+                                    colSum = testSum;
+                                }} else break;
+                            }} else {{
+                                col = testCol;
+                                colSum = testSum;
+                            }}
+                        }}
+
+                        const colHeight = (colSum / total) * height;
+                        let cx = rx;
+                        for (const cv of col) {{
+                            const rectWidth = (cv / colSum) * rw;
+                            rects.push({{x: cx, y: ry, w: rectWidth, h: colHeight}});
+                            cx += rectWidth;
+                        }}
+                        ry += colHeight;
+                        rh -= colHeight;
+                        remaining = remaining.slice(col.length);
+                    }}
+                }}
+            }}
 
             rects.forEach((r, i) => {{
                 const leaf = leaves[i];
@@ -625,7 +582,6 @@ html_content = f"""<!DOCTYPE html>
                 ctx.lineWidth = 3;
                 ctx.strokeRect(r.x, r.y, r.w, r.h);
 
-                // Label
                 const pct = (leaf.value / totalValue * 100).toFixed(0);
                 if (r.w > 60 && r.h > 40) {{
                     ctx.fillStyle = 'white';
@@ -662,7 +618,6 @@ html_content = f"""<!DOCTYPE html>
                 const endAngle = startAngle + pct * 2 * Math.PI;
                 const color = colorMap[leaf.label] || '#888888';
 
-                // Draw arc
                 ctx.beginPath();
                 ctx.moveTo(centerX + innerRadius * Math.cos(startAngle), centerY + innerRadius * Math.sin(startAngle));
                 ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
@@ -676,8 +631,7 @@ html_content = f"""<!DOCTYPE html>
                 ctx.lineWidth = 2;
                 ctx.stroke();
 
-                // Label
-                if (pct > 0.03) {{
+                if (pct > 0.04) {{
                     const midAngle = startAngle + (endAngle - startAngle) / 2;
                     const labelR = (innerRadius + outerRadius) / 2;
                     const labelX = centerX + labelR * Math.cos(midAngle);
@@ -695,7 +649,6 @@ html_content = f"""<!DOCTYPE html>
                 startAngle = endAngle;
             }});
 
-            // Center text
             ctx.fillStyle = '#333';
             ctx.font = 'bold 16px -apple-system, sans-serif';
             ctx.textAlign = 'center';
@@ -720,25 +673,22 @@ html_content = f"""<!DOCTYPE html>
             drawSunburst();
         }}
 
-        function updateLegend() {{
-            const legend = document.getElementById('legend');
-            legend.innerHTML = leaves.map(leaf => {{
-                const color = colorMap[leaf.label] || '#888888';
-                const pct = (leaf.value / totalValue * 100).toFixed(1);
-                return `<div class="legend-item">
-                    <div class="legend-color" style="background: ${{color}}"></div>
-                    <span>${{leaf.label}} (${{pct}}%)</span>
-                </div>`;
-            }}).join('');
-        }}
+        // Build legend inline
+        const legend = document.getElementById('legend');
+        legend.innerHTML = leaves.map(leaf => {{
+            const color = colorMap[leaf.label] || '#888888';
+            const pct = (leaf.value / totalValue * 100).toFixed(1);
+            return `<div class="legend-item">
+                <div class="legend-color" style="background: ${{color}}"></div>
+                <span>${{leaf.label}} (${{pct}}%)</span>
+            </div>`;
+        }}).join('');
 
         window.addEventListener('resize', () => {{
             if (currentView === 'treemap') drawTreemap();
             else drawSunburst();
         }});
 
-        // Initial render
-        updateLegend();
         drawTreemap();
     </script>
 </body>

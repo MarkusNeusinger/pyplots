@@ -1,14 +1,12 @@
-""" pyplots.ai
+"""pyplots.ai
 windbarb-basic: Wind Barb Plot for Meteorological Data
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-11
 """
 
-from math import pi
-
 import numpy as np
 from bokeh.io import export_png
-from bokeh.models import ColumnDataSource
+from bokeh.models import ColumnDataSource, HoverTool, Label
 from bokeh.plotting import figure
 
 
@@ -30,9 +28,17 @@ base_v = 10 * np.cos(y_positions * 0.4)  # Meridional component
 u = base_u + np.random.randn(n_barbs) * 3  # Add some noise
 v = base_v + np.random.randn(n_barbs) * 3
 
+# Force some calm winds (< 2.5 knots) to demonstrate the calm symbol
+# Set corners to have calm conditions
+calm_indices = [0, 5, 24, 29]  # Corners of the grid
+for idx in calm_indices:
+    u[idx] = np.random.uniform(-0.5, 0.5)
+    v[idx] = np.random.uniform(-0.5, 0.5)
+
 # Calculate wind speed (knots) and direction
 wind_speed = np.sqrt(u**2 + v**2)
-wind_direction = np.arctan2(v, u)  # Direction wind is going TO
+wind_direction_rad = np.arctan2(v, u)  # Direction wind is going TO
+wind_direction_deg = np.degrees(wind_direction_rad)
 
 # Barb parameters
 barb_length = 0.6  # Length of the staff
@@ -40,18 +46,36 @@ barb_spacing = 0.08  # Spacing between barbs on the staff
 half_barb_len = 0.15  # Length of half barb (5 knots)
 full_barb_len = 0.25  # Length of full barb (10 knots)
 pennant_len = 0.25  # Length of pennant base
-barb_angle = 70 * pi / 180  # Angle of barbs relative to staff (degrees)
+barb_angle = 70 * np.pi / 180  # Angle of barbs relative to staff (degrees)
 
 # Lists to collect line segments for all barbs
 all_x0, all_y0, all_x1, all_y1 = [], [], [], []
+
+# Lists for calm wind positions (open circles without staff)
+calm_x, calm_y = [], []
+
+# Lists for station data (for HoverTool)
+station_x, station_y, station_speed, station_dir = [], [], [], []
 
 # Draw each wind barb
 for i in range(n_barbs):
     x, y = x_positions[i], y_positions[i]
     speed = wind_speed[i]
 
+    # Store station data for hover
+    station_x.append(x)
+    station_y.append(y)
+    station_speed.append(round(speed, 1))
+    station_dir.append(round((wind_direction_deg[i] + 180) % 360, 0))  # Direction FROM
+
+    # Calm wind: open circle without staff (< 2.5 knots)
+    if speed < 2.5:
+        calm_x.append(x)
+        calm_y.append(y)
+        continue
+
     # Wind barbs point FROM where wind is coming, so reverse direction
-    direction = wind_direction[i] + pi  # Reverse direction
+    direction = wind_direction_rad[i] + np.pi  # Reverse direction
 
     # Draw staff
     dx = barb_length * np.cos(direction)
@@ -134,7 +158,7 @@ p = figure(
     title="windbarb-basic · bokeh · pyplots.ai",
     x_axis_label="X Position (grid units)",
     y_axis_label="Y Position (grid units)",
-    x_range=(-1, 11),
+    x_range=(-1, 12),
     y_range=(-1, 9),
 )
 
@@ -146,19 +170,69 @@ p.segment(
     x0="x0", y0="y0", x1="x1", y1="y1", source=segment_source, line_color="#306998", line_width=3, line_cap="round"
 )
 
-# Add station markers at observation points
-station_source = ColumnDataSource(data={"x": x_positions, "y": y_positions, "speed": wind_speed})
+# Add station markers at observation points (for HoverTool)
+station_source = ColumnDataSource(
+    data={"x": station_x, "y": station_y, "speed": station_speed, "direction": station_dir}
+)
 
-p.scatter(
+station_markers = p.scatter(
     x="x",
     y="y",
     source=station_source,
-    size=12,
+    size=14,
     marker="circle",
     fill_color="white",
     line_color="#306998",
     line_width=2,
 )
+
+# Add calm wind markers (larger open circles without staff)
+if calm_x:
+    calm_source = ColumnDataSource(data={"x": calm_x, "y": calm_y})
+    p.scatter(
+        x="x",
+        y="y",
+        source=calm_source,
+        size=24,
+        marker="circle",
+        fill_color="white",
+        line_color="#306998",
+        line_width=3,
+    )
+
+# Add HoverTool for interactivity
+hover = HoverTool(
+    renderers=[station_markers], tooltips=[("Wind Speed", "@speed kt"), ("Direction From", "@direction°")]
+)
+p.add_tools(hover)
+
+# Add legend as text labels in upper right area
+legend_x = 11.0
+legend_y_start = 8.0
+legend_spacing = 0.6
+
+# Legend title
+legend_title = Label(
+    x=legend_x,
+    y=legend_y_start,
+    text="Wind Barb Key",
+    text_font_size="18pt",
+    text_font_style="bold",
+    text_color="#333333",
+)
+p.add_layout(legend_title)
+
+# Legend items
+legend_items = [
+    ("○  Calm (< 2.5 kt)", legend_y_start - legend_spacing),
+    ("╲  Half barb = 5 kt", legend_y_start - 2 * legend_spacing),
+    ("╲╲ Full barb = 10 kt", legend_y_start - 3 * legend_spacing),
+    ("▲  Pennant = 50 kt", legend_y_start - 4 * legend_spacing),
+]
+
+for text, y_pos in legend_items:
+    label = Label(x=legend_x, y=y_pos, text=text, text_font_size="16pt", text_color="#555555")
+    p.add_layout(label)
 
 # Styling
 p.title.text_font_size = "28pt"

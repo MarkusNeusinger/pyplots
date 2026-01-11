@@ -109,12 +109,62 @@ for i in range(grid_res):
 
 df_polygons = pd.DataFrame(polygon_data)
 
+# Create contour lines data at key density levels
+# Find density range and pick meaningful levels
+z_masked = Z.copy()
+z_masked[~mask] = 0
+z_min, z_max = z_masked[mask].min(), z_masked[mask].max()
+contour_levels = [z_min + (z_max - z_min) * p for p in [0.25, 0.5, 0.75]]
+
+# Extract contour paths using marching squares approach
+contour_data = []
+contour_id = 0
+for level in contour_levels:
+    for i in range(grid_res - 1):
+        for j in range(grid_res - 1):
+            # Check if contour crosses this cell
+            corners = [Z[i, j], Z[i, j + 1], Z[i + 1, j + 1], Z[i + 1, j]]
+            corners_mask = [mask[i, j], mask[i, j + 1], mask[i + 1, j + 1], mask[i + 1, j]]
+            if not all(corners_mask):
+                continue
+            above = [c >= level for c in corners]
+            if all(above) or not any(above):
+                continue
+            # Find intersection points on edges
+            x0, x1 = x_grid[j], x_grid[j + 1]
+            y0, y1 = y_grid[i], y_grid[i + 1]
+            pts = []
+            # Edge 0: bottom (i, j) -> (i, j+1)
+            if above[0] != above[1]:
+                t = (level - corners[0]) / (corners[1] - corners[0] + 1e-10)
+                pts.append((x0 + t * (x1 - x0), y0))
+            # Edge 1: right (i, j+1) -> (i+1, j+1)
+            if above[1] != above[2]:
+                t = (level - corners[1]) / (corners[2] - corners[1] + 1e-10)
+                pts.append((x1, y0 + t * (y1 - y0)))
+            # Edge 2: top (i+1, j+1) -> (i+1, j)
+            if above[2] != above[3]:
+                t = (level - corners[2]) / (corners[3] - corners[2] + 1e-10)
+                pts.append((x1 - t * (x1 - x0), y1))
+            # Edge 3: left (i+1, j) -> (i, j)
+            if above[3] != above[0]:
+                t = (level - corners[3]) / (corners[0] - corners[3] + 1e-10)
+                pts.append((x0, y1 - t * (y1 - y0)))
+            # Connect pairs of intersection points
+            if len(pts) == 2:
+                contour_data.append(
+                    {"x": pts[0][0], "y": pts[0][1], "xend": pts[1][0], "yend": pts[1][1], "level": level}
+                )
+                contour_id += 1
+
+df_contours = pd.DataFrame(contour_data) if contour_data else pd.DataFrame(columns=["x", "y", "xend", "yend", "level"])
+
 # Create triangle outline data
 tri_x = [0, 1, 0.5, 0]
 tri_y = [0, 0, sqrt3 / 2, 0]
 df_triangle = pd.DataFrame({"x": tri_x, "y": tri_y})
 
-# Create grid lines data (only inside the triangle)
+# Create grid lines data (only inside the triangle) - more prominent
 # Triangle vertices: bottom-left (0,0), bottom-right (1,0), top (0.5, sqrt3/2)
 grid_lines = []
 for pct in [0.2, 0.4, 0.6, 0.8]:
@@ -152,8 +202,21 @@ plot = (
     + geom_polygon(aes(x="x", y="y", fill="density", group="id"), data=df_polygons, color=None, alpha=0.9)
     # Viridis color scale for density
     + scale_fill_viridis(name="Density", option="viridis")
-    # Grid lines (drawn on top of density)
-    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend"), data=df_grid, color="#333333", size=0.5, alpha=0.3)
+    # Grid lines (more prominent - increased alpha and size)
+    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend"), data=df_grid, color="#555555", size=0.8, alpha=0.5)
+    # Contour lines at key density levels (dashed white lines for visibility on viridis)
+    + (
+        geom_segment(
+            aes(x="x", y="y", xend="xend", yend="yend"),
+            data=df_contours,
+            color="white",
+            size=1.0,
+            alpha=0.7,
+            linetype="dashed",
+        )
+        if len(df_contours) > 0
+        else geom_path(aes(x="x", y="y"), data=pd.DataFrame({"x": [], "y": []}))
+    )
     # Triangle outline
     + geom_path(aes(x="x", y="y"), data=df_triangle, color="#306998", size=2)
     # Vertex labels

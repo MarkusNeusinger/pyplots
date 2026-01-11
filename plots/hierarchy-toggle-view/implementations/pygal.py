@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hierarchy-toggle-view: Interactive Treemap-Sunburst Toggle View
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 45/100 | Created: 2026-01-11
@@ -90,18 +90,7 @@ custom_style = Style(
 )
 
 # ============ TREEMAP ============
-# Prepare treemap data
-treemap_data = {}
-for dept_id in level1_ids:
-    dept_label = nodes[dept_id]["label"]
-    dept_children = {}
-    for cid in children.get(dept_id, []):
-        child_label = nodes[cid]["label"]
-        child_value = nodes[cid]["value"]
-        dept_children[child_label] = child_value
-    treemap_data[dept_label] = dept_children
-
-# Create treemap chart
+# Create treemap chart - pygal Treemap expects list of values per series
 treemap = pygal.Treemap(
     width=2200,
     height=2200,
@@ -114,9 +103,17 @@ treemap = pygal.Treemap(
     legend_at_bottom_columns=4,
 )
 
-# Add data to treemap
-for dept_label, dept_children in treemap_data.items():
-    treemap.add(dept_label, dept_children)
+# Add data to treemap - each series gets a list of values for its sub-departments
+# pygal Treemap expects: chart.add('Label', [value1, value2, ...])
+# For nested data, use: chart.add('Label', [{'value': v, 'label': l}, ...])
+for dept_id in level1_ids:
+    dept_label = nodes[dept_id]["label"]
+    dept_values = []
+    for cid in children.get(dept_id, []):
+        child_label = nodes[cid]["label"]
+        child_value = nodes[cid]["value"]
+        dept_values.append({"value": child_value, "label": child_label})
+    treemap.add(dept_label, dept_values)
 
 # Render treemap to PNG bytes
 treemap_png = treemap.render_to_png()
@@ -125,9 +122,6 @@ treemap_img = Image.open(io.BytesIO(treemap_png))
 # ============ SUNBURST (as nested pie/donut) ============
 # Pygal doesn't have native sunburst, so we create a donut chart showing hierarchy
 # Inner ring: departments, outer values shown in legend
-
-# Create a pie chart for the sunburst approximation
-# We'll show department proportions with sub-department details in tooltips
 
 sunburst_style = Style(
     background="white",
@@ -146,29 +140,25 @@ sunburst_style = Style(
 )
 
 # Create a donut chart (pie with inner_radius) for sunburst-like appearance
+# Disable print_labels to avoid overlapping text in pie segments
 sunburst = pygal.Pie(
     width=2200,
     height=2200,
     style=sunburst_style,
     title="Sunburst View",
     inner_radius=0.4,
-    print_values=True,
-    print_labels=True,
+    print_values=False,
+    print_labels=False,
     show_legend=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=4,
 )
 
-# Add department data with sub-department breakdown in label
+# Add department data - use short labels, detailed info in tooltip (HTML only)
 for dept_id in level1_ids:
     dept_label = nodes[dept_id]["label"]
     dept_value = nodes[dept_id]["value"]
-    # Build tooltip with children info
-    child_info = []
-    for cid in children.get(dept_id, []):
-        child_info.append(f"{nodes[cid]['label']}: {nodes[cid]['value']}")
-    tooltip = f"{dept_label} (${dept_value}M)\n" + ", ".join(child_info)
-    sunburst.add(dept_label, [{"value": dept_value, "label": tooltip}])
+    sunburst.add(f"{dept_label} (${dept_value}M)", [dept_value])
 
 # Render sunburst to PNG bytes
 sunburst_png = sunburst.render_to_png()

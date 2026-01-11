@@ -1,0 +1,29 @@
+# Specification-level metadata for map-route-path
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: map-route-path
+title: Route Path Map
+
+# Specification tracking
+created: 2026-01-11T22:51:09Z
+updated: 2026-01-11T22:51:09Z
+issue: 3768
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - map
+    - line
+  data_type:
+    - geospatial
+    - numeric
+    - timeseries
+  domain:
+    - general
+    - technology
+  features:
+    - basic
+    - temporal
+    - annotated

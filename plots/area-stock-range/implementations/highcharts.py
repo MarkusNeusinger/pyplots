@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 area-stock-range: Stock Area Chart with Range Selector
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2026-01-11
+Library: highcharts unknown | Python 3.13.11
+Quality: 93/100 | Created: 2026-01-11
 """
 
 import json

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 windbarb-basic: Wind Barb Plot for Meteorological Data
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 86/100 | Created: 2026-01-11
+Quality: 90/100 | Created: 2026-01-11
 """
 
 import matplotlib.pyplot as plt

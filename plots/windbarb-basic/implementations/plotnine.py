@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 windbarb-basic: Wind Barb Plot for Meteorological Data
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-11
@@ -12,6 +12,7 @@ from plotnine import (
     element_line,
     element_text,
     geom_point,
+    geom_polygon,
     geom_segment,
     ggplot,
     labs,
@@ -90,13 +91,14 @@ for i in range(len(x)):
         barb_pos = 0.85  # Start position along staff (fraction from base)
         barb_idx = 0
 
-        # Pennants (50 knots each) - represented as triangular flags
+        # Pennants (50 knots each) - represented as filled triangular flags
+        pennant_id = 0
         while remaining_speed >= 50 and barb_idx < 3:
             pos_factor = barb_pos - barb_idx * 0.15
             bx = x[i] + ux * staff_len * pos_factor
             by = y[i] + uy * staff_len * pos_factor
 
-            # Create triangle vertices for pennant
+            # Create triangle vertices for pennant (filled triangle per meteorological standard)
             tri_base = 0.25
             tri_height = 0.35
             # Tip of triangle (along perpendicular)
@@ -108,13 +110,15 @@ for i in range(len(x)):
             base2_x = bx + ux * tri_base / 2
             base2_y = by + uy * tri_base / 2
 
-            # Draw pennant as segments (triangle outline)
-            pennant_records.append({"x": base1_x, "y": base1_y, "xend": tip_x, "yend": tip_y})
-            pennant_records.append({"x": tip_x, "y": tip_y, "xend": base2_x, "yend": base2_y})
-            pennant_records.append({"x": base2_x, "y": base2_y, "xend": base1_x, "yend": base1_y})
+            # Store pennant vertices for filled polygon (3 vertices per triangle)
+            group_id = f"{i}_{pennant_id}"
+            pennant_records.append({"x": base1_x, "y": base1_y, "group": group_id, "order": 1})
+            pennant_records.append({"x": tip_x, "y": tip_y, "group": group_id, "order": 2})
+            pennant_records.append({"x": base2_x, "y": base2_y, "group": group_id, "order": 3})
 
             remaining_speed -= 50
             barb_idx += 1
+            pennant_id += 1
 
         # Full barbs (10 knots each)
         while remaining_speed >= 10 and barb_idx < 8:
@@ -145,7 +149,7 @@ for i in range(len(x)):
 # Create DataFrames
 staff_df = pd.DataFrame(staff_records) if staff_records else pd.DataFrame(columns=["x", "y", "xend", "yend", "speed"])
 barb_df = pd.DataFrame(barb_records) if barb_records else pd.DataFrame(columns=["x", "y", "xend", "yend", "type"])
-pennant_df = pd.DataFrame(pennant_records) if pennant_records else pd.DataFrame(columns=["x", "y", "xend", "yend"])
+pennant_df = pd.DataFrame(pennant_records) if pennant_records else pd.DataFrame(columns=["x", "y", "group", "order"])
 calm_df = pd.DataFrame(calm_records) if calm_records else pd.DataFrame(columns=["x", "y", "speed"])
 
 # Base plot with staffs
@@ -163,36 +167,36 @@ if len(barb_df) > 0:
         data=barb_df, mapping=aes(x="x", y="y", xend="xend", yend="yend"), color="#306998", size=1.5
     )
 
-# Layer 4: Pennants (triangular flags for 50 knots)
+# Layer 4: Pennants (filled triangular flags for 50 knots - meteorological standard)
 if len(pennant_df) > 0:
-    plot = plot + geom_segment(
-        data=pennant_df, mapping=aes(x="x", y="y", xend="xend", yend="yend"), color="#306998", size=1.5
+    plot = plot + geom_polygon(
+        data=pennant_df, mapping=aes(x="x", y="y", group="group"), fill="#306998", color="#306998", size=0.5
     )
 
 # Layer 5: Calm wind indicators (open circles)
 if len(calm_df) > 0:
     plot = plot + geom_point(data=calm_df, mapping=aes(x="x", y="y"), color="#306998", fill="white", size=6, stroke=1.5)
 
-# Add legend annotation
+# Add legend annotation (positioned in lower right to avoid data overlap)
 legend_text = "Wind Barb Key:\n○  Calm (< 2.5 kt)\n╲  Half barb = 5 kt\n╲╲ Full barb = 10 kt\n▲  Pennant = 50 kt"
 
 plot = (
     plot
     + annotate(
         "label",
-        x=0.3,
-        y=7.5,
+        x=11.5,
+        y=-0.5,
         label=legend_text,
         size=11,
-        ha="left",
-        va="top",
+        ha="right",
+        va="bottom",
         fill="white",
         alpha=0.9,
         label_padding=0.4,
         color="#306998",
     )
-    + scale_x_continuous(limits=(-1, 12))
-    + scale_y_continuous(limits=(-1, 9))
+    + scale_x_continuous(limits=(-1, 13))
+    + scale_y_continuous(limits=(-1.5, 9))
     + labs(x="Longitude (°E)", y="Latitude (°N)", title="windbarb-basic · plotnine · pyplots.ai")
     + theme_minimal()
     + theme(

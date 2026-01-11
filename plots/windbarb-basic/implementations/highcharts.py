@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 windbarb-basic: Wind Barb Plot for Meteorological Data
 Library: highcharts unknown | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-11
@@ -11,6 +11,7 @@ import urllib.request
 from pathlib import Path
 
 import numpy as np
+from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -53,7 +54,7 @@ chart_config = {
         "width": 4800,
         "height": 2700,
         "backgroundColor": "#ffffff",
-        "marginBottom": 250,
+        "marginBottom": 350,
         "marginLeft": 280,
         "marginRight": 150,
         "marginTop": 200,
@@ -64,7 +65,7 @@ chart_config = {
         "style": {"fontSize": "44px", "color": "#666666"},
     },
     "xAxis": {
-        "title": {"text": "Weather Station Index", "style": {"fontSize": "48px"}},
+        "title": {"text": "Weather Station Index", "style": {"fontSize": "48px"}, "margin": 30},
         "labels": {"style": {"fontSize": "40px"}},
         "lineWidth": 4,
         "tickWidth": 4,
@@ -79,7 +80,13 @@ chart_config = {
         "gridLineWidth": 2,
         "gridLineColor": "#e0e0e0",
     },
-    "legend": {"enabled": True, "itemStyle": {"fontSize": "40px"}},
+    "legend": {
+        "enabled": True,
+        "itemStyle": {"fontSize": "40px"},
+        "verticalAlign": "bottom",
+        "align": "center",
+        "y": -100,
+    },
     "tooltip": {
         "style": {"fontSize": "32px"},
         "headerFormat": "<b>Station {point.x}</b><br/>",
@@ -147,13 +154,24 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2700")
+chrome_options.add_argument("--window-size=4900,2800")
+chrome_options.add_argument("--force-device-scale-factor=1")
 
 driver = webdriver.Chrome(options=chrome_options)
+driver.set_window_size(4900, 2800)
 driver.get(f"file://{temp_path}")
 time.sleep(5)
-driver.save_screenshot("plot.png")
+
+# Take screenshot of the container element to get exact 4800x2700
+container = driver.find_element("id", "container")
+container.screenshot("plot.png")
 driver.quit()
+
+# Ensure exact dimensions
+img = Image.open("plot.png")
+if img.size != (4800, 2700):
+    img = img.resize((4800, 2700), Image.LANCZOS)
+    img.save("plot.png")
 
 Path(temp_path).unlink()
 

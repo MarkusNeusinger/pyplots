@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 windbarb-basic: Wind Barb Plot for Meteorological Data
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 68/100 | Created: 2026-01-11

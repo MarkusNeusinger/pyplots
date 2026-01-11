@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 area-stock-range: Stock Area Chart with Range Selector
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-11
@@ -13,6 +13,7 @@ from plotnine import (
     element_rect,
     element_text,
     facet_wrap,
+    geom_label,
     geom_line,
     geom_rect,
     geom_ribbon,
@@ -86,6 +87,24 @@ range_highlight["panel"] = pd.Categorical(
     ordered=True,
 )
 
+# Create annotation label for explaining the selection in the overview panel
+selection_midpoint = range_start + (range_end - range_start) / 2
+overview_price_range = df["price"].max() - df["price"].min()
+annotation_y = df["price"].max() - overview_price_range * 0.15
+annotation_df = pd.DataFrame(
+    {
+        "x": [selection_midpoint],
+        "y": [annotation_y],
+        "label": ["Selected\nTimeframe"],
+        "panel": ["Range Selector · Full History"],
+    }
+)
+annotation_df["panel"] = pd.Categorical(
+    annotation_df["panel"],
+    categories=["Selected Range: Apr-Oct 2023 (6M)", "Range Selector · Full History"],
+    ordered=True,
+)
+
 # Plot - Stock area chart with faceted range selector
 plot = (
     ggplot(df_combined, aes(x="date", y="price"))
@@ -100,6 +119,15 @@ plot = (
     )
     + geom_vline(data=range_highlight, mapping=aes(xintercept="xmin"), color="#1a4971", size=1.2, linetype="dashed")
     + geom_vline(data=range_highlight, mapping=aes(xintercept="xmax"), color="#1a4971", size=1.2, linetype="dashed")
+    + geom_label(
+        data=annotation_df,
+        mapping=aes(x="x", y="y", label="label"),
+        fill="#ffffff",
+        color="#1a4971",
+        size=12,
+        alpha=0.9,
+        inherit_aes=False,
+    )
     + geom_ribbon(aes(ymin="y_min", ymax="price"), fill="#306998", alpha=0.4)
     + geom_line(color="#306998", size=1.2)
     + facet_wrap("~panel", ncol=1, scales="free")
@@ -114,7 +142,7 @@ plot = (
         axis_text=element_text(size=16),
         axis_text_x=element_text(angle=45, ha="right"),
         plot_title=element_text(size=24),
-        panel_grid_major=element_line(color="#888888", size=0.5),
+        panel_grid_major=element_line(color="#cccccc", size=0.5, alpha=0.3),
         panel_grid_minor=element_blank(),
         strip_text=element_text(size=16, weight="bold"),
         strip_background=element_rect(fill="#e8e8e8", color=None),

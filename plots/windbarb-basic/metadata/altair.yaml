@@ -1,7 +1,7 @@
 library: altair
 specification_id: windbarb-basic
 created: '2026-01-11T09:29:19Z'
-updated: '2026-01-11T09:40:48Z'
+updated: '2026-01-11T09:48:59Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20892892513
 issue: 3694
@@ -10,42 +10,45 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/windbarb-basic/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/windbarb-basic/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/windbarb-basic/altair/plot.html
-quality_score: 82
+quality_score: 68
 review:
   strengths:
-  - Wind barb staffs correctly point INTO the wind (FROM direction)
-  - Good use of Altair layering for complex multi-component visualization
-  - Tooltips provide helpful wind speed and direction info on hover
-  - Clean grid layout prevents barb overlap
-  - Proper use of mark_rule for staff and barb lines
+  - Creative implementation using Altair layered mark composition to build wind barbs
+    from primitives
+  - Proper use of meteorological convention (wind direction FROM which wind blows)
+  - Good code structure separating calm, barbed, and pennant data
+  - Tooltips provide useful interactive information
+  - Reproducible with fixed random seed
   weaknesses:
-  - Legend in top-right corner is not visible in output (text/symbols not rendering
-    properly)
-  - Pennants (50 knots) are drawn as lines instead of filled triangles per meteorological
-    standard
-  - No calm wind indication (open circle) for very light winds as specified in Notes
-  - Axis labels should include units or more descriptive context (e.g., Longitude
-    or Grid X Position)
-  image_description: The plot displays a 6x5 grid of wind barb symbols (30 weather
-    stations) on a coordinate plane. Each wind barb consists of a blue staff line
-    (#306998) pointing in the direction from which the wind blows, with a small filled
-    circle at the station location. Speed indicators are shown as short lines (half
-    barbs for 5 knots) and longer lines (full barbs for 10 knots) attached perpendicular
-    to the staff on the left side. The staffs vary in length and direction based on
-    the wind vector components. The plot has a clean white background with subtle
-    grid lines (alpha 0.3). Title reads "windbarb-basic · altair · pyplots.ai" at
-    the top. Axes are labeled "X Coordinate" and "Y Coordinate" with tick marks ranging
-    from approximately -1 to 11 on X and -1 to 9 on Y. The legend that was coded (showing
-    "Wind Barb Notation" with symbols) appears to be positioned in the top-right area
-    but is either cut off or not rendered properly in the visible image.
+  - Legend text annotations not rendering in the output image despite being coded
+  - Pennant triangles (50 knot indicators) not visible in the output - angle encoding
+    may not work correctly
+  - Axis labels are generic (X Coordinate, Y Coordinate) instead of descriptive with
+    context
+  - Calm wind open circles are barely distinguishable from regular station points
+  image_description: The plot displays a wind barb visualization on a 6x5 grid (30
+    stations) using Altair. Each wind barb consists of a staff (line) pointing in
+    the direction from which the wind blows, with small barb flags extending perpendicular
+    to indicate wind speed. The plot uses a consistent blue color (#306998) for all
+    elements. Station points are shown as small blue dots at the base of each staff.
+    The staffs vary in length and direction based on wind components. Speed indicators
+    (barb flags) appear as short lines perpendicular to the staff - shorter lines
+    for half barbs (5 knots) and longer lines for full barbs (10 knots). Two open
+    circles are visible near grid positions (0,0) and (2,0) representing calm wind
+    conditions. The title "windbarb-basic · altair · pyplots.ai" appears at the top.
+    Axis labels show "X Coordinate" and "Y Coordinate" with grid values from roughly
+    -1 to 11 on X and -1 to 9 on Y. A subtle grid is present in the background. However,
+    the legend mentioned in the code is NOT visible in the rendered image, and the
+    triangular pennant markers for high winds (50 knots) are NOT visible despite being
+    coded.
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 28
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
+        score: 8
         max: 10
         passed: true
         comment: Title and axis labels readable, tick labels slightly small
@@ -54,102 +57,107 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Wind barbs well-spaced on grid, no overlap
+        comment: No overlapping text or elements
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 5
         max: 8
-        passed: true
-        comment: Barbs visible but some could be more prominent
+        passed: false
+        comment: Barbs visible but staffs could be longer; pennants missing entirely
+          in output
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Single blue color scheme, no colorblind issues
+        comment: Single blue color scheme is colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 2
         max: 5
         passed: false
-        comment: Legend area appears empty/cut off in top-right
+        comment: Legend not appearing in output despite being coded
       - id: VQ-06
         name: Axis Labels
-        score: 1
+        score: 0
         max: 2
         passed: false
-        comment: Generic X Coordinate / Y Coordinate without units
+        comment: Generic X Coordinate and Y Coordinate without proper meteorological
+          context
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: Legend symbols not visible despite code to create them
+        comment: Legend not rendering in output, grid is appropriately subtle
     spec_compliance:
-      score: 20
+      score: 19
       max: 25
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
+        score: 6
         max: 8
-        passed: true
-        comment: Correct wind barb representation using staffs and barb flags
+        passed: false
+        comment: Wind barb plot implemented but missing pennants (50kt triangles)
+          in visual output
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: X/Y coordinates and u/v wind components correctly mapped
+        comment: X/Y coordinates correctly positioned on grid
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 2
         max: 5
         passed: false
-        comment: 'Missing: calm wind circles, pennants not filled triangles'
+        comment: Missing visible pennant triangles and legend; calm circles barely
+          visible
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axis range
+        comment: All data points visible within axis range
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 1
         max: 2
         passed: false
-        comment: Legend not rendering/visible
+        comment: Legend coded but not visible in output
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Correct format windbarb-basic · altair · pyplots.ai
+        comment: 'Correct format: windbarb-basic · altair · pyplots.ai'
     data_quality:
-      score: 18
+      score: 15
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 8
-        passed: true
-        comment: Shows half/full barbs, various directions; missing pennants (50kt)
-          and calm conditions
+        passed: false
+        comment: Shows staffs and barbs but pennants (50kt) not visible, calm conditions
+          barely detectable
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Weather station grid is plausible meteorological scenario
+        comment: Weather station grid is realistic meteorological scenario
       - id: DQ-03
         name: Appropriate Scale
-        score: 5
+        score: 3
         max: 5
-        passed: true
-        comment: Wind speeds -30 to 30 knots realistic for surface observations
+        passed: false
+        comment: Wind speeds appropriate but visual representation inconsistent with
+          coded values
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -157,49 +165,49 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear structure with imports, data, plot, save
+        comment: Linear structure with data generation, processing, and plotting
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) set
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only used imports (altair, numpy, pandas)
+        comment: Only necessary imports (altair, numpy, pandas)
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Current Altair API used
+        comment: Uses current Altair 6.x API
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Saves both plot.png and plot.html (minor issue)
+        passed: true
+        comment: Saves as plot.png with scale_factor=3.0
     library_features:
-      score: 3
+      score: 4
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Uses layer composition and tooltips, but custom legend attempt fails
-  verdict: REJECTED
+        passed: true
+        comment: Uses layer composition, tooltips, mark encodings, angle channel,
+          and Altair declarative style
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
   - hover-tooltips
-  - custom-legend
-  - html-export
+  - annotations
   patterns:
   - data-generation
   - iteration-over-groups

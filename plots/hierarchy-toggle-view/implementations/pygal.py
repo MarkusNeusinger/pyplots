@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 hierarchy-toggle-view: Interactive Treemap-Sunburst Toggle View
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 45/100 | Created: 2026-01-11
+Quality: 52/100 | Created: 2026-01-11
 """
 
 import pygal

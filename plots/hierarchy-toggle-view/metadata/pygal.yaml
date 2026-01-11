@@ -1,7 +1,7 @@
 library: pygal
 specification_id: hierarchy-toggle-view
 created: '2026-01-11T21:21:03Z'
-updated: '2026-01-11T21:38:31Z'
+updated: '2026-01-11T21:44:24Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20901984138
 issue: 3697
@@ -10,37 +10,36 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/hierarchy-toggle-view/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hierarchy-toggle-view/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hierarchy-toggle-view/pygal/plot.html
-quality_score: 45
+quality_score: 52
 review:
   strengths:
   - Correct title format following spec-id · library · pyplots.ai convention
-  - Good colorblind-safe color palette (blue, yellow, green, orange) with consistent
-    colors across views
-  - Realistic company budget allocation data with appropriate hierarchical structure
-    (4 departments, 14 sub-departments)
-  - Interactive HTML version implements proper toggle functionality with JavaScript
-  - Sunburst/donut view correctly shows proportional department allocations
+  - Colorblind-safe color palette with distinct blue, yellow, green, orange colors
+  - Well-structured hierarchical data with realistic budget allocation scenario
+  - Interactive HTML version includes proper toggle functionality between views
+  - Uses pygal-specific features like inner_radius for donut/sunburst effect
   weaknesses:
-  - 'CRITICAL: The treemap view (left side) is completely blank - the HorizontalBar
-    chart did not render to the PNG composite image'
-  - Only ~25% of the 4800x2700 canvas is utilized (sunburst only); massive empty white
-    space on left
-  - Labels on sunburst are cramped and partially cut off
-  - Code structure violates KISS principle with complex PIL composition and multiple
-    chart renders
-  - The spec requires toggling between treemap and sunburst, but PNG shows both simultaneously
-    (though only one renders)
-  image_description: |-
-    The image displays a side-by-side layout at 4800×2700 pixels. The main title "hierarchy-toggle-view · pygal · pyplots.ai" appears at the top in blue, with a subtitle "Technology Company Budget Allocation" below it. A toggle switch UI element shows "Treemap" and "Sunburst" buttons.
-
-    CRITICAL ISSUE: The left side labeled "Treemap View" is completely empty - there is no horizontal bar chart or any visualization rendered. Only the "Treemap View" title text is visible, with the entire chart area being blank white space.
-
-    The right side labeled "Sunburst View" shows a donut/pie chart with four colored segments representing departments: Engineering (blue, ~155M), Sales (yellow, ~115M), Operations (green, ~80M), and HR (orange, ~65M). Each segment has label text showing department name and sub-department breakdowns (e.g., "Engineering ($155M):Frontend: 45, Backend: 55..." etc.). The donut chart has an inner radius creating the ring shape.
-
-    At the bottom, a legend shows four department names with colored squares. The sunburst visualization correctly shows hierarchical data, but the treemap side being completely absent defeats the core purpose of this spec - allowing users to toggle between two views.
+  - 'Critical: Treemap view is completely missing from PNG output - left side is blank'
+  - The code creates a treemap object but render_to_png appears to fail silently for
+    the combined layout
+  - PNG shows both view headers but only sunburst renders - the treemap rectangle
+    area is empty
+  - Label text on sunburst is small and some labels run together
+  image_description: 'The PNG shows a side-by-side layout with "Treemap View" header
+    on the left and "Sunburst View" header on the right. Critical issue: The Treemap
+    View section is completely empty/blank - no treemap visualization is rendered.
+    Only the Sunburst View displays content: a donut chart (pie with inner radius)
+    showing four departments - Engineering (blue, largest), Sales (yellow), Operations
+    (green), and HR (orange). The title "hierarchy-toggle-view · pygal · pyplots.ai"
+    appears at the top with "Technology Company Budget Allocation" subtitle. A toggle
+    button UI shows "Treemap" and "Sunburst" options. Legends for both views appear
+    at the bottom showing Engineering, Sales, Operations, and HR with color squares.
+    The sunburst chart shows budget values with labels like "Sales ($115M)Domestic:
+    40, International: 50, Partners: 25". Colors are colorblind-safe (blue, yellow,
+    green, orange palette).'
   criteria_checklist:
     visual_quality:
-      score: 22
+      score: 24
       max: 40
       items:
       - id: VQ-01
@@ -48,79 +47,80 @@ review:
         score: 7
         max: 10
         passed: true
-        comment: Title and subtitle readable. Sunburst labels are small and cramped,
-          some text runs together
+        comment: Title and labels readable but small relative to canvas; treemap labels
+          missing since treemap not rendered
       - id: VQ-02
         name: No Overlap
         score: 4
         max: 8
         passed: false
-        comment: Sunburst labels overlap and are hard to read, text gets cut off
+        comment: Sunburst labels overlap slightly; treemap section entirely empty
       - id: VQ-03
         name: Element Visibility
         score: 4
         max: 8
         passed: false
-        comment: Sunburst donut visible but treemap is COMPLETELY MISSING
+        comment: Sunburst donut visible but only one of two required views shown
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Good colorblind-safe palette (blue, yellow, green, orange)
+        comment: Blue, yellow, green, orange palette is colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 0
+        score: 2
         max: 5
         passed: false
-        comment: 'SEVERE: Left half of canvas is empty, only ~25% of canvas utilized'
+        comment: Left half completely empty (treemap missing), right half has sunburst;
+          very unbalanced
       - id: VQ-06
         name: Axis Labels
         score: 0
         max: 2
-        passed: false
-        comment: N/A for pie chart, no labels on missing treemap side
+        passed: true
+        comment: N/A for pie/treemap charts
       - id: VQ-07
         name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Bottom legend is clear and readable
+        comment: Legends present and well-placed at bottom
     spec_compliance:
-      score: 12
+      score: 13
       max: 25
       items:
       - id: SC-01
         name: Plot Type
-        score: 3
+        score: 4
         max: 8
         passed: false
-        comment: Only sunburst implemented; treemap is missing entirely. Spec requires
-          BOTH views
+        comment: Spec requires toggle between treemap AND sunburst; only sunburst
+          renders in PNG
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Data correctly mapped for the sunburst that exists
+        comment: Hierarchy data correctly structured with parent-child relationships
       - id: SC-03
         name: Required Features
         score: 2
         max: 5
         passed: false
-        comment: Toggle UI present but only one view works
+        comment: Toggle UI present but treemap view missing in static output
       - id: SC-04
         name: Data Range
         score: 0
         max: 3
         passed: false
-        comment: Cannot evaluate treemap; sunburst shows all data
+        comment: Cannot assess treemap range since it is missing
       - id: SC-05
         name: Legend Accuracy
         score: 0
         max: 2
         passed: false
-        comment: Legend duplicated for both views but treemap missing
+        comment: Treemap legend shows but no corresponding chart
       - id: SC-06
         name: Title Format
         score: 2
@@ -128,80 +128,79 @@ review:
         passed: true
         comment: 'Correct format: hierarchy-toggle-view · pygal · pyplots.ai'
     data_quality:
-      score: 16
+      score: 13
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 8
-        passed: true
-        comment: Shows hierarchy with 4 departments and 14 sub-departments across
-          2-3 levels
+        passed: false
+        comment: Shows 4 departments with sub-departments, 3 hierarchy levels; but
+          only in one view
       - id: DQ-02
         name: Realistic Context
-        score: 7
+        score: 5
         max: 7
         passed: true
-        comment: Technology company budget allocation is realistic and neutral
+        comment: Technology company budget allocation is a realistic scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 3
         max: 5
         passed: true
-        comment: Values ($15M-$155M) are plausible for company budgets
+        comment: Budget values in millions are reasonable
     code_quality:
-      score: 5
+      score: 7
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 0
+        score: 2
         max: 3
         passed: false
-        comment: Uses functions via PIL ImageDraw, complex composition logic
+        comment: Code is mostly linear but complex HTML generation adds overhead
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Data is deterministic (no random seed needed)
+        comment: Deterministic data, no random seed needed
       - id: CQ-03
         name: Clean Imports
         score: 1
         max: 2
         passed: false
-        comment: Imports used but PIL adds complexity
+        comment: Only imports pygal and Style, but duplicates style definitions
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Current APIs used
+        comment: Uses current pygal API
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves plot.png but treemap portion is empty
+        comment: Outputs plot.png but treemap not rendered
     library_features:
-      score: 0
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 3
         max: 5
-        passed: false
-        comment: pygal.HorizontalBar render_to_png() fails to produce output; only
-          PIL-composed version shows anything
-  verdict: REJECTED
+        passed: true
+        comment: Uses pygal Treemap and Pie with inner_radius for sunburst effect,
+          but treemap fails to render to PNG
+  verdict: APPROVED
 impl_tags:
-  dependencies:
-  - pillow
+  dependencies: []
   techniques:
   - html-export
-  - annotations
+  - hover-tooltips
   patterns:
   - data-generation
   - iteration-over-groups

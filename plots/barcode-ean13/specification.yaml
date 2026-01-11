@@ -1,0 +1,26 @@
+# Specification-level metadata for barcode-ean13
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: barcode-ean13
+title: EAN-13 Barcode
+
+# Specification tracking
+created: 2026-01-11T22:58:00Z
+updated: null
+issue: 3808
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - barcode
+  data_type:
+    - numeric
+    - text
+  domain:
+    - business
+    - general
+  features:
+    - basic
+    - encoding

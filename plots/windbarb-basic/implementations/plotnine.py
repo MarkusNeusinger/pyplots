@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 windbarb-basic: Wind Barb Plot for Meteorological Data
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2026-01-11
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 88/100 | Created: 2026-01-11
 """
 
 import numpy as np

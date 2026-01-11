@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hierarchy-toggle-view: Interactive Treemap-Sunburst Toggle View
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 75/100 | Created: 2026-01-11
@@ -80,12 +80,10 @@ labels = [lbl for v, nid, lbl, d in sorted_data]
 depts = [d for v, nid, lbl, d in sorted_data]
 
 # Simple row-based layout
-x, y = 0, 0
+y = 0
 row_height = 25
 col_x = 0
 row_items = []
-row_value = 0
-target_row_value = total_value / 4  # 4 rows
 
 for i, (val, node_id, lbl, dept) in enumerate(zip(values, ids, labels, depts, strict=True)):
     width = 100 * (val / total_value) * 4 if total_value > 0 else 10
@@ -110,6 +108,7 @@ for i, (val, node_id, lbl, dept) in enumerate(zip(values, ids, labels, depts, st
                     "y2": y + row_height,
                     "cx": rx + scaled_w / 2,
                     "cy": y + row_height / 2,
+                    "view": "Treemap",
                 }
             )
             rx += scaled_w
@@ -133,6 +132,9 @@ start_angle = 0
 for dept in departments:
     dept_angle = 360 * (dept_values[dept] / total_company)
     end_angle = start_angle + dept_angle
+    mid_angle = (start_angle + end_angle) / 2
+    mid_angle_rad = np.radians(mid_angle - 90)
+    label_radius = 55  # Middle of inner ring
     sunburst_records.append(
         {
             "id": dept,
@@ -141,9 +143,12 @@ for dept in departments:
             "department": dept,
             "startAngle": start_angle,
             "endAngle": end_angle,
-            "innerRadius": 40,
-            "outerRadius": 70,
+            "innerRadius": 35,
+            "outerRadius": 65,
             "depth": 1,
+            "labelX": np.cos(mid_angle_rad) * label_radius,
+            "labelY": np.sin(mid_angle_rad) * label_radius,
+            "view": "Sunburst",
         }
     )
     # Level 2 - Team arcs within department
@@ -152,6 +157,9 @@ for dept in departments:
     for _, team in teams.iterrows():
         team_angle = dept_angle * (team["value"] / dept_values[dept]) if dept_values[dept] > 0 else 0
         team_end = dept_start + team_angle
+        team_mid_angle = (dept_start + team_end) / 2
+        team_mid_rad = np.radians(team_mid_angle - 90)
+        team_label_radius = 82  # Middle of outer ring
         sunburst_records.append(
             {
                 "id": team["id"],
@@ -160,9 +168,12 @@ for dept in departments:
                 "department": dept,
                 "startAngle": dept_start,
                 "endAngle": team_end,
-                "innerRadius": 70,
+                "innerRadius": 65,
                 "outerRadius": 100,
                 "depth": 2,
+                "labelX": np.cos(team_mid_rad) * team_label_radius,
+                "labelY": np.sin(team_mid_rad) * team_label_radius,
+                "view": "Sunburst",
             }
         )
         dept_start = team_end
@@ -176,7 +187,11 @@ sunburst_df["endAngle_rad"] = np.radians(sunburst_df["endAngle"] - 90)
 dept_domain = ["Engineering", "Sales", "Marketing", "Operations"]
 dept_range = ["#306998", "#FFD43B", "#E74C3C", "#27AE60"]
 
-# Treemap chart
+# Interactive toggle selection
+view_dropdown = alt.binding_select(options=["Treemap", "Sunburst"], name="Select View: ")
+view_selection = alt.selection_point(fields=["view"], bind=view_dropdown, value="Treemap")
+
+# Treemap chart - rectangles
 treemap_rects = (
     alt.Chart(treemap_df)
     .mark_rect(stroke="white", strokeWidth=3)
@@ -190,67 +205,100 @@ treemap_rects = (
             scale=alt.Scale(domain=dept_domain, range=dept_range),
             legend=alt.Legend(title="Department", titleFontSize=20, labelFontSize=18, orient="right"),
         ),
+        opacity=alt.condition(view_selection, alt.value(1), alt.value(0)),
         tooltip=[
             alt.Tooltip("label:N", title="Team"),
             alt.Tooltip("value:Q", title="Headcount"),
             alt.Tooltip("department:N", title="Department"),
         ],
     )
+    .add_params(view_selection)
 )
 
+# Treemap chart - labels
 treemap_labels = (
     alt.Chart(treemap_df)
-    .mark_text(fontSize=14, fontWeight="bold", color="white", baseline="middle", align="center")
+    .mark_text(fontSize=16, fontWeight="bold", color="white", baseline="middle", align="center")
     .encode(
         x=alt.X("cx:Q", scale=alt.Scale(domain=[0, 100])),
         y=alt.Y("cy:Q", scale=alt.Scale(domain=[0, 100])),
         text="label:N",
+        opacity=alt.condition(view_selection, alt.value(1), alt.value(0)),
     )
+    .add_params(view_selection)
 )
 
-treemap_chart = (treemap_rects + treemap_labels).properties(
-    width=1200, height=800, title=alt.Title("Treemap View - Team Sizes by Department", fontSize=22, anchor="middle")
-)
+treemap_chart = treemap_rects + treemap_labels
 
-# Sunburst chart
-sunburst_chart = (
+# Sunburst chart - arcs
+sunburst_arcs = (
     alt.Chart(sunburst_df)
     .mark_arc(stroke="white", strokeWidth=2)
     .encode(
         theta=alt.Theta("endAngle_rad:Q", scale=alt.Scale(domain=[-np.pi, np.pi])),
         theta2="startAngle_rad:Q",
-        radius=alt.Radius("outerRadius:Q", scale=alt.Scale(domain=[0, 120], range=[0, 350])),
+        radius=alt.Radius("outerRadius:Q", scale=alt.Scale(domain=[0, 120], range=[0, 450])),
         radius2="innerRadius:Q",
         color=alt.Color("department:N", scale=alt.Scale(domain=dept_domain, range=dept_range), legend=None),
+        opacity=alt.condition(view_selection, alt.value(1), alt.value(0)),
         tooltip=[
-            alt.Tooltip("label:N", title="Team"),
+            alt.Tooltip("label:N", title="Name"),
             alt.Tooltip("value:Q", title="Headcount"),
             alt.Tooltip("department:N", title="Department"),
         ],
     )
-    .properties(
-        width=800, height=800, title=alt.Title("Sunburst View - Hierarchical Structure", fontSize=22, anchor="middle")
-    )
+    .add_params(view_selection)
 )
 
-# Combine both views side by side
+# Sunburst chart - department labels (inner ring)
+dept_labels_df = sunburst_df[sunburst_df["depth"] == 1].copy()
+sunburst_dept_labels = (
+    alt.Chart(dept_labels_df)
+    .mark_text(fontSize=14, fontWeight="bold", color="white", baseline="middle", align="center")
+    .encode(
+        x=alt.X("labelX:Q", scale=alt.Scale(domain=[-120, 120])),
+        y=alt.Y("labelY:Q", scale=alt.Scale(domain=[-120, 120])),
+        text="label:N",
+        opacity=alt.condition(view_selection, alt.value(1), alt.value(0)),
+    )
+    .add_params(view_selection)
+)
+
+# Sunburst chart - team labels (outer ring, only larger teams)
+team_labels_df = sunburst_df[(sunburst_df["depth"] == 2) & (sunburst_df["value"] >= 20)].copy()
+sunburst_team_labels = (
+    alt.Chart(team_labels_df)
+    .mark_text(fontSize=12, fontWeight="normal", color="white", baseline="middle", align="center")
+    .encode(
+        x=alt.X("labelX:Q", scale=alt.Scale(domain=[-120, 120])),
+        y=alt.Y("labelY:Q", scale=alt.Scale(domain=[-120, 120])),
+        text="label:N",
+        opacity=alt.condition(view_selection, alt.value(1), alt.value(0)),
+    )
+    .add_params(view_selection)
+)
+
+sunburst_chart = sunburst_arcs + sunburst_dept_labels + sunburst_team_labels
+
+# Layer both views together (toggle controls visibility)
 combined_chart = (
-    alt.hconcat(treemap_chart, sunburst_chart, spacing=100)
-    .resolve_scale(color="shared")
+    alt.layer(treemap_chart, sunburst_chart)
     .properties(
+        width=900,
+        height=900,
         title=alt.Title(
             "hierarchy-toggle-view · altair · pyplots.ai",
             fontSize=28,
             anchor="middle",
             offset=20,
-            subtitle="Company Organization: Treemap (Size Comparison) vs Sunburst (Hierarchy)",
+            subtitle="Use dropdown to toggle between Treemap and Sunburst views",
             subtitleFontSize=18,
-        )
+        ),
     )
     .configure_view(strokeWidth=0)
     .configure_legend(titleFontSize=20, labelFontSize=18, symbolSize=200)
 )
 
 # Save outputs
-combined_chart.save("plot.png", scale_factor=3.0)
+combined_chart.save("plot.png", scale_factor=4.0)
 combined_chart.save("plot.html")

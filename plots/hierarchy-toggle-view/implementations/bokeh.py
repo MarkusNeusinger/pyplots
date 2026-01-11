@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hierarchy-toggle-view: Interactive Treemap-Sunburst Toggle View
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 58/100 | Created: 2026-01-11
@@ -7,7 +7,7 @@ Quality: 58/100 | Created: 2026-01-11
 import numpy as np
 from bokeh.io import export_png, save
 from bokeh.layouts import column, row
-from bokeh.models import Button, ColumnDataSource, CustomJS, Div, LabelSet
+from bokeh.models import Button, ColumnDataSource, CustomJS, Div, Legend, LegendItem
 from bokeh.plotting import figure
 from bokeh.resources import CDN
 
@@ -234,7 +234,7 @@ p = figure(
     tooltips="@labels",
 )
 
-p.title.text_font_size = "28pt"
+p.title.text_font_size = "36pt"
 p.title.text_color = "#306998"
 p.xaxis.visible = False
 p.yaxis.visible = False
@@ -279,37 +279,55 @@ treemap_renderer = p.rect(
     alpha=0.9,
 )
 
-# Add labels using LabelSet for proper PNG export
-treemap_labels_renderer = LabelSet(
-    x="x",
-    y="y",
-    text="text",
-    source=treemap_label_source,
-    text_font_size="22pt",
+# Add labels using text glyphs directly (more reliable for PNG export than LabelSet)
+treemap_labels_renderer = p.text(
+    x=treemap_label_xs,
+    y=treemap_label_ys,
+    text=treemap_text_labels,
+    text_font_size="24pt",
     text_color="#222222",
     text_align="center",
     text_baseline="middle",
     text_font_style="bold",
 )
-p.add_layout(treemap_labels_renderer)
 
-treemap_values_renderer = LabelSet(
-    x="x",
-    y="y",
-    text="text",
-    source=treemap_value_source,
-    text_font_size="18pt",
+treemap_values_renderer = p.text(
+    x=treemap_value_xs,
+    y=treemap_value_ys,
+    text=treemap_value_labels,
+    text_font_size="20pt",
     text_color="#444444",
     text_align="center",
     text_baseline="middle",
 )
-p.add_layout(treemap_values_renderer)
 
 # Draw sunburst (hidden initially)
 sunburst_renderer = p.patches(
     xs="xs", ys="ys", color="color", source=sunburst_source, line_color="white", line_width=2, alpha=0.9
 )
 sunburst_renderer.visible = False
+
+# Add legend for departments
+dept_colors = [
+    ("Engineering", colors["engineering"]),
+    ("Marketing", colors["marketing"]),
+    ("Operations", colors["operations"]),
+    ("HR", colors["hr"]),
+]
+
+legend_items = []
+for dept_name, dept_color in dept_colors:
+    legend_rect = p.rect(x=[-1000], y=[-1000], width=1, height=1, color=dept_color, alpha=0.9)
+    legend_items.append(LegendItem(label=dept_name, renderers=[legend_rect]))
+
+legend = Legend(items=legend_items, location="top_right", title="Departments", title_text_font_size="22pt")
+legend.label_text_font_size = "20pt"
+legend.glyph_height = 40
+legend.glyph_width = 40
+legend.spacing = 15
+legend.padding = 20
+legend.background_fill_alpha = 0.8
+p.add_layout(legend, "right")
 
 # Create toggle buttons
 treemap_btn = Button(label="Treemap View", button_type="primary", width=200, height=50)
@@ -332,7 +350,7 @@ toggle_to_treemap = CustomJS(
     tm_values.visible = true;
     tm_btn.button_type = 'primary';
     sb_btn.button_type = 'default';
-""",
+    """,
 )
 
 toggle_to_sunburst = CustomJS(
@@ -351,7 +369,7 @@ toggle_to_sunburst = CustomJS(
     tm_values.visible = false;
     tm_btn.button_type = 'default';
     sb_btn.button_type = 'primary';
-""",
+    """,
 )
 
 treemap_btn.js_on_click(toggle_to_treemap)
@@ -369,9 +387,5 @@ layout = column(title_div, button_row, p)
 # Save HTML for interactive version
 save(layout, filename="plot.html", resources=CDN, title="Hierarchy Toggle View")
 
-# For PNG export, ensure treemap view is shown
-treemap_renderer.visible = True
-sunburst_renderer.visible = False
-treemap_labels_renderer.visible = True
-treemap_values_renderer.visible = True
+# For PNG export, ensure treemap view with labels is shown
 export_png(p, filename="plot.png")

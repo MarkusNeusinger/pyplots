@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hierarchy-toggle-view: Interactive Treemap-Sunburst Toggle View
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-11
@@ -80,190 +80,132 @@ for nid in level1_ids:
             colors[cid] = colors[nid]
 
 
-# ============ TREEMAP DATA ============
-def build_treemap_data():
-    """Build rectangle data for treemap visualization."""
-    rects = []
-    x_start = 0
-    total = df[df["id"].isin(level1_ids)]["value"].sum()
+# ============ TREEMAP DATA (flat structure) ============
+treemap_rects = []
+x_start = 0
+treemap_total = df[df["id"].isin(level1_ids)]["value"].sum()
 
-    for nid in level1_ids:
-        parent_val = df[df["id"] == nid]["value"].iloc[0]
-        parent_width = (parent_val / total) * 100
+for nid in level1_ids:
+    parent_val = df[df["id"] == nid]["value"].iloc[0]
+    parent_width = (parent_val / treemap_total) * 100
 
-        # Get children
-        child_ids = children.get(nid, [])
-        child_vals = [df[df["id"] == cid]["value"].iloc[0] for cid in child_ids]
-        child_total = sum(child_vals)
+    child_ids = children.get(nid, [])
+    child_vals = [df[df["id"] == cid]["value"].iloc[0] for cid in child_ids]
+    child_total = sum(child_vals)
 
-        y_start = 0
-        for cid, cval in zip(child_ids, child_vals, strict=True):
-            child_height = (cval / child_total) * 100
-            label = df[df["id"] == cid]["label"].iloc[0]
-            # Text color: dark for yellow/light backgrounds, white for dark backgrounds
-            text_col = "#333333" if colors[cid] == "#FFD43B" else "white"
-            rects.append(
-                {
-                    "xmin": x_start + 0.5,
-                    "xmax": x_start + parent_width - 0.5,
-                    "ymin": y_start + 0.5,
-                    "ymax": y_start + child_height - 0.5,
-                    "fill": colors[cid],
-                    "label": f"{label}\n${cval}K",
-                    "label_x": x_start + parent_width / 2,
-                    "label_y": y_start + child_height / 2,
-                    "category": df[df["id"] == nid]["label"].iloc[0],
-                    "view": "Treemap View",
-                    "text_color": text_col,
-                }
-            )
-            y_start += child_height
-        x_start += parent_width
+    y_start = 0
+    for cid, cval in zip(child_ids, child_vals, strict=True):
+        child_height = (cval / child_total) * 100
+        label = df[df["id"] == cid]["label"].iloc[0]
+        text_col = "#333333" if colors[cid] == "#FFD43B" else "white"
+        treemap_rects.append(
+            {
+                "xmin": x_start + 0.5,
+                "xmax": x_start + parent_width - 0.5,
+                "ymin": y_start + 0.5,
+                "ymax": y_start + child_height - 0.5,
+                "fill": colors[cid],
+                "label": f"{label}\n${cval}K",
+                "label_x": x_start + parent_width / 2,
+                "label_y": y_start + child_height / 2,
+                "text_color": text_col,
+            }
+        )
+        y_start += child_height
+    x_start += parent_width
 
-    return pd.DataFrame(rects)
+treemap_df = pd.DataFrame(treemap_rects)
 
 
-# ============ SUNBURST DATA ============
-def create_wedge(cx, cy, inner_r, outer_r, start_angle, end_angle, n_points=50):
-    """Create polygon vertices for a wedge shape."""
-    angles_outer = np.linspace(start_angle, end_angle, n_points)
-    angles_inner = np.linspace(end_angle, start_angle, n_points)
+# ============ SUNBURST DATA (flat structure) ============
+sunburst_wedges = []
+sunburst_labels = []
+wedge_id = 0
+sunburst_total = df[df["id"].isin(level1_ids)]["value"].sum()
+start_angle = np.pi / 2  # Start at top
+cx, cy = 50, 50  # Center position
+n_points = 50
 
+for nid in level1_ids:
+    parent_val = df[df["id"] == nid]["value"].iloc[0]
+    parent_sweep = (parent_val / sunburst_total) * 2 * np.pi
+
+    # Inner ring wedge (level 1)
+    inner_r, outer_r = 12, 28
+    angles_outer = np.linspace(start_angle, start_angle + parent_sweep, n_points)
+    angles_inner = np.linspace(start_angle + parent_sweep, start_angle, n_points)
     x_outer = cx + outer_r * np.cos(angles_outer)
     y_outer = cy + outer_r * np.sin(angles_outer)
     x_inner = cx + inner_r * np.cos(angles_inner)
     y_inner = cy + inner_r * np.sin(angles_inner)
-
     x = np.concatenate([x_outer, x_inner])
     y = np.concatenate([y_outer, y_inner])
 
-    return x, y
+    for xi, yi in zip(x, y, strict=True):
+        sunburst_wedges.append({"x": xi, "y": yi, "wedge_id": wedge_id, "fill": colors[nid]})
+    wedge_id += 1
 
+    # Inner ring label with budget
+    mid_angle = start_angle + parent_sweep / 2
+    text_col = "#333333" if colors[nid] == "#FFD43B" else "white"
+    label_r = 20
+    lx = cx + label_r * np.cos(mid_angle)
+    ly = cy + label_r * np.sin(mid_angle)
+    parent_label = df[df["id"] == nid]["label"].iloc[0]
+    sunburst_labels.append({"x": lx, "y": ly, "label": f"{parent_label}\n${int(parent_val)}K", "text_color": text_col})
 
-def build_sunburst_data():
-    """Build polygon data for sunburst visualization."""
-    wedges = []
-    wedge_id = 0
-    total = df[df["id"].isin(level1_ids)]["value"].sum()
-    start_angle = np.pi / 2  # Start at top
+    # Outer ring wedges (level 2 - children)
+    child_ids = children.get(nid, [])
+    child_vals = [df[df["id"] == cid]["value"].iloc[0] for cid in child_ids]
+    child_total = sum(child_vals)
+    child_start = start_angle
 
-    # Center position for sunburst (offset to right side)
-    cx, cy = 50, 50
+    for cid, cval in zip(child_ids, child_vals, strict=True):
+        child_sweep = (cval / child_total) * parent_sweep
 
-    for nid in level1_ids:
-        parent_val = df[df["id"] == nid]["value"].iloc[0]
-        parent_sweep = (parent_val / total) * 2 * np.pi
+        inner_r, outer_r = 30, 45
+        angles_outer = np.linspace(child_start, child_start + child_sweep, n_points)
+        angles_inner = np.linspace(child_start + child_sweep, child_start, n_points)
+        x_outer = cx + outer_r * np.cos(angles_outer)
+        y_outer = cy + outer_r * np.sin(angles_outer)
+        x_inner = cx + inner_r * np.cos(angles_inner)
+        y_inner = cy + inner_r * np.sin(angles_inner)
+        x = np.concatenate([x_outer, x_inner])
+        y = np.concatenate([y_outer, y_inner])
 
-        # Inner ring (level 1)
-        x, y = create_wedge(cx, cy, 12, 28, start_angle, start_angle + parent_sweep)
         for xi, yi in zip(x, y, strict=True):
-            wedges.append({"x": xi, "y": yi, "wedge_id": wedge_id, "fill": colors[nid], "view": "Sunburst View"})
+            sunburst_wedges.append({"x": xi, "y": yi, "wedge_id": wedge_id, "fill": colors[cid]})
         wedge_id += 1
 
-        # Outer ring (level 2 - children)
-        child_ids = children.get(nid, [])
-        child_vals = [df[df["id"] == cid]["value"].iloc[0] for cid in child_ids]
-        child_total = sum(child_vals)
-        child_start = start_angle
+        # Outer ring label with budget (only for large enough segments)
+        if child_sweep > 0.2:
+            child_mid = child_start + child_sweep / 2
+            text_col = "#333333" if colors[cid] == "#FFD43B" else "white"
+            label_r = 37.5
+            lx = cx + label_r * np.cos(child_mid)
+            ly = cy + label_r * np.sin(child_mid)
+            child_label = df[df["id"] == cid]["label"].iloc[0]
+            sunburst_labels.append({"x": lx, "y": ly, "label": f"{child_label}\n${cval}K", "text_color": text_col})
+        child_start += child_sweep
 
-        for cid, cval in zip(child_ids, child_vals, strict=True):
-            child_sweep = (cval / child_total) * parent_sweep
-            x, y = create_wedge(cx, cy, 30, 45, child_start, child_start + child_sweep)
-            for xi, yi in zip(x, y, strict=True):
-                wedges.append({"x": xi, "y": yi, "wedge_id": wedge_id, "fill": colors[cid], "view": "Sunburst View"})
-            wedge_id += 1
-            child_start += child_sweep
+    start_angle += parent_sweep
 
-        start_angle += parent_sweep
-
-    return pd.DataFrame(wedges)
-
-
-def build_sunburst_labels():
-    """Build label data for sunburst visualization."""
-    labels = []
-    total = df[df["id"].isin(level1_ids)]["value"].sum()
-    start_angle = np.pi / 2
-    cx, cy = 50, 50
-
-    for nid in level1_ids:
-        parent_val = df[df["id"] == nid]["value"].iloc[0]
-        parent_sweep = (parent_val / total) * 2 * np.pi
-        mid_angle = start_angle + parent_sweep / 2
-
-        # Inner ring label - text color based on background
-        text_col = "#333333" if colors[nid] == "#FFD43B" else "white"
-        label_r = 20
-        lx = cx + label_r * np.cos(mid_angle)
-        ly = cy + label_r * np.sin(mid_angle)
-        labels.append(
-            {
-                "x": lx,
-                "y": ly,
-                "label": df[df["id"] == nid]["label"].iloc[0],
-                "view": "Sunburst View",
-                "text_color": text_col,
-            }
-        )
-
-        # Outer ring labels
-        child_ids = children.get(nid, [])
-        child_vals = [df[df["id"] == cid]["value"].iloc[0] for cid in child_ids]
-        child_total = sum(child_vals)
-        child_start = start_angle
-
-        for cid, cval in zip(child_ids, child_vals, strict=True):
-            child_sweep = (cval / child_total) * parent_sweep
-            if child_sweep > 0.25:  # Only label large enough segments
-                child_mid = child_start + child_sweep / 2
-                text_col = "#333333" if colors[cid] == "#FFD43B" else "white"
-                label_r = 37.5
-                lx = cx + label_r * np.cos(child_mid)
-                ly = cy + label_r * np.sin(child_mid)
-                labels.append(
-                    {
-                        "x": lx,
-                        "y": ly,
-                        "label": df[df["id"] == cid]["label"].iloc[0],
-                        "view": "Sunburst View",
-                        "text_color": text_col,
-                    }
-                )
-            child_start += child_sweep
-
-        start_angle += parent_sweep
-
-    return pd.DataFrame(labels)
-
-
-# Build data for both views
-treemap_df = build_treemap_data()
-sunburst_df = build_sunburst_data()
-sunburst_labels_df = build_sunburst_labels()
-
-# For combined plot, we need consistent columns
-# Treemap uses rect coordinates, sunburst uses polygon coordinates
-
-# Create a combined dataframe with dummy data for faceting structure
-combined_treemap = treemap_df[
-    ["xmin", "xmax", "ymin", "ymax", "fill", "label", "label_x", "label_y", "view", "text_color"]
-].copy()
-combined_sunburst = sunburst_df[["x", "y", "wedge_id", "fill", "view"]].copy()
-combined_sunburst_labels = sunburst_labels_df.copy()
+sunburst_df = pd.DataFrame(sunburst_wedges)
+sunburst_labels_df = pd.DataFrame(sunburst_labels)
 
 # Split labels by color for proper text rendering
-treemap_white_labels = combined_treemap[combined_treemap["text_color"] == "white"]
-treemap_dark_labels = combined_treemap[combined_treemap["text_color"] == "#333333"]
+treemap_white_labels = treemap_df[treemap_df["text_color"] == "white"]
+treemap_dark_labels = treemap_df[treemap_df["text_color"] == "#333333"]
 
-sunburst_white_labels = combined_sunburst_labels[combined_sunburst_labels["text_color"] == "white"]
-sunburst_dark_labels = combined_sunburst_labels[combined_sunburst_labels["text_color"] == "#333333"]
+sunburst_white_labels = sunburst_labels_df[sunburst_labels_df["text_color"] == "white"]
+sunburst_dark_labels = sunburst_labels_df[sunburst_labels_df["text_color"] == "#333333"]
 
 # Create the combined plot with both views
 plot = (
     ggplot()
     # Treemap rectangles
     + geom_rect(
-        data=combined_treemap,
+        data=treemap_df,
         mapping=aes(xmin="xmin", xmax="xmax", ymin="ymin", ymax="ymax", fill="fill"),
         color="white",
         size=1.2,
@@ -273,7 +215,7 @@ plot = (
         data=treemap_white_labels,
         mapping=aes(x="label_x", y="label_y", label="label"),
         color="white",
-        size=9,
+        size=11,
         fontweight="bold",
     )
     # Treemap labels - dark text (for yellow backgrounds)
@@ -281,12 +223,12 @@ plot = (
         data=treemap_dark_labels,
         mapping=aes(x="label_x", y="label_y", label="label"),
         color="#333333",
-        size=9,
+        size=11,
         fontweight="bold",
     )
     # Sunburst polygons (offset to right)
     + geom_polygon(
-        data=combined_sunburst.assign(x=lambda d: d["x"] + 110),
+        data=sunburst_df.assign(x=lambda d: d["x"] + 110),
         mapping=aes(x="x", y="y", fill="fill", group="wedge_id"),
         color="white",
         size=0.7,
@@ -296,7 +238,7 @@ plot = (
         data=sunburst_white_labels.assign(x=lambda d: d["x"] + 110),
         mapping=aes(x="x", y="y", label="label"),
         color="white",
-        size=8,
+        size=10,
         fontweight="bold",
     )
     # Sunburst labels - dark text (offset to right)
@@ -304,30 +246,30 @@ plot = (
         data=sunburst_dark_labels.assign(x=lambda d: d["x"] + 110),
         mapping=aes(x="x", y="y", label="label"),
         color="#333333",
-        size=8,
+        size=10,
         fontweight="bold",
     )
     # Use identity scale to respect literal color values
     + scale_fill_identity()
     # Sunburst center circle
-    + annotate("point", x=160, y=50, size=35, color="white")
-    + annotate("text", x=160, y=53, label="Total", size=10, fontweight="bold", color="#306998")
-    + annotate("text", x=160, y=47, label=f"${int(total_value)}K", size=9, color="#555555")
+    + annotate("point", x=160, y=50, size=40, color="white")
+    + annotate("text", x=160, y=53, label="Total", size=12, fontweight="bold", color="#306998")
+    + annotate("text", x=160, y=47, label=f"${int(total_value)}K", size=11, color="#555555")
     # View titles
-    + annotate("text", x=50, y=108, label="Treemap View", size=14, fontweight="bold", color="#333333")
-    + annotate("text", x=160, y=108, label="Sunburst View", size=14, fontweight="bold", color="#333333")
+    + annotate("text", x=50, y=108, label="Treemap View", size=16, fontweight="bold", color="#333333")
+    + annotate("text", x=160, y=108, label="Sunburst View", size=16, fontweight="bold", color="#333333")
     # Main title
     + annotate(
         "text",
         x=105,
         y=120,
         label="hierarchy-toggle-view · plotnine · pyplots.ai",
-        size=16,
+        size=18,
         fontweight="bold",
         color="#306998",
     )
     # Subtitle
-    + annotate("text", x=105, y=114, label="Research Department Budget Allocation", size=11, color="#666666")
+    + annotate("text", x=105, y=114, label="Research Department Budget Allocation", size=13, color="#666666")
     + lims(x=(-5, 215), y=(-10, 130))
     + theme_void()
     + theme(figure_size=(16, 9), legend_position="none")

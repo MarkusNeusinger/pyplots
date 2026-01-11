@@ -1,0 +1,214 @@
+library: plotnine
+specification_id: area-stock-range
+created: '2026-01-11T09:28:53Z'
+updated: '2026-01-11T09:47:53Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20892894478
+issue: 3701
+python_version: 3.13.11
+library_version: 0.15.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stock-range/plotnine/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stock-range/plotnine/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent faceted design effectively simulates range selector concept in a static
+    plot
+  - Clear visual distinction between main view and overview with highlighted selection
+    region
+  - Professional styling with proper text sizes, subtle grid, and clean color scheme
+  - Realistic stock data with varied market conditions (trends, volatility clusters)
+  - Proper use of geom_ribbon with dynamic y_min per panel for optimal fill
+  weaknesses:
+  - The Selected Timeframe annotation label is not visible in the final output (may
+    have been obscured or positioned incorrectly)
+  - 'Minor: Could benefit from slightly more prominent boundary lines or handles on
+    the selection region'
+  image_description: 'The plot displays a stock area chart with range selector functionality
+    implemented via two faceted panels. The top panel shows the "Selected Range: Apr-Oct
+    2023 (6M)" with a filled blue area chart (#306998 with alpha) showing stock price
+    movements between approximately $180-$260. The bottom panel shows "Range Selector
+    · Full History" displaying approximately 2 years of trading data (Jan 2022 - Jan
+    2024) with the selected 6-month range highlighted by a light blue shaded rectangle
+    and dashed vertical boundary lines. Both panels use the same blue color scheme
+    with semi-transparent fills below the price line and solid blue lines on top.
+    The Y-axis shows "Stock Price (USD)" with dollar-formatted labels ($120-$260 range),
+    and the X-axis shows "Date" with monthly labels at 45-degree angles. The title
+    correctly follows the format "area-stock-range · plotnine · pyplots.ai".'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt, axis labels 20pt, tick labels 16pt, all clearly readable
+          at full resolution
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements, x-axis labels angled at 45 degrees
+          to prevent overlap
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Line thickness and area fill appropriate; price movements clearly
+          visible; line could be slightly thicker
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color scheme (#306998) is colorblind-safe with good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of facet_wrap with two panels; slight extra whitespace between
+          panels
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Stock Price (USD) and Date are descriptive with units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid subtle with alpha=0.3, but annotation label not visible in output
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct filled area chart for stock prices with range selector concept
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Date on X-axis, price on Y-axis, correctly assigned
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has main chart + range selector overview with highlighted selection;
+          lacks interactive presets (acceptable for static library)
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible with free Y-scales per panel for optimal viewing
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed; panel titles clearly identify each view
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: Uses correct format area-stock-range · plotnine · pyplots.ai
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows trends, volatility periods, bull runs, corrections; good variety
+          of market conditions
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Stock price simulation with realistic patterns including trends and
+          volatility clustering
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Price range $120-$260 is realistic for a stock over 2 years of business
+          days
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Linear structure: imports, data generation, plot, save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) at start ensures reproducibility
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (plotnine components, numpy, pandas)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current plotnine 0.15.2 API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: 'Good use of ggplot grammar: facet_wrap, geom_ribbon+geom_line layering,
+          geom_rect for highlighting, scale_x_datetime, theme customization'
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - faceting
+  - layer-composition
+  - annotations
+  patterns:
+  - data-generation
+  dataprep:
+  - time-series
+  styling:
+  - alpha-blending
+  - grid-styling

@@ -1,19 +1,14 @@
-""" pyplots.ai
+"""pyplots.ai
 hierarchy-toggle-view: Interactive Treemap-Sunburst Toggle View
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-11
 """
 
-import sys
+import math
 
-
-sys.path = [p for p in sys.path if not p.endswith("implementations")]
-
-import math  # noqa: E402
-
-import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
-from plotnine import (  # noqa: E402
+import numpy as np
+import pandas as pd
+from plotnine import (
     aes,
     annotate,
     coord_fixed,
@@ -260,7 +255,7 @@ def create_annular_segment(start_angle, end_angle, inner_r, outer_r, center_x, c
 
 
 sunburst_center_x = 200
-sunburst_center_y = 45
+sunburst_center_y = 50
 sunburst_polygons = []
 sunburst_labels = []
 segment_id = 0
@@ -345,8 +340,8 @@ label_ring2 = sunburst_label_df[sunburst_label_df["ring"] == 2].reset_index(drop
 # ========== BUILD LEGEND DATA ==========
 legend_data = []
 legend_x = 105
-legend_y_start = 8
-legend_spacing = 5
+legend_y_start = 35
+legend_spacing = 8
 
 for i, dept in enumerate(departments):
     y_pos = legend_y_start + i * legend_spacing
@@ -419,7 +414,7 @@ plot = (
     + scale_fill_identity()
     + coord_fixed(ratio=1)
     + scale_x_continuous(limits=(-5, 250), expand=(0, 0))
-    + scale_y_continuous(limits=(-10, 105), expand=(0, 0))
+    + scale_y_continuous(limits=(-5, 105), expand=(0, 0))
     + labs(title="hierarchy-toggle-view · plotnine · pyplots.ai")
     + theme(
         figure_size=(16, 9),

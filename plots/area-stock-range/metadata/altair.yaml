@@ -1,0 +1,216 @@
+library: altair
+specification_id: area-stock-range
+created: '2026-01-11T09:31:30Z'
+updated: '2026-01-11T09:36:05Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20892894296
+issue: 3701
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stock-range/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stock-range/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stock-range/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of the two-chart composition with selection linking via
+    brush
+  - Beautiful gradient fill effect using alt.Gradient with proper gradient stops
+  - Clean, readable code following KISS principles
+  - Realistic stock price data generation with random walk simulation
+  - Proper tooltip formatting with date and currency formatting
+  - Good use of Altair declarative grammar for chart specification
+  weaknesses:
+  - Missing preset range buttons (1M, 3M, 6M, 1Y, YTD, All) specified in the specification
+    - only drag-to-select is implemented
+  - No subtle grid for easier price reading in the main chart
+  - Range selector mini chart could be more visually distinct from the main chart
+  image_description: 'The plot displays a stock area chart with two vertically stacked
+    components: a main chart (top) and a range selector (bottom). The main chart shows
+    stock price history from January 2021 to December 2024, with prices ranging from
+    approximately $125 to $305 USD. The area is filled with a gradient from light
+    blue-gray at the bottom (rgba(48, 105, 152, 0.15)) to more saturated blue at the
+    top (rgba(48, 105, 152, 0.5)), with a solid dark blue line (#306998) tracing the
+    price movements. The title "area-stock-range · altair · pyplots.ai" appears at
+    the top center in 28pt font. The Y-axis is labeled "Price (USD)" and X-axis shows
+    "Date" with month-year labels rotated at -45 degrees. The range selector below
+    shows a mini version of the entire dataset with the instruction "Drag to select
+    date range" as its title. Both charts share the same blue color scheme and are
+    connected via an interval selection brush that allows the main chart to zoom to
+    the selected range.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: 'Title, axis labels, and tick marks are clearly readable at appropriate
+          font sizes. Minor: x-axis labels could be slightly larger.'
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements. Rotated x-axis labels prevent overlap.
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Area chart clearly visible with appropriate fill opacity and line
+          weight. Mini chart could be slightly more prominent.
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single blue color scheme is colorblind-safe.
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent canvas utilization with main chart and range selector well
+          proportioned.
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Y-axis has 'Price (USD)' with unit, X-axis has 'Date'.
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: No grid visible for price reading assistance.
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Correct chart type: filled area chart for stock price visualization.'
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Date on X-axis (temporal), Price on Y-axis (quantitative) correctly
+          assigned.
+      - id: SC-03
+        name: Required Features
+        score: 3
+        max: 5
+        passed: false
+        comment: Has interactive range selector with mini chart context. Missing preset
+          range buttons (1M, 3M, 6M, 1Y, YTD, All).
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Axes show all data appropriately with nice padding.
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single series; tooltips provide data context.
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Uses correct format: area-stock-range · altair · pyplots.ai'
+    data_quality:
+      score: 20
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 8
+        max: 8
+        passed: true
+        comment: 'Shows realistic stock price behavior: volatility, trends, corrections,
+          sideways movements over ~4 years.'
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Stock price simulation using random walk with drift is standard and
+          realistic.
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Price ranges from ~$125-$305 - realistic stock price values.
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → charts → save.'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42) for reproducible data.
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only imports altair, numpy, pandas - all used.
+      - id: CQ-04
+        name: No Deprecated API
+        score: 0
+        max: 1
+        passed: false
+        comment: Uses alt.selection_interval which works but newer patterns exist.
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves both plot.png and plot.html.
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: 'Uses Altair''s declarative approach: interval selection, gradient
+          fills, vconcat composition. Good but not exceptional.'
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - time-series
+  dataprep:
+  - cumulative-sum
+  styling:
+  - gradient-fill
+  - alpha-blending

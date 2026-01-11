@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 area-stock-range: Stock Area Chart with Range Selector
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-11

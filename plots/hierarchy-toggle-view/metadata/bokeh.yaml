@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: hierarchy-toggle-view
 created: '2026-01-11T09:31:55Z'
-updated: '2026-01-11T09:51:27Z'
+updated: '2026-01-11T10:00:04Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20892893155
 issue: 3697
@@ -13,31 +13,32 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/hierarchy-togg
 quality_score: 72
 review:
   strengths:
-  - Excellent use of Bokeh interactive features with CustomJS callbacks for view toggling
-  - Well-implemented inline squarify algorithm for treemap layout
-  - Clean sunburst implementation using patches with proper angular calculations
-  - Realistic company budget data with clear hierarchy
-  - Both HTML (interactive) and PNG (static) outputs provided
-  - Good color distinction between departments and sub-departments
-  - Legend properly shows department categories
+  - Realistic company budget hierarchy data with clear department structure
+  - Good treemap layout algorithm implementation
+  - Colors are generally distinguishable
+  - Interactive HTML version includes proper toggle functionality with CustomJS
+  - Clean code organization with separate PNG and HTML generation
   weaknesses:
-  - PNG export only shows treemap view - cannot demonstrate toggle functionality which
-    is core spec requirement
-  - Legend shows only 4 department colors, not the distinct sub-department colors
-    used in treemap
-  - Some similar green/teal shades for Marketing sub-departments reduce distinguishability
-  image_description: 'The plot displays a treemap visualization of company budget
-    allocation with 13 sub-department rectangles across 4 main departments. Each rectangle''s
-    area is proportional to its budget value. Colors distinguish departments: Engineering
-    sub-departments (Backend in steel blue $1500K, Frontend in coral red $1200K, DevOps
-    in teal $800K, QA in yellow $600K), Marketing (Digital in light orange $900K,
-    Content in teal $700K, Analytics in green $500K), Operations (Logistics in orange
-    $1100K, Facilities in light orange $600K, Procurement in dark orange $450K), and
-    HR (Benefits in purple $300K, Recruiting in lavender $400K, Training in purple
-    $350K). The title "hierarchy-toggle-view · bokeh · pyplots.ai" appears at top
-    left in blue. A department legend is positioned on the right. Labels show department
-    names in bold with budget values below. The static PNG shows only the treemap
-    view; the sunburst view is available via toggle buttons in the HTML export.'
+  - PNG output only shows treemap view - sunburst is not visible (spec requires toggle
+    between both views)
+  - Legend only shows 4 parent departments, not matching the 13+ colors visible in
+    treemap
+  - Code is overly complex with inline squarify algorithm
+  - Panel labels and toggle arrow from code are not visible in output
+  image_description: 'The plot shows only a treemap view of a company budget hierarchy.
+    The treemap displays 13 colored rectangles representing sub-departments (Backend,
+    Frontend, Digital, QA, DevOps, Facilities, Logistics, Content, Analytics, Recruiting,
+    Training, Benefits, Procurement). Each rectangle is sized proportionally to its
+    budget value and labeled with the department name and budget (e.g., "Backend $1500K").
+    Colors include red (Frontend), blue (Backend), yellow (Digital), green (DevOps,
+    Content), orange (Logistics, Facilities, Procurement), purple/cyan (Recruiting,
+    Training, Benefits), and others. A small "Departments" legend appears in the top-right
+    corner showing only the 4 parent categories: Engineering, Marketing, Operations,
+    and HR. The title "hierarchy-toggle-view · bokeh · pyplots.ai" is displayed at
+    the top left in blue text. Critically, the sunburst view that should be shown
+    alongside the treemap is NOT visible in the PNG output - only the treemap is rendered.
+    The code intended to show both views side-by-side with panel labels and a toggle
+    arrow, but these elements are also not visible in the final output.'
   criteria_checklist:
     visual_quality:
       score: 32
@@ -48,7 +49,7 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Labels readable but could be larger for some smaller rectangles
+        comment: Labels readable but value text is somewhat small
       - id: VQ-02
         name: No Overlap
         score: 8
@@ -60,53 +61,53 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Rectangles well-sized, but some smaller ones are cramped
+        comment: Rectangles visible but some are quite small
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 5
         passed: true
-        comment: Colors generally distinct, some similar greens/teals
+        comment: Generally colorblind-safe but some similar hues
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Good canvas utilization, some whitespace at top/bottom
+        comment: Treemap fills canvas well but legend is minimal
       - id: VQ-06
         name: Axis Labels
-        score: 0
-        max: 2
-        passed: true
-        comment: N/A for treemap visualization
-      - id: VQ-07
-        name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Legend well-placed and clear
+        comment: N/A for treemap, labels present on rectangles
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: false
+        comment: Legend shows only 4 parent departments, not all colors
     spec_compliance:
-      score: 18
+      score: 15
       max: 25
       items:
       - id: SC-01
         name: Plot Type
-        score: 6
+        score: 4
         max: 8
-        passed: true
-        comment: Treemap correct, PNG cannot show sunburst toggle
+        passed: false
+        comment: Only treemap visible, sunburst NOT shown in PNG
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Area correctly proportional to values
+        comment: Data correctly mapped to rectangle sizes
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 2
         max: 5
         passed: false
-        comment: Toggle buttons exist in HTML but not demonstrable in PNG; no animation
+        comment: Toggle button missing from PNG, no sunburst visible
       - id: SC-04
         name: Data Range
         score: 3
@@ -115,93 +116,92 @@ review:
         comment: All data visible
       - id: SC-05
         name: Legend Accuracy
-        score: 1
-        max: 2
-        passed: false
-        comment: Legend shows departments but not sub-department colors
-      - id: SC-06
-        name: Title Format
         score: 0
         max: 2
         passed: false
-        comment: 'Title format is correct: hierarchy-toggle-view · bokeh · pyplots.ai'
+        comment: Legend shows only 4 parent departments, not matching all rectangle
+          colors
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: false
+        comment: Correct format but missing panel labels
     data_quality:
-      score: 17
+      score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Shows hierarchy well, 3 levels represented
+        comment: Good hierarchy with 3 levels, 18 nodes
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Company budget allocation is excellent real-world scenario
+        comment: Company budget allocation is realistic and neutral
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Budget values realistic ($300K-$1500K range)
+        comment: Budget values are realistic
     code_quality:
-      score: 10
+      score: 7
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 1
         max: 3
-        passed: true
-        comment: Linear structure, no classes/functions
+        passed: false
+        comment: Code is quite long with inline squarify algorithm
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) set
+        comment: np.random.seed(42) present
       - id: CQ-03
         name: Clean Imports
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: All imports used
+        passed: false
+        comment: Div import used only in HTML version
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Current Bokeh API
+        comment: Current API usage
       - id: CQ-05
         name: Output Correct
         score: 1
         max: 1
         passed: true
-        comment: Saves plot.png and plot.html
+        comment: Saves as plot.png
     library_features:
-      score: 5
+      score: 0
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 5
+        score: 0
         max: 5
-        passed: true
-        comment: 'Excellent use of Bokeh: ColumnDataSource, CustomJS callbacks, Button
-          widgets, patches for sunburst, Legend with LegendItem, interactive HTML
-          export'
+        passed: false
+        comment: HTML version has CustomJS callbacks but PNG fails to show both views
   verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - patches
-  - custom-legend
-  - hover-tooltips
-  - html-export
   - annotations
+  - hover-tooltips
+  - custom-legend
+  - html-export
   patterns:
   - data-generation
   - columndatasource
@@ -210,4 +210,3 @@ impl_tags:
   styling:
   - alpha-blending
   - edge-highlighting
-  - minimal-chrome

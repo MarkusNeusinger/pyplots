@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-race-animated: Animated Bar Chart Race
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 86/100 | Created: 2026-01-11
+Quality: 87/100 | Created: 2026-01-11
 """
 
 from io import BytesIO

@@ -1,7 +1,7 @@
 library: pygal
 specification_id: bar-race-animated
 created: '2026-01-11T00:21:12Z'
-updated: '2026-01-11T00:46:43Z'
+updated: '2026-01-11T00:57:57Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20886563904
 issue: 3653
@@ -10,33 +10,34 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-race-animated/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-race-animated/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-race-animated/pygal/plot.html
-quality_score: 86
+quality_score: 87
 review:
   strengths:
-  - Excellent color scheme with 8 distinct, colorblind-safe colors
-  - Clear visualization of market cap ranking evolution over 6 years
-  - Smart small multiples approach for libraries without animation support
-  - Global legend at bottom reduces redundancy
-  - Realistic tech company market cap data scenario
-  - Good use of pygal value formatting and styling options
+  - Excellent small multiples approach to represent animation in a static format
+  - Clear ranking progression visible across years (NVIDIA rise is engaging)
+  - Consistent color coding allows tracking entities across panels
+  - Good use of value labels on bars showing exact market cap
+  - Clean title format and professional appearance
+  - Both PNG and interactive HTML output generated
   weaknesses:
-  - Redundant legends appear on each individual chart despite show_legend=False (pygal
-    displays series as legend entries when using separate add calls)
-  - Grid styling could be improved - the individual chart legends clutter the visualization
-  - Title format slightly non-compliant - individual charts show only year, not full
-    spec-id format
-  image_description: 'The plot displays a 3x2 small multiples grid showing tech company
-    market capitalization evolution from 2019 to 2024. Each panel is a horizontal
-    bar chart with 8 companies (Apple, Microsoft, Alphabet, Amazon, Meta, Tesla, NVIDIA,
-    Samsung) sorted by value in descending order. Bars are distinctly colored: Apple
-    (blue), Microsoft (yellow), Alphabet (green), Amazon (orange), Meta (purple),
-    Tesla (red), NVIDIA (lime green), Samsung (brown). Each bar displays its value
-    in billions (e.g., "$1,200B", "$2,610B"). The main title "bar-race-animated ·
-    pygal · pyplots.ai" appears at the top in dark text. Year labels (2019-2024) serve
-    as individual chart titles. Each chart has "Market Cap ($B)" as the x-axis label.
-    A global legend at the bottom shows all 8 companies with their color boxes. The
-    layout demonstrates ranking changes over time - notably NVIDIA rises from bottom
-    ranks in 2019 to near top in 2024, while companies like Meta show volatility.'
+  - Per-chart legends are redundant since global legend exists (adds visual noise)
+  - Some value labels on smaller bars may be hard to read
+  - Heavy reliance on PIL/Pillow for composition rather than pygal native features
+  image_description: 'The plot displays a 3x2 grid of horizontal bar charts showing
+    tech company market cap evolution from 2019 to 2024. Each panel represents one
+    year with bars sorted by value (descending). The main title "bar-race-animated
+    · pygal · pyplots.ai" is centered at the top in a large, readable font. Each bar
+    shows its value label (e.g., "$1,200B") positioned in the middle of the bar. Companies
+    are color-coded consistently across all panels: Apple (blue), Microsoft (yellow),
+    Alphabet (green), Amazon (orange), Meta (purple), Tesla (red), NVIDIA (lime green),
+    Samsung (brown). A global legend appears at the bottom of the image showing all
+    company-color mappings. The charts effectively show ranking changes over time
+    - notably NVIDIA rises from near-bottom positions in 2019 to #1 by 2024, while
+    Tesla and Microsoft also show dramatic growth. Meta shows volatility with a dip
+    in 2022. The bars are properly sorted by value within each year panel, demonstrating
+    the "race" concept through small multiples. The layout is clean with white backgrounds,
+    subtle grid lines, and properly scaled axes that adjust per year to accommodate
+    the data range.'
   criteria_checklist:
     visual_quality:
       score: 34
@@ -47,44 +48,44 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Most text readable, but individual chart legends are small and redundant
+        comment: Main title and axis labels readable, some value labels inside bars
+          slightly small
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping text elements, clean layout
       - id: VQ-03
         name: Element Visibility
         score: 7
         max: 8
         passed: true
-        comment: Bars clearly visible, good sizing for data density
+        comment: Bars well-sized and visible, good spacing between bars
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Distinct colors for all 8 companies, colorblind-safe palette
+        comment: 8 distinct colors that are colorblind-friendly
       - id: VQ-05
         name: Layout Balance
         score: 4
         max: 5
         passed: true
-        comment: Good 3x2 grid utilization, minor spacing inefficiencies
+        comment: Good grid space usage, but per-chart legends add redundancy
       - id: VQ-06
         name: Axis Labels
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: Market Cap ($B) is descriptive with units
+        comment: X-axis labeled Market Cap ($B), Y-axis has no explicit label
       - id: VQ-07
         name: Grid & Legend
-        score: 0
+        score: 1
         max: 2
-        passed: false
-        comment: Redundant legends on each chart AND bottom global legend creates
-          visual clutter
+        passed: true
+        comment: Grid subtle, per-chart legends redundant with global legend
     spec_compliance:
       score: 23
       max: 25
@@ -94,39 +95,38 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct horizontal bar chart type
+        comment: Correct horizontal bar chart, properly sorted per time period
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Companies on y-axis, market cap on x-axis, correct
+        comment: Companies on Y-axis, market cap on X-axis, correctly sorted
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Shows ranking changes, consistent colors, time snapshots; slight
-          issue with no smooth transitions (expected for static output)
+        comment: Small multiples for animation, sorted bars, consistent colors, time
+          indicator as year titles
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All values visible within axis range
+        comment: Axes auto-scale appropriately per year
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend labels match company names correctly
+        comment: Global legend correctly maps colors to companies
       - id: SC-06
         name: Title Format
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Has correct main title format but year titles on individual charts
-          may confuse with spec-id
+        passed: true
+        comment: Correctly uses bar-race-animated · pygal · pyplots.ai
     data_quality:
       score: 18
       max: 20
@@ -136,23 +136,22 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows ranking changes well (NVIDIA rises, Meta volatility), good
-          variety
+        comment: Shows ranking changes well, demonstrates race concept effectively
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Tech company market caps are a realistic, neutral business scenario
+        comment: Tech company market cap is real, neutral, comprehensible scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Values are plausible for tech market caps 2019-2024; some growth
-          rates slightly exaggerated but acceptable
+        comment: Values plausible for tech market caps, NVIDIA 2024 value slightly
+          aggressive
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -160,8 +159,7 @@ review:
         score: 2
         max: 3
         passed: true
-        comment: Generally follows imports→data→plot→save but uses lambdas and has
-          complexity with PIL grid composition
+        comment: Mostly linear flow, uses PIL for grid composition adding complexity
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -173,7 +171,7 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports are used (pygal, cairosvg, PIL, numpy)
+        comment: All imports used
       - id: CQ-04
         name: No Deprecated API
         score: 1
@@ -182,11 +180,10 @@ review:
         comment: Uses current pygal API
       - id: CQ-05
         name: Output Correct
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Saves as plot.png but also creates plot.html (extra file, though
-          acceptable for interactive output)
+        passed: true
+        comment: Saves as plot.png and plot.html
     library_features:
       score: 3
       max: 5
@@ -196,14 +193,13 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses pygal HorizontalBar, custom Style, value_formatter, print_values;
-          also leverages SVG→PNG conversion and HTML output. Good but not exceptional
-          use of pygal-specific features.
+        comment: Uses pygal HorizontalBar with custom Style, print_values, value_formatter,
+          and HTML export. Relies heavily on PIL for composition.
   verdict: APPROVED
 impl_tags:
   dependencies:
-  - pillow
   - cairosvg
+  - pillow
   techniques:
   - subplots
   - html-export
@@ -212,5 +208,4 @@ impl_tags:
   - data-generation
   - iteration-over-groups
   dataprep: []
-  styling:
-  - edge-highlighting
+  styling: []

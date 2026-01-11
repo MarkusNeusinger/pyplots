@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 mosaic-categorical: Mosaic Plot for Categorical Association Analysis
 Library: highcharts unknown | Python 3.13.11
-Quality: 88/100 | Created: 2026-01-11
+Quality: 91/100 | Created: 2026-01-11
 """
 
 import tempfile

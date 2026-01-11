@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: mosaic-categorical
 created: '2026-01-11T00:20:13Z'
-updated: '2026-01-11T00:28:04Z'
+updated: '2026-01-11T00:40:24Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20886562386
 issue: 3650
@@ -10,86 +10,85 @@ library_version: unknown
 preview_url: https://storage.googleapis.com/pyplots-images/plots/mosaic-categorical/highcharts/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/mosaic-categorical/highcharts/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/mosaic-categorical/highcharts/plot.html
-quality_score: 88
+quality_score: 91
 review:
   strengths:
-  - Excellent use of Highcharts treemap with stripes layout algorithm to approximate
-    mosaic plot behavior
-  - Classic Titanic dataset provides immediately recognizable and meaningful context
-  - Colorblind-safe color palette (blue/yellow)
-  - Clear hierarchical structure with class labels at top level and survival status
-    within
-  - Inline legend in subtitle is elegant and space-efficient
-  - White borders provide clear visual separation between categories
+  - Excellent use of treemap as mosaic approximation with stripes layout algorithm
+  - Outstanding text legibility with appropriate font sizes and text outlines
+  - Perfect colorblind-safe color scheme (blue/yellow)
+  - Effective inline legend in subtitle avoids chart clutter
+  - Realistic Titanic dataset demonstrates categorical association patterns clearly
+  - Good canvas utilization (~90% filled)
+  - Hierarchical data structure properly represents class to survival breakdown
   weaknesses:
-  - Not a true mosaic plot (spec suggests statsmodels.graphics.mosaicplot); treemap
-    is a reasonable approximation but widths represent total counts rather than marginal
-    proportions
-  - Some white space at bottom of canvas could be better utilized
-  - Title font size could be larger for the 4800x2700 canvas
-  - Title format includes descriptive text before the required format
-  image_description: 'The plot displays a treemap-style mosaic visualization of Titanic
-    survival data by passenger class. The chart uses a stripes layout algorithm creating
-    horizontal divisions for each class (Crew, Third, First, Second from top to bottom).
+  - Traditional mosaic plots have a specific layout where widths represent marginal
+    proportions and heights represent conditional proportions; treemap is an approximation
+  - The subtitle has extra descriptive text beyond the pure spec format requirement
+  image_description: 'The plot displays a mosaic/treemap visualization of Titanic
+    survival data by passenger class. The chart uses a "stripes" layout algorithm
+    creating horizontal rectangular sections. Four passenger classes are shown: Crew
+    (largest, top), Third (second largest), First, and Second (smallest, bottom).
     Each class section is subdivided into "Survived" (Python Blue #306998) and "Died"
-    (Python Yellow #FFD43B) rectangles. The Crew and Third class sections are the
-    largest, showing the highest passenger counts. Within each class, the proportions
-    clearly show survival rates - First class has more survivors than deaths, while
-    Crew and Third class have significantly more deaths than survivors. The title
-    reads "Titanic Survival by Class · mosaic-categorical · highcharts · pyplots.ai"
-    with a subtitle explaining the area proportionality and color legend. Labels are
-    displayed on each rectangle showing the class name and survival status. White
-    borders separate the rectangles for clarity.'
+    (Python Yellow #FFD43B) rectangles. The title "mosaic-categorical · highcharts
+    · pyplots.ai" appears at the top in bold. A subtitle provides context: "Titanic
+    Survival by Passenger Class · Rectangle area proportional to count" with a color
+    legend showing blue square for Survived and yellow square for Died. All text labels
+    are clearly readable with white text outlines for contrast. The plot fills the
+    canvas well with balanced margins.'
   criteria_checklist:
     visual_quality:
-      score: 35
+      score: 37
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 10
         max: 10
         passed: true
-        comment: Title and labels are readable but could be larger relative to the
-          high-resolution canvas
+        comment: Title at 72px, subtitle at 42px, data labels at 32-48px, all perfectly
+          readable with text outlines for contrast
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements, all labels clearly visible
+        comment: No overlapping text elements, all labels clearly positioned within
+          their rectangles
       - id: VQ-03
         name: Element Visibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: Rectangles are well-sized and clearly visible with good proportions
+        comment: Rectangles well-sized, but some smaller sections (Second class) have
+          proportionally less visual weight
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Uses Python Blue and Yellow, colorblind-safe palette
+        comment: Blue (#306998) and Yellow (#FFD43B) are colorblind-safe, good contrast
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Good use of canvas but some unused white space at bottom
+        comment: Plot fills approximately 90% of canvas, excellent use of space with
+          proper margins
       - id: VQ-06
         name: Axis Labels
         score: 0
         max: 2
         passed: false
-        comment: N/A for mosaic/treemap plots - no axes present
+        comment: N/A for treemap visualization (no axes), but subtitle provides context
       - id: VQ-07
         name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Inline legend in subtitle is well-integrated
+        comment: Inline legend in subtitle is clean and effective, white borders between
+          sections work well
     spec_compliance:
-      score: 22
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -97,42 +96,43 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Uses treemap as mosaic approximation; effective but not true statsmodels
-          mosaic
+        comment: Uses treemap as mosaic approximation; rectangles show proportional
+          areas correctly, though traditional mosaic plots have a more specific layout
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Categories correctly mapped (Class as rows, Survival as columns within)
+        comment: Class as primary category (rows), Survival as secondary (colors within),
+          counts as area
       - id: SC-03
         name: Required Features
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Shows proportional areas, color coding, gap spacing; missing explicit
-          residual coloring
+        comment: Shows categorical association, rectangle areas proportional to frequency,
+          color coding for survival status
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data categories visible
+        comment: All four classes and both survival outcomes visible
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly identifies Survived/Died colors
+        comment: Subtitle legend accurately describes Survived (blue) and Died (yellow)
       - id: SC-06
         name: Title Format
         score: 1
         max: 2
         passed: false
-        comment: Has required elements but includes extra descriptive text before
-          format
+        comment: Correct format but extra descriptive text in subtitle (acceptable
+          but not pure spec format)
     data_quality:
-      score: 18
+      score: 19
       max: 20
       items:
       - id: DQ-01
@@ -140,35 +140,38 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows variation across classes with different survival rates
+        comment: Shows variation across classes (First had high survival, Third/Crew
+          had low survival), demonstrates association patterns
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Titanic survival data is a classic contingency table example
+        comment: Classic Titanic dataset, well-known neutral historical example
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Counts are realistic based on historical Titanic data patterns
+        comment: Counts are realistic (203, 122, 118, 167, 178, 528, 212, 673) matching
+          historical patterns
     code_quality:
-      score: 9
+      score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: 'Linear flow: imports → data → plot → save'
+        comment: Generally follows linear structure but has more complexity for treemap/selenium
+          workflow
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set (though data is hardcoded, seed is present)
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -186,7 +189,7 @@ review:
         score: 0
         max: 1
         passed: false
-        comment: Saves plot.png but creates intermediary plot_raw.png
+        comment: Saves as plot.png correctly after cropping
     library_features:
       score: 4
       max: 5
@@ -196,15 +199,16 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Uses Highcharts treemap with stripes algorithm, level-based styling,
-          HTML subtitle
-  verdict: REJECTED
+        comment: Uses Highcharts treemap with stripes layout, hierarchical data structure,
+          level-specific styling, interactive HTML export
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium
   - pillow
   techniques:
   - html-export
+  - annotations
   patterns:
   - data-generation
   - iteration-over-groups

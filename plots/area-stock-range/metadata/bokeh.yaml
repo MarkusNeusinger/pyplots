@@ -1,0 +1,218 @@
+library: bokeh
+specification_id: area-stock-range
+created: '2026-01-11T09:30:00Z'
+updated: '2026-01-11T09:33:34Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 20892893622
+issue: 3701
+python_version: 3.13.11
+library_version: 3.8.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/area-stock-range/bokeh/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/area-stock-range/bokeh/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/area-stock-range/bokeh/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of Bokeh RangeTool for interactive range selection
+  - Realistic stock price generation using geometric Brownian motion with trend and
+    volatility components
+  - Clean two-panel layout with main chart and mini context chart
+  - Proper use of ColumnDataSource for efficient data sharing between charts
+  - Good visual styling with semi-transparent fill (alpha=0.4) and solid line overlay
+  - Both PNG and HTML exports provided for static and interactive viewing
+  weaknesses:
+  - Missing preset range buttons (1M, 3M, 6M, 1Y, YTD, All) mentioned in the specification
+  image_description: The plot displays a stock area chart with a range selector. The
+    main chart (top) shows price data in USD on the Y-axis (ranging from 0 to ~250)
+    against dates on the X-axis (Jan 2025 to Nov 2025). The area is filled with Python
+    Blue (#306998) at ~40% opacity with a solid blue line on top. The title "area-stock-range
+    · bokeh · pyplots.ai" appears in the top-left. Below the main chart is a mini
+    range selector showing the full 3-year data range (Jan 2023 to Jan 2026) with
+    a yellow/gold highlighted selection box indicating the currently viewed range.
+    The range selector includes the label "Drag to select date range" and shows the
+    same blue area fill at lower opacity. The Y-axis shows "Price (USD)" and X-axis
+    shows "Date". Grid lines are visible with dashed styling and low opacity.
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title, axis labels, and tick labels are all clearly readable at the
+          4800x2700 resolution with appropriate font sizes (28pt title, 22pt labels,
+          18pt ticks)
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements; date labels are well-spaced
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Area fill and line are clearly visible; alpha=0.4 works well for
+          the data density
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Single color scheme (Python Blue) is colorblind-safe; yellow range
+          selector provides good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Main chart and range selector are well-proportioned; good use of
+          canvas space with the two-panel layout
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Price (USD) and Date are descriptive with units
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Grid is subtle with alpha=0.3 and dashed style, but no legend context
+          provided (though not strictly needed for single series)
+    spec_compliance:
+      score: 23
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct filled area chart for stock visualization
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Date on X-axis, price on Y-axis correctly mapped
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has range selector with mini chart context, semi-transparent fill
+          with solid line on top, interactive tools; missing preset range buttons
+          (1M, 3M, 6M, 1Y, YTD, All) mentioned in spec
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible in range selector; main chart shows selected range
+          correctly
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: No legend needed for single series
+      - id: SC-06
+        name: Title Format
+        score: 1
+        max: 2
+        passed: true
+        comment: Uses correct format area-stock-range · bokeh · pyplots.ai
+    data_quality:
+      score: 19
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows price trends, volatility clusters, both upward and downward
+          movements; demonstrates range selection capability
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Stock price data with realistic geometric Brownian motion, ~7.5%
+          annual return, 24% volatility - very plausible financial scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 5
+        max: 5
+        passed: true
+        comment: Price range ($0-250) and 3-year timeframe are realistic for stock
+          data
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Clean linear structure: imports → data → main chart → range selector
+          → save'
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: np.random.seed(42) ensures reproducibility
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (numpy, pandas, bokeh modules)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current Bokeh API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves both plot.png and plot.html which is correct for interactive
+          libraries but marked 0 for consistency
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'Excellent use of Bokeh-specific features: RangeTool for interactive
+          range selection, ColumnDataSource for data management, column layout for
+          combining figures, interactive tools (xpan, xwheel_zoom), HTML export for
+          interactivity'
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - hover-tooltips
+  - html-export
+  patterns:
+  - data-generation
+  - columndatasource
+  dataprep:
+  - time-series
+  styling:
+  - alpha-blending
+  - grid-styling

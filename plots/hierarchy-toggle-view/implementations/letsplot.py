@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 hierarchy-toggle-view: Interactive Treemap-Sunburst Toggle View
-Library: letsplot | Python 3.13
-Quality: pending | Created: 2025-01-11
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 88/100 | Created: 2026-01-11
 """
 
 import json

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 windbarb-basic: Wind Barb Plot for Meteorological Data
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 68/100 | Created: 2026-01-11
@@ -25,15 +25,15 @@ np.random.seed(42)
 u = np.random.uniform(-30, 30, len(x))
 v = np.random.uniform(-25, 25, len(x))
 
-# Force a few calm conditions and one high wind (pennant) for feature coverage
+# Force a few calm conditions and high winds (pennants) for feature coverage
 u[0] = 0.5
 v[0] = 0.3  # Calm (~0.6 knots)
 u[5] = 1.0
 v[5] = -0.8  # Calm (~1.3 knots)
 u[15] = 45
-v[15] = 25  # High wind (~51 knots - 1 pennant)
-u[20] = 50
-v[20] = 15  # High wind (~52 knots - 1 pennant)
+v[15] = 35  # High wind (~57 knots - 1 pennant)
+u[20] = 55
+v[20] = 10  # High wind (~56 knots - 1 pennant)
 
 # Calculate wind speed and direction
 wind_speed = np.sqrt(u**2 + v**2)
@@ -122,13 +122,13 @@ staff = (
     alt.Chart(barbed_df)
     .mark_rule(strokeWidth=2.5, color="#306998")
     .encode(
-        x=alt.X("x:Q", title="Station X Position (grid units)", scale=alt.Scale(domain=[-1, 12])),
-        y=alt.Y("y:Q", title="Station Y Position (grid units)", scale=alt.Scale(domain=[-1, 9.5])),
+        x=alt.X("x:Q", title="Longitude (degrees E)", scale=alt.Scale(domain=[-1, 12])),
+        y=alt.Y("y:Q", title="Latitude (degrees N)", scale=alt.Scale(domain=[-1, 9.5])),
         x2="x2:Q",
         y2="y2:Q",
         tooltip=[
-            alt.Tooltip("x:Q", title="X Position", format=".1f"),
-            alt.Tooltip("y:Q", title="Y Position", format=".1f"),
+            alt.Tooltip("x:Q", title="Longitude", format=".1f"),
+            alt.Tooltip("y:Q", title="Latitude", format=".1f"),
             alt.Tooltip("speed:Q", title="Wind Speed (knots)", format=".1f"),
             alt.Tooltip("direction:Q", title="Direction (deg from N)", format=".0f"),
         ],
@@ -143,15 +143,16 @@ points = (
 )
 
 # Layer 3: Calm wind indicators (open circles for < 2.5 knots)
+# Using larger size and thicker stroke for better visibility
 calm_circles = (
     alt.Chart(calm_df)
-    .mark_circle(size=150, stroke="#306998", strokeWidth=2.5, fill="white")
+    .mark_circle(size=400, stroke="#306998", strokeWidth=4, fill="white")
     .encode(
         x="x:Q",
         y="y:Q",
         tooltip=[
-            alt.Tooltip("x:Q", title="X Position", format=".1f"),
-            alt.Tooltip("y:Q", title="Y Position", format=".1f"),
+            alt.Tooltip("x:Q", title="Longitude", format=".1f"),
+            alt.Tooltip("y:Q", title="Latitude", format=".1f"),
             alt.Tooltip("speed:Q", title="Wind Speed (knots)", format=".1f"),
         ],
     )
@@ -165,45 +166,55 @@ barbs = (
 )
 
 # Layer 5: Pennant triangles (filled markers for 50 knots)
-# Using mark_point with triangle-up shape (Altair standard shape)
-pennants = (
-    (
-        alt.Chart(pennant_df)
-        .mark_point(shape="triangle-up", size=350, color="#306998", filled=True)
-        .encode(
-            x="x:Q",
-            y="y:Q",
-            angle=alt.Angle("angle:Q"),
-            tooltip=[alt.Tooltip("speed:Q", title="Speed (knots)", format=".1f")],
+# Build pennants as small filled triangles using polygon-like mark_line
+pennant_layer_list = []
+if len(pennant_df) > 0:
+    for _, prow in pennant_df.iterrows():
+        # Create a filled triangle outline
+        px, py = prow["x"], prow["y"]
+        angle_rad = np.radians(prow["angle"])
+        # Small triangle vertices (scaled to data coordinates)
+        tri_size = 0.18
+        v1_x = px + tri_size * np.cos(angle_rad)
+        v1_y = py + tri_size * np.sin(angle_rad)
+        v2_x = px + tri_size * np.cos(angle_rad + 2.09)  # 120 degrees
+        v2_y = py + tri_size * np.sin(angle_rad + 2.09)
+        v3_x = px + tri_size * np.cos(angle_rad - 2.09)
+        v3_y = py + tri_size * np.sin(angle_rad - 2.09)
+        tri_data = pd.DataFrame({"x": [v1_x, v2_x, v3_x, v1_x], "y": [v1_y, v2_y, v3_y, v1_y], "order": [0, 1, 2, 3]})
+        # Draw triangle outline (filled appearance via thick stroke)
+        pennant_layer_list.append(
+            alt.Chart(tri_data).mark_line(strokeWidth=4, color="#306998").encode(x="x:Q", y="y:Q", order="order:O")
         )
-    )
-    if len(pennant_df) > 0
-    else alt.Chart(pd.DataFrame({"x": []})).mark_point()
-)
+        # Add center point to give filled appearance
+        center_data = pd.DataFrame({"x": [px], "y": [py]})
+        pennant_layer_list.append(
+            alt.Chart(center_data)
+            .mark_point(shape="triangle", size=200, color="#306998", filled=True)
+            .encode(x="x:Q", y="y:Q")
+        )
+pennants = alt.layer(*pennant_layer_list) if pennant_layer_list else alt.Chart(pd.DataFrame({"x": []})).mark_point()
 
-# Create legend as text annotations within the main chart coordinate space
-# Position in top-right corner with proper spacing
-legend_base_x = 10.5
-legend_base_y = 7.5
-
-legend_text_data = pd.DataFrame(
+# Create legend as text annotations in the top-right area of the plot
+# Using explicit data coordinates that are visible within the axis domain
+legend_items = pd.DataFrame(
     {
-        "x": [legend_base_x, legend_base_x, legend_base_x, legend_base_x, legend_base_x],
-        "y": [legend_base_y, legend_base_y - 0.7, legend_base_y - 1.4, legend_base_y - 2.1, legend_base_y - 2.8],
-        "text": [
-            "Wind Barb Legend:",
-            "○  Calm (< 2.5 knots)",
-            "—  Half barb = 5 knots",
-            "——  Full barb = 10 knots",
-            "▲  Pennant = 50 knots",
+        "x": [9.2, 9.2, 9.2, 9.2, 9.2],
+        "y": [8.8, 8.2, 7.6, 7.0, 6.4],
+        "label": [
+            "Wind Barb Key:",
+            "○ Calm (< 2.5 kt)",
+            "— Half barb = 5 kt",
+            "—— Full barb = 10 kt",
+            "▲ Pennant = 50 kt",
         ],
     }
 )
 
 legend_text = (
-    alt.Chart(legend_text_data)
-    .mark_text(align="left", fontSize=16, font="sans-serif", color="#333333")
-    .encode(x="x:Q", y="y:Q", text="text:N")
+    alt.Chart(legend_items)
+    .mark_text(align="left", baseline="middle", fontSize=14, font="monospace", fontWeight="bold", color="#333333")
+    .encode(x="x:Q", y="y:Q", text="label:N")
 )
 
 # Main wind barb chart with all layers including legend

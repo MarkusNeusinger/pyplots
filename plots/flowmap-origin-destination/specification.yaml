@@ -1,0 +1,32 @@
+# Specification-level metadata for flowmap-origin-destination
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: flowmap-origin-destination
+title: Origin-Destination Flow Map
+
+# Specification tracking
+created: 2026-01-11T22:50:00Z
+updated: 2026-01-11T22:50:00Z
+issue: 3765
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - map
+    - arc
+    - flow
+  data_type:
+    - geospatial
+    - numeric
+    - relational
+  domain:
+    - general
+    - business
+    - statistics
+  features:
+    - flow
+    - proportional
+    - geographic
+    - connection

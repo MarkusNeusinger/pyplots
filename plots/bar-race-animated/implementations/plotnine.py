@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-race-animated: Animated Bar Chart Race
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-11
@@ -90,37 +90,46 @@ df["label"] = df["revenue"].apply(lambda x: f"${x:.0f}B")
 # Sort for consistent ordering within facets
 df = df.sort_values(["year", "rank"])
 
+# Create a categorical ordering column for proper per-facet bar sorting
+# This creates a unique rank-based key for each year-company pair
+df["bar_order"] = df.groupby("year")["revenue"].rank(ascending=True, method="first").astype(int)
+
 # Get max revenue for consistent x-axis scaling
 max_revenue = df["revenue"].max()
 
+# Create combined label for display (company name and value)
+df["bar_label"] = df.apply(lambda row: f"{row['company']}  {row['label']}", axis=1)
+
 # Create the small multiples plot - bars sorted by revenue within each facet
+# Using bar_order ensures proper sorting per-facet (rank-based within each year)
 plot = (
-    ggplot(df, aes(x="reorder(company, revenue)", y="revenue", fill="company"))
-    + geom_col(width=0.75, show_legend=False)
-    + geom_text(aes(label="label"), ha="left", nudge_y=8, size=10, color="#333333")
+    ggplot(df, aes(x="bar_order", y="revenue", fill="company"))
+    + geom_col(width=0.8, show_legend=False)
+    + geom_text(aes(label="bar_label"), ha="left", nudge_y=5, size=9, color="#333333")
     + coord_flip()
     + facet_wrap("~year_label", ncol=2)
     + scale_fill_manual(values=colors)
-    + scale_y_continuous(expand=(0.02, 0, 0.15, 0))
-    + expand_limits(y=max_revenue * 1.15)
+    + scale_y_continuous(expand=(0.02, 0, 0.25, 0))
+    + expand_limits(y=max_revenue * 1.2)
     + labs(
         title="Tech Company Revenue Race · bar-race-animated · plotnine · pyplots.ai", x="", y="Revenue (Billions USD)"
     )
     + theme_minimal()
     + theme(
-        figure_size=(16, 12),
-        plot_title=element_text(size=24, weight="bold", ha="center"),
-        axis_title_x=element_text(size=18, margin={"t": 15}),
+        figure_size=(16, 10),
+        plot_title=element_text(size=24, weight="bold", ha="center", margin={"b": 15}),
+        axis_title_x=element_text(size=18, margin={"t": 10}),
         axis_title_y=element_blank(),
         axis_text_x=element_text(size=14),
-        axis_text_y=element_text(size=15),
+        axis_text_y=element_blank(),
         strip_text=element_text(size=20, weight="bold"),
         strip_background=element_rect(fill="#f0f0f0", color="none"),
-        panel_spacing=0.4,
+        panel_spacing=0.05,
         panel_grid_major_y=element_blank(),
         panel_grid_minor=element_blank(),
+        plot_margin=0.02,
     )
 )
 
 # Save
-plot.save("plot.png", dpi=300, width=16, height=12)
+plot.save("plot.png", dpi=300)

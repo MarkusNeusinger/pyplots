@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 area-stock-range: Stock Area Chart with Range Selector
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-11
@@ -68,32 +68,29 @@ custom_style = Style(
     foreground_subtle="#666666",
     colors=("#306998",),
     title_font_size=72,
-    label_font_size=48,
-    major_label_font_size=44,
-    legend_font_size=48,
-    value_font_size=36,
+    label_font_size=44,
+    major_label_font_size=40,
+    legend_font_size=44,
+    value_font_size=32,
     opacity=0.4,
     opacity_hover=0.7,
     stroke_width=4,
 )
 
-# Create x-axis labels for filtered data
+# Create x-axis labels for filtered data - show fewer labels to avoid overlap
 x_labels = []
+label_interval = 45  # Show label every ~45 data points (roughly every 2 months)
 for i, d in enumerate(filtered_dates):
-    if i % 30 == 0:
+    if i % label_interval == 0:
         x_labels.append(d.strftime("%b %Y"))
     else:
         x_labels.append("")
 
-# Create main chart with range selector in title
-range_buttons_display = "  ".join(
-    f"[{r}]" if r == selected_range else f" {r} " for r in ["1M", "3M", "6M", "1Y", "YTD", "All"]
-)
-
+# Create main chart
 main_chart = pygal.Line(
     width=4800,
-    height=2100,
-    title=f"area-stock-range · pygal · pyplots.ai\nRange: {range_buttons_display}",
+    height=1900,
+    title="area-stock-range · pygal · pyplots.ai",
     x_title="Date",
     y_title="Price (USD)",
     style=custom_style,
@@ -101,45 +98,45 @@ main_chart = pygal.Line(
     show_dots=False,
     show_x_guides=False,
     show_y_guides=True,
-    x_label_rotation=45,
+    x_label_rotation=35,
     truncate_label=-1,
     show_legend=True,
     legend_at_bottom=True,
     legend_at_bottom_columns=1,
-    legend_box_size=32,
+    legend_box_size=28,
     show_minor_x_labels=False,
     stroke_style={"width": 4, "linecap": "round", "linejoin": "round"},
-    margin=100,
-    margin_top=200,
-    margin_bottom=180,
-    spacing=40,
+    margin=80,
+    margin_top=150,
+    margin_bottom=200,
+    spacing=30,
 )
 
 main_chart.x_labels = x_labels
-main_chart.add(f"Stock Price ({selected_range} view)", filtered_prices)
+main_chart.add("Stock Price (1Y view)", filtered_prices)
 
-# Mini chart style for range context
+# Mini chart style for range navigator
 mini_style = Style(
-    background="white",
-    plot_background="#f5f5f5",
-    foreground="#666666",
-    foreground_strong="#666666",
-    foreground_subtle="#999999",
+    background="#fafafa",
+    plot_background="#f0f0f0",
+    foreground="#555555",
+    foreground_strong="#555555",
+    foreground_subtle="#888888",
     colors=("#306998",),
-    title_font_size=48,
-    label_font_size=36,
-    major_label_font_size=32,
+    title_font_size=44,
+    label_font_size=32,
+    major_label_font_size=28,
     legend_font_size=0,
     value_font_size=0,
-    opacity=0.5,
-    stroke_width=2,
+    opacity=0.6,
+    stroke_width=3,
 )
 
 # Create mini chart showing full range
 mini_chart = pygal.Line(
     width=4800,
-    height=600,
-    title="Full Range Navigator (selected range highlighted)",
+    height=500,
+    title="Range Navigator — Full History",
     style=mini_style,
     fill=True,
     show_dots=False,
@@ -150,15 +147,15 @@ mini_chart = pygal.Line(
     show_y_labels=False,
     x_label_rotation=0,
     margin=60,
-    margin_top=80,
-    margin_bottom=60,
-    spacing=20,
+    margin_top=90,
+    margin_bottom=70,
+    spacing=15,
 )
 
-# Sparse labels for mini chart
+# Sparse labels for mini chart - quarterly
 mini_labels = []
 for i, d in enumerate(dates):
-    if i % 84 == 0:
+    if i % 63 == 0:  # Every ~3 months
         mini_labels.append(d.strftime("%b '%y"))
     else:
         mini_labels.append("")
@@ -177,40 +174,74 @@ mini_img = Image.open(io.BytesIO(mini_png))
 # Create combined image (4800 x 2700)
 combined = Image.new("RGB", (4800, 2700), "white")
 combined.paste(main_img, (0, 0))
-combined.paste(mini_img, (0, 2100))
 
-# Draw range indicator on mini chart section
+# Add range selector buttons area
 draw = ImageDraw.Draw(combined)
 
-# Calculate indicator position
-chart_left = 120
-chart_right = 4680
-chart_width = chart_right - chart_left
-indicator_left = chart_left + int((selected_start / total_days) * chart_width)
-indicator_width = int(((total_days - selected_start) / total_days) * chart_width)
-indicator_top = 2180
-indicator_bottom = 2550
+# Draw range button bar between main chart and mini chart
+button_bar_y = 1920
+button_bar_height = 100
 
-# Draw semi-transparent rectangle (approximate with alpha)
-overlay_color = (48, 105, 152, 40)  # RGBA
-draw.rectangle(
-    [indicator_left, indicator_top, indicator_left + indicator_width, indicator_bottom], outline="#306998", width=4
+# Draw button background
+draw.rectangle([100, button_bar_y, 4700, button_bar_y + button_bar_height], fill="#f5f5f5", outline="#dddddd", width=2)
+
+# Draw range buttons
+button_labels = ["1M", "3M", "6M", "1Y", "YTD", "All"]
+button_width = 200
+button_height = 70
+button_spacing = 30
+start_x = 200
+
+for i, label in enumerate(button_labels):
+    x = start_x + i * (button_width + button_spacing)
+    y = button_bar_y + 15
+    is_selected = label == selected_range
+
+    if is_selected:
+        draw.rectangle([x, y, x + button_width, y + button_height], fill="#306998", outline="#306998", width=2)
+        text_color = "white"
+    else:
+        draw.rectangle([x, y, x + button_width, y + button_height], fill="white", outline="#306998", width=2)
+        text_color = "#306998"
+
+    # Center text in button (approximate)
+    text_x = x + button_width // 2 - len(label) * 12
+    text_y = y + 15
+    draw.text((text_x, text_y), label, fill=text_color)
+
+# Add "Range:" label
+draw.text((110, button_bar_y + 30), "Range:", fill="#333333")
+
+# Paste mini chart below button bar
+mini_y = button_bar_y + button_bar_height + 30
+combined.paste(mini_img, (0, mini_y))
+
+# Draw range indicator on mini chart
+chart_left_margin = 140
+chart_right_margin = 140
+chart_width = 4800 - chart_left_margin - chart_right_margin
+indicator_start_pct = selected_start / total_days
+indicator_width_pct = (total_days - selected_start) / total_days
+
+indicator_left = int(chart_left_margin + indicator_start_pct * chart_width)
+indicator_width = int(indicator_width_pct * chart_width)
+indicator_top = mini_y + 100
+indicator_bottom = mini_y + 420
+
+# Create overlay with transparency
+overlay = Image.new("RGBA", combined.size, (255, 255, 255, 0))
+overlay_draw = ImageDraw.Draw(overlay)
+overlay_draw.rectangle(
+    [indicator_left, indicator_top, indicator_left + indicator_width, indicator_bottom],
+    fill=(48, 105, 152, 50),
+    outline=(48, 105, 152, 200),
+    width=4,
 )
 
-# Fill with light blue (simulate transparency on white background)
-fill_color = (230, 240, 248)  # Light blue approximating rgba(48,105,152,0.15) on white
-for y in range(indicator_top + 2, indicator_bottom - 2):
-    for x in range(indicator_left + 2, indicator_left + indicator_width - 2):
-        combined.putpixel((x, y), fill_color)
-
-# Re-paste mini chart over the fill to show data
-combined.paste(mini_img, (0, 2100))
-
-# Draw indicator border on top
-draw = ImageDraw.Draw(combined)
-draw.rectangle(
-    [indicator_left, indicator_top, indicator_left + indicator_width, indicator_bottom], outline="#306998", width=6
-)
+# Composite the overlay onto combined image
+combined = combined.convert("RGBA")
+combined = Image.alpha_composite(combined, overlay)
+combined = combined.convert("RGB")
 
 # Save final PNG
 combined.save("plot.png", "PNG")

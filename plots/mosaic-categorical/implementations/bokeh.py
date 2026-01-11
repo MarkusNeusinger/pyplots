@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 mosaic-categorical: Mosaic Plot for Categorical Association Analysis
 Library: bokeh 3.8.2 | Python 3.13.11
-Quality: 88/100 | Created: 2026-01-11
+Quality: 90/100 | Created: 2026-01-11
 """
 
 import pandas as pd

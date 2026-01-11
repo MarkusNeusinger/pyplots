@@ -1,7 +1,7 @@
 library: bokeh
 specification_id: hierarchy-toggle-view
 created: '2026-01-11T09:31:55Z'
-updated: '2026-01-11T09:36:48Z'
+updated: '2026-01-11T09:45:35Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20892893155
 issue: 3697
@@ -10,38 +10,34 @@ library_version: 3.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/hierarchy-toggle-view/bokeh/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hierarchy-toggle-view/bokeh/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hierarchy-toggle-view/bokeh/plot.html
-quality_score: 62
+quality_score: 58
 review:
   strengths:
-  - Excellent use of Bokeh interactive features (CustomJS callbacks, Button widgets,
-    visibility toggling)
-  - Both treemap and sunburst views implemented with consistent color scheme
-  - Good canvas utilization and clean visual layout
-  - Realistic company budget data scenario
-  - HTML version provides full interactivity as intended
+  - Excellent use of Bokeh interactive features (CustomJS, Button widgets, ColumnDataSource)
+  - Well-implemented dual-view architecture with toggle functionality in HTML
+  - Realistic company budget data with proper 3-level hierarchy
+  - Good canvas utilization and color scheme
+  - Proper squarify algorithm implementation for treemap layout
   weaknesses:
-  - 'Critical: Labels not visible in PNG export - the text renderers (treemap_labels_renderer,
-    treemap_values_renderer) are not appearing in the exported PNG, making nodes unidentifiable'
-  - Code uses functions (squarify, add_sunburst_wedges) violating KISS principle -
-    should be inline code
-  - Toggle buttons and interactive elements not visible in static PNG output
-  - Similar yellow shades make some Engineering sub-departments hard to distinguish
-  image_description: 'The plot displays a treemap visualization showing company budget
-    allocation across departments and sub-departments. The treemap consists of 14
-    nested rectangles representing leaf nodes (sub-departments), arranged using a
-    squarified algorithm. Colors are used consistently: yellow shades for Engineering
-    (Frontend, Backend, DevOps, QA), teal/green shades for Marketing (Digital, Content,
-    Analytics), orange shades for Operations (Logistics, Facilities, Procurement),
-    and purple shades for HR (Recruiting, Training, Benefits). The rectangles have
-    white borders separating them, with a light gray (#fafafa) background. The title
-    "hierarchy-toggle-view · bokeh · pyplots.ai" appears in blue at the top-left.
-    Critical issue: No text labels are visible on the rectangles - the node names
-    and values that should appear on each rectangle are missing from the PNG output,
-    making it impossible to identify which rectangle represents which department without
-    cross-referencing the colors.'
+  - 'CRITICAL: Labels not rendering in PNG export - LabelSet elements are created
+    but not appearing in the exported PNG image, making the treemap uninterpretable'
+  - No legend to identify what each color represents
+  - Title text appears small relative to the large canvas
+  image_description: 'The plot displays a treemap visualization of a company budget
+    allocation hierarchy. The canvas shows colored rectangles representing leaf nodes
+    of the hierarchy: yellow/gold tones for Engineering sub-departments (Backend,
+    Frontend, DevOps, QA), teal/cyan for Marketing (Digital, Content, Analytics),
+    orange tones for Operations (Logistics, Facilities, Procurement), and purple tones
+    for HR (Recruiting, Training, Benefits). The rectangles are arranged using a squarify
+    algorithm with white borders separating them. The title "hierarchy-toggle-view
+    · bokeh · pyplots.ai" appears at the top left in blue. CRITICAL ISSUE: No text
+    labels are visible on any of the rectangles - the department names and budget
+    values that should appear on each rectangle are completely missing from the PNG
+    export. The layout fills approximately 70% of the canvas with good proportions.
+    The background is light gray (#fafafa).'
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 24
       max: 40
       items:
       - id: VQ-01
@@ -49,8 +45,8 @@ review:
         score: 3
         max: 10
         passed: false
-        comment: Title readable but all treemap labels missing from PNG export - no
-          node names or values visible
+        comment: Title is readable but all treemap labels are missing - department
+          names and values do not appear on rectangles
       - id: VQ-02
         name: No Overlap
         score: 8
@@ -62,31 +58,31 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Rectangles well-sized and visible, good use of space
+        comment: Rectangles are well-sized and visible with alpha=0.9
       - id: VQ-04
         name: Color Accessibility
         score: 3
         max: 5
         passed: true
-        comment: Colors distinguishable but some yellow shades very similar
+        comment: Colors are reasonably distinct but some similar shades exist
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Good canvas utilization (~60%), lacks interactive controls in PNG
+        comment: Good canvas utilization (~70%), balanced margins
       - id: VQ-06
         name: Axis Labels
         score: 0
         max: 2
-        passed: false
-        comment: N/A for treemap but missing data labels is major issue
+        passed: true
+        comment: N/A for treemap, axes hidden appropriately
       - id: VQ-07
         name: Grid & Legend
-        score: 2
+        score: 0
         max: 2
-        passed: true
-        comment: Clean background, no distracting grid
+        passed: false
+        comment: No legend present to identify departments by color
     spec_compliance:
       score: 17
       max: 25
@@ -96,53 +92,55 @@ review:
         score: 6
         max: 8
         passed: true
-        comment: Treemap correct but sunburst view cannot be shown in static PNG
+        comment: Treemap is correct; sunburst code exists but toggle only works in
+          HTML
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Values correctly mapped to rectangle areas
+        comment: Values correctly map to rectangle areas
       - id: SC-03
         name: Required Features
         score: 2
         max: 5
         passed: false
-        comment: Toggle functionality exists in HTML but not demonstrated in PNG
+        comment: Toggle buttons exist for HTML but not visible in PNG; labels missing
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible, proper hierarchy
+        comment: All data represented
       - id: SC-05
         name: Legend Accuracy
         score: 0
         max: 2
         passed: false
-        comment: No legend or labels to identify nodes
+        comment: No legend to identify departments
       - id: SC-06
         name: Title Format
         score: 1
         max: 2
-        passed: false
-        comment: Title format correct but very small font size in output
+        passed: true
+        comment: Title format correct but appears small
     data_quality:
-      score: 18
+      score: 17
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Shows 3-level hierarchy with 14 leaf nodes across 4 departments
+        comment: Shows 3-level hierarchy with varied sizes, but without labels user
+          cannot interpret
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Company budget allocation is realistic and neutral
+        comment: Company budget allocation is excellent real-world scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
@@ -150,28 +148,27 @@ review:
         passed: true
         comment: Budget values ($300K-$1500K) are realistic
     code_quality:
-      score: 7
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 0
+        score: 2
         max: 3
-        passed: false
-        comment: Contains functions (squarify, add_sunburst_wedges) - violates KISS
-          principle
+        passed: true
+        comment: Code has inline squarify algorithm which adds complexity but is necessary
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: All imports used
       - id: CQ-04
         name: No Deprecated API
         score: 1
@@ -183,7 +180,7 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
+        comment: Saves plot.png and plot.html
     library_features:
       score: 5
       max: 5
@@ -194,16 +191,15 @@ review:
         max: 5
         passed: true
         comment: 'Excellent use of Bokeh: ColumnDataSource, CustomJS callbacks, Button
-          widgets, interactive toggle, HTML export'
+          widgets, LabelSet, patches, hover tooltips, HTML export'
   verdict: REJECTED
 impl_tags:
-  dependencies:
-  - selenium
+  dependencies: []
   techniques:
   - patches
-  - annotations
   - hover-tooltips
   - html-export
+  - annotations
   patterns:
   - data-generation
   - columndatasource

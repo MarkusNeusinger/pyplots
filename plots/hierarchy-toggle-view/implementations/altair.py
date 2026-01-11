@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hierarchy-toggle-view: Interactive Treemap-Sunburst Toggle View
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-11
@@ -9,18 +9,18 @@ import numpy as np
 import pandas as pd
 
 
-# Data - Company structure with departments and teams (21 nodes, 3 levels)
+# Data - Company structure with departments and teams (18 nodes, 3 levels)
 np.random.seed(42)
 
 hierarchy_data = [
     # Root
-    {"id": "Company", "parent": "", "label": "TechCorp Inc.", "value": 0},
+    {"id": "Company", "parent": "", "label": "TechCorp", "value": 0},
     # Level 1 - Departments
     {"id": "Engineering", "parent": "Company", "label": "Engineering", "value": 0},
     {"id": "Sales", "parent": "Company", "label": "Sales", "value": 0},
     {"id": "Marketing", "parent": "Company", "label": "Marketing", "value": 0},
     {"id": "Operations", "parent": "Company", "label": "Operations", "value": 0},
-    # Level 2 - Engineering Teams (larger values for visibility)
+    # Level 2 - Engineering Teams
     {"id": "Frontend", "parent": "Engineering", "label": "Frontend", "value": 55},
     {"id": "Backend", "parent": "Engineering", "label": "Backend", "value": 62},
     {"id": "DevOps", "parent": "Engineering", "label": "DevOps", "value": 38},
@@ -30,11 +30,11 @@ hierarchy_data = [
     {"id": "Enterprise", "parent": "Sales", "label": "Enterprise", "value": 48},
     {"id": "SMB", "parent": "Sales", "label": "SMB", "value": 35},
     {"id": "Partners", "parent": "Sales", "label": "Partners", "value": 28},
-    # Level 2 - Marketing Teams (combined smaller teams for better visibility)
+    # Level 2 - Marketing Teams
     {"id": "Digital", "parent": "Marketing", "label": "Digital", "value": 30},
     {"id": "Content", "parent": "Marketing", "label": "Content", "value": 25},
     {"id": "Events", "parent": "Marketing", "label": "Events", "value": 22},
-    # Level 2 - Operations Teams (combined smaller teams)
+    # Level 2 - Operations Teams
     {"id": "HR", "parent": "Operations", "label": "HR", "value": 28},
     {"id": "Finance", "parent": "Operations", "label": "Finance", "value": 32},
     {"id": "Legal", "parent": "Operations", "label": "Legal", "value": 20},
@@ -44,7 +44,7 @@ df = pd.DataFrame(hierarchy_data)
 
 # Calculate parent values (sum of children)
 parent_ids = df[df["parent"] != ""]["parent"].unique()
-for _ in range(5):  # Iterate to propagate values up the hierarchy
+for _ in range(5):
     for parent_id in parent_ids:
         children = df[df["parent"] == parent_id]
         if len(children) > 0 and all(children["value"] > 0):
@@ -62,95 +62,74 @@ all_parent_ids = set(df["parent"].unique())
 leaf_mask = ~df["id"].isin(all_parent_ids - {""})
 leaf_df = df[leaf_mask & (df["value"] > 0)].copy()
 
-# Build treemap rectangles using squarified layout (fills full canvas)
+# Build treemap rectangles using iterative binary split algorithm (no functions)
+# Sort items by value descending for better layout
+sorted_leaf = leaf_df.sort_values("value", ascending=False).reset_index(drop=True)
+items = [(row["value"], row["id"], row["label"], row["department"]) for _, row in sorted_leaf.iterrows()]
+
+# Iterative squarified layout using a stack - fills canvas from (0,0) to (100,100)
+layout_stack = [(items, 0, 0, 100, 100)]  # (items, x, y, width, height)
 treemap_records = []
-values = leaf_df["value"].tolist()
-ids = leaf_df["id"].tolist()
-labels = leaf_df["label"].tolist()
-depts = leaf_df["department"].tolist()
-total_value = sum(values)
 
-# Sort by value descending for better layout
-sorted_data = sorted(zip(values, ids, labels, depts, strict=True), reverse=True)
-values = [v for v, nid, lbl, d in sorted_data]
-ids = [nid for v, nid, lbl, d in sorted_data]
-labels = [lbl for v, nid, lbl, d in sorted_data]
-depts = [d for v, nid, lbl, d in sorted_data]
-
-
-# Squarified treemap algorithm for better aspect ratios and canvas utilization
-def squarify_layout(items, x, y, w, h):
-    """Recursive squarified treemap layout."""
-    if not items:
-        return []
-    if len(items) == 1:
-        val, nid, lbl, dept = items[0]
-        return [(nid, lbl, val, dept, x, y, x + w, y + h)]
-    total = sum(v for v, _, _, _ in items)
-    if total == 0:
-        return []
-    # Split items for best aspect ratio
+while layout_stack:
+    current_items, x, y, w, h = layout_stack.pop()
+    if not current_items:
+        continue
+    if len(current_items) == 1:
+        val, nid, lbl, dept = current_items[0]
+        treemap_records.append(
+            {
+                "id": nid,
+                "label": lbl,
+                "value": val,
+                "department": dept,
+                "x": x,
+                "y": y,
+                "x2": x + w,
+                "y2": y + h,
+                "cx": x + w / 2,
+                "cy": y + h / 2,
+                "view": "Treemap",
+            }
+        )
+        continue
+    # Split items at approximate half of total value for best aspect ratio
+    total = sum(v for v, _, _, _ in current_items)
     half_val = total / 2
     cumsum = 0
-    split_idx = 0
-    for i, (val, _, _, _) in enumerate(items):
+    split_idx = 1
+    for i, (val, _, _, _) in enumerate(current_items):
         cumsum += val
         if cumsum >= half_val:
             split_idx = i + 1
             break
-    left_items = items[:split_idx] if split_idx > 0 else items[:1]
-    right_items = items[split_idx:] if split_idx > 0 else items[1:]
+    left_items = current_items[:split_idx]
+    right_items = current_items[split_idx:]
     left_total = sum(v for v, _, _, _ in left_items)
     ratio = left_total / total if total > 0 else 0.5
     # Choose horizontal or vertical split for better aspect ratios
-    results = []
-    if w >= h:  # Horizontal split
-        results.extend(squarify_layout(left_items, x, y, w * ratio, h))
-        results.extend(squarify_layout(right_items, x + w * ratio, y, w * (1 - ratio), h))
-    else:  # Vertical split
-        results.extend(squarify_layout(left_items, x, y, w, h * ratio))
-        results.extend(squarify_layout(right_items, x, y + h * ratio, w, h * (1 - ratio)))
-    return results
-
-
-items_for_layout = list(zip(values, ids, labels, depts, strict=True))
-layout_results = squarify_layout(items_for_layout, 0, 0, 100, 100)
-
-for nid, lbl, val, dept, x, y, x2, y2 in layout_results:
-    treemap_records.append(
-        {
-            "id": nid,
-            "label": lbl,
-            "value": val,
-            "department": dept,
-            "x": x,
-            "y": y,
-            "x2": x2,
-            "y2": y2,
-            "cx": (x + x2) / 2,
-            "cy": (y + y2) / 2,
-            "width": x2 - x,
-            "height": y2 - y,
-            "view": "Treemap",
-        }
-    )
+    if w >= h:
+        layout_stack.append((right_items, x + w * ratio, y, w * (1 - ratio), h))
+        layout_stack.append((left_items, x, y, w * ratio, h))
+    else:
+        layout_stack.append((right_items, x, y + h * ratio, w, h * (1 - ratio)))
+        layout_stack.append((left_items, x, y, w, h * ratio))
 
 treemap_df = pd.DataFrame(treemap_records)
 
-# Build sunburst data from hierarchy
+# Build sunburst data from hierarchy - centered at origin
 sunburst_records = []
 departments = ["Engineering", "Sales", "Marketing", "Operations"]
 dept_values = {d: df[df["id"] == d]["value"].values[0] for d in departments}
 total_company = sum(dept_values.values())
 
-# Level 1 - Department arcs
+# Create arc segments for sunburst
 start_angle = 0
 for dept in departments:
     dept_angle = 360 * (dept_values[dept] / total_company)
     end_angle = start_angle + dept_angle
     mid_angle = (start_angle + end_angle) / 2
     mid_angle_rad = np.radians(mid_angle - 90)
-    label_radius = 55  # Middle of inner ring
     sunburst_records.append(
         {
             "id": dept,
@@ -162,12 +141,12 @@ for dept in departments:
             "innerRadius": 35,
             "outerRadius": 65,
             "depth": 1,
-            "labelX": np.cos(mid_angle_rad) * label_radius,
-            "labelY": np.sin(mid_angle_rad) * label_radius,
+            "labelX": np.cos(mid_angle_rad) * 50,
+            "labelY": np.sin(mid_angle_rad) * 50,
             "view": "Sunburst",
         }
     )
-    # Level 2 - Team arcs within department
+    # Team arcs within department
     teams = df[df["parent"] == dept]
     dept_start = start_angle
     for _, team in teams.iterrows():
@@ -175,7 +154,6 @@ for dept in departments:
         team_end = dept_start + team_angle
         team_mid_angle = (dept_start + team_end) / 2
         team_mid_rad = np.radians(team_mid_angle - 90)
-        team_label_radius = 82  # Middle of outer ring
         sunburst_records.append(
             {
                 "id": team["id"],
@@ -187,8 +165,8 @@ for dept in departments:
                 "innerRadius": 65,
                 "outerRadius": 100,
                 "depth": 2,
-                "labelX": np.cos(team_mid_rad) * team_label_radius,
-                "labelY": np.sin(team_mid_rad) * team_label_radius,
+                "labelX": np.cos(team_mid_rad) * 82,
+                "labelY": np.sin(team_mid_rad) * 82,
                 "view": "Sunburst",
             }
         )
@@ -199,7 +177,7 @@ sunburst_df = pd.DataFrame(sunburst_records)
 sunburst_df["startAngle_rad"] = np.radians(sunburst_df["startAngle"] - 90)
 sunburst_df["endAngle_rad"] = np.radians(sunburst_df["endAngle"] - 90)
 
-# Color scale
+# Color scale - colorblind-friendly
 dept_domain = ["Engineering", "Sales", "Marketing", "Operations"]
 dept_range = ["#306998", "#FFD43B", "#E74C3C", "#27AE60"]
 
@@ -207,7 +185,7 @@ dept_range = ["#306998", "#FFD43B", "#E74C3C", "#27AE60"]
 view_dropdown = alt.binding_select(options=["Treemap", "Sunburst"], name="Select View: ")
 view_selection = alt.selection_point(fields=["view"], bind=view_dropdown, value="Treemap")
 
-# Treemap chart - rectangles (add params only once to avoid deduplicate warning)
+# Treemap chart - rectangles fill the full canvas (0-100 scale for both axes)
 treemap_rects = (
     alt.Chart(treemap_df)
     .mark_rect(stroke="white", strokeWidth=3)
@@ -231,7 +209,7 @@ treemap_rects = (
     .add_params(view_selection)
 )
 
-# Treemap chart - labels (size based on cell dimensions)
+# Treemap chart - labels sized by cell value
 treemap_labels = (
     alt.Chart(treemap_df)
     .mark_text(fontWeight="bold", color="white", baseline="middle", align="center")
@@ -240,20 +218,20 @@ treemap_labels = (
         y=alt.Y("cy:Q", scale=alt.Scale(domain=[0, 100])),
         text="label:N",
         opacity=alt.condition(view_selection, alt.value(1), alt.value(0)),
-        size=alt.Size("value:Q", scale=alt.Scale(domain=[20, 65], range=[14, 22]), legend=None),
+        size=alt.Size("value:Q", scale=alt.Scale(domain=[20, 65], range=[14, 24]), legend=None),
     )
 )
 
 treemap_chart = treemap_rects + treemap_labels
 
-# Sunburst chart - arcs (scale radius for 16:9 aspect ratio)
+# Sunburst chart - arcs centered and scaled to fill canvas
 sunburst_arcs = (
     alt.Chart(sunburst_df)
     .mark_arc(stroke="white", strokeWidth=2)
     .encode(
         theta=alt.Theta("endAngle_rad:Q", scale=alt.Scale(domain=[-np.pi, np.pi])),
         theta2="startAngle_rad:Q",
-        radius=alt.Radius("outerRadius:Q", scale=alt.Scale(domain=[0, 120], range=[0, 400])),
+        radius=alt.Radius("outerRadius:Q", scale=alt.Scale(domain=[0, 120], range=[0, 420])),
         radius2="innerRadius:Q",
         color=alt.Color("department:N", scale=alt.Scale(domain=dept_domain, range=dept_range), legend=None),
         opacity=alt.condition(view_selection, alt.value(1), alt.value(0)),
@@ -265,7 +243,7 @@ sunburst_arcs = (
     )
 )
 
-# Sunburst chart - department labels (inner ring)
+# Sunburst department labels (inner ring)
 dept_labels_df = sunburst_df[sunburst_df["depth"] == 1].copy()
 sunburst_dept_labels = (
     alt.Chart(dept_labels_df)
@@ -278,8 +256,8 @@ sunburst_dept_labels = (
     )
 )
 
-# Sunburst chart - team labels (outer ring, only larger teams)
-team_labels_df = sunburst_df[(sunburst_df["depth"] == 2) & (sunburst_df["value"] >= 25)].copy()
+# Sunburst team labels (outer ring, larger teams only)
+team_labels_df = sunburst_df[(sunburst_df["depth"] == 2) & (sunburst_df["value"] >= 28)].copy()
 sunburst_team_labels = (
     alt.Chart(team_labels_df)
     .mark_text(fontSize=14, fontWeight="normal", color="white", baseline="middle", align="center")
@@ -293,8 +271,7 @@ sunburst_team_labels = (
 
 sunburst_chart = sunburst_arcs + sunburst_dept_labels + sunburst_team_labels
 
-# Layer both views together (toggle controls visibility)
-# Use 16:9 aspect ratio (1600x900) as per style guide
+# Layer both views together with toggle control
 combined_chart = (
     alt.layer(treemap_chart, sunburst_chart)
     .properties(
@@ -313,6 +290,6 @@ combined_chart = (
     .configure_legend(titleFontSize=20, labelFontSize=18, symbolSize=200)
 )
 
-# Save outputs - target 4800x2700 per style guide (1600 × 3 = 4800, 900 × 3 = 2700)
+# Save outputs - 4800x2700 per style guide (1600 × 3 = 4800, 900 × 3 = 2700)
 combined_chart.save("plot.png", scale_factor=3.0)
 combined_chart.save("plot.html")

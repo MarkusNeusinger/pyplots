@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 area-stock-range: Stock Area Chart with Range Selector
-Library: bokeh | Python 3.13
-Quality: pending | Created: 2026-01-11
+Library: bokeh 3.8.2 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-11
 """
 
 import numpy as np

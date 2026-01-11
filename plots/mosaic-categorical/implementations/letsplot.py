@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 mosaic-categorical: Mosaic Plot for Categorical Association Analysis
-Library: letsplot | Python 3.13
-Quality: pending | Created: 2026-01-11
+Library: letsplot 4.8.2 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-11
 """
 
 import pandas as pd

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 mosaic-categorical: Mosaic Plot for Categorical Association Analysis
 Library: highcharts unknown | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-11
@@ -64,31 +64,33 @@ for cls in class_order:
 chart = Chart(container="container")
 chart.options = HighchartsOptions()
 
-# Chart configuration
+# Chart configuration - optimized margins for better canvas utilization
 chart.options.chart = {
     "type": "treemap",
     "width": 4800,
     "height": 2700,
     "backgroundColor": "#ffffff",
-    "marginTop": 180,
-    "marginBottom": 120,
+    "marginTop": 200,
+    "marginBottom": 60,
+    "marginLeft": 40,
+    "marginRight": 40,
 }
 
-# Title
+# Title - required format without extra descriptive text
 chart.options.title = {
-    "text": "Titanic Survival by Class · mosaic-categorical · highcharts · pyplots.ai",
-    "style": {"fontSize": "58px", "fontWeight": "bold"},
-    "y": 60,
+    "text": "mosaic-categorical · highcharts · pyplots.ai",
+    "style": {"fontSize": "72px", "fontWeight": "bold"},
+    "y": 70,
 }
 
-# Subtitle with context and legend explanation
+# Subtitle with Titanic context and legend explanation
 chart.options.subtitle = {
-    "text": "Rectangle area proportional to passenger count · "
+    "text": "Titanic Survival by Passenger Class · Rectangle area proportional to count · "
     "<span style='color:#306998'>■</span> Survived · "
     "<span style='color:#FFD43B'>■</span> Died",
-    "style": {"fontSize": "36px", "color": "#666666"},
+    "style": {"fontSize": "42px", "color": "#555555"},
     "useHTML": True,
-    "y": 120,
+    "y": 140,
 }
 
 # Tooltip
@@ -193,13 +195,13 @@ chrome_options.add_argument("--window-size=4800,2900")
 driver = webdriver.Chrome(options=chrome_options)
 driver.get(f"file://{temp_path}")
 time.sleep(5)  # Wait for chart to render
-driver.save_screenshot("plot_raw.png")
+driver.save_screenshot("plot_temp.png")
 driver.quit()
 
 # Crop to exact 4800x2700 dimensions
-img = Image.open("plot_raw.png")
+img = Image.open("plot_temp.png")
 img_cropped = img.crop((0, 0, 4800, 2700))
 img_cropped.save("plot.png")
-Path("plot_raw.png").unlink()
+Path("plot_temp.png").unlink()
 
 Path(temp_path).unlink()  # Clean up temp file

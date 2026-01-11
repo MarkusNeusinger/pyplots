@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hierarchy-toggle-view: Interactive Treemap-Sunburst Toggle View
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-11
@@ -8,7 +8,7 @@ import pygal
 from pygal.style import Style
 
 
-# Custom style for both charts
+# Custom style with larger fonts for 4800x2700 canvas
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -29,12 +29,12 @@ custom_style = Style(
         "#458588",
         "#CC241D",
     ),
-    title_font_size=48,
-    label_font_size=24,
-    major_label_font_size=22,
-    legend_font_size=22,
-    value_font_size=18,
-    tooltip_font_size=20,
+    title_font_size=64,
+    label_font_size=32,
+    major_label_font_size=28,
+    legend_font_size=36,
+    value_font_size=28,
+    tooltip_font_size=24,
     stroke_width=2,
 )
 
@@ -50,45 +50,52 @@ budget_data = {
 # Calculate totals for each department
 department_totals = {dept: sum(items.values()) for dept, items in budget_data.items()}
 
+# Title format per spec: {spec-id} · {library} · pyplots.ai
+chart_title = "hierarchy-toggle-view · pygal · pyplots.ai"
+
 # Create Treemap chart
 treemap = pygal.Treemap(
     width=4800,
     height=2700,
     style=custom_style,
-    title="Company Budget Allocation · hierarchy-toggle-view · pygal · pyplots.ai",
+    title=chart_title,
     show_legend=True,
     legend_at_bottom=True,
-    legend_box_size=30,
-    margin=50,
-    spacing=5,
+    legend_box_size=40,
+    margin=80,
+    spacing=8,
     tooltip_border_radius=10,
+    print_values=True,
+    print_labels=True,
+    value_formatter=lambda x: f"${x / 1000:.0f}K",
 )
 
 # Add data to treemap - each department as a series with sub-items
+# Include label with value in title for better visibility in static PNG
 for dept, items in budget_data.items():
-    treemap.add(dept, [{"value": v, "label": k} for k, v in items.items()])
+    treemap.add(dept, [{"value": v, "label": f"{k}\n${v / 1000:.0f}K"} for k, v in items.items()])
 
-# Create Pie chart (sunburst approximation - showing department breakdown)
+# Create Pie chart (donut style for alternate hierarchical view)
 pie = pygal.Pie(
     width=4800,
     height=2700,
     style=custom_style,
-    title="Company Budget Allocation · hierarchy-toggle-view · pygal · pyplots.ai",
+    title=chart_title,
     show_legend=True,
     legend_at_bottom=True,
-    legend_box_size=30,
-    margin=50,
-    inner_radius=0.3,
+    legend_box_size=40,
+    margin=80,
+    inner_radius=0.35,
     tooltip_border_radius=10,
+    print_values=True,
+    print_labels=True,
+    value_formatter=lambda x: f"${x / 1000:.0f}K",
 )
 
-# Add department totals to pie chart with sub-item details in labels
+# Add department totals to pie chart with sub-item details
 for dept, items in budget_data.items():
     total = department_totals[dept]
-    details = ", ".join([f"{k}: ${v / 1000:.0f}K" for k, v in items.items()])
-    pie.add(
-        f"{dept} (${total / 1000:.0f}K)", [{"value": v, "label": f"{k}: ${v / 1000:.0f}K"} for k, v in items.items()]
-    )
+    pie.add(f"{dept} (${total / 1000:.0f}K)", [{"value": v, "label": k} for k, v in items.items()])
 
 # Render both charts as SVG strings
 treemap_svg = treemap.render(is_unicode=True)
@@ -161,7 +168,7 @@ html_content = f"""<!DOCTYPE html>
 <body>
     <div class="toggle-container">
         <button class="toggle-btn active" onclick="showChart('treemap', this)">Treemap View</button>
-        <button class="toggle-btn" onclick="showChart('pie', this)">Sunburst View</button>
+        <button class="toggle-btn" onclick="showChart('pie', this)">Donut View</button>
     </div>
     <div class="chart-container">
         <div id="treemap" class="chart active">

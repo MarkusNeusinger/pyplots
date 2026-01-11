@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hierarchy-toggle-view: Interactive Treemap-Sunburst Toggle View
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 87/100 | Created: 2026-01-11
@@ -73,7 +73,7 @@ team_colors = {
     "finance": "#E0CEEB",
 }
 
-# Custom style for better visibility
+# Custom style for better visibility - larger fonts for HTML version
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -81,12 +81,12 @@ custom_style = Style(
     foreground_strong="#333",
     foreground_subtle="#666",
     colors=(colors["engineering"], colors["marketing"], colors["sales"], colors["operations"]),
-    title_font_size=32,
-    label_font_size=16,
-    major_label_font_size=14,
-    legend_font_size=14,
-    value_font_size=12,
-    value_label_font_size=12,
+    title_font_size=40,
+    label_font_size=22,
+    major_label_font_size=20,
+    legend_font_size=20,
+    value_font_size=18,
+    value_label_font_size=18,
 )
 
 # Get departments (level 1) and their children (level 2)
@@ -255,7 +255,7 @@ with open("plot.html", "w") as f:
     f.write(html_content)
 
 # For PNG, create a combined side-by-side view
-# Update style for combined image - larger fonts for 4800x2700 canvas
+# Update style for combined image - much larger fonts for 4800x2700 canvas for perfect legibility
 combined_style = Style(
     background="white",
     plot_background="white",
@@ -263,12 +263,12 @@ combined_style = Style(
     foreground_strong="#333",
     foreground_subtle="#666",
     colors=(colors["engineering"], colors["marketing"], colors["sales"], colors["operations"]),
-    title_font_size=48,
-    label_font_size=28,
-    major_label_font_size=24,
-    legend_font_size=24,
-    value_font_size=22,
-    value_label_font_size=22,
+    title_font_size=64,
+    label_font_size=36,
+    major_label_font_size=32,
+    legend_font_size=32,
+    value_font_size=28,
+    value_label_font_size=28,
 )
 
 # Create treemap for left side
@@ -332,10 +332,10 @@ from PIL import Image, ImageDraw, ImageFont  # noqa: E402
 combined = Image.new("RGB", (4800, 2700), "white")
 draw = ImageDraw.Draw(combined)
 
-# Add title
+# Add title - using larger fonts for 4800x2700 canvas
 try:
-    title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 48)
-    subtitle_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 24)
+    title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 72)
+    subtitle_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 36)
 except OSError:
     title_font = ImageFont.load_default()
     subtitle_font = ImageFont.load_default()
@@ -344,23 +344,23 @@ except OSError:
 title = "Company Budget · hierarchy-toggle-view · pygal · pyplots.ai"
 title_bbox = draw.textbbox((0, 0), title, font=title_font)
 title_width = title_bbox[2] - title_bbox[0]
-draw.text(((4800 - title_width) // 2, 30), title, fill="#306998", font=title_font)
+draw.text(((4800 - title_width) // 2, 40), title, fill="#306998", font=title_font)
 
 # Draw subtitle
 subtitle = "Toggle between rectangle (Treemap) and radial (Sunburst) hierarchy views"
 subtitle_bbox = draw.textbbox((0, 0), subtitle, font=subtitle_font)
 subtitle_width = subtitle_bbox[2] - subtitle_bbox[0]
-draw.text(((4800 - subtitle_width) // 2, 90), subtitle, fill="#666666", font=subtitle_font)
+draw.text(((4800 - subtitle_width) // 2, 130), subtitle, fill="#666666", font=subtitle_font)
 
-# Load and paste treemap (left)
+# Load and paste treemap (left) - adjusted y-position for larger title
 treemap_img = Image.open("treemap_temp.png")
 treemap_img = treemap_img.resize((2200, 2400), Image.Resampling.LANCZOS)
-combined.paste(treemap_img, (100, 200))
+combined.paste(treemap_img, (100, 220))
 
-# Load and paste sunburst (right)
+# Load and paste sunburst (right) - adjusted y-position for larger title
 sunburst_img = Image.open("sunburst_temp.png")
 sunburst_img = sunburst_img.resize((2200, 2400), Image.Resampling.LANCZOS)
-combined.paste(sunburst_img, (2500, 200))
+combined.paste(sunburst_img, (2500, 220))
 
 # Save combined image
 combined.save("plot.png", "PNG")

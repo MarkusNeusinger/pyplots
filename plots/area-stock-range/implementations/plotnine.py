@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 area-stock-range: Stock Area Chart with Range Selector
 Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 68/100 | Created: 2026-01-11
+Quality: 82/100 | Created: 2026-01-11
 """
 
 import numpy as np

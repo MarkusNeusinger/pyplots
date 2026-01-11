@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hierarchy-toggle-view: Interactive Treemap-Sunburst Toggle View
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-11
@@ -13,8 +13,8 @@ from matplotlib.patches import FancyBboxPatch, Wedge
 
 
 # Set seaborn style for consistent aesthetics
-sns.set_theme(style="white")
-sns.set_context("talk", font_scale=1.2)
+sns.set_theme(style="white", palette="Set2")
+sns.set_context("poster", font_scale=1.0)
 
 # Hierarchical data: Software project budget allocation
 # Structure: root -> category -> subcategory (15 nodes, 3 levels)
@@ -146,7 +146,7 @@ for i, nid in enumerate(level1_ids):
                     f"{c_label}\n${c_val}K",
                     ha="center",
                     va="center",
-                    fontsize=11,
+                    fontsize=12,
                     fontweight="bold",
                     color="white",
                 )
@@ -168,7 +168,7 @@ for i, nid in enumerate(level1_ids):
             label_text,
             ha="center",
             va="bottom",
-            fontsize=9,
+            fontsize=10,
             fontweight="bold",
             color="white",
             bbox={"boxstyle": "round,pad=0.2", "facecolor": color_map[nid], "alpha": 0.85},
@@ -207,13 +207,29 @@ for i, nid in enumerate(level1_ids):
     )
     ax2.add_patch(wedge)
 
-    # Level 1 label
+    # Level 1 label - curved along the ring
     mid_angle = np.radians(start_angle + sweep / 2)
     label_r = (inner_r1 + outer_r1) / 2
     lx, ly = label_r * np.cos(mid_angle), label_r * np.sin(mid_angle)
     cat_label = df[df["id"] == nid]["label"].iloc[0]
-    if sweep > 35:
-        ax2.text(lx, ly, cat_label, ha="center", va="center", fontsize=12, fontweight="bold", color="white")
+    if sweep > 30:
+        # Calculate rotation for inner ring labels
+        angle_deg = (start_angle + sweep / 2) % 360
+        if 90 < angle_deg <= 270:
+            text_rot = angle_deg - 180
+        else:
+            text_rot = angle_deg
+        ax2.text(
+            lx,
+            ly,
+            cat_label,
+            ha="center",
+            va="center",
+            fontsize=13,
+            fontweight="bold",
+            color="white",
+            rotation=text_rot,
+        )
 
     # Outer ring (level 2 - children)
     if nid in children:
@@ -246,21 +262,25 @@ for i, nid in enumerate(level1_ids):
             cly = c_label_r * np.sin(c_mid)
             c_label = df[df["id"] == cid]["label"].iloc[0]
 
-            if c_sweep > 18:
-                # Calculate rotation for readability
-                rot = (c_start + c_sweep / 2) % 360
-                if 90 < rot < 270:
-                    rot += 180
+            if c_sweep > 15:
+                # Calculate rotation for readability - keep text right-side up
+                angle_deg = (c_start + c_sweep / 2) % 360
+                # Text should be readable from the center outward
+                if 90 < angle_deg <= 270:
+                    # Flip text for left side of sunburst
+                    text_rot = angle_deg - 180
+                else:
+                    text_rot = angle_deg
                 ax2.text(
                     clx,
                     cly,
                     c_label,
                     ha="center",
                     va="center",
-                    fontsize=10,
+                    fontsize=11,
                     fontweight="bold",
                     color="white",
-                    rotation=rot - 90,
+                    rotation=text_rot,
                 )
 
             c_start += c_sweep

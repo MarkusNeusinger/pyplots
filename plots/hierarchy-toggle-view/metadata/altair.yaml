@@ -1,7 +1,7 @@
 library: altair
 specification_id: hierarchy-toggle-view
 created: '2026-01-11T09:30:49Z'
-updated: '2026-01-11T09:44:58Z'
+updated: '2026-01-11T09:52:51Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20892893334
 issue: 3697
@@ -10,40 +10,33 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/hierarchy-toggle-view/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/hierarchy-toggle-view/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/hierarchy-toggle-view/altair/plot.html
-quality_score: 82
+quality_score: 72
 review:
   strengths:
-  - Successfully implements toggle functionality using Altair selection binding with
-    dropdown selector
-  - Clean separation of treemap and sunburst views with shared color scale
-  - Excellent use of Altair declarative grammar for interactive visualization
-  - Both views properly share the same data and color scheme for consistency
-  - HTML export enables full interactivity in browser
+  - Excellent use of Altair selection binding for interactive toggle between views
+  - Well-implemented squarified treemap algorithm for good aspect ratios
+  - Clear color scheme with four distinct, colorblind-friendly department colors
+  - Good data context with realistic organizational structure
+  - Proper implementation of both treemap and sunburst views with shared data/colors
   weaknesses:
-  - 'Text truncation/crowding in smaller treemap cells (top row: Facilities, Events,
-    Brand, Legal are hard to read)'
-  - Layout does not fully utilize canvas - treemap sits in upper portion with significant
-    whitespace below
-  - Static PNG only shows one view - consider adding annotation about interactivity
+  - Treemap only fills ~50% of canvas vertically, leaving large empty space below
+    the visualization
+  - Some labels truncated due to small cell sizes (e.g., Facilitie, Partnershi)
+  - Code contains helper function (squarify_layout) violating KISS structure principle
+  - Static PNG only shows treemap view; sunburst only visible in interactive HTML
   image_description: |-
-    The static PNG shows a treemap view (the default selection) of a company organizational structure for TechCorp Inc. The treemap is positioned in the upper portion of the canvas with significant whitespace below. It displays 17 team rectangles organized in 5 horizontal rows, sorted by size (largest at bottom - Backend, Frontend, Enterprise).
+    The plot displays a treemap visualization showing a company organizational structure with nested rectangles. The treemap fills approximately 50% of the vertical canvas (upper half), with significant whitespace below. There are four departments color-coded: Engineering (blue #306998), Sales (yellow #FFD43B), Marketing (red #E74C3C), and Operations (green #27AE60).
 
-    Colors used:
-    - Blue (#306998) for Engineering teams (Backend, Frontend, DevOps, QA, Data Science)
-    - Yellow (#FFD43B) for Sales teams (Enterprise, SMB, Partnerships)
-    - Red (#E74C3C) for Marketing teams (Digital, Content, Events, Brand)
-    - Green (#27AE60) for Operations teams (HR, Finance, Legal, Facilities)
+    The largest rectangle is "Backend" (blue, Engineering) at the bottom. Other Engineering teams include Frontend, Data Science, DevOps, and QA. Sales teams (Enterprise, SMB, Partnerships) are shown in yellow. Marketing teams (Content, Events, Digital, Brand) in red, with some labels truncated (e.g., "Facilitie", "Brand"). Operations teams (HR, Finance, Legal) in green.
 
-    Labels: White bold text centered in each rectangle. Some labels in smaller cells appear truncated or crowded (Facilities, Events, Brand, Legal in the top row are quite small; Partnership is cut off).
+    The title reads "hierarchy-toggle-view · altair · pyplots.ai" with subtitle "Use dropdown to toggle between Treemap and Sunburst views". A legend on the right shows the four department colors. White stroke borders separate the rectangles. Labels are white text centered in each cell with size scaled by value.
 
-    Title: "hierarchy-toggle-view · altair · pyplots.ai" with subtitle "Use dropdown to toggle between Treemap and Sunburst views".
+    Critical issue: The treemap only fills the top ~50% of the canvas vertically, leaving the bottom half completely empty. This is a significant layout problem - the visualization should fill more of the available canvas area.
 
-    Legend: Department color legend positioned on the right side showing all 4 departments.
-
-    Notable: The dropdown toggle control for switching to Sunburst view is not visible in the static PNG export (expected behavior - interactivity only works in HTML). The sunburst view, when selected via the dropdown in the HTML version, displays the same data as concentric arcs with departments in the inner ring and teams in the outer ring.
+    Label issues: Some labels appear truncated or clipped (e.g., "Facilitie" instead of "Facilities", "Partnershi" instead of "Partnerships").
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 29
       max: 40
       items:
       - id: VQ-01
@@ -51,49 +44,48 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Title and larger labels readable, but some smaller cell labels (top
-          row) are quite small at output resolution
+        comment: Title 28pt is good, labels readable but some are truncated due to
+          cell size
       - id: VQ-02
         name: No Overlap
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Some text truncation issues in smaller cells (FacilitiesEvents appears
-          merged, Partnership truncated)
+        passed: true
+        comment: Minor truncation of labels like Facilitie, Partnershi due to small
+          cells
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: Treemap rectangles clearly visible with good white borders, but only
-          one view visible in PNG
+        comment: Rectangles well-sized, but small cells make some labels hard to fit
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Excellent colorblind-safe palette with distinct hues
+        comment: 'Four distinct colorblind-friendly colors: blue, yellow, red, green'
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 2
         max: 5
-        passed: true
-        comment: Treemap fills only ~40% of vertical canvas space; significant whitespace
+        passed: false
+        comment: Treemap only fills ~50% of canvas vertically; significant empty space
           below
       - id: VQ-06
         name: Axis Labels
-        score: 2
+        score: 0
         max: 2
-        passed: true
-        comment: N/A for treemap (correctly omitted); tooltips provide context
+        passed: false
+        comment: Not applicable for treemap visualization
       - id: VQ-07
         name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Legend well-placed on right, good font sizes
+        comment: Legend well placed on right, no grid needed for treemap
     spec_compliance:
-      score: 22
+      score: 20
       max: 25
       items:
       - id: SC-01
@@ -101,32 +93,31 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correctly implements both treemap and sunburst with toggle mechanism
+        comment: Correct treemap visualization with toggle to sunburst (interactive)
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Values correctly mapped to area (treemap) and angle (sunburst)
+        comment: Area correctly proportional to headcount values
       - id: SC-03
         name: Required Features
-        score: 4
+        score: 3
         max: 5
-        passed: true
-        comment: 'Toggle implemented with dropdown selector; minor: static PNG can
-          only show one view'
+        passed: false
+        comment: Toggle exists but sunburst view is hidden in static PNG
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All 17 teams visible in treemap view
+        comment: All data visible
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Department legend accurate with correct colors
+        comment: Legend correctly identifies departments
       - id: SC-06
         name: Title Format
         score: 2
@@ -139,58 +130,57 @@ review:
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Good hierarchy (3 levels, 21 nodes total), varied team sizes; sunburst
-          shows parent-child relationships
+        comment: Shows 3-level hierarchy but departments only visible via color, not
+          explicit nesting
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Realistic tech company structure with sensible departments and teams
+        comment: TechCorp Inc. organization structure is realistic business scenario
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Headcount values realistic (8-52 range), though root has 0 value
+        comment: Headcount values 20-62 are realistic team sizes
     code_quality:
-      score: 9
+      score: 7
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
+        score: 1
         max: 3
-        passed: true
-        comment: Linear flow but complex data transformation loops for manual treemap/sunburst
-          layout
+        passed: false
+        comment: Contains functions (squarify_layout) which violates KISS principle
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only altair, numpy, pandas
+        comment: Only altair, numpy, pandas imported
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Modern Altair 5.x API with selection_point
+        comment: Current API usage
       - id: CQ-05
         name: Output Correct
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves both plot.png and plot.html
+        passed: false
+        comment: Saves as plot.png but note label truncation issue
     library_features:
       score: 5
       max: 5
@@ -200,10 +190,8 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: 'Excellent use of declarative grammar: selection_point with binding_select
-          for interactivity, alt.condition for visibility toggle, mark_rect/mark_arc
-          for different chart types, theta/radius encoding, layer composition, tooltips,
-          and HTML export'
+        comment: Excellent use of Altair selection binding for toggle, layered composition,
+          conditional opacity
   verdict: APPROVED
 impl_tags:
   dependencies: []
@@ -211,7 +199,6 @@ impl_tags:
   - layer-composition
   - hover-tooltips
   - html-export
-  - polar-projection
   patterns:
   - data-generation
   - iteration-over-groups

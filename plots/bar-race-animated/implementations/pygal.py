@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-race-animated: Animated Bar Chart Race
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 86/100 | Created: 2026-01-11
@@ -59,21 +59,6 @@ company_colors = {
     "Samsung": "#795548",  # Brown (distinct from all other colors)
 }
 
-# Custom style for pygal with larger fonts for readability
-custom_style = Style(
-    background="white",
-    plot_background="white",
-    foreground="#333333",
-    foreground_strong="#333333",
-    foreground_subtle="#666666",
-    title_font_size=52,
-    label_font_size=36,
-    major_label_font_size=32,
-    legend_font_size=32,
-    value_font_size=32,  # Larger value labels for better readability
-    tooltip_font_size=28,
-)
-
 # Create individual charts for each year
 charts = []
 for year_idx, year in enumerate(years):
@@ -81,10 +66,25 @@ for year_idx, year in enumerate(years):
     year_data = [(company, data[company][year_idx]) for company in companies]
     year_data.sort(key=lambda x: x[1], reverse=True)
 
+    # Create style for this chart
+    year_style = Style(
+        background="white",
+        plot_background="white",
+        foreground="#333333",
+        foreground_strong="#333333",
+        foreground_subtle="#666666",
+        title_font_size=52,
+        label_font_size=36,
+        major_label_font_size=32,
+        legend_font_size=32,
+        value_font_size=32,
+        tooltip_font_size=28,
+    )
+
     chart = pygal.HorizontalBar(
         width=1500,
         height=950,
-        style=custom_style,
+        style=year_style,
         show_legend=False,  # Disable legend on individual charts - use global legend only
         title=str(year),
         x_title="Market Cap ($B)",
@@ -99,9 +99,16 @@ for year_idx, year in enumerate(years):
         show_minor_x_labels=False,
     )
 
-    # Add each company as a separate series with its own color
-    for company, value in year_data:
-        chart.add(company, [{"value": value, "color": company_colors[company]}])
+    # Set x_labels for company names (shown on y-axis for horizontal bar)
+    chart.x_labels = [company for company, _ in year_data]
+
+    # Add each company as a separate series with its value at the correct position
+    # Use None placeholders for other positions to avoid stacking
+    num_companies = len(year_data)
+    for idx, (company, value) in enumerate(year_data):
+        values = [None] * num_companies
+        values[idx] = {"value": value, "color": company_colors[company]}
+        chart.add(company, values)
 
     charts.append(chart)
 

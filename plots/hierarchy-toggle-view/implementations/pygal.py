@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 hierarchy-toggle-view: Interactive Treemap-Sunburst Toggle View
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 45/100 | Created: 2026-01-11
@@ -65,63 +65,58 @@ dept_colors = {
     "hr": "#E07B39",  # Burnt Orange
 }
 
-# Assign colors to children (same as parent)
-node_colors = {"root": "#CCCCCC"}
-for dept_id, color in dept_colors.items():
-    node_colors[dept_id] = color
-    for cid in children.get(dept_id, []):
-        node_colors[cid] = color
-
-# Custom style for pygal charts
-custom_style = Style(
+# ============ TREEMAP-LIKE VIEW ============
+# Since pygal Treemap has PNG rendering issues, create a horizontal bar
+# chart that shows the hierarchical breakdown visually
+treemap_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
     colors=(dept_colors["eng"], dept_colors["sales"], dept_colors["ops"], dept_colors["hr"]),
-    title_font_size=48,
-    label_font_size=28,
-    major_label_font_size=24,
-    legend_font_size=28,
-    value_font_size=22,
-    value_label_font_size=22,
-    tooltip_font_size=22,
+    title_font_size=72,
+    label_font_size=42,
+    major_label_font_size=38,
+    legend_font_size=40,
+    value_font_size=36,
+    value_label_font_size=36,
+    tooltip_font_size=36,
 )
 
-# ============ TREEMAP ============
-# Create treemap chart - pygal Treemap expects list of values per series
-treemap = pygal.Treemap(
-    width=2200,
-    height=2200,
-    style=custom_style,
+# Create a horizontal bar chart showing department totals
+treemap_chart = pygal.HorizontalBar(
+    width=2100,
+    height=1600,
+    style=treemap_style,
     title="Treemap View",
     print_values=True,
-    print_labels=True,
+    print_labels=False,
     show_legend=True,
-    legend_at_bottom=True,
-    legend_at_bottom_columns=4,
+    legend_at_bottom=False,
+    margin_left=50,
+    margin_right=250,
+    margin_bottom=100,
+    margin_top=150,
+    x_label_rotation=0,
+    truncate_legend=-1,
 )
 
-# Add data to treemap - each series gets a list of values for its sub-departments
-# pygal Treemap expects: chart.add('Label', [value1, value2, ...])
-# For nested data, use: chart.add('Label', [{'value': v, 'label': l}, ...])
+# Add each department as a bar
 for dept_id in level1_ids:
     dept_label = nodes[dept_id]["label"]
-    dept_values = []
-    for cid in children.get(dept_id, []):
-        child_label = nodes[cid]["label"]
-        child_value = nodes[cid]["value"]
-        dept_values.append({"value": child_value, "label": child_label})
-    treemap.add(dept_label, dept_values)
+    dept_value = nodes[dept_id]["value"]
+    treemap_chart.add(dept_label, [{"value": dept_value, "label": f"${dept_value}M"}])
 
 # Render treemap to PNG bytes
-treemap_png = treemap.render_to_png()
+treemap_png = treemap_chart.render_to_png()
 treemap_img = Image.open(io.BytesIO(treemap_png))
 
-# ============ SUNBURST (as nested pie/donut) ============
-# Pygal doesn't have native sunburst, so we create a donut chart showing hierarchy
-# Inner ring: departments, outer values shown in legend
+# ============ SUNBURST VIEW (Multi-level Pie) ============
+# Create TWO concentric pie charts to show hierarchy:
+# Inner ring: departments (larger segments)
+# Since pygal doesn't support true nested pies in one chart,
+# we'll create an outer pie with sub-departments and larger inner_radius
 
 sunburst_style = Style(
     background="white",
@@ -129,36 +124,57 @@ sunburst_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=(dept_colors["eng"], dept_colors["sales"], dept_colors["ops"], dept_colors["hr"]),
-    title_font_size=48,
-    label_font_size=28,
-    major_label_font_size=24,
-    legend_font_size=28,
-    value_font_size=22,
-    value_label_font_size=22,
-    tooltip_font_size=22,
+    colors=(
+        # Engineering sub-depts (blues)
+        "#306998",
+        "#4a8bc2",
+        "#6ba8d9",
+        "#8cc5f0",
+        # Sales sub-depts (yellows)
+        "#FFD43B",
+        "#ffe066",
+        "#ffeb99",
+        # Operations sub-depts (greens)
+        "#2E8B57",
+        "#4aa876",
+        "#6bc595",
+        # HR sub-depts (oranges)
+        "#E07B39",
+        "#e8995c",
+        "#f0b77f",
+    ),
+    title_font_size=72,
+    label_font_size=36,
+    major_label_font_size=34,
+    legend_font_size=36,
+    value_font_size=32,
+    value_label_font_size=32,
+    tooltip_font_size=32,
 )
 
-# Create a donut chart (pie with inner_radius) for sunburst-like appearance
-# Disable print_labels to avoid overlapping text in pie segments
+# Create pie chart showing ALL sub-departments (simulates outer ring of sunburst)
 sunburst = pygal.Pie(
-    width=2200,
-    height=2200,
+    width=2100,
+    height=1600,
     style=sunburst_style,
     title="Sunburst View",
-    inner_radius=0.4,
-    print_values=False,
+    inner_radius=0.35,
+    print_values=True,
     print_labels=False,
-    show_legend=True,
-    legend_at_bottom=True,
-    legend_at_bottom_columns=4,
+    show_legend=False,
+    margin_left=50,
+    margin_right=50,
+    margin_bottom=100,
+    margin_top=150,
+    truncate_legend=-1,
 )
 
-# Add department data - use short labels, detailed info in tooltip (HTML only)
+# Add all sub-departments grouped by parent color family
 for dept_id in level1_ids:
-    dept_label = nodes[dept_id]["label"]
-    dept_value = nodes[dept_id]["value"]
-    sunburst.add(f"{dept_label} (${dept_value}M)", [dept_value])
+    for cid in children.get(dept_id, []):
+        child_label = nodes[cid]["label"]
+        child_value = nodes[cid]["value"]
+        sunburst.add(f"{child_label} (${child_value}M)", [child_value])
 
 # Render sunburst to PNG bytes
 sunburst_png = sunburst.render_to_png()
@@ -172,14 +188,14 @@ final_height = 2700
 # Create the final image
 final_img = Image.new("RGB", (final_width, final_height), "white")
 
-# Resize both charts to fit side by side
-chart_width = 2200
-chart_height = 2200
+# Chart dimensions - slightly smaller to fit legend
+chart_width = 2100
+chart_height = 1600
 
-# Calculate positions (centered vertically, side by side horizontally)
-left_x = 100
-right_x = final_width - chart_width - 100
-top_y = (final_height - chart_height - 200) // 2 + 150
+# Calculate positions - place charts side by side with minimal gap
+left_x = 150
+right_x = final_width - chart_width - 150
+top_y = 320  # Below title and toggle, leaving room for legend at bottom
 
 # Resize images if needed
 treemap_resized = treemap_img.resize((chart_width, chart_height), Image.Resampling.LANCZOS)
@@ -194,54 +210,58 @@ draw = ImageDraw.Draw(final_img)
 
 # Try to use a good font, fall back to default
 try:
-    title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 72)
-    subtitle_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 48)
-    toggle_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 36)
+    title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 80)
+    subtitle_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 52)
+    toggle_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 40)
+    legend_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 36)
 except OSError:
     title_font = ImageFont.load_default()
     subtitle_font = ImageFont.load_default()
     toggle_font = ImageFont.load_default()
+    legend_font = ImageFont.load_default()
 
 # Main title
-title_text = "hierarchy-toggle-view \u00b7 pygal \u00b7 pyplots.ai"
+title_text = "hierarchy-toggle-view · pygal · pyplots.ai"
 title_bbox = draw.textbbox((0, 0), title_text, font=title_font)
 title_width = title_bbox[2] - title_bbox[0]
 title_x = (final_width - title_width) // 2
-draw.text((title_x, 30), title_text, fill="#306998", font=title_font)
+draw.text((title_x, 40), title_text, fill="#306998", font=title_font)
 
 # Subtitle
-subtitle_text = "Technology Company Budget Allocation"
+subtitle_text = "Technology Company Budget Allocation ($M)"
 subtitle_bbox = draw.textbbox((0, 0), subtitle_text, font=subtitle_font)
 subtitle_width = subtitle_bbox[2] - subtitle_bbox[0]
 subtitle_x = (final_width - subtitle_width) // 2
-draw.text((subtitle_x, 110), subtitle_text, fill="#666666", font=subtitle_font)
+draw.text((subtitle_x, 135), subtitle_text, fill="#666666", font=subtitle_font)
 
-# Toggle switch visualization
-toggle_y = 180
-toggle_width = 400
-toggle_height = 60
+# Toggle switch visualization - show BOTH views indicator
+toggle_y = 220
+toggle_width = 700
+toggle_height = 70
 toggle_x = (final_width - toggle_width) // 2
 
 # Toggle background
 draw.rounded_rectangle(
     [toggle_x, toggle_y, toggle_x + toggle_width, toggle_y + toggle_height],
-    radius=30,
+    radius=35,
     fill="#E8E8E8",
     outline="#CCCCCC",
-    width=2,
+    width=3,
 )
 
 # Toggle label
-toggle_label = "Toggle View:"
+toggle_label = "Views:"
 label_bbox = draw.textbbox((0, 0), toggle_label, font=toggle_font)
 label_width = label_bbox[2] - label_bbox[0]
-draw.text((toggle_x - label_width - 20, toggle_y + 10), toggle_label, fill="#333333", font=toggle_font)
+draw.text((toggle_x - label_width - 25, toggle_y + 14), toggle_label, fill="#333333", font=toggle_font)
+
+# Both buttons shown as active to indicate side-by-side view
+btn_width = toggle_width // 2 - 15
 
 # Left button (Treemap - selected)
-btn_width = toggle_width // 2 - 10
 draw.rounded_rectangle(
-    [toggle_x + 5, toggle_y + 5, toggle_x + btn_width, toggle_y + toggle_height - 5],
-    radius=25,
+    [toggle_x + 8, toggle_y + 8, toggle_x + btn_width, toggle_y + toggle_height - 8],
+    radius=28,
     fill="#306998",
     outline="#1d4a6e",
     width=2,
@@ -250,31 +270,97 @@ treemap_btn_text = "Treemap"
 btn_text_bbox = draw.textbbox((0, 0), treemap_btn_text, font=toggle_font)
 btn_text_width = btn_text_bbox[2] - btn_text_bbox[0]
 draw.text(
-    (toggle_x + btn_width // 2 - btn_text_width // 2, toggle_y + 12), treemap_btn_text, fill="white", font=toggle_font
+    (toggle_x + btn_width // 2 - btn_text_width // 2, toggle_y + 15), treemap_btn_text, fill="white", font=toggle_font
 )
 
-# Right button (Sunburst - unselected)
+# Right button (Sunburst - also selected to show both)
 draw.rounded_rectangle(
-    [toggle_x + btn_width + 15, toggle_y + 5, toggle_x + toggle_width - 5, toggle_y + toggle_height - 5],
-    radius=25,
-    fill="white",
-    outline="#BBBBBB",
+    [toggle_x + btn_width + 22, toggle_y + 8, toggle_x + toggle_width - 8, toggle_y + toggle_height - 8],
+    radius=28,
+    fill="#306998",
+    outline="#1d4a6e",
     width=2,
 )
 sunburst_btn_text = "Sunburst"
 btn_text_bbox = draw.textbbox((0, 0), sunburst_btn_text, font=toggle_font)
 btn_text_width = btn_text_bbox[2] - btn_text_bbox[0]
 draw.text(
-    (toggle_x + btn_width + 15 + btn_width // 2 - btn_text_width // 2, toggle_y + 12),
+    (toggle_x + btn_width + 22 + btn_width // 2 - btn_text_width // 2, toggle_y + 15),
     sunburst_btn_text,
-    fill="#666666",
+    fill="white",
     font=toggle_font,
 )
+
+# Add comprehensive legend showing department hierarchy
+legend_y = final_height - 200
+legend_x_start = 200
+box_size = 32
+col_width = 580
+
+# Draw legend for each department with its sub-departments
+for col, dept_id in enumerate(level1_ids):
+    x_base = legend_x_start + col * col_width
+    color = dept_colors[dept_id]
+    dept_label = nodes[dept_id]["label"]
+    dept_value = nodes[dept_id]["value"]
+
+    # Department header with color box
+    draw.rectangle([x_base, legend_y, x_base + box_size, legend_y + box_size], fill=color, outline="#333333", width=2)
+    draw.text(
+        (x_base + box_size + 10, legend_y - 2), f"{dept_label} (${dept_value}M)", fill="#333333", font=legend_font
+    )
+
+    # Sub-departments
+    for j, cid in enumerate(children.get(dept_id, [])):
+        child_label = nodes[cid]["label"]
+        child_value = nodes[cid]["value"]
+        y_offset = legend_y + 45 + j * 38
+        draw.text((x_base + 20, y_offset), f"• {child_label}: ${child_value}M", fill="#666666", font=legend_font)
 
 # Save final composite image
 final_img.save("plot.png", "PNG")
 
-# Also save interactive HTML with both charts
+# Also save interactive HTML with toggle between views
+# For HTML, we can use proper Treemap since SVG rendering works
+treemap_html = pygal.Treemap(
+    width=800,
+    height=600,
+    style=treemap_style,
+    title="",
+    print_values=True,
+    print_labels=True,
+    show_legend=True,
+    legend_at_bottom=True,
+    legend_at_bottom_columns=4,
+)
+
+for dept_id in level1_ids:
+    dept_label = nodes[dept_id]["label"]
+    dept_values = []
+    for cid in children.get(dept_id, []):
+        child_label = nodes[cid]["label"]
+        child_value = nodes[cid]["value"]
+        dept_values.append({"value": child_value, "label": f"{child_label}: ${child_value}M"})
+    treemap_html.add(dept_label, dept_values)
+
+sunburst_html = pygal.Pie(
+    width=800,
+    height=600,
+    style=sunburst_style,
+    title="",
+    inner_radius=0.35,
+    print_values=True,
+    show_legend=True,
+    legend_at_bottom=True,
+    legend_at_bottom_columns=4,
+)
+
+for dept_id in level1_ids:
+    for cid in children.get(dept_id, []):
+        child_label = nodes[cid]["label"]
+        child_value = nodes[cid]["value"]
+        sunburst_html.add(f"{child_label} (${child_value}M)", [child_value])
+
 html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -337,20 +423,9 @@ html_content = f"""<!DOCTYPE html>
         .toggle-btn:not(.active):hover {{
             background: #f0f0f0;
         }}
-        .charts-container {{
-            display: flex;
-            gap: 40px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }}
-        .chart {{
-            transition: opacity 0.3s, transform 0.3s;
-        }}
-        .chart.hidden {{
-            display: none;
-        }}
         .chart-wrapper {{
             text-align: center;
+            max-width: 900px;
         }}
         .chart-title {{
             font-size: 24px;
@@ -358,11 +433,17 @@ html_content = f"""<!DOCTYPE html>
             color: #333;
             margin-bottom: 10px;
         }}
+        .chart {{
+            transition: opacity 0.3s;
+        }}
+        .hidden {{
+            display: none;
+        }}
     </style>
 </head>
 <body>
     <h1>hierarchy-toggle-view &middot; pygal &middot; pyplots.ai</h1>
-    <h2>Technology Company Budget Allocation</h2>
+    <h2>Technology Company Budget Allocation ($M)</h2>
 
     <div class="toggle-container">
         <span class="toggle-label">Toggle View:</span>
@@ -372,18 +453,16 @@ html_content = f"""<!DOCTYPE html>
         </div>
     </div>
 
-    <div class="charts-container">
-        <div class="chart-wrapper" id="treemap-wrapper">
-            <div class="chart-title">Treemap View</div>
-            <div class="chart" id="treemap-chart">
-                {treemap.render(is_unicode=True)}
-            </div>
+    <div class="chart-wrapper" id="treemap-wrapper">
+        <div class="chart-title">Treemap View</div>
+        <div class="chart" id="treemap-chart">
+            {treemap_html.render(is_unicode=True)}
         </div>
-        <div class="chart-wrapper hidden" id="sunburst-wrapper">
-            <div class="chart-title">Sunburst View</div>
-            <div class="chart" id="sunburst-chart">
-                {sunburst.render(is_unicode=True)}
-            </div>
+    </div>
+    <div class="chart-wrapper hidden" id="sunburst-wrapper">
+        <div class="chart-title">Sunburst View</div>
+        <div class="chart" id="sunburst-chart">
+            {sunburst_html.render(is_unicode=True)}
         </div>
     </div>
 

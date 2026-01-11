@@ -1,0 +1,28 @@
+# Specification-level metadata for drawdown-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: drawdown-basic
+title: Drawdown Chart
+
+# Specification tracking
+created: 2026-01-11T22:46:20Z
+updated: null
+issue: 3752
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - area
+    - line
+  data_type:
+    - timeseries
+    - numeric
+  domain:
+    - finance
+    - business
+  features:
+    - basic
+    - temporal
+    - risk-analysis

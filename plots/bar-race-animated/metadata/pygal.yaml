@@ -1,7 +1,7 @@
 library: pygal
 specification_id: bar-race-animated
 created: '2026-01-11T00:21:12Z'
-updated: '2026-01-11T00:29:08Z'
+updated: '2026-01-11T00:41:04Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 20886563904
 issue: 3653
@@ -10,84 +10,85 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/bar-race-animated/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/bar-race-animated/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/bar-race-animated/pygal/plot.html
-quality_score: 78
+quality_score: 85
 review:
   strengths:
-  - Excellent small multiples approach to show animation frames as static grid
-  - Consistent color assignment per company allows visual tracking across years
-  - Realistic tech market cap data with compelling narrative (NVIDIA rise)
-  - Values displayed on bars improve readability
-  - Proper use of pygal HorizontalBar with custom styling
+  - 'Excellent interpretation of spec for static library: small multiples grid approach
+    effectively shows the bar race concept over time'
+  - Good data storytelling - NVIDIA rise from $100B to $2,100B is dramatic and engaging
+  - Consistent color mapping across all panels allows easy entity tracking
+  - Clean layout with proper title format and well-organized grid
+  - Creative solution using PIL to compose final image at correct 4800x2700 resolution
   weaknesses:
-  - Y-axis labels (company names) not visible in subplots - should appear beside each
-    bar
-  - X-axis tick labels are truncated and overlap in several panels
-  - Heavy reliance on PIL/cairosvg for final composition rather than native pygal
-    output
-  - No legend in static output makes color-company mapping unclear without y-axis
-    labels
-  image_description: 'The plot displays a 3x2 grid (small multiples layout) showing
-    tech company market cap evolution from 2019-2024. Each panel represents one year
-    with horizontal bars sorted by value. Eight companies are shown: Apple (blue),
-    Microsoft (yellow), Alphabet (blue), Amazon (orange), Meta (blue), Tesla (red),
-    NVIDIA (green), and Samsung (dark blue). Bar values are displayed in the middle
-    of each bar in "$XB" format. The main title at top reads "bar-race-animated ·
-    pygal · pyplots.ai" in black. Each subplot has the year as title and "Market Cap
-    (Billion USD)" as x-axis label. The ranking changes are visible across years -
-    notably NVIDIA rises dramatically from 8th place in 2019 to 1st place by 2024.
-    Colors remain consistent for each company across all frames, allowing visual tracking.'
+  - 'Duplicate legends: each small chart has its own legend AND there is a master
+    legend at bottom (redundant, clutters visual)'
+  - Some similar blue shades (Apple, Meta, Samsung) can be hard to distinguish at
+    a glance
+  - Value labels inside bars could be slightly larger for readability
+  - The 2024 x-axis scale is inconsistent with other panels
+  image_description: 'The plot displays a 3x2 grid showing tech company market cap
+    evolution from 2019-2024 (small multiples approach for animated bar race). Each
+    panel shows a horizontal bar chart for one year, with bars sorted by value (descending).
+    The title "bar-race-animated · pygal · pyplots.ai" appears at the top in large
+    black text. Companies include Apple, Microsoft, Alphabet, Amazon, Meta, Tesla,
+    NVIDIA, and Samsung, each with consistent coloring: Apple (blue), Microsoft (yellow),
+    Alphabet (Google blue), Amazon (orange), Meta (bright blue), Tesla (red), NVIDIA
+    (green), Samsung (dark blue). Each bar displays value labels (e.g., "$1,200B").
+    X-axis shows "Market Cap ($B)" and year titles appear above each chart. A legend
+    at the bottom shows all company colors. The ranking changes are visible across
+    years - notably NVIDIA''s dramatic rise from bottom positions in 2019 to top 3
+    by 2024.'
   criteria_checklist:
     visual_quality:
-      score: 29
+      score: 34
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 10
         passed: true
-        comment: Title and bar values readable but subplot titles and x-axis labels
-          somewhat small; x-axis tick labels compressed and truncated
+        comment: Main title is clear, year titles readable, but some value labels
+          on bars are small when viewing full image
       - id: VQ-02
         name: No Overlap
-        score: 5
-        max: 8
-        passed: false
-        comment: X-axis tick labels overlap in several subplots, some bar value labels
-          overlap with bar edges
-      - id: VQ-03
-        name: Element Visibility
         score: 8
         max: 8
         passed: true
-        comment: Bars well-sized and clearly visible with good proportions
+        comment: No overlapping text elements, bars well separated
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 8
+        passed: true
+        comment: Bars are visible and appropriately sized, colors distinguishable
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 5
         passed: true
-        comment: Good distinct colors, though multiple blue shades could be confusing
+        comment: Good distinct colors, though some blues are similar (Apple vs Samsung
+          vs Meta)
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Grid layout balanced but subplots cramped; company names (y-axis
-          labels) missing
+        comment: Excellent use of 3x2 grid, fills canvas well
       - id: VQ-06
         name: Axis Labels
+        score: 1
+        max: 2
+        passed: true
+        comment: Has Market Cap ($B) which is descriptive with unit abbreviation
+      - id: VQ-07
+        name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Market Cap (Billion USD) is descriptive with units
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
-        max: 2
-        passed: false
-        comment: No legend present in PNG output
+        comment: Subtle vertical grid lines, legend well placed at bottom
     spec_compliance:
-      score: 22
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -95,38 +96,40 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct horizontal bar chart with sorted ranking at each time point
+        comment: 'Correct: horizontal bar chart showing rankings over time via small
+          multiples'
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Companies correctly mapped to bars, values correctly shown
+        comment: Entities on Y-axis, values on X-axis, time as grid panels
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Shows ranking changes, consistent colors; entity labels not visible
-          attached to bars
+        comment: Has sorted bars per frame, consistent colors, time indicator, values
+          shown. Missing smooth transitions (static output)
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Axes show full data range for each year
+        comment: All data visible, axes scale appropriately per year
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 1
         max: 2
-        passed: false
-        comment: No legend visible; company names should be on y-axis but not visible
+        passed: true
+        comment: Legend present but duplicated (each chart has legend + bottom global
+          legend)
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: bar-race-animated · pygal · pyplots.ai correctly formatted
+        comment: Uses bar-race-animated · pygal · pyplots.ai format correctly
     data_quality:
       score: 18
       max: 20
@@ -136,22 +139,23 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows ranking changes, dramatic rises (NVIDIA, Tesla), falls (Meta
-          2022), overtakes
+        comment: Shows ranking changes well (NVIDIA/Tesla rise, Meta dip in 2022),
+          demonstrates the racing concept effectively
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Real tech companies with plausible market cap evolution
+        comment: Tech company market cap is a real, neutral, well-understood scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Values generally realistic though some 2024 projections are estimated
+        comment: Values are roughly realistic for tech market caps, though some growth
+          rates are simplified
     code_quality:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: CQ-01
@@ -159,32 +163,32 @@ review:
         score: 1
         max: 3
         passed: false
-        comment: Uses PIL composition functions, more complex than typical KISS structure
+        comment: Uses functions/loops but reasonable given the grid complexity; not
+          pure linear flow
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) set
+        comment: Has np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: BytesIO, cairosvg, PIL imports used but add complexity
+        comment: All imports used (cairosvg, PIL for grid composition)
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: No deprecated functions
+        comment: Current API usage
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves as plot.png but via PIL composition rather than direct pygal
-          output
+        comment: Saves as plot.png but also generates plot.html (minor, acceptable)
     library_features:
       score: 3
       max: 5
@@ -194,19 +198,19 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses pygal HorizontalBar, custom Style, value_formatter; but final
-          output relies heavily on cairosvg and PIL
-  verdict: REJECTED
+        comment: Uses pygal HorizontalBar, Style customization, value_formatter, render_to_file.
+          Creative use of PIL/cairosvg to compose grid is pragmatic but not showcasing
+          pygal native features
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - pillow
   - cairosvg
   techniques:
   - subplots
-  - annotations
+  - html-export
   patterns:
   - data-generation
   - iteration-over-groups
   dataprep: []
-  styling:
-  - edge-highlighting
+  styling: []

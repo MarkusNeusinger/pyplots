@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-race-animated: Animated Bar Chart Race
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-11
@@ -59,52 +59,51 @@ company_colors = {
     "Samsung": "#1428A0",  # Samsung Blue
 }
 
-# Custom style for pygal with larger fonts
+# Custom style for pygal with larger fonts for readability
 custom_style = Style(
     background="white",
     plot_background="white",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    title_font_size=72,
-    label_font_size=36,
-    major_label_font_size=32,
-    legend_font_size=36,
-    value_font_size=28,
-    tooltip_font_size=28,
+    title_font_size=48,
+    label_font_size=32,
+    major_label_font_size=28,
+    legend_font_size=28,
+    value_font_size=24,
+    tooltip_font_size=24,
 )
 
-# Create individual charts for each year with y-axis labels (company names)
+# Create individual charts for each year
 charts = []
 for year_idx, year in enumerate(years):
-    # Get values for this year and sort
+    # Get values for this year and sort by value (descending)
     year_data = [(company, data[company][year_idx]) for company in companies]
     year_data.sort(key=lambda x: x[1], reverse=True)
 
     chart = pygal.HorizontalBar(
-        width=1600,
-        height=1000,
+        width=1500,
+        height=950,
         style=custom_style,
-        show_legend=False,
+        show_legend=True,
+        legend_at_bottom=True,
+        legend_at_bottom_columns=4,
         title=str(year),
-        x_title="Market Cap (Billion USD)",
+        x_title="Market Cap ($B)",
         print_values=True,
         print_values_position="middle",
         value_formatter=lambda x: f"${x:,.0f}B",
-        margin=30,
-        spacing=20,
+        margin=40,
+        spacing=12,
         truncate_label=-1,
-        x_labels_major_every=2,  # Show fewer x-axis tick labels
+        show_x_labels=True,
+        x_label_rotation=0,
+        show_minor_x_labels=False,
     )
 
-    # Set y-axis labels to company names (in sorted order)
-    chart.x_labels = [company for company, _ in year_data]
-
-    # Add single series with all values
-    values = []
+    # Add each company as a separate series with its own color
     for company, value in year_data:
-        values.append({"value": value, "color": company_colors[company]})
-    chart.add("Market Cap", values)
+        chart.add(company, [{"value": value, "color": company_colors[company]}])
 
     charts.append(chart)
 
@@ -112,26 +111,32 @@ for year_idx, year in enumerate(years):
 chart_images = []
 for chart in charts:
     svg_data = chart.render()
-    png_data = cairosvg.svg2png(bytestring=svg_data, output_width=1600, output_height=1000)
+    png_data = cairosvg.svg2png(bytestring=svg_data, output_width=1500, output_height=950)
     img = Image.open(BytesIO(png_data))
     chart_images.append(img)
 
 # Create 3x2 grid layout (4800 x 2700 final size)
 grid_width = 4800
 grid_height = 2700
+title_height = 160
+legend_height = 120
+content_height = grid_height - title_height - legend_height
 cell_width = grid_width // 3
-cell_height = (grid_height - 180) // 2  # Leave space for title
+cell_height = content_height // 2
 
 combined = Image.new("RGB", (grid_width, grid_height), "white")
-
-# Add main title
 draw = ImageDraw.Draw(combined)
+
+# Load fonts
 try:
-    title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 80)
+    title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 72)
+    legend_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 36)
 except OSError:
     title_font = ImageFont.load_default()
+    legend_font = ImageFont.load_default()
 
-title_text = "Tech Company Market Cap (2019-2024) · bar-race-animated · pygal · pyplots.ai"
+# Add main title
+title_text = "bar-race-animated · pygal · pyplots.ai"
 bbox = draw.textbbox((0, 0), title_text, font=title_font)
 title_width = bbox[2] - bbox[0]
 draw.text(((grid_width - title_width) // 2, 40), title_text, fill="#333333", font=title_font)
@@ -150,13 +155,26 @@ for idx, (col, row) in enumerate(positions):
     if idx < len(chart_images):
         img = chart_images[idx].resize((cell_width, cell_height), Image.Resampling.LANCZOS)
         x = col * cell_width
-        y = 180 + row * cell_height
+        y = title_height + row * cell_height
         combined.paste(img, (x, y))
+
+# Add legend at bottom
+legend_y = grid_height - legend_height + 30
+legend_x_start = 150
+box_size = 30
+spacing_between = grid_width // len(companies)
+
+for i, company in enumerate(companies):
+    x_pos = legend_x_start + i * spacing_between
+    # Draw color box
+    draw.rectangle([x_pos, legend_y, x_pos + box_size, legend_y + box_size], fill=company_colors[company])
+    # Draw company name
+    draw.text((x_pos + box_size + 10, legend_y - 5), company, fill="#333333", font=legend_font)
 
 # Save as PNG
 combined.save("plot.png", dpi=(300, 300))
 
-# Save as HTML (interactive SVG version showing evolution)
+# Save as HTML (interactive SVG version showing 2024 final state)
 html_style = Style(
     background="white",
     plot_background="white",
@@ -184,8 +202,8 @@ html_chart = pygal.HorizontalBar(
 
 final_data = [(company, data[company][-1]) for company in companies]
 final_data.sort(key=lambda x: x[1], reverse=True)
-html_chart.x_labels = [company for company, _ in final_data]
-values = [{"value": value, "color": company_colors[company]} for company, value in final_data]
-html_chart.add("Market Cap", values)
+
+for company, value in final_data:
+    html_chart.add(company, [{"value": value, "color": company_colors[company]}])
 
 html_chart.render_to_file("plot.html")

@@ -1,10 +1,11 @@
-""" pyplots.ai
+"""pyplots.ai
 hierarchy-toggle-view: Interactive Treemap-Sunburst Toggle View
 Library: matplotlib 3.10.8 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-11
 """
 
 import matplotlib.patches as mpatches
+import matplotlib.patheffects as path_effects
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -78,27 +79,45 @@ ax_toggle.set_xlim(0, 1)
 ax_toggle.set_ylim(0, 1)
 ax_toggle.axis("off")
 
+# Draw toggle switch shadow (drop shadow effect using multiple patches)
+toggle_shadow = mpatches.FancyBboxPatch(
+    (0.352, 0.22), 0.30, 0.5, boxstyle="round,pad=0.02", facecolor="#00000022", edgecolor="none"
+)
+ax_toggle.add_patch(toggle_shadow)
+
 # Draw toggle switch background
 toggle_bg = mpatches.FancyBboxPatch(
     (0.35, 0.25), 0.30, 0.5, boxstyle="round,pad=0.02", facecolor="#E8E8E8", edgecolor="#CCCCCC", linewidth=2
 )
 ax_toggle.add_patch(toggle_bg)
 
-# Draw toggle buttons (Treemap selected, Sunburst unselected - showing both views)
+# Draw toggle buttons (Treemap selected with glow effect, Sunburst unselected)
+# Selected button glow
+btn_glow = mpatches.FancyBboxPatch(
+    (0.355, 0.28), 0.14, 0.44, boxstyle="round,pad=0.01", facecolor="#30699833", edgecolor="none"
+)
+ax_toggle.add_patch(btn_glow)
+
 btn_treemap = mpatches.FancyBboxPatch(
-    (0.36, 0.30), 0.13, 0.40, boxstyle="round,pad=0.01", facecolor="#306998", edgecolor="#306998", linewidth=2
+    (0.36, 0.30), 0.13, 0.40, boxstyle="round,pad=0.01", facecolor="#306998", edgecolor="#1d4a6e", linewidth=2
 )
 ax_toggle.add_patch(btn_treemap)
-ax_toggle.text(0.425, 0.50, "Treemap", ha="center", va="center", fontsize=14, fontweight="bold", color="white")
+treemap_text = ax_toggle.text(
+    0.425, 0.50, "Treemap", ha="center", va="center", fontsize=14, fontweight="bold", color="white"
+)
+treemap_text.set_path_effects([path_effects.withStroke(linewidth=2, foreground="#1d4a6e")])
 
 btn_sunburst = mpatches.FancyBboxPatch(
-    (0.51, 0.30), 0.13, 0.40, boxstyle="round,pad=0.01", facecolor="white", edgecolor="#CCCCCC", linewidth=2
+    (0.51, 0.30), 0.13, 0.40, boxstyle="round,pad=0.01", facecolor="white", edgecolor="#BBBBBB", linewidth=2
 )
 ax_toggle.add_patch(btn_sunburst)
 ax_toggle.text(0.575, 0.50, "Sunburst", ha="center", va="center", fontsize=14, fontweight="bold", color="#666666")
 
-# Toggle label
-ax_toggle.text(0.5, 0.90, "Toggle View:", ha="center", va="center", fontsize=16, fontweight="bold", color="#333333")
+# Toggle label with subtle styling
+toggle_label = ax_toggle.text(
+    0.5, 0.90, "Toggle View:", ha="center", va="center", fontsize=16, fontweight="bold", color="#333333"
+)
+toggle_label.set_path_effects([path_effects.withStroke(linewidth=1, foreground="#FFFFFF")])
 
 # ============ LEFT: TREEMAP ============
 # Get leaf nodes (sub-departments)
@@ -147,7 +166,9 @@ for _dept_id, items in dept_groups.items():
 
         # Add label if rectangle is large enough
         if dept_width > 0.1 and item_height > 0.08:
-            ax1.text(
+            text_color = "white" if color in ["#306998", "#2E8B57"] else "black"
+            outline_color = "#00000066" if text_color == "white" else "#FFFFFF66"
+            label = ax1.text(
                 current_x + dept_width / 2 - 0.0025,
                 current_y + item_height / 2 - 0.0025,
                 f"{n['label']}\n({n['value']})",
@@ -155,8 +176,9 @@ for _dept_id, items in dept_groups.items():
                 va="center",
                 fontsize=14,
                 fontweight="bold",
-                color="white" if color in ["#306998", "#2E8B57"] else "black",
+                color=text_color,
             )
+            label.set_path_effects([path_effects.withStroke(linewidth=2, foreground=outline_color)])
 
         current_y += item_height
 
@@ -190,45 +212,74 @@ for dept_id in dept_order:
         outer_colors.append(node_colors[nid])
         outer_labels.append(n["label"])
 
-# Draw sunburst as concentric pie charts (reduced radius to avoid clipping)
+# Draw sunburst as concentric pie charts (increased radius for better canvas utilization)
 # Inner ring (departments)
 wedges1, _ = ax2.pie(
     inner_sizes,
-    radius=0.55,
+    radius=0.62,
     colors=inner_colors,
-    wedgeprops={"width": 0.28, "edgecolor": "white", "linewidth": 2},
+    wedgeprops={"width": 0.32, "edgecolor": "white", "linewidth": 2.5},
     startangle=90,
 )
 
-# Add department labels on inner ring
+# Add department labels on inner ring with path effects for better readability
 for i, wedge in enumerate(wedges1):
     angle = (wedge.theta2 + wedge.theta1) / 2
-    x = 0.41 * np.cos(np.radians(angle))
-    y = 0.41 * np.sin(np.radians(angle))
-    color = "white" if dept_order[i] in ["eng", "ops"] else "black"
-    ax2.text(x, y, dept_labels[i], ha="center", va="center", fontsize=16, fontweight="bold", color=color)
+    x = 0.46 * np.cos(np.radians(angle))
+    y = 0.46 * np.sin(np.radians(angle))
+    text_color = "white" if dept_order[i] in ["eng", "ops"] else "black"
+    outline_color = "#00000088" if text_color == "white" else "#FFFFFF88"
+    inner_label = ax2.text(
+        x, y, dept_labels[i], ha="center", va="center", fontsize=17, fontweight="bold", color=text_color
+    )
+    inner_label.set_path_effects([path_effects.withStroke(linewidth=3, foreground=outline_color)])
 
 # Outer ring (sub-departments)
 wedges2, _ = ax2.pie(
     outer_sizes,
-    radius=0.88,
+    radius=0.98,
     colors=outer_colors,
-    wedgeprops={"width": 0.33, "edgecolor": "white", "linewidth": 1.5},
+    wedgeprops={"width": 0.36, "edgecolor": "white", "linewidth": 2},
     startangle=90,
 )
 
-# Add sub-department labels on outer ring (only for larger segments)
+# Add sub-department labels on outer ring with smart positioning and path effects
 for i, wedge in enumerate(wedges2):
     angle_span = wedge.theta2 - wedge.theta1
-    if angle_span > 12:  # Label more segments with increased threshold
+    if angle_span > 15:  # Only label larger segments to avoid overlap
         angle = (wedge.theta2 + wedge.theta1) / 2
-        x = 0.72 * np.cos(np.radians(angle))
-        y = 0.72 * np.sin(np.radians(angle))
+        # Adjust radius based on segment size
+        label_radius = 0.80 if angle_span > 25 else 0.78
+        x = label_radius * np.cos(np.radians(angle))
+        y = label_radius * np.sin(np.radians(angle))
         # Determine text color based on background
         bg_color = outer_colors[i]
         text_color = "white" if bg_color in ["#306998", "#2E8B57"] else "black"
-        # Horizontal labels (no rotation) for better readability
-        ax2.text(x, y, outer_labels[i], ha="center", va="center", fontsize=11, fontweight="bold", color=text_color)
+        outline_color = "#00000066" if text_color == "white" else "#FFFFFF66"
+        # Use horizontal labels for larger segments, rotated for smaller ones
+        if angle_span >= 28:
+            outer_label = ax2.text(
+                x, y, outer_labels[i], ha="center", va="center", fontsize=12, fontweight="bold", color=text_color
+            )
+        else:
+            # Ensure text is always readable (not upside down) with radial rotation
+            if 90 < angle <= 270:
+                rotation = angle + 90  # Right side up on left half
+            else:
+                rotation = angle - 90  # Right side up on right half
+            outer_label = ax2.text(
+                x,
+                y,
+                outer_labels[i],
+                ha="center",
+                va="center",
+                fontsize=10,
+                fontweight="bold",
+                color=text_color,
+                rotation=rotation,
+                rotation_mode="anchor",
+            )
+        outer_label.set_path_effects([path_effects.withStroke(linewidth=2, foreground=outline_color)])
 
 ax2.set_title("Sunburst View", fontsize=22, fontweight="bold", pad=15)
 

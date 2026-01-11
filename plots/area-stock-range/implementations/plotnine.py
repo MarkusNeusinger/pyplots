@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 area-stock-range: Stock Area Chart with Range Selector
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 68/100 | Created: 2026-01-11
@@ -10,9 +10,13 @@ from plotnine import (
     aes,
     element_blank,
     element_line,
+    element_rect,
     element_text,
-    geom_area,
+    facet_wrap,
     geom_line,
+    geom_rect,
+    geom_ribbon,
+    geom_vline,
     ggplot,
     labs,
     scale_x_datetime,
@@ -50,12 +54,56 @@ price = initial_price * np.cumprod(1 + adjusted_returns)
 
 df = pd.DataFrame({"date": dates, "price": price})
 
-# Plot - Stock area chart
+# Define selected range for main view (simulating 6-month preset selection)
+range_start = pd.Timestamp("2023-04-01")
+range_end = pd.Timestamp("2023-10-01")
+
+# Create two panels: Main view shows selected 6M range, Overview shows full history
+df_main = df[(df["date"] >= range_start) & (df["date"] <= range_end)].copy()
+df_main["panel"] = "Selected Range: Apr-Oct 2023 (6M)"
+
+df_overview = df.copy()
+df_overview["panel"] = "Range Selector · Full History"
+
+df_combined = pd.concat([df_main, df_overview], ignore_index=True)
+
+# Calculate y_min for ribbon baseline (for proper area fill without starting at 0)
+# Use per-panel minimums for better y-axis utilization
+df_combined["y_min"] = df_combined.groupby("panel")["price"].transform("min") * 0.95
+
+# Ensure proper panel ordering (main view first, then overview)
+df_combined["panel"] = pd.Categorical(
+    df_combined["panel"],
+    categories=["Selected Range: Apr-Oct 2023 (6M)", "Range Selector · Full History"],
+    ordered=True,
+)
+
+# Create range highlight for overview panel
+range_highlight = pd.DataFrame({"xmin": [range_start], "xmax": [range_end], "panel": ["Range Selector · Full History"]})
+range_highlight["panel"] = pd.Categorical(
+    range_highlight["panel"],
+    categories=["Selected Range: Apr-Oct 2023 (6M)", "Range Selector · Full History"],
+    ordered=True,
+)
+
+# Plot - Stock area chart with faceted range selector
 plot = (
-    ggplot(df, aes(x="date", y="price"))
-    + geom_area(fill="#306998", alpha=0.35)
+    ggplot(df_combined, aes(x="date", y="price"))
+    + geom_rect(
+        data=range_highlight,
+        mapping=aes(xmin="xmin", xmax="xmax"),
+        ymin=-np.inf,
+        ymax=np.inf,
+        fill="#306998",
+        alpha=0.2,
+        inherit_aes=False,
+    )
+    + geom_vline(data=range_highlight, mapping=aes(xintercept="xmin"), color="#1a4971", size=1.2, linetype="dashed")
+    + geom_vline(data=range_highlight, mapping=aes(xintercept="xmax"), color="#1a4971", size=1.2, linetype="dashed")
+    + geom_ribbon(aes(ymin="y_min", ymax="price"), fill="#306998", alpha=0.4)
     + geom_line(color="#306998", size=1.2)
-    + scale_x_datetime(date_labels="%b %Y", date_breaks="3 months")
+    + facet_wrap("~panel", ncol=1, scales="free")
+    + scale_x_datetime(date_labels="%b %Y", date_breaks="2 months")
     + scale_y_continuous(labels=lambda x: [f"${v:.0f}" for v in x])
     + labs(x="Date", y="Stock Price (USD)", title="area-stock-range · plotnine · pyplots.ai")
     + theme_minimal()
@@ -66,8 +114,11 @@ plot = (
         axis_text=element_text(size=16),
         axis_text_x=element_text(angle=45, ha="right"),
         plot_title=element_text(size=24),
-        panel_grid_major=element_line(color="#cccccc", size=0.4, alpha=0.3),
+        panel_grid_major=element_line(color="#888888", size=0.5),
         panel_grid_minor=element_blank(),
+        strip_text=element_text(size=16, weight="bold"),
+        strip_background=element_rect(fill="#e8e8e8", color=None),
+        panel_spacing=0.12,
     )
 )
 

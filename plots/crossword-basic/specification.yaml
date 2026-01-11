@@ -1,0 +1,28 @@
+# Specification-level metadata for crossword-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: crossword-basic
+title: Crossword Puzzle Grid
+
+# Specification tracking
+created: 2026-01-11T22:56:29Z
+updated: null
+issue: 3805
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - grid
+    - puzzle
+  data_type:
+    - categorical
+    - matrix
+  domain:
+    - general
+    - education
+  features:
+    - basic
+    - printable
+    - annotated

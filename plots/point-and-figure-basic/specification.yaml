@@ -1,0 +1,29 @@
+# Specification-level metadata for point-and-figure-basic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: point-and-figure-basic
+title: Point and Figure Chart
+
+# Specification tracking
+created: 2026-01-11T22:46:47Z
+updated: 2026-01-11T22:46:47Z
+issue: 3755
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - point-and-figure
+    - financial
+  data_type:
+    - timeseries
+    - numeric
+  domain:
+    - finance
+    - trading
+  features:
+    - basic
+    - technical-analysis
+    - noise-filtering
+    - pattern-recognition

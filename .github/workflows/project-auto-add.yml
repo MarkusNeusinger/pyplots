@@ -7,7 +7,7 @@ on:
 jobs:
   add-to-project:
     runs-on: ubuntu-latest
-    if: contains(fromJSON('["report-pending", "spec-request"]'), github.event.label.name)
+    if: contains(fromJSON('["report-pending", "report-validated", "spec-request"]'), github.event.label.name)
     steps:
       - name: Add to project
         uses: actions/add-to-project@v1.0.2

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 hierarchy-toggle-view: Interactive Treemap-Sunburst Toggle View
-Library: matplotlib | Python 3.13
-Quality: pending | Created: 2026-01-11
+Library: matplotlib 3.10.8 | Python 3.13.11
+Quality: 83/100 | Created: 2026-01-11
 """
 
 import matplotlib.patches as mpatches

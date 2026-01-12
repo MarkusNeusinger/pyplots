@@ -410,7 +410,7 @@ class TestSeoRouter:
     """Tests for SEO router."""
 
     def test_robots_txt(self, client: TestClient) -> None:
-        """robots.txt should block all crawlers."""
+        """robots.txt should block crawlers from all routes."""
         response = client.get("/robots.txt")
         assert response.status_code == 200
         assert response.headers["content-type"] == "text/plain; charset=utf-8"

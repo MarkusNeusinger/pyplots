@@ -37,20 +37,6 @@ function shuffleArray<T>(array: T[], seed?: number): T[] {
 }
 
 /**
- * Generate a hash from filter state for deterministic shuffle.
- */
-function hashFilters(filters: ActiveFilters): number {
-  const str = JSON.stringify(filters);
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash;
-  }
-  return Math.abs(hash);
-}
-
-/**
  * Parse URL params into ActiveFilters.
  * URL format: ?lib=matplotlib&lib=seaborn (AND) or ?lib=matplotlib,seaborn (OR within group)
  */
@@ -349,9 +335,8 @@ export function useFilterState({
         setGlobalCounts(data.globalCounts || data.counts);
         setOrCounts(data.orCounts || []);
 
-        // Shuffle with deterministic seed based on filters
-        const seed = hashFilters(activeFilters);
-        const shuffled = shuffleArray<PlotImage>(data.images || [], seed);
+        // Shuffle with random seed on each load
+        const shuffled = shuffleArray<PlotImage>(data.images || []);
         setAllImages(shuffled);
 
         // Initial display count

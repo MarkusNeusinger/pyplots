@@ -71,6 +71,7 @@ async def get_sitemap(db: AsyncSession | None = Depends(optional_db)):
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
         "  <url><loc>https://pyplots.ai/</loc></url>",
         "  <url><loc>https://pyplots.ai/catalog</loc></url>",
+        "  <url><loc>https://pyplots.ai/legal</loc></url>",
     ]
 
     # Add spec URLs (overview + all implementations)
@@ -127,6 +128,19 @@ async def seo_catalog():
             description="Browse all Python plotting specifications alphabetically. Find matplotlib, seaborn, plotly, bokeh, altair examples.",
             image=DEFAULT_CATALOG_IMAGE,
             url="https://pyplots.ai/catalog",
+        )
+    )
+
+
+@router.get("/seo-proxy/legal")
+async def seo_legal():
+    """Bot-optimized legal page with correct og:tags."""
+    return HTMLResponse(
+        BOT_HTML_TEMPLATE.format(
+            title="Legal | pyplots.ai",
+            description="Legal notice, privacy policy, and transparency information for pyplots.ai",
+            image=DEFAULT_HOME_IMAGE,
+            url="https://pyplots.ai/legal",
         )
     )
 

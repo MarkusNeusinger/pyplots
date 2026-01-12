@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -10,6 +10,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 import { API_URL } from '../constants';
 import { useAnalytics } from '../hooks';
+import { Breadcrumb } from '../components';
 
 // Initial dimensions - will be updated via postMessage from iframe
 const INITIAL_WIDTH = 1600;
@@ -208,78 +209,23 @@ export function InteractivePage() {
         }}
       >
         {/* Breadcrumb navigation */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            px: 2,
-            py: 1,
-            bgcolor: '#f3f4f6',
-            borderBottom: '1px solid #e5e7eb',
-            fontFamily: '"MonoLisa", monospace',
-            fontSize: '0.85rem',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Box
-              component={Link}
-              to="/"
-              sx={{
-                color: '#3776AB',
-                textDecoration: 'none',
-                '&:hover': { textDecoration: 'underline' },
-              }}
-            >
-              pyplots.ai
-            </Box>
-            <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
-            <Box
-              component={Link}
-              to="/catalog"
-              sx={{
-                color: '#3776AB',
-                textDecoration: 'none',
-                '&:hover': { textDecoration: 'underline' },
-              }}
-            >
-              catalog
-            </Box>
-            <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
-            <Box
-              component={Link}
-              to={`/${specId}`}
-              sx={{
-                color: '#3776AB',
-                textDecoration: 'none',
-                '&:hover': { textDecoration: 'underline' },
-              }}
-            >
-              {specId}
-            </Box>
-            <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
-            <Box
-              component={Link}
-              to={`/${specId}/${library}`}
-              sx={{
-                color: '#3776AB',
-                textDecoration: 'none',
-                '&:hover': { textDecoration: 'underline' },
-              }}
-            >
-              {library}
-            </Box>
-            <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
-            <Box component="span" sx={{ color: '#4b5563' }}>
-              interactive
-            </Box>
-          </Box>
-          <Tooltip title="View Raw HTML">
-            <IconButton onClick={handleOpenExternal} size="small">
-              <OpenInNewIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
+        <Breadcrumb
+          items={[
+            { label: 'pyplots.ai', to: '/' },
+            { label: 'catalog', to: '/catalog' },
+            { label: specId || '', to: `/${specId}` },
+            { label: library || '', to: `/${specId}/${library}` },
+            { label: 'interactive' },
+          ]}
+          rightAction={
+            <Tooltip title="View Raw HTML">
+              <IconButton onClick={handleOpenExternal} size="small">
+                <OpenInNewIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          }
+          sx={{ mx: 0, mt: 0, mb: 0 }}
+        />
 
         {/* Fullscreen iframe - scaled to fit container */}
         <Box

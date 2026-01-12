@@ -2,66 +2,16 @@
  * Hook for managing filter state and URL synchronization.
  *
  * Uses persistent state from Layout context to survive navigation.
+ * Composes useUrlSync and useFilterFetch for cleaner separation of concerns.
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 
 import type { PlotImage, FilterCategory, ActiveFilters, FilterCounts } from '../types';
 import { FILTER_CATEGORIES } from '../types';
-import { API_URL, BATCH_SIZE } from '../constants';
 import { useHomeState } from '../components/Layout';
-
-/**
- * Fisher-Yates shuffle algorithm.
- */
-function shuffleArray<T>(array: T[]): T[] {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
-
-/**
- * Parse URL params into ActiveFilters.
- * URL format: ?lib=matplotlib&lib=seaborn (AND) or ?lib=matplotlib,seaborn (OR within group)
- */
-function parseUrlFilters(): ActiveFilters {
-  const params = new URLSearchParams(window.location.search);
-  const filters: ActiveFilters = [];
-
-  FILTER_CATEGORIES.forEach((category) => {
-    const allValues = params.getAll(category);
-    allValues.forEach((value) => {
-      if (value) {
-        const values = value
-          .split(',')
-          .map((v) => v.trim())
-          .filter(Boolean);
-        if (values.length > 0) {
-          filters.push({ category, values });
-        }
-      }
-    });
-  });
-
-  return filters;
-}
-
-/**
- * Build URL from ActiveFilters.
- */
-function buildFilterUrl(filters: ActiveFilters): string {
-  const params = new URLSearchParams();
-  filters.forEach(({ category, values }) => {
-    if (values.length > 0) {
-      params.append(category, values.join(','));
-    }
-  });
-  const queryString = params.toString();
-  return queryString ? `?${queryString}` : '/';
-}
+import { parseUrlFilters, useUrlSync } from './useUrlSync';
+import { useFilterFetch } from './useFilterFetch';
 
 /**
  * Check if filters are empty.
@@ -109,34 +59,11 @@ export function useFilterState({
 }: UseFilterStateOptions): UseFilterStateReturn {
   const { homeStateRef, setHomeState } = useHomeState();
 
-  // Initialize from persistent state (ref) or URL params (all using lazy initializers)
+  // Initialize from persistent state (ref) or URL params
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>(() =>
     homeStateRef.current.initialized ? homeStateRef.current.activeFilters : parseUrlFilters()
   );
-  const [filterCounts, setFilterCounts] = useState<FilterCounts | null>(() =>
-    homeStateRef.current.initialized ? homeStateRef.current.filterCounts : null
-  );
-  const [globalCounts, setGlobalCounts] = useState<FilterCounts | null>(() =>
-    homeStateRef.current.initialized ? homeStateRef.current.globalCounts : null
-  );
-  const [orCounts, setOrCounts] = useState<Record<string, number>[]>(() =>
-    homeStateRef.current.initialized ? homeStateRef.current.orCounts : []
-  );
 
-  // Image state - restore from persistent state if available
-  const [allImages, setAllImages] = useState<PlotImage[]>(() =>
-    homeStateRef.current.initialized ? homeStateRef.current.allImages : []
-  );
-  const [displayedImages, setDisplayedImages] = useState<PlotImage[]>(() =>
-    homeStateRef.current.initialized ? homeStateRef.current.displayedImages : []
-  );
-  const [hasMore, setHasMore] = useState(() =>
-    homeStateRef.current.initialized ? homeStateRef.current.hasMore : false
-  );
-
-  // UI state
-  const [loading, setLoading] = useState(() => !homeStateRef.current.initialized);
-  const [error, setError] = useState<string>('');
   const [randomAnimation, setRandomAnimation] = useState<{
     index: number;
     phase: 'out' | 'in';
@@ -146,6 +73,41 @@ export function useFilterState({
   // Refs for stable callbacks
   const activeFiltersRef = useRef(activeFilters);
   activeFiltersRef.current = activeFilters;
+
+  // Check if we should skip initial fetch (restored from persistent state with same filters)
+  const shouldSkipInitialFetch =
+    homeStateRef.current.initialized &&
+    JSON.stringify(homeStateRef.current.activeFilters) === JSON.stringify(activeFilters);
+
+  // Use extracted hooks
+  useUrlSync({ activeFilters, onTrackPageview });
+
+  const {
+    filterCounts,
+    globalCounts,
+    orCounts,
+    allImages,
+    displayedImages,
+    hasMore,
+    loading,
+    error,
+    setDisplayedImages,
+    setHasMore,
+    setError,
+  } = useFilterFetch({
+    activeFilters,
+    initialState: homeStateRef.current.initialized
+      ? {
+          filterCounts: homeStateRef.current.filterCounts,
+          globalCounts: homeStateRef.current.globalCounts,
+          orCounts: homeStateRef.current.orCounts,
+          allImages: homeStateRef.current.allImages,
+          displayedImages: homeStateRef.current.displayedImages,
+          hasMore: homeStateRef.current.hasMore,
+        }
+      : undefined,
+    skipInitialFetch: shouldSkipInitialFetch,
+  });
 
   // Sync state changes back to persistent context
   useEffect(() => {
@@ -182,33 +144,39 @@ export function useFilterState({
   }, []);
 
   // Remove a filter value from a specific group
-  const handleRemoveFilter = useCallback((groupIndex: number, value: string) => {
-    const group = activeFiltersRef.current[groupIndex];
-    if (group) {
-      onTrackEvent('filter_remove', { category: group.category, value });
-    }
-    setActiveFilters((prev) => {
-      const newFilters = [...prev];
-      const grp = newFilters[groupIndex];
-      if (!grp) return prev;
-
-      const updatedValues = grp.values.filter((v) => v !== value);
-      if (updatedValues.length === 0) {
-        return newFilters.filter((_, i) => i !== groupIndex);
+  const handleRemoveFilter = useCallback(
+    (groupIndex: number, value: string) => {
+      const group = activeFiltersRef.current[groupIndex];
+      if (group) {
+        onTrackEvent('filter_remove', { category: group.category, value });
       }
-      newFilters[groupIndex] = { ...grp, values: updatedValues };
-      return newFilters;
-    });
-  }, [onTrackEvent]);
+      setActiveFilters((prev) => {
+        const newFilters = [...prev];
+        const grp = newFilters[groupIndex];
+        if (!grp) return prev;
+
+        const updatedValues = grp.values.filter((v) => v !== value);
+        if (updatedValues.length === 0) {
+          return newFilters.filter((_, i) => i !== groupIndex);
+        }
+        newFilters[groupIndex] = { ...grp, values: updatedValues };
+        return newFilters;
+      });
+    },
+    [onTrackEvent]
+  );
 
   // Remove entire group by index
-  const handleRemoveGroup = useCallback((groupIndex: number) => {
-    const group = activeFiltersRef.current[groupIndex];
-    if (group) {
-      onTrackEvent('filter_remove', { category: group.category, value: group.values.join(',') });
-    }
-    setActiveFilters((prev) => prev.filter((_, i) => i !== groupIndex));
-  }, [onTrackEvent]);
+  const handleRemoveGroup = useCallback(
+    (groupIndex: number) => {
+      const group = activeFiltersRef.current[groupIndex];
+      if (group) {
+        onTrackEvent('filter_remove', { category: group.category, value: group.values.join(',') });
+      }
+      setActiveFilters((prev) => prev.filter((_, i) => i !== groupIndex));
+    },
+    [onTrackEvent]
+  );
 
   // Random filter - replaces last filter slot (or adds first one)
   const handleRandom = useCallback(
@@ -225,8 +193,7 @@ export function useFilterState({
 
       if (availableCategories.length === 0) return;
 
-      const randomCategory =
-        availableCategories[Math.floor(Math.random() * availableCategories.length)];
+      const randomCategory = availableCategories[Math.floor(Math.random() * availableCategories.length)];
       const values = Object.keys(countsToUse[randomCategory]);
 
       if (values.length === 0) return;
@@ -260,89 +227,6 @@ export function useFilterState({
     },
     [filterCounts, globalCounts, onTrackEvent]
   );
-
-  // Update URL when filters change
-  useEffect(() => {
-    const newUrl = buildFilterUrl(activeFilters);
-    window.history.replaceState({}, '', newUrl);
-
-    // Update document title
-    const filterParts = activeFilters
-      .filter((f) => f.values.length > 0)
-      .map((f) => `${f.category}:${f.values.join(',')}`)
-      .join(' ');
-
-    document.title = filterParts ? `${filterParts} | pyplots.ai` : 'pyplots.ai';
-    onTrackPageview();
-  }, [activeFilters, onTrackPageview]);
-
-  // Track if we should skip initial fetch (restored from persistent state)
-  const initializedRef = useRef(homeStateRef.current.initialized);
-  const filtersMatchRef = useRef(
-    homeStateRef.current.initialized && JSON.stringify(homeStateRef.current.activeFilters) === JSON.stringify(activeFilters)
-  );
-
-  // Load filtered images when filters change
-  useEffect(() => {
-    // Skip fetch on first mount if restored from persistent state with same filters
-    if (initializedRef.current && filtersMatchRef.current) {
-      initializedRef.current = false;
-      filtersMatchRef.current = false;
-      return;
-    }
-    initializedRef.current = false;
-    filtersMatchRef.current = false;
-
-    const abortController = new AbortController();
-
-    const fetchFilteredImages = async () => {
-      setLoading(true);
-
-      try {
-        // Build query string from filters
-        const params = new URLSearchParams();
-        activeFilters.forEach(({ category, values }) => {
-          if (values.length > 0) {
-            params.append(category, values.join(','));
-          }
-        });
-
-        const queryString = params.toString();
-        const url = `${API_URL}/plots/filter${queryString ? `?${queryString}` : ''}`;
-
-        const response = await fetch(url, { signal: abortController.signal });
-        if (!response.ok) throw new Error('Failed to fetch filtered plots');
-
-        const data = await response.json();
-
-        if (abortController.signal.aborted) return;
-
-        // Update filter counts
-        setFilterCounts(data.counts);
-        setGlobalCounts(data.globalCounts || data.counts);
-        setOrCounts(data.orCounts || []);
-
-        // Shuffle images randomly on each load
-        const shuffled = shuffleArray<PlotImage>(data.images || []);
-        setAllImages(shuffled);
-
-        // Initial display count
-        setDisplayedImages(shuffled.slice(0, BATCH_SIZE));
-        setHasMore(shuffled.length > BATCH_SIZE);
-      } catch (err) {
-        if (abortController.signal.aborted) return;
-        setError(`Error loading images: ${err}`);
-      } finally {
-        if (!abortController.signal.aborted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchFilteredImages();
-
-    return () => abortController.abort();
-  }, [activeFilters]);
 
   return {
     // State

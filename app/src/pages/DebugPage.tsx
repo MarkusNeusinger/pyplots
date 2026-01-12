@@ -27,6 +27,7 @@ import WarningIcon from '@mui/icons-material/Warning';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 import { API_URL, LIBRARIES } from '../constants';
+import { Breadcrumb } from '../components';
 
 // ============================================================================
 // Types
@@ -277,26 +278,18 @@ export function DebugPage() {
   return (
     <Box sx={{ p: 3, minHeight: '100vh', bgcolor: '#fafafa' }}>
       {/* Breadcrumb */}
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        <Box
-          component={Link}
-          to="/"
-          sx={{
-            fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
-            fontWeight: 600,
-            fontSize: '0.9rem',
-            color: '#3776AB',
-            textDecoration: 'none',
-            '&:hover': { textDecoration: 'underline' },
-          }}
-        >
-          pyplots.ai
-        </Box>
-        <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
-        <Box component="span" sx={{ color: '#4b5563', fontFamily: 'monospace', fontSize: '0.9rem' }}>
-          debug
-        </Box>
-      </Box>
+      <Breadcrumb
+        items={[{ label: 'pyplots.ai', to: '/' }, { label: 'debug' }]}
+        sx={{
+          mx: 0,
+          mt: 0,
+          px: 0,
+          bgcolor: 'transparent',
+          borderBottom: 'none',
+          fontWeight: 600,
+          fontSize: '0.9rem',
+        }}
+      />
 
       {/* Stats */}
       <Box sx={{ mb: 2 }}>

@@ -111,6 +111,25 @@ export interface SpecInfo {
   description?: string;
 }
 
+// Implementation of a spec for a specific library
+export interface Implementation {
+  library_id: string;
+  library_name: string;
+  preview_url: string;
+  preview_thumb?: string;
+  preview_html?: string;
+  quality_score: number | null;
+  code: string | null;
+  generated_at?: string;
+  library_version?: string;
+  review_strengths?: string[];
+  review_weaknesses?: string[];
+  review_image_description?: string;
+  review_criteria_checklist?: Record<string, unknown>;
+  review_verdict?: string;
+  impl_tags?: Record<string, string[]>;
+}
+
 // Plausible analytics (only in production)
 declare global {
   interface Window {

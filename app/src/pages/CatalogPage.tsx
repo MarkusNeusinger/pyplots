@@ -10,7 +10,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { API_URL, GITHUB_URL } from '../constants';
 import { useAnalytics } from '../hooks';
 import { useAppData, useHomeState } from '../components/Layout';
-import { Footer } from '../components';
+import { Breadcrumb, Footer } from '../components';
 import type { PlotImage } from '../types';
 
 interface CatalogSpec {
@@ -153,60 +153,26 @@ export function CatalogPage() {
 
       <Box sx={{ pb: 4 }}>
         {/* Breadcrumb navigation */}
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mx: { xs: -2, sm: -4, md: -8, lg: -12 },
-            mt: -5,
-            px: 2,
-            py: 1,
-            mb: 3,
-            bgcolor: '#f3f4f6',
-            borderBottom: '1px solid #e5e7eb',
-            fontFamily: '"MonoLisa", monospace',
-            fontSize: '0.85rem',
-            position: 'sticky',
-            top: 0,
-            zIndex: 100,
-          }}
-        >
-          {/* Breadcrumb links */}
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Breadcrumb
+          items={[{ label: 'pyplots.ai', to: '/' }, { label: 'catalog' }]}
+          rightAction={
             <Box
-              component={Link}
-              to="/"
+              component="a"
+              href={`${GITHUB_URL}/issues/new?template=request-new-plot.yml`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEvent('suggest_spec')}
               sx={{
-                color: '#3776AB',
+                color: '#9ca3af',
                 textDecoration: 'none',
-                '&:hover': { textDecoration: 'underline' },
+                '&:hover': { color: '#3776AB' },
               }}
             >
-              pyplots.ai
+              suggest spec
             </Box>
-            <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>›</Box>
-            <Box component="span" sx={{ color: '#4b5563' }}>
-              catalog
-            </Box>
-          </Box>
-
-          {/* Suggest spec link */}
-          <Box
-            component="a"
-            href={`${GITHUB_URL}/issues/new?template=request-new-plot.yml`}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => trackEvent('suggest_spec')}
-            sx={{
-              color: '#9ca3af',
-              textDecoration: 'none',
-              '&:hover': { color: '#3776AB' },
-            }}
-          >
-            suggest spec
-          </Box>
-        </Box>
+          }
+          sx={{ mb: 3, position: 'sticky', top: 0, zIndex: 100 }}
+        />
 
         {/* Title */}
         <Typography

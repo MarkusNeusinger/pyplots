@@ -1,12 +1,19 @@
 """Filter endpoint for plots."""
 
+import logging
+
 from fastapi import APIRouter, Depends, Request
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.cache import get_cache, set_cache
 from api.dependencies import require_db
+from api.exceptions import DatabaseQueryError
 from api.schemas import FilteredPlotsResponse
 from core.database import SpecRepository
+
+
+logger = logging.getLogger(__name__)
 
 
 router = APIRouter(tags=["plots"])
@@ -446,13 +453,21 @@ async def get_filtered_plots(request: Request, db: AsyncSession = Depends(requir
 
     # Check cache
     cache_key = _build_cache_key(filter_groups)
-    cached = get_cache(cache_key)
-    if cached:
-        return cached
+    try:
+        cached = get_cache(cache_key)
+        if cached:
+            return cached
+    except Exception as e:
+        # Cache failures are non-fatal, log and continue
+        logger.warning("Cache read failed for key %s: %s", cache_key, e)
 
     # Fetch data from database
-    repo = SpecRepository(db)
-    all_specs = await repo.get_all()
+    try:
+        repo = SpecRepository(db)
+        all_specs = await repo.get_all()
+    except SQLAlchemyError as e:
+        logger.error("Database query failed in get_filtered_plots: %s", e)
+        raise DatabaseQueryError("fetch_specs", str(e)) from e
 
     # Build data structures
     spec_lookup = _build_spec_lookup(all_specs)
@@ -476,5 +491,11 @@ async def get_filtered_plots(request: Request, db: AsyncSession = Depends(requir
         globalCounts=global_counts,
         orCounts=or_counts,
     )
-    set_cache(cache_key, result)
+
+    try:
+        set_cache(cache_key, result)
+    except Exception as e:
+        # Cache failures are non-fatal, log and continue
+        logger.warning("Cache write failed for key %s: %s", cache_key, e)
+
     return result

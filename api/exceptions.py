@@ -74,6 +74,15 @@ class ValidationError(PyplotsException):
         super().__init__(f"Validation failed: {detail}", status_code=400)
 
 
+class DatabaseQueryError(PyplotsException):
+    """Database query failed (500)."""
+
+    def __init__(self, operation: str, detail: str):
+        message = f"Database query failed during '{operation}': {detail}"
+        super().__init__(message, status_code=500)
+        self.operation = operation
+
+
 # ===== Exception Handlers =====
 
 
@@ -153,3 +162,17 @@ def raise_validation_error(detail: str) -> None:
         ValidationError: Always raises
     """
     raise ValidationError(detail)
+
+
+def raise_database_query_error(operation: str, detail: str) -> None:
+    """
+    Raise a standardized 500 error for database query failures.
+
+    Args:
+        operation: The operation that failed (e.g., "fetch_specs", "filter_plots")
+        detail: Error details
+
+    Raises:
+        DatabaseQueryError: Always raises
+    """
+    raise DatabaseQueryError(operation, detail)

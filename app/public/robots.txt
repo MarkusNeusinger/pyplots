@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /debug
 
 Sitemap: https://pyplots.ai/sitemap.xml

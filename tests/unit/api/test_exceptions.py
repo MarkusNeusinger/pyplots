@@ -12,6 +12,7 @@ from fastapi.responses import JSONResponse
 
 from api.exceptions import (
     DatabaseNotConfiguredError,
+    DatabaseQueryError,
     ExternalServiceError,
     PyplotsException,
     ResourceNotFoundError,
@@ -20,6 +21,7 @@ from api.exceptions import (
     http_exception_handler,
     pyplots_exception_handler,
     raise_database_not_configured,
+    raise_database_query_error,
     raise_external_service_error,
     raise_not_found,
     raise_validation_error,
@@ -106,6 +108,26 @@ class TestValidationError:
         exc = ValidationError("Invalid library ID")
         assert "Validation failed" in exc.message
         assert "Invalid library ID" in exc.message
+
+
+class TestDatabaseQueryError:
+    """Tests for DatabaseQueryError."""
+
+    def test_status_code(self) -> None:
+        """Should have status code 500."""
+        exc = DatabaseQueryError("fetch_specs", "Connection pool exhausted")
+        assert exc.status_code == 500
+
+    def test_message_format(self) -> None:
+        """Should format message with operation and detail."""
+        exc = DatabaseQueryError("fetch_specs", "Connection pool exhausted")
+        assert "fetch_specs" in exc.message
+        assert "Connection pool exhausted" in exc.message
+
+    def test_operation_attribute(self) -> None:
+        """Should store operation attribute."""
+        exc = DatabaseQueryError("filter_plots", "Timeout")
+        assert exc.operation == "filter_plots"
 
 
 class TestExceptionHandlers:
@@ -196,3 +218,12 @@ class TestHelperFunctions:
 
         assert exc_info.value.status_code == 400
         assert "Invalid input" in str(exc_info.value)
+
+    def test_raise_database_query_error(self) -> None:
+        """Should raise DatabaseQueryError with proper message."""
+        with pytest.raises(DatabaseQueryError) as exc_info:
+            raise_database_query_error("fetch_specs", "Connection failed")
+
+        assert exc_info.value.status_code == 500
+        assert "fetch_specs" in str(exc_info.value)
+        assert "Connection failed" in str(exc_info.value)

@@ -14,15 +14,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 
-interface Implementation {
-  library_id: string;
-  library_name: string;
-  preview_url: string;
-  preview_thumb?: string;
-  preview_html?: string;
-  quality_score: number | null;
-  code: string | null;
-}
+import type { Implementation } from '../types';
 
 interface SpecDetailViewProps {
   specId: string;

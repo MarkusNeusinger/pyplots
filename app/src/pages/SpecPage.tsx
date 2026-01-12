@@ -14,25 +14,8 @@ import { useAnalytics } from '../hooks';
 import { useAppData } from '../components/Layout';
 import { LibraryPills } from '../components/LibraryPills';
 import { SpecTabs } from '../components/SpecTabs';
-import { Footer, SpecOverview, SpecDetailView } from '../components';
-
-interface Implementation {
-  library_id: string;
-  library_name: string;
-  preview_url: string;
-  preview_thumb?: string;
-  preview_html?: string;
-  quality_score: number | null;
-  code: string | null;
-  generated_at?: string;
-  library_version?: string;
-  review_strengths?: string[];
-  review_weaknesses?: string[];
-  review_image_description?: string;
-  review_criteria_checklist?: Record<string, unknown>;
-  review_verdict?: string;
-  impl_tags?: Record<string, string[]>;
-}
+import { Breadcrumb, Footer, SpecOverview, SpecDetailView } from '../components';
+import type { Implementation } from '../types';
 
 interface SpecDetail {
   id: string;
@@ -246,11 +229,50 @@ export function SpecPage() {
       <Box sx={{ pb: 4 }}>
         {/* Breadcrumb navigation */}
         <Breadcrumb
-          specId={specId || ''}
-          selectedLibrary={selectedLibrary}
-          isOverviewMode={isOverviewMode}
-          reportUrl={buildReportUrl()}
-          onTrackEvent={trackEvent}
+          items={
+            isOverviewMode
+              ? [
+                  { label: 'pyplots.ai', to: '/' },
+                  { label: 'catalog', to: '/catalog' },
+                  { label: specId || '' },
+                ]
+              : [
+                  { label: 'pyplots.ai', to: '/' },
+                  { label: 'catalog', to: '/catalog' },
+                  { label: specId || '', to: `/${specId}` },
+                  { label: selectedLibrary || '' },
+                ]
+          }
+          rightAction={
+            <Tooltip title="report issue">
+              <Box
+                component="a"
+                href={buildReportUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent('report_issue', { spec: specId, library: selectedLibrary || undefined })}
+                sx={{
+                  color: '#9ca3af',
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  '&:hover': { color: '#3776AB' },
+                }}
+              >
+                <BugReportIcon sx={{ fontSize: '1.1rem', display: { xs: 'block', md: 'none' } }} />
+                <Box
+                  component="span"
+                  sx={{
+                    display: { xs: 'none', md: 'block' },
+                    fontFamily: '"MonoLisa", monospace',
+                    fontSize: '0.85rem',
+                  }}
+                >
+                  report issue
+                </Box>
+              </Box>
+            </Tooltip>
+          }
         />
 
         {/* Title */}
@@ -379,122 +401,5 @@ export function SpecPage() {
         <Footer onTrackEvent={trackEvent} selectedSpec={specId} selectedLibrary={selectedLibrary || ''} />
       </Box>
     </>
-  );
-}
-
-// Breadcrumb sub-component
-interface BreadcrumbProps {
-  specId: string;
-  selectedLibrary: string | null;
-  isOverviewMode: boolean;
-  reportUrl: string;
-  onTrackEvent: (event: string, props?: Record<string, string | undefined>) => void;
-}
-
-function Breadcrumb({ specId, selectedLibrary, isOverviewMode, reportUrl, onTrackEvent }: BreadcrumbProps) {
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        mx: { xs: -2, sm: -4, md: -8, lg: -12 },
-        mt: -5,
-        px: 2,
-        py: 1,
-        mb: 2,
-        bgcolor: '#f3f4f6',
-        borderBottom: '1px solid #e5e7eb',
-        fontFamily: '"MonoLisa", monospace',
-        fontSize: '0.85rem',
-      }}
-    >
-      {/* Breadcrumb links */}
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Box
-          component={Link}
-          to="/"
-          sx={{
-            color: '#3776AB',
-            textDecoration: 'none',
-            '&:hover': { textDecoration: 'underline' },
-          }}
-        >
-          pyplots.ai
-        </Box>
-        <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>
-          ›
-        </Box>
-        <Box
-          component={Link}
-          to="/catalog"
-          sx={{
-            color: '#3776AB',
-            textDecoration: 'none',
-            '&:hover': { textDecoration: 'underline' },
-          }}
-        >
-          catalog
-        </Box>
-        <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>
-          ›
-        </Box>
-        {isOverviewMode ? (
-          <Box component="span" sx={{ color: '#4b5563' }}>
-            {specId}
-          </Box>
-        ) : (
-          <>
-            <Box
-              component={Link}
-              to={`/${specId}`}
-              sx={{
-                color: '#3776AB',
-                textDecoration: 'none',
-                '&:hover': { textDecoration: 'underline' },
-              }}
-            >
-              {specId}
-            </Box>
-            <Box component="span" sx={{ mx: 1, color: '#9ca3af' }}>
-              ›
-            </Box>
-            <Box component="span" sx={{ color: '#4b5563' }}>
-              {selectedLibrary}
-            </Box>
-          </>
-        )}
-      </Box>
-
-      {/* Report issue link */}
-      <Tooltip title="report issue">
-        <Box
-          component="a"
-          href={reportUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => onTrackEvent('report_issue', { spec: specId, library: selectedLibrary || undefined })}
-          sx={{
-            color: '#9ca3af',
-            textDecoration: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            '&:hover': { color: '#3776AB' },
-          }}
-        >
-          <BugReportIcon sx={{ fontSize: '1.1rem', display: { xs: 'block', md: 'none' } }} />
-          <Box
-            component="span"
-            sx={{
-              display: { xs: 'none', md: 'block' },
-              fontFamily: '"MonoLisa", monospace',
-              fontSize: '0.85rem',
-            }}
-          >
-            report issue
-          </Box>
-        </Box>
-      </Tooltip>
-    </Box>
   );
 }

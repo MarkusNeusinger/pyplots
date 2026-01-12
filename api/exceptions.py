@@ -83,15 +83,6 @@ class DatabaseQueryError(PyplotsException):
         self.operation = operation
 
 
-class CacheError(PyplotsException):
-    """Cache operation failed (non-fatal, logged only)."""
-
-    def __init__(self, operation: str, detail: str):
-        message = f"Cache {operation} failed: {detail}"
-        super().__init__(message, status_code=500)
-        self.operation = operation
-
-
 # ===== Exception Handlers =====
 
 

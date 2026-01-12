@@ -12,25 +12,12 @@ import { API_URL, BATCH_SIZE } from '../constants';
 import { useHomeState } from '../components/Layout';
 
 /**
- * Seeded random number generator (mulberry32).
+ * Fisher-Yates shuffle algorithm.
  */
-function seededRandom(seed: number): () => number {
-  return () => {
-    let t = (seed += 0x6d2b79f5);
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-/**
- * Fisher-Yates shuffle algorithm with optional seed for deterministic results.
- */
-function shuffleArray<T>(array: T[], seed?: number): T[] {
+function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
-  const random = seed !== undefined ? seededRandom(seed) : Math.random;
   for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1));
+    const j = Math.floor(Math.random() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   return shuffled;
@@ -335,7 +322,7 @@ export function useFilterState({
         setGlobalCounts(data.globalCounts || data.counts);
         setOrCounts(data.orCounts || []);
 
-        // Shuffle with random seed on each load
+        // Shuffle images randomly on each load
         const shuffled = shuffleArray<PlotImage>(data.images || []);
         setAllImages(shuffled);
 

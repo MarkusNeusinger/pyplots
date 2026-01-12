@@ -409,6 +409,15 @@ class TestDownloadRouter:
 class TestSeoRouter:
     """Tests for SEO router."""
 
+    def test_robots_txt(self, client: TestClient) -> None:
+        """robots.txt should block all crawlers."""
+        response = client.get("/robots.txt")
+        assert response.status_code == 200
+        assert response.headers["content-type"] == "text/plain; charset=utf-8"
+        content = response.text
+        assert "User-agent: *" in content
+        assert "Disallow: /" in content
+
     def test_sitemap_structure(self, client: TestClient) -> None:
         """Sitemap should return valid XML structure."""
         with patch(DB_CONFIG_PATCH, return_value=False):

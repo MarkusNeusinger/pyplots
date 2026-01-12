@@ -210,6 +210,34 @@ Uses **MonoLisa** variable font (commercial, not in repo):
 - Cached locally in `/tmp/pyplots-fonts/`
 - Fallback: DejaVuSansMono-Bold
 
+## Robots.txt
+
+### Frontend (pyplots.ai)
+
+Static file at `app/public/robots.txt`:
+
+```txt
+User-agent: *
+Allow: /
+Disallow: /debug
+
+Sitemap: https://pyplots.ai/sitemap.xml
+```
+
+### Backend (api.pyplots.ai)
+
+Dynamic endpoint at `GET /robots.txt`:
+
+```txt
+User-agent: *
+Disallow: /
+```
+
+**Why block the API?**
+- APIs should not be indexed by search engines
+- Prevents crawling of debug endpoints, docs, and API responses
+- Social media bots (WhatsApp, Twitter, etc.) are unaffected - they fetch og:images directly
+
 ## Sitemap
 
 Dynamic XML sitemap for search engine indexing.
@@ -277,7 +305,8 @@ curl -o test.png https://api.pyplots.ai/og/scatter-basic.png
 | File | Purpose |
 |------|---------|
 | `app/nginx.conf` | Bot detection, SPA routing, sitemap proxy |
-| `api/routers/seo.py` | SEO proxy endpoints, sitemap generation |
+| `app/public/robots.txt` | Frontend robots.txt (blocks /debug) |
+| `api/routers/seo.py` | SEO proxy endpoints, robots.txt, sitemap generation |
 | `api/routers/og_images.py` | Branded og:image endpoints |
 | `core/images.py` | Image processing, branding functions |
 

@@ -196,6 +196,14 @@ class TestDownloadEndpoints:
 class TestSeoEndpoints:
     """E2E tests for SEO endpoints with real PostgreSQL."""
 
+    async def test_robots_txt(self, client):
+        """Should return robots.txt blocking all crawlers."""
+        response = await client.get("/robots.txt")
+        assert response.status_code == 200
+        assert response.headers["content-type"] == "text/plain; charset=utf-8"
+        assert "User-agent: *" in response.text
+        assert "Disallow: /" in response.text
+
     async def test_sitemap(self, client):
         """Should return sitemap XML with spec URLs."""
         response = await client.get("/sitemap.xml")

@@ -42,6 +42,17 @@ DEFAULT_CATALOG_IMAGE = "https://api.pyplots.ai/og/catalog.png"
 DEFAULT_DESCRIPTION = "library-agnostic, ai-powered python plotting."
 
 
+@router.get("/robots.txt")
+async def get_robots():
+    """
+    Serve robots.txt for API backend.
+
+    Blocks all crawlers - APIs should not be indexed by search engines.
+    Social media bots (WhatsApp, Twitter, etc.) are unaffected.
+    """
+    return Response(content="User-agent: *\nDisallow: /\n", media_type="text/plain")
+
+
 @router.get("/sitemap.xml")
 async def get_sitemap(db: AsyncSession | None = Depends(optional_db)):
     """

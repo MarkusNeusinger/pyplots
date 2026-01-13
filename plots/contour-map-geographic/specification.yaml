@@ -1,0 +1,30 @@
+# Specification-level metadata for contour-map-geographic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: contour-map-geographic
+title: Contour Lines on Geographic Map
+
+# Specification tracking
+created: 2026-01-11T22:50:30Z
+updated: null
+issue: 3772
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - contour
+    - map
+  data_type:
+    - geospatial
+    - numeric
+    - continuous
+  domain:
+    - general
+    - science
+    - environment
+  features:
+    - basic
+    - annotated
+    - color-mapped

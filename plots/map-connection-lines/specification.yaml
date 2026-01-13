@@ -1,0 +1,29 @@
+# Specification-level metadata for map-connection-lines
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: map-connection-lines
+title: Connection Lines Map (Origin-Destination)
+
+# Specification tracking
+created: 2026-01-11T22:42:40Z
+updated: 2026-01-11T22:42:40Z
+issue: 3746
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - map
+    - flow
+  data_type:
+    - geospatial
+    - numeric
+  domain:
+    - general
+    - business
+    - logistics
+  features:
+    - basic
+    - flow
+    - connection

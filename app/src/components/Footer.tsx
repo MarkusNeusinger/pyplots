@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
+import { Link as RouterLink } from 'react-router-dom';
 import { GITHUB_URL } from '../constants';
 
 interface FooterProps {
@@ -62,6 +63,19 @@ export function Footer({ onTrackEvent, selectedSpec, selectedLibrary }: FooterPr
           }}
         >
           stats
+        </Link>
+        <span>·</span>
+        <Link
+          component={RouterLink}
+          to="/legal"
+          onClick={() => onTrackEvent?.('internal_link', { destination: 'legal', spec: selectedSpec, library: selectedLibrary })}
+          sx={{
+            color: '#9ca3af',
+            textDecoration: 'none',
+            '&:hover': { color: '#6b7280' },
+          }}
+        >
+          legal
         </Link>
       </Box>
     </Box>

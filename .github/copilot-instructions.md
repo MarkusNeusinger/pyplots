@@ -219,14 +219,14 @@ plt.savefig('plot.png', dpi=300, bbox_inches='tight')
 
 The project runs on **Google Cloud Platform** (europe-west4 region):
 
-| Service | Component | Purpose |
-|---------|-----------|---------|
-| **Cloud Run** | `pyplots-backend` | FastAPI API (auto-scaling, serverless) |
+| Service | Component          | Purpose |
+|---------|--------------------|---------|
+| **Cloud Run** | `pyplots-backend`  | FastAPI API (auto-scaling, serverless) |
 | **Cloud Run** | `pyplots-frontend` | React SPA served via nginx |
-| **Cloud SQL** | PostgreSQL 15 | Database (Unix socket in production) |
-| **Cloud Storage** | `pyplots-images` | Preview images (GCS bucket) |
-| **Secret Manager** | `DATABASE_URL` | Secure credential storage |
-| **Cloud Build** | Triggers | Auto-deploy on push to main |
+| **Cloud SQL** | PostgreSQL 18      | Database (Unix socket in production) |
+| **Cloud Storage** | `pyplots-images`   | Preview images (GCS bucket) |
+| **Secret Manager** | `DATABASE_URL`     | Secure credential storage |
+| **Cloud Build** | Triggers           | Auto-deploy on push to main |
 
 Automatic deployment on push to `main`:
 - `api/**`, `core/**`, `pyproject.toml` changes → Backend redeploy

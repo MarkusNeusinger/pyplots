@@ -42,6 +42,7 @@ https://pyplots.ai/{category}/{value}/{category}/{value}/...
 |-----|-------------|
 | `/` | Home page (no filters) |
 | `/catalog` | Catalog page (alphabetical spec list) |
+| `/legal` | Legal notice, privacy policy, transparency |
 | `/{spec_id}` | Spec overview page (grid of all implementations) |
 | `/{spec_id}/{library}` | Spec detail page (single library implementation) |
 | `/interactive/{spec_id}/{library}` | Interactive fullscreen view (HTML plots) |

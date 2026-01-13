@@ -7,6 +7,7 @@ import { SpecPage } from './pages/SpecPage';
 import { CatalogPage } from './pages/CatalogPage';
 import { InteractivePage } from './pages/InteractivePage';
 import { DebugPage } from './pages/DebugPage';
+import { LegalPage } from './pages/LegalPage';
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'catalog', element: <CatalogPage /> },
+      { path: 'legal', element: <LegalPage /> },
       { path: ':specId', element: <SpecPage /> },
       { path: ':specId/:library', element: <SpecPage /> },
     ],

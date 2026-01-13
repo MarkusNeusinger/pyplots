@@ -137,6 +137,7 @@ Backend endpoints that serve HTML with correct meta tags for bots.
 |----------|---------|----------|
 | `GET /seo-proxy/` | Home page | Default (`og-image.png`) |
 | `GET /seo-proxy/catalog` | Catalog page | Default |
+| `GET /seo-proxy/legal` | Legal page | Default |
 | `GET /seo-proxy/{spec_id}` | Spec overview | Collage (2x3 grid) |
 | `GET /seo-proxy/{spec_id}/{library}` | Implementation | Single branded |
 
@@ -253,6 +254,7 @@ Dynamic XML sitemap for search engine indexing.
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://pyplots.ai/</loc></url>
   <url><loc>https://pyplots.ai/catalog</loc></url>
+  <url><loc>https://pyplots.ai/legal</loc></url>
   <!-- For each spec with implementations: -->
   <url><loc>https://pyplots.ai/{spec_id}</loc></url>
   <url><loc>https://pyplots.ai/{spec_id}/{library}</loc></url>
@@ -264,8 +266,9 @@ Dynamic XML sitemap for search engine indexing.
 
 1. Home page (`/`)
 2. Catalog page (`/catalog`)
-3. Spec overview pages (`/{spec_id}`) - only if spec has implementations
-4. Implementation pages (`/{spec_id}/{library}`) - all implementations
+3. Legal page (`/legal`)
+4. Spec overview pages (`/{spec_id}`) - only if spec has implementations
+5. Implementation pages (`/{spec_id}/{library}`) - all implementations
 
 ### nginx Proxy
 

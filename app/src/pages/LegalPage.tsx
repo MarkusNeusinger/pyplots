@@ -195,8 +195,8 @@ export function LegalPage() {
 
           <Typography sx={subheadingStyle}>Your Rights</Typography>
           <Typography sx={textStyle}>
-            Under GDPR and Swiss DSG, you have the right to access, rectification, erasure, and data portability. Since
-            we do not store personal data, there is typically nothing to delete or export. For questions, contact{' '}
+            You have the right to access, rectify, erase, and export your data. Since we do not store personal data,
+            there is typically nothing to delete or export. For questions, contact{' '}
             <Link href="mailto:admin@pyplots.ai" sx={{ color: '#3776AB' }}>
               admin@pyplots.ai
             </Link>

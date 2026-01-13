@@ -1,0 +1,26 @@
+# Specification-level metadata for line-stock-comparison
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: line-stock-comparison
+title: Stock Price Comparison Chart
+
+# Specification tracking
+created: 2026-01-11T22:45:53Z
+updated: null
+issue: 3748
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - line
+  data_type:
+    - timeseries
+    - numeric
+  domain:
+    - finance
+  features:
+    - comparison
+    - multi
+    - normalized

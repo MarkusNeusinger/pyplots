@@ -27,7 +27,7 @@
     "react-syntax-highlighter": "^16.1.0"
   },
   "devDependencies": {
-    "@types/react": "^19.2.7",
+    "@types/react": "^19.2.8",
     "@types/react-dom": "^19.1.7",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@vitejs/plugin-react-swc": "^4.0.0",

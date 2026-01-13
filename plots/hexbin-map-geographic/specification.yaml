@@ -1,0 +1,29 @@
+# Specification-level metadata for hexbin-map-geographic
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: hexbin-map-geographic
+title: Hexagonal Binning Map
+
+# Specification tracking
+created: 2026-01-11T22:49:59Z
+updated: null
+issue: 3767
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - hexbin
+    - map
+  data_type:
+    - geospatial
+    - numeric
+  domain:
+    - general
+    - statistics
+    - business
+  features:
+    - aggregation
+    - color-mapped
+    - interactive

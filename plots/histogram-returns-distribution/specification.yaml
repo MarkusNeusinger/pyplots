@@ -1,0 +1,29 @@
+# Specification-level metadata for histogram-returns-distribution
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: histogram-returns-distribution
+title: Returns Distribution Histogram
+
+# Specification tracking
+created: 2026-01-11T22:46:25Z
+updated: null
+issue: 3751
+suggested: MarkusNeusinger
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - histogram
+    - density
+  data_type:
+    - numeric
+    - continuous
+    - timeseries
+  domain:
+    - finance
+    - statistics
+  features:
+    - distribution
+    - annotated
+    - comparison

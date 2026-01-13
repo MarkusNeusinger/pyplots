@@ -68,6 +68,7 @@ export function Footer({ onTrackEvent, selectedSpec, selectedLibrary }: FooterPr
         <Link
           component={RouterLink}
           to="/legal"
+          onClick={() => onTrackEvent?.('internal_link', { destination: 'legal', spec: selectedSpec, library: selectedLibrary })}
           sx={{
             color: '#9ca3af',
             textDecoration: 'none',

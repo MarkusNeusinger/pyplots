@@ -31,6 +31,7 @@ interface UseFilterStateReturn {
   filterCounts: FilterCounts | null;
   globalCounts: FilterCounts | null;
   orCounts: Record<string, number>[];
+  specTitles: Record<string, string>;
   allImages: PlotImage[];
   displayedImages: PlotImage[];
   hasMore: boolean;
@@ -86,6 +87,7 @@ export function useFilterState({
     filterCounts,
     globalCounts,
     orCounts,
+    specTitles,
     allImages,
     displayedImages,
     hasMore,
@@ -234,6 +236,7 @@ export function useFilterState({
     filterCounts,
     globalCounts,
     orCounts,
+    specTitles,
     allImages,
     displayedImages,
     hasMore,

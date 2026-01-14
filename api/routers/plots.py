@@ -484,6 +484,9 @@ async def get_filtered_plots(request: Request, db: AsyncSession = Depends(requir
     counts = _calculate_contextual_counts(filtered_images, spec_id_to_tags, impl_lookup)
     or_counts = _calculate_or_counts(filter_groups, all_images, spec_id_to_tags, spec_lookup, impl_lookup)
 
+    # Build spec_id -> title mapping for search/tooltips
+    spec_titles = {spec_id: data["spec"].title for spec_id, data in spec_lookup.items() if data["spec"].title}
+
     # Build and cache response
     result = FilteredPlotsResponse(
         total=len(filtered_images),
@@ -491,6 +494,7 @@ async def get_filtered_plots(request: Request, db: AsyncSession = Depends(requir
         counts=counts,
         globalCounts=global_counts,
         orCounts=or_counts,
+        specTitles=spec_titles,
     )
 
     try:

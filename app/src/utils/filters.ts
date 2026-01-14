@@ -6,6 +6,7 @@
 
 import type { FilterCategory, ActiveFilters, FilterCounts } from '../types';
 import { FILTER_CATEGORIES } from '../types';
+import { createFuzzySearcher, getMatchType, type MatchType } from './fuzzySearch';
 
 /**
  * Get counts for a specific filter category.
@@ -74,89 +75,45 @@ export function getAvailableValuesForGroup(
     .sort((a, b) => b[1] - a[1]);
 }
 
-/**
- * Check if a value matches the search query.
- * Supports multi-word queries where all words must appear in the value.
- *
- * @param value - The filter value to check
- * @param query - The search query (already lowercased and trimmed)
- * @returns True if the value matches the query
- *
- * @example
- * matchesSearchQuery("scatter-basic", "scatter basic") // true
- * matchesSearchQuery("bar-grouped-horizontal", "bar horiz") // true
- * matchesSearchQuery("heatmap", "heat map") // true
- * matchesSearchQuery("scatter", "bar line") // false (not all words match)
- */
-function matchesSearchQuery(value: string, query: string): boolean {
-  if (!query) return true;
-
-  const valueLower = value.toLowerCase();
-
-  // Split query into individual words (by whitespace)
-  const words = query.split(/\s+/).filter((w) => w.length > 0);
-
-  // All words must appear somewhere in the value
-  return words.every((word) => valueLower.includes(word));
+export interface SearchResult {
+  category: FilterCategory;
+  value: string;
+  count: number;
+  matchType: MatchType;
 }
 
 /**
- * Calculate a relevance score for a search result.
- * Higher score = more relevant.
+ * Search across all filter categories using fuzzy matching.
  *
- * @param value - The filter value
- * @param query - The search query (lowercased)
- * @returns Relevance score (higher is better)
- */
-function calculateRelevance(value: string, query: string): number {
-  const valueLower = value.toLowerCase();
-
-  // Exact match: highest score
-  if (valueLower === query) return 1000;
-
-  // Starts with query: high score
-  if (valueLower.startsWith(query)) return 500;
-
-  // Contains query as substring: medium score
-  if (valueLower.includes(query)) return 250;
-
-  // Multi-word match: score based on how many words match at start
-  const words = query.split(/\s+/);
-  const matchingWordsAtStart = words.filter((word) => valueLower.startsWith(word)).length;
-  if (matchingWordsAtStart > 0) return 100 + matchingWordsAtStart * 50;
-
-  // All words match somewhere: base score
-  return 10;
-}
-
-/**
- * Search across all filter categories.
+ * Uses fuse.js for typo-tolerant search. Results are grouped by match quality:
+ * - 'exact': Very close matches (score < 0.1)
+ * - 'fuzzy': Looser matches with typo tolerance (score >= 0.1)
  *
- * Supports multi-word queries where all words must match.
- * Words can appear anywhere in the value (not necessarily consecutive).
- * Results are sorted by relevance and then by count.
+ * For the "spec" category, also searches through spec titles.
  *
  * @param filterCounts - Available filter counts
  * @param activeFilters - Current active filters
  * @param searchQuery - Search query string
  * @param selectedCategory - Optional category to limit search to
- * @returns Matching results sorted by relevance and count
+ * @param specTitles - Optional mapping of spec_id to title for enhanced spec search
+ * @returns Matching results sorted by match quality and count
  *
  * @example
- * // Query: "scatter basic" will match: scatter-basic, basic-scatter, scatter-basic-3d
- * // Query: "bar horiz" will match: bar-horizontal, bar-grouped-horizontal
- * // Results are ranked by relevance (exact match > starts with > contains > multi-word)
+ * // Query: "scater" will find "scatter-basic" (typo tolerance)
+ * // Query: "heatmp" will find "heatmap-correlation"
+ * // Exact matches appear first, fuzzy matches after a divider
  */
 export function getSearchResults(
   filterCounts: FilterCounts | null,
   activeFilters: ActiveFilters,
   searchQuery: string,
-  selectedCategory: FilterCategory | null
-): { category: FilterCategory; value: string; count: number }[] {
-  if (!filterCounts) return [];
+  selectedCategory: FilterCategory | null,
+  specTitles: Record<string, string> = {}
+): SearchResult[] {
+  if (!filterCounts || !searchQuery.trim()) return [];
 
   const query = searchQuery.toLowerCase().trim();
-  const results: Array<{ category: FilterCategory; value: string; count: number; relevance: number }> = [];
+  const results: Array<SearchResult & { score: number }> = [];
 
   const categoriesToSearch = selectedCategory ? [selectedCategory] : FILTER_CATEGORIES;
 
@@ -164,20 +121,44 @@ export function getSearchResults(
     const counts = getCounts(filterCounts, category);
     const selected = getSelectedValuesForCategory(activeFilters, category);
 
-    for (const [value, count] of Object.entries(counts)) {
-      if (selected.includes(value)) continue;
-      if (!matchesSearchQuery(value, query)) continue;
+    // Build searchable items for this category
+    const items = Object.keys(counts)
+      .filter((value) => !selected.includes(value))
+      .map((value) => ({
+        value,
+        title: category === 'spec' ? specTitles[value] : undefined,
+        count: counts[value],
+      }));
 
-      const relevance = calculateRelevance(value, query);
-      results.push({ category, value, count, relevance });
+    if (items.length === 0) continue;
+
+    // Create fuzzy searcher and search
+    const searcher = createFuzzySearcher(items);
+    const matches = searcher.search(query);
+
+    for (const match of matches) {
+      const score = match.score ?? 0;
+      results.push({
+        category,
+        value: match.item.value,
+        count: match.item.count,
+        score,
+        matchType: getMatchType(score),
+      });
     }
   }
 
-  // Sort by relevance (descending) then by count (descending)
+  // Sort: exact first, then by score (lower = better), then by count
   return results.sort((a, b) => {
-    if (b.relevance !== a.relevance) {
-      return b.relevance - a.relevance;
+    // Exact matches before fuzzy
+    if (a.matchType !== b.matchType) {
+      return a.matchType === 'exact' ? -1 : 1;
     }
+    // Within same type, sort by score (lower is better in fuse.js)
+    if (a.score !== b.score) {
+      return a.score - b.score;
+    }
+    // Then by count (higher is better)
     return b.count - a.count;
   });
 }

@@ -139,3 +139,74 @@ jobs:
     - name: Skip notice
       if: steps.check.outputs.should_test == 'false'
       run: echo "::notice::Tests skipped - no testable Python changes (only plots/ or non-Python files)"
+
+  test-frontend:
+    name: Run Frontend Tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: Check for frontend changes
+      id: check
+      run: |
+        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          CHANGED_FILES=$(git diff --name-only $BASE_SHA $HEAD_SHA)
+        else
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
+        fi
+
+        echo "Changed files:"
+        echo "$CHANGED_FILES"
+
+        # Check for frontend changes
+        FRONTEND_CHANGES=$(echo "$CHANGED_FILES" | grep '^app/' || true)
+
+        # Force run on workflow_dispatch with force_run=true
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.force_run }}" == "true" ]]; then
+          echo "Manual trigger with force_run=true, will run frontend tests"
+          echo "should_test=true" >> $GITHUB_OUTPUT
+        elif [[ -n "$FRONTEND_CHANGES" ]]; then
+          echo "Found frontend changes, will run tests"
+          echo "should_test=true" >> $GITHUB_OUTPUT
+        else
+          echo "No frontend changes, skipping frontend tests"
+          echo "should_test=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Set up Node.js
+      if: steps.check.outputs.should_test == 'true'
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'yarn'
+        cache-dependency-path: app/yarn.lock
+
+    - name: Install dependencies
+      if: steps.check.outputs.should_test == 'true'
+      working-directory: app
+      run: yarn install --frozen-lockfile
+
+    - name: Run frontend tests with coverage
+      if: steps.check.outputs.should_test == 'true'
+      working-directory: app
+      run: yarn test --coverage
+
+    - name: Upload frontend coverage to Codecov
+      if: steps.check.outputs.should_test == 'true'
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./app/coverage/coverage-final.json
+        flags: frontend
+        fail_ci_if_error: false
+
+    - name: Skip notice
+      if: steps.check.outputs.should_test == 'false'
+      run: echo "::notice::Frontend tests skipped - no app/ changes"

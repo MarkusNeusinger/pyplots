@@ -4,3 +4,4 @@
 
 export * from './tooltip';
 export * from './filters';
+export * from './fuzzySearch';

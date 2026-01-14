@@ -21,12 +21,13 @@ import { useTheme } from '@mui/material/styles';
 import type { FilterCategory, ActiveFilters, FilterCounts } from '../types';
 import { FILTER_LABELS, FILTER_TOOLTIPS, FILTER_CATEGORIES } from '../types';
 import type { ImageSize } from '../constants';
-import { getAvailableValues, getAvailableValuesForGroup, getSearchResults } from '../utils';
+import { getAvailableValues, getAvailableValuesForGroup, getSearchResults, type SearchResult } from '../utils';
 
 interface FilterBarProps {
   activeFilters: ActiveFilters;
   filterCounts: FilterCounts | null;  // Contextual counts (for AND additions)
   orCounts: Record<string, number>[];  // Per-group counts for OR additions
+  specTitles: Record<string, string>;  // Mapping spec_id -> title for search/tooltips
   currentTotal: number;  // Total number of filtered images
   displayedCount: number;  // Currently displayed images
   randomAnimation: { index: number; phase: 'out' | 'in'; oldLabel?: string } | null;
@@ -44,6 +45,7 @@ export function FilterBar({
   activeFilters,
   filterCounts,
   orCounts,
+  specTitles,
   currentTotal,
   displayedCount,
   randomAnimation,
@@ -208,8 +210,8 @@ export function FilterBar({
 
   // Memoize search results to avoid recalculating on every render
   const searchResults = useMemo(
-    () => getSearchResults(filterCounts, activeFilters, searchQuery, selectedCategory),
-    [filterCounts, activeFilters, searchQuery, selectedCategory]
+    () => getSearchResults(filterCounts, activeFilters, searchQuery, selectedCategory, specTitles),
+    [filterCounts, activeFilters, searchQuery, selectedCategory, specTitles]
   );
 
   // Track searches with no results (debounced, to discover missing specs)
@@ -699,38 +701,83 @@ export function FilterBar({
                   ]
                 : []),
               ...(searchResults.length > 0
-                ? searchResults.map(({ category, value, count }, idx) => (
-                    <MenuItem
-                      key={`${category}-${value}`}
-                      onClick={() => handleValueSelect(category, value)}
-                      selected={idx === highlightedIndex}
-                      sx={{ fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace' }}
-                    >
-                      <ListItemText
-                        primary={value}
-                        secondary={!selectedCategory ? FILTER_LABELS[category] : undefined}
-                        primaryTypographyProps={{
-                          fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
-                          fontSize: '0.85rem',
-                        }}
-                        secondaryTypographyProps={{
-                          fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
-                          fontSize: '0.7rem',
-                          color: '#9ca3af',
-                        }}
-                      />
-                      <Typography
-                        sx={{
-                          fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
-                          fontSize: '0.75rem',
-                          color: '#9ca3af',
-                          ml: 2,
-                        }}
-                      >
-                        ({count})
-                      </Typography>
-                    </MenuItem>
-                  ))
+                ? (() => {
+                    // Split results into exact and fuzzy matches
+                    const exactResults = searchResults.filter((r) => r.matchType === 'exact');
+                    const fuzzyResults = searchResults.filter((r) => r.matchType === 'fuzzy');
+
+                    const renderMenuItem = (result: SearchResult, idx: number) => {
+                      const { category, value, count } = result;
+                      const specTitle = category === 'spec' ? specTitles[value] : undefined;
+                      const menuItem = (
+                        <MenuItem
+                          key={`${category}-${value}`}
+                          onClick={() => handleValueSelect(category, value)}
+                          selected={idx === highlightedIndex}
+                          sx={{ fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace' }}
+                        >
+                          <ListItemText
+                            primary={value}
+                            secondary={!selectedCategory ? FILTER_LABELS[category] : undefined}
+                            primaryTypographyProps={{
+                              fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
+                              fontSize: '0.85rem',
+                            }}
+                            secondaryTypographyProps={{
+                              fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
+                              fontSize: '0.7rem',
+                              color: '#9ca3af',
+                            }}
+                          />
+                          <Typography
+                            sx={{
+                              fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
+                              fontSize: '0.75rem',
+                              color: '#9ca3af',
+                              ml: 2,
+                            }}
+                          >
+                            ({count})
+                          </Typography>
+                        </MenuItem>
+                      );
+                      return specTitle ? (
+                        <Tooltip key={`${category}-${value}`} title={specTitle} placement="right" arrow>
+                          <span>{menuItem}</span>
+                        </Tooltip>
+                      ) : (
+                        menuItem
+                      );
+                    };
+
+                    const items: React.ReactNode[] = [];
+                    // Add exact matches
+                    exactResults.forEach((result, i) => {
+                      items.push(renderMenuItem(result, i));
+                    });
+                    // Add fuzzy label/divider if there are fuzzy results
+                    if (fuzzyResults.length > 0) {
+                      items.push(
+                        <Divider key="exact-fuzzy-divider" sx={{ my: 0.5 }}>
+                          <Typography
+                            sx={{
+                              fontSize: '0.65rem',
+                              color: '#9ca3af',
+                              fontFamily: '"MonoLisa", "MonoLisa Fallback", monospace',
+                              px: 1,
+                            }}
+                          >
+                            fuzzy
+                          </Typography>
+                        </Divider>
+                      );
+                    }
+                    // Add fuzzy matches
+                    fuzzyResults.forEach((result, i) => {
+                      items.push(renderMenuItem(result, exactResults.length + i));
+                    });
+                    return items;
+                  })()
                 : [
                     <MenuItem key="no-results" disabled>
                       <Typography

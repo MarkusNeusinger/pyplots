@@ -25,6 +25,7 @@ interface FilterFetchState {
   filterCounts: FilterCounts | null;
   globalCounts: FilterCounts | null;
   orCounts: Record<string, number>[];
+  specTitles: Record<string, string>;
   allImages: PlotImage[];
   displayedImages: PlotImage[];
   hasMore: boolean;
@@ -55,6 +56,7 @@ export function useFilterFetch({
   const [filterCounts, setFilterCounts] = useState<FilterCounts | null>(initialState.filterCounts ?? null);
   const [globalCounts, setGlobalCounts] = useState<FilterCounts | null>(initialState.globalCounts ?? null);
   const [orCounts, setOrCounts] = useState<Record<string, number>[]>(initialState.orCounts ?? []);
+  const [specTitles, setSpecTitles] = useState<Record<string, string>>(initialState.specTitles ?? {});
   const [allImages, setAllImages] = useState<PlotImage[]>(initialState.allImages ?? []);
   const [displayedImages, setDisplayedImages] = useState<PlotImage[]>(initialState.displayedImages ?? []);
   const [hasMore, setHasMore] = useState(initialState.hasMore ?? false);
@@ -97,10 +99,11 @@ export function useFilterFetch({
 
         if (abortController.signal.aborted) return;
 
-        // Update filter counts
+        // Update filter counts and spec titles
         setFilterCounts(data.counts);
         setGlobalCounts(data.globalCounts || data.counts);
         setOrCounts(data.orCounts || []);
+        setSpecTitles(data.specTitles || {});
 
         // Shuffle images randomly on each load
         const shuffled = shuffleArray<PlotImage>(data.images || []);
@@ -128,6 +131,7 @@ export function useFilterFetch({
     filterCounts,
     globalCounts,
     orCounts,
+    specTitles,
     allImages,
     displayedImages,
     hasMore,

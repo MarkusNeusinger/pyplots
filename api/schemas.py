@@ -97,6 +97,7 @@ class FilteredPlotsResponse(BaseModel):
     counts: dict
     globalCounts: dict
     orCounts: list[dict]
+    specTitles: dict[str, str] = {}  # Mapping spec_id -> title for search/tooltips
 
 
 class LibraryInfo(BaseModel):

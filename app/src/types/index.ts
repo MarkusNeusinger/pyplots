@@ -7,6 +7,7 @@ export interface PlotImage {
   html?: string;
   code?: string;
   spec_id?: string;
+  title?: string;
 }
 
 // Filter system types
@@ -95,6 +96,7 @@ export interface FilteredPlotsResponse {
   counts: FilterCounts;  // Contextual counts (for AND additions)
   globalCounts: FilterCounts;  // Global counts (for reference)
   orCounts: Record<string, number>[];  // Per-group counts for OR additions
+  specTitles: Record<string, string>;  // Mapping spec_id -> title for search/tooltips
 }
 
 export interface LibraryInfo {

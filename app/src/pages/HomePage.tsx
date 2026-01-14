@@ -30,6 +30,7 @@ export function HomePage() {
     activeFilters,
     filterCounts,
     orCounts,
+    specTitles,
     allImages,
     displayedImages,
     hasMore,
@@ -167,6 +168,7 @@ export function HomePage() {
         activeFilters={activeFilters}
         filterCounts={filterCounts}
         orCounts={orCounts}
+        specTitles={specTitles}
         currentTotal={allImages.length}
         displayedCount={displayedImages.length}
         randomAnimation={randomAnimation}

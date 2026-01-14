@@ -6,6 +6,7 @@
 
 import type { FilterCategory, ActiveFilters, FilterCounts } from '../types';
 import { FILTER_CATEGORIES } from '../types';
+import { createFuzzySearcher, getMatchType, type MatchType } from './fuzzySearch';
 
 /**
  * Get counts for a specific filter category.
@@ -74,25 +75,45 @@ export function getAvailableValuesForGroup(
     .sort((a, b) => b[1] - a[1]);
 }
 
+export interface SearchResult {
+  category: FilterCategory;
+  value: string;
+  count: number;
+  matchType: MatchType;
+}
+
 /**
- * Search across all filter categories.
+ * Search across all filter categories using fuzzy matching.
+ *
+ * Uses fuse.js for typo-tolerant search. Results are grouped by match quality:
+ * - 'exact': Very close matches (score < 0.1)
+ * - 'fuzzy': Looser matches with typo tolerance (score >= 0.1)
+ *
+ * For the "spec" category, also searches through spec titles.
  *
  * @param filterCounts - Available filter counts
  * @param activeFilters - Current active filters
  * @param searchQuery - Search query string
  * @param selectedCategory - Optional category to limit search to
- * @returns Matching results sorted by count
+ * @param specTitles - Optional mapping of spec_id to title for enhanced spec search
+ * @returns Matching results sorted by match quality and count
+ *
+ * @example
+ * // Query: "scater" will find "scatter-basic" (typo tolerance)
+ * // Query: "heatmp" will find "heatmap-correlation"
+ * // Exact matches appear first, fuzzy matches after a divider
  */
 export function getSearchResults(
   filterCounts: FilterCounts | null,
   activeFilters: ActiveFilters,
   searchQuery: string,
-  selectedCategory: FilterCategory | null
-): { category: FilterCategory; value: string; count: number }[] {
-  if (!filterCounts) return [];
+  selectedCategory: FilterCategory | null,
+  specTitles: Record<string, string> = {}
+): SearchResult[] {
+  if (!filterCounts || !searchQuery.trim()) return [];
 
   const query = searchQuery.toLowerCase().trim();
-  const results: { category: FilterCategory; value: string; count: number }[] = [];
+  const results: Array<SearchResult & { score: number }> = [];
 
   const categoriesToSearch = selectedCategory ? [selectedCategory] : FILTER_CATEGORIES;
 
@@ -100,12 +121,44 @@ export function getSearchResults(
     const counts = getCounts(filterCounts, category);
     const selected = getSelectedValuesForCategory(activeFilters, category);
 
-    for (const [value, count] of Object.entries(counts)) {
-      if (selected.includes(value)) continue;
-      if (query && !value.toLowerCase().includes(query)) continue;
-      results.push({ category, value, count });
+    // Build searchable items for this category
+    const items = Object.keys(counts)
+      .filter((value) => !selected.includes(value))
+      .map((value) => ({
+        value,
+        title: category === 'spec' ? specTitles[value] : undefined,
+        count: counts[value],
+      }));
+
+    if (items.length === 0) continue;
+
+    // Create fuzzy searcher and search
+    const searcher = createFuzzySearcher(items);
+    const matches = searcher.search(query);
+
+    for (const match of matches) {
+      const score = match.score ?? 0;
+      results.push({
+        category,
+        value: match.item.value,
+        count: match.item.count,
+        score,
+        matchType: getMatchType(score),
+      });
     }
   }
 
-  return results.sort((a, b) => b.count - a.count);
+  // Sort: exact first, then by score (lower = better), then by count
+  return results.sort((a, b) => {
+    // Exact matches before fuzzy
+    if (a.matchType !== b.matchType) {
+      return a.matchType === 'exact' ? -1 : 1;
+    }
+    // Within same type, sort by score (lower is better in fuse.js)
+    if (a.score !== b.score) {
+      return a.score - b.score;
+    }
+    // Then by count (higher is better)
+    return b.count - a.count;
+  });
 }

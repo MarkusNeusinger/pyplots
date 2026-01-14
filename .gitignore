@@ -216,6 +216,7 @@ dist/
 *.tsbuildinfo
 .yarn/
 .pnp.*
+app/coverage/
 
 # OS-specific files
 .DS_Store

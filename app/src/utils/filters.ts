@@ -75,13 +75,77 @@ export function getAvailableValuesForGroup(
 }
 
 /**
+ * Check if a value matches the search query.
+ * Supports multi-word queries where all words must appear in the value.
+ *
+ * @param value - The filter value to check
+ * @param query - The search query (already lowercased and trimmed)
+ * @returns True if the value matches the query
+ *
+ * @example
+ * matchesSearchQuery("scatter-basic", "scatter basic") // true
+ * matchesSearchQuery("bar-grouped-horizontal", "bar horiz") // true
+ * matchesSearchQuery("heatmap", "heat map") // true
+ * matchesSearchQuery("scatter", "bar line") // false (not all words match)
+ */
+function matchesSearchQuery(value: string, query: string): boolean {
+  if (!query) return true;
+
+  const valueLower = value.toLowerCase();
+
+  // Split query into individual words (by whitespace)
+  const words = query.split(/\s+/).filter((w) => w.length > 0);
+
+  // All words must appear somewhere in the value
+  return words.every((word) => valueLower.includes(word));
+}
+
+/**
+ * Calculate a relevance score for a search result.
+ * Higher score = more relevant.
+ *
+ * @param value - The filter value
+ * @param query - The search query (lowercased)
+ * @returns Relevance score (higher is better)
+ */
+function calculateRelevance(value: string, query: string): number {
+  const valueLower = value.toLowerCase();
+
+  // Exact match: highest score
+  if (valueLower === query) return 1000;
+
+  // Starts with query: high score
+  if (valueLower.startsWith(query)) return 500;
+
+  // Contains query as substring: medium score
+  if (valueLower.includes(query)) return 250;
+
+  // Multi-word match: score based on how many words match at start
+  const words = query.split(/\s+/);
+  const matchingWordsAtStart = words.filter((word) => valueLower.startsWith(word)).length;
+  if (matchingWordsAtStart > 0) return 100 + matchingWordsAtStart * 50;
+
+  // All words match somewhere: base score
+  return 10;
+}
+
+/**
  * Search across all filter categories.
+ *
+ * Supports multi-word queries where all words must match.
+ * Words can appear anywhere in the value (not necessarily consecutive).
+ * Results are sorted by relevance and then by count.
  *
  * @param filterCounts - Available filter counts
  * @param activeFilters - Current active filters
  * @param searchQuery - Search query string
  * @param selectedCategory - Optional category to limit search to
- * @returns Matching results sorted by count
+ * @returns Matching results sorted by relevance and count
+ *
+ * @example
+ * // Query: "scatter basic" will match: scatter-basic, basic-scatter, scatter-basic-3d
+ * // Query: "bar horiz" will match: bar-horizontal, bar-grouped-horizontal
+ * // Results are ranked by relevance (exact match > starts with > contains > multi-word)
  */
 export function getSearchResults(
   filterCounts: FilterCounts | null,
@@ -92,7 +156,7 @@ export function getSearchResults(
   if (!filterCounts) return [];
 
   const query = searchQuery.toLowerCase().trim();
-  const results: { category: FilterCategory; value: string; count: number }[] = [];
+  const results: Array<{ category: FilterCategory; value: string; count: number; relevance: number }> = [];
 
   const categoriesToSearch = selectedCategory ? [selectedCategory] : FILTER_CATEGORIES;
 
@@ -102,10 +166,18 @@ export function getSearchResults(
 
     for (const [value, count] of Object.entries(counts)) {
       if (selected.includes(value)) continue;
-      if (query && !value.toLowerCase().includes(query)) continue;
-      results.push({ category, value, count });
+      if (!matchesSearchQuery(value, query)) continue;
+
+      const relevance = calculateRelevance(value, query);
+      results.push({ category, value, count, relevance });
     }
   }
 
-  return results.sort((a, b) => b.count - a.count);
+  // Sort by relevance (descending) then by count (descending)
+  return results.sort((a, b) => {
+    if (b.relevance !== a.relevance) {
+      return b.relevance - a.relevance;
+    }
+    return b.count - a.count;
+  });
 }

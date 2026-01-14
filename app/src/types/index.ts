@@ -7,6 +7,7 @@ export interface PlotImage {
   html?: string;
   code?: string;
   spec_id?: string;
+  title?: string;
 }
 
 // Filter system types

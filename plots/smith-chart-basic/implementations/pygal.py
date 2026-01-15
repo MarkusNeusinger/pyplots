@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 smith-chart-basic: Smith Chart for RF/Impedance
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 84/100 | Created: 2026-01-15
@@ -34,30 +34,30 @@ custom_style = Style(
     opacity_hover=1.0,
 )
 
-# Create XY chart for Smith chart - standard 4800x2700 landscape
+# Create XY chart for Smith chart - square format better for circular chart
 chart = pygal.XY(
-    width=4800,
-    height=2700,
+    width=3600,
+    height=3600,
     style=custom_style,
     title="smith-chart-basic · pygal · pyplots.ai",
     show_legend=True,
     legend_at_bottom=True,
-    legend_at_bottom_columns=4,
+    legend_at_bottom_columns=5,
     show_x_guides=False,
     show_y_guides=False,
-    x_title="Real(Gamma) - Normalized Impedance",
-    y_title="Imag(Gamma) - Normalized Impedance",
-    dots_size=5,
+    x_title="Reflection Coefficient Real Part",
+    y_title="Reflection Coefficient Imaginary Part",
+    dots_size=6,
     stroke_style={"width": 2},
-    range=(-1.25, 1.25),
-    xrange=(-1.6, 1.6),
-    margin=60,
+    range=(-1.15, 1.15),
+    xrange=(-1.15, 1.15),
+    margin=40,
 )
 
 # Generate unit circle boundary (|gamma| = 1) - Python Blue
 theta = np.linspace(0, 2 * np.pi, 200)
 unit_circle = [(np.cos(t), np.sin(t)) for t in theta]
-chart.add("Gamma=1 Boundary", unit_circle, show_dots=False, stroke_style={"width": 4})
+chart.add("|Γ|=1 Boundary", unit_circle, show_dots=False, stroke_style={"width": 4})
 
 # Generate constant resistance circles as a single combined grid element
 all_r_points = []

@@ -16,10 +16,15 @@ describe('getSearchResults', () => {
       seaborn: 8,
       plotly: 7,
     },
-    tag: {
-      basic: 15,
-      advanced: 10,
-    },
+    plot: { scatter: 8, heatmap: 4, histogram: 2, bar: 6 },
+    data: {},
+    dom: {},
+    feat: { basic: 15, advanced: 10 },
+    dep: {},
+    tech: {},
+    pat: {},
+    prep: {},
+    style: {},
   };
 
   const emptyFilters: ActiveFilters = [];

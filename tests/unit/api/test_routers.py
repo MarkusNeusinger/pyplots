@@ -840,6 +840,7 @@ class TestPlotsRouter:
         cached_response.counts = {}
         cached_response.globalCounts = {}
         cached_response.orCounts = []
+        cached_response.specTitles = {}
 
         with (
             patch(DB_CONFIG_PATCH, return_value=True),

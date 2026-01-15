@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 sn-curve-basic: S-N Curve (Wöhler Curve)
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-15
@@ -32,6 +32,18 @@ for stress, base_n in zip(stress_levels, base_cycles, strict=True):
 cycles_data = np.array(cycles_data)
 stress_data = np.array(stress_data)
 
+# Fit Basquin equation: S = A * N^b (linear in log-log space)
+log_cycles = np.log10(cycles_data)
+log_stress = np.log10(stress_data)
+coeffs = np.polyfit(log_cycles, log_stress, 1)
+b = coeffs[0]  # slope (negative for S-N curve)
+log_A = coeffs[1]  # intercept
+A = 10**log_A
+
+# Generate fitted curve points
+fit_cycles = np.logspace(2, 7, 50)
+fit_stress = A * (fit_cycles**b)
+
 # Material reference values (MPa)
 ultimate_strength = 520
 yield_strength = 350
@@ -40,6 +52,9 @@ endurance_limit = 190
 # Create XY data points for pygal
 xy_points = [(float(c), float(s)) for c, s in zip(cycles_data, stress_data, strict=True)]
 
+# Fitted curve points
+fit_points = [(float(c), float(s)) for c, s in zip(fit_cycles, fit_stress, strict=True)]
+
 # Custom style for 4800x2700 canvas with larger fonts
 custom_style = Style(
     background="white",
@@ -47,7 +62,7 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998", "#E74C3C", "#27AE60", "#8E44AD"),
+    colors=("#306998", "#FF6B35", "#E74C3C", "#27AE60", "#8E44AD"),
     title_font_size=72,
     label_font_size=48,
     major_label_font_size=42,
@@ -59,6 +74,7 @@ custom_style = Style(
 )
 
 # Create XY chart with logarithmic x-axis
+# Use string labels for scientific notation display
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -68,7 +84,7 @@ chart = pygal.XY(
     y_title="Stress Amplitude (MPa)",
     logarithmic=True,
     show_dots=True,
-    dots_size=12,
+    dots_size=16,
     stroke=False,
     show_x_guides=True,
     show_y_guides=True,
@@ -78,27 +94,15 @@ chart = pygal.XY(
     margin=80,
     truncate_legend=-1,
     range=(150, 550),
-    x_labels=[100, 1000, 10000, 100000, 1000000, 10000000],
-    x_labels_major=[100, 1000, 10000, 100000, 1000000, 10000000],
+    x_labels=["10²", "10³", "10⁴", "10⁵", "10⁶", "10⁷"],
+    x_labels_major_count=6,
 )
 
-# Format x-axis labels as powers of 10 using superscript digits
-superscripts = {
-    "0": "\u2070",
-    "1": "\u00b9",
-    "2": "\u00b2",
-    "3": "\u00b3",
-    "4": "\u2074",
-    "5": "\u2075",
-    "6": "\u2076",
-    "7": "\u2077",
-    "8": "\u2078",
-    "9": "\u2079",
-}
-chart.x_label_formatter = lambda x: "10" + "".join(superscripts[d] for d in str(int(np.log10(x)))) if x > 0 else str(x)
+# Add test data points (scatter) with larger markers
+chart.add("Test Data", xy_points, dots_size=18, stroke=False)
 
-# Add test data points (scatter)
-chart.add("Test Data", xy_points, dots_size=14, stroke=False)
+# Add fitted Basquin curve (S-N relationship)
+chart.add("Basquin Fit (S-N Curve)", fit_points, stroke=True, show_dots=False)
 
 # Reference lines - Ultimate Strength
 ultimate_line = [(50, ultimate_strength), (5e7, ultimate_strength)]

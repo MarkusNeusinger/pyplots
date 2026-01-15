@@ -1,0 +1,269 @@
+""" pyplots.ai
+gantt-dependencies: Gantt Chart with Dependencies
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-15
+"""
+
+import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from matplotlib.patches import FancyArrowPatch
+
+
+# Set seaborn style
+sns.set_theme(style="whitegrid")
+
+# Data: Software Development Project with Dependencies
+tasks_data = [
+    # Requirements Phase
+    {
+        "task": "Requirements Gathering",
+        "start": "2024-01-01",
+        "end": "2024-01-14",
+        "group": "Requirements",
+        "depends_on": [],
+    },
+    {
+        "task": "Requirements Review",
+        "start": "2024-01-15",
+        "end": "2024-01-21",
+        "group": "Requirements",
+        "depends_on": ["Requirements Gathering"],
+    },
+    {
+        "task": "Requirements Sign-off",
+        "start": "2024-01-22",
+        "end": "2024-01-25",
+        "group": "Requirements",
+        "depends_on": ["Requirements Review"],
+    },
+    # Design Phase
+    {
+        "task": "System Architecture",
+        "start": "2024-01-26",
+        "end": "2024-02-08",
+        "group": "Design",
+        "depends_on": ["Requirements Sign-off"],
+    },
+    {
+        "task": "Database Design",
+        "start": "2024-02-01",
+        "end": "2024-02-12",
+        "group": "Design",
+        "depends_on": ["System Architecture"],
+    },
+    {
+        "task": "UI/UX Design",
+        "start": "2024-02-05",
+        "end": "2024-02-18",
+        "group": "Design",
+        "depends_on": ["System Architecture"],
+    },
+    {
+        "task": "Design Review",
+        "start": "2024-02-19",
+        "end": "2024-02-23",
+        "group": "Design",
+        "depends_on": ["Database Design", "UI/UX Design"],
+    },
+    # Development Phase
+    {
+        "task": "Backend Core",
+        "start": "2024-02-26",
+        "end": "2024-03-18",
+        "group": "Development",
+        "depends_on": ["Design Review"],
+    },
+    {
+        "task": "API Development",
+        "start": "2024-03-04",
+        "end": "2024-03-22",
+        "group": "Development",
+        "depends_on": ["Backend Core"],
+    },
+    {
+        "task": "Frontend Components",
+        "start": "2024-03-11",
+        "end": "2024-03-29",
+        "group": "Development",
+        "depends_on": ["UI/UX Design", "API Development"],
+    },
+    {
+        "task": "Integration",
+        "start": "2024-04-01",
+        "end": "2024-04-12",
+        "group": "Development",
+        "depends_on": ["API Development", "Frontend Components"],
+    },
+    # Testing Phase
+    {
+        "task": "Unit Testing",
+        "start": "2024-03-19",
+        "end": "2024-04-05",
+        "group": "Testing",
+        "depends_on": ["Backend Core"],
+    },
+    {
+        "task": "Integration Testing",
+        "start": "2024-04-08",
+        "end": "2024-04-19",
+        "group": "Testing",
+        "depends_on": ["Integration", "Unit Testing"],
+    },
+    {
+        "task": "UAT",
+        "start": "2024-04-22",
+        "end": "2024-05-03",
+        "group": "Testing",
+        "depends_on": ["Integration Testing"],
+    },
+    {"task": "Bug Fixes", "start": "2024-05-06", "end": "2024-05-17", "group": "Testing", "depends_on": ["UAT"]},
+]
+
+df = pd.DataFrame(tasks_data)
+df["start"] = pd.to_datetime(df["start"])
+df["end"] = pd.to_datetime(df["end"])
+
+# Reference date for x-axis (convert dates to numeric)
+ref_date = df["start"].min()
+df["start_num"] = (df["start"] - ref_date).dt.days
+df["end_num"] = (df["end"] - ref_date).dt.days
+df["duration"] = df["end_num"] - df["start_num"]
+
+# Calculate y positions - groups first, then tasks
+groups = df["group"].unique()
+group_colors = {"Requirements": "#306998", "Design": "#FFD43B", "Development": "#4B8BBE", "Testing": "#6B8E23"}
+
+y_positions = {}
+task_to_y = {}
+y_counter = 0
+
+for group in groups:
+    y_positions[group] = y_counter
+    y_counter += 1
+    group_tasks = df[df["group"] == group]["task"].tolist()
+    for task in group_tasks:
+        task_to_y[task] = y_counter
+        y_counter += 1
+
+# Add y position to dataframe
+df["y_pos"] = df["task"].map(task_to_y)
+
+# Create figure
+fig, ax = plt.subplots(figsize=(16, 9))
+
+# Create data for seaborn lineplot (bars as thick lines)
+# This uses seaborn's lineplot to draw horizontal bars as line segments
+line_data = []
+for _, row in df.iterrows():
+    # Create start and end points for each task bar
+    line_data.append(
+        {"x": row["start_num"], "y": row["y_pos"], "task": row["task"], "group": row["group"], "point": "start"}
+    )
+    line_data.append(
+        {"x": row["end_num"], "y": row["y_pos"], "task": row["task"], "group": row["group"], "point": "end"}
+    )
+
+line_df = pd.DataFrame(line_data)
+
+# Use seaborn lineplot with units parameter to draw separate lines for each task
+sns.lineplot(
+    data=line_df,
+    x="x",
+    y="y",
+    hue="group",
+    units="task",
+    estimator=None,
+    palette=group_colors,
+    linewidth=14,
+    alpha=0.85,
+    ax=ax,
+    legend=False,
+)
+
+# Draw group bars (aggregate spans) as thinner lines
+for group in groups:
+    group_df = df[df["group"] == group]
+    group_start = group_df["start_num"].min()
+    group_end = group_df["end_num"].max()
+    y = y_positions[group]
+    color = group_colors[group]
+
+    ax.plot([group_start, group_end], [y, y], color=color, linewidth=10, alpha=0.4, solid_capstyle="round")
+
+# Draw dependency arrows
+for _, row in df.iterrows():
+    if row["depends_on"]:
+        end_y = task_to_y[row["task"]]
+        end_x = row["start_num"]
+
+        for dep in row["depends_on"]:
+            dep_row = df[df["task"] == dep].iloc[0]
+            start_y = task_to_y[dep]
+            start_x = dep_row["end_num"]
+
+            # Draw arrow with curved path
+            arrow = FancyArrowPatch(
+                (start_x, start_y),
+                (end_x, end_y),
+                connectionstyle="arc3,rad=0.1",
+                arrowstyle="->,head_width=0.4,head_length=0.3",
+                color="#555555",
+                linewidth=1.5,
+                alpha=0.7,
+                zorder=5,
+            )
+            ax.add_patch(arrow)
+
+# Y-axis labels with proper formatting
+all_labels = []
+all_y = []
+
+for group in groups:
+    all_labels.append(f"▪ {group}")
+    all_y.append(y_positions[group])
+    group_tasks = df[df["group"] == group]["task"].tolist()
+    for task in group_tasks:
+        all_labels.append(f"   {task}")
+        all_y.append(task_to_y[task])
+
+ax.set_yticks(all_y)
+ax.set_yticklabels(all_labels, fontsize=12)
+ax.invert_yaxis()
+
+# X-axis formatting (dates)
+max_day = int(df["end_num"].max()) + 7
+date_ticks = np.arange(0, max_day, 14)
+date_labels = [(ref_date + pd.Timedelta(days=int(d))).strftime("%b %d") for d in date_ticks]
+ax.set_xticks(date_ticks)
+ax.set_xticklabels(date_labels, fontsize=14, rotation=45, ha="right")
+ax.set_xlim(-2, max_day)
+
+# Labels and title
+ax.set_xlabel("Timeline", fontsize=20)
+ax.set_ylabel("Tasks", fontsize=20)
+ax.set_title("gantt-dependencies · seaborn · pyplots.ai", fontsize=24, fontweight="bold")
+
+# Grid (subtle, vertical only)
+ax.grid(True, axis="x", alpha=0.3, linestyle="--", linewidth=0.8)
+ax.grid(False, axis="y")
+ax.set_axisbelow(True)
+
+# Legend for groups
+legend_patches = [mpatches.Patch(color=color, alpha=0.85, label=group) for group, color in group_colors.items()]
+arrow_legend = plt.Line2D(
+    [0], [0], color="#555555", linewidth=1.5, linestyle="-", marker=">", markersize=8, label="Dependency"
+)
+legend_patches.append(arrow_legend)
+
+ax.legend(
+    handles=legend_patches, loc="upper right", fontsize=14, framealpha=0.9, title="Project Phases", title_fontsize=16
+)
+
+# Clean up spines
+sns.despine(left=True, bottom=False)
+
+plt.tight_layout()
+plt.savefig("plot.png", dpi=300, bbox_inches="tight")

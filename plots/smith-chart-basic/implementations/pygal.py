@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 smith-chart-basic: Smith Chart for RF/Impedance
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-15
@@ -23,7 +23,7 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#888888",
-    colors=("#306998", "#BBBBBB", "#BBBBBB", "#555555", "#E74C3C", "#FFD43B", "#2ECC71", "#9B59B6", "#F39C12"),
+    colors=("#E74C3C", "#9B59B6", "#F39C12", "#2ECC71", "#306998", "#BBBBBB"),
     title_font_size=56,
     label_font_size=24,
     major_label_font_size=22,
@@ -42,24 +42,23 @@ chart = pygal.XY(
     title="smith-chart-basic · pygal · pyplots.ai",
     show_legend=True,
     legend_at_bottom=True,
-    legend_at_bottom_columns=5,
+    legend_at_bottom_columns=4,
     show_x_guides=False,
     show_y_guides=False,
     x_title="Reflection Coefficient Real Part",
     y_title="Reflection Coefficient Imaginary Part",
     dots_size=6,
-    stroke_style={"width": 2},
     range=(-1.15, 1.15),
     xrange=(-1.15, 1.15),
     margin=40,
 )
 
-# Generate unit circle boundary (|gamma| = 1) - Python Blue
+# Generate unit circle boundary (|gamma| = 1) - Python Blue (structural, no legend)
 theta = np.linspace(0, 2 * np.pi, 200)
 unit_circle = [(np.cos(t), np.sin(t)) for t in theta]
-chart.add("|Γ|=1 Boundary", unit_circle, show_dots=False, stroke_style={"width": 4})
+chart.add("", unit_circle, show_dots=False, stroke="#306998", stroke_width=4)
 
-# Generate constant resistance circles as a single combined grid element
+# Generate constant resistance circles as a single combined grid element (no legend)
 all_r_points = []
 for r in r_values:
     x_range = np.concatenate([np.linspace(-50, -0.01, 100), np.linspace(0.01, 50, 100)])
@@ -69,9 +68,9 @@ for r in r_values:
         if abs(gamma) <= 1.001:
             all_r_points.append((gamma.real, gamma.imag))
     all_r_points.append((None, None))
-chart.add("R Grid", all_r_points, show_dots=False, stroke_style={"width": 1.5, "dasharray": "8,4"})
+chart.add("", all_r_points, show_dots=False, stroke="#BBBBBB", stroke_width=1.5, stroke_dasharray="8,4")
 
-# Generate constant reactance arcs combined
+# Generate constant reactance arcs combined (no legend)
 all_x_points = []
 for x in x_values:
     # Positive reactance arc
@@ -88,10 +87,10 @@ for x in x_values:
         if abs(gamma) <= 1.001:
             all_x_points.append((gamma.real, gamma.imag))
     all_x_points.append((None, None))
-chart.add("X Grid", all_x_points, show_dots=False, stroke_style={"width": 1.5, "dasharray": "8,4"})
+chart.add("", all_x_points, show_dots=False, stroke="#BBBBBB", stroke_width=1.5, stroke_dasharray="8,4")
 
-# Add horizontal axis (real axis)
-chart.add("Real Axis", [(-1, 0), (1, 0)], show_dots=False, stroke_style={"width": 3})
+# Add horizontal axis (real axis, no legend)
+chart.add("", [(-1, 0), (1, 0)], show_dots=False, stroke="#555555", stroke_width=3)
 
 # Generate example impedance data - antenna impedance sweep 1-6 GHz
 np.random.seed(42)
@@ -113,7 +112,7 @@ gamma = (z_normalized - 1) / (z_normalized + 1)
 impedance_locus = [(g.real, g.imag) for g in gamma]
 
 # Add impedance locus curve - Red for visibility
-chart.add("Antenna Z(f)", impedance_locus, show_dots=True, stroke_style={"width": 4}, dots_size=5)
+chart.add("Antenna Z(f)", impedance_locus, show_dots=True, stroke_width=4, dots_size=5)
 
 # Add labeled frequency markers at key points
 # 1 GHz marker

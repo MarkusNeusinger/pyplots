@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 sn-curve-basic: S-N Curve (Wöhler Curve)
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 75/100 | Created: 2026-01-15
+Quality: 77/100 | Created: 2026-01-15
 """
 
 import numpy as np

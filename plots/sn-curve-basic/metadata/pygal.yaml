@@ -1,7 +1,7 @@
 library: pygal
 specification_id: sn-curve-basic
 created: '2026-01-15T21:43:12Z'
-updated: '2026-01-15T21:59:49Z'
+updated: '2026-01-15T22:04:17Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21047244255
 issue: 3826
@@ -10,81 +10,83 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/sn-curve-basic/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/sn-curve-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/sn-curve-basic/pygal/plot.html
-quality_score: 77
+quality_score: 78
 review:
   strengths:
-  - Correct S-N curve implementation with all required elements (data points, Basquin
-    fit, reference lines)
-  - Good use of pygal XY chart with logarithmic scale
-  - Custom style properly sized for 4800x2700 canvas with appropriate font sizes
-  - Realistic fatigue test data with proper scatter simulation
-  - All three material reference values clearly shown (UTS, YS, endurance limit)
+  - Correctly implements S-N curve with logarithmic X-axis and fitted Basquin equation
+  - Includes all three key material reference lines (Ultimate Strength, Yield Strength,
+    Endurance Limit)
+  - Good use of pygal custom Style with appropriately sized fonts for 4800x2700 canvas
+  - Data shows realistic scatter with multiple test specimens per stress level
+  - Color palette is distinct and accessible
   weaknesses:
-  - X-axis tick labels are compressed/overlapping at higher cycle counts (pygal logarithmic
-    label formatting issue)
-  - Legend order could be more intuitive (data then fit then reference lines)
-  image_description: 'The plot displays an S-N curve (Wöhler curve) for steel fatigue
-    testing with orange/red circular data points scattered across multiple stress
-    levels (450 MPa down to ~195 MPa). A blue dashed line represents the Basquin power-law
-    fit descending from upper-left to lower-right. Three horizontal reference lines
-    are shown: red at 520 MPa (Ultimate Strength), green at 350 MPa (Yield Strength),
-    and purple at 190 MPa (Endurance Limit). The X-axis shows "Cycles to Failure (N)"
-    with a logarithmic scale spanning from ~100 to 10^7 cycles. The Y-axis shows "Stress
-    Amplitude (MPa)" ranging from ~150 to 550. The legend at bottom lists all five
-    series. The title correctly shows "sn-curve-basic · pygal · pyplots.ai".'
+  - X-axis tick labels overlap/truncate at high cycle values due to logarithmic scale
+    rendering in pygal
+  - Y-axis is linear but spec recommends both axes use logarithmic scales
+  - Legend order (Basquin Fit first) does not match visual prominence order (Test
+    Data is primary)
+  image_description: 'The plot displays an S-N curve (Wöhler curve) on a semi-logarithmic
+    scale. The X-axis shows "Cycles to Failure (N)" with a logarithmic scale ranging
+    from approximately 100 to 10^7, and the Y-axis shows "Stress Amplitude (MPa)"
+    ranging from about 150 to 550 MPa (linear scale). Orange circular markers represent
+    the test data points showing the characteristic downward trend of fatigue data
+    - high stress at low cycles transitioning to low stress at high cycles. A dashed
+    blue line represents the Basquin fit (S-N curve) that follows the data trend.
+    Three horizontal reference lines are visible: a red line at 520 MPa for Ultimate
+    Strength, a green line at 350 MPa for Yield Strength, and a purple line at 190
+    MPa for Endurance Limit. The title "sn-curve-basic · pygal · pyplots.ai" appears
+    at the top. The legend is positioned at the bottom, showing all five series. The
+    background is white with subtle grid lines. X-axis tick labels show some crowding/overlap
+    at higher values.'
   criteria_checklist:
     visual_quality:
-      score: 31
+      score: 30
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 10
         passed: true
-        comment: Title and axis labels readable. Some x-axis tick labels at higher
-          values appear compressed.
+        comment: Title and axis labels readable; tick labels somewhat crowded at high
+          cycle counts
       - id: VQ-02
         name: No Overlap
-        score: 5
+        score: 4
         max: 8
-        passed: true
-        comment: X-axis tick labels overlap/compress at higher cycle counts, appearing
-          as compressed text instead of clean log labels.
+        passed: false
+        comment: X-axis tick labels overlap at higher cycle values due to logarithmic
+          scale rendering
       - id: VQ-03
         name: Element Visibility
         score: 8
         max: 8
         passed: true
-        comment: Data points well-sized (dots_size=20), clearly visible, dashed fit
-          line stands out nicely.
+        comment: Data markers clearly visible at appropriate size, lines distinguishable
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: 'Colors distinct and colorblind-safe: blue dashed line, orange data
-          points, red/green/purple reference lines.'
+        comment: Orange, blue, red, green, purple are colorblind-friendly and distinct
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Layout reasonable but plot area somewhat compressed. Legend at bottom
-          works but could be better positioned.
+        comment: Good canvas utilization, slight imbalance with legend at bottom
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Both axes have descriptive labels with units.
+        comment: Both axes have descriptive labels with units (MPa, N)
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: Grid subtle but legend layout could be improved (series order not
-          intuitive).
+        comment: Legend order differs from visual prominence order
     spec_compliance:
       score: 23
       max: 25
@@ -94,64 +96,63 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct XY scatter with logarithmic x-axis showing S-N fatigue data.
+        comment: Correct XY scatter plot with fitted curve for S-N data
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Cycles (N) correctly on x-axis, stress amplitude on y-axis.
+        comment: Cycles on X (log scale), Stress on Y correctly assigned
       - id: SC-03
         name: Required Features
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: 'All spec features present: log scale, Basquin fit, reference lines
-          for UTS/YS/endurance limit.'
+        comment: Has data points, fit curve, and reference lines; Y-axis is linear
+          not logarithmic
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Full range visible from 10^2 to 10^7 cycles, stress from 150-550
-          MPa.
+        comment: Full range of data visible (10^2 to 10^7 cycles)
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Legend labels correct but order could be more logical.
+        passed: true
+        comment: Legend labels correctly identify all series with values
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: 'Correct format: sn-curve-basic · pygal · pyplots.ai'
+        comment: 'Uses correct format: sn-curve-basic · pygal · pyplots.ai'
     data_quality:
       score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Shows low-cycle to high-cycle fatigue, scatter from multiple specimens,
-          Basquin fit.
+        comment: Shows scatter from multiple specimens, low/high cycle regions, and
+          endurance limit region
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Steel fatigue testing is real engineering scenario with realistic
-          stress values.
+        comment: Steel fatigue testing is a real engineering application with appropriate
+          terminology
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: 'Values realistic for steel: UTS ~520 MPa, YS ~350 MPa, endurance
-          ~190 MPa.'
+        comment: Stress values realistic for steel (190-520 MPa); could extend cycles
+          further
     code_quality:
       score: 10
       max: 10
@@ -161,42 +162,42 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean structure: imports → data → chart → save.'
+        comment: 'Simple script: imports → data → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42).
+        comment: np.random.seed(42) ensures reproducibility
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'Only necessary imports: numpy, pygal, Style.'
+        comment: Only necessary imports (numpy, pygal, Style)
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current pygal API.
+        comment: Uses current pygal API
       - id: CQ-05
         name: Output Correct
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html.
+        comment: Saves both plot.png and plot.html
     library_features:
-      score: 5
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 5
+        score: 3
         max: 5
         passed: true
-        comment: Good use of pygal XY chart with logarithmic scale, custom Style,
-          stroke_style for dashed lines, HTML export.
+        comment: Uses pygal XY chart, custom Style, logarithmic scale; could leverage
+          tooltips more
   verdict: APPROVED
 impl_tags:
   dependencies: []

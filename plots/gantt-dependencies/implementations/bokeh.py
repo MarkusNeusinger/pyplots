@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 gantt-dependencies: Gantt Chart with Dependencies
 Library: bokeh 3.8.2 | Python 3.13.11
-Quality: 85/100 | Created: 2026-01-15
+Quality: 90/100 | Created: 2026-01-15
 """
 
 import pandas as pd

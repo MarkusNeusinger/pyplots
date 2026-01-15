@@ -1,10 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 gantt-dependencies: Gantt Chart with Dependencies
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 86/100 | Created: 2026-01-15
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pandas as pd
 from plotnine import (
@@ -189,23 +189,62 @@ for grp in group_order:
 tasks_df = pd.DataFrame(task_data)
 groups_df = pd.DataFrame(group_data)
 
-# Build dependency arrows
+# Set explicit category ordering for legend (project phase order, not alphabetical)
+phase_order = pd.CategoricalDtype(categories=group_order, ordered=True)
+tasks_df["group"] = tasks_df["group"].astype(phase_order)
+groups_df["group"] = groups_df["group"].astype(phase_order)
+
+# Build dependency arrows with arrowheads
 arrows_data = []
+arrowheads_data = []
+arrow_size_days = 1.5  # Size of arrowhead in days
+
 for _, row in df.iterrows():
     if row["depends_on"]:
         for dep_name in row["depends_on"]:
             if dep_name in task_positions:
                 dep_row = df[df["task"] == dep_name].iloc[0]
+                x_start = dep_row["end"]
+                x_end = row["start"]
+                y_start = task_positions[dep_name]
+                y_end = task_positions[row["task"]]
+
+                # Main arrow line (slightly shorter to make room for arrowhead)
                 arrows_data.append(
                     {
-                        "x_start": dep_row["end"],
-                        "x_end": row["start"],
-                        "y_start": task_positions[dep_name],
-                        "y_end": task_positions[row["task"]],
+                        "x_start": x_start,
+                        "x_end": x_end - timedelta(days=arrow_size_days * 0.5),
+                        "y_start": y_start,
+                        "y_end": y_end,
+                    }
+                )
+
+                # Create arrowhead (two lines forming a V pointing right)
+                arrow_tip_x = x_end
+                arrow_base_x = x_end - timedelta(days=arrow_size_days)
+                arrow_wing_offset = 0.25  # Y offset for arrowhead wings
+
+                # Upper wing of arrowhead
+                arrowheads_data.append(
+                    {
+                        "x_start": arrow_base_x,
+                        "x_end": arrow_tip_x,
+                        "y_start": y_end - arrow_wing_offset,
+                        "y_end": y_end,
+                    }
+                )
+                # Lower wing of arrowhead
+                arrowheads_data.append(
+                    {
+                        "x_start": arrow_base_x,
+                        "x_end": arrow_tip_x,
+                        "y_start": y_end + arrow_wing_offset,
+                        "y_end": y_end,
                     }
                 )
 
 arrows_df = pd.DataFrame(arrows_data) if arrows_data else None
+arrowheads_df = pd.DataFrame(arrowheads_data) if arrowheads_data else None
 
 # Create y-axis labels and breaks
 y_breaks = list(task_labels.keys())
@@ -228,27 +267,37 @@ plot = (
     )
 )
 
-# Add dependency arrows
+# Add dependency arrows with arrowheads
 if arrows_df is not None and len(arrows_df) > 0:
+    # Main arrow lines
     plot = plot + geom_segment(
         data=arrows_df,
         mapping=aes(x="x_start", xend="x_end", y="y_start", yend="y_end"),
-        color="#555555",
-        size=1,
-        alpha=0.7,
+        color="#444444",
+        size=1.2,
+        alpha=0.8,
     )
+    # Arrowheads
+    if arrowheads_df is not None and len(arrowheads_df) > 0:
+        plot = plot + geom_segment(
+            data=arrowheads_df,
+            mapping=aes(x="x_start", xend="x_end", y="y_start", yend="y_end"),
+            color="#444444",
+            size=1.5,
+            alpha=0.9,
+        )
 
 # Add scales, labels, and theme
 plot = (
     plot
-    + scale_color_manual(values=group_colors, name="Phase")
+    + scale_color_manual(values=group_colors, name="Project Phase", limits=group_order)
     + scale_y_continuous(
         breaks=y_breaks,
         labels=y_labels,
         trans="reverse",  # Reverse so first group is at top
     )
     + scale_x_datetime()
-    + labs(title="gantt-dependencies · plotnine · pyplots.ai", x="Timeline", y="")
+    + labs(title="gantt-dependencies · plotnine · pyplots.ai", x="Date (2024)", y="")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),

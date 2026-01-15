@@ -2,9 +2,9 @@
 
 > Quickly understand the pyplots codebase - structure, rules, and current state.
 
-## Project Rules
+## Project Vision
 
-@CLAUDE.md
+@docs/concepts/vision.md
 
 ## Project Config
 

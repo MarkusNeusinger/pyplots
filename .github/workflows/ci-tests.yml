@@ -134,6 +134,7 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: ./coverage.xml
+        flags: backend
         fail_ci_if_error: false
 
     - name: Skip notice

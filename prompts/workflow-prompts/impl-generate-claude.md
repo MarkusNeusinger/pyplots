@@ -1,42 +1,44 @@
 # Generate Implementation
 
-You are generating the **{LIBRARY}** implementation for **{SPEC_ID}**.
+**YOUR PRIMARY TASK: Create a working Python plot implementation file.**
 
-**Regeneration:** {IS_REGENERATION}
+You MUST create: `plots/{SPEC_ID}/implementations/{LIBRARY}.py`
 
-## Step 1: Read required files
+This is NOT optional. The workflow will FAIL if this file does not exist after you finish.
 
-1. `prompts/plot-generator.md` - Base generation rules (IMPORTANT: Read the "Regeneration" section!)
-2. `prompts/default-style-guide.md` - Visual style requirements
-3. `prompts/quality-criteria.md` - Quality requirements
-4. `prompts/library/{LIBRARY}.md` - Library-specific rules
-5. `plots/{SPEC_ID}/specification.md` - The specification
+---
 
-## Step 1b: If Regeneration, read previous feedback
+**Variables:**
+- LIBRARY: {LIBRARY}
+- SPEC_ID: {SPEC_ID}
+- Regeneration: {IS_REGENERATION}
 
-If this is a regeneration ({IS_REGENERATION} == true):
+## Step 1: Read the rules (quickly)
 
-1. Read `plots/{SPEC_ID}/metadata/{LIBRARY}.yaml`
-   - Look at `review.strengths` (keep these aspects!)
-   - Look at `review.weaknesses` (fix these problems - decide HOW yourself)
-   - Look at `review.image_description` (understand what was generated visually)
-   - Look at `review.criteria_checklist` (see exactly which criteria failed)
-     - Focus on categories with low scores (e.g., visual_quality.score < visual_quality.max)
-     - Check items with `passed: false` - these need fixing
-     - VQ-XX items for visual issues
-     - SC-XX items for spec compliance
-     - CQ-XX items for code quality
-2. Read `plots/{SPEC_ID}/implementations/{LIBRARY}.py`
-   - Understand what was done before
-   - Keep what worked, fix what didn't
+Read these files to understand the requirements:
 
-## Step 2: Generate implementation
+1. `prompts/plot-generator.md` - Base generation rules
+2. `prompts/library/{LIBRARY}.md` - Library-specific rules (CRITICAL!)
+3. `plots/{SPEC_ID}/specification.md` - What to visualize
 
-Create: `plots/{SPEC_ID}/implementations/{LIBRARY}.py`
+Optional (if regenerating):
+- `plots/{SPEC_ID}/metadata/{LIBRARY}.yaml` - Previous review feedback
+- `plots/{SPEC_ID}/implementations/{LIBRARY}.py` - Previous implementation
+
+## Step 2: CREATE THE FILE (MANDATORY)
+
+**You MUST use the Write tool to create:**
+
+```
+plots/{SPEC_ID}/implementations/{LIBRARY}.py
+```
 
 The script MUST:
-- Save as `plot.png` in the current directory
+- Follow the KISS structure: imports → data → plot → save
+- Save output as `plot.png` in current directory
 - For interactive libraries (plotly, bokeh, altair, highcharts, pygal, letsplot): also save `plot.html`
+
+**DO NOT SKIP THIS STEP. The file MUST be created.**
 
 ## Step 3: Test and fix (up to 3 attempts)
 
@@ -64,7 +66,17 @@ ruff format plots/{SPEC_ID}/implementations/{LIBRARY}.py
 ruff check --fix plots/{SPEC_ID}/implementations/{LIBRARY}.py
 ```
 
-## Step 6: Commit
+## Step 6: Verify file exists (CRITICAL)
+
+Before committing, verify the implementation file exists:
+
+```bash
+ls -la plots/{SPEC_ID}/implementations/{LIBRARY}.py
+```
+
+**If the file does NOT exist, you MUST go back to Step 2 and create it!**
+
+## Step 7: Commit
 
 ```bash
 git config user.name "github-actions[bot]"
@@ -74,8 +86,11 @@ git commit -m "feat({LIBRARY}): implement {SPEC_ID}"
 git push -u origin implementation/{SPEC_ID}/{LIBRARY}
 ```
 
-## Report result
+## Final Check
 
-Print exactly one line:
-- `GENERATION_SUCCESS` - if everything worked
-- `GENERATION_FAILED: <reason>` - if it failed
+Before finishing, confirm:
+1. ✅ `plots/{SPEC_ID}/implementations/{LIBRARY}.py` exists
+2. ✅ `plot.png` was generated successfully
+3. ✅ Changes were committed and pushed
+
+If any of these failed, DO NOT report success.

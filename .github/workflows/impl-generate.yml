@@ -244,6 +244,14 @@ jobs:
             echo "is_regeneration=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Ensure implementations directory exists
+        env:
+          SPEC_ID: ${{ steps.inputs.outputs.specification_id }}
+        run: |
+          # Create implementations directory if it doesn't exist (for new specs)
+          mkdir -p "plots/${SPEC_ID}/implementations"
+          echo "::notice::Ensured implementations directory exists"
+
       - name: Run Claude Code to generate implementation
         id: claude
         continue-on-error: true
@@ -615,7 +623,7 @@ jobs:
           fi
 
       # ========================================================================
-      # Failure handling: Track failures and clean up labels
+      # Failure handling: Track failures via comments and auto-retry
       # ========================================================================
       - name: Handle generation failure
         if: failure() && steps.issue.outputs.number != ''
@@ -627,43 +635,60 @@ jobs:
         run: |
           echo "::notice::Handling generation failure for $LIBRARY/$SPEC_ID"
 
-          # Count previous failed generation runs for this spec/library
-          # Filter by both library AND spec ID to avoid counting unrelated failures
-          FAILURE_COUNT=$(gh run list \
-            --workflow=impl-generate.yml \
-            --limit 20 \
-            --json conclusion,displayTitle,createdAt \
-            -q "[.[] | select(.conclusion == \"failure\") | select(.displayTitle | (contains(\"$LIBRARY\") and contains(\"$SPEC_ID\")))] | length" \
-            2>/dev/null || echo "0")
+          # Count previous failures via hidden marker comments (more reliable than workflow runs)
+          MARKER="<!-- impl-fail:${SPEC_ID}:${LIBRARY} -->"
+          FAILURE_COUNT=$(gh api "repos/${{ github.repository }}/issues/${ISSUE}/comments" \
+            --jq "[.[] | select(.body | contains(\"$MARKER\"))] | length" 2>/dev/null || echo "0")
 
-          echo "::notice::Previous failures: $FAILURE_COUNT"
+          echo "::notice::Previous failures for ${LIBRARY}/${SPEC_ID}: $FAILURE_COUNT"
 
-          # After 3 failures, mark as failed (current run is the 3rd)
-          if [ "$FAILURE_COUNT" -ge 2 ]; then
-            echo "::warning::Marking $LIBRARY as failed after multiple generation failures"
+          # After 1 previous failure (= this is attempt 2) → mark as failed
+          if [ "$FAILURE_COUNT" -ge 1 ]; then
+            echo "::warning::Marking $LIBRARY as failed after 2 generation attempts"
 
             # Create failed label if needed
             gh label create "impl:${LIBRARY}:failed" --color "d73a4a" \
               --description "${LIBRARY} implementation failed" 2>/dev/null || true
 
-            # Remove stale labels and add failed (Fix #2: clean up duplicates)
+            # Remove stale labels and add failed
             gh issue edit "$ISSUE" \
               --remove-label "generate:${LIBRARY},impl:${LIBRARY}:pending" \
               --add-label "impl:${LIBRARY}:failed" 2>/dev/null || true
 
-            # Post failure comment
-            gh issue comment "$ISSUE" --body "## :x: ${LIBRARY} Failed
+            # Post final failure comment with marker
+            gh issue comment "$ISSUE" --body "${MARKER}
+          ## :x: ${LIBRARY} Failed (Attempt 2/2)
 
-          The **${LIBRARY}** implementation for \`${SPEC_ID}\` failed after multiple attempts.
+          The **${LIBRARY}** implementation for \`${SPEC_ID}\` failed after 2 attempts.
 
-          This may indicate that the library cannot implement this plot type natively.
+          **Reason:** Claude Code failed to create the implementation file.
+
+          To retry manually:
+          \`\`\`
+          gh workflow run impl-generate.yml -f specification_id=${SPEC_ID} -f library=${LIBRARY} -f issue_number=${ISSUE}
+          \`\`\`
 
           ---
           :robot: *[impl-generate](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
 
           else
-            # Not enough failures yet - just clean up stale generate label
-            # Keep pending label for retry
+            # First failure → post comment with marker and auto-retry
+            gh issue comment "$ISSUE" --body "${MARKER}
+          ## :warning: ${LIBRARY} Generation Failed (Attempt 1/2)
+
+          First attempt failed. Automatically retrying...
+
+          ---
+          :robot: *[impl-generate](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*"
+
+            # Clean up generate label before retry
             gh issue edit "$ISSUE" --remove-label "generate:${LIBRARY}" 2>/dev/null || true
-            echo "::notice::Cleaned up generate label, keeping pending for retry"
+
+            # Automatic retry via workflow_dispatch
+            gh workflow run impl-generate.yml \
+              -f specification_id="${SPEC_ID}" \
+              -f library="${LIBRARY}" \
+              -f issue_number="${ISSUE}"
+
+            echo "::notice::Triggered automatic retry for ${LIBRARY}/${SPEC_ID}"
           fi

@@ -169,26 +169,71 @@ jobs:
             echo "::warning::$SPEC_YAML not found"
           fi
 
+      - name: Add pending label before dispatch
+        if: steps.spec.outputs.issue_number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ steps.spec.outputs.issue_number }}
+          LIBRARY: ${{ matrix.library }}
+        run: |
+          # Add pending label BEFORE dispatch so we can track what was attempted
+          gh issue edit "$ISSUE" --add-label "impl:${LIBRARY}:pending" 2>/dev/null || true
+
       - name: Trigger impl-generate for ${{ matrix.specification_id }} / ${{ matrix.library }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE: ${{ steps.spec.outputs.issue_number }}
+          SPEC_ID: ${{ matrix.specification_id }}
+          LIBRARY: ${{ matrix.library }}
         run: |
-          echo "Triggering impl-generate.yml for ${{ matrix.specification_id }} / ${{ matrix.library }}"
+          echo "Triggering impl-generate.yml for ${SPEC_ID} / ${LIBRARY}"
 
-          # Run workflow with optional issue_number (avoid eval for security)
-          if [ -n "$ISSUE" ]; then
-            gh workflow run impl-generate.yml --repo ${{ github.repository }} \
-              -f specification_id="${{ matrix.specification_id }}" \
-              -f library="${{ matrix.library }}" \
-              -f issue_number="$ISSUE"
-          else
-            gh workflow run impl-generate.yml --repo ${{ github.repository }} \
-              -f specification_id="${{ matrix.specification_id }}" \
-              -f library="${{ matrix.library }}"
+          # Retry dispatch up to 3 times with exponential backoff
+          MAX_RETRIES=3
+          RETRY_DELAY=5
+
+          for attempt in $(seq 1 $MAX_RETRIES); do
+            echo "Dispatch attempt $attempt/$MAX_RETRIES..."
+
+            # Run workflow with optional issue_number
+            if [ -n "$ISSUE" ]; then
+              gh workflow run impl-generate.yml --repo ${{ github.repository }} \
+                -f specification_id="${SPEC_ID}" \
+                -f library="${LIBRARY}" \
+                -f issue_number="$ISSUE" && DISPATCHED=true || DISPATCHED=false
+            else
+              gh workflow run impl-generate.yml --repo ${{ github.repository }} \
+                -f specification_id="${SPEC_ID}" \
+                -f library="${LIBRARY}" && DISPATCHED=true || DISPATCHED=false
+            fi
+
+            if [ "$DISPATCHED" = true ]; then
+              echo "::notice::Dispatched impl-generate for ${SPEC_ID} / ${LIBRARY} (issue: ${ISSUE:-none})"
+
+              # Wait and verify workflow appears in run list
+              sleep 5
+              FOUND=$(gh run list --workflow=impl-generate.yml --limit 10 --json displayTitle,createdAt \
+                --jq "[.[] | select(.displayTitle | test(\"${LIBRARY}\"))] | length")
+
+              if [ "$FOUND" -gt 0 ]; then
+                echo "::notice::Verified workflow run started"
+                break
+              else
+                echo "::warning::Workflow dispatched but not found in run list, retrying..."
+              fi
+            fi
+
+            if [ "$attempt" -lt "$MAX_RETRIES" ]; then
+              echo "Waiting ${RETRY_DELAY}s before retry..."
+              sleep $RETRY_DELAY
+              RETRY_DELAY=$((RETRY_DELAY * 2))
+            fi
+          done
+
+          if [ "$DISPATCHED" != true ]; then
+            echo "::error::Failed to dispatch workflow after $MAX_RETRIES attempts"
+            exit 1
           fi
-
-          echo "::notice::Dispatched impl-generate for ${{ matrix.specification_id }} / ${{ matrix.library }} (issue: ${ISSUE:-none})"
 
   # ============================================================================
   # Summary

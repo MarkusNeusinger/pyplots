@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 crossword-basic: Crossword Puzzle Grid
-Library: pygal | Python 3.13
-Quality: pending | Created: 2026-01-15
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 92/100 | Created: 2026-01-15
 """
 
 import cairosvg

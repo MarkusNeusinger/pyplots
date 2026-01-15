@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 sn-curve-basic: S-N Curve (Wöhler Curve)
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 77/100 | Created: 2026-01-15
@@ -95,8 +95,12 @@ chart = pygal.XY(
     range=(150, 550),
 )
 
-# Add fitted Basquin curve FIRST so it appears under data points
-# Use stroke_style to make it clearly visible with dashed line
+# Add series in logical order for legend: data → fit → references (high to low)
+
+# 1. Test data points (primary data - most important)
+chart.add("Test Data", xy_points, dots_size=20, stroke=False, show_dots=True)
+
+# 2. Fitted Basquin curve (derived from data)
 chart.add(
     "Basquin Fit (S-N Curve)",
     fit_points,
@@ -105,10 +109,8 @@ chart.add(
     stroke_style={"width": 8, "dasharray": "20, 10"},
 )
 
-# Add test data points (scatter) with larger markers on top
-chart.add("Test Data", xy_points, dots_size=20, stroke=False, show_dots=True)
-
-# Reference lines - Ultimate Strength (extend beyond data range)
+# 3. Reference lines in descending order of stress value
+# Ultimate Strength (highest)
 ultimate_line = [(100, ultimate_strength), (1e7, ultimate_strength)]
 chart.add(
     f"Ultimate Strength ({ultimate_strength} MPa)",
@@ -118,11 +120,11 @@ chart.add(
     stroke_style={"width": 4},
 )
 
-# Reference lines - Yield Strength
+# Yield Strength (middle)
 yield_line = [(100, yield_strength), (1e7, yield_strength)]
 chart.add(f"Yield Strength ({yield_strength} MPa)", yield_line, stroke=True, show_dots=False, stroke_style={"width": 4})
 
-# Reference lines - Endurance Limit
+# Endurance Limit (lowest)
 endurance_line = [(100, endurance_limit), (1e7, endurance_limit)]
 chart.add(
     f"Endurance Limit ({endurance_limit} MPa)", endurance_line, stroke=True, show_dots=False, stroke_style={"width": 4}

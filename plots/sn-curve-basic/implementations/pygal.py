@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 sn-curve-basic: S-N Curve (Wöhler Curve)
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 75/100 | Created: 2026-01-15
@@ -40,8 +40,8 @@ b = coeffs[0]  # slope (negative for S-N curve)
 log_A = coeffs[1]  # intercept
 A = 10**log_A
 
-# Generate fitted curve points
-fit_cycles = np.logspace(2, 7, 50)
+# Generate fitted curve points with more points for smooth line
+fit_cycles = np.logspace(2, 7, 100)
 fit_stress = A * (fit_cycles**b)
 
 # Material reference values (MPa)
@@ -52,7 +52,7 @@ endurance_limit = 190
 # Create XY data points for pygal
 xy_points = [(float(c), float(s)) for c, s in zip(cycles_data, stress_data, strict=True)]
 
-# Fitted curve points
+# Fitted curve points as list of tuples
 fit_points = [(float(c), float(s)) for c, s in zip(fit_cycles, fit_stress, strict=True)]
 
 # Custom style for 4800x2700 canvas with larger fonts
@@ -68,13 +68,12 @@ custom_style = Style(
     major_label_font_size=42,
     legend_font_size=42,
     value_font_size=36,
-    stroke_width=5,
+    stroke_width=6,
     opacity=0.9,
     opacity_hover=1.0,
 )
 
 # Create XY chart with logarithmic x-axis
-# Use string labels for scientific notation display
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -85,7 +84,7 @@ chart = pygal.XY(
     logarithmic=True,
     show_dots=True,
     dots_size=16,
-    stroke=False,
+    stroke=True,
     show_x_guides=True,
     show_y_guides=True,
     x_label_rotation=0,
@@ -94,27 +93,40 @@ chart = pygal.XY(
     margin=80,
     truncate_legend=-1,
     range=(150, 550),
-    x_labels=["10²", "10³", "10⁴", "10⁵", "10⁶", "10⁷"],
-    x_labels_major_count=6,
 )
 
-# Add test data points (scatter) with larger markers
-chart.add("Test Data", xy_points, dots_size=18, stroke=False)
+# Add fitted Basquin curve FIRST so it appears under data points
+# Use stroke_style to make it clearly visible with dashed line
+chart.add(
+    "Basquin Fit (S-N Curve)",
+    fit_points,
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": 8, "dasharray": "20, 10"},
+)
 
-# Add fitted Basquin curve (S-N relationship)
-chart.add("Basquin Fit (S-N Curve)", fit_points, stroke=True, show_dots=False)
+# Add test data points (scatter) with larger markers on top
+chart.add("Test Data", xy_points, dots_size=20, stroke=False, show_dots=True)
 
-# Reference lines - Ultimate Strength
-ultimate_line = [(50, ultimate_strength), (5e7, ultimate_strength)]
-chart.add(f"Ultimate Strength ({ultimate_strength} MPa)", ultimate_line, stroke=True, show_dots=False)
+# Reference lines - Ultimate Strength (extend beyond data range)
+ultimate_line = [(100, ultimate_strength), (1e7, ultimate_strength)]
+chart.add(
+    f"Ultimate Strength ({ultimate_strength} MPa)",
+    ultimate_line,
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": 4},
+)
 
 # Reference lines - Yield Strength
-yield_line = [(50, yield_strength), (5e7, yield_strength)]
-chart.add(f"Yield Strength ({yield_strength} MPa)", yield_line, stroke=True, show_dots=False)
+yield_line = [(100, yield_strength), (1e7, yield_strength)]
+chart.add(f"Yield Strength ({yield_strength} MPa)", yield_line, stroke=True, show_dots=False, stroke_style={"width": 4})
 
 # Reference lines - Endurance Limit
-endurance_line = [(50, endurance_limit), (5e7, endurance_limit)]
-chart.add(f"Endurance Limit ({endurance_limit} MPa)", endurance_line, stroke=True, show_dots=False)
+endurance_line = [(100, endurance_limit), (1e7, endurance_limit)]
+chart.add(
+    f"Endurance Limit ({endurance_limit} MPa)", endurance_line, stroke=True, show_dots=False, stroke_style={"width": 4}
+)
 
 # Save outputs
 chart.render_to_file("plot.html")

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 smith-chart-basic: Smith Chart for RF/Impedance
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-15
@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from matplotlib.lines import Line2D
 
 
 # Set seaborn style for better aesthetics
@@ -55,12 +54,12 @@ for r in r_values:
     circle_y = radius * np.sin(theta)
     # Clip to unit circle
     mask = circle_x**2 + circle_y**2 <= 1.001
-    ax.plot(circle_x[mask], circle_y[mask], color="#306998", alpha=0.4, linewidth=1)
+    ax.plot(circle_x[mask], circle_y[mask], color="#306998", linewidth=1)
     # Add r value labels on the real axis (inside unit circle)
     if r > 0:
         label_x = r / (r + 1) - 1 / (r + 1) + 0.02  # Left edge of circle
         if label_x > -0.95:
-            ax.text(label_x, 0.03, f"r={r}", fontsize=10, color="#306998", alpha=0.8, va="bottom")
+            ax.text(label_x, 0.03, f"r={r}", fontsize=10, color="#306998", va="bottom")
 
 # Constant reactance arcs
 x_values = [0.2, 0.5, 1, 2, 5]
@@ -73,20 +72,20 @@ for x in x_values:
     arc_x = 1 + radius * np.cos(arc_theta)
     arc_y = center_y + radius * np.sin(arc_theta)
     mask = (arc_x**2 + arc_y**2 <= 1.001) & (arc_x >= -0.001)
-    ax.plot(arc_x[mask], arc_y[mask], color="#D4A017", alpha=0.7, linewidth=1.5)
+    ax.plot(arc_x[mask], arc_y[mask], color="#D4A017", linewidth=1.5)
 
     # Negative reactance arc (capacitive)
     arc_y_neg = -center_y + radius * np.sin(arc_theta)
     mask_neg = (arc_x**2 + arc_y_neg**2 <= 1.001) & (arc_x >= -0.001)
-    ax.plot(arc_x[mask_neg], arc_y_neg[mask_neg], color="#D4A017", alpha=0.7, linewidth=1.5)
+    ax.plot(arc_x[mask_neg], arc_y_neg[mask_neg], color="#D4A017", linewidth=1.5)
 
-    # Add x value labels near the right edge of the unit circle
+    # Add x value labels inside the unit circle boundary
     if x <= 2:
         label_angle = np.arctan(1 / x)
-        label_x_pos = 0.98 * np.cos(label_angle)
-        label_y_pos = 0.98 * np.sin(label_angle)
-        ax.text(label_x_pos + 0.05, label_y_pos, f"x={x}", fontsize=10, color="#D4A017", alpha=0.9, va="center")
-        ax.text(label_x_pos + 0.05, -label_y_pos, f"x=-{x}", fontsize=10, color="#D4A017", alpha=0.9, va="center")
+        label_x_pos = 0.85 * np.cos(label_angle)
+        label_y_pos = 0.85 * np.sin(label_angle)
+        ax.text(label_x_pos, label_y_pos + 0.03, f"x={x}", fontsize=10, color="#D4A017", va="bottom", ha="center")
+        ax.text(label_x_pos, -label_y_pos - 0.03, f"x=-{x}", fontsize=10, color="#D4A017", va="top", ha="center")
 
 # Draw unit circle (|Gamma| = 1 boundary)
 unit_theta = np.linspace(0, 2 * np.pi, 200)
@@ -95,7 +94,7 @@ ax.plot(np.cos(unit_theta), np.sin(unit_theta), color="#306998", linewidth=2.5)
 # Draw horizontal axis (real axis)
 ax.axhline(0, color="#306998", linewidth=1.5, alpha=0.6)
 
-# Create DataFrame for seaborn plotting (better library utilization)
+# Create DataFrame for seaborn plotting
 df_locus = pd.DataFrame({"gamma_real": gamma_real, "gamma_imag": gamma_imag, "freq_ghz": freq_ghz})
 
 # Plot impedance locus using seaborn lineplot for the trajectory
@@ -120,13 +119,12 @@ sns.scatterplot(
 )
 
 # Label key frequency points with smart positioning to avoid overlap
-# Compute offsets based on position to prevent label collisions
 label_offsets = {
-    0: (12, -18),  # 1.0 GHz - offset right and down
-    n_points // 4: (15, 12),  # 2.2 GHz - offset right and up
-    n_points // 2: (12, -18),  # 3.6 GHz - offset right and down
-    3 * n_points // 4: (-60, 10),  # 4.8 GHz - offset left
-    n_points - 1: (-60, -15),  # 6.0 GHz - offset left
+    0: (12, -18),
+    n_points // 4: (15, 12),
+    n_points // 2: (12, -18),
+    3 * n_points // 4: (-60, 10),
+    n_points - 1: (-60, -15),
 }
 
 for idx in key_indices:
@@ -151,7 +149,7 @@ ax.annotate(
 vswr_radius = 0.5
 vswr_circle_x = vswr_radius * np.cos(unit_theta)
 vswr_circle_y = vswr_radius * np.sin(unit_theta)
-ax.plot(vswr_circle_x, vswr_circle_y, "--", color="#9B59B6", linewidth=2, alpha=0.8)
+ax.plot(vswr_circle_x, vswr_circle_y, "--", color="#9B59B6", linewidth=2)
 ax.annotate("VSWR 3:1", (0.35, 0.35), fontsize=12, color="#9B59B6", fontweight="bold")
 
 # Styling
@@ -164,14 +162,12 @@ ax.set_title("smith-chart-basic · seaborn · pyplots.ai", fontsize=24, fontweig
 ax.tick_params(axis="both", labelsize=16)
 ax.grid(False)  # Turn off default grid, we drew our own Smith grid
 
-# Add legend for the grid lines
-legend_elements = [
-    Line2D([0], [0], color="#306998", linewidth=2, alpha=0.6, label="Constant R circles"),
-    Line2D([0], [0], color="#D4A017", linewidth=2, alpha=0.8, label="Constant X arcs"),
-    Line2D([0], [0], color="#E74C3C", linewidth=3, label="Impedance locus"),
-    Line2D([0], [0], color="#9B59B6", linewidth=2, linestyle="--", label="VSWR 3:1 circle"),
-]
-ax.legend(handles=legend_elements, loc="upper left", fontsize=14, framealpha=0.9)
+# Add legend with matching line styles
+ax.plot([], [], color="#306998", linewidth=1, label="Constant R circles")
+ax.plot([], [], color="#D4A017", linewidth=1.5, label="Constant X arcs")
+ax.plot([], [], color="#E74C3C", linewidth=3, label="Impedance locus")
+ax.plot([], [], color="#9B59B6", linewidth=2, linestyle="--", label="VSWR 3:1 circle")
+ax.legend(loc="upper left", fontsize=14, framealpha=0.9)
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

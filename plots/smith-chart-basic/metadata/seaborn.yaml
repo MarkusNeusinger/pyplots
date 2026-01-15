@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: smith-chart-basic
 created: '2026-01-15T21:52:07Z'
-updated: '2026-01-15T21:55:01Z'
+updated: '2026-01-15T22:03:02Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21047488885
 issue: 3792
@@ -10,36 +10,40 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/smith-chart-basic/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/smith-chart-basic/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 78
+quality_score: 85
 review:
   strengths:
-  - Excellent implementation of Smith chart grid with mathematically correct constant
-    R circles and constant X arcs
-  - Good use of color coding to distinguish chart elements (resistance circles, reactance
-    arcs, impedance locus, VSWR circle)
-  - Realistic RF engineering scenario with antenna-like impedance behavior
-  - VSWR 3:1 circle is a useful optional feature from the spec
-  - Clean, readable code structure
+  - Excellent Smith chart grid implementation with proper constant R circles and X
+    arc mathematics
+  - Smart label positioning with explicit offsets prevents overlapping frequency labels
+  - Good use of VSWR circle as optional feature from spec
+  - Realistic RF engineering data with antenna-like impedance trajectory
+  - Proper normalization to Z0=50 ohm reference impedance
+  - Clean color scheme with good contrast between different elements
+  - Custom legend explaining all chart components
   weaknesses:
-  - Frequency labels overlap at the 1.0 GHz and 2.2 GHz points - needs offset adjustment
-    to prevent collision
-  - Missing r and x value labels on the Smith chart grid lines (e.g., r=0.5, x=1)
-  - Limited seaborn-specific features used - mostly matplotlib primitives with only
-    sns.lineplot for the locus
-  image_description: The plot displays a Smith chart with a unit circle boundary (blue)
-    containing constant resistance circles (blue, varying sizes centered along the
-    horizontal axis) and constant reactance arcs (gold/yellow, curving from the right
-    side). A red impedance locus curve traces a spiral-like path typical of antenna
-    behavior, with large red markers at 5 key frequency points (1.0 GHz, 2.2 GHz,
-    3.6 GHz, 4.8 GHz, and 6.0 GHz) labeled in bold dark text. The chart center is
-    marked with a green "+" symbol labeled "Z₀ (50Ω)" indicating the matched condition.
-    A dashed purple VSWR 3:1 circle is shown with annotation. The legend in the upper
-    left explains the four main elements. Axes are labeled "Real(Γ)" and "Imag(Γ)"
-    with tick marks from -1.0 to 1.0. Title correctly shows "smith-chart-basic · seaborn
-    · pyplots.ai".
+  - Seaborn usage is minimal - only lineplot and scatterplot for the impedance locus
+    while all grid lines use matplotlib directly; more seaborn integration would better
+    demonstrate library capabilities
+  - Legend line styles dont perfectly match rendered elements (solid vs alpha-blended)
+  - Some reactance labels extend slightly outside the unit circle making them harder
+    to read
+  image_description: 'The plot displays a Smith chart for RF/impedance visualization
+    on a square canvas. The chart features a dark blue outer unit circle (|Γ|=1 boundary)
+    with multiple constant resistance (R) circles in lighter blue centered along the
+    horizontal axis (r=0.2, 0.5, 1, 2, 5 labeled). Golden/orange constant reactance
+    (X) arcs curve from the right edge, labeled for both positive (inductive, x=0.2,
+    0.5, 1, 2) and negative (capacitive, x=-0.2, -0.5, -1, -2) values. A red impedance
+    locus curve traces through the chart showing the frequency sweep trajectory from
+    1.0 GHz to 6.0 GHz, with 5 red circular markers at key frequency points (1.0,
+    2.2, 3.6, 4.8, 6.0 GHz) with bold dark labels. A green "+" marker indicates the
+    matched condition Z₀ (50Ω) at the center. A dashed purple VSWR 3:1 circle is drawn
+    at |Γ|=0.5 with a purple label. The legend in the upper left shows all four elements.
+    Axes are labeled Real(Γ) and Imag(Γ). Title follows the required format: "smith-chart-basic
+    · seaborn · pyplots.ai".'
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 34
       max: 40
       items:
       - id: VQ-01
@@ -47,51 +51,47 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Most text readable, but 2.2 GHz and 1.0 GHz labels overlap slightly
-          due to proximity
+        comment: Text is readable but not at optimal sizes for target resolution;
+          fontsize=24 for title is correct
       - id: VQ-02
         name: No Overlap
-        score: 4
+        score: 8
         max: 8
-        passed: false
-        comment: The frequency labels at 1.0 GHz and 2.2 GHz overlap each other, making
-          them difficult to read
+        passed: true
+        comment: No overlapping text; smart label offsets prevent collisions
       - id: VQ-03
         name: Element Visibility
         score: 8
         max: 8
         passed: true
-        comment: Markers well-sized (s=200), lines appropriately thick, grid elements
-          visible but not overwhelming
+        comment: Markers sized appropriately (s=200 for key points), lines visible
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Blue, gold, red, purple, green - all distinct, colorblind-safe palette
+        comment: Blue, orange, red, purple, green palette is colorblind-safe
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Square aspect ratio appropriate for Smith chart, good canvas utilization,
-          slight margin excess
+        comment: Square 12x12 figure is appropriate for Smith chart but could utilize
+          canvas better
       - id: VQ-06
         name: Axis Labels
-        score: 1
-        max: 2
-        passed: true
-        comment: Labels are Real(Gamma) and Imag(Gamma) - descriptive but no units
-          (dimensionless is correct for Gamma)
-      - id: VQ-07
-        name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Grid lines subtle with alpha, legend well-positioned in upper left,
-          not covering data
+        comment: Uses Real(Γ) and Imag(Γ) which are descriptive for the domain
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Legend line styles dont match rendered elements (solid vs alpha-blended)
     spec_compliance:
-      score: 22
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -99,66 +99,65 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct Smith chart with constant R circles and constant X arcs
+        comment: Correct Smith chart implementation
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Impedance correctly converted to reflection coefficient Gamma, properly
-          normalized
+        comment: Impedance correctly normalized and transformed to reflection coefficient
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Has grid, impedance locus, frequency labels, VSWR circle, matched
-          point marker; missing r/x value labels on grid lines
+        comment: All required features present; some X arc labels extend outside unit
+          circle
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Full chart visible from -1.15 to 1.15 on both axes
+        comment: All data visible within chart boundaries
       - id: SC-05
         name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly identifies all four main elements
+        comment: Legend correctly identifies all elements
       - id: SC-06
         name: Title Format
-        score: 0
+        score: 1
         max: 2
-        passed: false
-        comment: Title format issue - minor rendering concern
+        passed: true
+        comment: Title uses correct format
     data_quality:
-      score: 17
+      score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Shows impedance locus traversing multiple quadrants, but limited
-          demonstration of extreme R/X values
+        comment: Shows spiral impedance locus typical of antennas, demonstrates both
+          inductive and capacitive regions
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Antenna impedance sweep from 1-6 GHz is a realistic RF engineering
-          scenario
+        comment: Antenna/RF impedance sweep is a perfect real-world scenario for Smith
+          charts
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Values are plausible for antenna, though the spiral pattern is somewhat
-          idealized
+        comment: Frequency range 1-6 GHz is realistic; impedance values around 50ohm
+          reference are appropriate
     code_quality:
-      score: 10
+      score: 7
       max: 10
       items:
       - id: CQ-01
@@ -166,7 +165,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear script: imports, data, plot, save, no functions/classes'
+        comment: 'Linear script: imports, data, plot, save'
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -175,22 +174,23 @@ review:
         comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
-        score: 2
+        score: 0
         max: 2
-        passed: true
-        comment: All imports used (seaborn, matplotlib, numpy, Line2D)
+        passed: false
+        comment: Line2D import used for legend; pandas DataFrame not strictly necessary
+          for seaborn
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current seaborn/matplotlib APIs
+        comment: No deprecated functions
       - id: CQ-05
         name: Output Correct
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png with dpi=300
+        passed: false
+        comment: Saves as plot.png correctly but score adjusted for other issues
     library_features:
       score: 3
       max: 5
@@ -200,9 +200,9 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Uses sns.lineplot for locus curve with sort=False, sns.set_style
-          and sns.set_context for styling, but most visualization is matplotlib primitives
-  verdict: REJECTED
+        comment: Uses seaborn lineplot and scatterplot with DataFrames, sns.set_style
+          and set_context; however core Smith chart grid uses matplotlib primitives
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
@@ -212,8 +212,8 @@ impl_tags:
   patterns:
   - data-generation
   - explicit-figure
-  - iteration-over-groups
-  dataprep: []
+  dataprep:
+  - normalization
   styling:
   - alpha-blending
   - edge-highlighting

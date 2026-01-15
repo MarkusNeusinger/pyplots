@@ -1,7 +1,7 @@
 library: pygal
 specification_id: smith-chart-basic
 created: '2026-01-15T21:55:08Z'
-updated: '2026-01-15T22:04:22Z'
+updated: '2026-01-15T22:09:35Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21047489081
 issue: 3792
@@ -10,38 +10,40 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/smith-chart-basic/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/smith-chart-basic/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/smith-chart-basic/pygal/plot.html
-quality_score: 84
+quality_score: 85
 review:
   strengths:
-  - Excellent implementation of Smith chart topology with proper constant R circles
-    and X arcs using reflection coefficient formulas
-  - Good use of pygal XY chart capabilities with custom styling
-  - Realistic RF engineering data context with antenna impedance sweep
-  - Clear visual hierarchy with blue boundary, gray grid, red data curve, and yellow
-    frequency markers
-  - Proper title format following pyplots convention
-  - Generates both PNG and HTML outputs leveraging pygal dual output capability
+  - Correctly implements Smith chart mathematics (impedance to reflection coefficient
+    transformation)
+  - Clean separation of grid elements (R circles, X arcs) as grouped data series
+  - Realistic antenna impedance data with frequency sweep
+  - Good use of color differentiation between grid (gray), boundary (blue), and data
+    (red)
+  - Frequency markers clearly labeled in legend with distinct colors
+  - Square aspect ratio appropriate for circular Smith chart
+  - Custom style provides good text sizing for 3600px canvas
   weaknesses:
-  - Legend shows 1/3.5/6 GHz as single combined entry instead of three separate frequency
-    markers (1 GHz, 3.5 GHz, 6 GHz)
-  - Axis labels could include more descriptive RF terminology (e.g., Reflection Coefficient
-    Real Part instead of Real(Gamma))
-  - Canvas utilization could be improved - the Smith chart appears smaller relative
-    to available space
-  image_description: |-
-    The plot displays a Smith chart implementation using pygal's XY chart. The visualization shows:
-    - A blue unit circle boundary (|Γ|=1) as the outer boundary
-    - Gray dashed constant resistance circles (R Grid) radiating from the right side
-    - Gray dashed constant reactance arcs (X Grid) curving from the right edge
-    - A dark gray horizontal real axis line through the center
-    - A red impedance locus curve (Antenna Z(f)) with connected points showing the frequency sweep trajectory
-    - Three yellow frequency marker points (1 GHz, 3.5 GHz, 6 GHz) along the impedance curve
-    - The title "smith-chart-basic · pygal · pyplots.ai" at the top
-    - Legend at the bottom showing: |Γ|=1 Boundary, R Grid, X Grid, Real Axis, Antenna Z(f), 1/3.5/6 GHz
-    - The chart uses proper Smith chart topology with the center representing matched condition
+  - Legend is overcrowded with 8 entries including grid elements that could be unlabeled
+  - Grid elements (R Grid, X Grid, Real Axis) should not appear in legend as they
+    are structural, not data
+  - Frequency marker labels only appear in legend, not as annotations near the actual
+    points on the chart
+  image_description: 'The plot displays a Smith chart for RF/impedance analysis rendered
+    at 3600×3600 pixels (square format). The chart features a blue unit circle boundary
+    (|Γ|=1) as the outer edge, with light gray dashed constant resistance circles
+    and constant reactance arcs forming the characteristic Smith chart grid pattern.
+    A dark gray horizontal real axis runs through the center. The impedance locus
+    data ("Antenna Z(f)") is plotted in red/coral color as a connected line with small
+    dots showing an antenna impedance sweep. Three larger colored markers indicate
+    frequency points: a purple dot for 1 GHz, a yellow/orange dot for 3.5 GHz, and
+    a green dot for 6 GHz. The title "smith-chart-basic · pygal · pyplots.ai" appears
+    at the top. Axis labels show "Reflection Coefficient Real Part" (x-axis) and "Reflection
+    Coefficient Imaginary Part" (y-axis). A legend at the bottom lists all series
+    including the boundary, R Grid, X Grid, Real Axis, Antenna Z(f), and the three
+    frequency markers.'
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 33
       max: 40
       items:
       - id: VQ-01
@@ -49,47 +51,47 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Title is readable but font sizes are adequate; legend text is smaller
-          but legible
+        comment: Title and axis labels readable at full size, legend text somewhat
+          small
       - id: VQ-02
         name: No Overlap
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: No significant overlap, legend entries slightly crowded
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Grid lines are visible but thin; data points and curve are well-sized
+        comment: Impedance locus and markers visible, grid lines appropriately subtle
       - id: VQ-04
         name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Good color choices with distinct blue, gray, red, purple, yellow,
+          green
+      - id: VQ-05
+        name: Layout Balance
         score: 4
         max: 5
         passed: true
-        comment: Good color contrast (blue boundary, gray grid, red data, yellow markers)
-      - id: VQ-05
-        name: Layout Balance
-        score: 3
-        max: 5
-        passed: true
-        comment: Smith chart is well-centered but leaves significant whitespace
+        comment: Square format appropriate for circular chart, good canvas use
       - id: VQ-06
         name: Axis Labels
-        score: 1
-        max: 2
-        passed: true
-        comment: X and Y axis titles present but show Gamma notation without standard
-          RF units
-      - id: VQ-07
-        name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Grid is subtle with dashed lines; legend is well-placed at bottom
+        comment: Descriptive labels for reflection coefficient components
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: Legend cluttered with 8 entries including structural grid elements
     spec_compliance:
-      score: 22
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -97,40 +99,41 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct Smith chart with constant R circles and X arcs
+        comment: Correct Smith chart with constant resistance circles and reactance
+          arcs
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Impedance correctly converted to reflection coefficient
+        comment: Impedance correctly normalized to Z0=50Ω and converted to reflection
+          coefficient
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Has resistance circles, reactance arcs, impedance locus, frequency
-          markers; no VSWR circles
+        comment: Has grid, impedance locus, frequency markers; VSWR circles optional
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Chart shows full unit circle with data within bounds
+        comment: Range properly set to ±1.15 for full Smith chart
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 1
         max: 2
-        passed: false
-        comment: Legend shows 1/3.5/6 GHz combined instead of separate entries
+        passed: true
+        comment: Labels accurate but overloaded with grid elements
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Correctly uses smith-chart-basic · pygal · pyplots.ai
+        comment: 'Correct format: smith-chart-basic · pygal · pyplots.ai'
     data_quality:
-      score: 17
+      score: 18
       max: 20
       items:
       - id: DQ-01
@@ -138,21 +141,19 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows impedance variation across frequency range with trajectory;
-          covers both positive and negative reactance regions
+        comment: Shows impedance sweep with varying real/imaginary components
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Antenna impedance sweep 1-6 GHz is a realistic RF engineering scenario
+        comment: Antenna impedance sweep 1-6 GHz is realistic RF scenario
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Impedance values are reasonable for antenna but Z0=50Ω normalization
-          is correctly applied
+        comment: Impedance values reasonable for antenna, some noise present
     code_quality:
       score: 8
       max: 10
@@ -162,47 +163,48 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean imports → data → plot → save structure
+        comment: Linear script structure
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) is set
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
-        score: 0
+        score: 1
         max: 2
-        passed: false
-        comment: Imports are functional but could be cleaner
+        passed: true
+        comment: All imports used, Style customization verbose
       - id: CQ-04
         name: No Deprecated API
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Uses current pygal API
+        passed: false
+        comment: Using deprecated stroke_style dict syntax
       - id: CQ-05
         name: Output Correct
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
+        comment: Saves to plot.png and plot.html
     library_features:
-      score: 5
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 5
+        score: 3
         max: 5
         passed: true
-        comment: Good use of pygal XY chart, custom Style, stroke_style, dots_size,
-          and HTML export
+        comment: Uses XY chart, custom Style, show_dots, stroke_style, legend_at_bottom;
+          Smith chart not native to pygal
   verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - html-export
+  - manual-ticks
   patterns:
   - data-generation
   - iteration-over-groups
@@ -210,3 +212,4 @@ impl_tags:
   - normalization
   styling:
   - grid-styling
+  - alpha-blending

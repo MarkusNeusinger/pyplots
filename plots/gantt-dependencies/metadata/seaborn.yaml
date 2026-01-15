@@ -1,0 +1,216 @@
+library: seaborn
+specification_id: gantt-dependencies
+created: '2026-01-15T21:03:35Z'
+updated: '2026-01-15T21:06:24Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 21046151686
+issue: 3830
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent hierarchical organization with group headers and indented task names
+  - Dependency arrows are well-styled with curved paths and appropriate opacity
+  - Color scheme is distinctive and colorblind-accessible
+  - Aggregate phase bars provide good visual summary
+  - Clean title format and professional appearance
+  weaknesses:
+  - The implementation relies heavily on matplotlib for actual plotting logic; seaborn
+    is mainly used for styling and the lineplot hack for bars
+  - Some dependency arrows pass through task bars rather than routing around them
+  image_description: 'The plot displays a Gantt chart with task dependencies for a
+    software development project. The chart shows 15 tasks organized into 4 phases:
+    Requirements (dark blue), Design (yellow/gold), Development (light blue), and
+    Testing (olive green). Each phase has a semi-transparent aggregate bar showing
+    the overall phase duration, with individual tasks displayed as thicker bars below
+    their respective phase headers. The y-axis lists tasks with bullet markers (▪)
+    for group headers and indented task names. The x-axis shows dates from Jan 01
+    to May 20, with tick marks every 2 weeks. Curved gray dependency arrows connect
+    related tasks showing finish-to-start relationships. A legend in the upper right
+    explains the color coding for project phases and the dependency arrow style. The
+    title follows the correct format: "gantt-dependencies · seaborn · pyplots.ai".'
+  criteria_checklist:
+    visual_quality:
+      score: 37
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title 24pt bold, axis labels 20pt, tick labels properly sized and
+          readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: Task labels and bars are well separated, no overlapping text
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Task bars are clearly visible with good thickness, alpha for overlapping
+          elements works well; slight deduction for some bars being quite short
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Four distinct colors (blue, yellow, light blue, green) are colorblind-friendly
+          with good contrast
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of canvas, minor issue with rotated x-axis labels taking
+          extra space
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Descriptive labels: Tasks and Timeline'
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Grid is subtle (vertical only, alpha 0.3), legend is well placed
+          but includes some redundancy
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct Gantt chart with dependencies
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Tasks on Y-axis, timeline on X-axis, correct mapping
+      - id: SC-03
+        name: Required Features
+        score: 4
+        max: 5
+        passed: true
+        comment: Has dependency arrows, group headers with aggregate bars, hierarchical
+          organization; arrows could avoid task bars better
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: All data visible within axes
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: Legend correctly identifies all phases and dependency arrows
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct: gantt-dependencies · seaborn · pyplots.ai'
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows various dependency patterns including sequential and parallel
+          tasks; some tasks have multiple dependencies
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Software development project is a classic, neutral, and realistic
+          Gantt chart scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Dates and durations are realistic for a software project; some task
+          durations could be more varied
+    code_quality:
+      score: 9
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 2
+        max: 3
+        passed: true
+        comment: Follows imports to data to plot to save, but has some complexity
+          in data preparation loops
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses deterministic data (no random elements)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Uses current seaborn API
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png with dpi=300
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses sns.lineplot with units parameter creatively for Gantt bars,
+          sns.set_theme for styling, and sns.despine; however, Gantt charts are not
+          a native seaborn feature so this is more of a matplotlib-heavy implementation
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - custom-legend
+  - patches
+  - manual-ticks
+  patterns:
+  - iteration-over-groups
+  - explicit-figure
+  dataprep:
+  - time-series
+  styling:
+  - alpha-blending
+  - grid-styling

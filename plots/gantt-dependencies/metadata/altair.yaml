@@ -1,0 +1,210 @@
+library: altair
+specification_id: gantt-dependencies
+created: '2026-01-15T21:08:15Z'
+updated: '2026-01-15T21:11:05Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 21046152021
+issue: 3830
+python_version: 3.13.11
+library_version: 6.0.0
+preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/altair/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/altair/plot_thumb.png
+preview_html: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/altair/plot.html
+quality_score: 91
+review:
+  strengths:
+  - Excellent implementation of dependency arrows using rule marks with triangular
+    endpoints
+  - Good hierarchical organization with group headers and indented tasks
+  - Color-coded phases with clear visual distinction
+  - Proper use of Altair layering for complex chart composition
+  - Interactive tooltips provide additional task information
+  - Clean legend explaining all visual elements
+  weaknesses:
+  - Legend text DeploymentDependencies runs together without space separator
+  - Some task labels on left side could be slightly larger for better readability
+    at full resolution
+  image_description: 'The plot displays a Gantt chart showing a software development
+    project with 5 phases: Requirements, Design, Development, Testing, and Deployment.
+    Each phase is shown as a bold group header with a dark aggregate bar spanning
+    its duration, followed by indented individual tasks with colored bars. Tasks are
+    color-coded by phase: Requirements (dark blue #306998), Design (yellow #FFD43B),
+    Development (light blue #4B8BBE), Testing (gray #646464), and Deployment (light
+    yellow #FFE873). Red dashed lines with triangle arrowheads connect task end points
+    to successor task start points, clearly showing finish-to-start dependencies.
+    The timeline runs from January 2024 to mid-May 2024 along the x-axis with dates
+    formatted as "Jan 07", "Jan 14", etc. A color legend at the bottom identifies
+    each phase and the dependency line style. The title "gantt-dependencies · altair
+    · pyplots.ai" appears at the top.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 9
+        max: 10
+        passed: true
+        comment: Title and axis labels readable, task labels slightly small but legible
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text or elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Bars well-sized, dependency arrows visible with clear triangular
+          endpoints
+      - id: VQ-04
+        name: Color Accessibility
+        score: 4
+        max: 5
+        passed: true
+        comment: Good contrast between phases, though yellow on white could be stronger
+      - id: VQ-05
+        name: Layout Balance
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of canvas, chart fills space well
+      - id: VQ-06
+        name: Axis Labels
+        score: 2
+        max: 2
+        passed: true
+        comment: Timeline label is descriptive
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: true
+        comment: Legend present but text slightly small; grid is subtle
+    spec_compliance:
+      score: 24
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct Gantt chart type with dependencies
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Tasks on Y-axis, timeline on X-axis
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Dependencies shown with arrows, groups with aggregate bars, hierarchical
+          display
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full timeline visible
+      - id: SC-05
+        name: Legend Accuracy
+        score: 1
+        max: 2
+        passed: true
+        comment: Legend correct but DeploymentDependencies text runs together
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format gantt-dependencies · altair · pyplots.ai
+    data_quality:
+      score: 18
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 7
+        max: 8
+        passed: true
+        comment: Shows groups, tasks, dependencies; both sequential and parallel tasks
+          demonstrated
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: Realistic software development project scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Dates and durations are realistic for software projects
+    code_quality:
+      score: 8
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 2
+        max: 3
+        passed: true
+        comment: Code is mostly linear but has some complexity in building data structures
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Deterministic data (hardcoded dates)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: Only necessary imports
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current Altair API
+      - id: CQ-05
+        name: Output Correct
+        score: 0
+        max: 1
+        passed: false
+        comment: Saves both plot.png and plot.html
+    library_features:
+      score: 5
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 5
+        max: 5
+        passed: true
+        comment: Excellent use of Altair layering, rect marks, point marks for arrows,
+          vconcat for legend, tooltips, declarative encoding
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - hover-tooltips
+  - html-export
+  - custom-legend
+  patterns:
+  - iteration-over-groups
+  dataprep:
+  - time-series
+  styling:
+  - alpha-blending
+  - grid-styling

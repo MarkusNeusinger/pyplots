@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 point-and-figure-basic: Point and Figure Chart
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 68/100 | Created: 2026-01-15
@@ -78,9 +78,9 @@ if current_direction:
 x_color = "#0066CC"  # Blue
 o_color = "#E56B00"  # Orange
 support_color = "#228B22"  # Forest green for support line
-resistance_color = "#DC143C"  # Crimson for resistance line
+resistance_color = "#8B0000"  # Dark red for resistance line
 
-# Custom style for large canvas with X and O text display
+# Custom style for large canvas
 custom_style = Style(
     background="white",
     plot_background="white",
@@ -92,10 +92,9 @@ custom_style = Style(
     label_font_size=48,
     major_label_font_size=42,
     legend_font_size=48,
-    value_font_size=72,  # Large font for X and O symbols
-    value_colors=(x_color, o_color),  # Match X/O text colors to series
+    value_font_size=48,
     tooltip_font_size=36,
-    stroke_width=6,  # Thicker lines for trend lines
+    stroke_width=8,
 )
 
 # Collect all price levels to set y_labels at box size intervals
@@ -108,6 +107,7 @@ y_max = max(all_prices) + box_size
 y_labels = list(np.arange(y_min, y_max + box_size, box_size))
 
 # Create XY chart for Point and Figure visualization
+# Using large dots with distinct visual patterns for X and O
 chart = pygal.XY(
     width=4800,
     height=2700,
@@ -124,11 +124,10 @@ chart = pygal.XY(
     margin_bottom=200,
     margin_left=200,
     margin_top=150,
-    stroke=False,
-    dots_size=2,  # Small dots - text symbols are the main visual
-    print_values=True,  # Display X and O as text at data points
-    y_labels=y_labels,  # Grid at box size intervals
+    y_labels=y_labels,
     range=(y_min, y_max),
+    dots_size=25,  # Large visible markers
+    stroke=False,
 )
 
 # Plot X columns (rising) and O columns (falling) as vertical sequences of points
@@ -139,51 +138,56 @@ for col_idx, (start, end, direction) in enumerate(columns):
     low = min(start, end)
     high = max(start, end)
     if direction == "X":
-        # Rising column - plot X's from bottom to top
+        # Rising column - X markers
         for price_level in np.arange(low, high + box_size, box_size):
-            x_points.append((col_idx, price_level))
+            x_points.append({"value": (col_idx, price_level), "label": "X"})
     else:
-        # Falling column - plot O's from top to bottom
+        # Falling column - O markers
         for price_level in np.arange(low, high + box_size, box_size):
-            o_points.append((col_idx, price_level))
+            o_points.append({"value": (col_idx, price_level), "label": "O"})
 
-# Add series with formatters to display X and O symbols instead of values
-chart.add("X (Rising)", x_points, stroke=False, formatter=lambda x: "X")
-chart.add("O (Falling)", o_points, stroke=False, formatter=lambda x: "O")
+# Add series - X as filled circles (blue), O as filled circles (orange)
+# Legend will show "X (Rising)" and "O (Falling)" with distinctive colors
+chart.add("X (Rising)", x_points, stroke=False)
+chart.add("O (Falling)", o_points, stroke=False)
 
 # Calculate support and resistance trend lines
 # Find lows of O columns for support line (45-degree uptrend)
 # Find highs of X columns for resistance line (45-degree downtrend)
-support_points = []
-resistance_points = []
+support_lows = []
+resistance_highs = []
 
 for col_idx, (start, end, direction) in enumerate(columns):
     low = min(start, end)
     high = max(start, end)
     if direction == "O":
-        support_points.append((col_idx, low))
+        support_lows.append((col_idx, low))
     else:
-        resistance_points.append((col_idx, high))
+        resistance_highs.append((col_idx, high))
 
-# Draw support line connecting ascending lows (if we have enough points)
-if len(support_points) >= 2:
-    # Find the lowest point and draw 45-degree line from it
-    support_start = min(support_points, key=lambda p: p[1])
-    support_line = [
-        (support_start[0], support_start[1]),
-        (support_start[0] + 4, support_start[1] + 4 * box_size),  # 45-degree up
+# Draw support line from ascending low (45-degree uptrend)
+if len(support_lows) >= 2:
+    # Start from the first O column low
+    support_start = support_lows[0]
+    # Extend 45-degree line (1 box up per column)
+    support_end_col = min(support_start[0] + 6, len(columns) - 1)
+    support_line_points = [
+        {"value": (support_start[0], support_start[1])},
+        {"value": (support_end_col, support_start[1] + (support_end_col - support_start[0]) * box_size)},
     ]
-    chart.add("Support (45°)", support_line, stroke=True, show_dots=False, formatter=lambda x: "")
+    chart.add("Support (45° up)", support_line_points, stroke=True, show_dots=False, dots_size=0)
 
-# Draw resistance line connecting descending highs (if we have enough points)
-if len(resistance_points) >= 2:
-    # Find the highest point and draw 45-degree down line from it
-    resistance_start = max(resistance_points, key=lambda p: p[1])
-    resistance_line = [
-        (resistance_start[0], resistance_start[1]),
-        (resistance_start[0] + 4, resistance_start[1] - 4 * box_size),  # 45-degree down
+# Draw resistance line from descending high (45-degree downtrend)
+if len(resistance_highs) >= 2:
+    # Start from the first X column high
+    resistance_start = resistance_highs[0]
+    # Extend 45-degree line down (1 box down per column)
+    resistance_end_col = min(resistance_start[0] + 6, len(columns) - 1)
+    resistance_line_points = [
+        {"value": (resistance_start[0], resistance_start[1])},
+        {"value": (resistance_end_col, resistance_start[1] - (resistance_end_col - resistance_start[0]) * box_size)},
     ]
-    chart.add("Resistance (45°)", resistance_line, stroke=True, show_dots=False, formatter=lambda x: "")
+    chart.add("Resistance (45° down)", resistance_line_points, stroke=True, show_dots=False, dots_size=0)
 
 # Save as PNG and HTML
 chart.render_to_png("plot.png")

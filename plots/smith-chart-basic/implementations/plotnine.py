@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 smith-chart-basic: Smith Chart for RF/Impedance
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2026-01-15
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 90/100 | Created: 2026-01-15
 """
 
 import numpy as np

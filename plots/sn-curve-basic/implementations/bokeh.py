@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 sn-curve-basic: S-N Curve (Wöhler Curve)
-Library: bokeh | Python 3.13
-Quality: pending | Created: 2026-01-15
+Library: bokeh 3.8.2 | Python 3.13.11
+Quality: 93/100 | Created: 2026-01-15
 """
 
 import numpy as np

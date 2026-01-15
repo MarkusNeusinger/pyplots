@@ -1,7 +1,7 @@
 library: letsplot
 specification_id: smith-chart-basic
 created: '2026-01-15T21:53:11Z'
-updated: '2026-01-15T21:55:48Z'
+updated: '2026-01-15T22:04:14Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21047489117
 issue: 3792
@@ -10,92 +10,94 @@ library_version: 4.8.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/smith-chart-basic/letsplot/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/smith-chart-basic/letsplot/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/smith-chart-basic/letsplot/plot.html
-quality_score: 88
+quality_score: 91
 review:
   strengths:
-  - Excellent implementation of Smith chart geometry with correct mathematical formulas
-    for constant resistance circles and reactance arcs
-  - Clean visualization with appropriate color coding (blue grid, yellow locus, green/red
-    markers)
-  - Good use of layer composition with multiple geom_path and geom_point layers
-  - Proper conversion from normalized impedance to reflection coefficient (gamma)
-  - Frequency labels at key points along the impedance trajectory
+  - Excellent implementation of Smith chart grid with mathematically correct constant
+    resistance circles and reactance arcs
+  - Realistic antenna impedance data that traverses both inductive and capacitive
+    regions
+  - Interactive tooltips (layer_tooltips) showing frequency, impedance, and VSWR on
+    hover - great use of lets-plot feature
+  - Clear visual distinction between start (green) and end (red) markers with manual
+    legend
+  - Proper normalization of impedance to reference impedance (Z0=50 ohms) and conversion
+    to reflection coefficient
   weaknesses:
-  - Lower portion of Smith chart is largely empty; impedance locus could be designed
-    to traverse more regions of the chart
-  - No VSWR circles shown (though spec marks this as optional)
-  - Missing legend explaining start/end marker colors
-  - Interactive features of lets-plot not utilized (hover tooltips on impedance points
-    would enhance usability)
-  image_description: The plot displays a Smith chart with the standard circular grid
-    structure. The outer boundary is a dark black circle representing |γ| = 1 (total
-    reflection). The chart features light blue constant resistance circles (concentrically
-    positioned along the horizontal axis) and constant reactance arcs (curving from
-    the right edge). A horizontal black line represents the real axis through the
-    center. The yellow impedance locus curve shows an antenna impedance sweep from
-    1.0 GHz to 6.0 GHz, with the trajectory creating an irregular pattern in the upper-left
-    quadrant. A green marker indicates the start point (1.0 GHz) and a red marker
-    indicates the end point (6.0 GHz). Frequency labels are placed at 1.0 GHz, 3.6
-    GHz, and 6.0 GHz. The title "smith-chart-basic · letsplot · pyplots.ai" appears
-    at the top. The plot uses theme_void() resulting in no axis labels or ticks visible.
-    The chart is square (1:1 aspect ratio) and the Smith chart circle fills a reasonable
-    portion of the canvas.
+  - 'Unused import: LetsPlot is imported but the symbol is only used for setup_html()
+    call'
+  - Missing grid labels for resistance and reactance values (r=0, 0.2, 0.5, 1, 2,
+    5) on the chart
+  image_description: The plot displays a Smith chart with the characteristic circular
+    grid pattern used in RF engineering. The chart features constant resistance circles
+    (blue lines centered along the horizontal axis) and constant reactance arcs (blue
+    curves emanating from the right edge). A yellow impedance locus curve traces the
+    frequency sweep trajectory from 1.0 GHz (green start marker on the left) to 6.0
+    GHz (red end marker near the center-right). The trajectory traverses both the
+    upper (inductive) and lower (capacitive) halves of the chart, demonstrating realistic
+    antenna impedance behavior. Frequency labels (1.0 GHz, 3.5 GHz, 6.0 GHz) annotate
+    key points along the trajectory. A manual legend on the right side outside the
+    chart shows "Start (1.0 GHz)" with a green marker and "End (6.0 GHz)" with a red
+    marker. The outer boundary circle (|gamma| = 1) is drawn in dark gray, and the
+    horizontal real axis passes through the center. The title "smith-chart-basic ·
+    letsplot · pyplots.ai" appears at the top. The chart uses a square aspect ratio
+    with a white background via theme_void().
   criteria_checklist:
     visual_quality:
-      score: 35
+      score: 37
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 10
         max: 10
         passed: true
-        comment: Title and frequency labels are readable, though labels could be slightly
-          larger for optimal readability at full resolution
+        comment: Title, frequency labels, and legend text are all clearly readable
+          at full size
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements; labels are well positioned with appropriate
-          nudge
+        comment: No overlapping text elements; frequency labels are well-positioned
+          with nudge offsets
       - id: VQ-03
         name: Element Visibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: Impedance locus clearly visible in yellow with appropriate line width;
-          grid lines subtle with alpha=0.5; start/end markers distinct
+        comment: Grid lines visible with appropriate alpha=0.5, impedance locus and
+          markers clearly visible; grid could be slightly more prominent
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: 'Good color choices: blue grid, yellow locus, green start, red end
-          - all distinguishable and colorblind-safe'
+        comment: 'Good color contrast: blue grid, yellow locus, green/red markers
+          are colorblind-distinguishable'
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Smith chart is well-centered but has significant empty space in lower
-          half due to impedance data range; square aspect ratio is correct
+        comment: Good use of coord_fixed with extended x-limits to accommodate legend;
+          chart fills canvas appropriately
       - id: VQ-06
         name: Axis Labels
         score: 0
         max: 2
         passed: false
-        comment: Uses theme_void() so no axis labels present; however, this is appropriate
-          for Smith charts which typically have no traditional axes
+        comment: N/A for Smith chart (uses theme_void), no axis labels as expected
+          for this specialized chart type
       - id: VQ-07
         name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Grid lines are subtle (alpha=0.5), appropriately styled; no legend
-          needed as this is a single-trace plot
+        comment: Grid is subtle (alpha=0.5), manual legend well-placed outside chart
+          area
     spec_compliance:
-      score: 23
+      score: 24
       max: 25
       items:
       - id: SC-01
@@ -103,35 +105,34 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct Smith chart with constant resistance circles and constant
-          reactance arcs
+        comment: Correct Smith chart implementation with resistance circles and reactance
+          arcs
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Impedance correctly normalized to Z0=50Ω and converted to reflection
-          coefficient (gamma)
+        comment: Impedance correctly converted to reflection coefficient (gamma) for
+          plotting
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Has grid with resistance circles and reactance arcs, impedance locus
-          curve, frequency labels; missing VSWR circles (noted as optional in spec)
+        comment: Has grid, impedance locus, frequency labels; optional VSWR circles
+          not drawn
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data points visible within unit circle boundary
+        comment: All data visible within the unit circle boundary
       - id: SC-05
         name: Legend Accuracy
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: Start/end markers present but no explicit legend explaining green=start,
-          red=end
+        passed: true
+        comment: Manual legend correctly identifies start/end markers
       - id: SC-06
         name: Title Format
         score: 2
@@ -147,25 +148,24 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows realistic impedance sweep with variation across frequency;
-          locus traverses multiple regions of the chart; has start/end markers and
-          frequency labels
+        comment: Shows trajectory traversing both inductive and capacitive regions;
+          impedance varies realistically
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Antenna impedance sweep from 1-6 GHz is a realistic RF engineering
-          scenario; impedance values center around 50Ω (typical RF reference)
+        comment: Realistic antenna impedance sweep scenario (1-6 GHz VNA measurement
+          simulation)
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Impedance values are realistic for antenna measurements; random variation
-          might be slightly exaggerated but acceptable
+        comment: Impedance values (20-100 ohms resistance, ±50 ohms reactance) are
+          realistic for antenna measurements
     code_quality:
-      score: 9
+      score: 7
       max: 10
       items:
       - id: CQ-01
@@ -173,20 +173,19 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear structure: imports → data generation → grid construction
-          → plot → save'
+        comment: 'Linear flow: imports → data → grid construction → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42) for reproducible results
+        comment: np.random.seed(42) ensures reproducible data
       - id: CQ-03
         name: Clean Imports
-        score: 2
+        score: 0
         max: 2
-        passed: true
-        comment: All imports are used; appropriate use of pandas and numpy
+        passed: false
+        comment: LetsPlot imported but symbol unused; setup_html called on class directly
       - id: CQ-04
         name: No Deprecated API
         score: 1
@@ -198,29 +197,31 @@ review:
         score: 0
         max: 1
         passed: false
-        comment: Saves both plot.png and plot.html; while HTML is appropriate for
-          letsplot, the primary output is present
+        comment: Saves as plot.png but path='.' argument may be redundant
     library_features:
-      score: 3
+      score: 5
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Uses lets-plot's ggplot grammar effectively with multiple geom layers,
-          theme_void, coord_fixed; however, does not leverage interactive features
-  verdict: REJECTED
+        comment: Uses layer_tooltips for interactive hover, ggplot2-style grammar,
+          theme_void, coord_fixed, ggsave with scale=3
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - annotations
-  - layer-composition
+  - hover-tooltips
   - html-export
+  - layer-composition
+  - patches
   patterns:
   - data-generation
   - iteration-over-groups
+  - matrix-construction
   dataprep:
   - normalization
   styling:

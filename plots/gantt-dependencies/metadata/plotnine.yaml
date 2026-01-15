@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: gantt-dependencies
 created: '2026-01-15T21:04:49Z'
-updated: '2026-01-15T21:07:29Z'
+updated: '2026-01-15T21:14:06Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21046151866
 issue: 3830
@@ -10,84 +10,81 @@ library_version: 0.15.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gantt-dependencies/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 86
+quality_score: 90
 review:
   strengths:
-  - Excellent hierarchical organization with group headers and indented tasks
-  - Good use of geom_segment for both task bars and dependency lines
-  - Clean color scheme with distinguishable phases
-  - Proper datetime axis handling with scale_x_datetime
-  - Thicker bars for group aggregates clearly distinguish phases from tasks
+  - Excellent implementation of dependency arrows with custom arrowheads using geom_segment
+  - Clear visual hierarchy with group headers (thicker bars) and indented task labels
+  - Good use of plotnine grammar of graphics with layered geom_segment calls
+  - Appropriate color scheme that distinguishes phases clearly
+  - Well-structured data preparation for mapping tasks to y-positions
   weaknesses:
-  - Dependency arrows lack arrowheads to show direction (finish-to-start)
-  - Legend entries are alphabetically sorted rather than in logical project phase
-    order
-  - Some dependency lines cross over task bars instead of routing around them
-  image_description: 'The plot displays a Gantt chart showing a software development
-    project timeline from January 2024 to mid-March 2024. The chart uses four distinct
-    colors: dark blue (#306998) for Requirements phase, light blue (#4B8BBE) for Design
-    phase, yellow (#FFD43B) for Development phase, and gray (#646464) for Testing
-    phase. Tasks are organized hierarchically with group headers (marked with ▸) at
-    the top of each phase, followed by indented individual tasks. Group aggregate
-    bars are thicker than individual task bars. Gray dependency arrows connect related
-    tasks, showing finish-to-start relationships. The y-axis displays task names with
-    proper hierarchy (group headers and indented tasks), while the x-axis shows dates
-    in 2024-MM-DD format rotated at 45 degrees. A legend on the right shows the Phase
-    color mapping. The title "gantt-dependencies · plotnine · pyplots.ai" appears
-    at the top in bold.'
+  - Legend displays phases in alphabetical order instead of intended project phase
+    order despite using CategoricalDtype and limits parameter
+  - Legend title shows Phase instead of Project Phase as defined in code
+  image_description: 'The plot displays a Gantt chart for a software development project
+    with 4 phases (Requirements, Design, Development, Testing). Each phase has a thicker
+    aggregate bar showing the overall phase duration, with thinner individual task
+    bars nested below. Dependency arrows with arrowheads connect tasks showing finish-to-start
+    relationships. Colors: dark blue (#306998) for Requirements, light blue (#4B8BBE)
+    for Design, yellow (#FFD43B) for Development, and gray (#646464) for Testing.
+    The y-axis shows hierarchical task labels with "▸" prefix for group headers and
+    indentation for tasks. The x-axis displays dates from January to March 2024 with
+    rotated labels. Legend on the right shows "Phase" with the 4 categories, though
+    displayed in alphabetical order rather than project sequence. Title correctly
+    formatted as "gantt-dependencies · plotnine · pyplots.ai".'
   criteria_checklist:
     visual_quality:
-      score: 34
+      score: 36
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
+        score: 10
         max: 10
         passed: true
-        comment: All text readable, title bold and large, task labels clear. Slightly
-          smaller than optimal for axis text.
+        comment: Title 24pt bold, axis labels properly sized, all text clearly readable
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text or elements
+        comment: No overlapping elements, y-axis labels well-spaced
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: Task bars visible, but dependency arrows are subtle and could be
-          more prominent
+        comment: Task bars sized appropriately (size=10 for tasks, 14 for groups),
+          arrows visible
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Colors are distinguishable, colorblind-friendly palette (blue/yellow/gray)
+        comment: Four distinct colors with good contrast, colorblind-safe (blue/yellow/gray)
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 3
         max: 5
-        passed: true
-        comment: Good layout, but some whitespace on right side near legend
+        passed: false
+        comment: Good overall layout but legend could be closer to chart
       - id: VQ-06
         name: Axis Labels
         score: 1
         max: 2
         passed: false
-        comment: X-axis labeled Timeline (descriptive but no units), Y-axis empty
-          (acceptable for task names)
+        comment: X-axis has Timeline but no unit; Y-axis intentionally empty for task
+          names
       - id: VQ-07
         name: Grid & Legend
         score: 1
         max: 2
         passed: false
-        comment: Grid subtle with vertical lines only, legend well placed but Phase
-          title slightly generic
+        comment: Grid subtle (alpha=0.3), but legend shows alphabetical order instead
+          of project phase order
     spec_compliance:
-      score: 21
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -101,28 +98,27 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Tasks on Y-axis, time on X-axis, correctly mapped
+        comment: Tasks on Y-axis, time on X-axis, dependencies as arrows
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 4
         max: 5
         passed: false
-        comment: Has dependencies, groups, and aggregate bars. However, dependency
-          arrows lack arrowheads to indicate direction, and arrows sometimes cross
-          task bars
+        comment: Has dependency arrows, group headers, aggregate bars; legend order
+          is alphabetical not project sequence
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within axes
+        comment: Full date range visible from Jan 1 to Mar 18
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 1
         max: 2
         passed: false
-        comment: Legend shows Phase but legend entries are out of order (alphabetical
-          instead of logical project phase order)
+        comment: Legend title says Phase but code defines Project Phase; order is
+          alphabetical not as defined
       - id: SC-06
         name: Title Format
         score: 2
@@ -137,21 +133,22 @@ review:
         name: Feature Coverage
         score: 7
         max: 8
-        passed: true
-        comment: Shows multiple phases, dependencies, parallel tasks, sequential dependencies.
-          Missing some complex dependency patterns
+        passed: false
+        comment: Shows multiple dependency types (sequential, parallel, cross-phase),
+          groups with varying sizes
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Software development project is a realistic, neutral scenario
+        comment: Software development project is a realistic, neutral scenario with
+          standard phases
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
-        passed: true
-        comment: Timeline spans ~2.5 months, task durations reasonable (3-22 days)
+        passed: false
+        comment: Task durations realistic (3-22 days), timeline spans Jan-Mar 2024
     code_quality:
       score: 10
       max: 10
@@ -161,13 +158,13 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Linear script structure, no functions/classes
+        comment: 'Clear flow: imports, data, processing, plot, save'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Deterministic data (no random generation)
+        comment: Deterministic data (hardcoded datetime values)
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -179,7 +176,7 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Modern plotnine API
+        comment: Uses current plotnine API
       - id: CQ-05
         name: Output Correct
         score: 1
@@ -195,15 +192,16 @@ review:
         score: 3
         max: 5
         passed: false
-        comment: Uses ggplot grammar (aes, geom_segment, scales, theme), but does
-          not leverage plotnine-specific features like faceting or stat functions
-  verdict: REJECTED
+        comment: Good use of ggplot grammar but CategoricalDtype for legend ordering
+          does not work as expected
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
   - manual-ticks
   patterns:
+  - data-generation
   - iteration-over-groups
   dataprep:
   - time-series

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 gantt-dependencies: Gantt Chart with Dependencies
 Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 86/100 | Created: 2026-01-15
+Quality: 90/100 | Created: 2026-01-15
 """
 
 from datetime import datetime, timedelta

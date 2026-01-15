@@ -1,0 +1,29 @@
+# Specification-level metadata for gantt-dependencies
+# Auto-synced to PostgreSQL on push to main
+
+spec_id: gantt-dependencies
+title: Gantt Chart with Dependencies
+
+# Specification tracking
+created: 2026-01-15T20:43:22Z
+updated: 2026-01-15T20:43:22Z
+issue: 3830
+suggested: Eifi1
+
+# Classification tags (applies to all library implementations)
+# See docs/reference/tagging-system.md for detailed guidelines
+tags:
+  plot_type:
+    - gantt
+    - bar
+  data_type:
+    - datetime
+    - categorical
+    - relational
+  domain:
+    - business
+    - project-management
+  features:
+    - grouped
+    - hierarchical
+    - annotated

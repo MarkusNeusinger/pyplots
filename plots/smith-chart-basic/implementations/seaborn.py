@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 smith-chart-basic: Smith Chart for RF/Impedance
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-15
@@ -6,6 +6,7 @@ Quality: 78/100 | Created: 2026-01-15
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 from matplotlib.lines import Line2D
 
@@ -23,11 +24,11 @@ n_points = 50
 freq_ghz = np.linspace(1, 6, n_points)
 
 # Simulate a realistic impedance locus (antenna-like behavior)
-# Start near matched, go through reactive region, return toward center
-t = np.linspace(0, 2 * np.pi, n_points)
-# Spiral-like pattern typical of antenna impedance vs frequency
-z_real = 50 + 30 * np.sin(t) + 15 * np.cos(2 * t)
-z_imag = 40 * np.sin(1.5 * t) + 20 * np.cos(t)
+# Create a spiral pattern that doesn't close on itself (avoids label overlap)
+t = np.linspace(0, 1.8 * np.pi, n_points)
+# Spiral-like pattern typical of antenna impedance vs frequency with drift
+z_real = 50 + 30 * np.sin(t) + 15 * np.cos(2 * t) + 10 * (t / (2 * np.pi))
+z_imag = 40 * np.sin(1.5 * t) + 20 * np.cos(t) - 15 * (t / (2 * np.pi))
 
 # Normalize impedance to reference
 z_norm = (z_real + 1j * z_imag) / z0
@@ -55,6 +56,11 @@ for r in r_values:
     # Clip to unit circle
     mask = circle_x**2 + circle_y**2 <= 1.001
     ax.plot(circle_x[mask], circle_y[mask], color="#306998", alpha=0.4, linewidth=1)
+    # Add r value labels on the real axis (inside unit circle)
+    if r > 0:
+        label_x = r / (r + 1) - 1 / (r + 1) + 0.02  # Left edge of circle
+        if label_x > -0.95:
+            ax.text(label_x, 0.03, f"r={r}", fontsize=10, color="#306998", alpha=0.8, va="bottom")
 
 # Constant reactance arcs
 x_values = [0.2, 0.5, 1, 2, 5]
@@ -74,6 +80,14 @@ for x in x_values:
     mask_neg = (arc_x**2 + arc_y_neg**2 <= 1.001) & (arc_x >= -0.001)
     ax.plot(arc_x[mask_neg], arc_y_neg[mask_neg], color="#D4A017", alpha=0.7, linewidth=1.5)
 
+    # Add x value labels near the right edge of the unit circle
+    if x <= 2:
+        label_angle = np.arctan(1 / x)
+        label_x_pos = 0.98 * np.cos(label_angle)
+        label_y_pos = 0.98 * np.sin(label_angle)
+        ax.text(label_x_pos + 0.05, label_y_pos, f"x={x}", fontsize=10, color="#D4A017", alpha=0.9, va="center")
+        ax.text(label_x_pos + 0.05, -label_y_pos, f"x=-{x}", fontsize=10, color="#D4A017", alpha=0.9, va="center")
+
 # Draw unit circle (|Gamma| = 1 boundary)
 unit_theta = np.linspace(0, 2 * np.pi, 200)
 ax.plot(np.cos(unit_theta), np.sin(unit_theta), color="#306998", linewidth=2.5)
@@ -81,19 +95,42 @@ ax.plot(np.cos(unit_theta), np.sin(unit_theta), color="#306998", linewidth=2.5)
 # Draw horizontal axis (real axis)
 ax.axhline(0, color="#306998", linewidth=1.5, alpha=0.6)
 
-# Plot impedance locus using seaborn lineplot for the trajectory
-# First plot the main line
-sns.lineplot(x=gamma_real, y=gamma_imag, color="#E74C3C", linewidth=3, ax=ax, legend=False, sort=False)
+# Create DataFrame for seaborn plotting (better library utilization)
+df_locus = pd.DataFrame({"gamma_real": gamma_real, "gamma_imag": gamma_imag, "freq_ghz": freq_ghz})
 
-# Add markers at key frequency points
-key_indices = [0, n_points // 4, n_points // 2, 3 * n_points // 4, n_points - 1]
-ax.scatter(
-    gamma_real[key_indices], gamma_imag[key_indices], s=200, color="#E74C3C", edgecolor="white", linewidth=2, zorder=10
+# Plot impedance locus using seaborn lineplot for the trajectory
+sns.lineplot(
+    data=df_locus, x="gamma_real", y="gamma_imag", color="#E74C3C", linewidth=3, ax=ax, legend=False, sort=False
 )
 
-# Label key frequency points
+# Add markers at key frequency points using seaborn scatterplot
+key_indices = [0, n_points // 4, n_points // 2, 3 * n_points // 4, n_points - 1]
+df_markers = df_locus.iloc[key_indices].copy()
+sns.scatterplot(
+    data=df_markers,
+    x="gamma_real",
+    y="gamma_imag",
+    s=200,
+    color="#E74C3C",
+    edgecolor="white",
+    linewidth=2,
+    ax=ax,
+    zorder=10,
+    legend=False,
+)
+
+# Label key frequency points with smart positioning to avoid overlap
+# Compute offsets based on position to prevent label collisions
+label_offsets = {
+    0: (12, -18),  # 1.0 GHz - offset right and down
+    n_points // 4: (15, 12),  # 2.2 GHz - offset right and up
+    n_points // 2: (12, -18),  # 3.6 GHz - offset right and down
+    3 * n_points // 4: (-60, 10),  # 4.8 GHz - offset left
+    n_points - 1: (-60, -15),  # 6.0 GHz - offset left
+}
+
 for idx in key_indices:
-    offset = (10, 10) if gamma_imag[idx] >= 0 else (10, -15)
+    offset = label_offsets.get(idx, (10, 10))
     ax.annotate(
         f"{freq_ghz[idx]:.1f} GHz",
         (gamma_real[idx], gamma_imag[idx]),

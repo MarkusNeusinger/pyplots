@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 gantt-dependencies: Gantt Chart with Dependencies
-Library: altair | Python 3.13
-Quality: pending | Created: 2026-01-15
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-15
 """
 
 import altair as alt

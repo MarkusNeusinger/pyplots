@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-drilldown: Column Chart with Hierarchical Drilling
 Library: bokeh 3.8.2 | Python 3.13.11
-Quality: 78/100 | Created: 2026-01-16
+Quality: 82/100 | Created: 2026-01-16
 """
 
 from bokeh.io import export_png, save

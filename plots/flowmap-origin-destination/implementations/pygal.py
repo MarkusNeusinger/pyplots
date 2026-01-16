@@ -1,24 +1,19 @@
-""" pyplots.ai
+"""pyplots.ai
 flowmap-origin-destination: Origin-Destination Flow Map
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-16
 """
 
+# Prevent local file from shadowing the pygal package
 import sys
 
+
+if sys.path and sys.path[0].endswith("implementations"):
+    sys.path.pop(0)
+
 import numpy as np
-
-
-# Remove current directory from path to avoid shadowing the pygal package
-_cwd = sys.path[0] if sys.path and sys.path[0] else "."
-if _cwd in sys.path:
-    sys.path.remove(_cwd)
-
-import pygal  # noqa: E402
-from pygal.style import Style  # noqa: E402
-
-
-sys.path.insert(0, _cwd)
+import pygal
+from pygal.style import Style
 
 
 # Data: Trade flows between major European ports
@@ -131,14 +126,14 @@ max_flow = max(flows)
 min_stroke = 4
 max_stroke = 14
 
-# Custom style - colors: coastlines, low, medium, high, cities
+# Custom style - colors: coastlines, low (green), medium (orange), high (red), cities (yellow)
 custom_style = Style(
     background="white",
     plot_background="#E8F4FC",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#777777", "#7FB3D5", "#2980B9", "#1A5276", "#FFD43B"),
+    colors=("#888888", "#27AE60", "#E67E22", "#C0392B", "#FFD43B"),
     title_font_size=64,
     legend_font_size=40,
     label_font_size=42,
@@ -160,11 +155,12 @@ chart = pygal.XY(
     y_title="Latitude",
     show_legend=True,
     legend_at_bottom=False,
-    legend_box_size=24,
+    legend_box_size=36,
+    truncate_legend=-1,
     margin=100,
     margin_top=180,
     margin_bottom=140,
-    margin_right=550,
+    margin_right=650,
     margin_left=200,
     range=(lat_min, lat_max),
     xrange=(lon_min, lon_max),
@@ -235,11 +231,7 @@ for flow in low_flows:
     low_curves.append({"value": (None, None)})
 
 chart.add(
-    "Low Volume (220-399)",
-    low_curves,
-    stroke=True,
-    show_dots=False,
-    stroke_style={"width": min_stroke, "linecap": "round"},
+    "Low (220-399)", low_curves, stroke=True, show_dots=False, stroke_style={"width": min_stroke, "linecap": "round"}
 )
 
 # Add medium volume flows
@@ -274,7 +266,7 @@ for flow in medium_flows:
     medium_curves.append({"value": (None, None)})
 
 chart.add(
-    "Medium Volume (400-599)",
+    "Medium (400-599)",
     medium_curves,
     stroke=True,
     show_dots=False,
@@ -313,11 +305,7 @@ for flow in high_flows:
     high_curves.append({"value": (None, None)})
 
 chart.add(
-    "High Volume (600-850)",
-    high_curves,
-    stroke=True,
-    show_dots=False,
-    stroke_style={"width": max_stroke, "linecap": "round"},
+    "High (600-850)", high_curves, stroke=True, show_dots=False, stroke_style={"width": max_stroke, "linecap": "round"}
 )
 
 # Add port city locations as the final layer (on top)

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 flowmap-origin-destination: Origin-Destination Flow Map
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2026-01-16
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-16
 """
 
 import numpy as np

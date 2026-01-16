@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 flowmap-origin-destination: Origin-Destination Flow Map
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-16
@@ -14,279 +14,11 @@ _cwd = sys.path[0] if sys.path and sys.path[0] else "."
 if _cwd in sys.path:
     sys.path.remove(_cwd)
 
-from pygal.graph.graph import Graph  # noqa: E402
+import pygal  # noqa: E402
 from pygal.style import Style  # noqa: E402
 
 
 sys.path.insert(0, _cwd)
-
-
-class FlowMap(Graph):
-    """Custom Flow Map for pygal - displays origin-destination flows as curved arcs."""
-
-    def __init__(self, *args, **kwargs):
-        self.flow_data = kwargs.pop("flow_data", None)
-        self.lat_range = kwargs.pop("lat_range", (-90, 90))
-        self.lon_range = kwargs.pop("lon_range", (-180, 180))
-        self.coastlines = kwargs.pop("coastlines", [])
-        self.flow_color = kwargs.pop("flow_color", "#306998")
-        self.max_stroke = kwargs.pop("max_stroke", 12)
-        self.min_stroke = kwargs.pop("min_stroke", 2)
-        super().__init__(*args, **kwargs)
-
-    def _plot(self):
-        """Draw the flow map."""
-        if self.flow_data is None:
-            return
-
-        plot_width = self.view.width
-        plot_height = self.view.height
-
-        # Layout margins
-        label_margin_left = 180
-        label_margin_right = 120
-        label_margin_top = 60
-        label_margin_bottom = 180
-
-        available_width = plot_width - label_margin_left - label_margin_right
-        available_height = plot_height - label_margin_top - label_margin_bottom
-
-        x_offset = self.view.x(0) + label_margin_left
-        y_offset = self.view.y(1) + label_margin_top
-
-        # Create group for the flow map
-        plot_node = self.nodes["plot"]
-        flowmap_group = self.svg.node(plot_node, class_="flow-map")
-
-        # Draw background rectangle for ocean
-        bg_rect = self.svg.node(
-            flowmap_group, "rect", x=x_offset, y=y_offset, width=available_width, height=available_height
-        )
-        bg_rect.set("fill", "#C8DDF0")
-        bg_rect.set("stroke", "#333333")
-        bg_rect.set("stroke-width", "2")
-
-        lat_min, lat_max = self.lat_range
-        lon_min, lon_max = self.lon_range
-
-        def lon_to_x(lon):
-            return x_offset + (lon - lon_min) / (lon_max - lon_min) * available_width
-
-        def lat_to_y(lat):
-            return y_offset + (1 - (lat - lat_min) / (lat_max - lat_min)) * available_height
-
-        # Draw grid lines
-        n_lon_lines = 7
-        for i in range(n_lon_lines):
-            lon = lon_min + (lon_max - lon_min) * i / (n_lon_lines - 1)
-            x = lon_to_x(lon)
-            line = self.svg.node(flowmap_group, "line", x1=x, y1=y_offset, x2=x, y2=y_offset + available_height)
-            line.set("stroke", "#aaaaaa")
-            line.set("stroke-width", "1")
-            line.set("stroke-opacity", "0.4")
-
-        n_lat_lines = 5
-        for i in range(n_lat_lines):
-            lat = lat_min + (lat_max - lat_min) * i / (n_lat_lines - 1)
-            y = lat_to_y(lat)
-            line = self.svg.node(flowmap_group, "line", x1=x_offset, y1=y, x2=x_offset + available_width, y2=y)
-            line.set("stroke", "#aaaaaa")
-            line.set("stroke-width", "1")
-            line.set("stroke-opacity", "0.4")
-
-        # Draw coastlines
-        for coastline in self.coastlines:
-            if len(coastline) < 2:
-                continue
-            points = " ".join([f"{lon_to_x(lon)},{lat_to_y(lat)}" for lon, lat in coastline])
-            polyline = self.svg.node(flowmap_group, "polyline", points=points)
-            polyline.set("fill", "none")
-            polyline.set("stroke", "#666666")
-            polyline.set("stroke-width", "2")
-            polyline.set("stroke-opacity", "0.6")
-
-        # Calculate flow magnitude range for scaling stroke width
-        flows = [f["flow"] for f in self.flow_data]
-        min_flow = min(flows)
-        max_flow = max(flows)
-
-        def flow_to_stroke(flow):
-            if max_flow == min_flow:
-                return (self.max_stroke + self.min_stroke) / 2
-            normalized = (flow - min_flow) / (max_flow - min_flow)
-            return self.min_stroke + normalized * (self.max_stroke - self.min_stroke)
-
-        # Sort flows by magnitude (draw smaller first so larger are on top)
-        sorted_flows = sorted(self.flow_data, key=lambda f: f["flow"])
-
-        # Draw flow arcs (Bezier curves)
-        for flow in sorted_flows:
-            o_lat, o_lon = flow["origin_lat"], flow["origin_lon"]
-            d_lat, d_lon = flow["dest_lat"], flow["dest_lon"]
-            magnitude = flow["flow"]
-
-            x1 = lon_to_x(o_lon)
-            y1 = lat_to_y(o_lat)
-            x2 = lon_to_x(d_lon)
-            y2 = lat_to_y(d_lat)
-
-            # Calculate control point for quadratic Bezier curve
-            # Offset perpendicular to the line, with arc curving based on direction
-            mid_x = (x1 + x2) / 2
-            mid_y = (y1 + y2) / 2
-
-            # Calculate perpendicular offset (curve upward)
-            dx = x2 - x1
-            dy = y2 - y1
-            length = np.sqrt(dx * dx + dy * dy)
-            if length > 0:
-                # Perpendicular direction (rotate 90 degrees)
-                perp_x = -dy / length
-                perp_y = dx / length
-                # Offset proportional to distance (but capped)
-                offset_amount = min(length * 0.3, 150)
-                ctrl_x = mid_x + perp_x * offset_amount
-                ctrl_y = mid_y + perp_y * offset_amount
-            else:
-                ctrl_x, ctrl_y = mid_x, mid_y
-
-            # Create quadratic Bezier path
-            path_d = f"M {x1},{y1} Q {ctrl_x},{ctrl_y} {x2},{y2}"
-
-            stroke_width = flow_to_stroke(magnitude)
-            opacity = 0.5 + 0.3 * (magnitude - min_flow) / (max_flow - min_flow) if max_flow > min_flow else 0.6
-
-            path = self.svg.node(flowmap_group, "path", d=path_d)
-            path.set("fill", "none")
-            path.set("stroke", self.flow_color)
-            path.set("stroke-width", str(stroke_width))
-            path.set("stroke-opacity", str(opacity))
-            path.set("stroke-linecap", "round")
-
-        # Draw origin and destination markers
-        drawn_locations = set()
-        for flow in self.flow_data:
-            # Origin marker
-            o_key = (round(flow["origin_lat"], 2), round(flow["origin_lon"], 2))
-            if o_key not in drawn_locations:
-                ox = lon_to_x(flow["origin_lon"])
-                oy = lat_to_y(flow["origin_lat"])
-                circle = self.svg.node(flowmap_group, "circle", cx=ox, cy=oy, r=14)
-                circle.set("fill", "#FFD43B")
-                circle.set("stroke", "#333333")
-                circle.set("stroke-width", "2")
-                drawn_locations.add(o_key)
-
-            # Destination marker
-            d_key = (round(flow["dest_lat"], 2), round(flow["dest_lon"], 2))
-            if d_key not in drawn_locations:
-                dx = lon_to_x(flow["dest_lon"])
-                dy = lat_to_y(flow["dest_lat"])
-                circle = self.svg.node(flowmap_group, "circle", cx=dx, cy=dy, r=14)
-                circle.set("fill", "#FFD43B")
-                circle.set("stroke", "#333333")
-                circle.set("stroke-width", "2")
-                drawn_locations.add(d_key)
-
-        # Draw axis labels
-        axis_font_size = 48
-        tick_font_size = 36
-
-        # X-axis label
-        text_node = self.svg.node(
-            flowmap_group, "text", x=x_offset + available_width / 2, y=y_offset + available_height + 130
-        )
-        text_node.set("text-anchor", "middle")
-        text_node.set("fill", "#333333")
-        text_node.set("style", f"font-size:{axis_font_size}px;font-weight:bold;font-family:sans-serif")
-        text_node.text = "Longitude"
-
-        # Y-axis label
-        text_node = self.svg.node(flowmap_group, "text", x=x_offset - 100, y=y_offset + available_height / 2)
-        text_node.set("text-anchor", "middle")
-        text_node.set("fill", "#333333")
-        text_node.set("style", f"font-size:{axis_font_size}px;font-weight:bold;font-family:sans-serif")
-        text_node.set("transform", f"rotate(-90, {x_offset - 100}, {y_offset + available_height / 2})")
-        text_node.text = "Latitude"
-
-        # X-axis ticks
-        for i in range(n_lon_lines):
-            lon = lon_min + (lon_max - lon_min) * i / (n_lon_lines - 1)
-            x = lon_to_x(lon)
-            text_node = self.svg.node(flowmap_group, "text", x=x, y=y_offset + available_height + 50)
-            text_node.set("text-anchor", "middle")
-            text_node.set("fill", "#333333")
-            text_node.set("style", f"font-size:{tick_font_size}px;font-family:sans-serif")
-            text_node.text = f"{lon:.0f}"
-
-        # Y-axis ticks
-        for i in range(n_lat_lines):
-            lat = lat_min + (lat_max - lat_min) * i / (n_lat_lines - 1)
-            y = lat_to_y(lat)
-            text_node = self.svg.node(flowmap_group, "text", x=x_offset - 20, y=y + tick_font_size * 0.35)
-            text_node.set("text-anchor", "end")
-            text_node.set("fill", "#333333")
-            text_node.set("style", f"font-size:{tick_font_size}px;font-family:sans-serif")
-            text_node.text = f"{lat:.0f}"
-
-        # Draw legend for flow magnitude
-        legend_x = x_offset + available_width + 40
-        legend_y = y_offset + 100
-        legend_title_size = 40
-        legend_text_size = 32
-
-        # Legend title
-        text_node = self.svg.node(flowmap_group, "text", x=legend_x, y=legend_y)
-        text_node.set("fill", "#333333")
-        text_node.set("style", f"font-size:{legend_title_size}px;font-weight:bold;font-family:sans-serif")
-        text_node.text = "Flow Volume"
-
-        # Legend items (3 representative widths)
-        legend_flows = [min_flow, (min_flow + max_flow) / 2, max_flow]
-        legend_labels = ["Low", "Medium", "High"]
-
-        for i, (flow_val, label) in enumerate(zip(legend_flows, legend_labels, strict=True)):
-            ly = legend_y + 60 + i * 70
-            stroke_w = flow_to_stroke(flow_val)
-
-            # Draw sample line
-            line = self.svg.node(flowmap_group, "line", x1=legend_x, y1=ly, x2=legend_x + 80, y2=ly)
-            line.set("stroke", self.flow_color)
-            line.set("stroke-width", str(stroke_w))
-            line.set("stroke-linecap", "round")
-            line.set("stroke-opacity", "0.7")
-
-            # Draw label
-            text_node = self.svg.node(flowmap_group, "text", x=legend_x + 100, y=ly + legend_text_size * 0.35)
-            text_node.set("fill", "#333333")
-            text_node.set("style", f"font-size:{legend_text_size}px;font-family:sans-serif")
-            text_node.text = f"{label} ({flow_val:.0f})"
-
-        # Legend for markers
-        marker_legend_y = legend_y + 300
-        text_node = self.svg.node(flowmap_group, "text", x=legend_x, y=marker_legend_y)
-        text_node.set("fill", "#333333")
-        text_node.set("style", f"font-size:{legend_title_size}px;font-weight:bold;font-family:sans-serif")
-        text_node.text = "Locations"
-
-        circle = self.svg.node(flowmap_group, "circle", cx=legend_x + 14, cy=marker_legend_y + 50, r=14)
-        circle.set("fill", "#FFD43B")
-        circle.set("stroke", "#333333")
-        circle.set("stroke-width", "2")
-
-        text_node = self.svg.node(
-            flowmap_group, "text", x=legend_x + 40, y=marker_legend_y + 50 + legend_text_size * 0.35
-        )
-        text_node.set("fill", "#333333")
-        text_node.set("style", f"font-size:{legend_text_size}px;font-family:sans-serif")
-        text_node.text = "City"
-
-    def _compute(self):
-        """Compute the box for rendering."""
-        self._box.xmin = 0
-        self._box.xmax = 1
-        self._box.ymin = 0
-        self._box.ymax = 1
 
 
 # Data: Trade flows between major European ports
@@ -309,10 +41,6 @@ ports = {
     "Gdansk": (54.35, 18.65),
     "Dublin": (53.35, -6.26),
 }
-
-# Generate trade flow data between ports
-flow_data = []
-port_names = list(ports.keys())
 
 # Create flows between major trading pairs
 flow_pairs = [
@@ -338,6 +66,7 @@ flow_pairs = [
     ("Copenhagen", "Gdansk", 220),
 ]
 
+flow_data = []
 for origin, dest, flow in flow_pairs:
     o_lat, o_lon = ports[origin]
     d_lat, d_lon = ports[dest]
@@ -395,45 +124,218 @@ coastlines = [
     [(-10.0, 51.5), (-6.0, 51.5), (-6.0, 54.0), (-8.0, 55.5), (-10.0, 53.5), (-10.0, 51.5)],
 ]
 
-# Custom style
+# Calculate flow ranges for scaling
+flows = [f["flow"] for f in flow_data]
+min_flow = min(flows)
+max_flow = max(flows)
+min_stroke = 4
+max_stroke = 14
+
+# Custom style - colors: coastlines, low, medium, high, cities
 custom_style = Style(
     background="white",
-    plot_background="#C8DDF0",
+    plot_background="#E8F4FC",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#306998",),
+    colors=("#777777", "#7FB3D5", "#2980B9", "#1A5276", "#FFD43B"),
     title_font_size=64,
     legend_font_size=40,
     label_font_size=42,
+    major_label_font_size=36,
     value_font_size=36,
+    tooltip_font_size=36,
     font_family="sans-serif",
+    opacity=0.75,
+    opacity_hover=1.0,
 )
 
-# Create flow map chart
-chart = FlowMap(
+# Create XY chart
+chart = pygal.XY(
     width=4800,
     height=2700,
     style=custom_style,
     title="flowmap-origin-destination · pygal · pyplots.ai",
-    flow_data=flow_data,
-    lat_range=(lat_min, lat_max),
-    lon_range=(lon_min, lon_max),
-    coastlines=coastlines,
-    flow_color="#306998",
-    max_stroke=14,
-    min_stroke=3,
-    show_legend=False,
+    x_title="Longitude",
+    y_title="Latitude",
+    show_legend=True,
+    legend_at_bottom=False,
+    legend_box_size=24,
     margin=100,
-    margin_top=160,
-    margin_bottom=80,
-    margin_right=350,
-    show_x_labels=False,
-    show_y_labels=False,
+    margin_top=180,
+    margin_bottom=140,
+    margin_right=550,
+    margin_left=200,
+    range=(lat_min, lat_max),
+    xrange=(lon_min, lon_max),
+    show_dots=True,
+    stroke=True,
+    dots_size=14,
+    tooltip_border_radius=10,
+    show_x_guides=True,
+    show_y_guides=True,
 )
 
-# Add a dummy series to trigger _plot
-chart.add("", [0])
+# Combine all coastlines into a single series with breaks
+coastline_points = []
+for coastline in coastlines:
+    for lon, lat in coastline:
+        coastline_points.append({"value": (lon, lat), "label": "European Coastline"})
+    coastline_points.append({"value": (None, None)})  # Break between coastline segments
+
+chart.add("Coastlines", coastline_points, stroke=True, show_dots=False, stroke_style={"width": 3})
+
+# Sort flows by magnitude (smaller first so larger are on top visually)
+sorted_flows = sorted(flow_data, key=lambda f: f["flow"])
+
+# Group flows into categories for cleaner legend
+high_flows = []  # >= 600
+medium_flows = []  # 400-599
+low_flows = []  # < 400
+
+for flow in sorted_flows:
+    if flow["flow"] >= 600:
+        high_flows.append(flow)
+    elif flow["flow"] >= 400:
+        medium_flows.append(flow)
+    else:
+        low_flows.append(flow)
+
+n_segments = 15
+
+# Add low volume flows
+low_curves = []
+for flow in low_flows:
+    o_lat, o_lon = flow["origin_lat"], flow["origin_lon"]
+    d_lat, d_lon = flow["dest_lat"], flow["dest_lon"]
+    magnitude = flow["flow"]
+    origin_name = flow["origin_name"]
+    dest_name = flow["dest_name"]
+
+    mid_lon = (o_lon + d_lon) / 2
+    mid_lat = (o_lat + d_lat) / 2
+    dx = d_lon - o_lon
+    dy = d_lat - o_lat
+    length = np.sqrt(dx * dx + dy * dy)
+
+    if length > 0:
+        perp_x = -dy / length
+        perp_y = dx / length
+        offset_amount = min(length * 0.2, 2.5)
+        ctrl_lon = mid_lon + perp_x * offset_amount
+        ctrl_lat = mid_lat + perp_y * offset_amount
+    else:
+        ctrl_lon, ctrl_lat = mid_lon, mid_lat
+
+    for i in range(n_segments + 1):
+        t = i / n_segments
+        lon = (1 - t) ** 2 * o_lon + 2 * (1 - t) * t * ctrl_lon + t**2 * d_lon
+        lat = (1 - t) ** 2 * o_lat + 2 * (1 - t) * t * ctrl_lat + t**2 * d_lat
+        low_curves.append({"value": (lon, lat), "label": f"{origin_name} → {dest_name}: {magnitude} units"})
+    low_curves.append({"value": (None, None)})
+
+chart.add(
+    "Low Volume (220-399)",
+    low_curves,
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": min_stroke, "linecap": "round"},
+)
+
+# Add medium volume flows
+medium_curves = []
+for flow in medium_flows:
+    o_lat, o_lon = flow["origin_lat"], flow["origin_lon"]
+    d_lat, d_lon = flow["dest_lat"], flow["dest_lon"]
+    magnitude = flow["flow"]
+    origin_name = flow["origin_name"]
+    dest_name = flow["dest_name"]
+
+    mid_lon = (o_lon + d_lon) / 2
+    mid_lat = (o_lat + d_lat) / 2
+    dx = d_lon - o_lon
+    dy = d_lat - o_lat
+    length = np.sqrt(dx * dx + dy * dy)
+
+    if length > 0:
+        perp_x = -dy / length
+        perp_y = dx / length
+        offset_amount = min(length * 0.2, 2.5)
+        ctrl_lon = mid_lon + perp_x * offset_amount
+        ctrl_lat = mid_lat + perp_y * offset_amount
+    else:
+        ctrl_lon, ctrl_lat = mid_lon, mid_lat
+
+    for i in range(n_segments + 1):
+        t = i / n_segments
+        lon = (1 - t) ** 2 * o_lon + 2 * (1 - t) * t * ctrl_lon + t**2 * d_lon
+        lat = (1 - t) ** 2 * o_lat + 2 * (1 - t) * t * ctrl_lat + t**2 * d_lat
+        medium_curves.append({"value": (lon, lat), "label": f"{origin_name} → {dest_name}: {magnitude} units"})
+    medium_curves.append({"value": (None, None)})
+
+chart.add(
+    "Medium Volume (400-599)",
+    medium_curves,
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": (min_stroke + max_stroke) // 2, "linecap": "round"},
+)
+
+# Add high volume flows
+high_curves = []
+for flow in high_flows:
+    o_lat, o_lon = flow["origin_lat"], flow["origin_lon"]
+    d_lat, d_lon = flow["dest_lat"], flow["dest_lon"]
+    magnitude = flow["flow"]
+    origin_name = flow["origin_name"]
+    dest_name = flow["dest_name"]
+
+    mid_lon = (o_lon + d_lon) / 2
+    mid_lat = (o_lat + d_lat) / 2
+    dx = d_lon - o_lon
+    dy = d_lat - o_lat
+    length = np.sqrt(dx * dx + dy * dy)
+
+    if length > 0:
+        perp_x = -dy / length
+        perp_y = dx / length
+        offset_amount = min(length * 0.2, 2.5)
+        ctrl_lon = mid_lon + perp_x * offset_amount
+        ctrl_lat = mid_lat + perp_y * offset_amount
+    else:
+        ctrl_lon, ctrl_lat = mid_lon, mid_lat
+
+    for i in range(n_segments + 1):
+        t = i / n_segments
+        lon = (1 - t) ** 2 * o_lon + 2 * (1 - t) * t * ctrl_lon + t**2 * d_lon
+        lat = (1 - t) ** 2 * o_lat + 2 * (1 - t) * t * ctrl_lat + t**2 * d_lat
+        high_curves.append({"value": (lon, lat), "label": f"{origin_name} → {dest_name}: {magnitude} units"})
+    high_curves.append({"value": (None, None)})
+
+chart.add(
+    "High Volume (600-850)",
+    high_curves,
+    stroke=True,
+    show_dots=False,
+    stroke_style={"width": max_stroke, "linecap": "round"},
+)
+
+# Add port city locations as the final layer (on top)
+city_points = []
+drawn_locations = set()
+
+for flow in flow_data:
+    o_key = (round(flow["origin_lat"], 2), round(flow["origin_lon"], 2))
+    if o_key not in drawn_locations:
+        city_points.append({"value": (flow["origin_lon"], flow["origin_lat"]), "label": flow["origin_name"]})
+        drawn_locations.add(o_key)
+
+    d_key = (round(flow["dest_lat"], 2), round(flow["dest_lon"], 2))
+    if d_key not in drawn_locations:
+        city_points.append({"value": (flow["dest_lon"], flow["dest_lat"]), "label": flow["dest_name"]})
+        drawn_locations.add(d_key)
+
+chart.add("Port Cities", city_points, dots_size=18, stroke=False)
 
 # Save outputs
 chart.render_to_png("plot.png")

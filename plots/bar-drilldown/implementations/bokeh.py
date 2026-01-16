@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-drilldown: Column Chart with Hierarchical Drilling
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-16
@@ -6,7 +6,7 @@ Quality: 85/100 | Created: 2026-01-16
 
 from bokeh.io import export_png, save
 from bokeh.layouts import column, row
-from bokeh.models import Button, ColumnDataSource, CustomJS, Div, LabelSet, Legend, LegendItem, TapTool
+from bokeh.models import Button, ColumnDataSource, CustomJS, Div, LabelSet, Legend, TapTool
 from bokeh.plotting import figure
 
 
@@ -164,17 +164,33 @@ p.outline_line_width = 2
 bars.selection_glyph = bars.glyph
 bars.nonselection_glyph = bars.glyph
 
-# Add legend showing region colors
-legend_items = [
-    LegendItem(label=hierarchy_data[id]["name"], renderers=[bars], index=i) for i, id in enumerate(root_children)
-]
-legend = Legend(items=legend_items, location="top_right", label_text_font_size="22pt")
-legend.background_fill_alpha = 0.8
+# Add legend showing region colors using separate renderers for reliable PNG export
+legend_renderers = []
+for i, child_id in enumerate(root_children):
+    # Create invisible scatter points for legend entries
+    legend_source = ColumnDataSource(data={"x": [names[i]], "y": [values[i] / 2]})
+    scatter = p.scatter(
+        x="x",
+        y="y",
+        source=legend_source,
+        fill_color=colors[i % len(colors)],
+        line_color="white",
+        size=0,  # Invisible points
+        marker="square",
+    )
+    legend_renderers.append((hierarchy_data[child_id]["name"], [scatter]))
+
+legend = Legend(items=legend_renderers, location="top_right", label_text_font_size="24pt")
+legend.background_fill_alpha = 0.9
+legend.background_fill_color = "white"
 legend.border_line_color = "#cccccc"
 legend.border_line_width = 2
-legend.padding = 15
-legend.spacing = 10
-p.add_layout(legend)
+legend.padding = 20
+legend.spacing = 12
+legend.glyph_height = 30
+legend.glyph_width = 30
+legend.label_standoff = 10
+p.add_layout(legend, "right")
 
 # Breadcrumb div for navigation (display only - Back button handles navigation)
 breadcrumb_div = Div(

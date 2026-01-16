@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 maze-circular: Circular Maze Puzzle
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-16
@@ -155,45 +155,47 @@ entry_r = num_rings * ring_width + 0.8
 entry_x = entry_r * np.cos(entry_angle)
 entry_y = entry_r * np.sin(entry_angle)
 
-# Calculate rotation so text reads correctly (upright, tangent to circle)
-# Altair angle must be in [0, 360] range, counter-clockwise from right
-# We want text baseline parallel to tangent, readable from outside
-text_angle_deg = np.degrees(entry_angle) + 90
-# Normalize to 0-360 range first
-text_angle_deg = text_angle_deg % 360
-# Flip if text would be upside down (angles between 90 and 270)
-if 90 < text_angle_deg < 270:
-    text_angle_deg = (text_angle_deg + 180) % 360
+# Keep START text horizontal for universal readability regardless of entry position
 
 entry_data = pd.DataFrame({"x": [entry_x], "y": [entry_y], "label": ["START"]})
 
 # Convert wall data to DataFrame
 df_walls = pd.DataFrame(wall_data)
 
-# Create wall lines chart
+# Calculate domain bounds to ensure perfect circle (equal x/y scales)
+max_extent = num_rings * ring_width + 1.5  # Extra padding for START label
+
+# Create wall lines chart with fixed scale domains for circular appearance
 base = (
     alt.Chart(df_walls)
     .mark_line(color="black", strokeWidth=3)
-    .encode(x=alt.X("x:Q", axis=None), y=alt.Y("y:Q", axis=None), detail="wall_id:N", order="order:O")
+    .encode(
+        x=alt.X("x:Q", axis=None, scale=alt.Scale(domain=[-max_extent, max_extent])),
+        y=alt.Y("y:Q", axis=None, scale=alt.Scale(domain=[-max_extent, max_extent])),
+        detail="wall_id:N",
+        order="order:O",
+    )
 )
 
 # Center goal - use Vega-Lite's built-in star shape via mark_point
+# Increased size to 40000 for better visibility relative to maze size
 goal = (
     alt.Chart(goal_df)
     .mark_point(
         shape="M0,0.5L0.191,0.181L0.5,0.181L0.236,-0.045L0.309,-0.405L0,-0.191L-0.309,-0.405L-0.236,-0.045L-0.5,0.181L-0.191,0.181Z",
-        size=8000,
-        color="#FFD43B",
-        stroke="black",
-        strokeWidth=2,
+        size=40000,
+        fill="#FFD43B",
+        stroke="#333333",
+        strokeWidth=3,
+        filled=True,
     )
     .encode(x=alt.X("x:Q", axis=None), y=alt.Y("y:Q", axis=None))
 )
 
-# Entry marker with correct rotation
+# Entry marker - horizontal text for best readability
 entry = (
     alt.Chart(entry_data)
-    .mark_text(fontSize=22, fontWeight="bold", color="#306998", angle=text_angle_deg)
+    .mark_text(fontSize=22, fontWeight="bold", color="#306998")
     .encode(x="x:Q", y="y:Q", text="label:N")
 )
 

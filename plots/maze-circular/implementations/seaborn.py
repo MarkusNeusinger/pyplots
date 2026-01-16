@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 maze-circular: Circular Maze Puzzle
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 75/100 | Created: 2026-01-16
@@ -6,6 +6,7 @@ Quality: 75/100 | Created: 2026-01-16
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 
 
@@ -13,51 +14,16 @@ import seaborn as sns
 np.random.seed(42)
 rings = 7
 sectors_per_ring = 12
-difficulty = "medium"
 
-# Set seaborn style for clean aesthetics
-sns.set_style("white")
-sns.set_context("talk", font_scale=1.2)
-
-# Create figure with square aspect
+# Create figure with square aspect for circular maze (3600x3600 at 300dpi = 12x12)
 fig, ax = plt.subplots(figsize=(12, 12))
 
-
-# Maze generation using Union-Find for guaranteed single solution
-class UnionFind:
-    def __init__(self, n):
-        self.parent = list(range(n))
-        self.rank = [0] * n
-
-    def find(self, x):
-        if self.parent[x] != x:
-            self.parent[x] = self.find(self.parent[x])
-        return self.parent[x]
-
-    def union(self, x, y):
-        px, py = self.find(x), self.find(y)
-        if px == py:
-            return False
-        if self.rank[px] < self.rank[py]:
-            px, py = py, px
-        self.parent[py] = px
-        if self.rank[px] == self.rank[py]:
-            self.rank[px] += 1
-        return True
-
-
-# Cell indexing: cell (ring, sector) -> unique id
-def cell_id(ring, sector):
-    if ring == 0:
-        return 0  # Center is a single cell
-    return 1 + sum(sectors_per_ring for _ in range(ring - 1)) + (sector % sectors_per_ring)
-
-
-# Total cells
+# Total cells = center (1) + rings * sectors
 total_cells = 1 + rings * sectors_per_ring
 
-# Initialize Union-Find
-uf = UnionFind(total_cells)
+# Union-Find data structure using arrays (KISS - flat script, no classes/functions)
+parent = list(range(total_cells))
+uf_rank = [0] * total_cells
 
 # Generate all possible walls (edges between adjacent cells)
 walls = []
@@ -65,127 +31,186 @@ walls = []
 # Radial walls: between ring r and ring r+1
 for r in range(rings):
     if r == 0:
-        # From center to first ring
         for s in range(sectors_per_ring):
-            walls.append(("radial", 0, s, cell_id(0, 0), cell_id(1, s)))
+            # cell_id for center is 0, for ring 1 sector s is 1 + s
+            walls.append(("radial", 0, s, 0, 1 + s))
     else:
         for s in range(sectors_per_ring):
-            walls.append(("radial", r, s, cell_id(r, s), cell_id(r + 1, s)))
+            # cell_id: 1 + (ring-1)*sectors + sector
+            c1 = 1 + (r - 1) * sectors_per_ring + s
+            c2 = 1 + r * sectors_per_ring + s
+            walls.append(("radial", r, s, c1, c2))
 
 # Circular walls: between adjacent sectors in same ring
 for r in range(1, rings + 1):
     for s in range(sectors_per_ring):
         next_s = (s + 1) % sectors_per_ring
-        walls.append(("circular", r, s, cell_id(r, s), cell_id(r, next_s)))
+        c1 = 1 + (r - 1) * sectors_per_ring + s
+        c2 = 1 + (r - 1) * sectors_per_ring + next_s
+        walls.append(("circular", r, s, c1, c2))
 
 # Shuffle walls for random maze generation
 np.random.shuffle(walls)
 
-# Kruskal's algorithm: remove walls to create spanning tree (single path)
+# Kruskal's algorithm: remove walls to create spanning tree (exactly one solution)
 passages = set()
 for wall in walls:
     wall_type, r, s, c1, c2 = wall
-    if uf.union(c1, c2):
+
+    # Find root of c1 with path compression
+    root1 = c1
+    while parent[root1] != root1:
+        root1 = parent[root1]
+    x = c1
+    while parent[x] != x:
+        next_x = parent[x]
+        parent[x] = root1
+        x = next_x
+
+    # Find root of c2 with path compression
+    root2 = c2
+    while parent[root2] != root2:
+        root2 = parent[root2]
+    x = c2
+    while parent[x] != x:
+        next_x = parent[x]
+        parent[x] = root2
+        x = next_x
+
+    # Union if different sets
+    if root1 != root2:
+        if uf_rank[root1] < uf_rank[root2]:
+            root1, root2 = root2, root1
+        parent[root2] = root1
+        if uf_rank[root1] == uf_rank[root2]:
+            uf_rank[root1] += 1
         passages.add((wall_type, r, s))
 
-# Adjust passage density based on difficulty
-if difficulty == "easy":
-    extra_passages = int(len(walls) * 0.15)
-elif difficulty == "medium":
-    extra_passages = int(len(walls) * 0.08)
-else:  # hard
-    extra_passages = int(len(walls) * 0.02)
-
-# Add some extra passages to make easier (multiple paths)
-remaining_walls = [w for w in walls if (w[0], w[1], w[2]) not in passages]
-np.random.shuffle(remaining_walls)
-for i in range(min(extra_passages, len(remaining_walls))):
-    w = remaining_walls[i]
-    passages.add((w[0], w[1], w[2]))
+# Build maze grid for seaborn heatmap visualization
+grid_size = 200
+maze_grid = np.ones((grid_size, grid_size)) * 0.95  # White background
 
 # Drawing parameters
 inner_radius = 0.15
 ring_width = (1 - inner_radius) / (rings + 0.5)
-wall_color = "#1a1a1a"
-wall_linewidth = 3
+wall_color_val = 0.1  # Dark gray for walls
+
+# Grid conversion parameters
+grid_center = grid_size // 2
+grid_scale = (grid_size - 20) / 2.6
+
+# Draw walls onto grid
+wall_thickness = 2
 
 # Draw outer boundary
-theta = np.linspace(0, 2 * np.pi, 200)
-outer_r = inner_radius + (rings + 0.3) * ring_width
-ax.plot(outer_r * np.cos(theta), outer_r * np.sin(theta), color=wall_color, linewidth=wall_linewidth + 1)
+for i in range(360):
+    theta = i * np.pi / 180
+    outer_r = inner_radius + (rings + 0.3) * ring_width
+    gx = grid_center + int(outer_r * np.cos(theta) * grid_scale)
+    gy = grid_center + int(outer_r * np.sin(theta) * grid_scale)
+    gx = np.clip(gx, 0, grid_size - 1)
+    gy = np.clip(gy, 0, grid_size - 1)
+    for dx in range(-wall_thickness, wall_thickness + 1):
+        for dy in range(-wall_thickness, wall_thickness + 1):
+            nx = np.clip(gx + dx, 0, grid_size - 1)
+            ny = np.clip(gy + dy, 0, grid_size - 1)
+            maze_grid[ny, nx] = wall_color_val
 
-# Draw concentric ring walls (circular walls between rings)
+# Draw concentric ring walls
 for r in range(1, rings + 1):
     radius = inner_radius + r * ring_width
     sector_angle = 2 * np.pi / sectors_per_ring
-
     for s in range(sectors_per_ring):
-        # Check if there's a passage here (circular wall between sectors)
         if ("circular", r, s) not in passages:
-            # Draw arc wall between sector s and s+1
             start_angle = s * sector_angle
             end_angle = start_angle + sector_angle
-            arc_theta = np.linspace(start_angle, end_angle, 30)
-            ax.plot(radius * np.cos(arc_theta), radius * np.sin(arc_theta), color=wall_color, linewidth=wall_linewidth)
+            for i in range(30):
+                theta = start_angle + (end_angle - start_angle) * i / 29
+                gx = grid_center + int(radius * np.cos(theta) * grid_scale)
+                gy = grid_center + int(radius * np.sin(theta) * grid_scale)
+                gx = np.clip(gx, 0, grid_size - 1)
+                gy = np.clip(gy, 0, grid_size - 1)
+                for dx in range(-wall_thickness, wall_thickness + 1):
+                    for dy in range(-wall_thickness, wall_thickness + 1):
+                        nx = np.clip(gx + dx, 0, grid_size - 1)
+                        ny = np.clip(gy + dy, 0, grid_size - 1)
+                        maze_grid[ny, nx] = wall_color_val
 
 # Draw radial walls
 for r in range(rings):
-    if r == 0:
-        inner_r = inner_radius
-    else:
-        inner_r = inner_radius + r * ring_width
+    inner_r = inner_radius if r == 0 else inner_radius + r * ring_width
     outer_r_wall = inner_radius + (r + 1) * ring_width
-
     sector_angle = 2 * np.pi / sectors_per_ring
-
     for s in range(sectors_per_ring):
-        # Check if there's a passage here (radial wall)
         if ("radial", r, s) not in passages:
             angle = s * sector_angle
-            ax.plot(
-                [inner_r * np.cos(angle), outer_r_wall * np.cos(angle)],
-                [inner_r * np.sin(angle), outer_r_wall * np.sin(angle)],
-                color=wall_color,
-                linewidth=wall_linewidth,
-            )
+            for i in range(30):
+                rad = inner_r + (outer_r_wall - inner_r) * i / 29
+                gx = grid_center + int(rad * np.cos(angle) * grid_scale)
+                gy = grid_center + int(rad * np.sin(angle) * grid_scale)
+                gx = np.clip(gx, 0, grid_size - 1)
+                gy = np.clip(gy, 0, grid_size - 1)
+                for dx in range(-wall_thickness, wall_thickness + 1):
+                    for dy in range(-wall_thickness, wall_thickness + 1):
+                        nx = np.clip(gx + dx, 0, grid_size - 1)
+                        ny = np.clip(gy + dy, 0, grid_size - 1)
+                        maze_grid[ny, nx] = wall_color_val
 
-# Draw center circle
-center_theta = np.linspace(0, 2 * np.pi, 100)
-ax.fill(
-    inner_radius * 0.8 * np.cos(center_theta), inner_radius * 0.8 * np.sin(center_theta), color="#306998", alpha=0.8
-)
-ax.text(0, 0, "★", fontsize=28, ha="center", va="center", color="#FFD43B", fontweight="bold")
+# Draw center goal area
+center_radius_grid = int(inner_radius * 0.7 * grid_scale)
+for dx in range(-center_radius_grid, center_radius_grid + 1):
+    for dy in range(-center_radius_grid, center_radius_grid + 1):
+        if dx * dx + dy * dy <= center_radius_grid * center_radius_grid:
+            maze_grid[grid_center + dy, grid_center + dx] = 0.3
 
-# Mark entry point on outer edge
+# Entry opening on outer boundary
 entry_sector = 0
 entry_angle = entry_sector * (2 * np.pi / sectors_per_ring) + (np.pi / sectors_per_ring)
-entry_r = inner_radius + (rings + 0.15) * ring_width
-ax.plot(entry_r * np.cos(entry_angle), entry_r * np.sin(entry_angle), "o", color="#306998", markersize=20)
+entry_inner_r = inner_radius + rings * ring_width
+entry_outer_r = inner_radius + (rings + 0.3) * ring_width
+for i in range(30):
+    rad = entry_inner_r + (entry_outer_r - entry_inner_r) * i / 29
+    gx = grid_center + int(rad * np.cos(entry_angle) * grid_scale)
+    gy = grid_center + int(rad * np.sin(entry_angle) * grid_scale)
+    gx = np.clip(gx, 0, grid_size - 1)
+    gy = np.clip(gy, 0, grid_size - 1)
+    for dx in range(-wall_thickness - 2, wall_thickness + 3):
+        for dy in range(-wall_thickness - 2, wall_thickness + 3):
+            nx = np.clip(gx + dx, 0, grid_size - 1)
+            ny = np.clip(gy + dy, 0, grid_size - 1)
+            maze_grid[ny, nx] = 0.95  # White to create opening
+
+# Convert to DataFrame for seaborn
+maze_df = pd.DataFrame(maze_grid)
+
+# Use seaborn heatmap to display the maze (primary seaborn plotting function)
+# Use gray colormap (not gray_r) so low values = dark (walls), high values = light (paths)
+sns.heatmap(maze_df, ax=ax, cmap="gray", cbar=False, xticklabels=False, yticklabels=False, square=True, vmin=0, vmax=1)
+
+# Add goal star overlay at center
+ax.text(grid_center, grid_center, "★", fontsize=32, ha="center", va="center", color="#FFD43B", fontweight="bold")
+
+# Add START marker
+entry_marker_r = inner_radius + (rings + 0.5) * ring_width
+start_x = grid_center + int(entry_marker_r * np.cos(entry_angle) * grid_scale)
+start_y = grid_center + int(entry_marker_r * np.sin(entry_angle) * grid_scale)
+ax.plot(start_x, start_y, "o", color="#306998", markersize=18, zorder=5)
 ax.annotate(
     "START",
-    xy=(entry_r * np.cos(entry_angle), entry_r * np.sin(entry_angle)),
-    xytext=(entry_r * 1.15 * np.cos(entry_angle), entry_r * 1.15 * np.sin(entry_angle)),
-    fontsize=16,
+    xy=(start_x, start_y),
+    xytext=(start_x + 15, start_y - 15),
+    fontsize=14,
     fontweight="bold",
     ha="center",
     color="#306998",
 )
 
-# Create opening at entry point
-entry_inner_r = inner_radius + rings * ring_width
-entry_outer_r = outer_r
-ax.plot(
-    [entry_inner_r * np.cos(entry_angle), entry_outer_r * np.cos(entry_angle)],
-    [entry_inner_r * np.sin(entry_angle), entry_outer_r * np.sin(entry_angle)],
-    color="white",
-    linewidth=wall_linewidth + 3,
-)
-
-# Set equal aspect ratio and remove axes
-ax.set_aspect("equal")
-ax.set_xlim(-1.3, 1.3)
-ax.set_ylim(-1.3, 1.3)
-ax.axis("off")
+# Add legend explaining markers
+legend_elements = [
+    plt.Line2D([0], [0], marker="o", color="w", markerfacecolor="#306998", markersize=12, label="Entry Point"),
+    plt.Line2D([0], [0], marker="*", color="w", markerfacecolor="#FFD43B", markersize=15, label="Goal (Center)"),
+]
+ax.legend(handles=legend_elements, loc="upper right", fontsize=12, framealpha=0.9)
 
 # Title
 ax.set_title("maze-circular · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)

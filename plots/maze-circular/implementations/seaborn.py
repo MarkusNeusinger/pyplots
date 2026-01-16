@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 maze-circular: Circular Maze Puzzle
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-16
@@ -15,8 +15,8 @@ np.random.seed(42)
 rings = 7
 sectors_per_ring = 12
 
-# Create figure with square aspect for circular maze (3600x3600 at 300dpi = 12x12)
-fig, ax = plt.subplots(figsize=(12, 12))
+# Create figure with square aspect for circular maze (3600x3600 at 100dpi = 36x36)
+fig, ax = plt.subplots(figsize=(36, 36))
 
 # Total cells = center (1) + rings * sectors
 total_cells = 1 + rings * sectors_per_ring
@@ -86,8 +86,8 @@ for wall in walls:
             uf_rank[root1] += 1
         passages.add((wall_type, r, s))
 
-# Build maze grid for seaborn heatmap visualization
-grid_size = 200
+# Build maze grid for seaborn heatmap visualization (higher resolution for smoother walls)
+grid_size = 300
 maze_grid = np.ones((grid_size, grid_size)) * 0.95  # White background
 
 # Drawing parameters
@@ -99,8 +99,8 @@ wall_color_val = 0.1  # Dark gray for walls
 grid_center = grid_size // 2
 grid_scale = (grid_size - 20) / 2.6
 
-# Draw walls onto grid
-wall_thickness = 2
+# Draw walls onto grid (increased thickness for higher resolution grid)
+wall_thickness = 3
 
 # Draw outer boundary
 for i in range(360):
@@ -187,19 +187,19 @@ maze_df = pd.DataFrame(maze_grid)
 # Use gray colormap (not gray_r) so low values = dark (walls), high values = light (paths)
 sns.heatmap(maze_df, ax=ax, cmap="gray", cbar=False, xticklabels=False, yticklabels=False, square=True, vmin=0, vmax=1)
 
-# Add goal star overlay at center
-ax.text(grid_center, grid_center, "★", fontsize=32, ha="center", va="center", color="#FFD43B", fontweight="bold")
+# Add goal star overlay at center (larger for bigger figure)
+ax.text(grid_center, grid_center, "★", fontsize=48, ha="center", va="center", color="#FFD43B", fontweight="bold")
 
 # Add START marker - position it clearly outside the maze
 entry_marker_r = inner_radius + (rings + 0.6) * ring_width
 start_x = grid_center + int(entry_marker_r * np.cos(entry_angle) * grid_scale)
 start_y = grid_center + int(entry_marker_r * np.sin(entry_angle) * grid_scale)
-ax.plot(start_x, start_y, "o", color="#306998", markersize=20, zorder=5)
+ax.plot(start_x, start_y, "o", color="#306998", markersize=28, zorder=5)
 ax.annotate(
     "START",
     xy=(start_x, start_y),
-    xytext=(start_x + 18, start_y),
-    fontsize=16,
+    xytext=(start_x + 25, start_y),
+    fontsize=24,
     fontweight="bold",
     ha="left",
     va="center",
@@ -207,23 +207,23 @@ ax.annotate(
     bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "#306998", "alpha": 0.9},
 )
 
-# Add legend explaining markers - place at lower left within the visible plot area
+# Add legend explaining markers - place at upper right for better balance
 legend_elements = [
-    plt.Line2D([0], [0], marker="o", color="w", markerfacecolor="#306998", markersize=14, label="Entry Point"),
-    plt.Line2D([0], [0], marker="*", color="w", markerfacecolor="#FFD43B", markersize=18, label="Goal (Center)"),
+    plt.Line2D([0], [0], marker="o", color="w", markerfacecolor="#306998", markersize=20, label="Entry Point"),
+    plt.Line2D([0], [0], marker="*", color="w", markerfacecolor="#FFD43B", markersize=24, label="Goal (Center)"),
 ]
 ax.legend(
     handles=legend_elements,
-    loc="lower left",
-    fontsize=14,
+    loc="upper right",
+    fontsize=20,
     framealpha=0.95,
     edgecolor="#333333",
     fancybox=True,
     borderpad=1.0,
 )
 
-# Title
-ax.set_title("maze-circular · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
+# Title (larger for bigger figure)
+ax.set_title("maze-circular · seaborn · pyplots.ai", fontsize=36, fontweight="bold", pad=30)
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")
+plt.savefig("plot.png", dpi=100, bbox_inches="tight", facecolor="white")

@@ -1,7 +1,7 @@
 library: pygal
 specification_id: flowmap-origin-destination
 created: '2026-01-16T08:06:32Z'
-updated: '2026-01-16T08:09:05Z'
+updated: '2026-01-16T08:18:23Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21059785752
 issue: 3765
@@ -10,131 +10,127 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/flowmap-origin-destination/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/flowmap-origin-destination/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/flowmap-origin-destination/pygal/plot.html
-quality_score: 88
+quality_score: 78
 review:
   strengths:
-  - Creative implementation extending pygal's Graph class to create a custom flow
-    map visualization
-  - Excellent geographic context with simplified European coastlines
-  - Clear visual hierarchy with thickness-based flow encoding and transparency for
-    overlapping arcs
-  - Well-designed legend explaining both flow volume and location markers
-  - Realistic trade route data between actual European port cities
+  - Creative adaptation of pygal XY chart to create a flow map visualization despite
+    library limitations
+  - Bezier curve implementation for arc flows adds visual sophistication
+  - Good geographic context with simplified European coastlines
+  - 'Interactive tooltips showing flow details (origin to destination: volume)'
+  - Three-tier flow categorization helps understand trade patterns
   weaknesses:
-  - Code uses a custom class (FlowMap) rather than following KISS structure (imports
-    → data → plot → save)
-  - Missing hover tooltips which pygal supports for interactivity
-  - Some thinner flow arcs could be slightly more visible
+  - Legend text is truncated making volume ranges unreadable - need to increase legend_box_size
+    or use shorter legend labels
+  - Flow arc colors are all similar gray shades; the spec suggests using color gradients
+    to encode flow magnitude - consider using distinct colors from the custom_style.colors
+    for each flow category
+  - The sys.path manipulation at the beginning is a code smell - should investigate
+    if this is truly necessary
   image_description: 'The plot displays an origin-destination flow map of European
-    port trade routes. The visualization features a light blue background representing
-    ocean/sea, with simplified gray coastlines showing parts of Europe (UK, Ireland,
-    Iberian Peninsula, France, Italy, Greece, and Baltic region). Yellow circular
-    markers indicate port city locations (14 cities total). Curved blue arcs (Bezier
-    curves) connect origin-destination pairs, with line thickness proportional to
-    trade flow volume (ranging from 220 to 850). Thicker, more opaque arcs represent
-    higher flow volumes. The plot has axis labels "Longitude" (x-axis, -12 to 28)
-    and "Latitude" (y-axis, 35 to 58). A legend on the right shows "Flow Volume" with
-    three thickness examples (Low 220, Medium 535, High 850) and a "Locations" section
-    showing the yellow city marker. The title follows the correct format: "flowmap-origin-destination
-    · pygal · pyplots.ai".'
+    port trade routes rendered using pygal''s XY chart. The background is a light
+    blue (#E8F4FC). Yellow/gold dots represent 14 major European port cities (Rotterdam,
+    Hamburg, Antwerp, London, Le Havre, Barcelona, Marseille, Genoa, Valencia, Lisbon,
+    Piraeus, Copenhagen, Gdansk, Dublin). Gray curved arcs connect the ports showing
+    trade flows, with three categories differentiated in the legend: Low Volume (220-399),
+    Medium Volume (400-599), and High Volume (600-850). The coastlines are rendered
+    as thin gray polylines showing a simplified outline of Europe. The title "flowmap-origin-destination
+    · pygal · pyplots.ai" appears at the top. Axes show Longitude (-12 to 28) on X-axis
+    and Latitude (35 to 58) on Y-axis. The legend is positioned in the upper-left
+    and is partially truncated with "..." showing for some entries.'
   criteria_checklist:
     visual_quality:
-      score: 35
+      score: 29
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
+        score: 8
         max: 10
         passed: true
-        comment: Title, axis labels, and legend text are all clearly readable at full
-          size. Font sizes are appropriate for the 4800x2700 canvas.
+        comment: Title and axis labels are readable; legend text is truncated with
+          '...' for some entries
       - id: VQ-02
         name: No Overlap
-        score: 8
+        score: 6
         max: 8
         passed: true
-        comment: No overlapping text elements. All labels, ticks, and legend items
-          are well-separated.
+        comment: Some flow arcs overlap in dense areas (northern ports), minor issue
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: Flow arcs are visible with appropriate thickness variation. City
-          markers are clearly visible. However, some thinner arcs could be slightly
-          more prominent.
+        comment: Port cities are clearly visible; flow arcs are somewhat thin and
+          hard to distinguish by thickness
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Uses blue (#306998) for flows and yellow (#FFD43B) for markers -
-          colorblind-safe combination with good contrast.
-      - id: VQ-05
-        name: Layout Balance
         score: 4
         max: 5
         passed: true
-        comment: Good use of canvas with balanced margins. Plot area fills approximately
-          60-70% of the canvas. Legend is appropriately placed.
+        comment: Yellow ports on blue background have good contrast; flow categories
+          all use similar gray shades making them hard to differentiate
+      - id: VQ-05
+        name: Layout Balance
+        score: 3
+        max: 5
+        passed: true
+        comment: Good canvas utilization but legend truncation is problematic
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Descriptive axis labels Longitude and Latitude are present.
+        comment: Longitude and Latitude labels are descriptive
       - id: VQ-07
         name: Grid & Legend
-        score: 1
+        score: 0
         max: 2
-        passed: true
-        comment: Grid is subtle with alpha 0.4. Legend is well-organized. Grid could
-          be slightly more subtle.
+        passed: false
+        comment: Legend entries are truncated; grid is visible but legend display
+          is poor
     spec_compliance:
-      score: 23
+      score: 21
       max: 25
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
+        score: 6
         max: 8
         passed: true
-        comment: Correct origin-destination flow map with curved arcs overlaid on
-          geographic context.
+        comment: Approximates flow map using XY chart with curved arcs; reasonable
+          pygal adaptation
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Origin/destination coordinates correctly mapped to positions; flow
-          magnitude correctly mapped to arc thickness.
+        comment: Origin/destination coordinates correctly mapped to lon/lat
       - id: SC-03
         name: Required Features
         score: 4
         max: 5
         passed: true
-        comment: Has curved arcs (Bezier), thickness proportional to flow, transparency
-          for overlapping arcs, geographic context with coastlines. Missing hover
-          tooltips.
+        comment: Has curved arcs, line thickness categories for flow magnitude, coastline
+          basemap; missing transparency specification
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data points are visible within the defined lat/lon ranges.
+        comment: All ports visible within axis range
       - id: SC-05
         name: Legend Accuracy
+        score: 1
+        max: 2
+        passed: false
+        comment: Legend categories correct but text is truncated
+      - id: SC-06
+        name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly explains flow volume thickness and location markers.
-      - id: SC-06
-        name: Title Format
-        score: 1
-        max: 2
-        passed: true
-        comment: Uses correct format but no subtitle with additional context.
+        comment: 'Correct format: flowmap-origin-destination · pygal · pyplots.ai'
     data_quality:
       score: 18
       max: 20
@@ -144,76 +140,72 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows variety of flow magnitudes from 220 to 850, demonstrates hub
-          locations, directional flows between multiple cities.
+        comment: Shows multiple flow magnitudes, multiple origin-destination pairs,
+          geographic spread
       - id: DQ-02
         name: Realistic Context
-        score: 7
+        score: 6
         max: 7
         passed: true
-        comment: European port trade flows is a realistic, neutral scenario. Port
-          names are real cities with accurate coordinates.
+        comment: European port trade flows is a plausible and realistic scenario
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Trade volumes (220-850) are plausible relative measures. Coordinates
-          are accurate for European cities.
+        comment: Trade volumes (220-850 units) and European lat/lon coordinates are
+          realistic
     code_quality:
       score: 7
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 0
+        score: 3
         max: 3
-        passed: false
-        comment: Uses a custom class (FlowMap extending Graph), which violates the
-          KISS principle of no functions/classes.
+        passed: true
+        comment: 'Linear structure: imports → data → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42) even though data is deterministic.
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
-        score: 2
+        score: 0
         max: 2
-        passed: true
-        comment: Only necessary imports are included.
+        passed: false
+        comment: sys module used for path manipulation which is unusual/hacky
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Uses current pygal API.
+        comment: No deprecated functions
       - id: CQ-05
         name: Output Correct
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png and plot.html.
+        passed: false
+        comment: Saves as plot.png but path manipulation via sys is unusual
     library_features:
-      score: 5
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 5
+        score: 3
         max: 5
         passed: true
-        comment: Excellent use of pygal's SVG rendering capabilities by extending
-          the Graph class to create a custom chart type. Demonstrates advanced pygal
-          usage with direct SVG node manipulation.
+        comment: Uses pygal's XY chart with custom Style, interactive SVG tooltips
+          via labels, stroke_style customization
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - bezier-curves
-  - custom-legend
-  - annotations
+  - html-export
   patterns:
   - data-generation
   - iteration-over-groups

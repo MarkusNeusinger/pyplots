@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-drilldown: Column Chart with Hierarchical Drilling
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 86/100 | Created: 2026-01-16
@@ -10,7 +10,6 @@ from plotnine import (
     aes,
     element_blank,
     element_line,
-    element_rect,
     element_text,
     geom_bar,
     geom_segment,
@@ -122,7 +121,7 @@ plot = (
         color="#306998",
         fontweight="bold",
     )
-    + scale_fill_manual(values=region_colors, name="Category")
+    + scale_fill_manual(values=region_colors)  # Colors for each category
     + scale_x_continuous(
         breaks=[0, 1, 2, 3, 4.8, 5.8, 6.8, 7.8],
         labels=["Americas", "Asia\nPacific", "Europe", "MEA", "USA", "Canada", "Brazil", "Mexico"],
@@ -145,13 +144,10 @@ plot = (
         panel_grid_major_x=element_blank(),
         panel_grid_major_y=element_line(color="#cccccc", alpha=0.4),
         panel_grid_minor=element_blank(),
-        legend_position="right",
-        legend_title=element_text(size=16, weight="bold"),
-        legend_text=element_text(size=14),
-        legend_background=element_rect(fill="white", alpha=0.9),
+        legend_position="none",  # Legend removed - x-axis labels clearly identify each bar
         plot_margin=0.02,
     )
 )
 
 # Save
-plot.save("plot.png", dpi=300, verbose=False)
+plot.save("plot.png", dpi=300)

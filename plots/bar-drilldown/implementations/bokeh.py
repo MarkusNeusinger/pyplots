@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-drilldown: Column Chart with Hierarchical Drilling
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-16
@@ -6,7 +6,7 @@ Quality: 82/100 | Created: 2026-01-16
 
 from bokeh.io import export_png, save
 from bokeh.layouts import column, row
-from bokeh.models import Button, ColumnDataSource, CustomJS, Div, LabelSet, TapTool
+from bokeh.models import Button, ColumnDataSource, CustomJS, Div, LabelSet, Legend, LegendItem, TapTool
 from bokeh.plotting import figure
 
 
@@ -132,22 +132,22 @@ labels = LabelSet(
     source=source,
     text_align="center",
     text_baseline="bottom",
-    text_font_size="24pt",
+    text_font_size="28pt",
     text_font_style="bold",
     text_color="#333333",
 )
 p.add_layout(labels)
 
-# Styling
-p.title.text_font_size = "36pt"
+# Styling - increased font sizes for better legibility
+p.title.text_font_size = "42pt"
 p.title.text_font_style = "bold"
 p.xaxis.axis_label = "Category"
 p.yaxis.axis_label = "Sales (millions $)"
-p.xaxis.axis_label_text_font_size = "24pt"
-p.yaxis.axis_label_text_font_size = "24pt"
-p.xaxis.major_label_text_font_size = "26pt"
-p.yaxis.major_label_text_font_size = "20pt"
-p.xaxis.major_label_orientation = 0
+p.xaxis.axis_label_text_font_size = "30pt"
+p.yaxis.axis_label_text_font_size = "30pt"
+p.xaxis.major_label_text_font_size = "28pt"
+p.yaxis.major_label_text_font_size = "24pt"
+p.xaxis.major_label_orientation = 0  # Horizontal labels
 p.y_range.start = 0
 p.y_range.end = max(values) * 1.15
 
@@ -164,6 +164,18 @@ p.outline_line_width = 2
 bars.selection_glyph = bars.glyph
 bars.nonselection_glyph = bars.glyph
 
+# Add legend showing region colors
+legend_items = [
+    LegendItem(label=hierarchy_data[id]["name"], renderers=[bars], index=i) for i, id in enumerate(root_children)
+]
+legend = Legend(items=legend_items, location="top_right", label_text_font_size="22pt")
+legend.background_fill_alpha = 0.8
+legend.border_line_color = "#cccccc"
+legend.border_line_width = 2
+legend.padding = 15
+legend.spacing = 10
+p.add_layout(legend)
+
 # Breadcrumb div for navigation (display only - Back button handles navigation)
 breadcrumb_div = Div(
     text='<div style="font-size: 28pt; font-family: Arial, sans-serif; padding: 15px; '
@@ -177,11 +189,11 @@ breadcrumb_div = Div(
 # Back button (visible but only functional when not at root)
 back_button = Button(label="⬅ Back", button_type="primary", width=200, height=60)
 
-# Instructions div
+# Instructions div - increased font size for better legibility
 instructions_div = Div(
-    text='<div style="font-size: 20pt; font-family: Arial, sans-serif; padding: 10px; '
-    'color: #666; text-align: center;">'
-    "👆 Click on a bar to drill down | Use Back button to navigate up"
+    text='<div style="font-size: 28pt; font-family: Arial, sans-serif; padding: 20px; '
+    'color: #333; text-align: center; background: #e8f4fc; border-radius: 8px; margin-top: 20px;">'
+    "👆 <b>Click on a bar to drill down</b> | Use Back button to navigate up"
     "</div>",
     width=4800,
 )
@@ -376,6 +388,6 @@ p.select(TapTool).callback = drill_callback
 nav_row = row(breadcrumb_div, back_button)
 layout = column(nav_row, p, instructions_div)
 
-# Save outputs
+# Save outputs (PNG for static preview, HTML for interactivity)
 export_png(layout, filename="plot.png")
 save(layout, filename="plot.html", title="bar-drilldown · bokeh · pyplots.ai")

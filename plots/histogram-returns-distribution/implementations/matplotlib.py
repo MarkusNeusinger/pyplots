@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 histogram-returns-distribution: Returns Distribution Histogram
 Library: matplotlib 3.10.8 | Python 3.13.11
 Quality: 88/100 | Created: 2026-01-16
@@ -6,6 +6,7 @@ Quality: 88/100 | Created: 2026-01-16
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.patches import Patch
 from scipy import stats
 
 
@@ -37,14 +38,7 @@ fig, ax = plt.subplots(figsize=(16, 9))
 
 # Plot histogram with density normalization
 n, bins, patches = ax.hist(
-    returns_pct,
-    bins=35,
-    density=True,
-    alpha=0.7,
-    color="#306998",
-    edgecolor="white",
-    linewidth=1.5,
-    label="Actual Returns",
+    returns_pct, bins=35, density=True, alpha=0.7, color="#306998", edgecolor="white", linewidth=1.5
 )
 
 # Color tail bins differently
@@ -58,7 +52,11 @@ for i, patch in enumerate(patches):
 ax.plot(x_range, normal_pdf, color="#C75450", linewidth=3, linestyle="--", label="Normal Distribution")
 
 # Add vertical lines for mean and standard deviations
-ax.axvline(mean_ret, color="#306998", linewidth=2.5, linestyle="-", alpha=0.8, label=f"Mean ({mean_ret:.2f}%)")
+ax.axvline(mean_ret, color="#306998", linewidth=2.5, linestyle="-", alpha=0.8, label="Mean")
+
+# Create manual legend entries for histogram (blue for main, yellow for tails)
+hist_patch = Patch(facecolor="#306998", edgecolor="white", alpha=0.7, label="Returns Distribution")
+tail_patch = Patch(facecolor="#FFD43B", edgecolor="white", alpha=0.9, label="Tail Regions (>2σ)")
 ax.axvline(lower_tail, color="#888888", linewidth=2, linestyle=":", alpha=0.7)
 ax.axvline(upper_tail, color="#888888", linewidth=2, linestyle=":", alpha=0.7)
 
@@ -84,11 +82,16 @@ ax.set_xlabel("Daily Returns (%)", fontsize=20)
 ax.set_ylabel("Density", fontsize=20)
 ax.set_title("histogram-returns-distribution · matplotlib · pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
-ax.legend(fontsize=16, loc="upper left")
+
+# Build legend with correct colors
+handles, labels = ax.get_legend_handles_labels()
+ax.legend(handles=[hist_patch, tail_patch] + handles, fontsize=16, loc="upper left")
+
 ax.grid(True, alpha=0.3, linestyle="--")
 
-# Add annotation for tail regions
-ax.annotate("Tail Region\n(>2σ)", xy=(lower_tail - 1, 0.02), fontsize=14, ha="center", color="#888888")
+# Add annotations for both tail regions
+ax.annotate("Left Tail\n(<-2σ)", xy=(lower_tail - 1, 0.02), fontsize=14, ha="center", color="#888888")
+ax.annotate("Right Tail\n(>+2σ)", xy=(upper_tail + 1, 0.02), fontsize=14, ha="center", color="#888888")
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

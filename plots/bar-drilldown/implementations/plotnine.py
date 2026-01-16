@@ -1,26 +1,31 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-drilldown: Column Chart with Hierarchical Drilling
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-16
 """
 
+import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
+    element_blank,
     element_line,
-    element_rect,
     element_text,
-    facet_wrap,
     geom_bar,
+    geom_segment,
     geom_text,
     ggplot,
+    guides,
     labs,
-    position_stack,
     scale_fill_manual,
+    scale_x_continuous,
+    scale_y_continuous,
     theme,
     theme_minimal,
 )
 
+
+np.random.seed(42)
 
 # Hierarchical data: Sales by region and country
 hierarchy_data = [
@@ -60,21 +65,18 @@ for region in regions:
 
 # Prepare data for top-level view (regions only)
 top_level_df = df[df["parent"].isna()].copy()
-top_level_df["level"] = "1. All Regions"
-top_level_df["display_name"] = top_level_df["name"]
-top_level_df["sort_order"] = top_level_df["value"]
+top_level_df = top_level_df.sort_values("value", ascending=False)
+top_level_df["x"] = range(len(top_level_df))
+top_level_df["panel"] = "Region"
 
 # Prepare data for drilled-down view (Americas breakdown)
 drilled_df = df[df["parent"] == "americas"].copy()
-drilled_df["level"] = "2. All > Americas"
-drilled_df["display_name"] = drilled_df["name"]
-drilled_df["sort_order"] = drilled_df["value"]
+drilled_df = drilled_df.sort_values("value", ascending=False)
+drilled_df["x"] = [x + 5.5 for x in range(len(drilled_df))]  # Offset to create gap
+drilled_df["panel"] = "Americas"
 
-# Combine for faceted display
+# Combine for single panel display
 combined_df = pd.concat([top_level_df, drilled_df], ignore_index=True)
-
-# Sort by value within each level for better visual
-combined_df = combined_df.sort_values(["level", "sort_order"], ascending=[True, False])
 
 # Define colors for each category
 region_colors = {
@@ -83,47 +85,66 @@ region_colors = {
     "Asia Pacific": "#4B8BBE",  # Light Blue
     "MEA": "#E07B39",  # Orange
     # Drilled countries (Americas shades)
-    "USA": "#306998",
-    "Canada": "#4B8BBE",
-    "Brazil": "#5A9BD4",
+    "USA": "#1A4A6E",  # Darker blue
+    "Canada": "#306998",
+    "Brazil": "#4B8BBE",
     "Mexico": "#7FB3D5",
 }
 
-# Set ordered category for x-axis to respect sort order
-for lvl in combined_df["level"].unique():
-    mask = combined_df["level"] == lvl
-    order = combined_df.loc[mask, "display_name"].tolist()
-    combined_df.loc[mask, "display_name"] = pd.Categorical(
-        combined_df.loc[mask, "display_name"], categories=order, ordered=True
-    )
+# Create annotation data for drill arrow
+arrow_df = pd.DataFrame({"x_start": [0], "x_end": [5.5], "y_start": [750], "y_end": [480]})
 
-# Create the plot
+# Section labels data
+section_labels = pd.DataFrame({"x": [1.5, 7], "y": [850, 850], "label": ["All Regions", "All > Americas"]})
+
+# Create the plot using single panel with custom x positioning
 plot = (
-    ggplot(combined_df, aes(x="display_name", y="value", fill="name"))
-    + geom_bar(stat="identity", width=0.7, show_legend=False)
-    + geom_text(aes(label="value"), position=position_stack(vjust=1.05), size=11, color="#333333", fontweight="bold")
-    + facet_wrap("~level", scales="free_x", ncol=2)
-    + scale_fill_manual(values=region_colors)
+    ggplot(combined_df, aes(x="x", y="value"))
+    + geom_bar(aes(fill="name"), stat="identity", width=0.8)
+    + geom_text(aes(label="value", y="value"), va="bottom", size=12, color="#333333", fontweight="bold", nudge_y=15)
+    # Arrow showing drill path from Americas to breakdown
+    + geom_segment(
+        aes(x="x_start", xend="x_end", y="y_start", yend="y_end"),
+        data=arrow_df,
+        inherit_aes=False,
+        color="#666666",
+        size=1.5,
+        linetype="dashed",
+    )
+    # Section labels
+    + geom_text(
+        aes(x="x", y="y", label="label"),
+        data=section_labels,
+        inherit_aes=False,
+        size=14,
+        color="#306998",
+        fontweight="bold",
+    )
+    + scale_fill_manual(values=region_colors, name="Category")
+    + scale_x_continuous(
+        breaks=[0, 1, 2, 3, 5.5, 6.5, 7.5, 8.5],
+        labels=["Americas", "Asia Pacific", "Europe", "MEA", "USA", "Canada", "Brazil", "Mexico"],
+    )
+    + scale_y_continuous(limits=(0, 900), expand=(0, 0))
     + labs(
         title="bar-drilldown · plotnine · pyplots.ai",
-        subtitle="Static drilldown: Top-level regions (left) and Americas breakdown (right)",
+        subtitle="Static drilldown visualization: Click Americas (left) to see country breakdown (right)",
         x="",
         y="Sales ($ millions)",
     )
+    + guides(fill=False)  # Hide legend since labels are on x-axis
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        plot_title=element_text(size=24, weight="bold", color="#306998"),
-        plot_subtitle=element_text(size=14, color="#666666"),
-        axis_title_y=element_text(size=18),
-        axis_text_x=element_text(size=14, angle=0),
-        axis_text_y=element_text(size=14),
-        strip_text=element_text(size=16, weight="bold"),
-        strip_background=element_rect(fill="#f0f0f0", color="none"),
-        panel_grid_major_x=element_line(alpha=0),
-        panel_grid_major_y=element_line(color="#cccccc", alpha=0.5),
-        panel_grid_minor=element_line(alpha=0),
-        panel_spacing=0.4,
+        plot_title=element_text(size=26, weight="bold", color="#306998"),
+        plot_subtitle=element_text(size=16, color="#666666"),
+        axis_title_y=element_text(size=20),
+        axis_text_x=element_text(size=16),
+        axis_text_y=element_text(size=16),
+        panel_grid_major_x=element_blank(),
+        panel_grid_major_y=element_line(color="#cccccc", alpha=0.4),
+        panel_grid_minor=element_blank(),
+        plot_margin=0.02,
     )
 )
 

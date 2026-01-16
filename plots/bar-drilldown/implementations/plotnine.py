@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-drilldown: Column Chart with Hierarchical Drilling
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-16
@@ -10,12 +10,12 @@ from plotnine import (
     aes,
     element_blank,
     element_line,
+    element_rect,
     element_text,
     geom_bar,
     geom_segment,
     geom_text,
     ggplot,
-    guides,
     labs,
     scale_fill_manual,
     scale_x_continuous,
@@ -67,41 +67,43 @@ for region in regions:
 top_level_df = df[df["parent"].isna()].copy()
 top_level_df = top_level_df.sort_values("value", ascending=False)
 top_level_df["x"] = range(len(top_level_df))
-top_level_df["panel"] = "Region"
+top_level_df["level"] = "Regions"
 
 # Prepare data for drilled-down view (Americas breakdown)
 drilled_df = df[df["parent"] == "americas"].copy()
 drilled_df = drilled_df.sort_values("value", ascending=False)
-drilled_df["x"] = [x + 5.5 for x in range(len(drilled_df))]  # Offset to create gap
-drilled_df["panel"] = "Americas"
+drilled_df["x"] = [x + 4.8 for x in range(len(drilled_df))]  # Reduced gap for better balance
+drilled_df["level"] = "Americas Detail"
 
 # Combine for single panel display
 combined_df = pd.concat([top_level_df, drilled_df], ignore_index=True)
 
-# Define colors for each category
+# Define colors for each category - use distinct colors to avoid confusion
 region_colors = {
     "Americas": "#306998",  # Python Blue
     "Europe": "#FFD43B",  # Python Yellow
-    "Asia Pacific": "#4B8BBE",  # Light Blue
+    "Asia Pacific": "#2E8B57",  # Sea Green (changed from similar blue)
     "MEA": "#E07B39",  # Orange
-    # Drilled countries (Americas shades)
-    "USA": "#1A4A6E",  # Darker blue
-    "Canada": "#306998",
-    "Brazil": "#4B8BBE",
-    "Mexico": "#7FB3D5",
+    # Drilled countries (Americas shades - gradient)
+    "USA": "#1A3D5C",  # Dark blue
+    "Canada": "#2A5F8F",  # Medium-dark blue
+    "Brazil": "#4B8BBE",  # Light blue
+    "Mexico": "#7FB3D5",  # Lightest blue
 }
 
 # Create annotation data for drill arrow
-arrow_df = pd.DataFrame({"x_start": [0], "x_end": [5.5], "y_start": [750], "y_end": [480]})
+arrow_df = pd.DataFrame({"x_start": [0], "x_end": [4.8], "y_start": [750], "y_end": [480]})
 
-# Section labels data
-section_labels = pd.DataFrame({"x": [1.5, 7], "y": [850, 850], "label": ["All Regions", "All > Americas"]})
+# Section labels data - breadcrumb navigation
+section_labels = pd.DataFrame(
+    {"x": [1.5, 6.3], "y": [820, 820], "label": ["1. All Regions", "2. Americas → Countries"]}
+)
 
 # Create the plot using single panel with custom x positioning
 plot = (
     ggplot(combined_df, aes(x="x", y="value"))
-    + geom_bar(aes(fill="name"), stat="identity", width=0.8)
-    + geom_text(aes(label="value", y="value"), va="bottom", size=12, color="#333333", fontweight="bold", nudge_y=15)
+    + geom_bar(aes(fill="name"), stat="identity", width=0.75)
+    + geom_text(aes(label="value", y="value"), va="bottom", size=11, color="#333333", fontweight="bold", nudge_y=12)
     # Arrow showing drill path from Americas to breakdown
     + geom_segment(
         aes(x="x_start", xend="x_end", y="y_start", yend="y_end"),
@@ -111,39 +113,42 @@ plot = (
         size=1.5,
         linetype="dashed",
     )
-    # Section labels
+    # Section labels for breadcrumb navigation
     + geom_text(
         aes(x="x", y="y", label="label"),
         data=section_labels,
         inherit_aes=False,
-        size=14,
+        size=13,
         color="#306998",
         fontweight="bold",
     )
     + scale_fill_manual(values=region_colors, name="Category")
     + scale_x_continuous(
-        breaks=[0, 1, 2, 3, 5.5, 6.5, 7.5, 8.5],
-        labels=["Americas", "Asia Pacific", "Europe", "MEA", "USA", "Canada", "Brazil", "Mexico"],
+        breaks=[0, 1, 2, 3, 4.8, 5.8, 6.8, 7.8],
+        labels=["Americas", "Asia\nPacific", "Europe", "MEA", "USA", "Canada", "Brazil", "Mexico"],
     )
-    + scale_y_continuous(limits=(0, 900), expand=(0, 0))
+    + scale_y_continuous(limits=(0, 880), expand=(0, 0))
     + labs(
         title="bar-drilldown · plotnine · pyplots.ai",
-        subtitle="Static drilldown visualization: Click Americas (left) to see country breakdown (right)",
+        subtitle="Hierarchical drilldown: Americas region expanded to show country breakdown",
         x="",
         y="Sales ($ millions)",
     )
-    + guides(fill=False)  # Hide legend since labels are on x-axis
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
         plot_title=element_text(size=26, weight="bold", color="#306998"),
         plot_subtitle=element_text(size=16, color="#666666"),
         axis_title_y=element_text(size=20),
-        axis_text_x=element_text(size=16),
+        axis_text_x=element_text(size=14),  # Slightly smaller for better fit
         axis_text_y=element_text(size=16),
         panel_grid_major_x=element_blank(),
         panel_grid_major_y=element_line(color="#cccccc", alpha=0.4),
         panel_grid_minor=element_blank(),
+        legend_position="right",
+        legend_title=element_text(size=16, weight="bold"),
+        legend_text=element_text(size=14),
+        legend_background=element_rect(fill="white", alpha=0.9),
         plot_margin=0.02,
     )
 )

@@ -1,12 +1,12 @@
-""" pyplots.ai
+"""pyplots.ai
 bar-drilldown: Column Chart with Hierarchical Drilling
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-16
 """
 
 from bokeh.io import export_png, save
-from bokeh.layouts import column
-from bokeh.models import ColumnDataSource, CustomJS, Div, LabelSet, TapTool
+from bokeh.layouts import column, row
+from bokeh.models import Button, ColumnDataSource, CustomJS, Div, LabelSet, TapTool
 from bokeh.plotting import figure
 
 
@@ -145,9 +145,9 @@ p.xaxis.axis_label = "Category"
 p.yaxis.axis_label = "Sales (millions $)"
 p.xaxis.axis_label_text_font_size = "24pt"
 p.yaxis.axis_label_text_font_size = "24pt"
-p.xaxis.major_label_text_font_size = "20pt"
-p.yaxis.major_label_text_font_size = "18pt"
-p.xaxis.major_label_orientation = 0.3
+p.xaxis.major_label_text_font_size = "26pt"
+p.yaxis.major_label_text_font_size = "20pt"
+p.xaxis.major_label_orientation = 0
 p.y_range.start = 0
 p.y_range.end = max(values) * 1.15
 
@@ -164,22 +164,24 @@ p.outline_line_width = 2
 bars.selection_glyph = bars.glyph
 bars.nonselection_glyph = bars.glyph
 
-# Breadcrumb div for navigation
+# Breadcrumb div for navigation (display only - Back button handles navigation)
 breadcrumb_div = Div(
-    text='<div style="font-size: 28pt; font-family: Arial, sans-serif; padding: 20px; '
-    'background: #f5f5f5; border-radius: 8px; margin-bottom: 20px;">'
+    text='<div style="font-size: 28pt; font-family: Arial, sans-serif; padding: 15px; '
+    'background: #f5f5f5; border-radius: 8px; display: inline-block;">'
     '<span style="color: #306998; font-weight: bold;">📍 </span>'
-    '<span style="color: #666;">All</span>'
+    '<span style="color: #333; font-weight: bold;">All</span>'
     "</div>",
-    width=4800,
+    width=2400,
 )
+
+# Back button (visible but only functional when not at root)
+back_button = Button(label="⬅ Back", button_type="primary", width=200, height=60)
 
 # Instructions div
 instructions_div = Div(
-    text='<div style="font-size: 22pt; font-family: Arial, sans-serif; padding: 15px; '
+    text='<div style="font-size: 20pt; font-family: Arial, sans-serif; padding: 10px; '
     'color: #666; text-align: center;">'
-    "👆 Click on a bar to drill down into subcategories | "
-    "Click breadcrumb links to navigate back"
+    "👆 Click on a bar to drill down | Use Back button to navigate up"
     "</div>",
     width=4800,
 )
@@ -193,6 +195,7 @@ drill_callback = CustomJS(
         "hierarchy": hierarchy_data,
         "colors": colors,
         "breadcrumb_div": breadcrumb_div,
+        "back_button": back_button,
     },
     code="""
     const indices = source.selected.indices;
@@ -246,22 +249,25 @@ drill_callback = CustomJS(
     state.data['breadcrumb_ids'] = current_ids;
 
     // Update breadcrumb display
-    let breadcrumb_html = '<div style="font-size: 28pt; font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; border-radius: 8px; margin-bottom: 20px;">';
+    let breadcrumb_html = '<div style="font-size: 28pt; font-family: Arial, sans-serif; padding: 15px; background: #f5f5f5; border-radius: 8px; display: inline-block;">';
     breadcrumb_html += '<span style="color: #306998; font-weight: bold;">📍 </span>';
 
     for (let i = 0; i < current_path.length; i++) {
         if (i > 0) {
-            breadcrumb_html += '<span style="color: #999;"> > </span>';
+            breadcrumb_html += '<span style="color: #999;"> › </span>';
         }
         const is_last = (i === current_path.length - 1);
         if (is_last) {
             breadcrumb_html += '<span style="color: #333; font-weight: bold;">' + current_path[i] + '</span>';
         } else {
-            breadcrumb_html += '<span style="color: #306998; cursor: pointer; text-decoration: underline;" onclick="drillUp(' + i + ')">' + current_path[i] + '</span>';
+            breadcrumb_html += '<span style="color: #306998;">' + current_path[i] + '</span>';
         }
     }
     breadcrumb_html += '</div>';
     breadcrumb_div.text = breadcrumb_html;
+
+    // Enable Back button when not at root
+    back_button.disabled = false;
 
     source.selected.indices = [];
     source.change.emit();
@@ -269,11 +275,106 @@ drill_callback = CustomJS(
 """,
 )
 
+# JavaScript callback for drilling up (Back button)
+drill_up_callback = CustomJS(
+    args={
+        "source": source,
+        "state": state_source,
+        "p": p,
+        "hierarchy": hierarchy_data,
+        "colors": colors,
+        "breadcrumb_div": breadcrumb_div,
+        "back_button": back_button,
+    },
+    code="""
+    const current_path = state.data['breadcrumb_path'];
+    const current_ids = state.data['breadcrumb_ids'];
+
+    // If at root level, do nothing
+    if (current_ids.length <= 1) return;
+
+    // Go up one level
+    const new_path = current_path.slice(0, -1);
+    const new_ids = current_ids.slice(0, -1);
+    const parent_id = new_ids[new_ids.length - 1];
+
+    // Get data for parent level
+    let children_ids;
+    if (parent_id === 'root') {
+        children_ids = hierarchy['root']['children'];
+    } else {
+        children_ids = hierarchy[parent_id]['children'];
+    }
+
+    const names = [];
+    const values = [];
+    const has_children = [];
+
+    for (const child_id of children_ids) {
+        const child = hierarchy[child_id];
+        names.push(child.name);
+        values.push(child.value);
+        has_children.push(child.children && child.children.length > 0);
+    }
+
+    // Update source data
+    source.data['names'] = names;
+    source.data['values'] = values;
+    source.data['ids'] = children_ids;
+    source.data['has_children'] = has_children;
+    source.data['colors'] = names.map((_, i) => colors[i % colors.length]);
+    source.data['label_y'] = values.map(v => v + 5);
+
+    // Update x_range
+    p.x_range.factors = names;
+
+    // Update y_range
+    const max_val = Math.max(...values);
+    p.y_range.end = max_val * 1.15;
+
+    // Update state
+    state.data['current_parent'] = [parent_id];
+    state.data['breadcrumb_path'] = new_path;
+    state.data['breadcrumb_ids'] = new_ids;
+
+    // Update breadcrumb display
+    let breadcrumb_html = '<div style="font-size: 28pt; font-family: Arial, sans-serif; padding: 15px; background: #f5f5f5; border-radius: 8px; display: inline-block;">';
+    breadcrumb_html += '<span style="color: #306998; font-weight: bold;">📍 </span>';
+
+    for (let i = 0; i < new_path.length; i++) {
+        if (i > 0) {
+            breadcrumb_html += '<span style="color: #999;"> › </span>';
+        }
+        const is_last = (i === new_path.length - 1);
+        if (is_last) {
+            breadcrumb_html += '<span style="color: #333; font-weight: bold;">' + new_path[i] + '</span>';
+        } else {
+            breadcrumb_html += '<span style="color: #306998;">' + new_path[i] + '</span>';
+        }
+    }
+    breadcrumb_html += '</div>';
+    breadcrumb_div.text = breadcrumb_html;
+
+    // Disable Back button if at root
+    if (new_ids.length <= 1) {
+        back_button.disabled = true;
+    }
+
+    source.change.emit();
+    state.change.emit();
+""",
+)
+
+# Attach drill-up callback to back button
+back_button.js_on_click(drill_up_callback)
+back_button.disabled = True  # Start disabled since we're at root
+
 # Add tap tool callback
 p.select(TapTool).callback = drill_callback
 
-# Create layout
-layout = column(breadcrumb_div, p, instructions_div)
+# Create layout with navigation row containing breadcrumb and back button
+nav_row = row(breadcrumb_div, back_button)
+layout = column(nav_row, p, instructions_div)
 
 # Save outputs
 export_png(layout, filename="plot.png")

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 maze-circular: Circular Maze Puzzle
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 74/100 | Created: 2026-01-16
@@ -146,19 +146,8 @@ for ring in range(num_rings):
             wall_data.append({"x": x2, "y": y2, "wall_id": f"radial_{ring}_{sector}_{wall_count}", "order": 1})
             wall_count += 1
 
-# Create center goal marker using a filled circle with inner circle for star effect
-goal_points = []
-star_r = 0.4
-for i in range(5):
-    angle_outer = -np.pi / 2 + i * 2 * np.pi / 5
-    angle_inner = -np.pi / 2 + (i + 0.5) * 2 * np.pi / 5
-    goal_points.append({"x": star_r * np.cos(angle_outer), "y": star_r * np.sin(angle_outer), "order": i * 2})
-    goal_points.append(
-        {"x": star_r * 0.38 * np.cos(angle_inner), "y": star_r * 0.38 * np.sin(angle_inner), "order": i * 2 + 1}
-    )
-goal_points.append(goal_points[0].copy())
-goal_points[-1]["order"] = 10
-goal_df = pd.DataFrame(goal_points)
+# Create center goal marker - use mark_point with star shape (Altair's native star support)
+goal_df = pd.DataFrame({"x": [0], "y": [0]})
 
 # Entry marker - position and compute angle for text rotation
 entry_angle = (entry_theta_start + entry_theta_end) / 2
@@ -166,10 +155,15 @@ entry_r = num_rings * ring_width + 0.8
 entry_x = entry_r * np.cos(entry_angle)
 entry_y = entry_r * np.sin(entry_angle)
 
-# Calculate rotation so text reads correctly from outside pointing inward
-text_angle_deg = np.degrees(entry_angle) - 90
-if text_angle_deg > 90 or text_angle_deg < -90:
-    text_angle_deg += 180
+# Calculate rotation so text reads correctly (upright, tangent to circle)
+# Altair angle must be in [0, 360] range, counter-clockwise from right
+# We want text baseline parallel to tangent, readable from outside
+text_angle_deg = np.degrees(entry_angle) + 90
+# Normalize to 0-360 range first
+text_angle_deg = text_angle_deg % 360
+# Flip if text would be upside down (angles between 90 and 270)
+if 90 < text_angle_deg < 270:
+    text_angle_deg = (text_angle_deg + 180) % 360
 
 entry_data = pd.DataFrame({"x": [entry_x], "y": [entry_y], "label": ["START"]})
 
@@ -183,11 +177,17 @@ base = (
     .encode(x=alt.X("x:Q", axis=None), y=alt.Y("y:Q", axis=None), detail="wall_id:N", order="order:O")
 )
 
-# Center goal - star shape using mark_area for filled polygon
+# Center goal - use Vega-Lite's built-in star shape via mark_point
 goal = (
     alt.Chart(goal_df)
-    .mark_area(color="#FFD43B", stroke="black", strokeWidth=1)
-    .encode(x=alt.X("x:Q", axis=None), y=alt.Y("y:Q", axis=None), order="order:O")
+    .mark_point(
+        shape="M0,0.5L0.191,0.181L0.5,0.181L0.236,-0.045L0.309,-0.405L0,-0.191L-0.309,-0.405L-0.236,-0.045L-0.5,0.181L-0.191,0.181Z",
+        size=8000,
+        color="#FFD43B",
+        stroke="black",
+        strokeWidth=2,
+    )
+    .encode(x=alt.X("x:Q", axis=None), y=alt.Y("y:Q", axis=None))
 )
 
 # Entry marker with correct rotation

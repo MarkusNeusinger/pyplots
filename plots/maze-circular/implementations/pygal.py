@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 maze-circular: Circular Maze Puzzle
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 72/100 | Created: 2026-01-16
+Quality: 78/100 | Created: 2026-01-16
 """
 
 import numpy as np

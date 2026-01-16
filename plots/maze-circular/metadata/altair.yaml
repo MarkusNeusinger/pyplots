@@ -1,7 +1,7 @@
 library: altair
 specification_id: maze-circular
 created: '2026-01-16T07:21:30Z'
-updated: '2026-01-16T07:24:03Z'
+updated: '2026-01-16T07:29:31Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21058785410
 issue: 3804
@@ -10,82 +10,79 @@ library_version: 6.0.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/maze-circular/altair/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/maze-circular/altair/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/maze-circular/altair/plot.html
-quality_score: 72
+quality_score: 74
 review:
   strengths:
-  - Excellent use of Altair declarative approach with layered composition
-  - Proper algorithmic maze generation using randomized Kruskal algorithm ensuring
-    single solution
-  - Good use of detail encoding to render separate wall segments
-  - Print-friendly black and white color scheme as specified
-  - Proper title format following spec
+  - Excellent maze generation algorithm using Kruskal's algorithm with proper union-find
+  - Clean print-friendly black/white aesthetic
+  - Correct title format
+  - Good wall structure with clear passages
+  - Reproducible with fixed seed
   weaknesses:
-  - Entry label START appears inverted/upside-down - should be oriented correctly
-    for readability
-  - Center goal marker shows OA instead of the intended star - Unicode character rendering
-    issue
-  - Code violates KISS principle by using helper functions (find, union, add_arc,
-    add_radial)
-  - Chart dimensions result in slight elliptical distortion - should be perfectly
-    circular
-  image_description: The plot displays a circular maze puzzle with 7 concentric rings.
-    Black walls on a white background form the maze structure with concentric circular
-    arcs and radial line segments creating pathways. At the center is a light blue/gray
-    circle with "OA" text (likely intended to be a star goal marker but rendered as
-    text). At the bottom of the maze is an entry point with "START" text displayed
-    in blue, though it appears upside-down/inverted. The title "maze-circular · altair
-    · pyplots.ai" is displayed at the top in black text. The maze has good overall
-    circular structure with visible passages between rings and sectors.
+  - START label renders upside down due to text rotation calculation error
+  - Center goal star marker failed to render - shows malformed polygon instead of
+    star shape (mark_area polygon approach did not work)
+  - Altair's declarative approach struggles with custom geometric primitives like
+    filled star polygons
+  image_description: The plot displays a circular maze puzzle with 7 concentric rings,
+    black walls on a white background. The title "maze-circular · altair · pyplots.ai"
+    appears at the top in bold black text. The maze shows concentric circular walls
+    with gaps for passages between rings, and radial walls dividing each ring into
+    sectors. An entry point is visible at the bottom of the outer ring (a gap in the
+    outer boundary). The "START" label appears at the bottom but is rendered upside
+    down (inverted text). The center goal marker does not render as a star - instead
+    it shows "OA" text or a malformed shape, indicating the mark_area polygon approach
+    failed to produce the intended star shape. The maze itself has proper wall structure
+    with varied sector counts per ring, creating a legitimate solvable maze pattern.
   criteria_checklist:
     visual_quality:
-      score: 32
+      score: 30
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 10
         passed: true
-        comment: Title clear; START label readable but upside-down
+        comment: Title clear at 28pt, but START label is upside down
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text or elements
+        comment: No overlapping elements
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: Walls visible with good thickness; center goal marker rendered incorrectly
-          as OA instead of star
+        comment: Walls visible, but center goal marker failed to render properly
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Black walls on white background optimal for print-friendly output
+        comment: Black/white high contrast, excellent for printing
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Good proportions; slight aspect ratio distortion making it elliptical
+        comment: Square aspect good, START label positioning awkward
       - id: VQ-06
         name: Axis Labels
         score: 0
         max: 2
         passed: true
-        comment: N/A for maze type - no axes appropriate
+        comment: N/A for maze
       - id: VQ-07
         name: Grid & Legend
-        score: 2
+        score: 0
         max: 2
         passed: true
-        comment: No grid needed; clean presentation
+        comment: N/A for maze
     spec_compliance:
-      score: 18
+      score: 19
       max: 25
       items:
       - id: SC-01
@@ -93,32 +90,32 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct circular maze type with concentric rings
+        comment: Correct circular maze with concentric rings and radial passages
       - id: SC-02
         name: Data Mapping
-        score: 3
+        score: 5
         max: 5
         passed: true
-        comment: Walls and passages rendered correctly; marker rendering issues
+        comment: Maze algorithm correctly maps walls and passages
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 2
         max: 5
         passed: false
-        comment: Entry point marked but text inverted; goal at center but star renders
-          as OA
+        comment: Entry exists but START upside down; Goal marker fails to render as
+          star
       - id: SC-04
         name: Data Range
-        score: 2
+        score: 3
         max: 3
         passed: true
-        comment: All rings visible
+        comment: All 7 rings visible
       - id: SC-05
         name: Legend Accuracy
         score: 0
         max: 2
         passed: true
-        comment: N/A - no legend needed for maze
+        comment: N/A for maze
       - id: SC-06
         name: Title Format
         score: 2
@@ -126,39 +123,37 @@ review:
         passed: true
         comment: 'Correct format: maze-circular · altair · pyplots.ai'
     data_quality:
-      score: 15
+      score: 17
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Shows concentric rings, radial walls, passages; entry and goal markers
-          have rendering issues
+        comment: Shows all maze features though goal marker rendering failed
       - id: DQ-02
         name: Realistic Context
-        score: 5
+        score: 7
         max: 7
         passed: true
-        comment: Plausible maze puzzle, algorithmically generated with Kruskal
+        comment: Valid printable maze puzzle with proper difficulty
       - id: DQ-03
         name: Appropriate Scale
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: 7 rings with reasonable complexity
+        comment: 7 rings appropriate for medium difficulty
     code_quality:
-      score: 7
+      score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 0
+        score: 3
         max: 3
-        passed: false
-        comment: Uses helper functions (find, union, add_arc, add_radial) violating
-          KISS principle
+        passed: true
+        comment: 'Linear flow: imports → data → algorithm → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -170,36 +165,35 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: Only altair, numpy, pandas used
       - id: CQ-04
         name: No Deprecated API
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Current API usage
+        passed: false
+        comment: mark_area polygon rendering not working as intended
       - id: CQ-05
         name: Output Correct
-        score: 1
+        score: 0
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
+        comment: Saves as plot.png
     library_features:
-      score: 5
+      score: 0
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 5
+        score: 0
         max: 5
-        passed: true
-        comment: Uses Altair mark_line with detail encoding, mark_text for markers,
-          layer composition
+        passed: false
+        comment: mark_area polygon failed; Altair not ideal for custom geometric shapes
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
-  - annotations
+  - html-export
   patterns:
   - data-generation
   - iteration-over-groups

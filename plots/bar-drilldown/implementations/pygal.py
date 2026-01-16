@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-drilldown: Column Chart with Hierarchical Drilling
-Library: pygal | Python 3.13
-Quality: pending | Created: 2026-01-16
+Library: pygal 3.1.0 | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-16
 """
 
 import pygal

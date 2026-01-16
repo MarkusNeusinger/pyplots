@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 bar-drilldown: Column Chart with Hierarchical Drilling
-Library: plotnine | Python 3.13
-Quality: pending | Created: 2026-01-16
+Library: plotnine 0.15.2 | Python 3.13.11
+Quality: 78/100 | Created: 2026-01-16
 """
 
 import pandas as pd

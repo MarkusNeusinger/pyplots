@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 flowmap-origin-destination: Origin-Destination Flow Map
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2026-01-16
+Library: seaborn 0.13.2 | Python 3.13.11
+Quality: 84/100 | Created: 2026-01-16
 """
 
 import matplotlib.patches as mpatches

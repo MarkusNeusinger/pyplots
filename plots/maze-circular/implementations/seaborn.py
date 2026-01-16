@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 maze-circular: Circular Maze Puzzle
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-16
@@ -190,27 +190,37 @@ sns.heatmap(maze_df, ax=ax, cmap="gray", cbar=False, xticklabels=False, yticklab
 # Add goal star overlay at center
 ax.text(grid_center, grid_center, "★", fontsize=32, ha="center", va="center", color="#FFD43B", fontweight="bold")
 
-# Add START marker
-entry_marker_r = inner_radius + (rings + 0.5) * ring_width
+# Add START marker - position it clearly outside the maze
+entry_marker_r = inner_radius + (rings + 0.6) * ring_width
 start_x = grid_center + int(entry_marker_r * np.cos(entry_angle) * grid_scale)
 start_y = grid_center + int(entry_marker_r * np.sin(entry_angle) * grid_scale)
-ax.plot(start_x, start_y, "o", color="#306998", markersize=18, zorder=5)
+ax.plot(start_x, start_y, "o", color="#306998", markersize=20, zorder=5)
 ax.annotate(
     "START",
     xy=(start_x, start_y),
-    xytext=(start_x + 15, start_y - 15),
-    fontsize=14,
+    xytext=(start_x + 18, start_y),
+    fontsize=16,
     fontweight="bold",
-    ha="center",
+    ha="left",
+    va="center",
     color="#306998",
+    bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "#306998", "alpha": 0.9},
 )
 
-# Add legend explaining markers
+# Add legend explaining markers - place at lower left within the visible plot area
 legend_elements = [
-    plt.Line2D([0], [0], marker="o", color="w", markerfacecolor="#306998", markersize=12, label="Entry Point"),
-    plt.Line2D([0], [0], marker="*", color="w", markerfacecolor="#FFD43B", markersize=15, label="Goal (Center)"),
+    plt.Line2D([0], [0], marker="o", color="w", markerfacecolor="#306998", markersize=14, label="Entry Point"),
+    plt.Line2D([0], [0], marker="*", color="w", markerfacecolor="#FFD43B", markersize=18, label="Goal (Center)"),
 ]
-ax.legend(handles=legend_elements, loc="upper right", fontsize=12, framealpha=0.9)
+ax.legend(
+    handles=legend_elements,
+    loc="lower left",
+    fontsize=14,
+    framealpha=0.95,
+    edgecolor="#333333",
+    fancybox=True,
+    borderpad=1.0,
+)
 
 # Title
 ax.set_title("maze-circular · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)

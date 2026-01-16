@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 maze-circular: Circular Maze Puzzle
-Library: altair | Python 3.13
-Quality: pending | Created: 2026-01-16
+Library: altair 6.0.0 | Python 3.13.11
+Quality: 72/100 | Created: 2026-01-16
 """
 
 import altair as alt

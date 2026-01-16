@@ -1,10 +1,10 @@
-""" pyplots.ai
+"""pyplots.ai
 flowmap-origin-destination: Origin-Destination Flow Map
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-16
 """
 
-# Prevent local file from shadowing the pygal package
+# When run from implementations directory, local pygal.py shadows the package
 import sys
 
 
@@ -123,17 +123,20 @@ coastlines = [
 flows = [f["flow"] for f in flow_data]
 min_flow = min(flows)
 max_flow = max(flows)
-min_stroke = 4
-max_stroke = 14
+# More pronounced line width differentiation for better visual distinction
+min_stroke = 3
+mid_stroke = 10
+max_stroke = 18
 
-# Custom style - colors: coastlines, low (green), medium (orange), high (red), cities (yellow)
+# Custom style - colorblind-safe palette (viridis-inspired)
+# Colors: coastlines (gray), low (teal), medium (gold), high (purple), cities (coral)
 custom_style = Style(
     background="white",
-    plot_background="#E8F4FC",
+    plot_background="#F0F8F8",
     foreground="#333333",
     foreground_strong="#333333",
     foreground_subtle="#666666",
-    colors=("#888888", "#27AE60", "#E67E22", "#C0392B", "#FFD43B"),
+    colors=("#888888", "#1F9E89", "#FCA636", "#6A3D9A", "#FF7F50"),
     title_font_size=64,
     legend_font_size=40,
     label_font_size=42,
@@ -270,7 +273,7 @@ chart.add(
     medium_curves,
     stroke=True,
     show_dots=False,
-    stroke_style={"width": (min_stroke + max_stroke) // 2, "linecap": "round"},
+    stroke_style={"width": mid_stroke, "linecap": "round"},
 )
 
 # Add high volume flows

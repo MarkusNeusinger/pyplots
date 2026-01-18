@@ -1,7 +1,7 @@
 library: altair
 specification_id: skewt-logp-atmospheric
 created: '2026-01-17T09:28:57Z'
-updated: '2026-01-18T22:42:52Z'
+updated: '2026-01-18T22:49:27Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21092078682
 issue: 3802
@@ -13,35 +13,34 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/skewt-logp-atm
 quality_score: 72
 review:
   strengths:
-  - Correctly implements the skew transformation for temperature isotherms mathematically
-  - Proper logarithmic, inverted pressure scale
-  - Realistic atmospheric sounding data with appropriate temperature/dewpoint profiles
-  - Temperature and dewpoint profiles are visually distinct and prominent
-  - All required reference line types are implemented (isotherms, dry adiabats, moist
-    adiabats, mixing ratios)
-  - Clean code structure following KISS principles
+  - Correctly implements the fundamental Skew-T Log-P thermodynamic structure with
+    skewed isotherms
+  - Realistic atmospheric sounding data with proper temperature/dewpoint profiles
+  - Good use of Altair layer composition for multiple reference line systems
+  - All reference lines (isotherms, dry/moist adiabats, mixing ratios) are present
+  - Temperature and dewpoint profiles clearly distinguished by color and line style
   weaknesses:
-  - Legend is not visible in the rendered output - the invisible rule approach for
-    creating a combined legend does not work
-  - X-axis domain extends far beyond the actual data range, creating excessive empty
-    space on the right side
-  - Y-axis label lacks units (should be Pressure (hPa) not pressure)
-  - Reference line colors could have better contrast for distinguishing moist adiabats
-    from mixing ratio lines
-  image_description: The plot displays a Skew-T Log-P atmospheric diagram with a logarithmic
-    pressure axis (inverted, showing 1000 hPa at bottom to 100 hPa at top). The temperature
-    profile is shown as a solid red (crimson) line with circle markers, while the
-    dewpoint profile is displayed as a dashed blue line with circle markers. The background
-    includes gray dashed isotherms (temperature lines skewed diagonally), green solid
-    dry adiabats, light purple/dashed moist adiabats, and blue dashed mixing ratio
-    lines. The title "skewt-logp-atmospheric · altair · pyplots.ai" is displayed at
-    the top. The x-axis shows "Temperature (°C, skewed)" and the y-axis shows "pressure".
-    However, the legend panel that should appear on the right side is not visible
-    in the rendered output - only the plot area is shown without the intended legend
-    explaining the 6 line types.
+  - Legend is not visible - the legend data points render inside the plot area as
+    regular markers rather than as a proper legend panel
+  - Y-axis label missing units (should be Pressure hPa not just pressure)
+  - X-axis domain too wide creating unused white space on the right
+  image_description: The plot displays a Skew-T Log-P atmospheric diagram with a white
+    background. The pressure axis (Y-axis) is logarithmic and inverted, ranging from
+    1000 hPa at the bottom to 100 hPa at the top. The X-axis shows skewed temperature
+    values ranging from -40 to 120. The temperature profile is rendered as a solid
+    red line with circular markers, extending from approximately 25°C at surface (1000
+    hPa) to around -55°C at the tropopause. The dewpoint profile is shown as a dashed
+    blue line with circular markers, depicting the expected moisture decrease with
+    altitude. Reference lines include gray dashed isotherms at 45-degree angles, green
+    dry adiabats curving from lower-left to upper-right, purple/magenta dashed moist
+    adiabats, and blue dashed mixing ratio lines. The title "skewt-logp-atmospheric
+    · altair · pyplots.ai" appears at the top. The legend was coded but is not visible
+    in the output image - the legend points appear within the visible plotting domain
+    as regular plot points rather than a separate legend panel. The Y-axis label shows
+    only "pressure" without units.
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 26
       max: 40
       items:
       - id: VQ-01
@@ -49,7 +48,7 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Title and axis labels are readable, but could be slightly larger
+        comment: Title and axis labels readable, tick labels adequately sized
       - id: VQ-02
         name: No Overlap
         score: 8
@@ -58,39 +57,36 @@ review:
         comment: No overlapping elements
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 8
         passed: true
-        comment: Temperature/dewpoint profiles visible and thick, but reference lines
-          are thin and can be hard to distinguish
+        comment: Profiles visible with thick lines and markers
       - id: VQ-04
         name: Color Accessibility
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Colors distinguishable; red/blue profiles clear, reference lines
-          could have more contrast
+        comment: Colors distinguishable but some similar blues
       - id: VQ-05
         name: Layout Balance
-        score: 2
+        score: 0
         max: 5
         passed: false
-        comment: Plot area utilized but right side has excessive empty space due to
-          x_domain extending beyond data
+        comment: Legend missing - renders as plot markers instead of legend panel
       - id: VQ-06
         name: Axis Labels
-        score: 1
-        max: 2
-        passed: true
-        comment: X-axis has units, Y-axis lacks units
-      - id: VQ-07
-        name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: Legend is not visible in the rendered output despite being coded
+        comment: Y-axis missing units (hPa)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 1
+        max: 2
+        passed: false
+        comment: Grid subtle but legend missing
     spec_compliance:
-      score: 18
+      score: 20
       max: 25
       items:
       - id: SC-01
@@ -98,39 +94,37 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct Skew-T Log-P diagram with skewed temperature axis and inverted
-          log pressure
+        comment: Correct Skew-T Log-P diagram
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Pressure on Y (log scale, inverted), temperature/dewpoint skewed
-          correctly on X
+        comment: Temperature and dewpoint correctly mapped
       - id: SC-03
         name: Required Features
         score: 3
         max: 5
-        passed: false
-        comment: Has all reference lines and profiles; missing visible legend
+        passed: true
+        comment: Has all reference lines but missing functional legend
       - id: SC-04
         name: Data Range
-        score: 0
+        score: 3
         max: 3
-        passed: false
-        comment: X-axis extends far beyond data creating wasted space
+        passed: true
+        comment: All data visible
       - id: SC-05
         name: Legend Accuracy
         score: 0
         max: 2
         passed: false
-        comment: Legend not visible in output
+        comment: Legend not rendered properly
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: 'Correct format: skewt-logp-atmospheric · altair · pyplots.ai'
+        comment: Correct title format
     data_quality:
       score: 17
       max: 20
@@ -140,23 +134,21 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows temperature profile, dewpoint profile, all reference lines;
-          tropopause visible
+        comment: Realistic sounding with temperature inversion
       - id: DQ-02
         name: Realistic Context
-        score: 5
+        score: 7
         max: 7
         passed: true
-        comment: Realistic mid-latitude sounding with appropriate atmospheric structure
+        comment: Authentic mid-latitude sounding data
       - id: DQ-03
         name: Appropriate Scale
-        score: 5
+        score: 3
         max: 5
         passed: true
-        comment: 'Realistic values: surface temp 25°C, tropopause around -55°C, pressure
-          1000-100 hPa'
+        comment: Ranges appropriate but X-axis too wide
     code_quality:
-      score: 9
+      score: 6
       max: 10
       items:
       - id: CQ-01
@@ -164,7 +156,7 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear script structure: imports → data → plot layers → save'
+        comment: Linear structure
       - id: CQ-02
         name: Reproducibility
         score: 3
@@ -173,40 +165,38 @@ review:
         comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
-        score: 2
+        score: 0
         max: 2
-        passed: true
-        comment: Only imports altair, numpy, pandas
+        passed: false
+        comment: Unused legend data created
       - id: CQ-04
         name: No Deprecated API
-        score: 1
+        score: 0
         max: 1
         passed: true
-        comment: Modern Altair API
+        comment: No deprecated APIs
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
-        passed: false
-        comment: Saves plot.png but also plot.html
+        passed: true
+        comment: Saves as plot.png
     library_features:
-      score: 0
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 3
         max: 5
-        passed: false
-        comment: Uses basic Altair layering but legend mechanism does not render properly;
-          does not effectively demonstrate Altair declarative grammar
+        passed: true
+        comment: Uses layer composition, log scale, interactive mode, tooltips
   verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
   - hover-tooltips
-  - html-export
   patterns:
   - data-generation
   - iteration-over-groups

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 skewt-logp-atmospheric: Skew-T Log-P Atmospheric Diagram
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-17
@@ -22,7 +22,6 @@ from lets_plot import (
     scale_y_log10,
     scale_y_reverse,
     theme,
-    theme_minimal,
 )
 
 
@@ -171,33 +170,42 @@ plot = (
     # Labels and title
     + labs(x="Temperature (°C) - Skewed", y="Pressure (hPa)", title="skewt-logp-atmospheric · letsplot · pyplots.ai")
     + ggsize(1600, 900)
-    + theme_minimal()
     + theme(
         axis_title=element_text(size=20),
         axis_text=element_text(size=16),
         plot_title=element_text(size=24),
         panel_grid_major=element_blank(),
         panel_grid_minor=element_blank(),
+        panel_background=element_blank(),
+        axis_line=element_blank(),
     )
 )
 
-# Create legend data for manual legend box
-# Position legend in right area, use linear spacing in log space
-# Each step is a constant multiplicative factor for log-uniform spacing
-legend_items = [
-    {"label": "━ Temperature", "color": "#DC2626", "y_pos": 500},
-    {"label": "╌ Dewpoint", "color": "#2563EB", "y_pos": 570},
-    {"label": "╌ Dry Adiabat", "color": "#D97706", "y_pos": 650},
-    {"label": "┄ Moist Adiabat", "color": "#7C3AED", "y_pos": 740},
-    {"label": "┈ Mixing Ratio", "color": "#059669", "y_pos": 850},
+# Create legend using actual line segments with matching styles
+# Position legend in upper right area
+legend_x_start = 95
+legend_x_end = 115
+legend_text_x = 118
+
+# Legend items with their properties matching the actual plot lines
+legend_entries = [
+    {"label": "Temp", "color": "#DC2626", "linetype": "solid", "size": 2.5, "y": 125},
+    {"label": "Dewpt", "color": "#2563EB", "linetype": "dashed", "size": 2.5, "y": 140},
+    {"label": "Dry Ad.", "color": "#D97706", "linetype": "dashed", "size": 0.8, "y": 158},
+    {"label": "Moist Ad.", "color": "#7C3AED", "linetype": "dotdash", "size": 0.8, "y": 178},
+    {"label": "Mix. Ratio", "color": "#059669", "linetype": "dotted", "size": 0.8, "y": 200},
 ]
 
-# Add legend using geom_text for proper visual representation
-legend_x = 100
-for item in legend_items:
-    plot = plot + geom_text(
-        x=legend_x, y=item["y_pos"], label=item["label"], color=item["color"], size=14, hjust=0, fontface="bold"
+# Add legend line segments with actual linetypes
+for entry in legend_entries:
+    plot = plot + geom_segment(
+        aes(x="x_start", xend="x_end", y="y", yend="y"),
+        data=pd.DataFrame([{"x_start": legend_x_start, "x_end": legend_x_end, "y": entry["y"]}]),
+        color=entry["color"],
+        size=entry["size"],
+        linetype=entry["linetype"],
     )
+    plot = plot + geom_text(x=legend_text_x, y=entry["y"], label=entry["label"], color="#333333", size=12, hjust=0)
 
 # Save the plot
 ggsave(plot, "plot.png", path=".", scale=3)

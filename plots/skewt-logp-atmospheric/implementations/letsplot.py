@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 skewt-logp-atmospheric: Skew-T Log-P Atmospheric Diagram
 Library: letsplot 4.8.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-17
@@ -6,7 +6,24 @@ Quality: 78/100 | Created: 2026-01-17
 
 import numpy as np
 import pandas as pd
-from lets_plot import *
+from lets_plot import (
+    LetsPlot,
+    aes,
+    element_blank,
+    element_text,
+    geom_path,
+    geom_point,
+    geom_segment,
+    geom_text,
+    ggplot,
+    ggsave,
+    ggsize,
+    labs,
+    scale_y_log10,
+    scale_y_reverse,
+    theme,
+    theme_minimal,
+)
 
 
 LetsPlot.setup_html()
@@ -36,10 +53,10 @@ log_pressure = np.log10(p0 / pressure)
 temp_skewed = temperature + skew_factor * log_pressure
 dewpoint_skewed = dewpoint + skew_factor * log_pressure
 
-# Create DataFrame for main profiles
-df_temp = pd.DataFrame({"pressure": pressure, "log_p": log_pressure, "value": temp_skewed, "type": "Temperature"})
+# Create DataFrame for main profiles with type for legend
+df_temp = pd.DataFrame({"pressure": pressure, "value": temp_skewed, "type": "Temperature"})
 
-df_dewpoint = pd.DataFrame({"pressure": pressure, "log_p": log_pressure, "value": dewpoint_skewed, "type": "Dewpoint"})
+df_dewpoint = pd.DataFrame({"pressure": pressure, "value": dewpoint_skewed, "type": "Dewpoint"})
 
 # Generate isotherms (temperature reference lines, skewed 45 degrees)
 isotherm_temps = np.arange(-80, 50, 10)  # °C
@@ -63,21 +80,44 @@ for theta in dry_adiabat_thetas:
     log_p_vals = np.log10(p0 / p_levels)
     temps_skewed = temps + skew_factor * log_p_vals
     for i in range(len(p_levels)):
-        dry_adiabat_data.append({"pressure": p_levels[i], "temp_skewed": temps_skewed[i], "theta": theta})
+        dry_adiabat_data.append(
+            {"pressure": p_levels[i], "temp_skewed": temps_skewed[i], "theta": theta, "line_type": "Dry Adiabat"}
+        )
 df_dry_adiabats = pd.DataFrame(dry_adiabat_data)
+
+# Generate moist adiabats (equivalent potential temperature lines)
+# Moist adiabats follow a different curve - steeper at low levels, flatter aloft
+# theta_e is conserved along moist adiabats
+moist_adiabat_theta_e = np.arange(280, 360, 10)  # K
+moist_adiabat_data = []
+for theta_e in moist_adiabat_theta_e:
+    # Approximate moist adiabat using simplified formula
+    # At surface, T ≈ theta_e - 273.15, then follows moist lapse rate (~6.5°C/km)
+    t_surface = theta_e - 273.15
+    for p in p_levels:
+        # Moist adiabatic lapse rate is variable, roughly 6.5 C/km
+        # Use pseudo-adiabatic approximation
+        height_factor = np.log(p0 / p) * 2.5  # Scale factor for height
+        t_moist = t_surface - 6.5 * height_factor * 0.8  # Moist lapse rate effect
+        log_p_val = np.log10(p0 / p)
+        t_skewed = t_moist + skew_factor * log_p_val
+        moist_adiabat_data.append(
+            {"pressure": p, "temp_skewed": t_skewed, "theta_e": theta_e, "line_type": "Moist Adiabat"}
+        )
+df_moist_adiabats = pd.DataFrame(moist_adiabat_data)
 
 # Generate mixing ratio lines (lines of constant water vapor mixing ratio)
 # Simplified: ws = 622 * es(T) / (p - es(T)) where es is saturation vapor pressure
 mixing_ratios = [1, 2, 4, 7, 10, 15, 20]  # g/kg
 mixing_data = []
 for ws in mixing_ratios:
-    for p in [1000, 700, 500]:
+    for p in p_levels[::5]:  # Sample every 5th pressure level for smooth lines
         # Approximate temperature for given mixing ratio and pressure
         # Using simplified formula: T ≈ 35 * log(ws * p / 622) - 20
         t = 35 * np.log10(ws * p / 622) - 20
         log_p_val = np.log10(p0 / p)
         t_skewed = t + skew_factor * log_p_val
-        mixing_data.append({"pressure": p, "temp_skewed": t_skewed, "ws": ws})
+        mixing_data.append({"pressure": p, "temp_skewed": t_skewed, "ws": ws, "line_type": "Mixing Ratio"})
 df_mixing = pd.DataFrame(mixing_data)
 
 # Build the plot using lets-plot
@@ -87,38 +127,47 @@ plot = (
     + geom_segment(
         aes(x="x_start", xend="x_end", y="y_start", yend="y_end"),
         data=df_isotherms,
-        color="#CCCCCC",
-        size=0.5,
-        alpha=0.7,
+        color="#999999",
+        size=0.6,
+        alpha=0.8,
     )
-    # Dry adiabats - light red/orange dashed
+    # Dry adiabats - orange dashed (increased visibility)
     + geom_path(
         aes(x="temp_skewed", y="pressure", group="theta"),
         data=df_dry_adiabats,
-        color="#E07020",
-        size=0.5,
-        alpha=0.5,
+        color="#D97706",
+        size=0.8,
+        alpha=0.7,
         linetype="dashed",
     )
-    # Mixing ratio lines - green dotted
+    # Moist adiabats - purple dash-dot
+    + geom_path(
+        aes(x="temp_skewed", y="pressure", group="theta_e"),
+        data=df_moist_adiabats,
+        color="#7C3AED",
+        size=0.8,
+        alpha=0.7,
+        linetype="dotdash",
+    )
+    # Mixing ratio lines - green dotted (increased visibility)
     + geom_path(
         aes(x="temp_skewed", y="pressure", group="ws"),
         data=df_mixing,
-        color="#20A020",
-        size=0.5,
-        alpha=0.5,
+        color="#059669",
+        size=0.8,
+        alpha=0.7,
         linetype="dotted",
     )
     # Temperature profile - solid red line
-    + geom_path(aes(x="value", y="pressure"), data=df_temp, color="#DC2626", size=2)
+    + geom_path(aes(x="value", y="pressure"), data=df_temp, color="#DC2626", size=2.5)
     # Dewpoint profile - dashed blue line
-    + geom_path(aes(x="value", y="pressure"), data=df_dewpoint, color="#306998", size=2, linetype="dashed")
+    + geom_path(aes(x="value", y="pressure"), data=df_dewpoint, color="#2563EB", size=2.5, linetype="dashed")
     # Points on profiles for clarity
-    + geom_point(aes(x="value", y="pressure"), data=df_temp, color="#DC2626", size=3)
-    + geom_point(aes(x="value", y="pressure"), data=df_dewpoint, color="#306998", size=3)
+    + geom_point(aes(x="value", y="pressure"), data=df_temp, color="#DC2626", size=4)
+    + geom_point(aes(x="value", y="pressure"), data=df_dewpoint, color="#2563EB", size=4)
     # Reverse y-axis (pressure decreases upward) and log scale
-    + scale_y_reverse()
     + scale_y_log10()
+    + scale_y_reverse(limits=[1000, 100])
     # Labels and title
     + labs(x="Temperature (°C) - Skewed", y="Pressure (hPa)", title="skewt-logp-atmospheric · letsplot · pyplots.ai")
     + ggsize(1600, 900)
@@ -132,14 +181,23 @@ plot = (
     )
 )
 
-# Add annotation for legend-like labels
-plot = (
-    plot
-    + geom_text(x=55, y=150, label="— Temperature", color="#DC2626", size=14, hjust=0)
-    + geom_text(x=55, y=180, label="-- Dewpoint", color="#306998", size=14, hjust=0)
-    + geom_text(x=55, y=220, label="Dry Adiabats", color="#E07020", size=12, hjust=0)
-    + geom_text(x=55, y=270, label="Mixing Ratio", color="#20A020", size=12, hjust=0)
-)
+# Create legend data for manual legend box
+# Position legend in right area, use linear spacing in log space
+# Each step is a constant multiplicative factor for log-uniform spacing
+legend_items = [
+    {"label": "━ Temperature", "color": "#DC2626", "y_pos": 500},
+    {"label": "╌ Dewpoint", "color": "#2563EB", "y_pos": 570},
+    {"label": "╌ Dry Adiabat", "color": "#D97706", "y_pos": 650},
+    {"label": "┄ Moist Adiabat", "color": "#7C3AED", "y_pos": 740},
+    {"label": "┈ Mixing Ratio", "color": "#059669", "y_pos": 850},
+]
+
+# Add legend using geom_text for proper visual representation
+legend_x = 100
+for item in legend_items:
+    plot = plot + geom_text(
+        x=legend_x, y=item["y_pos"], label=item["label"], color=item["color"], size=14, hjust=0, fontface="bold"
+    )
 
 # Save the plot
 ggsave(plot, "plot.png", path=".", scale=3)

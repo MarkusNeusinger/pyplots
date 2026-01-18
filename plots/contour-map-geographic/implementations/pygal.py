@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-map-geographic: Contour Lines on Geographic Map
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-17
@@ -84,7 +84,8 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#111111",
     foreground_subtle="#666666",
-    guide_stroke_color="#88888844",
+    guide_stroke_color="#666666",
+    guide_stroke_dasharray="8,4",
     colors=("#666666",) * len(coastlines),
     title_font_size=72,
     label_font_size=48,
@@ -147,10 +148,13 @@ for i in range(n_grid - 1):
             f'height="{cell_h + 1:.1f}" fill="{color}" fill-opacity="0.6" stroke="none"/>'
         )
 
-# Draw contour lines using marching squares algorithm
+# Draw contour lines using marching squares algorithm with path connection
 for level in contour_levels:
     line_color = "#333333"
     line_width = 3 if level % 8 == 0 else 2
+
+    # Collect all segments for this level
+    all_segments = []
 
     for i in range(n_grid - 1):
         for j in range(n_grid - 1):
@@ -187,31 +191,76 @@ for level in contour_levels:
             top = (x0 + cell_w * t_top, y0 - cell_h)
             bottom = (x0 + cell_w * t_bottom, y0)
 
-            segments = []
             if case in [1, 14]:
-                segments.append((left, bottom))
+                all_segments.append((left, bottom))
             elif case in [2, 13]:
-                segments.append((bottom, right))
+                all_segments.append((bottom, right))
             elif case in [3, 12]:
-                segments.append((left, right))
+                all_segments.append((left, right))
             elif case in [4, 11]:
-                segments.append((right, top))
+                all_segments.append((right, top))
             elif case == 5:
-                segments.append((left, top))
-                segments.append((bottom, right))
+                all_segments.append((left, top))
+                all_segments.append((bottom, right))
             elif case in [6, 9]:
-                segments.append((bottom, top))
+                all_segments.append((bottom, top))
             elif case in [7, 8]:
-                segments.append((left, top))
+                all_segments.append((left, top))
             elif case == 10:
-                segments.append((left, bottom))
-                segments.append((right, top))
+                all_segments.append((left, bottom))
+                all_segments.append((right, top))
 
-            for (x1_s, y1_s), (x2_s, y2_s) in segments:
-                svg_parts.append(
-                    f'<line x1="{x1_s:.1f}" y1="{y1_s:.1f}" x2="{x2_s:.1f}" y2="{y2_s:.1f}" '
-                    f'stroke="{line_color}" stroke-width="{line_width}" stroke-opacity="0.8"/>'
-                )
+    # Connect segments into polylines for smoother rendering
+    tolerance = 1.5
+    polylines = []
+    used = [False] * len(all_segments)
+
+    for idx, seg in enumerate(all_segments):
+        if used[idx]:
+            continue
+        used[idx] = True
+        chain = list(seg)
+
+        # Try extending the chain from both ends
+        extended = True
+        while extended:
+            extended = False
+            for j, other in enumerate(all_segments):
+                if used[j]:
+                    continue
+                p0, p1 = other
+                # Check if other connects to end of chain
+                if abs(chain[-1][0] - p0[0]) < tolerance and abs(chain[-1][1] - p0[1]) < tolerance:
+                    chain.append(p1)
+                    used[j] = True
+                    extended = True
+                elif abs(chain[-1][0] - p1[0]) < tolerance and abs(chain[-1][1] - p1[1]) < tolerance:
+                    chain.append(p0)
+                    used[j] = True
+                    extended = True
+                # Check if other connects to start of chain
+                elif abs(chain[0][0] - p1[0]) < tolerance and abs(chain[0][1] - p1[1]) < tolerance:
+                    chain.insert(0, p0)
+                    used[j] = True
+                    extended = True
+                elif abs(chain[0][0] - p0[0]) < tolerance and abs(chain[0][1] - p0[1]) < tolerance:
+                    chain.insert(0, p1)
+                    used[j] = True
+                    extended = True
+
+        polylines.append(chain)
+
+    # Render polylines as SVG paths
+    for chain in polylines:
+        if len(chain) < 2:
+            continue
+        path_data = f"M {chain[0][0]:.1f} {chain[0][1]:.1f}"
+        for pt in chain[1:]:
+            path_data += f" L {pt[0]:.1f} {pt[1]:.1f}"
+        svg_parts.append(
+            f'<path d="{path_data}" fill="none" stroke="{line_color}" '
+            f'stroke-width="{line_width}" stroke-opacity="0.85" stroke-linejoin="round" stroke-linecap="round"/>'
+        )
 
 # Add contour labels at strategic positions
 label_positions = [
@@ -230,17 +279,18 @@ for lon_l, lat_l, temp_l in label_positions:
         px = plot_x + (lon_l - lon_min) / (lon_max - lon_min) * plot_width
         py = plot_y + plot_height - (lat_l - lat_min) / (lat_max - lat_min) * plot_height
         svg_parts.append(
-            f'<rect x="{px - 30}" y="{py - 22}" width="60" height="32" fill="white" fill-opacity="0.85" rx="4"/>'
+            f'<rect x="{px - 40}" y="{py - 26}" width="80" height="42" fill="white" fill-opacity="0.92" rx="5" '
+            f'stroke="#666666" stroke-width="1"/>'
         )
         svg_parts.append(
-            f'<text x="{px}" y="{py + 5}" text-anchor="middle" fill="#333333" '
-            f'style="font-size:28px;font-weight:bold;font-family:sans-serif">{temp_l}°C</text>'
+            f'<text x="{px}" y="{py + 8}" text-anchor="middle" fill="#333333" '
+            f'style="font-size:34px;font-weight:bold;font-family:sans-serif">{temp_l}°C</text>'
         )
 
-# Add colorbar
-cb_width = 50
-cb_height = plot_height * 0.7
-cb_x = plot_x + plot_width + 80
+# Add colorbar with larger, more prominent labels
+cb_width = 60
+cb_height = plot_height * 0.75
+cb_x = plot_x + plot_width + 70
 cb_y = plot_y + (plot_height - cb_height) / 2
 
 n_cb_segments = len(temp_colors)
@@ -251,20 +301,20 @@ for i, color in enumerate(temp_colors[::-1]):
 
 svg_parts.append(
     f'<rect x="{cb_x}" y="{cb_y}" width="{cb_width}" height="{cb_height}" '
-    f'fill="none" stroke="#333333" stroke-width="2"/>'
+    f'fill="none" stroke="#333333" stroke-width="3"/>'
 )
 
 cb_labels = [24, 20, 16, 12, 8, 4, 0, -4]
 for i, val in enumerate(cb_labels):
-    label_y = cb_y + i * seg_h + seg_h / 2 + 10
+    label_y = cb_y + i * seg_h + seg_h / 2 + 14
     svg_parts.append(
-        f'<text x="{cb_x + cb_width + 15}" y="{label_y:.1f}" fill="#333333" '
-        f'style="font-size:32px;font-family:sans-serif">{val}°C</text>'
+        f'<text x="{cb_x + cb_width + 18}" y="{label_y:.1f}" fill="#333333" '
+        f'style="font-size:42px;font-weight:bold;font-family:sans-serif">{val}°C</text>'
     )
 
 svg_parts.append(
-    f'<text x="{cb_x + cb_width / 2}" y="{cb_y - 25}" text-anchor="middle" fill="#333333" '
-    f'style="font-size:36px;font-weight:bold;font-family:sans-serif">Temperature</text>'
+    f'<text x="{cb_x + cb_width / 2}" y="{cb_y - 30}" text-anchor="middle" fill="#333333" '
+    f'style="font-size:44px;font-weight:bold;font-family:sans-serif">Temperature</text>'
 )
 
 custom_svg = "\n".join(svg_parts)

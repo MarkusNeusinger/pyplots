@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 skewt-logp-atmospheric: Skew-T Log-P Atmospheric Diagram
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 72/100 | Created: 2026-01-17
@@ -101,8 +101,9 @@ for w in mixing_ratios:
                 )
 mixing_ratio_df = pd.DataFrame(mixing_ratio_data)
 
-# X-axis domain - adjusted to better fit data without wasted space
-x_domain = [-40, 80]
+# X-axis domain - tight fit to actual data range with small margin
+# Temperature skewed values range roughly from -40 to 65 based on data
+x_domain = [-50, 70]
 y_axis = alt.Y("pressure:Q", scale=alt.Scale(type="log", domain=[1000, 100]), title="Pressure (hPa)")
 
 # Isotherms - skewed temperature lines (gray, dashed, increased opacity)
@@ -189,25 +190,23 @@ dewpoint_points = (
     )
 )
 
-# Create combined legend with all elements
+# Create legend data for visible points that will generate the legend
 legend_df = pd.DataFrame(
     {
-        "x1": [75] * 6,
-        "x2": [78] * 6,
-        "y": [100] * 6,
+        "x": [-45, -45, -45, -45, -45, -45],
+        "y": [980, 900, 820, 740, 660, 580],
         "element": ["Temperature", "Dewpoint", "Isotherm", "Dry Adiabat", "Moist Adiabat", "Mixing Ratio"],
     }
 )
 
-# Use mark_rule for line legend symbols
+# Use mark_point to create visible legend entries - points placed outside visible area but within domain
 combined_legend = (
     alt.Chart(legend_df)
-    .mark_rule(strokeWidth=0.01, opacity=0)
+    .mark_point(size=150, filled=True)
     .encode(
-        x=alt.X("x1:Q", scale=alt.Scale(domain=x_domain)),
-        x2="x2:Q",
+        x=alt.X("x:Q", scale=alt.Scale(domain=x_domain)),
         y=alt.Y("y:Q", scale=alt.Scale(type="log", domain=[1000, 100])),
-        stroke=alt.Stroke(
+        color=alt.Color(
             "element:N",
             scale=alt.Scale(
                 domain=["Temperature", "Dewpoint", "Isotherm", "Dry Adiabat", "Moist Adiabat", "Mixing Ratio"],
@@ -218,8 +217,8 @@ combined_legend = (
                 orient="right",
                 titleFontSize=16,
                 labelFontSize=14,
-                symbolStrokeWidth=4,
                 symbolSize=300,
+                symbolStrokeWidth=3,
                 offset=10,
             ),
         ),
@@ -250,6 +249,5 @@ chart = (
     .interactive()
 )
 
-# Save outputs
+# Save output
 chart.save("plot.png", scale_factor=3.0)
-chart.save("plot.html")

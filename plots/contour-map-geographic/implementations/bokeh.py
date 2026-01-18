@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-map-geographic: Contour Lines on Geographic Map
 Library: bokeh 3.8.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-17
@@ -104,11 +104,11 @@ for i, (level, paths) in enumerate(zip(contour_set.levels, contour_set.allsegs, 
         contour_lons = path[:, 0]
         contour_lats = path[:, 1]
 
-        # Draw contour line
+        # Draw contour line - thicker lines for better visibility
         line_color = contour_colors[i % len(contour_colors)]
-        line_width = 3 if level % 1000 == 0 else 1.5
+        line_width = 4 if level % 1000 == 0 else 2.5
 
-        p.line(x=contour_lons, y=contour_lats, line_color=line_color, line_width=line_width, line_alpha=0.8)
+        p.line(x=contour_lons, y=contour_lats, line_color=line_color, line_width=line_width, line_alpha=0.9)
 
         # Add label at midpoint for major contours (every 500m)
         if level % 500 == 0 and len(path) > 20:
@@ -117,18 +117,18 @@ for i, (level, paths) in enumerate(zip(contour_set.levels, contour_set.allsegs, 
             label_data["y"].append(contour_lats[mid_idx])
             label_data["text"].append(f"{int(level)}m")
 
-# Add contour labels
+# Add contour labels - larger font for 4800x2700 canvas
 label_source = ColumnDataSource(data=label_data)
 labels = LabelSet(
     x="x",
     y="y",
     text="text",
     source=label_source,
-    text_font_size="14pt",
+    text_font_size="20pt",
     text_color="black",
     text_font_style="bold",
     background_fill_color="white",
-    background_fill_alpha=0.7,
+    background_fill_alpha=0.85,
 )
 p.add_layout(labels)
 
@@ -149,16 +149,17 @@ color_bar = ColorBar(
 )
 p.add_layout(color_bar, "right")
 
-# Configure legend
-p.legend.location = "top_left"
+# Configure legend - position outside plot area to avoid overlap
+p.legend.location = "bottom_right"
 p.legend.label_text_font_size = "16pt"
-p.legend.background_fill_alpha = 0.8
+p.legend.background_fill_alpha = 0.9
+p.legend.border_line_alpha = 0.5
 
-# Grid styling
-p.xgrid.grid_line_alpha = 0.3
-p.ygrid.grid_line_alpha = 0.3
-p.xgrid.grid_line_dash = [6, 4]
-p.ygrid.grid_line_dash = [6, 4]
+# Grid styling - subtle solid lines
+p.xgrid.grid_line_alpha = 0.2
+p.ygrid.grid_line_alpha = 0.2
+p.xgrid.grid_line_color = "#666666"
+p.ygrid.grid_line_color = "#666666"
 
 # Save
 export_png(p, filename="plot.png")

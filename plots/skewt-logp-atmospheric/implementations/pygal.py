@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 skewt-logp-atmospheric: Skew-T Log-P Atmospheric Diagram
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 68/100 | Created: 2026-01-17

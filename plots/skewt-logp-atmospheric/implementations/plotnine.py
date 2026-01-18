@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 skewt-logp-atmospheric: Skew-T Log-P Atmospheric Diagram
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 68/100 | Created: 2026-01-17
@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
+    annotate,
     element_blank,
     element_line,
     element_rect,
@@ -17,8 +18,9 @@ from plotnine import (
     ggplot,
     labs,
     scale_color_manual,
+    scale_linetype_manual,
     scale_x_continuous,
-    scale_y_log10,
+    scale_y_continuous,
     theme,
 )
 
@@ -205,73 +207,98 @@ profile_df = pd.DataFrame(
 x_min = skew_transform(T_MIN - 10, P_MAX)
 x_max = skew_transform(T_MAX + 10, P_MIN)
 
+# Create dataframes for reference lines with line type for legend
+# Use subset of lines for legend representation
+isotherm_legend = isotherm_df.copy()
+isotherm_legend["line_type"] = "Isotherms (10°C)"
+
+dry_adiabat_legend = dry_adiabat_df.copy()
+dry_adiabat_legend["line_type"] = "Dry Adiabats"
+
+moist_adiabat_legend = moist_adiabat_df.copy()
+moist_adiabat_legend["line_type"] = "Moist Adiabats"
+
+mixing_ratio_legend = mixing_ratio_df.copy()
+mixing_ratio_legend["line_type"] = "Mixing Ratios"
+
+# Combine all reference lines for unified legend
+all_ref_lines = pd.concat([isotherm_legend, dry_adiabat_legend, moist_adiabat_legend, mixing_ratio_legend])
+
+# Y-axis (pressure) - use log-transformed values manually for proper tick display
+pressure_breaks = [1000, 850, 700, 500, 400, 300, 200, 150, 100]
+pressure_labels = [str(p) for p in pressure_breaks]
+
 # Build the plot - use profile_df as base to ensure y scale works
 plot = (
     ggplot(profile_df, aes(x="x", y="pressure"))
     # Reference lines - drawn first (background)
-    # Isobars (horizontal pressure lines) - light gray
+    # Isobars (horizontal pressure lines) - light gray (no legend needed - obvious)
     + geom_segment(
         aes(x="x", xend="xend", y="y", yend="yend"),
         data=isobar_df,
-        color="#CCCCCC",
-        size=0.5,
+        color="#AAAAAA",
+        size=0.6,
         linetype="solid",
         inherit_aes=False,
     )
-    # Isotherms (skewed temperature lines) - light blue
+    # Reference lines with color/linetype for legend
     + geom_segment(
-        aes(x="x", xend="xend", y="y", yend="yend"),
-        data=isotherm_df,
-        color="#89CFF0",
-        size=0.5,
-        linetype="solid",
-        inherit_aes=False,
-    )
-    # Dry adiabats - dashed tan/orange
-    + geom_segment(
-        aes(x="x", xend="xend", y="y", yend="yend"),
-        data=dry_adiabat_df,
-        color="#D2691E",
-        size=0.4,
-        linetype="dashed",
-        inherit_aes=False,
-    )
-    # Moist adiabats - dotted green
-    + geom_segment(
-        aes(x="x", xend="xend", y="y", yend="yend"),
-        data=moist_adiabat_df,
-        color="#228B22",
-        size=0.4,
-        linetype="dotted",
-        inherit_aes=False,
-    )
-    # Mixing ratio lines - dashed teal
-    + geom_segment(
-        aes(x="x", xend="xend", y="y", yend="yend"),
-        data=mixing_ratio_df,
-        color="#20B2AA",
-        size=0.3,
-        linetype="dashed",
+        aes(x="x", xend="xend", y="y", yend="yend", color="line_type", linetype="line_type"),
+        data=all_ref_lines,
+        size=0.8,
         inherit_aes=False,
     )
     # Temperature profile - solid red, thick
-    + geom_path(aes(color="variable"), data=profile_df[profile_df["variable"] == "Temperature"], size=2.5)
+    + geom_path(data=profile_df[profile_df["variable"] == "Temperature"], color="#CC0000", size=3)
     # Dewpoint profile - dashed blue, thick
-    + geom_path(
-        aes(color="variable"), data=profile_df[profile_df["variable"] == "Dewpoint"], size=2.5, linetype="dashed"
-    )
-    # Color scale for profiles
+    + geom_path(data=profile_df[profile_df["variable"] == "Dewpoint"], color="#0066CC", size=3, linetype="dashed")
+    # Color and linetype scale for reference lines
     + scale_color_manual(
-        values={"Temperature": "#CC0000", "Dewpoint": "#306998"},  # Red for temp, Python blue for dewpoint
-        name="Profile",
+        values={
+            "Isotherms (10°C)": "#4A90D9",
+            "Dry Adiabats": "#D2691E",
+            "Moist Adiabats": "#228B22",
+            "Mixing Ratios": "#8B008B",
+        },
+        name="Reference Lines",
     )
-    # Logarithmic pressure scale (inverted - high pressure at bottom)
-    + scale_y_log10(
+    + scale_linetype_manual(
+        values={
+            "Isotherms (10°C)": "solid",
+            "Dry Adiabats": "dashed",
+            "Moist Adiabats": "dotted",
+            "Mixing Ratios": "dashdot",
+        },
+        name="Reference Lines",
+    )
+    # Y-axis: log scale with explicit breaks and labels
+    + scale_y_continuous(
+        trans="log10",
         limits=(1100, 90),  # Inverted: surface at bottom, top at 90 hPa
-        breaks=[1000, 850, 700, 500, 400, 300, 200, 150, 100],
+        breaks=pressure_breaks,
+        labels=pressure_labels,
     )
-    # X-axis (skewed temperature coordinates)
+    # X-axis (skewed temperature coordinates - hide ticks but keep label)
     + scale_x_continuous(breaks=[], labels=[], limits=(x_min - 10, x_max + 20))
+    # Annotations for profile lines at a visible pressure level (500 hPa - mid-troposphere)
+    + annotate(
+        "text",
+        x=skew_transform(temp_profile[np.argmin(np.abs(pressure_levels - 500))], 500) + 5,
+        y=500,
+        label="T",
+        color="#CC0000",
+        size=14,
+        fontweight="bold",
+    )
+    + annotate(
+        "text",
+        x=skew_transform(dewpoint_profile[np.argmin(np.abs(pressure_levels - 500))], 500) - 5,
+        y=500,
+        label="Td",
+        color="#0066CC",
+        size=14,
+        fontweight="bold",
+    )
     + labs(x="Temperature (°C, skewed 45°)", y="Pressure (hPa)", title="skewt-logp-atmospheric · plotnine · pyplots.ai")
     + theme(
         figure_size=(16, 16),  # Square for this specialized diagram
@@ -285,13 +312,14 @@ plot = (
         axis_title_x=element_text(margin={"t": 15}),
         axis_title_y=element_text(margin={"r": 15}),
         axis_text_x=element_blank(),  # Hide x-axis labels (skewed coords)
-        axis_text_y=element_text(size=18, color="black"),  # Show pressure labels
+        axis_text_y=element_text(size=18, color="#333333"),  # Pressure labels
         plot_title=element_text(size=24, ha="center"),
         legend_position="right",
-        legend_title=element_text(size=16),
-        legend_text=element_text(size=14),
-        legend_background=element_rect(fill="white", alpha=0.9),
-        axis_ticks_major_y=element_line(color="black", size=1),
+        legend_title=element_text(size=16, fontweight="bold"),
+        legend_text=element_text(size=13),
+        legend_background=element_rect(fill="white", alpha=0.95),
+        legend_key_width=40,
+        axis_ticks_major_y=element_line(color="#333333", size=1),
     )
 )
 

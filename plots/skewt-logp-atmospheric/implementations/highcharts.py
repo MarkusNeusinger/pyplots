@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 skewt-logp-atmospheric: Skew-T Log-P Atmospheric Diagram
-Library: highcharts | Python 3.13
-Quality: pending | Created: 2026-01-17
+Library: highcharts unknown | Python 3.13.11
+Quality: 91/100 | Created: 2026-01-17
 """
 
 import tempfile

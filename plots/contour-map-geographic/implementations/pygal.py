@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-map-geographic: Contour Lines on Geographic Map
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-17
@@ -84,8 +84,8 @@ custom_style = Style(
     foreground="#333333",
     foreground_strong="#111111",
     foreground_subtle="#666666",
-    guide_stroke_color="#666666",
-    guide_stroke_dasharray="8,4",
+    guide_stroke_color="rgba(100, 100, 100, 0.25)",
+    guide_stroke_dasharray="",
     colors=("#666666",) * len(coastlines),
     title_font_size=72,
     label_font_size=48,
@@ -326,27 +326,5 @@ chart.add("", [(lon_min, lat_min)])
 base_svg = chart.render(is_unicode=True)
 output_svg = base_svg.replace("</svg>", f"{custom_svg}\n</svg>")
 
-# Convert to PNG using cairosvg (only save plot.png)
+# Convert to PNG using cairosvg
 cairosvg.svg2png(bytestring=output_svg.encode("utf-8"), write_to="plot.png")
-
-# Save interactive HTML
-html_content = f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>contour-map-geographic - pygal</title>
-    <style>
-        body {{ margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f5f5; }}
-        .chart {{ max-width: 100%; height: auto; }}
-    </style>
-</head>
-<body>
-    <figure class="chart">
-        {output_svg}
-    </figure>
-</body>
-</html>
-"""
-
-with open("plot.html", "w", encoding="utf-8") as f:
-    f.write(html_content)

@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 contour-map-geographic: Contour Lines on Geographic Map
 Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 82/100 | Created: 2026-01-17
+Quality: 91/100 | Created: 2026-01-17
 """
 
 import numpy as np

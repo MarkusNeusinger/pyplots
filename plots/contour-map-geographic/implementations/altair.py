@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-map-geographic: Contour Lines on Geographic Map
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-17
@@ -12,63 +12,65 @@ import pandas as pd
 # Data - Generate temperature-like data for Europe region
 np.random.seed(42)
 
-# Create dense grid covering Europe for smooth appearance
-lon_range = np.linspace(-10, 40, 80)
-lat_range = np.linspace(35, 70, 60)
+# Create dense grid covering wider Europe region to fill map canvas
+lon_range = np.linspace(-25, 55, 120)
+lat_range = np.linspace(30, 72, 80)
 lon_grid, lat_grid = np.meshgrid(lon_range, lat_range)
 
 # Generate temperature pattern (decreases with latitude, varies with longitude)
 temperature = (
-    28
-    - 0.55 * (lat_grid - 35)  # Cooler as you go north
-    + 4 * np.sin((lon_grid + 5) / 12)  # East-west variation (Gulf Stream effect)
-    + 2 * np.cos(lat_grid / 8)  # Additional pattern
-    - 6 * np.exp(-((lat_grid - 47) ** 2 + (lon_grid - 10) ** 2) / 80)  # Alps cold spot
-    + np.random.normal(0, 0.8, lon_grid.shape)  # Reduced noise for smoother contours
+    30
+    - 0.6 * (lat_grid - 30)  # Cooler as you go north
+    + 3 * np.sin((lon_grid + 10) / 15)  # East-west variation (Gulf Stream effect)
+    + 2 * np.cos(lat_grid / 10)  # Additional pattern
+    - 5 * np.exp(-((lat_grid - 47) ** 2 + (lon_grid - 10) ** 2) / 100)  # Alps cold spot
+    - 3 * np.exp(-((lat_grid - 65) ** 2 + (lon_grid - 25) ** 2) / 150)  # Scandinavian cold
+    + np.random.normal(0, 0.3, lon_grid.shape)  # Minimal noise for smoother contours
 )
 
-# Create DataFrame with binned temperatures for contour-like effect
+# Clip to realistic range
+temperature = np.clip(temperature, -15, 35)
+
+# Create DataFrame
 df = pd.DataFrame(
     {"longitude": lon_grid.flatten(), "latitude": lat_grid.flatten(), "temperature": temperature.flatten()}
 )
 
-# Bin temperatures to create discrete contour levels
+# Define contour levels for labeling
 contour_levels = [-10, -5, 0, 5, 10, 15, 20, 25, 30]
-df["temp_bin"] = pd.cut(df["temperature"], bins=contour_levels, labels=False)
-df["temp_level"] = pd.cut(
-    df["temperature"], bins=contour_levels, labels=["-7.5", "-2.5", "2.5", "7.5", "12.5", "17.5", "22.5", "27.5"]
-).astype(float)
 
 # Load world countries for geographic context
 countries = alt.topo_feature("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json", "countries")
 
+# Map projection settings - centered on Europe with better coverage
+projection_params = {"type": "mercator", "scale": 550, "center": [15, 52]}
+
 # Base map - world countries with subtle styling
 base = (
     alt.Chart(countries)
-    .mark_geoshape(fill="#E8E8E8", stroke="#CCCCCC", strokeWidth=0.3)
-    .project(type="mercator", scale=650, center=[15, 52], clipExtent=[[0, 0], [1600, 900]])
+    .mark_geoshape(fill="#F0F0F0", stroke="#CCCCCC", strokeWidth=0.5)
+    .project(**projection_params)
     .properties(width=1600, height=900)
 )
 
-# Create filled contour visualization using square marks for seamless appearance
-# This approximates filled contours by using overlapping squares colored by temperature
+# Create smooth filled contour visualization using small circles for seamless appearance
 filled_contours = (
     alt.Chart(df)
-    .mark_square(size=350, opacity=0.85)
+    .mark_circle(size=180, opacity=0.9)
     .encode(
         longitude="longitude:Q",
         latitude="latitude:Q",
         color=alt.Color(
-            "temp_level:Q",
+            "temperature:Q",
             scale=alt.Scale(scheme="redyellowblue", reverse=True, domain=[-10, 30]),
             legend=alt.Legend(
                 title="Temperature (°C)",
-                titleFontSize=18,
-                labelFontSize=14,
-                gradientLength=400,
-                gradientThickness=25,
+                titleFontSize=20,
+                labelFontSize=16,
+                gradientLength=450,
+                gradientThickness=30,
                 orient="right",
-                offset=10,
+                offset=20,
             ),
         ),
         tooltip=[
@@ -77,37 +79,61 @@ filled_contours = (
             alt.Tooltip("temperature:Q", format=".1f", title="Temperature (°C)"),
         ],
     )
-    .project(type="mercator", scale=650, center=[15, 52], clipExtent=[[0, 0], [1600, 900]])
+    .project(**projection_params)
     .properties(width=1600, height=900)
 )
 
-# Create contour lines by identifying points near level boundaries
+# Create contour line data by identifying boundary points between temperature bins
 contour_data = []
-for level in [0, 5, 10, 15, 20, 25]:
-    mask = np.abs(df["temperature"] - level) < 0.8
+for level in contour_levels[1:-1]:  # Skip extreme ends
+    mask = np.abs(df["temperature"] - level) < 0.6
     level_points = df[mask].copy()
     level_points["contour_value"] = level
+    level_points["contour_label"] = f"{level}°C"
     contour_data.append(level_points)
 
 contour_df = pd.concat(contour_data, ignore_index=True)
 
-# Contour lines layer - darker points to show level boundaries
+# Contour lines layer - small dark points forming isolines
 contour_lines = (
     alt.Chart(contour_df)
-    .mark_point(size=15, opacity=0.6, filled=True)
-    .encode(longitude="longitude:Q", latitude="latitude:Q", color=alt.value("#333333"))
-    .project(type="mercator", scale=650, center=[15, 52], clipExtent=[[0, 0], [1600, 900]])
+    .mark_circle(size=8, opacity=0.7)
+    .encode(longitude="longitude:Q", latitude="latitude:Q", color=alt.value("#2D2D2D"))
+    .project(**projection_params)
     .properties(width=1600, height=900)
 )
 
-# Layer all components: base map, filled contours, contour lines
+# Create contour labels at strategic positions
+# Sample representative points along each contour level for labeling
+label_data = []
+for level in [0, 10, 20]:
+    level_points = contour_df[contour_df["contour_value"] == level]
+    if len(level_points) > 0:
+        # Select points at different longitudes for label placement
+        for target_lon in [-10, 10, 30]:
+            closest_idx = (level_points["longitude"] - target_lon).abs().idxmin()
+            point = level_points.loc[closest_idx].copy()
+            label_data.append({"longitude": point["longitude"], "latitude": point["latitude"], "label": f"{level}°C"})
+
+label_df = pd.DataFrame(label_data)
+
+# Contour value labels
+contour_labels = (
+    alt.Chart(label_df)
+    .mark_text(fontSize=16, fontWeight="bold", fill="#1a1a1a", stroke="#FFFFFF", strokeWidth=2)
+    .encode(longitude="longitude:Q", latitude="latitude:Q", text="label:N")
+    .project(**projection_params)
+    .properties(width=1600, height=900)
+)
+
+# Layer all components: base map, filled contours, contour lines, labels
 chart = (
-    alt.layer(base, filled_contours, contour_lines)
+    alt.layer(base, filled_contours, contour_lines, contour_labels)
     .properties(
         width=1600,
         height=900,
         title=alt.Title(
-            "European Temperature · contour-map-geographic · altair · pyplots.ai",
+            "European Temperature Contours · contour-map-geographic · altair · pyplots.ai",
             fontSize=28,
             anchor="middle",
             color="#333333",

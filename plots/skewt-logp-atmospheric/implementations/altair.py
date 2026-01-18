@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 skewt-logp-atmospheric: Skew-T Log-P Atmospheric Diagram
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 83/100 | Created: 2026-01-17
@@ -36,6 +36,9 @@ sounding_data["temp_skewed"] = (
 sounding_data["dewpoint_skewed"] = (
     sounding_data["dewpoint"] + (np.log10(1000) - sounding_data["log_pressure"]) * skew_factor
 )
+
+# Create combined profile data for legend (long format)
+profile_legend_data = pd.DataFrame({"profile": ["Temperature", "Dewpoint"], "color": ["#DC143C", "#306998"]})
 
 # Create isotherms (constant temperature lines, skewed)
 isotherm_temps = np.arange(-80, 50, 10)  # Temperature range
@@ -100,6 +103,7 @@ mixing_ratio_df = pd.DataFrame(mixing_ratio_data)
 
 # X-axis domain - adjusted to better fit data without wasted space
 x_domain = [-40, 80]
+y_axis = alt.Y("pressure:Q", scale=alt.Scale(type="log", domain=[1000, 100]), title="Pressure (hPa)")
 
 # Isotherms - skewed temperature lines (gray, dashed, increased opacity)
 isotherms = (
@@ -107,7 +111,7 @@ isotherms = (
     .mark_line(strokeDash=[4, 4], strokeWidth=1.2, opacity=0.6)
     .encode(
         x=alt.X("temp_skewed:Q", title="Temperature (°C, skewed)", scale=alt.Scale(domain=x_domain)),
-        y=alt.Y("pressure:Q", scale=alt.Scale(type="log", domain=[1000, 100]), title="Pressure (hPa)"),
+        y=y_axis,
         detail="isotherm:N",
         color=alt.value("#888888"),
     )
@@ -119,7 +123,7 @@ dry_adiabats = (
     .mark_line(strokeWidth=1.2, opacity=0.65)
     .encode(
         x=alt.X("temp_skewed:Q", scale=alt.Scale(domain=x_domain)),
-        y=alt.Y("pressure:Q", scale=alt.Scale(type="log", domain=[1000, 100]), title="Pressure (hPa)"),
+        y=y_axis,
         detail="theta:N",
         color=alt.value("#228B22"),
     )
@@ -131,7 +135,7 @@ moist_adiabats = (
     .mark_line(strokeDash=[6, 3], strokeWidth=1.2, opacity=0.65)
     .encode(
         x=alt.X("temp_skewed:Q", scale=alt.Scale(domain=x_domain)),
-        y=alt.Y("pressure:Q", scale=alt.Scale(type="log", domain=[1000, 100]), title="Pressure (hPa)"),
+        y=y_axis,
         detail="theta_e:N",
         color=alt.value("#9932CC"),
     )
@@ -143,7 +147,7 @@ mixing_lines = (
     .mark_line(strokeDash=[2, 2], strokeWidth=1.2, opacity=0.65)
     .encode(
         x=alt.X("temp_skewed:Q", scale=alt.Scale(domain=x_domain)),
-        y=alt.Y("pressure:Q", scale=alt.Scale(type="log", domain=[1000, 100]), title="Pressure (hPa)"),
+        y=y_axis,
         detail="mixing_ratio:N",
         color=alt.value("#4169E1"),
     )
@@ -154,9 +158,7 @@ temp_profile = (
     alt.Chart(sounding_data)
     .mark_line(strokeWidth=4, color="#DC143C")
     .encode(
-        x=alt.X("temp_skewed:Q", scale=alt.Scale(domain=x_domain)),
-        y=alt.Y("pressure:Q", scale=alt.Scale(type="log", domain=[1000, 100]), title="Pressure (hPa)"),
-        tooltip=["pressure:Q", "temperature:Q"],
+        x=alt.X("temp_skewed:Q", scale=alt.Scale(domain=x_domain)), y=y_axis, tooltip=["pressure:Q", "temperature:Q"]
     )
 )
 
@@ -165,9 +167,7 @@ temp_points = (
     alt.Chart(sounding_data)
     .mark_circle(size=120, color="#DC143C")
     .encode(
-        x=alt.X("temp_skewed:Q", scale=alt.Scale(domain=x_domain)),
-        y=alt.Y("pressure:Q", scale=alt.Scale(type="log", domain=[1000, 100]), title="Pressure (hPa)"),
-        tooltip=["pressure:Q", "temperature:Q"],
+        x=alt.X("temp_skewed:Q", scale=alt.Scale(domain=x_domain)), y=y_axis, tooltip=["pressure:Q", "temperature:Q"]
     )
 )
 
@@ -176,9 +176,7 @@ dewpoint_profile = (
     alt.Chart(sounding_data)
     .mark_line(strokeWidth=4, strokeDash=[8, 4], color="#306998")
     .encode(
-        x=alt.X("dewpoint_skewed:Q", scale=alt.Scale(domain=x_domain)),
-        y=alt.Y("pressure:Q", scale=alt.Scale(type="log", domain=[1000, 100]), title="Pressure (hPa)"),
-        tooltip=["pressure:Q", "dewpoint:Q"],
+        x=alt.X("dewpoint_skewed:Q", scale=alt.Scale(domain=x_domain)), y=y_axis, tooltip=["pressure:Q", "dewpoint:Q"]
     )
 )
 
@@ -187,70 +185,44 @@ dewpoint_points = (
     alt.Chart(sounding_data)
     .mark_circle(size=120, color="#306998")
     .encode(
-        x=alt.X("dewpoint_skewed:Q", scale=alt.Scale(domain=x_domain)),
-        y=alt.Y("pressure:Q", scale=alt.Scale(type="log", domain=[1000, 100]), title="Pressure (hPa)"),
-        tooltip=["pressure:Q", "dewpoint:Q"],
+        x=alt.X("dewpoint_skewed:Q", scale=alt.Scale(domain=x_domain)), y=y_axis, tooltip=["pressure:Q", "dewpoint:Q"]
     )
 )
 
-# Create legend data with proper labels and styling indicators
-legend_data = pd.DataFrame(
+# Create combined legend with all elements
+legend_df = pd.DataFrame(
     {
-        "label": ["Temperature", "Dewpoint", "Dry Adiabat", "Moist Adiabat", "Isotherm", "Mixing Ratio"],
-        "color": ["#DC143C", "#306998", "#228B22", "#9932CC", "#888888", "#4169E1"],
-        "line_type": ["solid", "dashed", "solid", "dashed", "dashed", "dashed"],
-        "x_pos": [62, 62, 62, 62, 62, 62],
-        "y_pos": [120, 135, 155, 175, 195, 215],
+        "x1": [75] * 6,
+        "x2": [78] * 6,
+        "y": [100] * 6,
+        "element": ["Temperature", "Dewpoint", "Isotherm", "Dry Adiabat", "Moist Adiabat", "Mixing Ratio"],
     }
 )
 
-# Legend lines (short horizontal lines to show style)
-legend_line_data = []
-for _, row in legend_data.iterrows():
-    legend_line_data.append(
-        {
-            "x1": row["x_pos"] - 8,
-            "x2": row["x_pos"] - 2,
-            "y": row["y_pos"],
-            "label": row["label"],
-            "color": row["color"],
-        }
-    )
-legend_line_df = pd.DataFrame(legend_line_data)
-
-# Legend text
-legend_text = (
-    alt.Chart(legend_data)
-    .mark_text(align="left", fontSize=14, fontWeight="bold")
+# Use mark_rule for line legend symbols
+combined_legend = (
+    alt.Chart(legend_df)
+    .mark_rule(strokeWidth=0.01, opacity=0)
     .encode(
-        x=alt.X("x_pos:Q", scale=alt.Scale(domain=x_domain)),
-        y=alt.Y("y_pos:Q", scale=alt.Scale(type="log", domain=[1000, 100]), title="Pressure (hPa)"),
-        text="label:N",
-        color=alt.Color("color:N", scale=None),
-    )
-)
-
-# Legend colored squares
-legend_squares = (
-    alt.Chart(legend_data)
-    .mark_square(size=150)
-    .encode(
-        x=alt.X("x_pos:Q", scale=alt.Scale(domain=x_domain)),
-        y=alt.Y("y_pos:Q", scale=alt.Scale(type="log", domain=[1000, 100]), title="Pressure (hPa)"),
-        color=alt.Color("color:N", scale=None),
-    )
-    .transform_calculate(x_pos="datum.x_pos - 12")
-    .encode(x="x_pos:Q")
-)
-
-# Create colored legend markers
-legend_markers = (
-    alt.Chart(legend_data)
-    .mark_square(size=180, opacity=0.9)
-    .encode(
-        x=alt.value(1480),  # Fixed position in pixels
-        y=alt.Y("y_pos:Q", scale=alt.Scale(type="log", domain=[1000, 100])),
-        color=alt.Color("color:N", scale=None),
+        x=alt.X("x1:Q", scale=alt.Scale(domain=x_domain)),
+        x2="x2:Q",
+        y=alt.Y("y:Q", scale=alt.Scale(type="log", domain=[1000, 100])),
+        stroke=alt.Stroke(
+            "element:N",
+            scale=alt.Scale(
+                domain=["Temperature", "Dewpoint", "Isotherm", "Dry Adiabat", "Moist Adiabat", "Mixing Ratio"],
+                range=["#DC143C", "#306998", "#888888", "#228B22", "#9932CC", "#4169E1"],
+            ),
+            legend=alt.Legend(
+                title="Legend",
+                orient="right",
+                titleFontSize=16,
+                labelFontSize=14,
+                symbolStrokeWidth=4,
+                symbolSize=300,
+                offset=10,
+            ),
+        ),
     )
 )
 
@@ -265,7 +237,7 @@ chart = (
         temp_points,
         dewpoint_profile,
         dewpoint_points,
-        legend_text,
+        combined_legend,
     )
     .properties(
         width=1600,
@@ -274,6 +246,7 @@ chart = (
     )
     .configure_axis(labelFontSize=18, titleFontSize=22, gridColor="#EEEEEE")
     .configure_view(strokeWidth=0)
+    .configure_legend(titleFontSize=16, labelFontSize=14, padding=10, cornerRadius=5)
     .interactive()
 )
 

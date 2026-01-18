@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 skewt-logp-atmospheric: Skew-T Log-P Atmospheric Diagram
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 85/100 | Created: 2026-01-17
@@ -260,12 +260,12 @@ pressure_labels = [str(p) for p in pressure_breaks]
 plot = (
     ggplot(profile_df, aes(x="x", y="pressure"))
     # Reference lines - drawn first (background)
-    # Isobars (horizontal pressure lines) - light gray (no legend needed - obvious)
+    # Isobars (horizontal pressure lines) - more visible dark gray with thicker line
     + geom_segment(
         aes(x="x", xend="xend", y="y", yend="yend"),
         data=isobar_df,
-        color="#AAAAAA",
-        size=0.6,
+        color="#666666",
+        size=1.0,
         linetype="solid",
         inherit_aes=False,
     )
@@ -352,10 +352,11 @@ plot = (
         axis_text_y=element_text(size=18, color="#333333"),  # Pressure labels
         plot_title=element_text(size=26, ha="center"),
         legend_position="right",
-        legend_title=element_text(size=18, fontweight="bold"),
-        legend_text=element_text(size=14),
+        legend_title=element_text(size=20, fontweight="bold"),
+        legend_text=element_text(size=16),
         legend_background=element_rect(fill="white", alpha=0.95),
-        legend_key_width=45,
+        legend_key_width=50,
+        legend_key_height=20,
         axis_ticks_major_y=element_line(color="#333333", size=1),
     )
 )

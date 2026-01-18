@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 histogram-returns-distribution: Returns Distribution Histogram
 Library: pygal 3.1.0 | Python 3.13.11
-Quality: 72/100 | Created: 2026-01-16
+Quality: 58/100 | Created: 2026-01-16
 """
 
 import numpy as np

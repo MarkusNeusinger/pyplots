@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 skewt-logp-atmospheric: Skew-T Log-P Atmospheric Diagram
 Library: altair 6.0.0 | Python 3.13.11
-Quality: 83/100 | Created: 2026-01-17
+Quality: 72/100 | Created: 2026-01-17
 """
 
 import altair as alt

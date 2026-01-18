@@ -1,7 +1,7 @@
 library: seaborn
 specification_id: skewt-logp-atmospheric
 created: '2026-01-17T09:26:00Z'
-updated: '2026-01-18T22:32:56Z'
+updated: '2026-01-18T22:40:57Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21092078646
 issue: 3802
@@ -10,80 +10,86 @@ library_version: 0.13.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/skewt-logp-atmospheric/seaborn/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/skewt-logp-atmospheric/seaborn/plot_thumb.png
 preview_html: null
-quality_score: 87
+quality_score: 90
 review:
   strengths:
-  - Correct implementation of the specialized Skew-T Log-P thermodynamic diagram
-  - All required reference lines present (isotherms, dry adiabats, moist adiabats,
-    mixing ratio)
-  - Proper logarithmic inverted pressure axis
-  - Good color coding distinguishing temperature/dewpoint profiles and reference line
-    types
-  - Clean, readable code structure
-  - Realistic atmospheric sounding data
+  - Excellent implementation of the skew-T transform with proper 45-degree isotherms
+  - Clean separation of temperature and dewpoint profiles with appropriate styling
+  - Proper logarithmic/inverted pressure axis matching meteorological convention
+  - Good use of seaborn theming (whitegrid, talk context) and despine function
+  - All major reference lines present (isotherms, dry adiabats, moist adiabats, mixing
+    ratio)
+  - Professional label annotations for reference line types
   weaknesses:
-  - Minor tick label overlap at 900/925 hPa levels
-  - Reference line labels at top edge are faint and may be hard to read
-  - Implementation relies heavily on matplotlib for the specialized diagram construction
-    rather than showcasing seaborn distinctive features
-  - No explicit grid styling (reference lines serve as implicit grid)
-  image_description: |-
-    The plot displays a Skew-T Log-P atmospheric diagram on a light gray background (#fafafa). The y-axis shows Pressure (hPa) with logarithmic scaling, inverted from 1000 hPa at the bottom to 100 hPa at the top. The x-axis shows Temperature (°C) ranging from -50 to 50. Two main data profiles are plotted: a solid red line with circle markers representing Temperature, and a dashed blue line with square markers representing Dewpoint. The temperature profile starts at ~25°C at surface (1000 hPa) and decreases to ~-55°C at 100 hPa. The dewpoint profile follows a similar pattern but is consistently lower than temperature (showing the dewpoint depression).
-
-    Reference lines are overlaid: gray diagonal isotherms (45-degree skew), brown dry adiabats, green dashed moist adiabats, and blue dotted mixing ratio lines. Labels for these reference lines appear at the top edge ("Dry Adiabats", "Moist Adiabats", "Mixing Ratio") and right edge ("Isotherms" rotated 45°). The legend in the upper right clearly identifies Temperature and Dewpoint profiles. The title correctly reads "skewt-logp-atmospheric · seaborn · pyplots.ai" with middle dot separators.
+  - Reference lines could have a dedicated legend entry for better interpretation
+  - Minor reliance on matplotlib for the specialized atmospheric reference lines rather
+    than seaborn-specific visualization methods
+  image_description: The plot displays a Skew-T Log-P atmospheric diagram with a light
+    gray (#fafafa) background. The pressure axis (y-axis) is logarithmic and inverted,
+    ranging from 1000 hPa at the bottom to 100 hPa at the top, with labeled tick marks
+    at 1000, 850, 700, 500, 400, 300, 250, 200, 150, and 100 hPa. The temperature
+    axis (x-axis) spans from -50°C to 50°C. The temperature profile is shown as a
+    solid red line with circular markers, while the dewpoint profile is displayed
+    as a dashed blue line with square markers. Both lines decrease with altitude,
+    with dewpoint consistently lower than temperature. Gray diagonal isotherms at
+    45° skew angle cross the plot. Brown diagonal lines represent dry adiabats, green
+    dashed lines show moist adiabats, and blue dotted lines indicate mixing ratio
+    lines. Reference labels for "Dry Adiabats", "Moist Adiabats", and "Mixing Ratio"
+    appear at the top, with "Isotherms" labeled on the right side. The title uses
+    the correct format with middle dots. A legend in the upper right distinguishes
+    Temperature and Dewpoint profiles.
   criteria_checklist:
     visual_quality:
-      score: 34
+      score: 37
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
+        score: 10
         max: 10
         passed: true
-        comment: Title, axis labels, and tick labels are readable. Reference line
-          labels at top are slightly faint.
+        comment: Title at 24pt, axis labels at 20pt, ticks at 16pt, all clearly readable
       - id: VQ-02
         name: No Overlap
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: Minor overlap visible between 900 and 925 pressure tick labels
+        comment: No overlapping text elements; tick label at 925 hPa removed to prevent
+          overlap
       - id: VQ-03
         name: Element Visibility
         score: 7
         max: 8
         passed: true
-        comment: Main profiles clearly visible with good markers; reference lines
-          appropriately subtle but some are very faint
+        comment: Markers and lines are visible with good sizing; reference lines slightly
+          subtle
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Red/blue for main profiles is colorblind-safe; reference lines use
-          distinguishable browns, greens, blues
+        comment: Red/blue colorblind-safe palette, good contrast between profiles
       - id: VQ-05
         name: Layout Balance
         score: 5
         max: 5
         passed: true
-        comment: Good proportions, plot fills canvas well
+        comment: Plot fills canvas well, balanced margins, legend well-positioned
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Temperature (°C) and Pressure (hPa) with proper units
+        comment: 'Descriptive with units: Temperature (°C) and Pressure (hPa)'
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: No traditional grid used (reference lines serve this purpose), but
-          legend placement is good
+        comment: Grid is subtle but legend frame slightly obscures corner of plot
+          area
     spec_compliance:
-      score: 25
+      score: 23
       max: 25
       items:
       - id: SC-01
@@ -91,38 +97,39 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correctly implements Skew-T Log-P diagram
+        comment: Correct Skew-T Log-P diagram type
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Temperature and dewpoint correctly plotted against pressure
+        comment: Pressure on y-axis (log/inverted), temperature with skew transform
+          on x-axis
       - id: SC-03
         name: Required Features
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: 'All required features present: log-P axis inverted, skewed isotherms,
-          dry adiabats, moist adiabats, mixing ratio lines'
+        comment: Has isotherms, dry adiabats, moist adiabats, mixing ratio lines;
+          wind barbs optional and not included
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: 1000-100 hPa range appropriate for atmospheric sounding
+        comment: Full range from surface to upper atmosphere displayed
       - id: SC-05
         name: Legend Accuracy
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Legend correctly identifies Temperature and Dewpoint
+        passed: false
+        comment: Legend shows profiles but reference line types not in legend
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Uses correct skewt-logp-atmospheric · seaborn · pyplots.ai format
+        comment: 'Correct format: skewt-logp-atmospheric · seaborn · pyplots.ai'
     data_quality:
       score: 18
       max: 20
@@ -132,24 +139,23 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows typical mid-latitude atmospheric profile with realistic temperature/dewpoint
-          separation; doesn't demonstrate inversions or extreme conditions
+        comment: Shows typical mid-latitude summer sounding with decreasing temperature
+          and dewpoint; temperature inversion near tropopause visible
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Atmospheric sounding data is realistic scientific scenario (radiosonde
-          profile)
+        comment: Realistic atmospheric profile with sensible meteorological data
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Temperature and dewpoint values are realistic for mid-latitude summer;
-          extreme cold at upper levels is appropriate
+        comment: Realistic values; surface temp 25°C and dewpoint 18°C appropriate;
+          upper atmosphere temps realistic
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -157,43 +163,43 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Imports → Data → Plot → Save structure followed
+        comment: 'Simple linear structure: imports → data → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: Uses np.random.seed(42) for reproducibility
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used appropriately
+        comment: All imports are used
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Current seaborn API used
+        comment: Uses current seaborn and matplotlib APIs
       - id: CQ-05
         name: Output Correct
-        score: 1
+        score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png
+        passed: false
+        comment: Saves as plot.png but header says 0.13.2 while current seaborn may
+          differ
     library_features:
-      score: 0
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 3
         max: 5
-        passed: false
-        comment: While sns.lineplot() is used, the bulk of the visualization relies
-          heavily on matplotlib. A more seaborn-idiomatic approach would leverage
-          seaborn's statistical capabilities more directly.
+        passed: true
+        comment: Uses sns.lineplot, sns.set_theme, sns.despine, and colorblind palette,
+          but heavy reliance on matplotlib for the specialized thermodynamic lines
   verdict: APPROVED
 impl_tags:
   dependencies: []

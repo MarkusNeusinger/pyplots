@@ -1,7 +1,7 @@
 library: plotnine
 specification_id: skewt-logp-atmospheric
 created: '2026-01-17T09:35:09Z'
-updated: '2026-01-18T22:14:13Z'
+updated: '2026-01-18T22:32:40Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21092078715
 issue: 3802
@@ -10,88 +10,90 @@ library_version: 0.15.2
 preview_url: https://storage.googleapis.com/pyplots-images/plots/skewt-logp-atmospheric/plotnine/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/skewt-logp-atmospheric/plotnine/plot_thumb.png
 preview_html: null
-quality_score: 68
+quality_score: 78
 review:
   strengths:
-  - Comprehensive implementation of Skew-T thermodynamics including all five reference
-    line types (isotherms, isobars, dry adiabats, moist adiabats, mixing ratios)
-  - Correct mathematical transformations for the skewed coordinate system
-  - Realistic synthetic atmospheric sounding data with proper meteorological features
-    (lapse rates, tropopause, dewpoint depression)
-  - Excellent use of plotnine grammar of graphics for layered composition
-  - Good color coding to distinguish temperature (red) from dewpoint (blue) profiles
-  - Clean, well-structured code despite the complexity of the diagram
+  - Correct implementation of all Skew-T reference lines (isotherms, dry/moist adiabats,
+    mixing ratios)
+  - Proper logarithmic pressure scale with inversion (surface at bottom)
+  - Clear visual distinction between profile lines (T=red solid, Td=blue dashed)
+  - Well-organized legend with distinct line types and colors
+  - Realistic synthetic atmospheric data with proper meteorological relationships
   weaknesses:
-  - Y-axis pressure tick labels are not visible despite scale_y_log10 breaks being
-    specified - this is a critical issue making the diagram unusable for reading pressure
-    values
-  - Reference lines (isotherms, dry/moist adiabats, mixing ratios) have no legend
-    or labeling, making it impossible to distinguish their meaning without prior knowledge
-  - Reference lines are quite faint and their different line styles (solid, dashed,
-    dotted) are difficult to distinguish at the current line weights
-  - The plot fills the canvas well but without visible y-axis tick labels, the scientific
-    utility is severely compromised
+  - Upper atmosphere (100-300 hPa) appears sparse with few reference line intersections
+    making the plot feel unbalanced
+  - The T and Td annotations are small (size=14) and could be more prominent for a
+    4800px image
+  - Does not leverage plotnine distinctive features - coordinate transformation done
+    manually
   image_description: 'The plot displays a Skew-T Log-P atmospheric diagram with a
-    white background. The y-axis shows "Pressure (hPa)" in log scale, though the pressure
-    tick labels are not visible (axis appears blank). The x-axis is labeled "Temperature
-    (°C, skewed 45°)" with no tick labels shown. Reference lines are present: light
-    blue diagonal isotherms (skewed at 45°), faint gray horizontal isobars, orange
-    dashed dry adiabats curving upward, green dotted moist adiabats, and teal dashed
-    mixing ratio lines. The temperature profile is shown as a thick solid red line
-    descending from upper left to lower right. The dewpoint profile is shown as a
-    thick dashed blue line, generally to the left of (cooler than) the temperature
-    line. A legend on the right shows "Profile" with Temperature (red solid) and Dewpoint
-    (blue dashed) entries. The title reads "skewt-logp-atmospheric · plotnine · pyplots.ai".'
+    square 16:16 aspect ratio. The background is white with a logarithmic pressure
+    axis (inverted, 100-1000 hPa) on the y-axis and a skewed temperature axis on the
+    x-axis. Four types of reference lines are visible: blue solid isotherms (temperature
+    lines skewed at 45°), orange dashed dry adiabats, green dotted moist adiabats,
+    and magenta dash-dot mixing ratio lines. The main temperature profile is shown
+    as a thick red solid line labeled "T" at 500 hPa, and the dewpoint profile as
+    a thick blue dashed line labeled "Td". The legend is positioned on the right side
+    showing "Reference Lines" with all four line types. The title correctly reads
+    "skewt-logp-atmospheric · plotnine · pyplots.ai". Gray horizontal isobars are
+    visible at standard pressure levels. The plot shows proper meteorological conventions
+    with pressure decreasing upward.'
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 32
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 9
         max: 10
         passed: true
-        comment: Title and axis labels readable, but y-axis tick labels are completely
-          missing
+        comment: Title and axis labels are readable at 24pt and 20pt; pressure labels
+          at 18pt are clear; T and Td annotations visible but could be larger
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
-        passed: true
-        comment: No overlapping text elements
-      - id: VQ-03
-        name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: Reference lines visible but faint; main profiles clearly visible
+        comment: Minor overlap between some reference lines and profile lines at intersections,
+          but main content readable
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Temperature and dewpoint profiles are thick (size=3) and clearly
+          visible; reference lines at size=0.8 appropriately subtle
       - id: VQ-04
         name: Color Accessibility
         score: 4
         max: 5
         passed: true
-        comment: Colors mostly distinguishable, teal and light blue somewhat similar
+        comment: Good color differentiation; red/blue profiles distinguishable; red/green
+          combination could be closer for some color vision deficiencies
       - id: VQ-05
         name: Layout Balance
-        score: 0
+        score: 3
         max: 5
         passed: false
-        comment: Y-axis pressure labels missing - critical issue for diagram usability
+        comment: Square format appropriate but data only occupies upper portion (300-1000
+          hPa), lower portion (100-300 hPa) relatively sparse
       - id: VQ-06
         name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: Both axes have descriptive labels with units
+        comment: Y-axis has Pressure (hPa) with units; X-axis has Temperature (°C,
+          skewed 45°) explaining the skew
       - id: VQ-07
         name: Grid & Legend
-        score: 0
+        score: 1
         max: 2
-        passed: false
-        comment: Reference lines not explained in legend; line styles hard to distinguish
+        passed: true
+        comment: Legend well-placed and informative; isobars subtle gray; reference
+          lines serve as grid system
     spec_compliance:
-      score: 20
+      score: 22
       max: 25
       items:
       - id: SC-01
@@ -99,110 +101,119 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct Skew-T Log-P diagram type
+        comment: Correct Skew-T Log-P diagram with all essential components
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Pressure on y-axis log scale inverted, temperature skewed correctly
+        comment: Pressure correctly on Y-axis (log scale, inverted), temperature on
+          X with 45° skew
       - id: SC-03
         name: Required Features
-        score: 3
+        score: 4
         max: 5
-        passed: false
-        comment: Missing y-axis tick labels and reference line legend
+        passed: true
+        comment: Has isotherms, dry adiabats, moist adiabats, mixing ratios, isobars,
+          T and Td profiles; missing optional wind barbs
       - id: SC-04
         name: Data Range
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Data covers full troposphere range
+        comment: Range is 100-1000 hPa as specified, but temperature profile data
+          only extends to ~300 hPa visually
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Legend only shows profiles, not reference lines
+        passed: true
+        comment: Legend correctly identifies all four reference line types
       - id: SC-06
         name: Title Format
         score: 1
         max: 2
         passed: false
-        comment: Uses straight dot instead of middle dot
+        comment: Uses correct format with middle dot separator
     data_quality:
-      score: 16
+      score: 15
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 8
         passed: true
-        comment: Shows temperature/dewpoint profiles with realistic features, all
-          reference line types
+        comment: Shows T and Td profiles with realistic vertical structure; demonstrates
+          tropopause inversion; sparse above 300 hPa
       - id: DQ-02
         name: Realistic Context
         score: 6
         max: 7
         passed: true
-        comment: Realistic atmospheric sounding with proper lapse rates and tropopause
+        comment: Atmospheric sounding follows realistic lapse rates (~6.5°C/km), tropopause
+          around 200 hPa, meteorologically sound
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Values realistic for atmospheric conditions
+        comment: Temperature range -55°C to 25°C realistic; pressure 100-1000 hPa
+          appropriate; dewpoint values physically plausible
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Imports → Data → Plot → Save structure maintained
+        comment: Has helper function skew_transform() which deviates from pure script
+          style but necessary for complex coordinate transformation
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) set
+        comment: Uses np.random.seed(42) for reproducible synthetic data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: All imports are used; plotnine components properly imported
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Current API usage
+        comment: Uses current plotnine 0.15.2 API
       - id: CQ-05
         name: Output Correct
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png
+        comment: Saves as plot.png with dpi=300
     library_features:
-      score: 5
+      score: 0
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 5
+        score: 0
         max: 5
-        passed: true
-        comment: 'Excellent use of plotnine: multiple geom layers, scale_y_log10,
-          scale_color_manual, comprehensive theme'
+        passed: false
+        comment: Skew-T diagrams are not a natural fit for plotnine; coordinate transformation
+          done manually; does not leverage faceting, statistical transformations,
+          or ggplot2-style aesthetic mapping
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
+  - annotations
   - layer-composition
+  - custom-legend
   - manual-ticks
   patterns:
   - data-generation

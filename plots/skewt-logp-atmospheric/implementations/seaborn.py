@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 skewt-logp-atmospheric: Skew-T Log-P Atmospheric Diagram
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 87/100 | Created: 2026-01-17
@@ -11,8 +11,9 @@ import seaborn as sns
 from matplotlib.ticker import ScalarFormatter
 
 
-# Set seaborn style with ticks (no grid - we'll add custom reference lines)
-sns.set_theme(style="ticks")
+# Set seaborn style with whitegrid for subtle grid lines, using talk context for better scaling
+sns.set_theme(style="whitegrid", context="talk", font_scale=1.1)
+sns.set_palette("colorblind")
 
 # Synthetic atmospheric sounding data (typical mid-latitude summer profile)
 np.random.seed(42)
@@ -107,11 +108,14 @@ display_ticks = [1000, 850, 700, 500, 400, 300, 250, 200, 150, 100]
 ax.set_yticks(display_ticks)
 ax.set_yticklabels([str(p) for p in display_ticks])
 
-# Labels and title (use hyphen for consistent rendering)
+# Labels and title with proper middle dot separator
 ax.set_xlabel("Temperature (°C)", fontsize=20)
 ax.set_ylabel("Pressure (hPa)", fontsize=20)
-ax.set_title("skewt-logp-atmospheric - seaborn - pyplots.ai", fontsize=24)
+ax.set_title("skewt-logp-atmospheric · seaborn · pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
+
+# Use seaborn's despine to clean up the appearance (keep left and bottom spines only)
+sns.despine(ax=ax, top=True, right=True)
 
 # Configure legend from seaborn lineplot
 legend = ax.get_legend()
@@ -120,14 +124,15 @@ for text in legend.get_texts():
     text.set_fontsize(16)
 legend.get_frame().set_alpha(0.9)
 
-# Add reference line labels with better positioning
-ax.text(48, 800, "Isotherms", fontsize=12, color="#666666", rotation=45, ha="center")
-ax.text(-10, 108, "Dry Adiabats", fontsize=11, color="#8B4513", ha="center")
-ax.text(12, 108, "Moist Adiabats", fontsize=11, color="#228B22", ha="center")
-ax.text(34, 108, "Mixing Ratio", fontsize=11, color="#4169E1", ha="center")
+# Add reference line labels with better positioning and improved visibility
+ax.text(45, 600, "Isotherms", fontsize=14, color="#555555", rotation=45, ha="center", fontweight="bold")
+ax.text(-25, 108, "Dry Adiabats", fontsize=13, color="#6B3510", ha="center", fontweight="bold")
+ax.text(0, 108, "Moist Adiabats", fontsize=13, color="#1A6B1A", ha="center", fontweight="bold")
+ax.text(22, 108, "Mixing Ratio", fontsize=13, color="#2E4A8B", ha="center", fontweight="bold")
 
-# Add subtle background
+# Add subtle background and configure grid styling
 ax.set_facecolor("#fafafa")
+ax.grid(True, which="major", alpha=0.3, linestyle="-", linewidth=0.5, color="#888888")
 
 plt.tight_layout()
 plt.savefig("plot.png", dpi=300, bbox_inches="tight")

@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 skewt-logp-atmospheric: Skew-T Log-P Atmospheric Diagram
 Library: pygal 3.1.0 | Python 3.13.11
 Quality: 68/100 | Created: 2026-01-17
@@ -48,7 +48,7 @@ custom_style = Style(
     title_font_size=72,
     label_font_size=44,
     major_label_font_size=40,
-    legend_font_size=36,
+    legend_font_size=40,
     value_font_size=32,
     stroke_width=4,
 )
@@ -58,10 +58,10 @@ custom_style = Style(
 log_p_values = [0, 0.033, 0.07, 0.155, 0.301, 0.398, 0.523, 0.602, 0.699, 0.824, 1.0]
 p_labels = ["1000", "925", "850", "700", "500", "400", "300", "250", "200", "150", "100"]
 
-# Create XY chart - limit series count for proper legend display
+# Create XY chart with explicit margin for legend visibility
 chart = pygal.XY(
     width=4800,
-    height=2700,
+    height=3000,
     style=custom_style,
     title="skewt-logp-atmospheric · pygal · pyplots.ai",
     x_title="Temperature (°C, skewed 45°)",
@@ -72,11 +72,14 @@ chart = pygal.XY(
     show_x_guides=True,
     show_y_guides=True,
     x_label_rotation=0,
+    show_legend=True,
     legend_at_bottom=True,
-    legend_at_bottom_columns=8,
+    legend_at_bottom_columns=4,
+    legend_box_size=28,
+    margin_bottom=180,
     range=(0, 1.02),
     xrange=(-50, 75),
-    y_labels=[{"value": v, "label": lbl} for v, lbl in zip(log_p_values, p_labels, strict=True)],
+    y_labels=[{"value": v, "label": lbl} for v, lbl in zip(log_p_values, p_labels, strict=False)],
     truncate_legend=-1,
 )
 

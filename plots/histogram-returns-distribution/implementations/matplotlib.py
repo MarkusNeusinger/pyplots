@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 histogram-returns-distribution: Returns Distribution Histogram
 Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 88/100 | Created: 2026-01-16
+Quality: 90/100 | Created: 2026-01-16
 """
 
 import matplotlib.pyplot as plt

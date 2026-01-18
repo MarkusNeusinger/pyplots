@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-map-geographic: Contour Lines on Geographic Map
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-17
@@ -13,8 +13,8 @@ import pandas as pd
 np.random.seed(42)
 
 # Create dense grid covering wider Europe region to fill map canvas
-lon_range = np.linspace(-25, 55, 120)
-lat_range = np.linspace(30, 72, 80)
+lon_range = np.linspace(-25, 55, 140)
+lat_range = np.linspace(30, 72, 90)
 lon_grid, lat_grid = np.meshgrid(lon_range, lat_range)
 
 # Generate temperature pattern (decreases with latitude, varies with longitude)
@@ -48,15 +48,15 @@ projection_params = {"type": "mercator", "scale": 550, "center": [15, 52]}
 # Base map - world countries with subtle styling
 base = (
     alt.Chart(countries)
-    .mark_geoshape(fill="#F0F0F0", stroke="#CCCCCC", strokeWidth=0.5)
+    .mark_geoshape(fill="#E8E8E8", stroke="#AAAAAA", strokeWidth=0.5)
     .project(**projection_params)
     .properties(width=1600, height=900)
 )
 
-# Create smooth filled contour visualization using small circles for seamless appearance
+# Create smooth filled contour visualization using mark_square for cleaner coverage
 filled_contours = (
     alt.Chart(df)
-    .mark_circle(size=180, opacity=0.9)
+    .mark_square(size=200, opacity=0.92)
     .encode(
         longitude="longitude:Q",
         latitude="latitude:Q",
@@ -84,9 +84,10 @@ filled_contours = (
 )
 
 # Create contour line data by identifying boundary points between temperature bins
+# Use tighter threshold for cleaner isolines
 contour_data = []
 for level in contour_levels[1:-1]:  # Skip extreme ends
-    mask = np.abs(df["temperature"] - level) < 0.6
+    mask = np.abs(df["temperature"] - level) < 0.5
     level_points = df[mask].copy()
     level_points["contour_value"] = level
     level_points["contour_label"] = f"{level}°C"
@@ -94,11 +95,11 @@ for level in contour_levels[1:-1]:  # Skip extreme ends
 
 contour_df = pd.concat(contour_data, ignore_index=True)
 
-# Contour lines layer - small dark points forming isolines
+# Contour lines layer - more prominent strokes forming isolines
 contour_lines = (
     alt.Chart(contour_df)
-    .mark_circle(size=8, opacity=0.7)
-    .encode(longitude="longitude:Q", latitude="latitude:Q", color=alt.value("#2D2D2D"))
+    .mark_circle(size=25, opacity=0.85)
+    .encode(longitude="longitude:Q", latitude="latitude:Q", color=alt.value("#1a1a1a"))
     .project(**projection_params)
     .properties(width=1600, height=900)
 )
@@ -117,10 +118,10 @@ for level in [0, 10, 20]:
 
 label_df = pd.DataFrame(label_data)
 
-# Contour value labels
+# Contour value labels with higher contrast
 contour_labels = (
     alt.Chart(label_df)
-    .mark_text(fontSize=16, fontWeight="bold", fill="#1a1a1a", stroke="#FFFFFF", strokeWidth=2)
+    .mark_text(fontSize=18, fontWeight="bold", fill="#000000", stroke="#FFFFFF", strokeWidth=3)
     .encode(longitude="longitude:Q", latitude="latitude:Q", text="label:N")
     .project(**projection_params)
     .properties(width=1600, height=900)
@@ -132,12 +133,7 @@ chart = (
     .properties(
         width=1600,
         height=900,
-        title=alt.Title(
-            "European Temperature Contours · contour-map-geographic · altair · pyplots.ai",
-            fontSize=28,
-            anchor="middle",
-            color="#333333",
-        ),
+        title=alt.Title("contour-map-geographic · altair · pyplots.ai", fontSize=28, anchor="middle", color="#333333"),
     )
     .configure_view(strokeWidth=0)
 )

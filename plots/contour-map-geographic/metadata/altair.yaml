@@ -1,7 +1,7 @@
 library: altair
 specification_id: contour-map-geographic
 created: '2026-01-17T11:55:07Z'
-updated: '2026-01-18T22:31:53Z'
+updated: '2026-01-18T22:37:15Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21093797329
 issue: 3772
@@ -13,35 +13,38 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/contour-map-ge
 quality_score: 82
 review:
   strengths:
-  - Effective use of Altair geographic capabilities with Mercator projection and topo_feature
-  - Good color scheme choice (red-yellow-blue diverging) appropriate for temperature
-    data
-  - Well-structured layered composition (base map, filled contours, contour markers,
-    labels)
-  - Realistic temperature pattern with physically plausible features (latitude gradient,
-    Gulf Stream effect, Alpine cold spot)
-  - Interactive tooltips provide additional data exploration capability
-  - Clean, readable code following KISS principles
+  - Good use of Altair geographic projection capabilities (Mercator with custom center/scale)
+  - Effective layer composition combining basemap, temperature fill, contour markers,
+    and labels
+  - Colorblind-friendly diverging color scheme (redyellowblue)
+  - Interactive tooltips showing exact coordinates and temperature
+  - Temperature labels with white stroke provide good contrast
+  - Realistic temperature pattern with regional variations (Alps, Scandinavia cold
+    spots)
   weaknesses:
-  - Title format includes extra text before the required spec-id format
-  - Contour lines are represented by scattered points rather than true isolines -
-    Altair transform_contour() could create proper contour lines
-  - No axis labels showing latitude/longitude coordinates on map edges
-  - Point-based contour representation creates a somewhat pixelated appearance rather
-    than smooth isolines
-  image_description: The plot displays a temperature contour map of Europe using Altair.
-    The visualization uses a red-yellow-blue color scheme (reversed) where red/orange
-    represents warm temperatures (25-30°C) in the south and blue represents cold temperatures
-    (-10 to 5°C) in the north. The data is rendered as small squares creating a heat
-    map effect over a Mercator projection of Europe. A gray basemap with country outlines
-    is visible underneath the temperature data. Contour labels showing "0°C", "10°C",
-    and "20°C" are placed at strategic positions with white stroke for legibility.
-    The colorbar on the right shows "Temperature (°C)" ranging from -10 to 30. The
-    title reads "European Temperature Contours · contour-map-geographic · altair ·
-    pyplots.ai". Contour lines are represented by small dark circles marking isotherm
-    boundaries rather than actual continuous lines. The geographic coverage extends
-    from approximately -25 to 55 longitude and 30 to 72 latitude, covering most of
-    Europe including the British Isles, Scandinavia, and the Mediterranean region.
+  - Contour lines are represented as scattered point markers rather than true smooth
+    isolines - fundamental Altair limitation
+  - 'Title format incorrect: includes European Temperature Contours prefix instead
+    of just the required spec-id format'
+  - Filled contours use mark_square which creates a pixelated appearance rather than
+    smooth continuous fills
+  - Altair cannot natively produce true isolines without external contour computation
+  image_description: The plot displays a geographic contour map of European temperature
+    data. The visualization covers Europe from approximately 25°W to 55°E longitude
+    and 30°N to 72°N latitude. Temperature values are shown using a red-yellow-blue
+    color scheme (reversed, so red=warm, blue=cold) with values ranging from -10°C
+    to 30°C. The southern regions (Mediterranean) appear in deep red (~25-30°C), transitioning
+    through orange and yellow in central Europe (~10-20°C), to cooler blue tones in
+    northern Scandinavia (~0-5°C). A light gray geographic basemap shows world country
+    outlines. Contour "lines" are represented as small black circles marking temperature
+    isoline boundaries. Temperature labels (0°C, 10°C, 20°C) appear with white stroke
+    for contrast. A colorbar legend on the right displays the temperature scale with
+    "Temperature (°C)" title. Longitude labels (20°W to 50°E) appear along the bottom
+    edge, and latitude labels (35°N to 70°N) along the left edge. The title reads
+    "European Temperature Contours · contour-map-geographic · altair · pyplots.ai"
+    which includes an extra prefix before the required spec-id format. The temperature
+    data uses a dense grid of square markers to create a filled contour effect, with
+    black circle markers overlaid to indicate contour level boundaries.
   criteria_checklist:
     visual_quality:
       score: 32
@@ -52,22 +55,21 @@ review:
         score: 8
         max: 10
         passed: true
-        comment: Title and legend text readable, contour labels visible with white
-          stroke, though slightly small
+        comment: Title and colorbar labels readable; contour labels with white stroke;
+          axis labels slightly small
       - id: VQ-02
         name: No Overlap
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Minor overlap between some contour markers and labels, but generally
-          readable
+        comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 8
         passed: true
-        comment: Square markers create good coverage, contour dots visible but not
-          as clear as true lines
+        comment: Temperature grid visible but contour lines as scattered circles are
+          not true isolines
       - id: VQ-04
         name: Color Accessibility
         score: 5
@@ -76,48 +78,45 @@ review:
         comment: Red-yellow-blue diverging scheme is colorblind-friendly
       - id: VQ-05
         name: Layout Balance
-        score: 4
+        score: 3
         max: 5
         passed: true
-        comment: Good canvas use, slight imbalance with data not extending to edges
-          in some areas
+        comment: Good canvas utilization but data doesn't fully extend to map edges
       - id: VQ-06
         name: Axis Labels
-        score: 0
-        max: 2
-        passed: false
-        comment: No lat/lon tick labels on map edges
-      - id: VQ-07
-        name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Legend well-positioned, country boundaries serve as reference
+        comment: Latitude/longitude labels with directional indicators
+      - id: VQ-07
+        name: Grid & Legend
+        score: 0
+        max: 2
+        passed: false
+        comment: No visible grid lines on map
     spec_compliance:
-      score: 21
+      score: 19
       max: 25
       items:
       - id: SC-01
         name: Plot Type
-        score: 7
+        score: 6
         max: 8
         passed: true
-        comment: Contour map on geographic context, but contours approximated with
-          point markers
+        comment: Shows temperature over geography but contour lines are point-based
+          approximations
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Lat/lon correctly mapped to geographic projection, temperature to
-          color
+        comment: Latitude/longitude correctly mapped with Mercator projection
       - id: SC-03
         name: Required Features
-        score: 4
+        score: 2
         max: 5
-        passed: true
-        comment: Has filled contours, labels, colorbar, basemap; missing true smooth
-          contour lines
+        passed: false
+        comment: Missing true smooth contour lines - uses scattered points instead
       - id: SC-04
         name: Data Range
         score: 3
@@ -129,13 +128,13 @@ review:
         score: 2
         max: 2
         passed: true
-        comment: Colorbar accurately shows temperature scale
+        comment: Colorbar correctly labeled with Temperature (°C)
       - id: SC-06
         name: Title Format
-        score: 0
+        score: 1
         max: 2
         passed: false
-        comment: Title has extra prefix, should be just spec-id · library · pyplots.ai
+        comment: Title includes extra prefix instead of just spec-id format
     data_quality:
       score: 18
       max: 20
@@ -145,22 +144,21 @@ review:
         score: 7
         max: 8
         passed: true
-        comment: Shows temperature gradient, regional variations (Alps, Gulf Stream
-          effect)
+        comment: Shows temperature gradient with regional variations (Alps, Scandinavia)
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: European temperature distribution is classic meteorological use case
+        comment: European temperature distribution is realistic and neutral
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: Temperature range -15 to 35°C is realistic for Europe
+        comment: Temperature range -10 to 30°C is plausible for European climate
     code_quality:
-      score: 8
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -168,50 +166,50 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports → data → chart layers → save'
+        comment: 'Linear code structure: imports → data → plot → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) set
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only altair, numpy, pandas used
+        comment: Only altair, numpy, pandas imported
       - id: CQ-04
         name: No Deprecated API
-        score: 0
+        score: 1
         max: 1
         passed: true
-        comment: Uses current API
+        comment: Uses current Altair API
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
-        passed: true
-        comment: Saves as plot.png and plot.html
+        passed: false
+        comment: Saves plot.png but also plot.html
     library_features:
-      score: 3
+      score: 4
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 3
+        score: 4
         max: 5
         passed: true
-        comment: Uses geographic projections, topo_feature, layered composition, tooltips;
-          could use transform_contour()
+        comment: Uses geographic projections, topo_feature, layer composition, tooltips;
+          lacks native contour support
   verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
-  - annotations
   - hover-tooltips
   - html-export
+  - annotations
   patterns:
   - data-generation
   - matrix-construction

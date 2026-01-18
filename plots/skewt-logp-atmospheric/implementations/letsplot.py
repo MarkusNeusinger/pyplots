@@ -1,7 +1,7 @@
-"""pyplots.ai
+""" pyplots.ai
 skewt-logp-atmospheric: Skew-T Log-P Atmospheric Diagram
 Library: letsplot 4.8.2 | Python 3.13.11
-Quality: 78/100 | Created: 2026-01-17
+Quality: 85/100 | Created: 2026-01-17
 """
 
 import numpy as np

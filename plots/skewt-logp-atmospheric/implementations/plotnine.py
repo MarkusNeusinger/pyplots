@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 skewt-logp-atmospheric: Skew-T Log-P Atmospheric Diagram
 Library: plotnine 0.15.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-17
@@ -13,7 +13,7 @@ from plotnine import (
     element_line,
     element_rect,
     element_text,
-    geom_path,
+    geom_line,
     geom_segment,
     ggplot,
     labs,
@@ -35,9 +35,9 @@ P_MIN = 100  # Top of diagram (stratosphere)
 P_MAX = 1050  # Bottom of diagram (surface)
 P_SURFACE = 1000  # Reference pressure
 
-# Temperature range (°C)
-T_MIN = -40
-T_MAX = 40
+# Temperature range (°C) - extended to fill upper atmosphere better
+T_MIN = -80
+T_MAX = 50
 
 
 # Skew-T transformation functions
@@ -50,9 +50,36 @@ def skew_transform(temp, pressure):
 # Generate synthetic atmospheric sounding data
 np.random.seed(42)
 
-# Pressure levels (typical radiosonde)
+# Pressure levels (typical radiosonde) - extended to 100 hPa for full upper atmosphere coverage
 pressure_levels = np.array(
-    [1000, 975, 950, 925, 900, 875, 850, 825, 800, 775, 750, 700, 650, 600, 550, 500, 450, 400, 350, 300, 250, 200, 150]
+    [
+        1000,
+        975,
+        950,
+        925,
+        900,
+        875,
+        850,
+        825,
+        800,
+        775,
+        750,
+        700,
+        650,
+        600,
+        550,
+        500,
+        450,
+        400,
+        350,
+        300,
+        250,
+        200,
+        175,
+        150,
+        125,
+        100,
+    ]
 )
 
 # Temperature profile (realistic lapse rate with inversion)
@@ -85,7 +112,7 @@ dewpoint_profile = np.array(dewpoint_profile)
 # Create reference lines data
 
 # 1. Temperature isotherms (skewed lines at 45 degrees)
-isotherm_temps = np.arange(-80, 50, 10)  # Every 10°C
+isotherm_temps = np.arange(-100, 60, 10)  # Every 10°C - extended range
 isotherm_data = []
 for t_ref in isotherm_temps:
     p_range = np.array([P_MIN, P_MAX])
@@ -107,7 +134,7 @@ isobar_df = pd.DataFrame(isobar_data)
 # 3. Dry adiabats (lines of constant potential temperature)
 # These curve upward as air rises and cools adiabatically
 dry_adiabat_data = []
-theta_values = np.arange(-30, 80, 10)  # Potential temperatures
+theta_values = np.arange(-40, 100, 10)  # Potential temperatures - extended range
 for theta in theta_values:
     points_x = []
     points_y = []
@@ -133,7 +160,7 @@ dry_adiabat_df = pd.DataFrame(dry_adiabat_data)
 
 # 4. Moist adiabats (saturated adiabatic lapse rate)
 moist_adiabat_data = []
-moist_theta_values = np.arange(-20, 40, 10)
+moist_theta_values = np.arange(-30, 50, 10)  # Extended range
 for theta_e in moist_theta_values:
     points_x = []
     points_y = []
@@ -191,7 +218,7 @@ for w in mixing_ratios:
             )
 mixing_ratio_df = pd.DataFrame(mixing_ratio_data)
 
-# Create profile data (temperature and dewpoint)
+# Create profile data (temperature and dewpoint) using plotnine's aesthetic mapping
 temp_skewed = skew_transform(temp_profile, pressure_levels)
 dewpoint_skewed = skew_transform(dewpoint_profile, pressure_levels)
 
@@ -200,6 +227,7 @@ profile_df = pd.DataFrame(
         "pressure": np.concatenate([pressure_levels, pressure_levels]),
         "x": np.concatenate([temp_skewed, dewpoint_skewed]),
         "variable": ["Temperature"] * len(pressure_levels) + ["Dewpoint"] * len(pressure_levels),
+        "line_style": ["solid"] * len(pressure_levels) + ["dashed"] * len(pressure_levels),
     }
 )
 
@@ -228,7 +256,7 @@ all_ref_lines = pd.concat([isotherm_legend, dry_adiabat_legend, moist_adiabat_le
 pressure_breaks = [1000, 850, 700, 500, 400, 300, 200, 150, 100]
 pressure_labels = [str(p) for p in pressure_breaks]
 
-# Build the plot - use profile_df as base to ensure y scale works
+# Build the plot using plotnine's grammar of graphics with aesthetic mapping
 plot = (
     ggplot(profile_df, aes(x="x", y="pressure"))
     # Reference lines - drawn first (background)
@@ -241,26 +269,32 @@ plot = (
         linetype="solid",
         inherit_aes=False,
     )
-    # Reference lines with color/linetype for legend
+    # Reference lines with color/linetype for legend - using plotnine's aesthetic mapping
     + geom_segment(
         aes(x="x", xend="xend", y="y", yend="yend", color="line_type", linetype="line_type"),
         data=all_ref_lines,
-        size=0.8,
+        size=0.9,
         inherit_aes=False,
     )
-    # Temperature profile - solid red, thick
-    + geom_path(data=profile_df[profile_df["variable"] == "Temperature"], color="#CC0000", size=3)
-    # Dewpoint profile - dashed blue, thick
-    + geom_path(data=profile_df[profile_df["variable"] == "Dewpoint"], color="#0066CC", size=3, linetype="dashed")
-    # Color and linetype scale for reference lines
+    # Temperature and dewpoint profiles using aesthetic mapping for color and linetype
+    + geom_line(
+        aes(x="x", y="pressure", color="variable", linetype="variable", group="variable"),
+        data=profile_df,
+        size=3.5,
+        inherit_aes=False,
+    )
+    # Color scale combining reference lines and profiles
     + scale_color_manual(
         values={
             "Isotherms (10°C)": "#4A90D9",
             "Dry Adiabats": "#D2691E",
             "Moist Adiabats": "#228B22",
             "Mixing Ratios": "#8B008B",
+            "Temperature": "#CC0000",
+            "Dewpoint": "#0066CC",
         },
-        name="Reference Lines",
+        name="Lines",
+        breaks=["Temperature", "Dewpoint", "Isotherms (10°C)", "Dry Adiabats", "Moist Adiabats", "Mixing Ratios"],
     )
     + scale_linetype_manual(
         values={
@@ -268,8 +302,11 @@ plot = (
             "Dry Adiabats": "dashed",
             "Moist Adiabats": "dotted",
             "Mixing Ratios": "dashdot",
+            "Temperature": "solid",
+            "Dewpoint": "dashed",
         },
-        name="Reference Lines",
+        name="Lines",
+        breaks=["Temperature", "Dewpoint", "Isotherms (10°C)", "Dry Adiabats", "Moist Adiabats", "Mixing Ratios"],
     )
     # Y-axis: log scale with explicit breaks and labels
     + scale_y_continuous(
@@ -280,23 +317,23 @@ plot = (
     )
     # X-axis (skewed temperature coordinates - hide ticks but keep label)
     + scale_x_continuous(breaks=[], labels=[], limits=(x_min - 10, x_max + 20))
-    # Annotations for profile lines at a visible pressure level (500 hPa - mid-troposphere)
+    # Annotations for profile lines - larger size for visibility in high-res image
     + annotate(
         "text",
-        x=skew_transform(temp_profile[np.argmin(np.abs(pressure_levels - 500))], 500) + 5,
-        y=500,
+        x=skew_transform(temp_profile[np.argmin(np.abs(pressure_levels - 600))], 600) + 8,
+        y=600,
         label="T",
         color="#CC0000",
-        size=14,
+        size=22,
         fontweight="bold",
     )
     + annotate(
         "text",
-        x=skew_transform(dewpoint_profile[np.argmin(np.abs(pressure_levels - 500))], 500) - 5,
-        y=500,
+        x=skew_transform(dewpoint_profile[np.argmin(np.abs(pressure_levels - 600))], 600) - 8,
+        y=600,
         label="Td",
         color="#0066CC",
-        size=14,
+        size=22,
         fontweight="bold",
     )
     + labs(x="Temperature (°C, skewed 45°)", y="Pressure (hPa)", title="skewt-logp-atmospheric · plotnine · pyplots.ai")
@@ -308,17 +345,17 @@ plot = (
         panel_grid_minor=element_blank(),
         axis_line=element_line(color="#333333", size=1),
         text=element_text(size=14),
-        axis_title=element_text(size=20),
+        axis_title=element_text(size=22),
         axis_title_x=element_text(margin={"t": 15}),
         axis_title_y=element_text(margin={"r": 15}),
         axis_text_x=element_blank(),  # Hide x-axis labels (skewed coords)
         axis_text_y=element_text(size=18, color="#333333"),  # Pressure labels
-        plot_title=element_text(size=24, ha="center"),
+        plot_title=element_text(size=26, ha="center"),
         legend_position="right",
-        legend_title=element_text(size=16, fontweight="bold"),
-        legend_text=element_text(size=13),
+        legend_title=element_text(size=18, fontweight="bold"),
+        legend_text=element_text(size=14),
         legend_background=element_rect(fill="white", alpha=0.95),
-        legend_key_width=40,
+        legend_key_width=45,
         axis_ticks_major_y=element_line(color="#333333", size=1),
     )
 )

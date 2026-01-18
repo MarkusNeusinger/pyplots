@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 contour-map-geographic: Contour Lines on Geographic Map
 Library: altair 6.0.0 | Python 3.13.11
 Quality: 82/100 | Created: 2026-01-17
@@ -127,9 +127,36 @@ contour_labels = (
     .properties(width=1600, height=900)
 )
 
-# Layer all components: base map, filled contours, contour lines, labels
+# Create latitude/longitude axis labels for map edges
+# Longitude labels along bottom
+lon_labels_data = pd.DataFrame({"longitude": [-20, -10, 0, 10, 20, 30, 40, 50], "latitude": [31] * 8})
+lon_labels_data["label"] = lon_labels_data["longitude"].apply(
+    lambda x: f"{abs(x)}°{'W' if x < 0 else 'E'}" if x != 0 else "0°"
+)
+
+lon_axis_labels = (
+    alt.Chart(lon_labels_data)
+    .mark_text(fontSize=14, fontWeight="normal", fill="#333333", dy=12)
+    .encode(longitude="longitude:Q", latitude="latitude:Q", text="label:N")
+    .project(**projection_params)
+    .properties(width=1600, height=900)
+)
+
+# Latitude labels along left edge
+lat_labels_data = pd.DataFrame({"longitude": [-24] * 5, "latitude": [35, 45, 55, 65, 70]})
+lat_labels_data["label"] = lat_labels_data["latitude"].apply(lambda x: f"{x}°N")
+
+lat_axis_labels = (
+    alt.Chart(lat_labels_data)
+    .mark_text(fontSize=14, fontWeight="normal", fill="#333333", dx=-12, align="right")
+    .encode(longitude="longitude:Q", latitude="latitude:Q", text="label:N")
+    .project(**projection_params)
+    .properties(width=1600, height=900)
+)
+
+# Layer all components: base map, filled contours, contour lines, labels, axis labels
 chart = (
-    alt.layer(base, filled_contours, contour_lines, contour_labels)
+    alt.layer(base, filled_contours, contour_lines, contour_labels, lon_axis_labels, lat_axis_labels)
     .properties(
         width=1600,
         height=900,

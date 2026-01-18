@@ -1,4 +1,4 @@
-""" pyplots.ai
+"""pyplots.ai
 skewt-logp-atmospheric: Skew-T Log-P Atmospheric Diagram
 Library: seaborn 0.13.2 | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-17
@@ -6,18 +6,19 @@ Quality: 78/100 | Created: 2026-01-17
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 from matplotlib.ticker import ScalarFormatter
 
 
-# Set seaborn style
-sns.set_theme(style="whitegrid")
+# Set seaborn style with ticks (no grid - we'll add custom reference lines)
+sns.set_theme(style="ticks")
 
 # Synthetic atmospheric sounding data (typical mid-latitude summer profile)
 np.random.seed(42)
 pressure = np.array([1000, 925, 850, 700, 500, 400, 300, 250, 200, 150, 100])
 temperature = np.array([25, 18, 12, 2, -20, -35, -50, -55, -58, -60, -55])
-dewpoint = np.array([18, 14, 8, -5, -30, -45, -60, -65, -70, -75, -70])
+dewpoint = np.array([18, 14, 8, -5, -30, -45, -60, -65, -68, -70, -65])
 
 # Create figure with custom transform for skew-T
 fig, ax = plt.subplots(figsize=(16, 9))
@@ -70,39 +71,62 @@ for w in mixing_ratios:
     x_mix = t_mix + skew_slope * (np.log(1000 / p_mix))
     ax.plot(x_mix, p_mix, color="#4169E1", linewidth=0.5, alpha=0.4, linestyle=":", zorder=1)
 
-# Plot temperature profile (solid red line)
+# Apply skew transform to data for seaborn plotting
 x_temp = temperature + skew_slope * np.log(1000 / pressure)
-ax.plot(x_temp, pressure, color="#E74C3C", linewidth=4, marker="o", markersize=10, label="Temperature", zorder=5)
-
-# Plot dewpoint profile (dashed blue line)
 x_dew = dewpoint + skew_slope * np.log(1000 / pressure)
-ax.plot(
-    x_dew, pressure, color="#306998", linewidth=4, marker="s", markersize=8, linestyle="--", label="Dewpoint", zorder=5
+
+# Create DataFrame for seaborn plotting
+df = pd.DataFrame(
+    {
+        "x": np.concatenate([x_temp, x_dew]),
+        "pressure": np.concatenate([pressure, pressure]),
+        "profile": ["Temperature"] * len(pressure) + ["Dewpoint"] * len(pressure),
+    }
 )
 
-# Configure pressure axis
-ax.yaxis.set_major_formatter(ScalarFormatter())
-ax.yaxis.set_minor_formatter(ScalarFormatter())
-ax.set_yticks(isobar_levels)
-ax.set_yticklabels([str(p) for p in isobar_levels])
+# Plot profiles using seaborn lineplot
+sns.lineplot(
+    data=df,
+    x="x",
+    y="pressure",
+    hue="profile",
+    style="profile",
+    markers={"Temperature": "o", "Dewpoint": "s"},
+    dashes={"Temperature": "", "Dewpoint": (5, 2)},
+    palette={"Temperature": "#E74C3C", "Dewpoint": "#306998"},
+    linewidth=4,
+    markersize=10,
+    ax=ax,
+    zorder=5,
+    legend=True,
+)
 
-# Labels and title
+# Configure pressure axis - remove overlapping ticks (925 removed to avoid overlap with 1000)
+ax.yaxis.set_major_formatter(ScalarFormatter())
+display_ticks = [1000, 850, 700, 500, 400, 300, 250, 200, 150, 100]
+ax.set_yticks(display_ticks)
+ax.set_yticklabels([str(p) for p in display_ticks])
+
+# Labels and title (use hyphen for consistent rendering)
 ax.set_xlabel("Temperature (°C)", fontsize=20)
 ax.set_ylabel("Pressure (hPa)", fontsize=20)
-ax.set_title("skewt-logp-atmospheric · seaborn · pyplots.ai", fontsize=24)
+ax.set_title("skewt-logp-atmospheric - seaborn - pyplots.ai", fontsize=24)
 ax.tick_params(axis="both", labelsize=16)
 
-# Legend
-ax.legend(loc="upper right", fontsize=16, framealpha=0.9)
+# Configure legend from seaborn lineplot
+legend = ax.get_legend()
+legend.set_title("")
+for text in legend.get_texts():
+    text.set_fontsize(16)
+legend.get_frame().set_alpha(0.9)
 
-# Add reference line labels
-ax.text(47, 920, "Isotherms", fontsize=12, color="#888888", rotation=45, ha="center")
-ax.text(-5, 105, "Dry Adiabats", fontsize=10, color="#8B4513", ha="center")
-ax.text(15, 105, "Moist Adiabats", fontsize=10, color="#228B22", ha="center")
-ax.text(35, 105, "Mixing Ratio", fontsize=10, color="#4169E1", ha="center")
+# Add reference line labels with better positioning
+ax.text(48, 800, "Isotherms", fontsize=12, color="#666666", rotation=45, ha="center")
+ax.text(-10, 108, "Dry Adiabats", fontsize=11, color="#8B4513", ha="center")
+ax.text(12, 108, "Moist Adiabats", fontsize=11, color="#228B22", ha="center")
+ax.text(34, 108, "Mixing Ratio", fontsize=11, color="#4169E1", ha="center")
 
-# Remove default grid and add subtle background
-ax.grid(False)
+# Add subtle background
 ax.set_facecolor("#fafafa")
 
 plt.tight_layout()

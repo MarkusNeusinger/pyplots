@@ -1,7 +1,7 @@
 library: pygal
 specification_id: skewt-logp-atmospheric
 created: '2026-01-17T09:27:06Z'
-updated: '2026-01-18T22:32:47Z'
+updated: '2026-01-18T22:39:50Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21092078750
 issue: 3802
@@ -10,31 +10,36 @@ library_version: 3.1.0
 preview_url: https://storage.googleapis.com/pyplots-images/plots/skewt-logp-atmospheric/pygal/plot.png
 preview_thumb: https://storage.googleapis.com/pyplots-images/plots/skewt-logp-atmospheric/pygal/plot_thumb.png
 preview_html: https://storage.googleapis.com/pyplots-images/plots/skewt-logp-atmospheric/pygal/plot.html
-quality_score: 62
+quality_score: 68
 review:
   strengths:
-  - Correct title format following pyplots.ai convention
-  - Realistic atmospheric sounding data with physically plausible temperature and
-    dewpoint profiles
-  - Good understanding of Skew-T transformation mathematics in the code
-  - Clean colorblind-safe color scheme for main temperature and dewpoint profiles
-  - Custom style defined for meteorological theme
+  - Correct mathematical implementation of Skew-T transformation with 45° isotherms
+  - Proper logarithmic pressure axis with inverted orientation (surface at bottom)
+  - All required reference lines present (dry adiabat, moist adiabat, mixing ratio,
+    isotherms)
+  - Good color coding differentiating temperature, dewpoint, and reference line types
+  - Realistic atmospheric sounding data with correct temperature/dewpoint relationship
+  - Clean axis labels with proper units
   weaknesses:
-  - Y-axis displays abstract log values (0-1) instead of actual pressure levels (100-1000
-    hPa) as required by spec
-  - Reference lines (dry adiabats, moist adiabats, mixing ratio lines) are defined
-    in code but not visibly rendered in the output - only temperature, dewpoint, and
-    some isotherms appear
-  - Legend shows only 5 items when 17+ series were added to the chart, indicating
-    rendering or configuration issues
-  - Font sizes appear small relative to the 4800x2700 canvas despite custom style
-    definition
-  image_description: |-
-    The plot displays a Skew-T Log-P atmospheric diagram rendered with pygal. The chart has a light blue-gray plot background (#f0f4f8) with a white overall background. The Y-axis shows "Altitude (log scale)" ranging from 0 to 1 (representing log10(1000/pressure)), with the surface (1000 hPa) at the bottom and upper atmosphere at the top. The X-axis shows "Temperature (°C, skewed)" ranging from -40 to 70.
-
-    Two main profiles are visible: a red temperature line with dot markers showing the atmospheric temperature profile, and a blue dewpoint line also with markers. Both profiles follow the characteristic Skew-T pattern where temperatures skew to the right with altitude. Three diagonal dotted gray lines representing isotherms (-40°C, -20°C, 0°C) are visible, tilted at approximately 45 degrees as required for Skew-T diagrams.
-
-    The title "skewt-logp-atmospheric · pygal · pyplots.ai" appears at the top. The legend is positioned at the bottom showing "Temperature", "Dewpoint", "-40°C", "-20°C", and "0°C". Text is generally legible but the font sizes appear somewhat small relative to the canvas. The Y-axis label incorrectly says "Altitude (log scale)" instead of "Pressure (hPa, log scale)" as specified in the code.
+  - Legend is not visible in the rendered output despite being configured - critical
+    for understanding the multiple overlapping lines
+  - Cannot use pygal native Skew-T (it does not exist) so this is an XY approximation
+    - acceptable given library limitations
+  - Some reference lines (especially the thin dashed ones) are subtle and could be
+    more visible
+  image_description: 'The plot displays a Skew-T Log-P atmospheric diagram rendered
+    using pygal''s XY chart. The Y-axis shows pressure levels (1000 hPa at bottom
+    to 100 hPa at top) with logarithmic spacing correctly inverted. The X-axis shows
+    "Temperature (°C, skewed 45°)". The main temperature profile is shown as a solid
+    red line with markers running from surface (~25°C at 1000 hPa) to stratosphere
+    (~-55°C at 100 hPa). The dewpoint profile is shown as a dashed blue line with
+    markers, consistently cooler than temperature. Reference lines include: a green
+    dashed dry adiabat (θ=300K), a purple dashed moist adiabat, an orange mixing ratio
+    line (r=10g/kg), and two gray diagonal isotherms (0°C and -20°C) demonstrating
+    the 45° skew. The title correctly uses the "{spec-id} · {library} · pyplots.ai"
+    format. The background is light gray (#f8f9fa). CRITICAL ISSUE: The legend is
+    not visible in the rendered image, despite the code having legend_at_bottom=True
+    - this appears to be cut off or hidden.'
   criteria_checklist:
     visual_quality:
       score: 28
@@ -42,89 +47,87 @@ review:
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 8
         max: 10
-        passed: false
-        comment: Text readable but fonts smaller than optimal for 4800x2700 canvas;
-          axis labels and legend text particularly small
+        passed: true
+        comment: Title and axis labels are readable but not maximally sized; tick
+          labels are adequate
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements, all labels clear
+        comment: No text overlapping, all elements clearly separated
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 6
         max: 8
-        passed: false
-        comment: Temperature and dewpoint lines visible with markers, but reference
-          lines (dry adiabats, moist adiabats, mixing ratio) are not visible in the
-          rendered output
+        passed: true
+        comment: Data lines and markers are visible, but some reference lines are
+          thin and could be more prominent
       - id: VQ-04
         name: Color Accessibility
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Red/blue for main profiles is colorblind-safe, good contrast
+        comment: Good color differentiation between temperature (red), dewpoint (blue),
+          and reference lines
       - id: VQ-05
         name: Layout Balance
-        score: 3
+        score: 0
         max: 5
         passed: false
-        comment: Reasonable plot utilization but legend at bottom creates some imbalance
+        comment: Legend is completely missing/cut off from the rendered image; severe
+          layout issue
       - id: VQ-06
         name: Axis Labels
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: X-axis has units, Y-axis shows Altitude (log scale) but should show
-          pressure in hPa with actual pressure values
+        passed: true
+        comment: Both axes have descriptive labels with units
       - id: VQ-07
         name: Grid & Legend
         score: 0
         max: 2
         passed: false
-        comment: Grid is subtle but legend shows only 5 items when 17+ series were
-          added; many reference lines not rendering correctly
+        comment: Legend is missing, grid is subtle but legend failure is critical
     spec_compliance:
-      score: 15
+      score: 21
       max: 25
       items:
       - id: SC-01
         name: Plot Type
-        score: 5
+        score: 6
         max: 8
-        passed: false
-        comment: 'Attempts Skew-T but missing key elements: dry adiabats, moist adiabats,
-          and mixing ratio lines not visibly rendered despite being in code'
+        passed: true
+        comment: XY chart approximation of Skew-T diagram; pygal lacks native meteorological
+          diagram support
       - id: SC-02
         name: Data Mapping
-        score: 3
+        score: 5
         max: 5
-        passed: false
-        comment: Temperature/dewpoint correctly mapped but Y-axis shows abstract log
-          values (0-1) instead of actual pressure levels (100-1000 hPa)
+        passed: true
+        comment: Pressure correctly on Y-axis (inverted, logarithmic), temperature
+          on X-axis with skew transformation
       - id: SC-03
         name: Required Features
-        score: 2
+        score: 4
         max: 5
-        passed: false
-        comment: Only temperature, dewpoint, and isotherms visible; missing visible
-          dry adiabats (green), moist adiabats (purple), mixing ratio lines (orange)
+        passed: true
+        comment: Has temperature profile, dewpoint profile, dry adiabat, moist adiabat,
+          mixing ratio line, isotherms; missing wind barbs (optional per spec)
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: Data range covers surface to upper troposphere appropriately
+        comment: Full pressure range from 1000 to 100 hPa shown
       - id: SC-05
         name: Legend Accuracy
-        score: 0
+        score: 1
         max: 2
         passed: false
-        comment: Legend shows only 5 of 17+ series added; most reference line labels
-          missing
+        comment: Legend code exists but is not visible in output
       - id: SC-06
         name: Title Format
         score: 2
@@ -132,86 +135,86 @@ review:
         passed: true
         comment: 'Correct format: skewt-logp-atmospheric · pygal · pyplots.ai'
     data_quality:
-      score: 14
+      score: 16
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
         score: 6
         max: 8
-        passed: false
-        comment: Good atmospheric sounding profile but reference lines not rendering
-          makes it incomplete for educational use
+        passed: true
+        comment: Shows temperature profile decreasing with altitude, dewpoint profile,
+          reference lines; shows realistic atmospheric structure
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 7
-        passed: false
-        comment: Realistic mid-latitude radiosonde data with appropriate temperature
-          lapse rate and dewpoint depression
+        passed: true
+        comment: Mid-latitude sounding data is plausible; temperature inversion at
+          top (stratosphere) is realistic
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
+        score: 5
         max: 5
-        passed: false
-        comment: Temperature and pressure values realistic, but Y-axis display as
-          0-1 instead of 100-1000 hPa reduces interpretability
+        passed: true
+        comment: Temperature values (-55°C to 25°C), pressure levels (1000-100 hPa)
+          are physically realistic
     code_quality:
       score: 8
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 2
+        score: 3
         max: 3
-        passed: false
-        comment: Follows linear structure but has multiple iteration loops that make
-          it complex
+        passed: true
+        comment: 'Linear script structure: imports → data → style → chart → lines
+          → save'
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: np.random.seed(42) set
+        comment: Uses np.random.seed(42) even though data is deterministic
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: Only imports used (numpy, pygal, Style)
       - id: CQ-04
         name: No Deprecated API
-        score: 1
-        max: 1
-        passed: true
-        comment: Current API usage
-      - id: CQ-05
-        name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Outputs both plot.png and plot.html correctly
+        comment: strict=True in zip is modern Python but may cause issues in some
+          environments
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png and plot.html
     library_features:
-      score: 2
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: Uses pygal XY chart with custom styling, but many series are added
-          that do not appear in output suggesting library limitations or rendering
-          issues
-  verdict: REJECTED
+        passed: true
+        comment: Uses pygal's XY chart with custom Style, y_labels with value/label
+          mapping, stroke_style for dashing; reasonable pygal usage but no interactive
+          features leveraged in visible output
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - manual-ticks
-  - html-export
   patterns:
   - data-generation
-  - iteration-over-groups
   dataprep: []
   styling:
   - grid-styling
+  - alpha-blending

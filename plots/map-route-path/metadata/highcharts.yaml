@@ -1,7 +1,7 @@
 library: highcharts
 specification_id: map-route-path
 created: '2026-01-19T17:56:21Z'
-updated: '2026-01-19T17:58:57Z'
+updated: '2026-01-19T18:07:56Z'
 generated_by: claude-opus-4-5-20251101
 workflow_run: 21147013685
 issue: 3768
@@ -13,84 +13,82 @@ preview_html: https://storage.googleapis.com/pyplots-images/plots/map-route-path
 quality_score: 78
 review:
   strengths:
-  - Excellent realistic hiking trail scenario with Swiss Alps coordinates and elevation
-    simulation
-  - Good colorblind-safe color scheme with shape differentiation (circle for start,
-    square for end)
-  - Clean code structure with well-organized data generation
-  - Proper use of Highcharts Maps with topology data and mappoint/mapline series
+  - Excellent color gradient implementation showing time progression along the route
+  - Clear start (green circle) and end (red square) markers with labels as spec requires
+  - Well-structured waypoint data with elevation and time attributes
+  - Good use of Highcharts Maps series types (MapLineSeries, MapPointSeries)
+  - Realistic Swiss Alps hiking scenario with appropriate coordinate ranges
   weaknesses:
-  - Route path is very small relative to the 4800x2700 canvas - needs better zoom
-    level or map bounds adjustment
-  - Does not use the highcharts-core Python library (Chart class) as specified in
-    library rules, instead uses raw JSON configuration
-  - Color gradient along path for time progression mentioned in spec notes but not
-    implemented
-  - Unused gradient_points variable suggests incomplete implementation of time-based
-    coloring
-  - Legend shows incorrect symbol for Route (dot instead of line representation)
-  image_description: The plot displays a geographic map of Europe with a hiking route
-    path visualized in the Swiss Alps region. The background shows country borders
-    in light gray (#e8e8e8) with darker gray border lines. The route is shown as a
-    blue (#306998) line connecting waypoints from east to west. Yellow circular markers
-    with blue borders appear at regular intervals along the route (every 10th waypoint).
-    A large green circle marks the START point on the east side with "START" label
-    in green text above it. A red square marks the END point on the west side with
-    "END" label in red text above it. The title reads "Alpine Hiking Trail · map-route-path
-    · highcharts · pyplots.ai" with a subtitle describing "GPS track from Zermatt
-    region through the Swiss Alps (150 waypoints, 6-hour hike)". A legend in the top-right
-    corner shows Route (blue), Start (green), and End (red) markers. The route itself
-    is relatively small compared to the overall canvas, with significant empty space
-    around it.
+  - Geographic basemap not rendering - the Switzerland topology is loaded but not
+    visible behind the route (critical spec requirement)
+  - Poor canvas utilization - route occupies only ~20-25% of vertical space with large
+    empty areas
+  - Legend does not explain the color gradient meaning (time progression from blue
+    to red)
+  - No direction arrows along path as spec suggests for indicating travel direction
+  image_description: The plot displays a hiking trail route rendered as a continuous
+    path across the canvas. The path uses a color gradient from dark blue (start,
+    right side) through light blue, white/cream, peach, and orange tones to dark red
+    (end, left side), effectively showing time progression over the 6-hour hike. A
+    green circle with "START" label marks the beginning on the right, and a dark red
+    square with "END" label marks the terminus on the left. Yellow circle markers
+    appear at regular intervals along the path representing waypoints. The legend
+    in the right portion shows "Route (colored by time)", "Start", and "End" entries.
+    The title "Alpine Hiking Trail · map-route-path · highcharts · pyplots.ai" appears
+    at the top with a descriptive subtitle. The Switzerland topographic basemap is
+    NOT visible - only a white background appears behind the route, which is a significant
+    deviation from the spec requirement for geographic context.
   criteria_checklist:
     visual_quality:
-      score: 31
+      score: 32
       max: 40
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 9
         max: 10
         passed: true
-        comment: Title and labels readable but could be larger for the canvas size
+        comment: Title, subtitle, labels all readable at full size; could be slightly
+          larger
       - id: VQ-02
         name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements
+        comment: No overlapping elements, all text clear
       - id: VQ-03
         name: Element Visibility
-        score: 5
+        score: 7
         max: 8
         passed: true
-        comment: Route and markers visible but the route is small relative to canvas
+        comment: Route line and markers visible, good sizing for path
       - id: VQ-04
         name: Color Accessibility
         score: 5
         max: 5
         passed: true
-        comment: Good colorblind-safe palette with shape differentiation
+        comment: Blue-to-red gradient is colorblind-friendly, no red-green conflict
       - id: VQ-05
         name: Layout Balance
-        score: 2
+        score: 1
         max: 5
         passed: false
-        comment: Route occupies only ~10-15% of canvas, significant wasted space
+        comment: Route occupies only ~20-25% of vertical canvas height, significant
+          empty space above and below
       - id: VQ-06
         name: Axis Labels
+        score: 0
+        max: 2
+        passed: false
+        comment: No axis labels (map visualization, but no coordinate indicators)
+      - id: VQ-07
+        name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: N/A for maps, using geographic context instead
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
-        passed: true
-        comment: Legend present but small relative to canvas
+        comment: Legend well-placed and clear
     spec_compliance:
-      score: 22
+      score: 18
       max: 25
       items:
       - id: SC-01
@@ -98,105 +96,106 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Correct map route visualization with connected path
+        comment: Correct route/path map visualization
       - id: SC-02
         name: Data Mapping
         score: 5
         max: 5
         passed: true
-        comment: Lat/lon correctly mapped to geographic coordinates
+        comment: Lat/lon correctly mapped to path
       - id: SC-03
         name: Required Features
-        score: 4
+        score: 2
         max: 5
-        passed: true
-        comment: Has start/end markers, connected path, waypoints; missing color gradient
-          for time progression
+        passed: false
+        comment: 'Missing: basemap not visible, no direction arrows along path'
       - id: SC-04
         name: Data Range
         score: 3
         max: 3
         passed: true
-        comment: All data visible within map bounds
+        comment: All waypoints displayed
       - id: SC-05
         name: Legend Accuracy
         score: 0
         max: 2
         passed: false
-        comment: Legend shows dot for Route instead of line representation
+        comment: Legend shows only route symbol, not the full color gradient meaning
       - id: SC-06
         name: Title Format
         score: 2
         max: 2
         passed: true
-        comment: Correct format with spec-id · library · pyplots.ai
+        comment: Correct format with spec-id, library, pyplots.ai
     data_quality:
-      score: 17
+      score: 18
       max: 20
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 7
         max: 8
         passed: true
-        comment: Shows path, waypoints, start/end markers; missing time/elevation
-          color encoding
+        comment: Shows path, start/end markers, time gradient, waypoints; missing
+          terrain context
       - id: DQ-02
         name: Realistic Context
         score: 7
         max: 7
         passed: true
-        comment: Excellent hiking trail scenario in Swiss Alps with realistic coordinates
+        comment: Swiss Alps hiking scenario is excellent and neutral
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 5
         passed: true
-        comment: 150 waypoints over 6-hour hike is realistic, elevation values appropriate
+        comment: Coordinates and elevation values realistic; 150 waypoints appropriate
     code_quality:
-      score: 8
+      score: 7
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: Simple imports → data → config → render flow
+        comment: Linear structure but complex HTML generation required for Highcharts
+          maps
       - id: CQ-02
         name: Reproducibility
         score: 3
         max: 3
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 1
         max: 2
         passed: true
-        comment: gradient_points variable created but not used
+        comment: All imports used, but urllib/tempfile/time are utility dependencies
       - id: CQ-04
         name: No Deprecated API
         score: 1
         max: 1
         passed: true
-        comment: Using current Highcharts Maps API
+        comment: Current highcharts-maps API
       - id: CQ-05
         name: Output Correct
         score: 0
         max: 1
         passed: false
-        comment: Saves both plot.png and plot.html correctly
+        comment: Saves plot.png but also plot.html
     library_features:
-      score: 0
+      score: 3
       max: 5
       items:
       - id: LF-01
         name: Distinctive Features
-        score: 0
+        score: 3
         max: 5
-        passed: false
-        comment: Uses raw JSON config instead of highcharts-core Python library
+        passed: true
+        comment: Uses highcharts-maps with MapLineSeries, MapPointSeries, topology
+          loading; could better utilize Highmaps projection/zoom features
   verdict: REJECTED
 impl_tags:
   dependencies:
@@ -204,9 +203,11 @@ impl_tags:
   techniques:
   - html-export
   - annotations
+  - custom-legend
   patterns:
   - data-generation
   - iteration-over-groups
   dataprep: []
   styling:
+  - custom-colormap
   - edge-highlighting

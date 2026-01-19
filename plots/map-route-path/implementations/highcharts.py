@@ -1,4 +1,4 @@
-"""pyplots.ai
+""" pyplots.ai
 map-route-path: Route Path Map
 Library: highcharts unknown | Python 3.13.11
 Quality: 78/100 | Created: 2026-01-19

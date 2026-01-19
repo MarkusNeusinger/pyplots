@@ -1,0 +1,213 @@
+library: seaborn
+specification_id: gauge-realtime
+created: '2026-01-19T21:00:22Z'
+updated: '2026-01-19T21:03:15Z'
+generated_by: claude-opus-4-5-20251101
+workflow_run: 21151227848
+issue: 3788
+python_version: 3.13.11
+library_version: 0.13.2
+preview_url: https://storage.googleapis.com/pyplots-images/plots/gauge-realtime/seaborn/plot.png
+preview_thumb: https://storage.googleapis.com/pyplots-images/plots/gauge-realtime/seaborn/plot_thumb.png
+preview_html: null
+quality_score: 91
+review:
+  strengths:
+  - Excellent motion blur effect showing needle transition history for real-time indication
+  - Clear and intuitive green/yellow/red color zones following conventional meaning
+  - Prominent numeric display of current value (67%) with appropriate sizing
+  - Clean implementation with proper LIVE indicator enhancing real-time feel
+  - Good use of alpha blending for motion blur effect
+  weaknesses:
+  - Seaborn library features are minimally used (only sns.set_theme) - gauge is built
+    with matplotlib patches
+  - Motion blur needle positions could have slightly higher opacity for better visibility
+    of the transition effect
+  image_description: 'The plot displays a semi-circular gauge chart representing CPU
+    usage at 67%. The gauge has three color zones: green (0-50) for normal range,
+    yellow (50-80) for warning, and red (80-100) for critical. A dark blue needle
+    points to the current value, with motion blur effect showing three previous needle
+    positions (52, 58, 63) in lighter opacity to indicate real-time updating. The
+    gauge has tick marks at 0, 25, 50, 75, and 100 with bold labels. The current value
+    "67%" is prominently displayed below the gauge center in large blue text. A "LIVE"
+    indicator with a red dot appears in the upper right, indicating real-time nature.
+    The title "gauge-realtime · seaborn · pyplots.ai" is centered at the top. Min
+    (0%) and max (100%) labels appear at gauge boundaries. "CPU Usage" label is shown
+    below the numeric value.'
+  criteria_checklist:
+    visual_quality:
+      score: 36
+      max: 40
+      items:
+      - id: VQ-01
+        name: Text Legibility
+        score: 10
+        max: 10
+        passed: true
+        comment: Title at 24pt, tick labels at 16pt bold, current value at 48pt bold,
+          all perfectly readable
+      - id: VQ-02
+        name: No Overlap
+        score: 8
+        max: 8
+        passed: true
+        comment: No overlapping text elements
+      - id: VQ-03
+        name: Element Visibility
+        score: 7
+        max: 8
+        passed: true
+        comment: Gauge elements are well-sized, motion blur needles could be slightly
+          more visible
+      - id: VQ-04
+        name: Color Accessibility
+        score: 5
+        max: 5
+        passed: true
+        comment: Green/yellow/red zones are distinct and not relying solely on red-green
+          distinction
+      - id: VQ-05
+        name: Layout Balance
+        score: 4
+        max: 5
+        passed: true
+        comment: Good canvas utilization with gauge centered, slight imbalance with
+          LIVE indicator placement
+      - id: VQ-06
+        name: Axis Labels
+        score: 0
+        max: 2
+        passed: false
+        comment: No traditional axis labels (gauge uses tick marks instead, acceptable
+          for this chart type)
+      - id: VQ-07
+        name: Grid & Legend
+        score: 2
+        max: 2
+        passed: true
+        comment: Clean design without distracting elements
+    spec_compliance:
+      score: 25
+      max: 25
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 8
+        max: 8
+        passed: true
+        comment: Correct gauge chart implementation
+      - id: SC-02
+        name: Data Mapping
+        score: 5
+        max: 5
+        passed: true
+        comment: Value correctly mapped to needle angle, thresholds to color zones
+      - id: SC-03
+        name: Required Features
+        score: 5
+        max: 5
+        passed: true
+        comment: 'All spec features present: color zones, numeric display, min/max
+          labels, motion blur effect'
+      - id: SC-04
+        name: Data Range
+        score: 3
+        max: 3
+        passed: true
+        comment: Full 0-100 range displayed
+      - id: SC-05
+        name: Legend Accuracy
+        score: 2
+        max: 2
+        passed: true
+        comment: LIVE indicator and labels are accurate
+      - id: SC-06
+        name: Title Format
+        score: 2
+        max: 2
+        passed: true
+        comment: Uses correct format gauge-realtime · seaborn · pyplots.ai
+    data_quality:
+      score: 17
+      max: 20
+      items:
+      - id: DQ-01
+        name: Feature Coverage
+        score: 6
+        max: 8
+        passed: true
+        comment: Shows motion blur for real-time effect, color zones, current value
+          in yellow zone; could show more dramatic transitions
+      - id: DQ-02
+        name: Realistic Context
+        score: 7
+        max: 7
+        passed: true
+        comment: CPU usage is a perfect real-world scenario for real-time gauge
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 5
+        passed: true
+        comment: Values are realistic (67% CPU), progression from 52-58-63-67 is plausible
+          but increments are small
+    code_quality:
+      score: 10
+      max: 10
+      items:
+      - id: CQ-01
+        name: KISS Structure
+        score: 3
+        max: 3
+        passed: true
+        comment: Linear script with no functions/classes
+      - id: CQ-02
+        name: Reproducibility
+        score: 3
+        max: 3
+        passed: true
+        comment: Uses np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: All imports are used (matplotlib.patches, pyplot, numpy, seaborn)
+      - id: CQ-04
+        name: No Deprecated API
+        score: 1
+        max: 1
+        passed: true
+        comment: Current matplotlib/seaborn API used
+      - id: CQ-05
+        name: Output Correct
+        score: 1
+        max: 1
+        passed: true
+        comment: Saves as plot.png
+    library_features:
+      score: 3
+      max: 5
+      items:
+      - id: LF-01
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: true
+        comment: Uses sns.set_theme() for styling, but gauge is primarily matplotlib
+          patches/manual drawing. Seaborn's distinctive features like statistical
+          plots are not applicable here.
+  verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - patches
+  - annotations
+  - manual-ticks
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - minimal-chrome
+  - alpha-blending
+  - edge-highlighting
